@@ -1,7 +1,6 @@
 import React from 'react';
 import ItemActions from '../actions/itemActions';
-var mui = require('material-ui'),
-    Snackbar = mui.Snackbar;
+var mui = require('material-ui');
 
 class ItemList extends React.Component {
 
@@ -13,10 +12,6 @@ class ItemList extends React.Component {
         if(this.props.error)
             error = (<h4>{this.props.error}</h4>);
 
-        var detail = '';
-        if(this.props.showDetailItem)
-            detail = (<h3>Show detail: {this.props.showDetailItem.title}</h3>);
-
         let items = this.props.items.map((item) => {
             var backgroundStyle = item.posters && item.posters.thumbnail ? {
                 color: '#fff',
@@ -27,15 +22,16 @@ class ItemList extends React.Component {
             };
 
             return (
-                <div key={ item.id } style={styles.demoCardSquare} className="mdl-card mdl-shadow--2dp">
+                <div key={ item.id } style={styles.demoCardSquare} className="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col">
                     <div style={backgroundStyle} className="mdl-card__title mdl-card--expand">
+                        <i className="material-icons">folder</i>
                         <h2 className="mdl-card__title-text">{ item.title }</h2>
                     </div>
                     <div className="mdl-card__supporting-text">
                         {item.year} - {item.mpaa_rating}
                     </div>
-                    <div className="mdl-card__actions mdl-card--border">
-                        <button className="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" onClick={boundClick}>
+                        <button className="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
+                                onClick={boundClick}>
                             Show Details
                         </button>
                     </div>
@@ -49,7 +45,6 @@ class ItemList extends React.Component {
         return (
             <div>
                 { error }
-                { detail }
                 { loading }
                 { items }
             </div>
@@ -66,7 +61,7 @@ var styles = {
     demoCardSquare: {
         width: 320,
         height: 320,
-        margin: 25
+        margin: 20
     }
 };
 
