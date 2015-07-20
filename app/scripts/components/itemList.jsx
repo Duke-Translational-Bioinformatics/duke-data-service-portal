@@ -34,7 +34,6 @@ class ItemList extends React.Component {
                                 onClick={boundClick}>
                             Show Details
                         </button>
-                    </div>
                 </div>
             );
             //return (<li key={ item.id }>{ item.title } ({item.year})</li>);
