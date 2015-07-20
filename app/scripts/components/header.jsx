@@ -26,6 +26,7 @@ class Header extends React.Component {
                             </div>
                         </div>
                         <i className="material-icons">account_box</i>
+                        <!--Need to add current user component here-->
                     </div>
                 </header>
                 <div className="mdl-layout__drawer">
