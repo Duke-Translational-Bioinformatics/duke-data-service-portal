@@ -5,6 +5,7 @@ var ProjectStore = Reflux.createStore({
 
     init() {
         this.projects = [];
+        this.accountOverview = null;
         //this.showDetailProject = null;
 
         this.listenTo(ProjectListActions.loadProjects, this.loadProjects);
@@ -35,18 +36,6 @@ var ProjectStore = Reflux.createStore({
             loading: false
         });
     }
-
-    //showProjectDetail(project) {
-    //    if(this.showDetailProject === project){
-    //        console.log("Same project already detailed");
-    //    } else {
-    //        this.showDetailProject = project;
-    //        this.trigger({
-    //            showDetailProject: this.showDetailProject
-    //        });
-    //    }
-    //}
-
 });
 
 export default ProjectStore;

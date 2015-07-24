@@ -2,7 +2,6 @@
 @import 'helper'
 
 /* variables */
-$lightgrey = #999
 $linkColor = #555
 $grey = #eee
 $black = #222
@@ -22,27 +21,77 @@ a:visited
 
 a:hover
   color: lighten($linkColor,10%)
-  
+
 body
   color: $black
   font-size: 1em
   line-height: 1.5
-  
-header
-  background: $grey
-  color:$black
-  padding: 1em
-  
-  nav
-    float:right
-    user-select:none
-    
-  .nav-item
-    float:left
-    margin-left:.5em
-    
-    a.active
-      text-decoration:underline
-    
+
 .content
-  padding: 1em
+  padding: .5em
+  margin 0px auto
+
+.project-list-grid
+  max-width 1200px
+
+.demo
+  overflow: auto
+  margin: 20px auto
+  max-width: 1200px
+  position: relative
+  text-align center
+
+
+.account-overview-container
+  padding-top: 40px
+
+/*Search bar css*/
+
+.searchBar
+  outline: none
+  color: slategrey
+
+.searchBar[type=search]
+  -webkit-appearance: textfield
+  -webkit-box-sizing: content-box
+  font-family: inherit
+  font-size: 100%
+
+.searchBar::-webkit-search-decoration,
+.searchBar::-webkit-search-cancel-button
+  display: none
+
+
+
+.searchBar[type=search]
+  background: #fff url(../images/mdl-icons/ic_search_black_24dp_1x.png) no-repeat 9px center
+  border: solid 1px #ccc
+  padding: 9px 10px 9px 32px
+  width: 500px
+
+  -webkit-border-radius: 3px
+  -moz-border-radius: 3px
+  border-radius: 3px
+
+  -webkit-transition: all .5s
+  -moz-transition: all .5s
+  transition: all .5s
+
+.searchBar[type=search]:focus
+  width: 700px
+  background-color: $white
+  border-color: #ededed
+
+  -webkit-box-shadow: 0 0 5px rgba(109,207,246,.5)
+  -moz-box-shadow: 0 0 5px rgba(109,207,246,.5)
+  box-shadow: 0 0 5px rgba(109,207,246,.5)
+
+
+
+.searchBar:-moz-placeholder
+  color: lightgrey
+
+.searchBar::-webkit-.searchBar-placeholder
+  color: lightgrey
+
+

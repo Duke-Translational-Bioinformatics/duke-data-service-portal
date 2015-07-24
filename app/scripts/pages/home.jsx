@@ -1,5 +1,6 @@
 import React from 'react';
 import ProjectList from '../components/projectList.jsx';
+import AccountOverview from '../components/accountOverview.jsx';
 import ProjectStore from '../stores/projectStore';
 import ProjectListActions from '../actions/projectListActions';
 
@@ -30,18 +31,12 @@ class Home extends React.Component {
 
         return (
             <div>
-                <h4 style={styles.pageTitle}>Projects</h4>
+                <AccountOverview {...this.state} />
                 <ProjectList { ...this.state } />
             </div>
         );
     }
 }
 
-var styles = {
-    pageTitle: {
-        padding: 30,
-        margin: 20
-    }
-};
 
 export default Home;
