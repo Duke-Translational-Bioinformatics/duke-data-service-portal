@@ -51,7 +51,7 @@ var styles = {
     },
     icon: {
         fontSize: 36
-    }
+    },
 }
 Header.contextTypes = {
     router: React.PropTypes.func.isRequired
