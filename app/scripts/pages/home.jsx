@@ -1,21 +1,22 @@
 import React from 'react';
-import ItemList from '../components/itemList.jsx';
-import ItemStore from '../stores/itemStore';
-import ItemActions from '../actions/itemActions';
+import ProjectList from '../components/projectList.jsx';
+import AccountOverview from '../components/accountOverview.jsx';
+import ProjectStore from '../stores/projectStore';
+import ProjectListActions from '../actions/projectListActions';
 
 class Home extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            items: [],
+            projects: [],
             loading: false
         };
     }
 
     componentDidMount() {
-        this.unsubscribe = ItemStore.listen(this.onStatusChange.bind(this));
-        ItemActions.loadItems();
+        this.unsubscribe = ProjectStore.listen(this.onStatusChange.bind(this));
+        ProjectListActions.loadProjects();
     }
 
     componentWillUnmount() {
@@ -30,11 +31,12 @@ class Home extends React.Component {
 
         return (
             <div>
-                <h1>Movies</h1>
-                <ItemList { ...this.state } />
+                <AccountOverview {...this.state} />
+                <ProjectList { ...this.state } />
             </div>
         );
     }
 }
+
 
 export default Home;
