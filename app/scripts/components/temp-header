@@ -10,6 +10,8 @@ class Header extends React.Component {
     }
 
     render() {
+        //let numProjects = this.props.projects.length;
+        //console.log(numProjects);
         var Child = this.props.isLoggedIn ? LogoutMenu : LoginMenu;
         return (
             <div className="mdl-layout mdl-js-layout mdl-layout--fixed-header">
@@ -91,7 +93,6 @@ var LogoutMenu = React.createClass({
         )
     }
 });
-
 var SearchBar = React.createClass({
     render: function() {
         return (
@@ -104,6 +105,47 @@ var SearchBar = React.createClass({
         )
     }
 });
+//var SearchBar = React.createClass({
+//
+//    getInitialState: function(){
+//        return { searchString: '' };
+//    },
+//
+//    handleChange: function(e){
+//        this.setState({searchString:e.target.value});
+//    },
+//
+//    render: function() {
+//        let numProjects = this.props.projects.length;
+//        console.log(numProjects);
+//        let projects = this.props.projects,
+//            searchString = this.state.searchString.trim().toLowerCase();
+//
+//        if(searchString.length > 0){
+//            projects = projects.filter(function(l){
+//                return l.name.toLowerCase().match( searchString );
+//            });
+//        }
+//
+//        return <div>
+//            <form>
+//                <input type="text"
+//                       value={this.state.searchString}
+//                       onChange={this.handleChange}
+//                       className="searchBar"
+//                       placeholder="Search" />
+//            </form>
+//        </div>;
+//    }
+//});
+
+
+//
+//React.renderComponent(
+//    <SearchExample items={ libraries } />,
+//    document.body
+//);
+
 
 Header.contextTypes = {
     router: React.PropTypes.func.isRequired

@@ -2,19 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0cf15d1e-a3ea-493c-832c-6467930d357e" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/scripts/stores/headStore.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/components/accountOverview.jsx" afterPath="$PROJECT_DIR$/app/scripts/components/accountOverview.jsx" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Dockerfile" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/dc-base.yml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/dc-dev.utils.yml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/docker-compose.yml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/launch_application.sh" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/components/header.jsx" afterPath="$PROJECT_DIR$/app/scripts/components/header.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dist/index.html" afterPath="$PROJECT_DIR$/dist/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dist/css/main.css" afterPath="$PROJECT_DIR$/dist/css/main.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dist/js/main.js" afterPath="$PROJECT_DIR$/dist/js/main.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/stylus/main.styl" afterPath="$PROJECT_DIR$/app/stylus/main.styl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/components/projectList.jsx" afterPath="$PROJECT_DIR$/app/scripts/components/projectList.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/actions/projectListActions.js" afterPath="$PROJECT_DIR$/app/scripts/actions/projectListActions.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/stores/projectStore.js" afterPath="$PROJECT_DIR$/app/scripts/stores/projectStore.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dist/css/font-icons/style.css" afterPath="$PROJECT_DIR$/dist/css/font-icons/style.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="duke-data-service-portal.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -106,34 +99,32 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="package.json" pinned="false" current-in-tab="true">
+      <file leaf-file-name="package.json" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/package.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.2">
+            <state vertical-scroll-proportion="-4.75">
               <caret line="49" column="28" selection-start-line="49" selection-start-column="28" selection-end-line="49" selection-end-column="28" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="projectStore.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/scripts/stores/projectStore.js">
+      <file leaf-file-name="header.jsx" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/scripts/components/header.jsx">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="8" column="40" selection-start-line="8" selection-start-column="40" selection-end-line="8" selection-end-column="40" />
+            <state vertical-scroll-proportion="0.94516593">
+              <caret line="112" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="112" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="header.jsx" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/scripts/components/header.jsx">
+      <file leaf-file-name="temp-header" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/scripts/components/temp-header">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="23" column="68" selection-start-line="23" selection-start-column="68" selection-end-line="23" selection-end-column="68" />
-              <folding>
-                <marker date="1438040948000" expanded="true" signature="3229:3550" placeholder="..." />
-              </folding>
+              <caret line="154" column="0" selection-start-line="154" selection-start-column="0" selection-end-line="154" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -170,8 +161,9 @@
         <option value="$PROJECT_DIR$/app/scripts/components/searchBar.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/actions/projectListActions.js" />
         <option value="$PROJECT_DIR$/app/scripts/stores/projectStore.js" />
-        <option value="$PROJECT_DIR$/app/scripts/components/header.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/components/projectList.jsx" />
+        <option value="$PROJECT_DIR$/app/scripts/components/temp-header" />
+        <option value="$PROJECT_DIR$/app/scripts/components/header.jsx" />
       </list>
     </option>
   </component>
@@ -667,12 +659,12 @@
       <workItem from="1437157795601" duration="491000" />
       <workItem from="1438016615697" duration="26000" />
       <workItem from="1438016700814" duration="4857000" />
-      <workItem from="1438030787095" duration="8179000" />
+      <workItem from="1438030787095" duration="8893000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="20977000" />
+    <option name="totallyTimeSpent" value="21691000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="22" width="1835" height="790" extended-state="0" />
@@ -772,9 +764,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="68" column="21" selection-start-line="68" selection-start-column="21" selection-end-line="68" selection-end-column="21" />
-          <folding>
-            <marker date="1438040948000" expanded="true" signature="3229:3550" placeholder="..." />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -814,9 +804,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <marker date="1438040948000" expanded="true" signature="3229:3550" placeholder="..." />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -848,9 +836,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <marker date="1438040948000" expanded="true" signature="3229:3550" placeholder="..." />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -889,9 +875,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="25" column="31" selection-start-line="25" selection-start-column="31" selection-end-line="25" selection-end-column="31" />
-          <folding>
-            <marker date="1438040948000" expanded="true" signature="3229:3550" placeholder="..." />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -969,16 +953,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/components/header.jsx">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="23" column="68" selection-start-line="23" selection-start-column="68" selection-end-line="23" selection-end-column="68" />
-          <folding>
-            <marker date="1438040948000" expanded="true" signature="3229:3550" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/scripts/stores/projectStore.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1045,8 +1019,24 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/package.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.2">
+        <state vertical-scroll-proportion="-4.75">
           <caret line="49" column="28" selection-start-line="49" selection-start-column="28" selection-end-line="49" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/components/temp-header">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="154" column="0" selection-start-line="154" selection-start-column="0" selection-end-line="154" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/components/header.jsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.94516593">
+          <caret line="112" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="112" selection-end-column="0" />
           <folding />
         </state>
       </provider>
