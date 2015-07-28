@@ -16,7 +16,6 @@ class Header extends React.Component {
                         <span className="mdl-layout-title">Duke Data Service</span>
                         <!-- Add spacer, to align navigation to the right -->
                         <div className="mdl-layout-spacer"></div>
-<<<<<<< HEAD
                         <!-- This should be a separate component -->
                         <form action="#">
                             <input className="searchBar" type="search" placeholder="Search"/>
@@ -25,7 +24,6 @@ class Header extends React.Component {
                         <div className="mdl-layout-spacer"></div>
                         <!--Should be broken into a current user component here-->
                         <i className="material-icons" style={styles.icon}>account_box</i>
-=======
                         <div className="mdl-textfield mdl-js-textfield mdl-textfield--expandable textfield-demo">
                             <label className="mdl-button mdl-js-button mdl-button--icon" for="sample6">
                                 <i className="material-icons">search</i>
@@ -37,7 +35,6 @@ class Header extends React.Component {
                         </div>
                         <i className="material-icons">account_box</i>
                         <!--Need to add current user component here-->
->>>>>>> upstream/develop
                     </div>
                 </header>
                 <!-- Side Nav needs to be broken into a different component -->
