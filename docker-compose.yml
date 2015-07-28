@@ -1,0 +1,4 @@
+server:
+  extends:
+    file: dc-base.yml
+    service: webapp
