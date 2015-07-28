@@ -4,8 +4,8 @@ import ProjectListActions from '../actions/projectListActions';
 var ProjectStore = Reflux.createStore({
 
     init() {
-        this.projects = [];
-        this.accountOverview = null;
+        this.projects = {};
+        //this.accountOverview = null;
         //this.showDetailProject = null;
 
         this.listenTo(ProjectListActions.loadProjects, this.loadProjects);

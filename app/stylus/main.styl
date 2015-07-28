@@ -34,7 +34,7 @@ body
 .project-list-grid
   max-width 1200px
 
-.demo
+.project-container
   overflow: auto
   margin: 20px auto
   max-width: 1200px
@@ -50,6 +50,8 @@ body
 .searchBar
   outline: none
   color: slategrey
+  text-align: left
+
 
 .searchBar[type=search]
   -webkit-appearance: textfield
@@ -63,7 +65,7 @@ body
 
 
 
-.searchBar[type=search]
+.searchBar[type=text]
   background: #fff url(../images/mdl-icons/ic_search_black_24dp_1x.png) no-repeat 9px center
   border: solid 1px #ccc
   padding: 9px 10px 9px 32px
@@ -77,7 +79,7 @@ body
   -moz-transition: all .5s
   transition: all .5s
 
-.searchBar[type=search]:focus
+.searchBar[type=text]:focus
   width: 700px
   background-color: $white
   border-color: #ededed

@@ -5,7 +5,6 @@ var ProjectListActions = Reflux.createActions([
     'loadProjects',
     'loadProjectsSuccess',
     'loadProjectsError',
-    'accountOverview'
 ]);
 
 ProjectListActions.loadProjects.preEmit = function (data) {
