@@ -1,13 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router';
+import ProjectListActions from '../actions/projectListActions';
 
 class Header extends React.Component {
 
     constructor(props, context) {
         super(props);
+
     }
 
     render() {
+        var Child = this.props.isLoggedIn ? LogoutMenu : LoginMenu;
         return (
             <div className="mdl-layout mdl-js-layout mdl-layout--fixed-header">
                 <header className="mdl-layout__header">
@@ -17,13 +20,12 @@ class Header extends React.Component {
                         <!-- Add spacer, to align navigation to the right -->
                         <div className="mdl-layout-spacer"></div>
                         <!-- This should be a separate component -->
-                        <form action="#">
-                            <input className="searchBar" type="search" placeholder="Search"/>
-                        </form>
+                        <SearchBar {...this.props}/>
                         <div className="mdl-layout-spacer"></div>
                         <div className="mdl-layout-spacer"></div>
                         <!--Should be broken into a current user component here-->
                         <i className="material-icons" style={styles.icon}>account_box</i>
+                        <Child {...this.props} />
                         <div className="mdl-textfield mdl-js-textfield mdl-textfield--expandable textfield-demo">
                             <label className="mdl-button mdl-js-button mdl-button--icon" for="sample6">
                                 <i className="material-icons">search</i>
@@ -63,7 +65,46 @@ var styles = {
     icon: {
         fontSize: 36
     },
+    loginButton: {
+        color: '#fff'
+    },
 }
+
+var LoginMenu = React.createClass({
+
+    render: function() {
+        return (
+            <button className="mdl-button mdl-js-button" style={styles.loginButton}>
+                LOGIN
+            </button>
+        )
+    }
+});
+
+var LogoutMenu = React.createClass({
+
+    render: function() {
+        return (
+            <button className="mdl-button mdl-js-button" style={styles.loginButton}>
+                LOGOUT
+            </button>
+        )
+    }
+});
+
+var SearchBar = React.createClass({
+    render: function() {
+        return (
+            <form>
+                <input type="text"
+                       onChange={this.props.handleChange}
+                       className="searchBar"
+                       placeholder="Search" />
+            </form>
+        )
+    }
+});
+
 Header.contextTypes = {
     router: React.PropTypes.func.isRequired
 };
