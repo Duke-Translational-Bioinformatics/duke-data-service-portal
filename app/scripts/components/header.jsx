@@ -16,27 +16,15 @@ class Header extends React.Component {
                 <header className="mdl-layout__header">
                     <div className="mdl-layout__header-row">
                         <!-- Title -->
-                        <span className="mdl-layout-title">Duke Data Service</span>
+                        <span className="mdl-layout-title">Duke Data Services</span>
                         <!-- Add spacer, to align navigation to the right -->
                         <div className="mdl-layout-spacer"></div>
                         <!-- This should be a separate component -->
                         <SearchBar {...this.props}/>
                         <div className="mdl-layout-spacer"></div>
                         <div className="mdl-layout-spacer"></div>
-                        <!--Should be broken into a current user component here-->
-                        <i className="material-icons" style={styles.icon}>account_box</i>
-                        <Child {...this.props} />
-                        <div className="mdl-textfield mdl-js-textfield mdl-textfield--expandable textfield-demo">
-                            <label className="mdl-button mdl-js-button mdl-button--icon" for="sample6">
-                                <i className="material-icons">search</i>
-                            </label>
-                            <div className="mdl-textfield__expandable-holder">
-                                <input className="mdl-textfield__input" type="text" id="sample6" />
-                                <label className="mdl-textfield__label" for="sample-expandable">Search</label>
-                            </div>
-                        </div>
-                        <i className="material-icons">account_box</i>
                         <!--Need to add current user component here-->
+                        <Child {...this.props} />
                     </div>
                 </header>
                 <!-- Side Nav needs to be broken into a different component -->
@@ -63,7 +51,9 @@ var styles = {
         verticalAlign: -6
     },
     icon: {
-        fontSize: 36
+        fontSize: 36,
+        verticalAlign: -15,
+        padding: 10
     },
     loginButton: {
         color: '#fff'
@@ -74,9 +64,12 @@ var LoginMenu = React.createClass({
 
     render: function() {
         return (
-            <button className="mdl-button mdl-js-button" style={styles.loginButton}>
-                LOGIN
-            </button>
+            <div>
+                <i className="material-icons" style={styles.icon}>account_box</i>
+                <button className="mdl-button mdl-js-button" style={styles.loginButton}>
+                    LOGOUT
+                </button>
+            </div>
         )
     }
 });
@@ -85,9 +78,12 @@ var LogoutMenu = React.createClass({
 
     render: function() {
         return (
+            <div>
+            <i className="material-icons" style={styles.icon}>account_box</i>
             <button className="mdl-button mdl-js-button" style={styles.loginButton}>
                 LOGOUT
             </button>
+            </div>
         )
     }
 });
