@@ -1,4 +1,4 @@
-#[Material-UI](http://callemall.github.io/material-ui/) [![Build Status](https://travis-ci.org/callemall/material-ui.svg?branch=master)](https://travis-ci.org/callemall/material-ui)
+#[Material-UI](http://callemall.github.io/material-ui/) [![Build Status](https://travis-ci.org/callemall/material-ui.svg?branch=master)](https://travis-ci.org/callemall/material-ui) [![npm version](https://badge.fury.io/js/material-ui.svg)](http://badge.fury.io/js/material-ui)
 
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/callemall/material-ui?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Pair on this](https://tf-assets-staging.s3.amazonaws.com/badges/thinkful_repo_badge.svg)](http://start.thinkful.com/react/?utm_source=github&utm_medium=badge&utm_campaign=material-ui)
 
@@ -47,7 +47,7 @@ var React = require('react'),
   ThemeManager = new mui.Styles.ThemeManager(),
   RaisedButton = mui.RaisedButton;
 
-var SomeAwesomeComponent = React.createClass({
+var MyAwesomeReactComponent = React.createClass({
 
   childContextTypes: {
     muiTheme: React.PropTypes.object
@@ -73,7 +73,7 @@ module.exports = MyAwesomeReactComponent;
 
 ### Theme
 
-**Please note that since v0.8.0, you also need to define a theme for components to start working.** For instrucitons on implementing and using themes, visit our [documentation](http://material-ui.com/#/customization/themes).
+**Please note that since v0.8.0, you also need to define a theme for components to start working.** For instructions on implementing and using themes, visit our [documentation](http://material-ui.com/#/customization/themes).
 
 ## Customization
 

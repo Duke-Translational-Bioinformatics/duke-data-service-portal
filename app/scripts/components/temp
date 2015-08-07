@@ -1,0 +1,60 @@
+<Dialog
+                                style={styles.dialogStyles}
+                                title="Add New Project"
+                                actions={standardActions}
+                                ref="addProject">
+                                <form action="#">
+                                <TextField
+                                    style={styles.textStyles}
+                                    hintText="Project Name"
+                                    errorText={this.state.floatingErrorText}
+                                    floatingLabelText="Project Name"
+                                    multiLine={true}
+                                    onChange={this.handleFloatingErrorInputChange.bind(this)}/> <br/>
+                                <TextField
+                                    style={styles.textStyles}
+                                    hintText="Principle Investigator"
+                                    errorText={this.state.floatingErrorText}
+                                    floatingLabelText="Principle Investigator"
+                                    multiLine={true}
+                                    onChange={this.handleFloatingErrorInputChange.bind(this)}/> <br/>
+                                <TextField
+                                    style={styles.textStyles}
+                                    hintText="Project Description"
+                                    floatingLabelText="Project Description"
+                                    multiLine={true} />
+                                </form>
+                            </Dialog>
+
+
+
+
+                             <Dialog
+                                                            style={styles.dialogStyles}
+                                                            title="Add Files"
+                                                            actions={standardActions}
+                                                            ref="addProject">
+                                                            <form action="#">
+                                                                <div className="mdl-color-text--grey-800" style={styles.upLoadBox}>
+                                                                    <p>Click or Drag Files Here to Upload</p>
+                                                                </div>
+                                                                <Checkbox
+                                                                    style={styles.textStyles}
+                                                                    name="storage"
+                                                                    value="duke"
+                                                                    label="Duke Isolon"
+                                                                    defaultChecked={true}/>
+                                                                <Checkbox
+                                                                    style={styles.textStyles}
+                                                                    name="storage"
+                                                                    value="box"
+                                                                    label="Box"
+                                                                    disabled={true}/>
+                                                                <Checkbox
+                                                                    style={styles.textStyles}
+                                                                    name="storage"
+                                                                    value="amazon"
+                                                                    label="Amazon Glacier"
+                                                                    disabled={true}/>
+                                                            </form>
+                                                        </Dialog>

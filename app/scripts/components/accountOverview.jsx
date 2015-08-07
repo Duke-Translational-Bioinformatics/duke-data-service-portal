@@ -17,21 +17,21 @@ class AccountOverview extends React.Component {
                         </div>
                         <div style={styles.cardSquare}
                              className="mdl-cell mdl-cell--4-col">
-                            <h3 style={styles.cardHeader}>
-                                {numProjects + ' Projects'}</h3>
-                            <i className="material-icons" style={styles.icon}>folder_special</i>
+                            <h4 style={styles.cardHeader}>
+                                {numProjects + ' Projects'}</h4>
+                            <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>folder_special</i>
                         </div>
                         <div style={styles.cardSquare}
                              className="mdl-cell mdl-cell--4-col">
-                            <h3 style={styles.cardHeader}>
-                                370 Files</h3>
-                            <i className="material-icons" style={styles.icon}>description</i>
+                            <h4 style={styles.cardHeader}>
+                                370 Files</h4>
+                            <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>description</i>
                         </div>
                         <div style={styles.cardSquare}
                              className="mdl-cell mdl-cell--4-col">
-                            <h3 style={styles.cardHeader}>
-                                99.9 GB</h3>
-                            <i className="material-icons" style={styles.icon}>save</i>
+                            <h4 style={styles.cardHeader}>
+                                99.9 GB</h4>
+                            <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>save</i>
                         </div>
                     </div>
             );
@@ -41,25 +41,22 @@ class AccountOverview extends React.Component {
 var styles = {
     cardSquare: {
         width: 320,
-        height: 150,
+        height: 120,
         margin: 20,
         display: 'inline-block',
-        backgroundColor: '#40c4ff'
     },
     cardHeader: {
        margin: 20
     },
     icon: {
-        fontSize: 48,
+        fontSize: 64,
         verticalAlign: 'center'
     },
     accountOverviewTitle: {
-        margin: 20,
-        marginBottom: -5,
-        textAlign: 'left',
-        overflow: 'auto',
+        marginTop: -10,
+        marginBottom: -10,
         float: 'left',
-        paddingLeft: 20
+        paddingLeft: 38
     }
 };
 

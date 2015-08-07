@@ -1,3 +1,6 @@
 'use strict';
 
-module.exports = require('./date-picker');
+module.exports = {
+      DatePicker: require('./date-picker'),
+      DatePickerDialog: require('./date-picker-dialog')
+};

@@ -15,9 +15,16 @@ var SlideInChild = React.createClass({
   mixins: [StylePropable],
 
   propTypes: {
+    enterDelay: React.PropTypes.number,
     //This callback is needed bacause the direction could change
     //when leaving the dom
     getLeaveDirection: React.PropTypes.func.isRequired
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      enterDelay: 0
+    };
   },
 
   componentWillEnter: function componentWillEnter(callback) {
@@ -28,7 +35,7 @@ var SlideInChild = React.createClass({
     style.opacity = '0';
     AutoPrefix.set(style, 'transform', 'translate3d(' + x + ',' + y + ',0)');
 
-    setTimeout(callback, 0);
+    setTimeout(callback, this.props.enterDelay);
   },
 
   componentDidEnter: function componentDidEnter() {
@@ -51,24 +58,26 @@ var SlideInChild = React.createClass({
 
   render: function render() {
     var _props = this.props;
-    var styles = _props.styles;
+    var children = _props.children;
+    var enterDelay = _props.enterDelay;
+    var getLeaveDirection = _props.getLeaveDirection;
+    var style = _props.style;
 
-    var other = _objectWithoutProperties(_props, ['styles']);
+    var other = _objectWithoutProperties(_props, ['children', 'enterDelay', 'getLeaveDirection', 'style']);
 
-    styles = this.mergeAndPrefix({
+    var mergedRootStyles = this.mergeAndPrefix({
       position: 'absolute',
       height: '100%',
       width: '100%',
       top: 0,
       left: 0,
-      transition: Transitions.easeOut()
-    }, this.props.style);
+      transition: Transitions.easeOut(null, ['transform', 'opacity'])
+    }, style);
 
     return React.createElement(
       'div',
-      _extends({}, other, {
-        style: styles }),
-      this.props.children
+      _extends({}, other, { style: mergedRootStyles }),
+      children
     );
   }
 

@@ -37,8 +37,8 @@ var ListItem = React.createClass({
     leftIcon: React.PropTypes.element,
     nestedLevel: React.PropTypes.number,
     onKeyboardFocus: React.PropTypes.func,
-    onMouseOut: React.PropTypes.func,
-    onMouseOver: React.PropTypes.func,
+    onMouseLeave: React.PropTypes.func,
+    onMouseEnter: React.PropTypes.func,
     onNestedListToggle: React.PropTypes.func,
     onTouchStart: React.PropTypes.func,
     open: React.PropTypes.bool,
@@ -83,8 +83,8 @@ var ListItem = React.createClass({
     var leftIcon = _props.leftIcon;
     var nestedLevel = _props.nestedLevel;
     var onKeyboardFocus = _props.onKeyboardFocus;
-    var onMouseOut = _props.onMouseOut;
-    var onMouseOver = _props.onMouseOver;
+    var onMouseLeave = _props.onMouseLeave;
+    var onMouseEnter = _props.onMouseEnter;
     var onTouchStart = _props.onTouchStart;
     var rightAvatar = _props.rightAvatar;
     var rightIcon = _props.rightIcon;
@@ -95,7 +95,7 @@ var ListItem = React.createClass({
     var secondaryTextLines = _props.secondaryTextLines;
     var style = _props.style;
 
-    var other = _objectWithoutProperties(_props, ['autoGenerateNestedIndicator', 'disabled', 'disableKeyboardFocus', 'innerDivStyle', 'insetChildren', 'leftAvatar', 'leftCheckbox', 'leftIcon', 'nestedLevel', 'onKeyboardFocus', 'onMouseOut', 'onMouseOver', 'onTouchStart', 'rightAvatar', 'rightIcon', 'rightIconButton', 'rightToggle', 'primaryText', 'secondaryText', 'secondaryTextLines', 'style']);
+    var other = _objectWithoutProperties(_props, ['autoGenerateNestedIndicator', 'disabled', 'disableKeyboardFocus', 'innerDivStyle', 'insetChildren', 'leftAvatar', 'leftCheckbox', 'leftIcon', 'nestedLevel', 'onKeyboardFocus', 'onMouseLeave', 'onMouseEnter', 'onTouchStart', 'rightAvatar', 'rightIcon', 'rightIconButton', 'rightToggle', 'primaryText', 'secondaryText', 'secondaryTextLines', 'style']);
 
     var textColor = this.context.muiTheme.palette.textColor;
     var hoverColor = ColorManipulator.fade(textColor, 0.1);
@@ -235,8 +235,8 @@ var ListItem = React.createClass({
 
     var rightIconButtonHandlers = {
       onKeyboardFocus: this._handleRightIconButtonKeyboardFocus,
-      onMouseOver: this._handleRightIconButtonMouseOver,
-      onMouseOut: this._handleRightIconButtonMouseOut,
+      onMouseEnter: this._handleRightIconButtonMouseEnter,
+      onMouseLeave: this._handleRightIconButtonMouseLeave,
       onTouchTap: this._handleRightIconButtonTouchTap,
       onMouseDown: this._handleRightIconButtonMouseUp,
       onMouseUp: this._handleRightIconButtonMouseUp
@@ -303,8 +303,8 @@ var ListItem = React.createClass({
           disableKeyboardFocus: disableKeyboardFocus || this.state.rightIconButtonKeyboardFocused,
           linkButton: true,
           onKeyboardFocus: this._handleKeyboardFocus,
-          onMouseOut: this._handleMouseOut,
-          onMouseOver: this._handleMouseOver,
+          onMouseLeave: this._handleMouseLeave,
+          onMouseEnter: this._handleMouseEnter,
           onTouchStart: this._handleTouchStart,
           ref: 'enhancedButton',
           style: mergedRootStyles }),
@@ -353,14 +353,14 @@ var ListItem = React.createClass({
     if (this.props.onKeyboardFocus) this.props.onKeyboardFocus(e, isKeyboardFocused);
   },
 
-  _handleMouseOver: function _handleMouseOver(e) {
+  _handleMouseEnter: function _handleMouseEnter(e) {
     if (!this.state.touch) this.setState({ hovered: true });
-    if (this.props.onMouseOver) this.props.onMouseOver(e);
+    if (this.props.onMouseEnter) this.props.onMouseEnter(e);
   },
 
-  _handleMouseOut: function _handleMouseOut(e) {
+  _handleMouseLeave: function _handleMouseLeave(e) {
     this.setState({ hovered: false });
-    if (this.props.onMouseOut) this.props.onMouseOut(e);
+    if (this.props.onMouseLeave) this.props.onMouseLeave(e);
   },
 
   _handleRightIconButtonKeyboardFocus: function _handleRightIconButtonKeyboardFocus(e, isKeyboardFocused) {
@@ -380,16 +380,16 @@ var ListItem = React.createClass({
     if (iconButton && iconButton.props.onMouseDown) iconButton.props.onMouseDown(e);
   },
 
-  _handleRightIconButtonMouseOut: function _handleRightIconButtonMouseOut(e) {
+  _handleRightIconButtonMouseLeave: function _handleRightIconButtonMouseLeave(e) {
     var iconButton = this.props.rightIconButton;
     this.setState({ rightIconButtonHovered: false });
-    if (iconButton && iconButton.props.onMouseOut) iconButton.props.onMouseOut(e);
+    if (iconButton && iconButton.props.onMouseLeave) iconButton.props.onMouseLeave(e);
   },
 
-  _handleRightIconButtonMouseOver: function _handleRightIconButtonMouseOver(e) {
+  _handleRightIconButtonMouseEnter: function _handleRightIconButtonMouseEnter(e) {
     var iconButton = this.props.rightIconButton;
     this.setState({ rightIconButtonHovered: true });
-    if (iconButton && iconButton.props.onMouseOver) iconButton.props.onMouseOver(e);
+    if (iconButton && iconButton.props.onMouseEnter) iconButton.props.onMouseEnter(e);
   },
 
   _handleRightIconButtonMouseUp: function _handleRightIconButtonMouseUp(e) {

@@ -6,6 +6,7 @@ function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in ob
 
 var React = require('react');
 var StylePropable = require('./mixins/style-propable');
+var PropTypes = require('./utils/prop-types');
 var Transitions = require('./styles/transitions');
 
 var Paper = React.createClass({
@@ -21,7 +22,7 @@ var Paper = React.createClass({
     circle: React.PropTypes.bool,
     rounded: React.PropTypes.bool,
     transitionEnabled: React.PropTypes.bool,
-    zDepth: React.PropTypes.oneOf([0, 1, 2, 3, 4, 5])
+    zDepth: PropTypes.zDepth
   },
 
   getDefaultProps: function getDefaultProps() {

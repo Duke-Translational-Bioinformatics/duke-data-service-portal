@@ -1,10 +1,13 @@
 'use strict';
 
-var React = require('react');
+var React = require('react/addons');
+var PureRenderMixin = React.addons.PureRenderMixin;
 var SvgIcon = require('../../svg-icon');
 
 var ActionTurnedInNot = React.createClass({
   displayName: 'ActionTurnedInNot',
+
+  mixins: [PureRenderMixin],
 
   render: function render() {
     return React.createElement(

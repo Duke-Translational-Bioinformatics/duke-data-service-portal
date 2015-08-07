@@ -16,6 +16,9 @@ var DarkTheme = {
   getComponentThemes: function getComponentThemes(palette) {
     var cardColor = Colors.grey800;
     return {
+      avatar: {
+        borderColor: 'rgba(0, 0, 0, 0.5)'
+      },
       floatingActionButton: {
         disabledColor: ColorManipulator.fade(palette.textColor, 0.12)
       },

@@ -17,7 +17,9 @@ var CardTitle = React.createClass({
     titleStyle: React.PropTypes.object,
     subtitle: React.PropTypes.string,
     subtitleColor: React.PropTypes.string,
-    subtitleStyle: React.PropTypes.object
+    subtitleStyle: React.PropTypes.object,
+    expandable: React.PropTypes.bool,
+    showExpandableButton: React.PropTypes.bool
   },
 
   getDefaultProps: function getDefaultProps() {
@@ -30,7 +32,8 @@ var CardTitle = React.createClass({
   getStyles: function getStyles() {
     return {
       root: {
-        padding: 16
+        padding: 16,
+        position: 'relative'
       },
       title: {
         fontSize: 24,
@@ -64,7 +67,8 @@ var CardTitle = React.createClass({
         'span',
         { style: subtitleStyle },
         this.props.subtitle
-      )
+      ),
+      this.props.children
     );
   }
 });

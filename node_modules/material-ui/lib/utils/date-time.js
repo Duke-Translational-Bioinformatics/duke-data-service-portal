@@ -181,6 +181,10 @@ module.exports = {
     return !this.isBeforeDate(dateToCheck, startDate) && !this.isAfterDate(dateToCheck, endDate);
   },
 
+  isDateObject: function isDateObject(d) {
+    return d instanceof Date;
+  },
+
   monthDiff: function monthDiff(d1, d2) {
     var m = undefined;
     m = (d1.getFullYear() - d2.getFullYear()) * 12;

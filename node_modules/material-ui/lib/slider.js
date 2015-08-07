@@ -84,7 +84,9 @@ var Slider = React.createClass({
 
   getInitialState: function getInitialState() {
     var value = this.props.value;
-    if (value === null) value = this.props.defaultValue;
+    if (value === undefined) {
+      value = this.props.defaultValue;
+    }
     var percent = (value - this.props.min) / (this.props.max - this.props.min);
     if (isNaN(percent)) percent = 0;
 
@@ -99,7 +101,7 @@ var Slider = React.createClass({
   },
 
   componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-    if (nextProps.value !== null) {
+    if (nextProps.value !== undefined) {
       this.setValue(nextProps.value);
     }
   },
@@ -269,8 +271,8 @@ var Slider = React.createClass({
           onFocus: this._onFocus,
           onBlur: this._onBlur,
           onMouseDown: this._onMouseDown,
-          onMouseOver: this._onMouseOver,
-          onMouseOut: this._onMouseOut,
+          onMouseEnter: this._onMouseEnter,
+          onMouseLeave: this._onMouseLeave,
           onMouseUp: this._onMouseUp },
         React.createElement(
           'div',
@@ -392,11 +394,11 @@ var Slider = React.createClass({
     this._pos = e.clientX;
   },
 
-  _onMouseOver: function _onMouseOver() {
+  _onMouseEnter: function _onMouseEnter() {
     this.setState({ hovered: true });
   },
 
-  _onMouseOut: function _onMouseOut() {
+  _onMouseLeave: function _onMouseLeave() {
     this.setState({ hovered: false });
   },
 

@@ -1,10 +1,13 @@
 'use strict';
 
-var React = require('react');
+var React = require('react/addons');
+var PureRenderMixin = React.addons.PureRenderMixin;
 var SvgIcon = require('../../svg-icon');
 
 var HardwareScanner = React.createClass({
   displayName: 'HardwareScanner',
+
+  mixins: [PureRenderMixin],
 
   render: function render() {
     return React.createElement(

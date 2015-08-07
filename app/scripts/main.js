@@ -9,4 +9,13 @@ import routes from './routes';
 var injectTapEventPlugin = require("react-tap-event-plugin");
 injectTapEventPlugin();
 
-Router.run(routes, Handler => React.render(<Handler />, document.body));
+let appRouter = Router.create({
+    routes: routes,
+    location: Router.HashLocation
+});
+
+appRouter.run((Handler, state) => {
+    React.render(<Handler routerPath={state.path} appRouter={appRouter}/>, document.body)
+});
+
+//Router.run(routes, Handler => React.render(<Handler />, document.body));

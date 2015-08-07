@@ -23,6 +23,7 @@ var LeftNav = React.createClass({
 
   propTypes: {
     className: React.PropTypes.string,
+    disableSwipeToOpen: React.PropTypes.bool,
     docked: React.PropTypes.bool,
     header: React.PropTypes.element,
     menuItems: React.PropTypes.array.isRequired,
@@ -40,14 +41,19 @@ var LeftNav = React.createClass({
 
   getDefaultProps: function getDefaultProps() {
     return {
+      disableSwipeToOpen: false,
       docked: true
     };
   },
 
   getInitialState: function getInitialState() {
+    this._maybeSwiping = false;
+    this._touchStartX = null;
+    this._touchStartY = null;
+    this._swipeStartX = null;
+
     return {
       open: this.props.docked,
-      maybeSwiping: false,
       swiping: null
     };
   },
@@ -141,7 +147,7 @@ var LeftNav = React.createClass({
     if (!this.props.docked) {
       overlay = React.createElement(Overlay, {
         ref: 'overlay',
-        show: this.state.open,
+        show: this.state.open || !!this.state.swiping,
         transitionEnabled: !this.state.swiping,
         onTouchTap: this._onOverlayTouchTap
       });
@@ -231,17 +237,16 @@ var LeftNav = React.createClass({
   },
 
   _onBodyTouchStart: function _onBodyTouchStart(e) {
-    if (!this.state.open && openNavEventHandler !== this._onBodyTouchStart) {
+    if (!this.state.open && (openNavEventHandler !== this._onBodyTouchStart || this.props.disableSwipeToOpen)) {
       return;
     }
 
     var touchStartX = e.touches[0].pageX;
     var touchStartY = e.touches[0].pageY;
-    this.setState({
-      maybeSwiping: true,
-      touchStartX: touchStartX,
-      touchStartY: touchStartY
-    });
+
+    this._maybeSwiping = true;
+    this._touchStartX = touchStartX;
+    this._touchStartY = touchStartY;
 
     document.body.addEventListener('touchmove', this._onBodyTouchMove);
     document.body.addEventListener('touchend', this._onBodyTouchEnd);
@@ -255,7 +260,7 @@ var LeftNav = React.createClass({
   },
 
   _getTranslateX: function _getTranslateX(currentX) {
-    return Math.min(Math.max(this.state.swiping === 'closing' ? this._getTranslateMultiplier() * (currentX - this.state.swipeStartX) : this._getMaxTranslateX() - this._getTranslateMultiplier() * (this.state.swipeStartX - currentX), 0), this._getMaxTranslateX());
+    return Math.min(Math.max(this.state.swiping === 'closing' ? this._getTranslateMultiplier() * (currentX - this._swipeStartX) : this._getMaxTranslateX() - this._getTranslateMultiplier() * (this._swipeStartX - currentX), 0), this._getMaxTranslateX());
   },
 
   _onBodyTouchMove: function _onBodyTouchMove(e) {
@@ -265,19 +270,18 @@ var LeftNav = React.createClass({
     if (this.state.swiping) {
       e.preventDefault();
       this._setPosition(this._getTranslateX(currentX));
-    } else if (this.state.maybeSwiping) {
-      var dXAbs = Math.abs(currentX - this.state.touchStartX);
-      var dYAbs = Math.abs(currentY - this.state.touchStartY);
+    } else if (this._maybeSwiping) {
+      var dXAbs = Math.abs(currentX - this._touchStartX);
+      var dYAbs = Math.abs(currentY - this._touchStartY);
       // If the user has moved his thumb ten pixels in either direction,
       // we can safely make an assumption about whether he was intending
       // to swipe or scroll.
       var threshold = 10;
 
       if (dXAbs > threshold && dYAbs <= threshold) {
+        this._swipeStartX = currentX;
         this.setState({
-          swiping: this.state.open ? 'closing' : 'opening',
-          open: true,
-          swipeStartX: currentX
+          swiping: this.state.open ? 'closing' : 'opening'
         });
         this._setPosition(this._getTranslateX(currentX));
       } else if (dXAbs <= threshold && dYAbs > threshold) {
@@ -291,22 +295,29 @@ var LeftNav = React.createClass({
       var currentX = e.changedTouches[0].pageX;
       var translateRatio = this._getTranslateX(currentX) / this._getMaxTranslateX();
 
+      this._maybeSwiping = false;
+      var swiping = this.state.swiping;
       this.setState({
-        maybeSwiping: false,
         swiping: null
       });
 
       // We have to open or close after setting swiping to null,
       // because only then CSS transition is enabled.
       if (translateRatio > 0.5) {
-        this.close();
+        if (swiping === 'opening') {
+          this._setPosition(this._getMaxTranslateX());
+        } else {
+          this.close();
+        }
       } else {
-        this._setPosition(0);
+        if (swiping === 'opening') {
+          this.open();
+        } else {
+          this._setPosition(0);
+        }
       }
     } else {
-      this.setState({
-        maybeSwiping: false
-      });
+      this._maybeSwiping = false;
     }
 
     document.body.removeEventListener('touchmove', this._onBodyTouchMove);

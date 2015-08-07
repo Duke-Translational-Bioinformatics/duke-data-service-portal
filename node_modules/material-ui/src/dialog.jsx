@@ -233,8 +233,7 @@ let Dialog = React.createClass({
 
   show() {
     this.refs.dialogOverlay.preventScrolling();
-    this.setState({ open: true });
-    this._onShow();
+    this.setState({ open: true }, this._onShow);
   },
 
   _getAction(actionJSON, key) {
@@ -353,7 +352,7 @@ let Dialog = React.createClass({
   },
 
   _handleWindowKeyUp(e) {
-    if (e.keyCode === KeyCode.ESC) {
+    if (e.keyCode === KeyCode.ESC && !this.props.modal) {
       this.dismiss();
     }
   },

@@ -105,8 +105,8 @@ var ToolbarGroup = React.createClass({
           return React.cloneElement(currentChild, {
             style: _this.mergeStyles({ float: 'left' }, currentChild.props.style),
             iconStyle: styles.icon.root,
-            onMouseOver: _this._handleMouseOverDropDownMenu,
-            onMouseOut: _this._handleMouseOutDropDownMenu
+            onMouseEnter: _this._handleMouseEnterDropDownMenu,
+            onMouseLeave: _this._handleMouseLeaveDropDownMenu
           });
         case 'RaisedButton':case 'FlatButton':
           return React.cloneElement(currentChild, {
@@ -115,8 +115,8 @@ var ToolbarGroup = React.createClass({
         case 'FontIcon':
           return React.cloneElement(currentChild, {
             style: _this.mergeStyles(styles.icon.root, currentChild.props.style),
-            onMouseOver: _this._handleMouseOverFontIcon,
-            onMouseOut: _this._handleMouseOutFontIcon
+            onMouseEnter: _this._handleMouseEnterFontIcon,
+            onMouseLeave: _this._handleMouseLeaveFontIcon
           });
         case 'ToolbarSeparator':case 'ToolbarTitle':
           return React.cloneElement(currentChild, {
@@ -134,22 +134,22 @@ var ToolbarGroup = React.createClass({
     );
   },
 
-  _handleMouseOverDropDownMenu: function _handleMouseOverDropDownMenu(e) {
+  _handleMouseEnterDropDownMenu: function _handleMouseEnterDropDownMenu(e) {
     e.target.style.zIndex = this.getStyles().icon.hover.zIndex;
     e.target.style.color = this.getStyles().icon.hover.color;
   },
 
-  _handleMouseOutDropDownMenu: function _handleMouseOutDropDownMenu(e) {
+  _handleMouseLeaveDropDownMenu: function _handleMouseLeaveDropDownMenu(e) {
     e.target.style.zIndex = 'auto';
     e.target.style.color = this.getStyles().icon.root.color;
   },
 
-  _handleMouseOverFontIcon: function _handleMouseOverFontIcon(e) {
+  _handleMouseEnterFontIcon: function _handleMouseEnterFontIcon(e) {
     e.target.style.zIndex = this.getStyles().icon.hover.zIndex;
     e.target.style.color = this.getStyles().icon.hover.color;
   },
 
-  _handleMouseOutFontIcon: function _handleMouseOutFontIcon(e) {
+  _handleMouseLeaveFontIcon: function _handleMouseLeaveFontIcon(e) {
     e.target.style.zIndex = 'auto';
     e.target.style.color = this.getStyles().icon.root.color;
   }

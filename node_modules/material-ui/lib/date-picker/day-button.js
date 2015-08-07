@@ -104,8 +104,8 @@ var DayButton = React.createClass({
         disabled: this.props.disabled,
         disableFocusRipple: true,
         disableTouchRipple: true,
-        onMouseOver: this._handleMouseOver,
-        onMouseOut: this._handleMouseOut,
+        onMouseEnter: this._handleMouseEnter,
+        onMouseLeave: this._handleMouseLeave,
         onTouchTap: this._handleTouchTap,
         onKeyboardFocus: this._handleKeyboardFocus }),
       React.createElement('div', { style: styles.buttonState }),
@@ -117,11 +117,11 @@ var DayButton = React.createClass({
     ) : React.createElement('span', { style: styles.root });
   },
 
-  _handleMouseOver: function _handleMouseOver() {
+  _handleMouseEnter: function _handleMouseEnter() {
     if (!this.props.disabled) this.setState({ hover: true });
   },
 
-  _handleMouseOut: function _handleMouseOut() {
+  _handleMouseLeave: function _handleMouseLeave() {
     if (!this.props.disabled) this.setState({ hover: false });
   },
 

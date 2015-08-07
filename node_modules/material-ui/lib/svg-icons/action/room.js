@@ -1,10 +1,13 @@
 'use strict';
 
-var React = require('react');
+var React = require('react/addons');
+var PureRenderMixin = React.addons.PureRenderMixin;
 var SvgIcon = require('../../svg-icon');
 
 var ActionRoom = React.createClass({
   displayName: 'ActionRoom',
+
+  mixins: [PureRenderMixin],
 
   render: function render() {
     return React.createElement(

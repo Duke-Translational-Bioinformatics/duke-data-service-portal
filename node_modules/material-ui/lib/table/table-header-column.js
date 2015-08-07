@@ -59,8 +59,8 @@ var TableHeaderColumn = React.createClass({
     var className = 'mui-table-header-column';
     var styles = this.getStyles();
     var handlers = {
-      onMouseOver: this._onMouseOver,
-      onMouseOut: this._onMouseOut,
+      onMouseEnter: this._onMouseEnter,
+      onMouseLeave: this._onMouseLeave,
       onClick: this._onClick
     };
     var tooltip = undefined;
@@ -84,11 +84,11 @@ var TableHeaderColumn = React.createClass({
     );
   },
 
-  _onMouseOver: function _onMouseOver() {
+  _onMouseEnter: function _onMouseEnter() {
     if (this.props.tooltip !== undefined) this.setState({ hovered: true });
   },
 
-  _onMouseOut: function _onMouseOut() {
+  _onMouseLeave: function _onMouseLeave() {
     if (this.props.tooltip !== undefined) this.setState({ hovered: false });
   },
 

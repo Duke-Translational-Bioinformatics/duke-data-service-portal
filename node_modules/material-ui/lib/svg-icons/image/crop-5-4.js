@@ -1,10 +1,13 @@
 'use strict';
 
-var React = require('react');
+var React = require('react/addons');
+var PureRenderMixin = React.addons.PureRenderMixin;
 var SvgIcon = require('../../svg-icon');
 
 var ImageCrop54 = React.createClass({
   displayName: 'ImageCrop54',
+
+  mixins: [PureRenderMixin],
 
   render: function render() {
     return React.createElement(
