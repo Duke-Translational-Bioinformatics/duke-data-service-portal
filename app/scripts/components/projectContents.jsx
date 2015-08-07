@@ -26,7 +26,6 @@ class ProjectContents extends React.Component {
                 </tr>
             );
         });
-
         let loading = this.props.loading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
 
         let standardActions = [
@@ -37,28 +36,8 @@ class ProjectContents extends React.Component {
         return (
                 <div className="project-container mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800">
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.listTitle}>
-                        <div style={styles.listTitle}>
-                            <h4>Test Project 123</h4>
-                        </div>
                         <div style={styles.addFolder}>
-                        <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
-                                style={styles.addFolder}
-                                onTouchTap={this.handleTouchTap.bind(this)}>
-                            ADD FOLDER
-                        </button>
-                            <Dialog
-                                style={styles.dialogStyles}
-                                title="Add New Folder"
-                                actions={standardActions}
-                                ref="addFolder">
-                                <form action="#">
-                                    <TextField
-                                        style={styles.textStyles}
-                                        hintText="Folder Name"
-                                        floatingLabelText="Folder Name"
-                                        multiLine={true}/> <br/>
-                                </form>
-                            </Dialog>
+
                         </div>
                     </div>
                     { error }
@@ -132,3 +111,23 @@ ProjectContents.propTypes = {
 
 export default ProjectContents;
 
+
+/////////////Add Folder Flat Button (Instead of floating action button)///////////////////////////////////////////////////
+//<button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
+//        style={styles.addFolder}
+//        onTouchTap={this.handleTouchTap.bind(this)}>
+//    ADD FOLDER
+//</button>
+//<Dialog
+//style={styles.dialogStyles}
+//title="Add New Folder"
+//actions={standardActions}
+//ref="addFolder">
+//    <form action="#">
+//        <TextField
+//            style={styles.textStyles}
+//            hintText="Folder Name"
+//            floatingLabelText="Folder Name"
+//            multiLine={true}/> <br/>
+//    </form>
+//    </Dialog>

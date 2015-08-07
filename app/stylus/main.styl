@@ -32,12 +32,12 @@ body
   margin: 0px auto
 
 .project-list-grid
-  max-width: 1200px
+  max-width: 1100px
 
 .project-container
   overflow: auto
   margin: 20px auto
-  max-width: 1200px
+  max-width: 1100px
   position: relative
   text-align center
 
@@ -68,7 +68,7 @@ body
 .searchBar[type=text]
   background: #fff url(/images/mdl-icons/ic_search_black_24dp_1x.png) no-repeat 9px center
   background-color: #C5CAE9
-  opacity: .5
+  opacity: .8
   border: none
   padding: 10px
   width: 400px
@@ -80,13 +80,15 @@ body
 
   -webkit-transition: all .5s
   -moz-transition: all .5s
-  transition: width .5s ease, opacity .5s ease
+  transition: width padding font-size .5s ease, opacity .5s ease
 
 .searchBar[type=text]:focus
   width: 500px
   background-color: $white
   opacity: 1
   text-align: left
+  font-size: 1em
+  padding: 14px
   border-color: #ededed
   -webkit-box-shadow: 0 0 5px rgba(109,207,246,.5)
   -moz-box-shadow: 0 0 5px rgba(109,207,246,.5)
@@ -98,6 +100,7 @@ body
 .searchBar::-webkit-.searchBar-placeholder
   color: lightgrey
 
+//Spacer for header height (might want to use vh and vw instead)
 .ribbon
   height: 200px
   width: 200%

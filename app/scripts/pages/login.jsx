@@ -12,13 +12,13 @@ class Login extends React.Component {
         super(props);
         this.state = {
             security_state: '',
-            loading: false
+            loading: false,
         };
     }
 
     componentDidMount() {
         this.unsubscribe = LoginStore.listen(this.onStatusChange.bind(this));
-        this.setState({security_state: $('meta[name="csrf-token"]').attr('content')});
+        //this.setState({security_state: $('meta[name="csrf-token"]').attr('content')});
     }
 
     componentWillUnmount() {
@@ -28,7 +28,6 @@ class Login extends React.Component {
     onStatusChange(state) {
         this.setState(state);
     }
-
     //Temporary hard coded variables
     //var auth_service_uri = "https://192.168.99.100:3000";//Heroku app URL
     //var service_id = "c87de9f2-1690-4523-87dc-6395f665a757";
@@ -45,6 +44,5 @@ class Login extends React.Component {
         )
     }
 };
-
 
 export default Login;
