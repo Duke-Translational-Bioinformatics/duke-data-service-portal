@@ -19,6 +19,7 @@ class Home extends React.Component {
     componentDidMount() {
         this.unsubscribe = ProjectStore.listen(this.onStatusChange.bind(this));
         ProjectListActions.loadProjects();
+        //ProjectListActions.addProject();
     }
 
     componentWillUnmount() {

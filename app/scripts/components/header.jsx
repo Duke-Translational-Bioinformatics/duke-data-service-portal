@@ -121,7 +121,7 @@ var styles = {
         margin: 10
     },
     headerStyle: {
-        height: 200,
+        height: 210,
         zIndex: '0'
     },
     titleStyle: {

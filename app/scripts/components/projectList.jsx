@@ -58,29 +58,6 @@ class ProjectList extends React.Component {
                                 style={styles.dialogStyles}
                                 title="Add New Project"
                                 actions={standardActions}
-                                ref="addProject2">
-                                <form action="#">
-                                    <TextField
-                                        style={styles.textStyles}
-                                        hintText="Project Name"
-                                        floatingLabelText="Project Name"
-                                        multiLine={true}/> <br/>
-                                    <TextField
-                                        style={styles.textStyles}
-                                        hintText="Principle Investigator"
-                                        floatingLabelText="Principle Investigator"
-                                        multiLine={true}/> <br/>
-                                    <TextField
-                                        style={styles.textStyles}
-                                        hintText="Project Description"
-                                        floatingLabelText="Project Description"
-                                        multiLine={true} />
-                                </form>
-                            </Dialog>
-                            <Dialog
-                                style={styles.dialogStyles}
-                                title="Add New Project"
-                                actions={standardActions}
                                 ref="addProject">
                                 <form action="#">
                                 <TextField
@@ -137,15 +114,15 @@ var styles = {
     addProject: {
         float: 'right',
         position: 'relative',
-        margin: '20px 36px 0px 0px'
+        margin: '12px 8px 0px 0px'
     },
     listTitle: {
-        margin: 20,
-        marginBottom: -5,
+        margin: '0px 0px -5px 0px',
+        //marginBottom: -5,
         textAlign: 'left',
         overflow: 'auto',
         float: 'left',
-        paddingLeft: 20
+        paddingLeft: 20,
     },
     dialogStyles: {
         textAlign: 'center',

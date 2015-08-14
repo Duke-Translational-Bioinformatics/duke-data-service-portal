@@ -37,7 +37,20 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             loading: true
         });
+    },
+
+    addProject() {
+
+    },
+
+    addProjectSuccess() {
+
+    },
+
+    addProjectError() {
+
     }
+
 
 });
 

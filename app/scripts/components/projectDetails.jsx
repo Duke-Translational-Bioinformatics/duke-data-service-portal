@@ -91,7 +91,7 @@ var styles = {
     floatingButton: {
         position: 'absolute',
         top: -28,
-        right: 50,
+        right: '2%',
         zIndex: '2',
         color: '#ffffff'
     }

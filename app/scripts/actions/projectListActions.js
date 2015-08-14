@@ -6,7 +6,10 @@ var ProjectListActions = Reflux.createActions([
     'loadProjectsSuccess',
     'loadProjectsError',
     'loadProjectContents',
-    'handleFloatingErrorInputChange'
+    'handleFloatingErrorInputChange',
+    'addProject',
+    'addProjectSuccess',
+    'addProjectError'
 ]);
 
 ProjectListActions.loadProjects.preEmit = function (data) {
@@ -32,6 +35,7 @@ ProjectListActions.loadProjectContents.preEmit = function (data) {
             ProjectListActions.loadProjectsError(ex)
         })
 };
+
 
 export default ProjectListActions;
 

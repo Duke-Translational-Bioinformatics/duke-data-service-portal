@@ -17,16 +17,12 @@ class Project extends React.Component {
     }
 
     componentDidMount() {
-        this.unsubscribe = ProjectStore.listen(this.onStatusChange.bind(this));
+        this.unsubscribe = ProjectStore.listen(state => this.setState(state));
         ProjectListActions.loadProjectContents();
     }
 
     componentWillUnmount() {
         this.unsubscribe();
-    }
-
-    onStatusChange(state) {
-        this.setState(state);
     }
 
     render() {

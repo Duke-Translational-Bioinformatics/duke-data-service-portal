@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "material-ui": "^0.10.1",
+    "query-string": "^2.4.0",
     "react": "^0.13.3",
     "react-router": "^0.13.2",
     "reflux": "^0.2.7"
