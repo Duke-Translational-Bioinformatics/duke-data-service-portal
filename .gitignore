@@ -5,7 +5,7 @@ app/bundles
 *.log
 
 # IDEA
-.idea/
+.idea
 *.iml
 
 # OSX
