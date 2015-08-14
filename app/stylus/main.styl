@@ -29,27 +29,31 @@ body
 
 .content
   padding: .5em
-  margin 0px auto
+  margin: 0px auto
 
 .project-list-grid
-  max-width 1200px
+  max-width: 1100px
 
-.demo
+.project-container
   overflow: auto
   margin: 20px auto
-  max-width: 1200px
+  max-width: 1100px
   position: relative
   text-align center
 
 
 .account-overview-container
-  padding-top: 40px
+  margin-top: -100px
 
 /*Search bar css*/
+//Need to add media queries here to account for a mobile search option//
 
 .searchBar
   outline: none
   color: slategrey
+  //text-align: left
+  margin-right: 100px
+  //font-size: .8em
 
 .searchBar[type=search]
   -webkit-appearance: textfield
@@ -61,32 +65,35 @@ body
 .searchBar::-webkit-search-cancel-button
   display: none
 
+.searchBar[type=text]
+  //background: #fff url(/images/mdl-icons/ic_search_black_24dp_1x.png) no-repeat 9px center
+  background-color: #C5CAE9
+  opacity: .8
+  border: none
+  padding: 10px
+  width: 400px
+  font-size: .8em
+  text-align: left
 
-
-.searchBar[type=search]
-  background: #fff url(../images/mdl-icons/ic_search_black_24dp_1x.png) no-repeat 9px center
-  border: solid 1px #ccc
-  padding: 9px 10px 9px 32px
-  width: 500px
-
-  -webkit-border-radius: 3px
+  -webkit-border-radius: 4px
   -moz-border-radius: 3px
-  border-radius: 3px
+  border-radius: 4px
 
   -webkit-transition: all .5s
   -moz-transition: all .5s
-  transition: all .5s
+  transition: width padding font-size .5s ease, opacity .5s ease
 
-.searchBar[type=search]:focus
-  width: 700px
+.searchBar[type=text]:focus
+  width: 500px
   background-color: $white
+  opacity: 1
+  text-align: left
+  font-size: 1em
+  padding: 14px
   border-color: #ededed
-
   -webkit-box-shadow: 0 0 5px rgba(109,207,246,.5)
   -moz-box-shadow: 0 0 5px rgba(109,207,246,.5)
   box-shadow: 0 0 5px rgba(109,207,246,.5)
-
-
 
 .searchBar:-moz-placeholder
   color: lightgrey
@@ -94,4 +101,9 @@ body
 .searchBar::-webkit-.searchBar-placeholder
   color: lightgrey
 
+//Spacer for header height (might want to use vh and vw instead)
+.ribbon
+  height: 200px
+  width: 200%
+  background-color: #FFFFFF
 

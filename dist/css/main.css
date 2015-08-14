@@ -218,22 +218,23 @@ body {
   margin: 0px auto;
 }
 .project-list-grid {
-  max-width: 1200px;
+  max-width: 1100px;
 }
-.demo {
+.project-container {
   overflow: auto;
   margin: 20px auto;
-  max-width: 1200px;
+  max-width: 1100px;
   position: relative;
   text-align: center;
 }
 .account-overview-container {
-  padding-top: 40px;
+  margin-top: -100px;
 }
 /*Search bar css*/
 .searchBar {
   outline: none;
   color: #708090;
+  margin-right: 100px;
 }
 .searchBar[type=search] {
   -webkit-appearance: textfield;
@@ -245,18 +246,25 @@ body {
 .searchBar::-webkit-search-cancel-button {
   display: none;
 }
-.searchBar[type=search] {
-  background: #fff url("../images/mdl-icons/ic_search_black_24dp_1x.png") no-repeat 9px center;
-  border: solid 1px #ccc;
-  padding: 9px 10px 9px 32px;
-  width: 500px;
-  border-radius: 3px;
+.searchBar[type=text] {
+  background-color: #c5cae9;
+  opacity: 0.8;
+  border: none;
+  padding: 10px;
+  width: 400px;
+  font-size: 0.8em;
+  text-align: left;
+  border-radius: 4px;
   -webkit-transition: all 0.5s;
-  transition: all 0.5s;
+  transition: width padding font-size 0.5s ease, opacity 0.5s ease;
 }
-.searchBar[type=search]:focus {
-  width: 700px;
+.searchBar[type=text]:focus {
+  width: 500px;
   background-color: #f7f7f7;
+  opacity: 1;
+  text-align: left;
+  font-size: 1em;
+  padding: 14px;
   border-color: #ededed;
   box-shadow: 0 0 5px rgba(109,207,246,0.5);
 }
@@ -265,4 +273,9 @@ body {
 }
 .searchBar::-webkit-.searchBar-placeholder {
   color: #d3d3d3;
+}
+.ribbon {
+  height: 200px;
+  width: 200%;
+  background-color: #fff;
 }

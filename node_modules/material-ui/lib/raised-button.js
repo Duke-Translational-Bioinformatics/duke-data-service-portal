@@ -33,7 +33,7 @@ var RaisedButton = React.createClass({
     label: validateLabel,
     onMouseDown: React.PropTypes.func,
     onMouseUp: React.PropTypes.func,
-    onMouseOut: React.PropTypes.func,
+    onMouseLeave: React.PropTypes.func,
     onTouchEnd: React.PropTypes.func,
     onTouchStart: React.PropTypes.func,
     primary: React.PropTypes.bool,
@@ -88,6 +88,7 @@ var RaisedButton = React.createClass({
     var amount = this.props.primary || this.props.secondary ? 0.4 : 0.08;
     var styles = {
       root: {
+        backgroundColor: 'none',
         display: 'inline-block',
         minWidth: this.props.fullWidth ? '100%' : this.getThemeButton().minWidth,
         height: this.getThemeButton().height,
@@ -158,8 +159,8 @@ var RaisedButton = React.createClass({
     var buttonEventHandlers = disabled ? null : {
       onMouseDown: this._handleMouseDown,
       onMouseUp: this._handleMouseUp,
-      onMouseOut: this._handleMouseOut,
-      onMouseOver: this._handleMouseOver,
+      onMouseLeave: this._handleMouseLeave,
+      onMouseEnter: this._handleMouseEnter,
       onTouchStart: this._handleTouchStart,
       onTouchEnd: this._handleTouchEnd,
       onKeyboardFocus: this._handleKeyboardFocus
@@ -203,16 +204,16 @@ var RaisedButton = React.createClass({
     if (this.props.onMouseUp) this.props.onMouseUp(e);
   },
 
-  _handleMouseOut: function _handleMouseOut(e) {
+  _handleMouseLeave: function _handleMouseLeave(e) {
     if (!this.refs.container.isKeyboardFocused()) this.setState({ zDepth: this.state.initialZDepth, hovered: false });
-    if (this.props.onMouseOut) this.props.onMouseOut(e);
+    if (this.props.onMouseLeave) this.props.onMouseLeave(e);
   },
 
-  _handleMouseOver: function _handleMouseOver(e) {
+  _handleMouseEnter: function _handleMouseEnter(e) {
     if (!this.refs.container.isKeyboardFocused() && !this.state.touch) {
       this.setState({ hovered: true });
     }
-    if (this.props.onMouseOver) this.props.onMouseOver(e);
+    if (this.props.onMouseEnter) this.props.onMouseEnter(e);
   },
 
   _handleTouchStart: function _handleTouchStart(e) {

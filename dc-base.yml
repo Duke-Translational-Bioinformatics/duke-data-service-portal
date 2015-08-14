@@ -1,0 +1,6 @@
+webapp:
+  build: .
+  ports:
+    - 1337:1337
+  volumes:
+    - .:/var/www/app

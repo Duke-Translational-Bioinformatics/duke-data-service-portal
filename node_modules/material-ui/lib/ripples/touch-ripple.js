@@ -41,7 +41,7 @@ var TouchRipple = React.createClass({
       {
         onMouseUp: this._handleMouseUp,
         onMouseDown: this._handleMouseDown,
-        onMouseOut: this._handleMouseOut,
+        onMouseLeave: this._handleMouseLeave,
         onTouchStart: this._handleTouchStart,
         onTouchEnd: this._handleTouchEnd },
       React.createElement(
@@ -136,7 +136,7 @@ var TouchRipple = React.createClass({
     this.end();
   },
 
-  _handleMouseOut: function _handleMouseOut() {
+  _handleMouseLeave: function _handleMouseLeave() {
     this.end();
   },
 

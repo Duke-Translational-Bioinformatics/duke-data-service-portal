@@ -5,6 +5,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 var React = require('react/addons');
+var PropTypes = require('../utils/prop-types');
 var StylePropable = require('../mixins/style-propable');
 var Typography = require('../styles/typography');
 var Paper = require('../paper');
@@ -22,7 +23,7 @@ var List = React.createClass({
     insetSubheader: React.PropTypes.bool,
     subheader: React.PropTypes.string,
     subheaderStyle: React.PropTypes.object,
-    zDepth: React.PropTypes.oneOf([0, 1, 2, 3, 4, 5])
+    zDepth: PropTypes.zDepth
   },
 
   getDefaultProps: function getDefaultProps() {

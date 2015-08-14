@@ -5,9 +5,9 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 var React = require('react');
-var KeyCode = require('./utils/key-code');
-var Colors = require('./styles/colors');
 var StylePropable = require('./mixins/style-propable');
+var Colors = require('./styles/colors');
+var KeyCode = require('./utils/key-code');
 var FocusRipple = require('./ripples/focus-ripple');
 var TouchRipple = require('./ripples/touch-ripple');
 
@@ -77,7 +77,8 @@ var EnhancedButton = React.createClass({
   componentDidMount: function componentDidMount() {
     if (!EnhancedButton.hasStyleBeenInjected) {
       var style = document.createElement('style');
-      style.innerHTML = 'button::-moz-focus-inner,' + 'input::-moz-focus-inner {' + ' border: 0;' + ' padding: 0;' + ' }';
+      style.innerHTML = '\n        button::-moz-focus-inner,\n        input::-moz-focus-inner {\n          border: 0;\n          padding: 0;\n        }\n      ';
+
       document.body.appendChild(style);
       EnhancedButton.hasStyleBeenInjected = true;
     }
@@ -114,8 +115,8 @@ var EnhancedButton = React.createClass({
       display: 'inline-block',
       font: 'inherit',
       fontFamily: this.context.muiTheme.contentFontFamily,
-      WebkitTapHighlightColor: Colors.transparent,
-      WebkitAppearance: !this.props.linkButton && 'button',
+      tapHighlightColor: Colors.transparent,
+      appearance: this.props.linkButton ? null : 'button',
       cursor: disabled ? 'default' : 'pointer',
       textDecoration: 'none',
       outline: 'none'
@@ -135,6 +136,15 @@ var EnhancedButton = React.createClass({
 
     var buttonChildren = [];
 
+    if (!disabled && !disableFocusRipple && !disableKeyboardFocus) {
+      buttonChildren.push(React.createElement(FocusRipple, {
+        key: 'focusRipple',
+        color: focusRippleColor,
+        opacity: focusRippleOpacity,
+        show: this.state.isKeyboardFocused
+      }));
+    }
+
     // Create ripples if we need to
     if (!disabled && !disableTouchRipple) {
       buttonChildren.push(React.createElement(
@@ -148,15 +158,6 @@ var EnhancedButton = React.createClass({
       ));
     } else {
       buttonChildren.push(this.props.children);
-    }
-
-    if (!disabled && !disableFocusRipple && !disableKeyboardFocus) {
-      buttonChildren.push(React.createElement(FocusRipple, {
-        key: 'focusRipple',
-        color: focusRippleColor,
-        opacity: focusRippleOpacity,
-        show: this.state.isKeyboardFocused
-      }));
     }
 
     if (disabled && linkButton) {

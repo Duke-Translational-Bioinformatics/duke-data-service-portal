@@ -153,13 +153,13 @@ var MenuItem = React.createClass({
       var toggle = _props.toggle;
       var onTouchTap = _props.onTouchTap;
       var onToggle = _props.onToggle;
-      var onMouseOver = _props.onMouseOver;
-      var onMouseOut = _props.onMouseOut;
+      var onMouseEnter = _props.onMouseEnter;
+      var onMouseLeave = _props.onMouseLeave;
       var children = _props.children;
       var label = _props.label;
       var style = _props.style;
 
-      var other = _objectWithoutProperties(_props, ['toggle', 'onTouchTap', 'onToggle', 'onMouseOver', 'onMouseOut', 'children', 'label', 'style']);
+      var other = _objectWithoutProperties(_props, ['toggle', 'onTouchTap', 'onToggle', 'onMouseEnter', 'onMouseLeave', 'children', 'label', 'style']);
 
       toggleElement = React.createElement(Toggle, _extends({}, other, { onToggle: this._handleToggle, style: styles.toggle }));
     }
@@ -170,8 +170,8 @@ var MenuItem = React.createClass({
         key: this.props.index,
         className: this.props.className,
         onTouchTap: this._handleTouchTap,
-        onMouseOver: this._handleMouseOver,
-        onMouseOut: this._handleMouseOut,
+        onMouseEnter: this._handleMouseEnter,
+        onMouseLeave: this._handleMouseLeave,
         style: this.mergeAndPrefix(styles.root, this.props.selected && styles.rootWhenSelected, this.props.active && !this.props.disabled && styles.rootWhenHovered, this.props.style, this.props.disabled && styles.rootWhenDisabled) },
       icon,
       this.props.children,
@@ -191,12 +191,12 @@ var MenuItem = React.createClass({
     if (!this.props.disabled && this.props.onToggle) this.props.onToggle(e, this.props.index, toggled);
   },
 
-  _handleMouseOver: function _handleMouseOver(e) {
-    if (!this.props.disabled && this.props.onMouseOver) this.props.onMouseOver(e, this.props.index);
+  _handleMouseEnter: function _handleMouseEnter(e) {
+    if (!this.props.disabled && this.props.onMouseEnter) this.props.onMouseEnter(e, this.props.index);
   },
 
-  _handleMouseOut: function _handleMouseOut(e) {
-    if (!this.props.disabled && this.props.onMouseOut) this.props.onMouseOut(e, this.props.index);
+  _handleMouseLeave: function _handleMouseLeave(e) {
+    if (!this.props.disabled && this.props.onMouseLeave) this.props.onMouseLeave(e, this.props.index);
   }
 });
 

@@ -99,8 +99,8 @@ var YearButton = React.createClass({
         style: styles.root,
         disableFocusRipple: true,
         disableTouchRipple: true,
-        onMouseOver: this._handleMouseOver,
-        onMouseOut: this._handleMouseOut,
+        onMouseEnter: this._handleMouseEnter,
+        onMouseLeave: this._handleMouseLeave,
         onTouchTap: this._handleTouchTap }),
       React.createElement('div', { style: styles.buttonState }),
       React.createElement(
@@ -111,11 +111,11 @@ var YearButton = React.createClass({
     );
   },
 
-  _handleMouseOver: function _handleMouseOver() {
+  _handleMouseEnter: function _handleMouseEnter() {
     this.setState({ hover: true });
   },
 
-  _handleMouseOut: function _handleMouseOut() {
+  _handleMouseLeave: function _handleMouseLeave() {
     this.setState({ hover: false });
   },
 

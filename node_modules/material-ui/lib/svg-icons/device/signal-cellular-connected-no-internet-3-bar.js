@@ -1,10 +1,13 @@
 'use strict';
 
-var React = require('react');
+var React = require('react/addons');
+var PureRenderMixin = React.addons.PureRenderMixin;
 var SvgIcon = require('../../svg-icon');
 
 var DeviceSignalCellularConnectedNoInternet3Bar = React.createClass({
   displayName: 'DeviceSignalCellularConnectedNoInternet3Bar',
+
+  mixins: [PureRenderMixin],
 
   render: function render() {
     return React.createElement(

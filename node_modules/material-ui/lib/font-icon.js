@@ -20,8 +20,8 @@ var FontIcon = React.createClass({
   propTypes: {
     color: React.PropTypes.string,
     hoverColor: React.PropTypes.string,
-    onMouseOut: React.PropTypes.func,
-    onMouseOver: React.PropTypes.func
+    onMouseLeave: React.PropTypes.func,
+    onMouseEnter: React.PropTypes.func
   },
 
   getInitialState: function getInitialState() {
@@ -34,11 +34,11 @@ var FontIcon = React.createClass({
     var _props = this.props;
     var color = _props.color;
     var hoverColor = _props.hoverColor;
-    var onMouseOut = _props.onMouseOut;
-    var onMouseOver = _props.onMouseOver;
+    var onMouseLeave = _props.onMouseLeave;
+    var onMouseEnter = _props.onMouseEnter;
     var style = _props.style;
 
-    var other = _objectWithoutProperties(_props, ['color', 'hoverColor', 'onMouseOut', 'onMouseOver', 'style']);
+    var other = _objectWithoutProperties(_props, ['color', 'hoverColor', 'onMouseLeave', 'onMouseEnter', 'style']);
 
     var spacing = this.context.muiTheme.spacing;
     var offColor = color ? color : style && style.color ? style.color : this.context.muiTheme.palette.textColor;
@@ -55,22 +55,24 @@ var FontIcon = React.createClass({
     });
 
     return React.createElement('span', _extends({}, other, {
-      onMouseOut: this._handleMouseOut,
-      onMouseOver: this._handleMouseOver,
+      onMouseLeave: this._handleMouseLeave,
+      onMouseEnter: this._handleMouseEnter,
       style: mergedStyles }));
   },
 
-  _handleMouseOut: function _handleMouseOut(e) {
-    this.setState({ hovered: false });
-    if (this.props.onMouseOut) {
-      this.props.onMouseOut(e);
+  _handleMouseLeave: function _handleMouseLeave(e) {
+    // hover is needed only when a hoverColor is defined
+    if (this.props.hoverColor !== undefined) this.setState({ hovered: false });
+    if (this.props.onMouseLeave) {
+      this.props.onMouseLeave(e);
     }
   },
 
-  _handleMouseOver: function _handleMouseOver(e) {
-    this.setState({ hovered: true });
-    if (this.props.onMouseOver) {
-      this.props.onMouseOver(e);
+  _handleMouseEnter: function _handleMouseEnter(e) {
+    // hover is needed only when a hoverColor is defined
+    if (this.props.hoverColor !== undefined) this.setState({ hovered: true });
+    if (this.props.onMouseEnter) {
+      this.props.onMouseEnter(e);
     }
   }
 });

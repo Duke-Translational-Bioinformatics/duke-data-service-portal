@@ -1,0 +1,13 @@
+node_modules
+dist
+dist/**
+app/bower_components
+app/bundles
+*.log
+
+# IDEA
+.idea
+*.iml
+
+# OSX
+.DS_Store

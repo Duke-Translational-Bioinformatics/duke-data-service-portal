@@ -18,9 +18,9 @@ var Avatar = React.createClass({
   },
 
   propTypes: {
-    icon: React.PropTypes.element,
     backgroundColor: React.PropTypes.string,
     color: React.PropTypes.string,
+    icon: React.PropTypes.element,
     size: React.PropTypes.number,
     src: React.PropTypes.string,
     style: React.PropTypes.object
@@ -36,51 +36,58 @@ var Avatar = React.createClass({
 
   render: function render() {
     var _props = this.props;
-    var icon = _props.icon;
     var backgroundColor = _props.backgroundColor;
     var color = _props.color;
+    var icon = _props.icon;
     var size = _props.size;
     var src = _props.src;
     var style = _props.style;
 
-    var other = _objectWithoutProperties(_props, ['icon', 'backgroundColor', 'color', 'size', 'src', 'style']);
+    var other = _objectWithoutProperties(_props, ['backgroundColor', 'color', 'icon', 'size', 'src', 'style']);
 
     var styles = {
       root: {
-        height: src ? size - 2 : size,
-        width: src ? size - 2 : size,
+        height: size,
+        width: size,
         userSelect: 'none',
-        backgroundColor: backgroundColor,
         borderRadius: '50%',
-        border: src ? 'solid 1px' : 'none',
-        borderColor: this.context.muiTheme.palette.borderColor,
-        display: 'inline-block',
+        display: 'inline-block'
+      }
+    };
 
-        //Needed for letter avatars
+    if (src) {
+      var borderColor = this.context.muiTheme.component.avatar.borderColor;
+
+      if (borderColor) {
+        styles.root = this.mergeStyles(styles.root, {
+          height: size - 2,
+          width: size - 2,
+          border: 'solid 1px ' + borderColor
+        });
+      }
+
+      return React.createElement('img', _extends({}, other, { src: src, style: this.mergeAndPrefix(styles.root, style) }));
+    } else {
+      styles.root = this.mergeStyles(styles.root, {
+        backgroundColor: backgroundColor,
         textAlign: 'center',
         lineHeight: size + 'px',
         fontSize: size / 2 + 4,
         color: color
-      },
+      });
 
-      iconStyles: {
+      var styleIcon = {
         margin: 8
-      }
-    };
+      };
 
-    var mergedRootStyles = this.mergeAndPrefix(styles.root, style);
-
-    if (src) {
-      return React.createElement('img', _extends({}, other, { src: src, style: mergedRootStyles }));
-    } else {
       var iconElement = icon ? React.cloneElement(icon, {
         color: color,
-        style: this.mergeStyles(styles.iconStyles, icon.props.style)
+        style: this.mergeStyles(styleIcon, icon.props.style)
       }) : null;
 
       return React.createElement(
         'div',
-        _extends({}, other, { style: mergedRootStyles }),
+        _extends({}, other, { style: this.mergeAndPrefix(styles.root, style) }),
         iconElement,
         this.props.children
       );

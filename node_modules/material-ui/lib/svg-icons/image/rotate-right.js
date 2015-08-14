@@ -1,10 +1,13 @@
 'use strict';
 
-var React = require('react');
+var React = require('react/addons');
+var PureRenderMixin = React.addons.PureRenderMixin;
 var SvgIcon = require('../../svg-icon');
 
 var ImageRotateRight = React.createClass({
   displayName: 'ImageRotateRight',
+
+  mixins: [PureRenderMixin],
 
   render: function render() {
     return React.createElement(

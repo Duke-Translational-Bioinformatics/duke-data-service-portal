@@ -19,7 +19,9 @@ var CardHeader = React.createClass({
     subtitle: React.PropTypes.string,
     subtitleColor: React.PropTypes.string,
     subtitleStyle: React.PropTypes.object,
-    textStyle: React.PropTypes.object
+    textStyle: React.PropTypes.object,
+    expandable: React.PropTypes.bool,
+    showExpandableButton: React.PropTypes.bool
   },
 
   getDefaultProps: function getDefaultProps() {
@@ -35,7 +37,8 @@ var CardHeader = React.createClass({
         height: 72,
         padding: 16,
         fontWeight: Styles.Typography.fontWeightMedium,
-        boxSizing: 'border-box'
+        boxSizing: 'border-box',
+        position: 'relative'
       },
       text: {
         display: 'inline-block',
@@ -87,7 +90,8 @@ var CardHeader = React.createClass({
           { style: subtitleStyle },
           this.props.subtitle
         )
-      )
+      ),
+      this.props.children
     );
   }
 });

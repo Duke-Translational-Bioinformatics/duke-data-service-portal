@@ -1,10 +1,13 @@
 'use strict';
 
-var React = require('react');
+var React = require('react/addons');
+var PureRenderMixin = React.addons.PureRenderMixin;
 var SvgIcon = require('../../svg-icon');
 
 var ActionHttp = React.createClass({
   displayName: 'ActionHttp',
+
+  mixins: [PureRenderMixin],
 
   render: function render() {
     return React.createElement(

@@ -179,4 +179,3 @@ var CircularProgress = React.createClass({
 });
 
 module.exports = CircularProgress;
-//webkitTransitionTimingFunction: "linear",

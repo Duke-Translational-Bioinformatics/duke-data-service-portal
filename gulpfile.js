@@ -10,6 +10,7 @@ var webpackConfig = require('./webpack.config.js').getConfig(environment);
 var port = $.util.env.port || 1337;
 var app = 'app/';
 var dist = 'dist/';
+var scriptsLib = app + 'scripts/lib/';
 
 // https://github.com/ai/autoprefixer
 var autoprefixerBrowsers = [                 
@@ -31,6 +32,14 @@ gulp.task('scripts', function() {
     .pipe(gulp.dest(dist + 'js/'))
     .pipe($.size({ title : 'js' }))
     .pipe($.connect.reload());
+});
+
+
+// copy libs to dist
+gulp.task('lib', function() {
+  gulp.src(scriptsLib + 'fetch.js')
+      .pipe(gulp.dest(dist + '/lib'))
+      .pipe($.size({ title : 'Fetch' }));
 });
 
 // copy html from app to dist

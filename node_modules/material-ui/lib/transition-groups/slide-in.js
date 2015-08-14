@@ -15,49 +15,56 @@ var SlideIn = React.createClass({
   mixins: [StylePropable],
 
   propTypes: {
+    enterDelay: React.PropTypes.number,
+    childStyle: React.PropTypes.object,
     direction: React.PropTypes.oneOf(['left', 'right', 'up', 'down'])
   },
 
   getDefaultProps: function getDefaultProps() {
     return {
+      enterDelay: 0,
       direction: 'left'
     };
   },
 
   render: function render() {
+    var _this = this;
+
     var _props = this.props;
+    var enterDelay = _props.enterDelay;
+    var children = _props.children;
+    var childStyle = _props.childStyle;
     var direction = _props.direction;
+    var style = _props.style;
 
-    var other = _objectWithoutProperties(_props, ['direction']);
+    var other = _objectWithoutProperties(_props, ['enterDelay', 'children', 'childStyle', 'direction', 'style']);
 
-    var styles = this.mergeAndPrefix({
+    var mergedRootStyles = this.mergeAndPrefix({
       position: 'relative',
       overflow: 'hidden',
       height: '100%'
-    }, this.props.style);
+    }, style);
 
-    return React.createElement(
-      ReactTransitionGroup,
-      _extends({}, other, {
-        style: styles,
-        component: 'div' }),
-      this._getSlideInChildren()
-    );
-  },
-
-  _getSlideInChildren: function _getSlideInChildren() {
-    var _this = this;
-
-    return React.Children.map(this.props.children, function (child) {
+    var newChildren = React.Children.map(children, function (child) {
       return React.createElement(
         SlideInChild,
         {
           key: child.key,
-          direction: _this.props.direction,
-          getLeaveDirection: _this._getLeaveDirection },
+          direction: direction,
+          enterDelay: enterDelay,
+          getLeaveDirection: _this._getLeaveDirection,
+          style: childStyle },
         child
       );
     }, this);
+
+    return React.createElement(
+      ReactTransitionGroup,
+      _extends({}, other, {
+        style: mergedRootStyles,
+        component: 'div' }),
+      newChildren
+    );
   },
 
   _getLeaveDirection: function _getLeaveDirection() {

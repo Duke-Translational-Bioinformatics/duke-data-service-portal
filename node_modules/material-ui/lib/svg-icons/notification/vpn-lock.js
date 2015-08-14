@@ -1,10 +1,13 @@
 'use strict';
 
-var React = require('react');
+var React = require('react/addons');
+var PureRenderMixin = React.addons.PureRenderMixin;
 var SvgIcon = require('../../svg-icon');
 
 var NotificationVpnLock = React.createClass({
   displayName: 'NotificationVpnLock',
+
+  mixins: [PureRenderMixin],
 
   render: function render() {
     return React.createElement(

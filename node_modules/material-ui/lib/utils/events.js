@@ -14,22 +14,22 @@ module.exports = {
     }
   },
 
-  // IE8+ Support
   on: function on(el, type, callback) {
     if (el.addEventListener) {
       el.addEventListener(type, callback);
     } else {
+      // IE8+ Support
       el.attachEvent('on' + type, function () {
         callback.call(el);
       });
     }
   },
 
-  // IE8+ Support
   off: function off(el, type, callback) {
     if (el.removeEventListener) {
       el.removeEventListener(type, callback);
     } else {
+      // IE8+ Support
       el.detachEvent('on' + type, callback);
     }
   },

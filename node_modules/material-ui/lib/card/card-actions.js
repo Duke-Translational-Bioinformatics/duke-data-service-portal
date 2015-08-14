@@ -10,9 +10,15 @@ var CardActions = React.createClass({
   getStyles: function getStyles() {
     return {
       root: {
-        padding: 8
+        padding: 8,
+        position: 'relative'
       }
     };
+  },
+
+  propTypes: {
+    expandable: React.PropTypes.bool,
+    showExpandableButton: React.PropTypes.bool
   },
 
   render: function render() {

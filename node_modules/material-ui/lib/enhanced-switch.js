@@ -175,14 +175,14 @@ var EnhancedSwitch = React.createClass({
     var onFocus = _props.onFocus;
     var onMouseUp = _props.onMouseUp;
     var onMouseDown = _props.onMouseDown;
-    var onMouseOut = _props.onMouseOut;
+    var onMouseLeave = _props.onMouseLeave;
     var onTouchStart = _props.onTouchStart;
     var onTouchEnd = _props.onTouchEnd;
     var disableTouchRipple = _props.disableTouchRipple;
     var disableFocusRipple = _props.disableFocusRipple;
     var className = _props.className;
 
-    var other = _objectWithoutProperties(_props, ['type', 'name', 'value', 'label', 'onSwitch', 'defaultSwitched', 'onBlur', 'onFocus', 'onMouseUp', 'onMouseDown', 'onMouseOut', 'onTouchStart', 'onTouchEnd', 'disableTouchRipple', 'disableFocusRipple', 'className']);
+    var other = _objectWithoutProperties(_props, ['type', 'name', 'value', 'label', 'onSwitch', 'defaultSwitched', 'onBlur', 'onFocus', 'onMouseUp', 'onMouseDown', 'onMouseLeave', 'onTouchStart', 'onTouchEnd', 'disableTouchRipple', 'disableFocusRipple', 'className']);
 
     var styles = this.getStyles();
     var wrapStyles = this.mergeAndPrefix(styles.wrap, this.props.iconStyle);
@@ -219,7 +219,7 @@ var EnhancedSwitch = React.createClass({
     if (!hideTouchRipple) {
       inputProps.onMouseUp = this._handleMouseUp;
       inputProps.onMouseDown = this._handleMouseDown;
-      inputProps.onMouseOut = this._handleMouseOut;
+      inputProps.onMouseLeave = this._handleMouseLeave;
       inputProps.onTouchStart = this._handleTouchStart;
       inputProps.onTouchEnd = this._handleTouchEnd;
     }
@@ -360,7 +360,7 @@ var EnhancedSwitch = React.createClass({
     this.refs.touchRipple.end();
   },
 
-  _handleMouseOut: function _handleMouseOut() {
+  _handleMouseLeave: function _handleMouseLeave() {
     this.refs.touchRipple.end();
   },
 

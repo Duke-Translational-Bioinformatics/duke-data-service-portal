@@ -1,6 +1,7 @@
 let React = require('react');
 let StylePropable = require('./mixins/style-propable');
 let Transitions = require('./styles/transitions');
+let PropTypes = require('./utils/prop-types');
 let EnhancedButton = require('./enhanced-button');
 let FontIcon = require('./font-icon');
 let Tooltip = require('./tooltip');
@@ -25,14 +26,7 @@ let IconButton = React.createClass({
     onKeyboardFocus: React.PropTypes.func,
     tooltip: React.PropTypes.string,
     tooltipStyles: React.PropTypes.object,
-    tooltipPosition: React.PropTypes.oneOf([
-      'bottom-center',
-      'bottom-left',
-      'bottom-right',
-      'top-center',
-      'top-left',
-      'top-right',
-    ]),
+    tooltipPosition: PropTypes.cornersAndCenter,
     touch: React.PropTypes.bool,
   },
 
@@ -140,8 +134,8 @@ let IconButton = React.createClass({
         style={this.mergeStyles(styles.root, this.props.style)}
         onBlur={this._handleBlur}
         onFocus={this._handleFocus}
-        onMouseOut={this._handleMouseOut}
-        onMouseOver={this._handleMouseOver}
+        onMouseLeave={this._handleMouseLeave}
+        onMouseEnter={this._handleMouseEnter}
         onKeyboardFocus={this._handleKeyboardFocus}>
 
         {tooltipElement}
@@ -178,14 +172,14 @@ let IconButton = React.createClass({
     if (this.props.onFocus) this.props.onFocus(e);
   },
 
-  _handleMouseOut(e) {
+  _handleMouseLeave(e) {
     if (!this.refs.button.isKeyboardFocused()) this._hideTooltip();
-    if (this.props.onMouseOut) this.props.onMouseOut(e);
+    if (this.props.onMouseLeave) this.props.onMouseLeave(e);
   },
 
-  _handleMouseOver(e) {
+  _handleMouseEnter(e) {
     this._showTooltip();
-    if (this.props.onMouseOver) this.props.onMouseOver(e);
+    if (this.props.onMouseEnter) this.props.onMouseEnter(e);
   },
 
   _handleKeyboardFocus(e, keyboardFocused) {

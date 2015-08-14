@@ -28,7 +28,7 @@ var Calendar = React.createClass({
     shouldShowMonthDayPickerFirst: React.PropTypes.bool,
     shouldShowYearPickerFirst: React.PropTypes.bool,
     showYearSelector: React.PropTypes.bool,
-    onSelectedDate: React.PropTypes.func
+    onDayTouchTap: React.PropTypes.func
   },
 
   windowListeners: {
@@ -256,7 +256,7 @@ var Calendar = React.createClass({
     }
   },
 
-  _setSelectedDate: function _setSelectedDate(date, e) {
+  _setSelectedDate: function _setSelectedDate(date) {
     var adjustedDate = date;
     if (DateTime.isBeforeDate(date, this.props.minDate)) {
       adjustedDate = this.props.minDate;
@@ -272,11 +272,11 @@ var Calendar = React.createClass({
         selectedDate: adjustedDate
       });
     }
-    if (this.props.onSelectedDate) this.props.onSelectedDate(e, date);
   },
 
   _handleDayTouchTap: function _handleDayTouchTap(e, date) {
-    this._setSelectedDate(date, e);
+    this._setSelectedDate(date);
+    if (this.props.onDayTouchTap) this.props.onDayTouchTap(e, date);
   },
 
   _handleMonthChange: function _handleMonthChange(months) {

@@ -3,6 +3,8 @@ import ProjectList from '../components/projectList.jsx';
 import AccountOverview from '../components/accountOverview.jsx';
 import ProjectStore from '../stores/projectStore';
 import ProjectListActions from '../actions/projectListActions';
+let mui = require('material-ui');
+
 
 class Home extends React.Component {
 
@@ -17,6 +19,7 @@ class Home extends React.Component {
     componentDidMount() {
         this.unsubscribe = ProjectStore.listen(this.onStatusChange.bind(this));
         ProjectListActions.loadProjects();
+        //ProjectListActions.addProject();
     }
 
     componentWillUnmount() {
