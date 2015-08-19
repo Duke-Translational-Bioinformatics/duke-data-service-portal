@@ -35,7 +35,8 @@ class ProjectList extends React.Component {
                 );
             });
 
-        let loading = this.props.loading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
+        let loading = this.props.loading ?
+            <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
 
         let standardActions = [
             { text: 'Submit' },

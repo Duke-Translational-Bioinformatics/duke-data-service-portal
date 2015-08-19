@@ -8,7 +8,7 @@ var MainActions = Reflux.createActions([
     'getDdsApiToken',
     'getDdsApiTokenSuccess',
     'getDdsApiTokenError',
-    'setApiToken'
+    'getCurrentUser'
 ]);
 
 MainActions.authenticationServiceValidate.preEmit = (appConfig, accessToken) => {
@@ -51,9 +51,27 @@ MainActions.getDdsApiToken.preEmit = (appConfig, signedInfo) => {
     }).catch(function (ex) {
         MainActions.getDdsApiTokenError(ex)
     });
-
-    console.log('call AS for validate');
 };
+//
+//MainActions.getCurrentUser.preEmit = (appConfig, currentUser) => {
+//    fetch("https://raw.githubusercontent.com/caseychoiniere/duke-data-service-portal/develop/test-utils/mock-json/current-user.json", {
+//        method: 'get',
+//        headers: {
+//            'Accept': 'application/json',
+//            'Content-Type': 'application/json'
+//        }
+//    }).then(function (response) {
+//        return response.json()
+//    }).then(function (json) {
+//        if (json && json.user) {
+//            MainActions.getCurrentUserSuccess(json.user)
+//        } else {
+//            throw error;
+//        }
+//    }).catch(function (ex) {
+//        MainActions.getCurrentUserError(ex)
+//    });
+//};
 
 
 export default MainActions;

@@ -64,7 +64,17 @@ var MainStore = Reflux.createStore({
         this.trigger({
             appConfig: this.appConfig
         });
+    },
+    getCurrentUser () {
+        this.appConfig.currentUser = currentUser;
+        this.trigger({
+            appConfig: this.appConfig
+        });
+    },
+    handleLogout () {
+
     }
+
 });
 
 export default MainStore;

@@ -4,7 +4,8 @@ let appConfig = {
     serviceId: 'c87de9f2-1690-4523-87dc-6395f665a757',
     authServiceName: 'Duke Authentication Service',
     securityState: '123456789',
-    apiToken: null
+    apiToken: null,
+    currentUser: null
 };
 
 export default appConfig;

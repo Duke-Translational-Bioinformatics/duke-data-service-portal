@@ -3,7 +3,6 @@ import { RouteHandler } from 'react-router';
 import Header from '../components/header.jsx';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions';
-var queryString = require('query-string');
 
 let mui = require('material-ui');
 let ThemeManager = new mui.Styles.ThemeManager();
@@ -35,6 +34,7 @@ class App extends React.Component {
 
     componentDidMount() {
         this.unsubscribe = MainStore.listen(state => this.setState(state));
+        new Framework7().addView('.view-main', { dynamicNavbar: true });
     }
 
     componentWillUnmount() {
@@ -46,50 +46,37 @@ class App extends React.Component {
     }
 
     render() {
+        this.state.appConfig.apiToken = "FAKE"; // TODO : remove this !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        this.state.appConfig.currentUser = "John Doe"; // TODO : remove this !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         let content = <RouteHandler {...this.props} {...this.state}/>;
-        if (!this.state.appConfig.apiToken) {
-            // check url for parameters
-            // - if there, show "logging you in" and emit authenticationServiceValidate(this.state.appConfig, <the values>) action
-            var splitUrl = window.location.hash.split('&');//Need to fix this to be more defensive
-            var accessToken = splitUrl[0].split('=')[1];
-            //console.log(accessToken);
-            if (this.state.error) {
-                content = this.state.error
-            }
-            else if (this.state.asValidateLoading || this.state.ddsApiTokenLoading) {
-                //show content loading
-                content = (<div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader"></div>);
-            }
-            else if (this.state.signedInfo) {
-                console.log(this.state.signedInfo);
-                MainActions.getDdsApiToken(this.state.appConfig, this.state.signedInfo);
-                //(this.state.apiToken) then emit the getDdsJwt(apiToken) action, also render "Logging you in"
-            }
-            else if (accessToken) {
-                MainActions.authenticationServiceValidate(this.state.appConfig, accessToken);
-            }
-            else {
-                content = (
-                    <a href={this.createLoginUrl()}>
-                        <button className="mdl-button mdl-js-button">
-                            LOGIN
-                        </button>
-                    </a>
-                );
-            }
+        if (!this.state.appConfig.apiToken && this.props.routerPath!=='/login') {
+            this.props.appRouter.transitionTo('/login');
         }
-        if (this.state.appConfig.apiToken) {
-            content = "api token exists: " + this.state.appConfig.apiToken;
-            console.log('jwt exists');
+        else if (this.state.appConfig.apiToken) {
+            this.props.appRouter.transitionTo('/home');
         }
         return (
-            <div>
-                <Header />
-
-                <div className="content">
-                    {content}
+            <span>
+                <div className="statusbar-overlay"></div>
+                <div className="panel-overlay"></div>
+                <div className="panel panel-left panel-reveal">
+                    <div className="content-block">
+                        <p>Left panel content goes here</p>
+                    </div>
                 </div>
-            </div>
+                <div className="views">
+                    <div className="view view-main">
+                        <Header />
+                        <div className="pages navbar-through toolbar-through">
+                            <div data-page="index" className="page">
+                                <div className="page-content">
+                                    {content}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </span>
         );
     }
 
