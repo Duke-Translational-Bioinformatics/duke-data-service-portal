@@ -12,7 +12,10 @@ let mui = require('material-ui'),
 class ProjectList extends React.Component {
 
     constructor() {
-        //this.state = {floatingErrorText: 'This field is required.'}
+        this.state = {
+            floatingErrorText: 'This field is required.',
+            floatingErrorText2: 'This field is required'
+        }
     }
 
     render() {
@@ -20,81 +23,102 @@ class ProjectList extends React.Component {
         if(this.props.error)
             error = (<h4>{this.props.error}</h4>);
         let projects = this.props.projects.map((project) => {
-                return (
-                    <div key={ project.id } style={styles.cardSquare}
-                         className="mdl-card mdl-shadow--3dp mdl-cell mdl-cell--4-col">
-                        <div className="title mdl-card__title mdl-card--expand">
-                            <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>folder</i>
-                            <Link to="project"><h1 className="mdl-card__title-text content mdl-color-text--grey-800" style={styles.cardHeader} >{ project.name }</h1></Link>
+            if (!project.is_deleted){
+                    return (
+                        <div key={ project.id } style={styles.cardSquare} className="card col-33">
+                            <div className="mdl-card__title mdl-card--expand">
+                                <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>folder</i>
+                                <Link to={"/project"}><h1 className="mdl-card__title-text content mdl-color-text--grey-800" style={styles.cardHeader} >{ project.name }</h1></Link>
+                            </div>
+                            <div className="mdl-card__supporting-text mdl-color-text--grey-800">
+                                <p>ID: {project.id}</p>
+                                <p>Description: { project.description }</p>
+                            </div>
                         </div>
-                        <div className="mdl-card__supporting-text mdl-color-text--grey-800">
-                            <p>ID: {project.id}</p>
-                            <p>Description: { project.description }</p>
-                        </div>
-                    </div>
-                );
+                    );
+                }
             });
 
-        let loading = this.props.loading ?
-            <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
-
+        let loading = this.props.loading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
+        let addProjectLoading = this.props.addProjectLoading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
         let standardActions = [
-            { text: 'Submit' },
+            { text: 'Submit', onTouchTap: this.handleProjectButton.bind(this)},
             { text: 'Cancel' }
         ];
 
         return (
-                <div className="project-container mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800">
+                <div className="project-container mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800 row">
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.listTitle}>
                         <div style={styles.listTitle}>
                             <h4>Projects</h4>
                         </div>
-                        <div style={styles.addProject}>
-                        <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
-                                style={styles.addProject}
-                                onTouchTap={this.handleTouchTap.bind(this)}>
-                            ADD PROJECT
-                        </button>
-                            <Dialog
-                                style={styles.dialogStyles}
-                                title="Add New Project"
-                                actions={standardActions}
-                                ref="addProject">
-                                <form action="#">
-                                <TextField
-                                    style={styles.textStyles}
-                                    hintText="Project Name"
-                                    floatingLabelText="Project Name"
-                                    multiLine={true}/> <br/>
-                                <TextField
-                                    style={styles.textStyles}
-                                    hintText="Principle Investigator"
-                                    floatingLabelText="Principle Investigator"
-                                    multiLine={true}/> <br/>
-                                <TextField
-                                    style={styles.textStyles}
-                                    hintText="Project Description"
-                                    floatingLabelText="Project Description"
-                                    multiLine={true} />
-                                </form>
-                            </Dialog>
+                            <div style={styles.addProject}>
+                            <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
+                                    style={styles.addProject}
+                                    onTouchTap={this.handleTouchTap.bind(this)}>
+                                ADD PROJECT
+                            </button>
+                                <Dialog
+                                    style={styles.dialogStyles}
+                                    title="Add New Project"
+                                    actions={standardActions}
+                                    ref="addProject">
+                                    <form action="#" id="newProjectForm">
+                                    <TextField
+                                        style={styles.textStyles}
+                                        hintText="Project Name"
+                                        errorText={this.state.floatingErrorText}
+                                        floatingLabelText="Project Name"
+                                        id="projectNameText"
+                                        type="text"
+                                        multiLine={true}
+                                        onChange={this.handleFloatingErrorInputChange.bind(this)} /> <br/>
+                                    <TextField
+                                        style={styles.textStyles}
+                                        hintText="Project Description"
+                                        errorText={this.state.floatingErrorText2}
+                                        floatingLabelText="Project Description"
+                                        id="projectDescriptionText"
+                                        type="text"
+                                        multiLine={true}
+                                        onChange={this.handleFloatingErrorInputChange2.bind(this)}
+                                        />
+                                    </form>
+                                </Dialog>
+                            </div>
                         </div>
-                    </div>
                     { error }
                     { loading }
+                    { addProjectLoading }
                     { projects }
                     </div>
         );
     }
     handleTouchTap() {
         this.refs.addProject.show();
-    }
-
-    //handleFloatingErrorInputChange(e) {
-    //    this.setState({
-    //        floatingErrorText: e.target.value ? '' : 'This field is required.'
-    //    });
-    //}
+    };
+    handleProjectButton() {
+        if(this.state.floatingErrorText || this.state.floatingErrorText2 != '')
+        {return null} else {
+            ProjectListActions.addProject();
+            this.refs.addProject.dismiss(
+                this.setState({
+                    floatingErrorText: 'This field is required.',
+                    floatingErrorText2: 'This field is required'
+                })
+            );
+        }
+    };
+    handleFloatingErrorInputChange(e) {
+        this.setState({
+            floatingErrorText: e.target.value ? '' : 'This field is required.'
+        });
+    };
+    handleFloatingErrorInputChange2(e) {
+        this.setState({
+            floatingErrorText2: e.target.value ? '' : 'This field is required.'
+        });
+    };
 }
 
 ProjectList.contextTypes = {
@@ -104,7 +128,7 @@ ProjectList.contextTypes = {
 var styles = {
     cardSquare: {
         width: 320,
-        height: 220,
+        height: 260,
         margin: 20,
         textAlign: 'left',
         display: 'inline-block'
@@ -121,7 +145,6 @@ var styles = {
         margin: '0px 0px -5px 0px',
         //marginBottom: -5,
         textAlign: 'left',
-        overflow: 'auto',
         float: 'left',
         paddingLeft: 20,
     },
@@ -137,6 +160,7 @@ var styles = {
 
 ProjectList.propTypes = {
     loading: React.PropTypes.bool,
+    addProjectLoading: React.PropTypes.bool,
     projects: React.PropTypes.array,
     error: React.PropTypes.string,
     is_deleted: React.PropTypes.bool,

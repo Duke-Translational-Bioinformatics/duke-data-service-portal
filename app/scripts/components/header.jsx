@@ -1,7 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router';
+import { RouteHandler, Link } from 'react-router';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions';
+import CurrentUser from './currentUser.jsx';
+import cookie from 'react-cookie';
 var mui = require('material-ui'),
     TextField = mui.TextField,
     Dialog = mui.Dialog,
@@ -12,120 +14,27 @@ class Header extends React.Component {
     constructor(props, context) {
         super(props);
         this.state = {
-            appConfig: MainStore.appConfig
+            appConfig: MainStore.appConfig,
         }
     }
 
     render() {
         return (
-            <div className="ribbon color-primary">
-                <div className="mdl-layout mdl-js-layout mdl-layout--fixed-header">
-                    <AppBar {...this.state}/>
-                    <Nav {...this.state}/>
+            <div className="navbar">
+                <div className="navbar-inner">
+                    <div className="left">
+                        {!this.state.appConfig.apiToken ? '' : <p><a href="#" className="open-panel"><i className="material-icons" style={styles.openIcon}>menu</i></a></p>}
+                    </div>
+                    <div className="center">
+                    </div>
+                    <div className="right">
+                        <CurrentUser {...this.state}/>
+                    </div>
                 </div>
             </div>
         );
     }
 }
-
-let CurrentUser = React.createClass({
-    render() {
-        return (
-            <div>
-                <span style={styles.currentUser}>{this.props.appConfig.currentUser}</span>
-            </div>
-        )
-    }
-});
-
-let LoginMenu = React.createClass({
-
-    render() {
-        let content = '';
-        return (
-            <div>
-                {content}
-            </div>
-        )
-    }
-});
-
-let LogoutMenu = React.createClass({
-
-    render() {
-        return (
-            <div>
-                <i className="material-icons" style={styles.icon}>account_box</i>
-                <button className="mdl-button mdl-js-button" style={styles.loginButton} onTouchTap={this.handleTouchTap}>
-                    LOGOUT
-                </button>
-                <CurrentUser {...this.props}/>
-            </div>
-        )
-    },
-    handleTouchTap() {
-        this.props.appConfig.apiToken = null;
-    }
-});
-
-
-let SearchBar = React.createClass({
-    render() {
-        return (
-            <form action="#">
-                <input type="text"
-                       className="searchBar"
-                       placeholder="Search"/>
-            </form>
-        )
-    }
-});
-
-let Nav = React.createClass({
-    render() {
-        return (
-            <div className="mdl-layout__drawer">
-                <span className="mdl-layout-title">Duke Data Service</span>
-                <nav className="mdl-navigation">
-                    <Link to="home" className="mdl-navigation__link"><i className="material-icons"
-                                                                        style={styles.navIcon}>add_circle</i>
-                        Create New Project</Link>
-                    <Link to="home" className="mdl-navigation__link"><i className="material-icons"
-                                                                        style={styles.navIcon}>settings</i>Settings</Link>
-                    <Link to="home" className="mdl-navigation__link"><i className="material-icons"
-                                                                        style={styles.navIcon}>exit_to_app</i>
-                        Logout</Link>
-                    <Link to="home" className="mdl-navigation__link"><i className="material-icons"
-                                                                        style={styles.navIcon}>help</i>Help</Link>
-                    <Link to="home" className="mdl-navigation__link">Governance</Link>
-                    <Link to="home" className="mdl-navigation__link">Terms &amp; Conditions</Link>
-                </nav>
-            </div>
-        )
-    }
-
-});
-
-let AppBar = React.createClass({
-    render() {
-        console.log('apiToken: ' + this.props.appConfig.apiToken);
-        var LoginButton = this.props.appConfig.apiToken ? LogoutMenu : LoginMenu;
-        return (
-            <header className="mdl-layout__header" style={styles.headerStyle}>
-                <div className="mdl-layout__header-row">
-                    <span className="mdl-layout-title" style={styles.titleStyle}>Duke Data Service</span>
-                    <div className="mdl-layout-spacer"></div>
-                    <div className="mdl-layout-spacer"></div>
-                    <SearchBar {...this.props}/>
-                    <div className="mdl-layout-spacer"></div>
-                    <div className="mdl-layout-spacer"></div>
-                    <LoginButton {...this.props}/>
-                </div>
-            </header>
-        )
-    }
-});
-
 
 var styles = {
     navIcon: {
@@ -139,7 +48,7 @@ var styles = {
     },
     loginButton: {
         color: '#fff',
-        margin: 20
+        margin: 20,
     },
     headerStyle: {
         height: 210,
@@ -149,7 +58,14 @@ var styles = {
         fontSize: '1.3em'
     },
     currentUser: {
-        fontSize: '.8em'
+        fontSize: '.5em',
+        verticalAlign: -12
+    },
+    openIcon: {
+        fontSize: 24,
+        color: '#fff',
+        verticalAlign: -30,
+        paddingLeft: 10
     }
 }
 

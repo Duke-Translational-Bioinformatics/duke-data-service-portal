@@ -21,8 +21,8 @@ class ProjectContents extends React.Component {
             return (
                 <tr key={ project.id }>
                     <td className="mdl-data-table__cell--non-numeric"><i className="material-icons" style={styles.icon}>description</i>{ project.name }</td>
-                    <td>{ project.id }</td>
-                    <td>{ project.description }</td>
+                    <td style={styles.tableText}>{ project.description }</td>
+                    <td style={styles.tableText}>{ project.id }</td>
                 </tr>
             );
         });
@@ -45,9 +45,9 @@ class ProjectContents extends React.Component {
                     <table className="mdl-data-table" style={styles.table}>
                         <thead>
                         <tr>
-                            <th className="mdl-data-table__cell--non-numeric">Name</th>
-                            <th>ID</th>
-                            <th>Description</th>
+                            <th className="mdl-data-table__cell--non-numeric" style={styles.tableText}>Name</th>
+                            <th style={styles.tableText}>Description</th>
+                            <th style={styles.tableText}>ID</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -72,6 +72,9 @@ var styles = {
         width: '90%',
         margin: '0 auto'
     },
+    tableText: {
+        textAlign: 'left'
+    },
     icon: {
         fontSize: 24,
         paddingRight: 5
@@ -89,10 +92,10 @@ var styles = {
         paddingLeft: 20
     },
     dialogStyles: {
-        textAlign: 'center',
+        textAlign: 'center'
     },
     textStyles: {
-        textAlign: 'left',
+        textAlign: 'left'
     },
     upLoadBox: {
         textAlign: 'center',
@@ -111,23 +114,3 @@ ProjectContents.propTypes = {
 
 export default ProjectContents;
 
-
-/////////////Add Folder Flat Button (Instead of floating action button)///////////////////////////////////////////////////
-//<button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
-//        style={styles.addFolder}
-//        onTouchTap={this.handleTouchTap.bind(this)}>
-//    ADD FOLDER
-//</button>
-//<Dialog
-//style={styles.dialogStyles}
-//title="Add New Folder"
-//actions={standardActions}
-//ref="addFolder">
-//    <form action="#">
-//        <TextField
-//            style={styles.textStyles}
-//            hintText="Folder Name"
-//            floatingLabelText="Folder Name"
-//            multiLine={true}/> <br/>
-//    </form>
-//    </Dialog>

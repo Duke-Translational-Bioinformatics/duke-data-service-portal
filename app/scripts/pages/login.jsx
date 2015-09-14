@@ -26,10 +26,25 @@ class Login extends React.Component {
         return this.state.appConfig.authServiceUri + "/authenticate?client_id=" + this.state.appConfig.serviceId + "&state=" + this.state.appConfig.securityState;
     }
 
+
     render() {
         let content = '';
         if (!this.state.appConfig.apiToken) {
-            var splitUrl = window.location.hash.split('&');//Need to fix this to be more defensive
+            content = (
+                <div className="mdl-card mdl-shadow--2dp mdl-color-text--grey-700" style={styles.loginWrapper}>
+                    <div style={styles.loginMessage}>
+                        <h2>Welcome to Duke Data Service</h2>
+
+                        <h3>Please Login</h3>
+                    </div>
+                    <a href={this.createLoginUrl()} className="external">
+                        <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored" onClick={MainStore.isLoggedInHandler}>
+                            LOGIN
+                        </button>
+                    </a>
+                </div>
+            );
+            var splitUrl = window.location.hash.split('&');//Todo //////Need to fix this to be more defensive////////////
             var accessToken = splitUrl[0].split('=')[1];
             if (this.state.error) {
                 content = this.state.error
@@ -42,23 +57,12 @@ class Login extends React.Component {
             }
             else if (accessToken) {
                 MainActions.authenticationServiceValidate(this.state.appConfig, accessToken);
+                MainActions.getCurrentUser(accessToken);
             }
-            else {
-                content = (
-                    <div className="mdl-card mdl-shadow--2dp mdl-color-text--grey-700" style={styles.loginWrapper}>
-                        <div style={styles.loginMessage}>
-                            <h2>Welcome to Duke Data Service</h2>
-                            <h3>Please Login</h3>
-                        </div>
-                        <a href={this.createLoginUrl()}>
-                            <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored">
-                                LOGIN
-                            </button>
-                        </a>
-                    </div>
-                );
-            }
+        } else {
+            this.props.appRouter.transitionTo('/home');
         }
+
 
         return (
             <div>
@@ -69,13 +73,15 @@ class Login extends React.Component {
         );
     }
 }
+
 var styles = {
     loginWrapper: {
         width: '90vw',
         height: 'auto',
         textAlign: 'center',
         margin: '0 auto',
-        padding: 10
+        padding: 10,
+        marginTop: 80
     },
     loginMessage: {
 

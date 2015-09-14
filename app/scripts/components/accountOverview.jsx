@@ -9,7 +9,7 @@ class AccountOverview extends React.Component {
         render () {
             let numProjects = this.props.projects.length;
             return (
-                    <div className="project-container account-overview-container mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800 ">
+                    <div className="project-container account-overview-container mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800 " style={styles.overviewContainer}>
                         <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.accountOverviewTitle}>
                             <div style={styles.accountOverviewTitle}>
                                 <h4>Account Overview</h4>
@@ -56,7 +56,10 @@ var styles = {
         marginTop: -10,
         marginBottom: -10,
         float: 'left',
-        paddingLeft: 38
+        paddingLeft: 14
+    },
+    overviewContainer: {
+        marginTop: 50
     }
 };
 

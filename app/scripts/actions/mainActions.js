@@ -1,5 +1,6 @@
 import Reflux from 'reflux';
-//import checkStatus from '../util/fetchUtils';
+
+var mockUrl = 'http://localhost:3000/';
 
 var MainActions = Reflux.createActions([
     'authenticationServiceValidate',
@@ -8,7 +9,11 @@ var MainActions = Reflux.createActions([
     'getDdsApiToken',
     'getDdsApiTokenSuccess',
     'getDdsApiTokenError',
-    'getCurrentUser'
+    'setApiToken',
+    'getCurrentUser',
+    'getCurrentUserSuccess',
+    'getCurrentUserError',
+    'isLoggedInHandler'
 ]);
 
 MainActions.authenticationServiceValidate.preEmit = (appConfig, accessToken) => {
@@ -23,7 +28,6 @@ MainActions.authenticationServiceValidate.preEmit = (appConfig, accessToken) => 
         return response.json()
     }).then(function (json) {
         if (json.signed_info) {
-            console.log(json.signed_info);
             MainActions.authenticationServiceValidateSuccess(json.signed_info)
         } else {
             throw "Error has occurred";
@@ -44,7 +48,8 @@ MainActions.getDdsApiToken.preEmit = (appConfig, signedInfo) => {
         return response.json()
     }).then(function (json) {
         if (json && json.api_token) {
-            MainActions.getDdsApiTokenSuccess(json.api_token)
+            MainActions.setApiToken(json.api_token);
+            MainActions.getDdsApiTokenSuccess(json.api_token);
         } else {
             throw error;
         }
@@ -52,26 +57,19 @@ MainActions.getDdsApiToken.preEmit = (appConfig, signedInfo) => {
         MainActions.getDdsApiTokenError(ex)
     });
 };
-//
-//MainActions.getCurrentUser.preEmit = (appConfig, currentUser) => {
-//    fetch("https://raw.githubusercontent.com/caseychoiniere/duke-data-service-portal/develop/test-utils/mock-json/current-user.json", {
-//        method: 'get',
-//        headers: {
-//            'Accept': 'application/json',
-//            'Content-Type': 'application/json'
-//        }
-//    }).then(function (response) {
-//        return response.json()
-//    }).then(function (json) {
-//        if (json && json.user) {
-//            MainActions.getCurrentUserSuccess(json.user)
-//        } else {
-//            throw error;
-//        }
-//    }).catch(function (ex) {
-//        MainActions.getCurrentUserError(ex)
-//    });
-//};
+
+MainActions.getCurrentUser.preEmit = (appConfig, apiToken, currentUser) => {
+    let url = mockUrl + 'db';
+    fetch(url)
+        .then(function (response) {
+            return response.json()
+        }).then(function (json) {
+            MainActions.getCurrentUserSuccess(json.current_user)
+        })
+        .catch(function (ex) {
+            MainActions.getCurrentUserError(ex)
+        });
+};
 
 
 export default MainActions;

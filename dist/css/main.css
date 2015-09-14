@@ -234,7 +234,7 @@ body {
 .searchBar {
   outline: none;
   color: #708090;
-  margin-right: 100px;
+  font-size: 0.8em;
 }
 .searchBar[type=search] {
   -webkit-appearance: textfield;
@@ -250,21 +250,21 @@ body {
   background-color: #c5cae9;
   opacity: 0.8;
   border: none;
-  padding: 10px;
+  padding: 6px;
   width: 400px;
-  font-size: 0.8em;
+  font-size: 0.6em;
   text-align: left;
   border-radius: 4px;
   -webkit-transition: all 0.5s;
   transition: width padding font-size 0.5s ease, opacity 0.5s ease;
 }
 .searchBar[type=text]:focus {
-  width: 500px;
+  width: 450px;
   background-color: #f7f7f7;
   opacity: 1;
   text-align: left;
-  font-size: 1em;
-  padding: 14px;
+  font-size: 0.7em;
+  padding: 8px;
   border-color: #ededed;
   box-shadow: 0 0 5px rgba(109,207,246,0.5);
 }

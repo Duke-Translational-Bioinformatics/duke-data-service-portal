@@ -5,6 +5,7 @@ let appConfig = {
     authServiceName: 'Duke Authentication Service',
     securityState: '123456789',
     apiToken: null,
+    isLoggedIn: null,
     currentUser: null
 };
 

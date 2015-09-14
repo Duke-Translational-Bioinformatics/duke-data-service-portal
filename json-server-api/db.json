@@ -1,0 +1,112 @@
+{
+  "current_user": [
+    {
+      "id": "c1179f73-0558-4f96-afc7-9d251e65b7bb",
+      "username": "mrgardner01",
+      "first_name": "Matthew",
+      "last_name": "Gardner",
+      "full_name": "Matthew Gardner",
+      "email": "mrgardner01@duke.edu",
+      "auth_provider": {
+        "source": "duke_shibboleth",
+        "uid": "gardner100"
+      },
+      "auth_role": {
+        "id": "system_admin",
+        "name": "System Admin"
+      },
+      "last_login_on": "2015-01-01T12:00:00Z",
+      "audit": {}
+    }
+  ],
+  "projects": [
+    {
+      "id": "ae759205-8246-45be-b4b6-3463c7894a9a",
+      "name": "proin interdum mauris non",
+      "description": "Limb shorten-tib/fibula",
+      "is_deleted": false
+    },
+    {
+      "id": "8fa07d6b-f15f-4a7b-a310-6b01d9fef02b",
+      "name": "quis justo maecenas rhoncus aliquam",
+      "description": "Inject antibiotic",
+      "is_deleted": true
+    },
+    {
+      "id": "5f0dc2d1-dd68-47ae-ad6a-a1080441f66b",
+      "name": "montes nascetur ridiculus mus vivamus",
+      "description": "AAAAA BBBBBBBB CCCCCCCC TEST",
+      "is_deleted": false
+    },
+    {
+      "name": "This is a test",
+      "description": "Nothing but a test",
+      "is_deleted": false,
+      "id": "3c5671d0-dc3d-4472-a14f-b2ff2e764060"
+    },
+    {
+      "name": "New Project 111",
+      "description": "hsdgsjhvjhdsfgvhdasfghv sadhvhsajkdadsvjhsajhdkv osoadihsafdhvsaidfv",
+      "is_deleted": false,
+      "id": "605d1e10-6dcc-4a87-a15d-38e01a5021a3"
+    },
+    {
+      "name": "Here is a new project",
+      "description": "jsdfjhsdf sdlfhksjdhf sjkdfhskjhdf hsdfhjsdjfhksd sjdfsdfh jsdbfjsdfb",
+      "is_deleted": false,
+      "id": "0ac54198-36fb-41d4-8cd8-7462e1043db5"
+    },
+    {
+      "name": "New project 222",
+      "description": "jlksdfjklsadf sdlfjslkadadfs sldfkhskljdaadfs sladkfhjskljadf sldakfhskjldaf klshdahadfskhjsadf",
+      "is_deleted": false,
+      "id": "4d0a90b2-568c-48cb-95f5-e1cdc6a4e1a1"
+    },
+    {
+      "name": 1234567890,
+      "description": "lkjsdjskhdf sdkjlvshdvhjk sdvjhsdvkjhsdv",
+      "is_deleted": false,
+      "id": "767fa8f6-5904-4a3a-a820-50911ccdb44f"
+    }
+  ],
+  "folders": [
+    {
+      "id": "ae759205-8246-45be-b4b6-3463c7894a9a",
+      "name": "Folder inside project #ae759205",
+      "description": "Limb folder folder",
+      "is_deleted": false
+    },
+    {
+      "id": "8fa07d6b-f15f-4a7b-a310-6b01d9fef02b",
+      "name": "Folder inside project id#8fa07d6b",
+      "description": "Inject antibiotic folder folder",
+      "is_deleted": true
+    },
+    {
+      "id": "5f0dc2d1-dd68-47ae-ad6a-a1080441f66b",
+      "name": "folder inside proj #5f0dc2d1",
+      "description": "Folder folder TEST",
+      "is_deleted": false
+    }
+  ],
+  "files": [
+    {
+      "id": "ae759205-8246-45be-b4b6-3463c7894a9a",
+      "name": "File inside project #ae759205",
+      "description": "Limb file file file",
+      "is_deleted": false
+    },
+    {
+      "id": "8fa07d6b-f15f-4a7b-a310-6b01d9fef02b",
+      "name": "File inside project id#8fa07d6b",
+      "description": "Inject file file file file",
+      "is_deleted": true
+    },
+    {
+      "id": "5f0dc2d1-dd68-47ae-ad6a-a1080441f66b",
+      "name": "File inside proj #5f0dc2d1",
+      "description": "File file file file",
+      "is_deleted": false
+    }
+  ]
+}

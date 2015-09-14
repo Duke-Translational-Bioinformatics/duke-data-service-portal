@@ -5,8 +5,6 @@ var ProjectStore = Reflux.createStore({
 
     init() {
         this.projects = [];
-        //this.showDetailProject = null;
-
         this.listenToMany(ProjectListActions);
     },
 
@@ -38,17 +36,37 @@ var ProjectStore = Reflux.createStore({
             loading: true
         });
     },
+    loadProjectContentsSuccess(folders) {
+        this.folders = folders;
+        this.trigger({
+            folders: this.folders,
+            loading: false
+        });
+    },
+
+    showProjectDetails() {
+
+    },
 
     addProject() {
-
+        this.trigger({
+            addProjectLoading: true
+        })
     },
 
     addProjectSuccess() {
-
+        ProjectListActions.loadProjects();
+        this.trigger({
+            addProjectLoading: false
+        })
     },
 
     addProjectError() {
-
+        let msg = error && error.message ? "Error: " : + 'An error occurred.';
+        this.trigger({
+            error: msg,
+            addProjectLoading: false
+        });
     }
 
 
