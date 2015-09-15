@@ -2,7 +2,9 @@ import React from 'react';
 import { RouteHandler, Link } from 'react-router';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions';
+import AddProjectModal from './addProjectModal.jsx';
 import cookie from 'react-cookie';
+import NavChildren from './navChildren.jsx';
 
 class LeftMenu extends React.Component {
 

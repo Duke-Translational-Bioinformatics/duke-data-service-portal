@@ -3,6 +3,8 @@ import { Link } from 'react-router';
 import ProjectListActions from '../actions/projectListActions';
 import AccountOverview from '../components/accountOverview.jsx';
 import Header from '../components/header.jsx';
+import AddProjectModal from '../components/addProjectModal.jsx';
+
 let mui = require('material-ui'),
     Table = mui.Table,
     RaisedButton = mui.RaisedButton,
@@ -13,8 +15,8 @@ class ProjectList extends React.Component {
 
     constructor() {
         this.state = {
-            floatingErrorText: 'This field is required.',
-            floatingErrorText2: 'This field is required'
+            //floatingErrorText: 'This field is required.',
+            //floatingErrorText2: 'This field is required'
         }
     }
 
@@ -28,7 +30,7 @@ class ProjectList extends React.Component {
                         <div key={ project.id } style={styles.cardSquare} className="card col-33">
                             <div className="mdl-card__title mdl-card--expand">
                                 <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>folder</i>
-                                <Link to={"/project"}><h1 className="mdl-card__title-text content mdl-color-text--grey-800" style={styles.cardHeader} >{ project.name }</h1></Link>
+                                <Link to={"/project/" + project.id}><h1 className="mdl-card__title-text content mdl-color-text--grey-800" style={styles.cardHeader} >{ project.name }</h1></Link>
                             </div>
                             <div className="mdl-card__supporting-text mdl-color-text--grey-800">
                                 <p>ID: {project.id}</p>
@@ -41,10 +43,6 @@ class ProjectList extends React.Component {
 
         let loading = this.props.loading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
         let addProjectLoading = this.props.addProjectLoading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
-        let standardActions = [
-            { text: 'Submit', onTouchTap: this.handleProjectButton.bind(this)},
-            { text: 'Cancel' }
-        ];
 
         return (
                 <div className="project-container mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800 row">
@@ -52,40 +50,7 @@ class ProjectList extends React.Component {
                         <div style={styles.listTitle}>
                             <h4>Projects</h4>
                         </div>
-                            <div style={styles.addProject}>
-                            <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
-                                    style={styles.addProject}
-                                    onTouchTap={this.handleTouchTap.bind(this)}>
-                                ADD PROJECT
-                            </button>
-                                <Dialog
-                                    style={styles.dialogStyles}
-                                    title="Add New Project"
-                                    actions={standardActions}
-                                    ref="addProject">
-                                    <form action="#" id="newProjectForm">
-                                    <TextField
-                                        style={styles.textStyles}
-                                        hintText="Project Name"
-                                        errorText={this.state.floatingErrorText}
-                                        floatingLabelText="Project Name"
-                                        id="projectNameText"
-                                        type="text"
-                                        multiLine={true}
-                                        onChange={this.handleFloatingErrorInputChange.bind(this)} /> <br/>
-                                    <TextField
-                                        style={styles.textStyles}
-                                        hintText="Project Description"
-                                        errorText={this.state.floatingErrorText2}
-                                        floatingLabelText="Project Description"
-                                        id="projectDescriptionText"
-                                        type="text"
-                                        multiLine={true}
-                                        onChange={this.handleFloatingErrorInputChange2.bind(this)}
-                                        />
-                                    </form>
-                                </Dialog>
-                            </div>
+                            <AddProjectModal />
                         </div>
                     { error }
                     { loading }
@@ -94,31 +59,6 @@ class ProjectList extends React.Component {
                     </div>
         );
     }
-    handleTouchTap() {
-        this.refs.addProject.show();
-    };
-    handleProjectButton() {
-        if(this.state.floatingErrorText || this.state.floatingErrorText2 != '')
-        {return null} else {
-            ProjectListActions.addProject();
-            this.refs.addProject.dismiss(
-                this.setState({
-                    floatingErrorText: 'This field is required.',
-                    floatingErrorText2: 'This field is required'
-                })
-            );
-        }
-    };
-    handleFloatingErrorInputChange(e) {
-        this.setState({
-            floatingErrorText: e.target.value ? '' : 'This field is required.'
-        });
-    };
-    handleFloatingErrorInputChange2(e) {
-        this.setState({
-            floatingErrorText2: e.target.value ? '' : 'This field is required.'
-        });
-    };
 }
 
 ProjectList.contextTypes = {
@@ -136,25 +76,11 @@ var styles = {
     icon: {
         fontSize: 36
     },
-    addProject: {
-        float: 'right',
-        position: 'relative',
-        margin: '12px 8px 0px 0px'
-    },
     listTitle: {
         margin: '0px 0px -5px 0px',
-        //marginBottom: -5,
         textAlign: 'left',
         float: 'left',
         paddingLeft: 20,
-    },
-    dialogStyles: {
-        textAlign: 'center',
-        fontColor: '#303F9F'
-    },
-    textStyles: {
-        textAlign: 'left',
-        fontColor: '#303F9F'
     }
 };
 
@@ -167,4 +93,3 @@ ProjectList.propTypes = {
 };
 
 export default ProjectList;
-

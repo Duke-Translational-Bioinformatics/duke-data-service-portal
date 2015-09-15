@@ -7,7 +7,7 @@ class AccountOverview extends React.Component {
     constructor() {
     }
         render () {
-            let numProjects = this.props.projects.length;
+            let numProjects = this.props.projects.length - 1;
             return (
                     <div className="project-container account-overview-container mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800 " style={styles.overviewContainer}>
                         <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.accountOverviewTitle}>
