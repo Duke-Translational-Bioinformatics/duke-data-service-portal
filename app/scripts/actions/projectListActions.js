@@ -12,6 +12,9 @@ var ProjectListActions = Reflux.createActions([
     'addProject',
     'addProjectSuccess',
     'addProjectError',
+    'deleteProject',
+    'deleteProjectSuccess',
+    'deleteProjectError',
     'showProjectDetails'
 ]);
 ProjectListActions.loadProjects.preEmit = function () {
@@ -60,6 +63,21 @@ ProjectListActions.addProject.preEmit = function () {
         })
 };
 
+ProjectListActions.deleteProject.preEmit = function (project) {
+    let url = mockUrl + 'projects/' + '';
+    console.log(url);
+    fetch(url, {
+        method: 'delete'
+    }).then(function(response) {
+        return response.json()
+    }).then(function(json) {
+        console.log('parsed json: ', json);
+        ProjectListActions.deleteProjectSuccess()
+    }).catch(function(ex) {
+        console.log('parsing failed: ', ex);
+        ProjectListActions.deleteProjectError(ex)
+    });
+};
 
 export default ProjectListActions;
 

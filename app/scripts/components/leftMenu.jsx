@@ -18,32 +18,24 @@ class LeftMenu extends React.Component {
     render() {
             return (
                 <span>
-            <div className="panel-overlay"></div>
-            <div className="panel panel-left panel-cover">
-                <div className="content-block">
-                    <p><Link to="home"><i className="material-icons" style={styles.navIcon}>home</i>
-                        Dashboard</Link></p>
-
-                    <p><Link to="home"><i className="material-icons" style={styles.navIcon}>add_circle</i>
-                        Add New Project</Link></p>
-
-                    <p><Link to="home"><i className="material-icons"
-                                          style={styles.navIcon}>settings</i>Settings</Link></p>
-
-                    <p><Link to="home" onTouchTap={this.handleTouchTap}><i className="material-icons"
-                                                                           style={styles.navIcon}>exit_to_app</i>
-                        Logout</Link></p>
-
-                    <p><Link to="home"><i className="material-icons" style={styles.navIcon}>help</i>Help</Link></p>
-
-                    <p><Link to="home">Governance</Link></p>
-
-                    <p><Link to="home">Terms &amp; Conditions</Link></p>
-                </div>
-            </div>
-            </span>
+                    <div className="panel-overlay"></div>
+                    <div className="panel panel-left panel-cover">
+                        <div className="content-block">
+                            <NavChildren />
+                            <p><Link to="home"><i className="material-icons"
+                                                  style={styles.navIcon}>settings</i>Settings</Link></p>
+                            <p><Link to="home" onTouchTap={this.handleTouchTap}><i className="material-icons"
+                                                                                   style={styles.navIcon}>exit_to_app</i>
+                                Logout</Link></p>
+                            <p><Link to="home"><i className="material-icons" style={styles.navIcon}>help</i>Help</Link></p>
+                            <p><Link to="home">Governance</Link></p>
+                            <p><Link to="home">Terms &amp; Conditions</Link></p>
+                        </div>
+                    </div>
+                </span>
             );
     }
+
     handleTouchTap() {
         MainStore.handleLogout();
     }

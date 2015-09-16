@@ -23,7 +23,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     loadProjectsError(error) {
-        let msg = error && error.message ? "Error: " : + 'An error occurred.';
+        let msg = error && error.message ? "Error: " : + 'An error occurred while loading projects.';
         this.trigger({
             error: msg,
             loading: false
@@ -31,6 +31,8 @@ var ProjectStore = Reflux.createStore({
     },
 
     // Loads folders and files contained inside a project
+    // TODO: NEED TO CHANGE THIS TO LOAD FILES & FOLDERS PROPERLY
+    // TODO: MOVE TO FOLDER AND FILE STORES?????
     loadProjectContents() {
         this.trigger({
             loading: true
@@ -62,10 +64,29 @@ var ProjectStore = Reflux.createStore({
     },
 
     addProjectError() {
-        let msg = error && error.message ? "Error: " : + 'An error occurred.';
+        let msg = error && error.message ? "Error: " : + 'An error occurred while trying to add a new project.';
         this.trigger({
             error: msg,
             addProjectLoading: false
+        });
+    },
+    deleteProject() {
+        this.trigger({
+            loading: true
+        });
+    },
+    deleteProjectSuccess(projects) {
+        this.projects = projects;
+        this.trigger({
+            projects: this.projects,
+            loading: false
+        });
+    },
+    deleteProjectError() {
+        let msg = error && error.message ? "Error: " : + 'An error occurred while trying to delete this project.';
+        this.trigger({
+            error: msg,
+            loading: false
         });
     }
 

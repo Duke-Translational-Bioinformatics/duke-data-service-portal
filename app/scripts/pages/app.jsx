@@ -64,8 +64,8 @@ class App extends React.Component {
                 {!this.state.appConfig.apiToken ? '' : <LeftMenu />}
                 <div className="views">
                     <div className="view view-main">
-                        <Header />
-                        <div className="pages navbar-through toolbar-through">
+                            <Header />
+                            <div className="pages navbar-through toolbar-through">
                             <div data-page="index" className="page">
                                 {!this.state.appConfig.apiToken ? '' : <form className="searchbar" action="#">
                                     <div className="searchbar-input">

@@ -15,8 +15,6 @@ class ProjectList extends React.Component {
 
     constructor() {
         this.state = {
-            //floatingErrorText: 'This field is required.',
-            //floatingErrorText2: 'This field is required'
         }
     }
 
@@ -34,7 +32,7 @@ class ProjectList extends React.Component {
                             </div>
                             <div className="mdl-card__supporting-text mdl-color-text--grey-800">
                                 <p>ID: {project.id}</p>
-                                <p>Description: { project.description }</p>
+                                <p>Description: { project.description.slice(0,65) + ' ...' }</p>
                             </div>
                         </div>
                     );

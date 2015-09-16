@@ -1,14 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router';
-import ProjectListActions from '../actions/projectListActions';
+import FolderActions from '../actions/folderActions';
 
 let mui = require('material-ui'),
     RaisedButton = mui.RaisedButton,
     TextField = mui.TextField,
-    Snackbar = mui.Snackbar,
-    Dialog = mui.Dialog;
+    Dialog = mui.Dialog,
+    Snackbar = mui.Snackbar;
 
-class AddProjectModal extends React.Component {
+class AddFolderModal extends React.Component {
 
     constructor() {
         this.state = {
@@ -20,30 +20,30 @@ class AddProjectModal extends React.Component {
     render() {
 
         let standardActions = [
-            {text: 'Submit', onTouchTap: this.handleProjectButton.bind(this)},
+            {text: 'Submit', onTouchTap: this.handleFolderButton.bind(this)},
             {text: 'Cancel'}
         ];
 
         return (
-            <div style={styles.addProject}>
+            <div style={styles.addFolder}>
 
-                <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
-                        style={styles.addProject}
+                <button className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored"
+                        style={styles.floatingButton}
                         onTouchTap={this.handleTouchTap.bind(this)}>
-                    ADD PROJECT
+                    <i className="material-icons">add</i>
                 </button>
                 <Dialog
                     style={styles.dialogStyles}
-                    title="Add New Project"
+                    title="Add New Folder"
                     actions={standardActions}
-                    ref="addProject">
-                    <form action="#" id="newProjectForm">
+                    ref="addFolder">
+                    <form action="#" id="newFolderForm">
                         <TextField
                             style={styles.textStyles}
-                            hintText="Project Name"
+                            hintText="Folder Name"
                             errorText={this.state.floatingErrorText}
-                            floatingLabelText="Project Name"
-                            id="projectNameText"
+                            floatingLabelText="Folder Name"
+                            id="folderNameText"
                             type="text"
                             multiLine={true}
                             onChange={this.handleFloatingErrorInputChange.bind(this)}/> <br/>
@@ -52,55 +52,54 @@ class AddProjectModal extends React.Component {
                             hintText="Project Description"
                             errorText={this.state.floatingErrorText2}
                             floatingLabelText="Project Description"
-                            id="projectDescriptionText"
+                            id="folderDescriptionText"
                             type="text"
                             multiLine={true}
-                            onChange={this.handleFloatingErrorInputChange2.bind(this)}
-                            />
+                            onChange={this.handleFloatingErrorInputChange2.bind(this)}/> <br/>
                     </form>
                 </Dialog>
                 <Snackbar
                     ref="snackbar"
-                    message= "Project Added!"
+                    message="Folder Added"
                     autoHideDuration={1500}/>
             </div>
         );
     }
 
     handleTouchTap() {
-        this.refs.addProject.show();
-    };
+        this.refs.addFolder.show();
+    }
 
-    handleProjectButton() {
+    handleFolderButton() {
         if (this.state.floatingErrorText || this.state.floatingErrorText2 != '') {
             return null
         } else {
             this.refs.snackbar.show();
-            ProjectListActions.addProject();
-            this.refs.addProject.dismiss(
+            FolderActions.addFolder();
+            this.refs.addFolder.dismiss(
                 this.setState({
                     floatingErrorText: 'This field is required.',
                     floatingErrorText2: 'This field is required'
                 })
             );
         }
-    };
+    }
 
     handleFloatingErrorInputChange(e) {
         this.setState({
             floatingErrorText: e.target.value ? '' : 'This field is required.'
         });
-    };
+    }
 
     handleFloatingErrorInputChange2(e) {
         this.setState({
             floatingErrorText2: e.target.value ? '' : 'This field is required.'
         });
-    };
+    }
 }
 
 var styles = {
-    addProject: {
+    addFolder: {
         float: 'right',
         position: 'relative',
         margin: '12px 8px 0px 0px'
@@ -112,16 +111,23 @@ var styles = {
     textStyles: {
         textAlign: 'left',
         fontColor: '#303F9F'
+    },
+    floatingButton: {
+        position: 'absolute',
+        top: -48,
+        right: '2%',
+        zIndex: '2',
+        color: '#ffffff'
     }
 };
 
-AddProjectModal.contextTypes = {
+AddFolderModal.contextTypes = {
     muiTheme: React.PropTypes.object
 };
 
-AddProjectModal.propTypes = {
-    addProjectLoading: React.PropTypes.bool,
+AddFolderModal.propTypes = {
+    addFolderLoading: React.PropTypes.bool,
 };
 
-export default AddProjectModal;
+export default AddFolderModal;
 

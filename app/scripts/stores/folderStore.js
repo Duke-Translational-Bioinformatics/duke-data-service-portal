@@ -1,5 +1,5 @@
 import Reflux from 'reflux';
-import MainActions from '../actions/folderActions';
+import FolderActions from '../actions/folderActions';
 import cookie from 'react-cookie';
 
 var FolderStore = Reflux.createStore ({
@@ -7,6 +7,26 @@ var FolderStore = Reflux.createStore ({
 
     init() {
 
+    },
+    addFolder() {
+        this.trigger({
+            addFolderLoading: true
+        })
+    },
+
+    addFolderSuccess() {
+        //FolderActions.loadFolders();
+        this.trigger({
+            addFolderLoading: false
+        })
+    },
+
+    addFolderError() {
+        let msg = error && error.message ? "Error: " : + 'An error occurred.';
+        this.trigger({
+            error: msg,
+            addFolderLoading: false
+        });
     }
 });
 
