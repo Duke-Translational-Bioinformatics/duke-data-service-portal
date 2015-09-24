@@ -14,13 +14,16 @@ class Home extends React.Component {
         super(props);
         this.state = {
             projects: [],
+            files: [],
+            folders: [],
             loading: false
         };
     }
 
     componentDidMount() {
+        let id = this.props.params.id;
         this.unsubscribe = ProjectStore.listen(this.onStatusChange.bind(this));
-        ProjectListActions.loadProjects();
+        ProjectListActions.loadProjects(id);
     }
 
     componentWillUnmount() {
@@ -34,8 +37,8 @@ class Home extends React.Component {
     render() {
         return (
             <div>
-                <AccountOverview {...this.state} />
-                <ProjectList { ...this.state } />
+                <AccountOverview { ...this.state } { ...this.props } />
+                <ProjectList { ...this.state } { ...this.props } />
             </div>
         );
     }

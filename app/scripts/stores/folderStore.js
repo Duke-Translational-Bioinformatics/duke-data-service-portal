@@ -1,12 +1,31 @@
 import Reflux from 'reflux';
 import FolderActions from '../actions/folderActions';
-import cookie from 'react-cookie';
 
 var FolderStore = Reflux.createStore ({
-    listenables: FolderActions,
 
     init() {
+        this.folders = [];
+        this.listenToMany(FolderActions);
 
+    },
+    loadFolders() {
+        this.trigger({
+            loading: true
+        })
+    },
+    loadFoldersSuccess(folders) {
+        this.folders = folders;
+        this.trigger({
+            folders: this.folders,
+            loading: false
+        })
+    },
+    loadFoldersError() {
+        let msg = error && error.message ? "Error: " : + 'An error occurred while loading folders.';
+        this.trigger({
+            error: msg,
+            loading: false
+        })
     },
     addFolder() {
         this.trigger({
@@ -15,7 +34,7 @@ var FolderStore = Reflux.createStore ({
     },
 
     addFolderSuccess() {
-        //FolderActions.loadFolders();
+        FolderActions.loadFolders();
         this.trigger({
             addFolderLoading: false
         })

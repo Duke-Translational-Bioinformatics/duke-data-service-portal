@@ -13,7 +13,9 @@ var MainActions = Reflux.createActions([
     'getCurrentUser',
     'getCurrentUserSuccess',
     'getCurrentUserError',
-    'isLoggedInHandler'
+    'isLoggedInHandler',
+    'showDialog',
+    'setPopupCmp'
 ]);
 
 MainActions.authenticationServiceValidate.preEmit = (appConfig, accessToken) => {
@@ -70,6 +72,15 @@ MainActions.getCurrentUser.preEmit = (appConfig, apiToken, currentUser) => {
             MainActions.getCurrentUserError(ex)
         });
 };
+
+MainActions.showDialog.preEmit = () => {
+    //this.refs.deleteProject.show();
+    console.log('clicked');
+};
+
+//MainActions.setPopupCmp.preEmit = () => {
+//
+//};
 
 
 export default MainActions;

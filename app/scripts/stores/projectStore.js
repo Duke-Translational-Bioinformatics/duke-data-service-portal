@@ -11,7 +11,7 @@ var ProjectStore = Reflux.createStore({
     loadProjects() {
         this.trigger({
             loading: true
-        });
+        })
     },
 
     loadProjectsSuccess(projects) {
@@ -19,7 +19,7 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             projects: this.projects,
             loading: false
-        });
+        })
     },
 
     loadProjectsError(error) {
@@ -27,7 +27,7 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             error: msg,
             loading: false
-        });
+        })
     },
 
     // Loads folders and files contained inside a project
@@ -36,14 +36,14 @@ var ProjectStore = Reflux.createStore({
     loadProjectContents() {
         this.trigger({
             loading: true
-        });
+        })
     },
-    loadProjectContentsSuccess(folders) {
-        this.folders = folders;
+    loadProjectContentsSuccess(projects) {
+        this.projects = projects;
         this.trigger({
-            folders: this.folders,
+            projects: this.projects,
             loading: false
-        });
+        })
     },
 
     showProjectDetails() {
@@ -68,22 +68,38 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             error: msg,
             addProjectLoading: false
-        });
+        })
     },
     deleteProject() {
         this.trigger({
             loading: true
-        });
+        })
     },
-    deleteProjectSuccess(projects) {
-        this.projects = projects;
+    deleteProjectSuccess() {
         this.trigger({
-            projects: this.projects,
             loading: false
-        });
+        })
     },
     deleteProjectError() {
         let msg = error && error.message ? "Error: " : + 'An error occurred while trying to delete this project.';
+        this.trigger({
+            error: msg,
+            loading: false
+        });
+    },
+    editProject() {
+        this.trigger({
+            editProjectLoading: true
+        })
+    },
+    editProjectSuccess() {
+        ProjectListActions.loadProjects();
+        this.trigger({
+            addProjectLoading: false
+        })
+    },
+    editProjectError() {
+        let msg = error && error.message ? "Error: " : + 'An error occurred while trying to edit this project.';
         this.trigger({
             error: msg,
             loading: false

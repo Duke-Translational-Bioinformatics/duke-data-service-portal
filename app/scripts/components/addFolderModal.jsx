@@ -13,7 +13,7 @@ class AddFolderModal extends React.Component {
     constructor() {
         this.state = {
             floatingErrorText: 'This field is required.',
-            floatingErrorText2: 'This field is required'
+            //floatingErrorText2: 'This field is required'
         }
     }
 
@@ -27,10 +27,10 @@ class AddFolderModal extends React.Component {
         return (
             <div style={styles.addFolder}>
 
-                <button className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored"
-                        style={styles.floatingButton}
+                <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
+                        style={styles.addFolder}
                         onTouchTap={this.handleTouchTap.bind(this)}>
-                    <i className="material-icons">add</i>
+                    ADD FOLDER
                 </button>
                 <Dialog
                     style={styles.dialogStyles}
@@ -47,15 +47,6 @@ class AddFolderModal extends React.Component {
                             type="text"
                             multiLine={true}
                             onChange={this.handleFloatingErrorInputChange.bind(this)}/> <br/>
-                        <TextField
-                            style={styles.textStyles}
-                            hintText="Project Description"
-                            errorText={this.state.floatingErrorText2}
-                            floatingLabelText="Project Description"
-                            id="folderDescriptionText"
-                            type="text"
-                            multiLine={true}
-                            onChange={this.handleFloatingErrorInputChange2.bind(this)}/> <br/>
                     </form>
                 </Dialog>
                 <Snackbar
@@ -71,15 +62,15 @@ class AddFolderModal extends React.Component {
     }
 
     handleFolderButton() {
-        if (this.state.floatingErrorText || this.state.floatingErrorText2 != '') {
+        let parent = window.location.hash.split('/').slice(2, 3).toString();
+        if (this.state.floatingErrorText) {
             return null
         } else {
             this.refs.snackbar.show();
-            FolderActions.addFolder();
+            FolderActions.addFolder(parent);
             this.refs.addFolder.dismiss(
                 this.setState({
-                    floatingErrorText: 'This field is required.',
-                    floatingErrorText2: 'This field is required'
+                    floatingErrorText: 'This field is required.'
                 })
             );
         }
@@ -91,11 +82,11 @@ class AddFolderModal extends React.Component {
         });
     }
 
-    handleFloatingErrorInputChange2(e) {
-        this.setState({
-            floatingErrorText2: e.target.value ? '' : 'This field is required.'
-        });
-    }
+    //handleFloatingErrorInputChange2(e) {
+    //    this.setState({
+    //        floatingErrorText2: e.target.value ? '' : 'This field is required.'
+    //    });
+    //}
 }
 
 var styles = {

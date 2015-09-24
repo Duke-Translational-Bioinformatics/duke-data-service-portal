@@ -1,12 +1,18 @@
 import React from 'react';
 import ProjectListActions from '../actions/projectListActions';
 import ProjectStore from '../stores/projectStore';
+import MainActions from '../actions/mainActions';
+import MainStore from '../stores/mainStore';
 import FolderActions from '../actions/folderActions';
 import FolderStore from '../stores/folderStore';
 import AddFolderModal from './addFolderModal.jsx';
+import ProjectOptionsMenu from './projectOptionsMenu.jsx';
+import CurrentUser from './currentUser.jsx';
+import cookie from 'react-cookie';
 
 var mui = require('material-ui'),
     TextField = mui.TextField,
+    IconMenu = mui.IconMenu,
     Dialog = mui.Dialog;
 
 
@@ -14,31 +20,50 @@ class ProjectDetails extends React.Component {
 
     constructor() {
         this.state = {
-            showDetails: false
+            showDetails: false,
+            currentUser: cookie.load('currentUser'),
+            projects: []
         }
     }
-    render () {
+
+    render() {
         let standardActions = [
-            { text: 'Submit' },
-            { text: 'Cancel' }
+            {text: 'Submit'},
+            {text: 'Cancel'}
         ];
-        let details = this.props.projects.map((project) => {
-            return <div>
-                <p>{project.name}</p>
-                <p>{project.description}</p>
-            </div>
+
+        let currentUser = cookie.load('currentUser').map((user)=> {
+            return <span>{user.first_name + " " + user.last_name}</span>
         });
+
+        let details = this.props.projects.map((project) => {
+            if (project.id == id) {
+                return <div key={project.id}>
+                    <h4>{project.name}</h4>
+                </div>
+            } else {
+                return null
+            }
+        });
+
         let error = '';
-        let addProjectLoading = this.props.addProjectLoading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
+
+        let addProjectLoading = this.props.addProjectLoading ?
+            <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
+
         return (
-            <div className="project-container account-overview-container mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800" style={styles.container}>
-                <AddFolderModal/>
-                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" >
+            <div
+                className="project-container account-overview-container mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800"
+                style={styles.container}>
+                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
+                    <div style={styles.menuIcon}>
+                        <ProjectOptionsMenu {...this.props} />
+                    </div>
                     <div className="mdl-cell mdl-cell--4-col" style={styles.detailsTitle}>
                         <h4>Test Project</h4>
                     </div>
                     <div className="mdl-cell mdl-cell--4-col" style={styles.details}>
-                        <p><span style={styles.span}>Created By:</span> Jane Doe</p>
+                        <p><span style={styles.span}>Created By:</span> {currentUser}</p>
                     </div>
                     <div className="mdl-cell mdl-cell--4-col" style={styles.details}>
                         <p><span style={styles.span}>Created On:</span> 7/30/2015</p>
@@ -47,7 +72,8 @@ class ProjectDetails extends React.Component {
                         <!--<p style={styles.summary}><span style={styles.span}>Summary:</span> Fake project summary Fake project summary Fake project summary Fake project summary Fake project summary Fake project summary Fake project summary Fake project summary Fake project summary vFake project summary Fake project summary Fake project summary </p>-->
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.detailsButton}>
-                        <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored" onClick={this.handleTouchTapDetails.bind(this)}>
+                        <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
+                                onClick={this.handleTouchTapDetails.bind(this)}>
                             {!this.state.showDetails ? 'MORE DETAILS' : 'LESS DETAILS'}
                         </button>
                     </div>
@@ -60,13 +86,15 @@ class ProjectDetails extends React.Component {
             </div>
         );
     }
+
     handleTouchTap() {
         this.refs.addFolder.show();
-    };
+    }
+
     handleTouchTapDetails() {
-        if(!this.state.showDetails) {
+        if (!this.state.showDetails) {
             this.setState({showDetails: true})
-        }else{
+        } else {
             this.setState({showDetails: false})
         }
     }
@@ -74,13 +102,11 @@ class ProjectDetails extends React.Component {
 
 var Details = React.createClass({
     getInitialState(){
-        return {
-            projects: []
-        }
+        return {}
     },
     render() {
         return (
-            <div  style={styles.moreDetails}>
+            <div style={styles.moreDetails}>
                 <h5>Project Members</h5>
                 <ul>
                     <li>Jon</li>
@@ -88,8 +114,11 @@ var Details = React.createClass({
                     <li>Darrin</li>
                     <li>Casey</li>
                 </ul>
-                <p>Placeholder for additional project details. Placeholder for additional project details. Placeholder for additional project details and other things.</p>
-                <p>Placeholder for additional project details. Placeholder for additional project details. Placeholder for additional project details and other things.</p>
+                <p>Placeholder for additional project details. Placeholder for additional project details. Placeholder
+                    for additional project details and other things.</p>
+
+                <p>Placeholder for additional project details. Placeholder for additional project details. Placeholder
+                    for additional project details and other things.</p>
             </div>
         )
     }
@@ -105,10 +134,11 @@ var styles = {
     detailsTitle: {
         textAlign: 'left',
         marginTop: -20,
-        float: 'left',
+        float: 'left'
     },
     details: {
         float: 'left',
+        marginLeft: -4
     },
     summary: {
         float: 'left',
@@ -116,16 +146,19 @@ var styles = {
     },
     detailsButton: {
         align: 'center',
-        clear: 'both',
+        clear: 'both'
     },
     textStyles: {
-        textAlign: 'left',
+        textAlign: 'left'
     },
     span: {
         fontWeight: 'bold'
     },
     moreDetails: {
         textAlign: 'left'
+    },
+    menuIcon: {
+        float: 'right'
     }
 };
 

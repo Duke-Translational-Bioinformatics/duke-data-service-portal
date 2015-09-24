@@ -22,7 +22,7 @@ class App extends React.Component {
         this.state = {
             appConfig: MainStore.appConfig,
             apiToken: cookie.load('apiToken'),
-            currentUser: cookie.load('currentUser')
+            currentUser: cookie.load('currentUser'),
         }
     }
 
@@ -77,6 +77,7 @@ class App extends React.Component {
                                 <div className="searchbar-overlay"></div>
                                 <div className="page-content">
                                     {content}
+                                    {this.props.children}
                                 </div>
                             </div>
                         </div>

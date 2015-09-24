@@ -20,7 +20,7 @@ class AddProjectModal extends React.Component {
     render() {
 
         let standardActions = [
-            {text: 'Submit', onTouchTap: this.handleProjectButton.bind(this)},
+            {text: 'Save', onTouchTap: this.handleProjectButton.bind(this)},
             {text: 'Cancel'}
         ];
 
@@ -72,7 +72,7 @@ class AddProjectModal extends React.Component {
     };
 
     handleProjectButton() {
-        if (this.state.floatingErrorText || this.state.floatingErrorText2 != '') {
+        if (this.state.floatingErrorText || this.state.floatingErrorText2) {
             return null
         } else {
             this.refs.snackbar.show();

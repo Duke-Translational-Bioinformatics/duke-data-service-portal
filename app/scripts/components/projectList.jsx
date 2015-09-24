@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router';
+import { RouteHandler, Link } from 'react-router';
 import ProjectListActions from '../actions/projectListActions';
 import AccountOverview from '../components/accountOverview.jsx';
 import Header from '../components/header.jsx';
@@ -15,6 +15,7 @@ class ProjectList extends React.Component {
 
     constructor() {
         this.state = {
+            projects: []
         }
     }
 
@@ -23,11 +24,11 @@ class ProjectList extends React.Component {
         if(this.props.error)
             error = (<h4>{this.props.error}</h4>);
         let projects = this.props.projects.map((project) => {
-            if (!project.is_deleted){
+                if (!project.is_deleted){
                     return (
                         <div key={ project.id } style={styles.cardSquare} className="card col-33">
                             <div className="mdl-card__title mdl-card--expand">
-                                <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>folder</i>
+                                <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>content_paste</i>
                                 <Link to={"/project/" + project.id}><h1 className="mdl-card__title-text content mdl-color-text--grey-800" style={styles.cardHeader} >{ project.name }</h1></Link>
                             </div>
                             <div className="mdl-card__supporting-text mdl-color-text--grey-800">
@@ -48,13 +49,13 @@ class ProjectList extends React.Component {
                         <div style={styles.listTitle}>
                             <h4>Projects</h4>
                         </div>
-                            <AddProjectModal />
+                            <AddProjectModal {...this.props} />
                         </div>
                     { error }
                     { loading }
                     { addProjectLoading }
                     { projects }
-                    </div>
+                </div>
         );
     }
 }

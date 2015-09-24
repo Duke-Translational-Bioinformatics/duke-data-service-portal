@@ -230,50 +230,6 @@ body {
 .account-overview-container {
   margin-top: -100px;
 }
-/*Search bar css*/
-.searchBar {
-  outline: none;
-  color: #708090;
-  font-size: 0.8em;
-}
-.searchBar[type=search] {
-  -webkit-appearance: textfield;
-  -webkit-box-sizing: content-box;
-  font-family: inherit;
-  font-size: 100%;
-}
-.searchBar::-webkit-search-decoration,
-.searchBar::-webkit-search-cancel-button {
-  display: none;
-}
-.searchBar[type=text] {
-  background-color: #c5cae9;
-  opacity: 0.8;
-  border: none;
-  padding: 6px;
-  width: 400px;
-  font-size: 0.6em;
-  text-align: left;
-  border-radius: 4px;
-  -webkit-transition: all 0.5s;
-  transition: width padding font-size 0.5s ease, opacity 0.5s ease;
-}
-.searchBar[type=text]:focus {
-  width: 450px;
-  background-color: #f7f7f7;
-  opacity: 1;
-  text-align: left;
-  font-size: 0.7em;
-  padding: 8px;
-  border-color: #ededed;
-  box-shadow: 0 0 5px rgba(109,207,246,0.5);
-}
-.searchBar:-moz-placeholder {
-  color: #d3d3d3;
-}
-.searchBar::-webkit-.searchBar-placeholder {
-  color: #d3d3d3;
-}
 .ribbon {
   height: 200px;
   width: 200%;

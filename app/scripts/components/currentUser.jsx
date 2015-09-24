@@ -19,7 +19,7 @@ class CurrentUser extends React.Component {
             return null
         }
         else if (this.state.appConfig.apiToken) {
-            let currentUser = cookie.load('currentUser').map(function (user) {
+            let currentUser = cookie.load('currentUser').map((user) => {
                 return (
                     <span style={styles.currentUser} key={user.id}>{user.username}</span>
                 );

@@ -7,6 +7,7 @@ var MainStore = Reflux.createStore({
 
     listenables: MainActions,
 
+
     init() {
         this.currentUser = cookie.load('currentUser');
         this.appConfig = appConfig;
@@ -15,6 +16,7 @@ var MainStore = Reflux.createStore({
         this.appConfig.apiToken = cookie.load('apiToken');
         this.signedInfo = null;
         this.isLoggingIn = false;
+        this.dialog = null;
     },
 
     authenticationServiceValidate(appConfig, accessToken) {
@@ -105,6 +107,13 @@ var MainStore = Reflux.createStore({
             isLoggingIn: this.isLoggingIn
         });
         location.reload();
+    },
+    showDialog (dialog) {
+        this.dialog = dialog
+        //console.log(dialog);
+        this.trigger({
+           dialog: this.dialog
+        });
     }
 
 });

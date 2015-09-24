@@ -45,63 +45,11 @@ body
 .account-overview-container
   margin-top: -100px
 
-/*Search bar css*/
-//Need to add media queries here to account for a mobile search option//
-
-.searchBar
-  outline: none
-  color: slategrey
-  font-size: .8em
-
-.searchBar[type=search]
-  -webkit-appearance: textfield
-  -webkit-box-sizing: content-box
-  font-family: inherit
-  font-size: 100%
-
-.searchBar::-webkit-search-decoration,
-.searchBar::-webkit-search-cancel-button
-  display: none
-
-.searchBar[type=text]
-  //background: #fff url(/images/mdl-icons/ic_search_black_24dp_1x.png) no-repeat 9px center
-  background-color: #C5CAE9
-  opacity: .8
-  border: none
-  padding: 6px
-  width: 400px
-  font-size: .6em
-  text-align: left
-
-  -webkit-border-radius: 4px
-  -moz-border-radius: 3px
-  border-radius: 4px
-
-  -webkit-transition: all .5s
-  -moz-transition: all .5s
-  transition: width padding font-size .5s ease, opacity .5s ease
-
-.searchBar[type=text]:focus
-  width: 450px
-  background-color: $white
-  opacity: 1
-  text-align: left
-  font-size: .7em
-  padding: 8px
-  border-color: #ededed
-  -webkit-box-shadow: 0 0 5px rgba(109,207,246,.5)
-  -moz-box-shadow: 0 0 5px rgba(109,207,246,.5)
-  box-shadow: 0 0 5px rgba(109,207,246,.5)
-
-.searchBar:-moz-placeholder
-  color: lightgrey
-
-.searchBar::-webkit-.searchBar-placeholder
-  color: lightgrey
 
 //Spacer for header height (might want to use vh and vw instead)
 .ribbon
   height: 200px
   width: 200%
   background-color: #FFFFFF
+
 
