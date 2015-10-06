@@ -1,6 +1,8 @@
 import React from 'react'
-import FolderActions from '../actions/folderActions';
-import FolderStore from '../stores/folderStore';
+import { Link } from 'react-router';
+import FolderActions from '../../actions/folderActions';
+import FolderStore from '../../stores/folderStore';
+import FolderOptionsMenu from './folderOptionsMenu.jsx';
 
 class FolderPath extends React.Component {
 
@@ -25,8 +27,11 @@ class FolderPath extends React.Component {
             <div className="project-container mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800"
                  style={styles.container}>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
+                        <div style={styles.menuIcon}>
+                        <FolderOptionsMenu {...this.props} />
+                    </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                        <a href="#"><i className="material-icons" style={styles.backIcon}>keyboard_backspace</i>Back</a>
+                        <Link to={'/project/' + this.props.params.id}><i className="material-icons" style={styles.backIcon}>keyboard_backspace</i>Back</Link>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col" style={styles.detailsTitle}>
                         <span className="mdl-color-text--grey-800" style={styles.breadcrumbs}>Test Project 123
@@ -46,7 +51,9 @@ class FolderPath extends React.Component {
 var styles = {
     container: {
         marginTop: 20,
-        padding: '10px 0px 10px 0px'
+        padding: '10px 0px 10px 0px',
+        overflow: 'hidden',
+        minHeight: 146
     },
     arrow: {
         textAlign: 'left'
@@ -67,7 +74,10 @@ var styles = {
     },
     backIcon: {
         fontSize: 24,
-        verticalAlign: -6
+        verticalAlign: -7
+    },
+    menuIcon: {
+        float: 'right'
     }
 };
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import Header from '../components/header.jsx';
+import Header from '../components/globalComponents/header.jsx';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions.js';
 var mui = require('material-ui'),
@@ -37,8 +37,8 @@ class Login extends React.Component {
 
                         <h3>Please Login</h3>
                     </div>
-                    <a href={this.createLoginUrl()} className="external">
-                        <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored" onClick={MainStore.isLoggedInHandler}>
+                    <a href={this.createLoginUrl()} className="external" onClick={MainStore.isLoggedInHandler}>
+                        <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored">
                             LOGIN
                         </button>
                     </a>
@@ -62,7 +62,6 @@ class Login extends React.Component {
         } else {
             this.props.appRouter.transitionTo('/home');
         }
-
 
         return (
             <div>

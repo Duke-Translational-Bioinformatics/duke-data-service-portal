@@ -1,7 +1,7 @@
 import React from 'react';
-import ProjectListActions from '../actions/projectListActions';
-import FolderActions from '../actions/folderActions';
-import FileActions from '../actions/fileActions';
+import ProjectListActions from '../../actions/projectListActions';
+import FolderActions from '../../actions/folderActions';
+import FileActions from '../../actions/fileActions';
 var mui = require('material-ui');
 
 class AccountOverview extends React.Component {
@@ -9,7 +9,7 @@ class AccountOverview extends React.Component {
     constructor() {
     }
         render () {
-            let numProjects = this.props.projects.length - 1;
+            let numProjects = this.props.projects.length;///Todo: Need to account for deleted projects i.e: is_deleted: true////////////////
 
             return (
                     <div className="project-container account-overview-container mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800 " style={styles.overviewContainer}>
@@ -19,19 +19,19 @@ class AccountOverview extends React.Component {
                             </div>
                         </div>
                         <div style={styles.cardSquare}
-                             className="mdl-cell mdl-cell--4-col">
+                             className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
                             <h4 style={styles.cardHeader}>
                                 {numProjects + ' Projects'}</h4>
                             <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>content_paste</i>
                         </div>
                         <div style={styles.cardSquare}
-                             className="mdl-cell mdl-cell--4-col">
+                             className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
                             <h4 style={styles.cardHeader}>
                                 370 Files</h4>
                             <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>description</i>
                         </div>
                         <div style={styles.cardSquare}
-                             className="mdl-cell mdl-cell--4-col">
+                             className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
                             <h4 style={styles.cardHeader}>
                                 99.9 GB</h4>
                             <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>save</i>
@@ -43,16 +43,11 @@ class AccountOverview extends React.Component {
 
 var styles = {
     cardSquare: {
-        width: 320,
         height: 120,
-        margin: 20,
-        display: 'inline-block',
-    },
-    cardHeader: {
-       margin: 20
+        display: 'inline-block'
     },
     icon: {
-        fontSize: 64,
+        fontSize: 52,
         verticalAlign: 'center'
     },
     accountOverviewTitle: {
@@ -62,7 +57,9 @@ var styles = {
         paddingLeft: 14
     },
     overviewContainer: {
-        marginTop: 50
+        marginTop: 20,
+        padding: 20,
+        textAlign: 'center'
     }
 };
 

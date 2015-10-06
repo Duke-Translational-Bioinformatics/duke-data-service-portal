@@ -1,10 +1,9 @@
 import React from 'react';
 import { RouteHandler, Link } from 'react-router';
-import MainStore from '../stores/mainStore';
-import MainActions from '../actions/mainActions';
-import ProjectListActions from '../actions/projectListActions';
-import ProjectStore from '../stores/projectStore';
-import DeleteConfirmationModal from './deleteConfirmationModal.jsx';
+import MainStore from '../../stores/mainStore';
+import MainActions from '../../actions/mainActions';
+import ProjectListActions from '../../actions/projectListActions';
+import ProjectStore from '../../stores/projectStore';
 import cookie from 'react-cookie';
 
 let mui = require('material-ui'),
@@ -20,10 +19,10 @@ class NavChildren extends React.Component {
     }
 
     render() {
-        //let standardActions = [
-        //    {text: 'DELETE', onTouchTap: this.handleDeleteButton.bind(this)},
-        //    {text: 'CANCEL'}
-        //];
+        let standardActions = [
+            {text: 'DELETE', onTouchTap: this.handleDeleteButton.bind(this)},
+            {text: 'CANCEL'}
+        ];
 
         let currentPath = window.location.hash.split('/').slice(1, 2).toString();
 
@@ -55,16 +54,16 @@ class NavChildren extends React.Component {
         }
     }
 
-    //handleTouchTap() {
-    //    this.refs.deleteProject.show();
-    //}
-    //
-    //handleDeleteButton() {
-    //    new Framework7().closePanel();
-    //    this.refs.snackbar.show();
-    //    ProjectListActions.deleteProject();
-    //    this.refs.deleteProject.dismiss();
-    //}
+    handleTouchTap() {
+        this.refs.deleteProject.show();
+    }
+
+    handleDeleteButton() {
+        new Framework7().closePanel();
+        this.refs.snackbar.show();
+        ProjectListActions.deleteProject();
+        this.refs.deleteProject.dismiss();
+    }
 }
 
 var styles = {

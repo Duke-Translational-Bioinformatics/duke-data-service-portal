@@ -1,42 +1,50 @@
 import React from 'react';
+import { RouteHandler } from 'react-router';
 import ProjectListActions from '../actions/projectListActions';
 import ProjectStore from '../stores/projectStore';
 import FolderActions from '../actions/folderActions';
 import FolderStore from '../stores/folderStore';
-import ProjectContents from '../components/projectContents.jsx';
-import ProjectDetails from '../components/projectDetails.jsx';
-import Header from '../components/header.jsx';
+import ProjectContents from '../components/projectComponents/projectContents.jsx';
+import ProjectDetails from '../components/projectComponents/projectDetails.jsx';
+import Toast from '../components/globalComponents/toast.jsx';
+import Header from '../components/globalComponents/header.jsx';
+
+let mui = require('material-ui'),
+    Snackbar = mui.Snackbar;
+
 
 class Project extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            folders: [],
-            projects: [],
-            loading: false
+            folders: FolderStore.folders,
+            projects: ProjectStore.projects,
+            loading: false,
+            msg: FolderStore.msg,
+            ref: FolderStore.ref,
+            toastState: FolderStore.toastState,
+            details: ProjectStore.details
         };
     }
 
     componentDidMount() {
         let id = this.props.params.id;
-        this.unsubscribe = FolderStore.listen(this.onStatusChange.bind(this));
+        this.unsubscribe = FolderStore.listen(state => this.setState(state));
         FolderActions.loadFolders(id);
+        ProjectListActions.showDetails(id);
     }
 
     componentWillUnmount() {
         this.unsubscribe();
     }
 
-    onStatusChange(state) {
-        this.setState(state);
-    }
-
     render() {
         return (
             <div>
-                <ProjectDetails { ...this.state } {...this.props} />
-                <ProjectContents { ...this.state } {...this.props} />
+                <RouteHandler {...this.props} {...this.state} />
+                <ProjectDetails {...this.props} {...this.state} />
+                <ProjectContents {...this.props} {...this.state} />
             </div>
         );
     }

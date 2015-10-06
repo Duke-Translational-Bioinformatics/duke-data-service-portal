@@ -1,6 +1,6 @@
 import Reflux from 'reflux';
 
-var mockUrl = 'http://localhost:3000/';
+var mockUrl = 'http://localhost:3000/';//Todo: Change this. It is only used for getting the currentUser from json-server mock DB
 
 var MainActions = Reflux.createActions([
     'authenticationServiceValidate',
@@ -14,8 +14,8 @@ var MainActions = Reflux.createActions([
     'getCurrentUserSuccess',
     'getCurrentUserError',
     'isLoggedInHandler',
-    'showDialog',
-    'setPopupCmp'
+    'addToast',
+    'removeToast'
 ]);
 
 MainActions.authenticationServiceValidate.preEmit = (appConfig, accessToken) => {
@@ -29,6 +29,7 @@ MainActions.authenticationServiceValidate.preEmit = (appConfig, accessToken) => 
     }).then(function (response) {
         return response.json()
     }).then(function (json) {
+        console.log('parsed json', json);
         if (json.signed_info) {
             MainActions.authenticationServiceValidateSuccess(json.signed_info)
         } else {
@@ -49,6 +50,7 @@ MainActions.getDdsApiToken.preEmit = (appConfig, signedInfo) => {
     }).then(function (response) {
         return response.json()
     }).then(function (json) {
+        console.log('parsed json', json);
         if (json && json.api_token) {
             MainActions.setApiToken(json.api_token);
             MainActions.getDdsApiTokenSuccess(json.api_token);
@@ -72,15 +74,6 @@ MainActions.getCurrentUser.preEmit = (appConfig, apiToken, currentUser) => {
             MainActions.getCurrentUserError(ex)
         });
 };
-
-MainActions.showDialog.preEmit = () => {
-    //this.refs.deleteProject.show();
-    console.log('clicked');
-};
-
-//MainActions.setPopupCmp.preEmit = () => {
-//
-//};
 
 
 export default MainActions;

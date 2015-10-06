@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import FolderActions from '../actions/folderActions';
+import FolderActions from '../../actions/folderActions';
 
 let mui = require('material-ui'),
     RaisedButton = mui.RaisedButton,
@@ -12,8 +12,7 @@ class AddFolderModal extends React.Component {
 
     constructor() {
         this.state = {
-            floatingErrorText: 'This field is required.',
-            //floatingErrorText2: 'This field is required'
+            floatingErrorText: 'This field is required.'
         }
     }
 
@@ -62,17 +61,15 @@ class AddFolderModal extends React.Component {
     }
 
     handleFolderButton() {
-        let parent = window.location.hash.split('/').slice(2, 3).toString();
+        let parent = this.props.params.id;
         if (this.state.floatingErrorText) {
             return null
         } else {
             this.refs.snackbar.show();
-            FolderActions.addFolder(parent);
-            this.refs.addFolder.dismiss(
-                this.setState({
-                    floatingErrorText: 'This field is required.'
-                })
-            );
+            FolderActions.addFolder(parent,this.setState({
+                floatingErrorText: 'This field is required.'
+            }));
+            this.refs.addFolder.dismiss();
         }
     }
 
@@ -81,15 +78,9 @@ class AddFolderModal extends React.Component {
             floatingErrorText: e.target.value ? '' : 'This field is required.'
         });
     }
-
-    //handleFloatingErrorInputChange2(e) {
-    //    this.setState({
-    //        floatingErrorText2: e.target.value ? '' : 'This field is required.'
-    //    });
-    //}
 }
 
-var styles = {
+let styles = {
     addFolder: {
         float: 'right',
         position: 'relative',
@@ -102,13 +93,6 @@ var styles = {
     textStyles: {
         textAlign: 'left',
         fontColor: '#303F9F'
-    },
-    floatingButton: {
-        position: 'absolute',
-        top: -48,
-        right: '2%',
-        zIndex: '2',
-        color: '#ffffff'
     }
 };
 

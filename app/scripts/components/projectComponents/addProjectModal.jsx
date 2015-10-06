@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import ProjectListActions from '../actions/projectListActions';
+import ProjectListActions from '../../actions/projectListActions';
 
 let mui = require('material-ui'),
     RaisedButton = mui.RaisedButton,
@@ -36,7 +36,8 @@ class AddProjectModal extends React.Component {
                     style={styles.dialogStyles}
                     title="Add New Project"
                     actions={standardActions}
-                    ref="addProject">
+                    ref="addProject"
+                    onDismiss={e=>console.log('modal dismissed')}>
                     <form action="#" id="newProjectForm">
                         <TextField
                             style={styles.textStyles}
@@ -76,13 +77,11 @@ class AddProjectModal extends React.Component {
             return null
         } else {
             this.refs.snackbar.show();
-            ProjectListActions.addProject();
-            this.refs.addProject.dismiss(
-                this.setState({
-                    floatingErrorText: 'This field is required.',
-                    floatingErrorText2: 'This field is required'
-                })
-            );
+            ProjectListActions.addProject(this.setState({
+                floatingErrorText: 'This field is required.',
+                floatingErrorText2: 'This field is required'
+            }));
+            this.refs.addProject.dismiss();
         }
     };
 

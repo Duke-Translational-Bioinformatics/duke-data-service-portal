@@ -1,12 +1,13 @@
 import React from 'react';
 import { RouteHandler, Link } from 'react-router';
-import Header from '../components/header.jsx';
-import LeftMenu from '../components/leftMenu.jsx';
+import Header from '../components/globalComponents/header.jsx';
+import LeftMenu from '../components/globalComponents/leftMenu.jsx';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions';
 import cookie from 'react-cookie';
 
-let mui = require('material-ui');
+let mui = require('material-ui'),
+    Snackbar = mui.Snackbar;
 let ThemeManager = new mui.Styles.ThemeManager();
 let appPalette = {
     primary1Color: "#303F9F",
@@ -23,6 +24,7 @@ class App extends React.Component {
             appConfig: MainStore.appConfig,
             apiToken: cookie.load('apiToken'),
             currentUser: cookie.load('currentUser'),
+            isLoggingIn: cookie.load('isLoggingIn'),
         }
     }
 
@@ -38,14 +40,19 @@ class App extends React.Component {
 
     componentDidMount() {
         this.unsubscribe = MainStore.listen(state => this.setState(state));
+        this.showToasts();
         new Framework7().addView('.view-main', {dynamicNavbar: true});
     }
 
     componentWillUnmount() {
         this.unsubscribe();
         new Framework7().closePanel();
-
     }
+
+    componentDidUpdate(prevProps, prevState) {
+        this.showToasts();
+    }
+
 
     createLoginUrl() {
         return this.state.appConfig.authServiceUri + "/authenticate?client_id=" + this.state.appConfig.serviceId + "&state=" + this.state.appConfig.securityState;
@@ -53,8 +60,14 @@ class App extends React.Component {
 
 
     render() {
+        let toasts = null;
+        if (this.state.toasts) {
+            toasts = this.state.toasts.map(obj => {
+                return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} autoHideDuration={1500} openOnMount={true}/>
+            });
+        }
         let content = <RouteHandler {...this.props} {...this.state}/>;
-        if (!this.state.appConfig.apiToken && this.state.isLoggingIn == false && this.props.routerPath !== '/login') {
+        if (!this.state.appConfig.apiToken && !this.state.isLoggingIn && this.props.routerPath !== '/login') {
             this.props.appRouter.transitionTo('/login');
         }
         return (
@@ -64,8 +77,9 @@ class App extends React.Component {
                 {!this.state.appConfig.apiToken ? '' : <LeftMenu />}
                 <div className="views">
                     <div className="view view-main">
-                            <Header />
-                            <div className="pages navbar-through toolbar-through">
+                        <Header {...this.props} {...this.state}/>
+
+                        <div className="pages navbar-through toolbar-through">
                             <div data-page="index" className="page">
                                 {!this.state.appConfig.apiToken ? '' : <form className="searchbar" action="#">
                                     <div className="searchbar-input">
@@ -77,7 +91,7 @@ class App extends React.Component {
                                 <div className="searchbar-overlay"></div>
                                 <div className="page-content">
                                     {content}
-                                    {this.props.children}
+                                    {toasts}
                                 </div>
                             </div>
                         </div>
@@ -86,7 +100,18 @@ class App extends React.Component {
             </span>
         );
     }
+
+    showToasts() {
+        if (this.state.toasts) {
+            this.state.toasts.map(obj => {
+                console.log('show toast: '+ obj.ref);
+                setTimeout(() => MainActions.removeToast(obj.ref), 1500);
+            });
+        }
+
+    }
 }
+
 var styles = {
     searchBar: {
         width: '50vw',
@@ -102,8 +127,12 @@ var styles = {
     }
 }
 
-App.childContextTypes = {
+App
+    .
+    childContextTypes = {
     muiTheme: React.PropTypes.object
 };
 
-export default App;
+export
+default
+App;

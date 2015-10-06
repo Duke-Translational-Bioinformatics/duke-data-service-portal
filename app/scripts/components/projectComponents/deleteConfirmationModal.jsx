@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import ProjectListActions from '../actions/projectListActions';
+import ProjectListActions from '../../actions/projectListActions';
 
 let MenuItem = require('material-ui/lib/menus/menu-item');
 

@@ -213,25 +213,13 @@ body {
   font-size: 1em;
   line-height: 1.5;
 }
-.content {
-  padding: 0.5em;
-  margin: 0px auto;
-}
 .project-list-grid {
-  max-width: 1100px;
+  max-width: 1200px;
 }
 .project-container {
   overflow: auto;
-  margin: 20px auto;
-  max-width: 1100px;
+  margin: 0 auto;
+  max-width: 1200px;
   position: relative;
   text-align: center;
-}
-.account-overview-container {
-  margin-top: -100px;
-}
-.ribbon {
-  height: 200px;
-  width: 200%;
-  background-color: #fff;
 }

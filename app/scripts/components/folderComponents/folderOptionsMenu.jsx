@@ -1,6 +1,6 @@
 import React from 'react';
-import ProjectListActions from '../actions/projectListActions';
-import ProjectStore from '../stores/projectStore';
+import FolderActions from '../../actions/folderActions';
+import FolderStore from '../../stores/folderStore';
 var mui = require('material-ui'),
     TextField = mui.TextField,
     IconMenu = mui.IconMenu,
@@ -9,7 +9,7 @@ var mui = require('material-ui'),
 
 let MenuItem = require('material-ui/lib/menus/menu-item');
 
-class ProjectOptionsMenu extends React.Component {
+class FolderOptionsMenu extends React.Component {
 
     constructor() {
         this.state = {
@@ -28,94 +28,71 @@ class ProjectOptionsMenu extends React.Component {
             {text: 'CANCEL'}
         ];
         let iconButtonElement = <a href="#"><i className="material-icons">settings</i></a>;
-
+        let loading = this.props.loading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
         return (
             <div>
                 <Dialog
                     style={styles.dialogStyles}
-                    title="Are you sure you want to delete this project?"
+                    title="Are you sure you want to delete this folder?"
                     actions={deleteActions}
-                    ref="deleteProject">
+                    ref="deleteFolder">
                 </Dialog>
-                <Snackbar
-                    ref="snackbarDelete"
-                    message="Project Deleted!"
-                    autoHideDuration={1300}/>
                 <Dialog
                     style={styles.dialogStyles}
-                    title="Update Project"
+                    title="Update Folder"
                     actions={editActions}
-                    ref="editProject">
-                    <form action="#" id="newProjectForm">
+                    ref="editFolder">
+                    <form action="#" id="newFolderForm">
                         <TextField
                             style={styles.textStyles}
-                            hintText="Project Name"
+                            hintText="Folder Name"
                             errorText={this.state.floatingErrorText}
-                            floatingLabelText="Project Name"
-                            id="projectNameText"
+                            floatingLabelText="Folder Name"
+                            id="folderNameText"
                             type="text"
                             multiLine={true}
                             onChange={this.handleFloatingErrorInputChange.bind(this)}/> <br/>
-                        <TextField
-                            style={styles.textStyles}
-                            hintText="Project Description"
-                            errorText={this.state.floatingErrorText2}
-                            floatingLabelText="Project Description"
-                            id="projectDescriptionText"
-                            type="text"
-                            multiLine={true}
-                            onChange={this.handleFloatingErrorInputChange2.bind(this)}
-                            />
                     </form>
                 </Dialog>
                 <Snackbar
                     ref="snackbarUpdate"
-                    message="Project Updated!"
+                    message="Folder Updated!"
                     autoHideDuration={1800}/>
                 <IconMenu iconButtonElement={iconButtonElement}>
-                    <MenuItem primaryText="Delete Project" onTouchTap={this.handleTouchTapDelete.bind(this)}/>
-                    <MenuItem primaryText="Edit Project" onTouchTap={this.handleTouchTapEdit.bind(this)}/>
+                    <MenuItem primaryText="Delete Folder" onTouchTap={this.handleTouchTapDelete.bind(this)}/>
+                    <MenuItem primaryText="Edit Folder" onTouchTap={this.handleTouchTapEdit.bind(this)}/>
                 </IconMenu>
             </div>
         );
     }
 
     handleTouchTapDelete() {
-        this.refs.deleteProject.show();
+        this.refs.deleteFolder.show();
     }
 
     handleTouchTapEdit() {
-        this.refs.editProject.show();
+        this.refs.editFolder.show();
     }
 
     handleDeleteButton() {
         let currentPath = this.props.params.id;
-        ProjectListActions.deleteProject(currentPath, ProjectListActions.loadProjects(
-            this.refs.deleteProject.dismiss(
-                this.refs.snackbarDelete.show(
-                    setTimeout(function(){
-                        window.location = 'http://localhost:1337/#/home'
-                    }, 1300)
-                )
-            )
+        let ref = 'snackbarDelete';
+        FolderActions.deleteFolder(currentPath, ref, this.refs.deleteFolder.dismiss(
+            this.props.appRouter.transitionTo('/project/' + currentPath)
         ));
-        //TODO: need to make page redirect properly after delete////////////////////////////////
     }
-
 
     handleUpdateButton() {
         let currentPath = this.props.params.id;
-        if (this.state.floatingErrorText || this.state.floatingErrorText2 != '') {
+        let ref = 'snackbarUpdate';
+        if (this.state.floatingErrorText) {
             return null
         } else {
             this.refs.snackbarUpdate.show();
-            ProjectListActions.editProject(currentPath);
-            this.refs.editProject.dismiss(
-                this.setState({
-                    floatingErrorText: 'This field is required.',
-                    floatingErrorText2: 'This field is required'
-                })
-            );
+            FolderActions.editFolder(currentPath, this.setState({
+                floatingErrorText: 'This field is required.'
+            }));
+            this.refs.editFolder.dismiss();
         }
     };
 
@@ -133,7 +110,7 @@ class ProjectOptionsMenu extends React.Component {
 
 }
 var styles = {
-    addProject: {
+    addFolder: {
         float: 'right',
         position: 'relative',
         margin: '12px 8px 0px 0px'
@@ -148,5 +125,5 @@ var styles = {
     }
 };
 
-export default ProjectOptionsMenu;
+export default FolderOptionsMenu;
 

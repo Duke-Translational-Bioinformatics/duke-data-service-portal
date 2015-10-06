@@ -1,6 +1,6 @@
 import React from 'react';
-import MainActions from '../actions/mainActions';
-import MainStore from '../stores/mainStore';
+import MainActions from '../../actions/mainActions';
+import MainStore from '../../stores/mainStore';
 import cookie from 'react-cookie';
 
 

@@ -1,18 +1,26 @@
 import React from 'react';
-import FileActions from '../actions/folderActions';
-import FileStore from '../stores/folderStore';
+import { RouteHandler, Link } from 'react-router';
+import ProjectDetails from './projectDetails.jsx';
+import FolderActions from '../../actions/folderActions';
+import FolderStore from '../../stores/folderStore';
+import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
+import Header from '../../components/globalComponents/header.jsx';
 var mui = require('material-ui'),
     TextField = mui.TextField,
     Dialog = mui.Dialog,
     Checkbox = mui.Checkbox,
     Table = mui.Table;
 
-class FileList extends React.Component {
+class ProjectContents extends React.Component {
 
     constructor() {
         this.state = {
-            files: []
+            folders: FolderStore.folders
         };
+    }
+
+    componentDidUpdate() {
+        componentHandler.upgradeDom();
     }
 
     render() {
@@ -20,10 +28,10 @@ class FileList extends React.Component {
         var error = '';
         if (this.props.error)
             error = (<h4>{this.props.error}</h4>);
-        let files = this.props.files.map((folder) => {
+        let folders = this.props.folders.map((folder) => {
             return (
                 <tr key={ folder.id }>
-                    <td className="mdl-data-table__cell--non-numeric"><i className="material-icons" style={styles.icon}>description</i>{ folder.name }
+                    <td className="mdl-data-table__cell--non-numeric"><i className="material-icons" style={styles.icon}>folder</i><Link to={"/folder/" + folder.id}>{ folder.name }</Link>
                     </td>
                     <td style={styles.tableText}>{ folder.id }</td>
                 </tr>
@@ -37,15 +45,15 @@ class FileList extends React.Component {
         ];
 
         return (
-            <div className="project-container mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800">
+            <div className="project-container">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.listTitle}>
                     <div style={styles.addFolder}>
-                     
+                        <AddFolderModal {...this.props}/>
                     </div>
                 </div>
                 { error }
                 { loading }
-                <table className="mdl-data-table" style={styles.table}>
+                <table className="mdl-data-table mdl-data-table mdl-js-data-table mdl-shadow--2dp" style={styles.table}>
                     <thead>
                     <tr>
                         <th className="mdl-data-table__cell--non-numeric" style={styles.tableText}>Name</th>
@@ -53,7 +61,7 @@ class FileList extends React.Component {
                     </tr>
                     </thead>
                     <tbody>
-                    { files }
+                    { folders }
                     </tbody>
                 </table>
             </div>
@@ -65,14 +73,13 @@ class FileList extends React.Component {
     }
 }
 
-
-FileList.contextTypes = {
+ProjectContents.contextTypes = {
     muiTheme: React.PropTypes.object
 };
 
 var styles = {
     table: {
-        width: '90%',
+        width: '100%',
         margin: '0 auto'
     },
     tableText: {
@@ -109,12 +116,12 @@ var styles = {
     }
 };
 
-FileList.propTypes = {
+ProjectContents.propTypes = {
     loading: React.PropTypes.bool,
     projects: React.PropTypes.array,
     error: React.PropTypes.string,
     is_deleted: React.PropTypes.bool,
 };
 
-export default FileList;
+export default ProjectContents;
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { RouteHandler, Link } from 'react-router';
-import MainStore from '../stores/mainStore';
-import MainActions from '../actions/mainActions';
+import MainStore from '../../stores/mainStore';
+import MainActions from '../../actions/mainActions';
 import CurrentUser from './currentUser.jsx';
 import cookie from 'react-cookie';
 var mui = require('material-ui'),

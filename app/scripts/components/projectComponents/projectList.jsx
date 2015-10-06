@@ -1,9 +1,9 @@
 import React from 'react';
 import { RouteHandler, Link } from 'react-router';
-import ProjectListActions from '../actions/projectListActions';
-import AccountOverview from '../components/accountOverview.jsx';
-import Header from '../components/header.jsx';
-import AddProjectModal from '../components/addProjectModal.jsx';
+import ProjectListActions from '../../actions/projectListActions';
+import AccountOverview from '../../components/globalComponents/accountOverview.jsx';
+import Header from '../../components/globalComponents/header.jsx';
+import AddProjectModal from '../projectComponents/addProjectModal.jsx';
 
 let mui = require('material-ui'),
     Table = mui.Table,
@@ -14,9 +14,9 @@ let mui = require('material-ui'),
 class ProjectList extends React.Component {
 
     constructor() {
-        this.state = {
-            projects: []
-        }
+        //this.state = {
+        //    projects: []
+        //}
     }
 
     render() {
@@ -26,14 +26,14 @@ class ProjectList extends React.Component {
         let projects = this.props.projects.map((project) => {
                 if (!project.is_deleted){
                     return (
-                        <div key={ project.id } style={styles.cardSquare} className="card col-33">
+                        <div key={ project.id } style={styles.cardSquare} className="card mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
                             <div className="mdl-card__title mdl-card--expand">
                                 <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>content_paste</i>
                                 <Link to={"/project/" + project.id}><h1 className="mdl-card__title-text content mdl-color-text--grey-800" style={styles.cardHeader} >{ project.name }</h1></Link>
                             </div>
                             <div className="mdl-card__supporting-text mdl-color-text--grey-800">
                                 <p>ID: {project.id}</p>
-                                <p>Description: { project.description.slice(0,65) + ' ...' }</p>
+                                <p>Description: { project.description }</p>
                             </div>
                         </div>
                     );
@@ -44,7 +44,7 @@ class ProjectList extends React.Component {
         let addProjectLoading = this.props.addProjectLoading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
 
         return (
-                <div className="project-container mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800 row">
+                <div className="project-container row">
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.listTitle}>
                         <div style={styles.listTitle}>
                             <h4>Projects</h4>
@@ -66,9 +66,7 @@ ProjectList.contextTypes = {
 
 var styles = {
     cardSquare: {
-        width: 320,
         height: 260,
-        margin: 20,
         textAlign: 'left',
         display: 'inline-block'
     },
@@ -79,7 +77,7 @@ var styles = {
         margin: '0px 0px -5px 0px',
         textAlign: 'left',
         float: 'left',
-        paddingLeft: 20,
+        paddingLeft: 20
     }
 };
 

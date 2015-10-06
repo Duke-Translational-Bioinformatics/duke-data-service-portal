@@ -3,8 +3,8 @@ import FileActions from '../actions/fileActions';
 import FileStore from '../stores/fileStore';
 import FolderActions from '../actions/folderActions';
 import FolderStore from '../stores/folderStore';
-import FolderPath from '../components/folderPath.jsx';
-import FileList from '../components/fileList.jsx';
+import FolderPath from '../components/folderComponents/folderPath.jsx';
+import FileList from '../components/fileComponents/fileList.jsx';
 
 class Folder extends React.Component {
 
@@ -18,17 +18,13 @@ class Folder extends React.Component {
     }
 
     componentDidMount() {
-        this.unsubscribe = FileStore.listen(this.onStatusChange.bind(this));
+        this.unsubscribe = FileStore.listen(state => this.setState(state));
         FolderActions.loadFolders();
         FileActions.loadFiles();
     }
 
     componentWillUnmount() {
         this.unsubscribe();
-    }
-
-    onStatusChange(state) {
-        this.setState(state);
     }
 
     render() {

@@ -1,7 +1,8 @@
 import React from 'react'
 import ProjectListActions from '../actions/projectListActions';
 import ProjectStore from '../stores/projectStore';
-import Header from '../components/header.jsx';
+import FileDetails from '../components/fileComponents/fileDetails.jsx';
+import Header from '../components/globalComponents/header.jsx';
 
 class File extends React.Component {
 
@@ -24,7 +25,7 @@ class File extends React.Component {
 
         return (
             <div>
-                <h2>This is where a file will be displayed</h2>
+                <FileDetails {...this.props} {...this.state} />
             </div>
         );
     }

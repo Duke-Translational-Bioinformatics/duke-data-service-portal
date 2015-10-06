@@ -15,8 +15,9 @@ var MainStore = Reflux.createStore({
         this.ddsApiTokenLoading = false;
         this.appConfig.apiToken = cookie.load('apiToken');
         this.signedInfo = null;
-        this.isLoggingIn = false;
+        this.isLoggingIn = cookie.load('isLoggingIn');
         this.dialog = null;
+        this.toasts = [];
     },
 
     authenticationServiceValidate(appConfig, accessToken) {
@@ -75,7 +76,7 @@ var MainStore = Reflux.createStore({
     getCurrentUser (currentUser) {
         this.appConfig.currentUser = currentUser;
         this.trigger({
-            appConfig: this.appConfig,
+            appConfig: this.appConfig
         });
     },
     getCurrentUserSuccess (currentUser) {
@@ -93,27 +94,42 @@ var MainStore = Reflux.createStore({
     },
     isLoggedInHandler() {
         this.isLoggingIn = true;
+        cookie.save('isLoggingIn', this.isLoggingIn);
         this.trigger({
             isLoggingIn: this.isLoggingIn
         });
     },
     handleLogout () {
         this.appConfig.apiToken = null;
-        this.isLoggingIn = false;
+        this.isLoggingIn = null;
         cookie.remove('apiToken');
         cookie.remove('currentUser');
+        cookie.remove('isLoggingIn');
         this.trigger({
-            appConfig: this.appConfig,
-            isLoggingIn: this.isLoggingIn
+            appConfig: this.appConfig
         });
         location.reload();
     },
-    showDialog (dialog) {
-        this.dialog = dialog
-        //console.log(dialog);
-        this.trigger({
-           dialog: this.dialog
+    addToast(msg) {
+        this.toasts.push({
+          msg: msg,
+          ref: 'toast' + Math.floor(Math.random()*10000)
         });
+        this.trigger({
+            toasts: this.toasts
+        });
+    },
+
+    removeToast(refId) {
+        for(let i=0; i < this.toasts.length; i++){
+            if (this.toasts[i].ref === refId) {
+                this.toasts.splice(i, 1);
+                break;
+            }
+        }
+        this.trigger({
+            toasts: this.toasts
+        })
     }
 
 });

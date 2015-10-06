@@ -1,11 +1,16 @@
 import Reflux from 'reflux';
 import ProjectListActions from '../actions/projectListActions';
+import MainActions from '../actions/mainActions';
 
 var ProjectStore = Reflux.createStore({
 
     init() {
-        this.projects = [];
         this.listenToMany(ProjectListActions);
+        this.projects = [];
+        this.toastState = null;
+        this.ref = '';
+        this.msg = '';
+        this.details = [];
     },
 
     loadProjects() {
@@ -23,7 +28,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     loadProjectsError(error) {
-        let msg = error && error.message ? "Error: " : + 'An error occurred while loading projects.';
+        let msg = error && error.message ? "Error: " : +'An error occurred while loading projects.';
         this.trigger({
             error: msg,
             loading: false
@@ -31,8 +36,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     // Loads folders and files contained inside a project
-    // TODO: NEED TO CHANGE THIS TO LOAD FILES & FOLDERS PROPERLY
-    // TODO: MOVE TO FOLDER AND FILE STORES?????
+    // TODO: NEED TO CHANGE THIS TO LOAD FILES & FOLDERS FROM PARENT
     loadProjectContents() {
         this.trigger({
             loading: true
@@ -46,8 +50,26 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    showProjectDetails() {
+    showDetails() {
+        this.trigger({
+            loading: true
+        })
+    },
 
+    showDetailsSuccess(json) {
+        this.details = json;
+        this.trigger({
+            details: this.details,
+            loading: false
+        })
+    },
+
+    showDetailsError() {
+        let msg = error && error.message ? "Error: " : +'An error occurred.';
+        this.trigger({
+            error: msg,
+            loading: false
+        })
     },
 
     addProject() {
@@ -64,48 +86,49 @@ var ProjectStore = Reflux.createStore({
     },
 
     addProjectError() {
-        let msg = error && error.message ? "Error: " : + 'An error occurred while trying to add a new project.';
+        let msg = error && error.message ? "Error: " : +'An error occurred while trying to add a new project.';
         this.trigger({
             error: msg,
             addProjectLoading: false
         })
     },
+
     deleteProject() {
-        this.trigger({
-            loading: true
-        })
+
     },
+
     deleteProjectSuccess() {
-        this.trigger({
-            loading: false
-        })
+        ProjectListActions.loadProjects();
     },
+
     deleteProjectError() {
-        let msg = error && error.message ? "Error: " : + 'An error occurred while trying to delete this project.';
+        let msg = error && error.message ? "Error: " : +'An error occurred while trying to delete this project.';
         this.trigger({
             error: msg,
             loading: false
         });
     },
+
     editProject() {
         this.trigger({
             editProjectLoading: true
         })
     },
+
     editProjectSuccess() {
         ProjectListActions.loadProjects();
         this.trigger({
             addProjectLoading: false
         })
     },
+
     editProjectError() {
-        let msg = error && error.message ? "Error: " : + 'An error occurred while trying to edit this project.';
+        let msg = error && error.message ? "Error: " : +'An error occurred while trying to edit this project.';
         this.trigger({
             error: msg,
             loading: false
         });
     }
-
 
 });
 

@@ -4,7 +4,7 @@ jest.dontMock('../components/header.jsx');
 jest.dontMock('../../../test-utils/stubRouterContext.jsx');
 
 var React = require('react/addons');
-var Header = require('../components/header.jsx');
+var Header = require('scripts/components/globalComponents/header.jsx');
 
 var StubRouterContext = require('../../../test-utils/stubRouterContext.jsx');
 
