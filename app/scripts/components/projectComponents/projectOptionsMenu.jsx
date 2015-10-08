@@ -27,7 +27,7 @@ class ProjectOptionsMenu extends React.Component {
             {text: 'UPDATE', onTouchTap: this.handleUpdateButton.bind(this)},
             {text: 'CANCEL'}
         ];
-        let iconButtonElement = <a className="external"><i className="material-icons">settings</i></a>;
+        let iconButtonElement = <a href="#"><i className="material-icons">settings</i></a>;
 
         return (
             <div>
@@ -64,10 +64,6 @@ class ProjectOptionsMenu extends React.Component {
                             />
                     </form>
                 </Dialog>
-                <Snackbar
-                    ref="snackbarUpdate"
-                    message="Project Updated!"
-                    autoHideDuration={1800}/>
                 <IconMenu iconButtonElement={iconButtonElement}>
                     <MenuItem primaryText="Delete Project" onTouchTap={this.handleTouchTapDelete.bind(this)}/>
                     <MenuItem primaryText="Edit Project" onTouchTap={this.handleTouchTapEdit.bind(this)}/>
@@ -86,23 +82,22 @@ class ProjectOptionsMenu extends React.Component {
 
     handleDeleteButton() {
         let currentPath = this.props.params.id;
-        let ref = 'snackbarDelete';
-        ProjectListActions.deleteProject(currentPath, ref, this.refs.deleteProject.dismiss(
+        ProjectListActions.deleteProject(currentPath, this.refs.deleteProject.dismiss(
             setTimeout(()=>this.props.appRouter.transitionTo('/home'),500)
         ));
     }
 
 
     handleUpdateButton() {
-        let currentPath = this.props.params.id;
+        let id = this.props.params.id;
         if (this.state.floatingErrorText || this.state.floatingErrorText2 != '') {
             return null
         } else {
-            this.refs.snackbarUpdate.show();
-            ProjectListActions.editProject(currentPath, this.setState({
+            ProjectListActions.editProject(id, this.setState({
                 floatingErrorText: 'This field is required.',
                 floatingErrorText2: 'This field is required'
             }));
+            ProjectListActions.showDetails(id);
             this.refs.editProject.dismiss();
         }
     };

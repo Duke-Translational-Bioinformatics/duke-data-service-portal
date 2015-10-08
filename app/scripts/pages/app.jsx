@@ -104,7 +104,6 @@ class App extends React.Component {
     showToasts() {
         if (this.state.toasts) {
             this.state.toasts.map(obj => {
-                console.log('show toast: '+ obj.ref);
                 setTimeout(() => MainActions.removeToast(obj.ref), 1500);
             });
         }

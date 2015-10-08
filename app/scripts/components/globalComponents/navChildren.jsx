@@ -42,10 +42,6 @@ class NavChildren extends React.Component {
                             actions={standardActions}
                             ref="deleteProject">
                         </Dialog>
-                        <Snackbar
-                            ref="snackbar"
-                            message= "Project Deleted!"
-                            autoHideDuration={1500}/>
                     </div>
                     <p><Link to="home"><i className="material-icons" style={styles.navIcon}>home</i>Home</Link></p>
                     <!--<p><a href="#" onTouchTap={this.handleTouchTap.bind(this)}><i className="material-icons" style={styles.navIcon}>delete</i>Delete Project</a></p>-->
@@ -60,7 +56,6 @@ class NavChildren extends React.Component {
 
     handleDeleteButton() {
         new Framework7().closePanel();
-        this.refs.snackbar.show();
         ProjectListActions.deleteProject();
         this.refs.deleteProject.dismiss();
     }

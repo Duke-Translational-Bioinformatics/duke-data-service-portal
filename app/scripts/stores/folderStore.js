@@ -1,5 +1,6 @@
 import Reflux from 'reflux';
 import FolderActions from '../actions/folderActions';
+import MainActions from '../actions/mainActions';
 
 var FolderStore = Reflux.createStore ({
 

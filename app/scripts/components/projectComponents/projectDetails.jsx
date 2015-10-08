@@ -22,8 +22,18 @@ class ProjectDetails extends React.Component {
         this.state = {
             showDetails: false,
             currentUser: cookie.load('currentUser'),
-            details: ProjectStore.details
+            project: ProjectStore.project
         }
+    }
+
+    componentDidMount() {
+        let id = this.props.params.id;
+        this.unsubscribe = ProjectStore.listen(state => this.setState(state));
+        ProjectListActions.showDetails(id);
+    }
+
+    componentWillUnmount() {
+        this.unsubscribe();
     }
 
     render() {
@@ -31,11 +41,11 @@ class ProjectDetails extends React.Component {
         let currentUser = cookie.load('currentUser').map((user)=> {
             return <span key={user.id}>{user.first_name + " " + user.last_name}</span>
         });
-        //let details = this.props.details.map((detail) => {
-        //    return <div key={detail.id}>
-        //        <h4>{detail.name}</h4>
-        //    </div>
-        //});
+        let details = this.state.project.map((detail) => { //TODO: Fix this!!!!
+            return <div key={detail.id}>
+                <h4>{detail.name}</h4>
+            </div>
+        });
 
         let error = '';
 
@@ -54,7 +64,7 @@ class ProjectDetails extends React.Component {
                         <Link to={'/home'} style={styles.back}><i className="material-icons" style={styles.backIcon}>keyboard_backspace</i>Back</Link>
                     </div>
                     <div className="mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
-                        <h4>Test Project</h4>
+                        <h4>{details}</h4>
                     </div>
                     <div className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.details}>
                         <p><span style={styles.span}>Created By:</span> {currentUser}</p>
@@ -141,7 +151,8 @@ var styles = {
     },
     detailsButton: {
         align: 'center',
-        clear: 'both'
+        clear: 'both',
+        textAlign: 'center'
     },
     textStyles: {
         textAlign: 'left'

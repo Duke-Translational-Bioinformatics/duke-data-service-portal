@@ -14,9 +14,7 @@ let mui = require('material-ui'),
 class ProjectList extends React.Component {
 
     constructor() {
-        //this.state = {
-        //    projects: []
-        //}
+
     }
 
     render() {
@@ -29,7 +27,7 @@ class ProjectList extends React.Component {
                         <div key={ project.id } style={styles.cardSquare} className="card mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
                             <div className="mdl-card__title mdl-card--expand">
                                 <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>content_paste</i>
-                                <Link to={"/project/" + project.id}><h1 className="mdl-card__title-text content mdl-color-text--grey-800" style={styles.cardHeader} >{ project.name }</h1></Link>
+                                <Link to={"/project/" + project.id}><h1 className="mdl-card__title-text content mdl-color-text--grey-800" style={styles.cardHeader}>{ project.name }</h1></Link>
                             </div>
                             <div className="mdl-card__supporting-text mdl-color-text--grey-800">
                                 <p>ID: {project.id}</p>
@@ -44,13 +42,13 @@ class ProjectList extends React.Component {
         let addProjectLoading = this.props.addProjectLoading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
 
         return (
-                <div className="project-container row">
+                <div className="project-container mdl-grid">
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.listTitle}>
                         <div style={styles.listTitle}>
                             <h4>Projects</h4>
                         </div>
-                            <AddProjectModal {...this.props} />
-                        </div>
+                        <AddProjectModal {...this.props} />
+                    </div>
                     { error }
                     { loading }
                     { addProjectLoading }

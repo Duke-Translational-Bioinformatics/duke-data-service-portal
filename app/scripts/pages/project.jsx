@@ -6,7 +6,6 @@ import FolderActions from '../actions/folderActions';
 import FolderStore from '../stores/folderStore';
 import ProjectContents from '../components/projectComponents/projectContents.jsx';
 import ProjectDetails from '../components/projectComponents/projectDetails.jsx';
-import Toast from '../components/globalComponents/toast.jsx';
 import Header from '../components/globalComponents/header.jsx';
 
 let mui = require('material-ui'),
@@ -20,11 +19,7 @@ class Project extends React.Component {
         this.state = {
             folders: FolderStore.folders,
             projects: ProjectStore.projects,
-            loading: false,
-            msg: FolderStore.msg,
-            ref: FolderStore.ref,
-            toastState: FolderStore.toastState,
-            details: ProjectStore.details
+            loading: false
         };
     }
 
@@ -32,7 +27,6 @@ class Project extends React.Component {
         let id = this.props.params.id;
         this.unsubscribe = FolderStore.listen(state => this.setState(state));
         FolderActions.loadFolders(id);
-        ProjectListActions.showDetails(id);
     }
 
     componentWillUnmount() {
@@ -42,7 +36,7 @@ class Project extends React.Component {
     render() {
         return (
             <div>
-                <RouteHandler {...this.props} {...this.state} />
+                <!--<RouteHandler {...this.props} {...this.state} />-->
                 <ProjectDetails {...this.props} {...this.state} />
                 <ProjectContents {...this.props} {...this.state} />
             </div>

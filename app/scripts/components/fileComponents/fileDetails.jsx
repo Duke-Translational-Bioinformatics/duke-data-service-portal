@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
 import cookie from 'react-cookie';
-import FilePreview from './filePreview.jsx';
 
 var mui = require('material-ui'),
     TextField = mui.TextField,
@@ -12,9 +11,7 @@ var mui = require('material-ui'),
 class FileDetails extends React.Component {
 
     constructor() {
-        this.state = {
-
-        }
+        this.state = {}
     }
 
     render() {
@@ -23,53 +20,52 @@ class FileDetails extends React.Component {
             <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
 
         return (
-        <div>
-            <div className="project-container mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800" style={styles.container}>
-                <button className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab mdl-button--colored"
-                        style={styles.floatingButton}
-                        >
-                    <i className="material-icons">get_app</i>
-                </button>
-                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
+            <div>
+                <div className="account-overview mdl-grid mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800"
+                    style={styles.container}>
+                    <button
+                        className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab mdl-button--colored"
+                        style={styles.floatingButton}>
+                        <i className="material-icons">get_app</i>
+                    </button>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                        <Link to={'/folder/' + this.props.params.id} style={styles.back}><i className="material-icons" style={styles.backIcon}>keyboard_backspace</i>Back</Link>
+                        <Link to={'/folder/' + this.props.params.id} className="mdl-color-text--grey-800"
+                              style={styles.back}><i className="material-icons" style={styles.backIcon}>keyboard_backspace</i>Back</Link>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col" style={styles.detailsTitle}>
                         <span className="mdl-color-text--grey-800" style={styles.breadcrumbs}>Test Project 123
                             <i className="material-icons mdl-color-text--grey-600" style={styles.moreIcon}>keyboard_arrow_right</i>
-                            <span className="mdl-color-text--grey-600"style={styles.folderName}><a href="#">KOMP Data</a></span><i className="material-icons mdl-color-text--grey-600" style={styles.moreIcon}>keyboard_arrow_right</i>
-                            <span className="mdl-color-text--grey-600"style={styles.folderName}>KOMP Data</span>
+                            <span className="mdl-color-text--grey-600" style={styles.folderName}><a href="#">KOMP
+                                Data</a></span><i className="material-icons mdl-color-text--grey-600"
+                                                  style={styles.moreIcon}>keyboard_arrow_right</i>
+                            <span className="mdl-color-text--grey-600" style={styles.folderName}>KOMP Data</span>
                         </span>
                     </div>
-                    <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.details}>
-                        <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.details}>
-                            <span style={styles.spanTitle}><i className="material-icons mdl-color-text--grey-600" style={styles.fileIcon}>description</i></span>
-                        </div>
-                        <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.details}>
-                            <span style={styles.span}>Created By:</span>
-                        </div>
-                        <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.details}>
-                            <span style={styles.span}>Created On:</span>
-                        </div>
-                        <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.details}>
-                            <span style={styles.span}>ID:</span>
-                        </div>
+                    <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.details}>
+                        <span style={styles.spanTitle}>Test File 123</span>
                     </div>
-                    <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.details}>
-                        <div className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.details}>
-                            <span style={styles.span}>File Size:</span>
-                        </div>
-                        <div className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.details}>
-                            <span style={styles.span}>Storage:</span>
-                        </div>
-                        <div className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.details}>
-                            <span style={styles.span}>SHA-1:</span>
-                        </div>
+                    <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.details}>
+                        <span style={styles.span}>Created By: Jon Doe</span>
+                    </div>
+                    <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.details}>
+                        <span style={styles.span}>Created On: 9/29/2015</span>
+                    </div>
+                    <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.details}>
+                        <span style={styles.span}>ID: 12345678901</span>
+                    </div>
+                    <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.details}>
+                        <span style={styles.span}>File Size: 46.2 MB</span>
+                    </div>
+                    <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.details}>
+                        <span style={styles.span}>Storage: Isolon</span>
+                    </div>
+                    <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.details}>
+                        <span style={styles.span}>SHA-1: 123-123123-123-1231</span>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.detailsButton}>
                         <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
                                 onClick={this.handleTouchTapDetails.bind(this)}>
-                            {!this.state.showDetails ? 'MORE DETAILS' : 'LESS DETAILS'}
+                            {!this.state.showDetails ? 'FILE HISTORY' : 'HIDE HISTORY'}
                         </button>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
@@ -77,18 +73,12 @@ class FileDetails extends React.Component {
                             { this.state.showDetails ? <Details className={this.state.newClass}/> : null }
                         </div>
                     </div>
-                </div>
-                { loading }
-                { error }
+                    { loading }
+                    { error }
+                </div><!--end of grid div-->
+
             </div>
-                <FilePreview />
-            <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored" style={styles.fullView}>
-                FULL VIEW
-            </button>
-            <div className="project-container mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800" style={styles.container}>
-            </div>
-        </div>
-);
+        );
     }
 
     handleTouchTapDetails() {
@@ -119,7 +109,8 @@ var styles = {
     },
     detailsButton: {
         align: 'center',
-        clear: 'both'
+        clear: 'both',
+        textAlign: 'center'
     },
     textStyles: {
         textAlign: 'left'
@@ -186,3 +177,10 @@ FileDetails.propTypes = {
 
 export default FileDetails;
 
+//<button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
+//        style={styles.fullView}>
+//    FULL VIEW
+//</button>
+//<div className="project-container mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800"
+//style={styles.container}>
+//</div>

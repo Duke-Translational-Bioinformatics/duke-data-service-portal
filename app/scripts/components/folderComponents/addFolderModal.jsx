@@ -48,10 +48,6 @@ class AddFolderModal extends React.Component {
                             onChange={this.handleFloatingErrorInputChange.bind(this)}/> <br/>
                     </form>
                 </Dialog>
-                <Snackbar
-                    ref="snackbar"
-                    message="Folder Added"
-                    autoHideDuration={1500}/>
             </div>
         );
     }
@@ -65,7 +61,6 @@ class AddFolderModal extends React.Component {
         if (this.state.floatingErrorText) {
             return null
         } else {
-            this.refs.snackbar.show();
             FolderActions.addFolder(parent,this.setState({
                 floatingErrorText: 'This field is required.'
             }));

@@ -213,13 +213,11 @@ body {
   font-size: 1em;
   line-height: 1.5;
 }
-.project-list-grid {
+.account-overview {
   max-width: 1200px;
+  margin: 0 auto;
 }
 .project-container {
-  overflow: auto;
+  max-width: 1230px;
   margin: 0 auto;
-  max-width: 1200px;
-  position: relative;
-  text-align: center;
 }

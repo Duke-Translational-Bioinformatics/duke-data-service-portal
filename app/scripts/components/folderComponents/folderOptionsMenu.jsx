@@ -54,10 +54,6 @@ class FolderOptionsMenu extends React.Component {
                             onChange={this.handleFloatingErrorInputChange.bind(this)}/> <br/>
                     </form>
                 </Dialog>
-                <Snackbar
-                    ref="snackbarUpdate"
-                    message="Folder Updated!"
-                    autoHideDuration={1800}/>
                 <IconMenu iconButtonElement={iconButtonElement}>
                     <MenuItem primaryText="Delete Folder" onTouchTap={this.handleTouchTapDelete.bind(this)}/>
                     <MenuItem primaryText="Edit Folder" onTouchTap={this.handleTouchTapEdit.bind(this)}/>
@@ -78,7 +74,7 @@ class FolderOptionsMenu extends React.Component {
         let currentPath = this.props.params.id;
         let ref = 'snackbarDelete';
         FolderActions.deleteFolder(currentPath, ref, this.refs.deleteFolder.dismiss(
-            this.props.appRouter.transitionTo('/project/' + currentPath)
+            setTimeout(()=>this.props.appRouter.transitionTo('/project/' + currentPath),500)
         ));
     }
 
@@ -88,7 +84,6 @@ class FolderOptionsMenu extends React.Component {
         if (this.state.floatingErrorText) {
             return null
         } else {
-            this.refs.snackbarUpdate.show();
             FolderActions.editFolder(currentPath, this.setState({
                 floatingErrorText: 'This field is required.'
             }));

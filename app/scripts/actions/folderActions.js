@@ -1,4 +1,5 @@
 import Reflux from 'reflux';
+import MainActions from '../actions/mainActions';
 
 var mockUrl = 'http://localhost:3000/';
 
@@ -47,8 +48,10 @@ FolderActions.addFolder.preEmit = function () {
     }).then(function(response) {
         return response.json()
     }).then(function(json) {
+        MainActions.addToast('Folder Added');
         FolderActions.addFolderSuccess()
     }).catch(function(ex) {
+        MainActions.addToast('Failed to Add a New Folder');
         FolderActions.addFolderError(ex)
     })
 };
@@ -60,8 +63,10 @@ FolderActions.deleteFolder.preEmit = function (currentPath, ref) {
     }).then(function(response) {
         return response.json()
     }).then(function(json) {
+        MainActions.addToast('Folder Deleted!');
         FolderActions.deleteFolderSuccess(ref)
     }).catch(function(ex) {
+        MainActions.addToast('Folder Deleted Failed!');
         FolderActions.deleteFolderError(ex)
     });
 };
@@ -82,9 +87,10 @@ FolderActions.editFolder.preEmit = function (currentPath) {
     }).then(function(response) {
         return response.json()
     }).then(function(json) {
+        MainActions.addToast('Folder Updated!');
         FolderActions.editFolderSuccess()
     }).catch(function(ex) {
-        console.log('parsing failed: ', ex);
+        MainActions.addToast('Failed to Update Folder');
         FolderActions.editFolderError(ex)
     });
 };

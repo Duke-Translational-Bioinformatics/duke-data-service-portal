@@ -88,8 +88,10 @@ ProjectListActions.addProject.preEmit = function () {
     }).then(function(response) {
             return response.json()
         }).then(function(json) {
+            MainActions.addToast('Project Added');
             ProjectListActions.addProjectSuccess()
         }).catch(function(ex) {
+            MainActions.addToast('Failed to add new project');
             ProjectListActions.addProjectError(ex)
         })
 };
@@ -109,8 +111,8 @@ ProjectListActions.deleteProject.preEmit = function (currentPath) {
     });
 };
 
-ProjectListActions.editProject.preEmit = function (currentPath) {
-    let url = mockUrl + 'projects/' + currentPath;
+ProjectListActions.editProject.preEmit = function (id) {
+    let url = mockUrl + 'projects/' + id;
     console.log(url);
     fetch(url, {
         method: 'put',
@@ -126,8 +128,10 @@ ProjectListActions.editProject.preEmit = function (currentPath) {
     }).then(function(response) {
         return response.json()
     }).then(function(json) {
+        MainActions.addToast('Project Updated');
         ProjectListActions.editProjectSuccess()
     }).catch(function(ex) {
+        MainActions.addToast('Project Update Failed');
         ProjectListActions.editProjectError(ex)
     });
 };

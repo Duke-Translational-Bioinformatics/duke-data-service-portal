@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import ProjectListActions from '../../actions/projectListActions';
+import FileActions from '../../actions/fileActions';
 
 let mui = require('material-ui'),
     RaisedButton = mui.RaisedButton,
@@ -8,7 +8,7 @@ let mui = require('material-ui'),
     Snackbar = mui.Snackbar,
     Dialog = mui.Dialog;
 
-class AddProjectModal extends React.Component {
+class FilePreviewModal extends React.Component {
 
     constructor() {
         this.state = {
@@ -29,13 +29,14 @@ class AddProjectModal extends React.Component {
                 <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
                         style={styles.addProject}
                         onTouchTap={this.handleTouchTap.bind(this)}>
-                    ADD PROJECT
+                    FULL VIEW
                 </button>
                 <Dialog
                     style={styles.dialogStyles}
                     title="Add New Project"
                     actions={standardActions}
-                    ref="addProject">
+                    ref="addProject"
+                    onDismiss={e=>console.log('modal dismissed')}>
                     <form action="#" id="newProjectForm">
                         <TextField
                             style={styles.textStyles}
@@ -107,13 +108,13 @@ var styles = {
     }
 };
 
-AddProjectModal.contextTypes = {
+FilePreviewModal.contextTypes = {
     muiTheme: React.PropTypes.object
 };
 
-AddProjectModal.propTypes = {
+FilePreviewModal.propTypes = {
     addProjectLoading: React.PropTypes.bool,
 };
 
-export default AddProjectModal;
+export default FilePreviewModal;
 

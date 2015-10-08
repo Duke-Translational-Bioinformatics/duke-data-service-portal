@@ -10,7 +10,7 @@ var ProjectStore = Reflux.createStore({
         this.toastState = null;
         this.ref = '';
         this.msg = '';
-        this.details = [];
+        this.project = [];
     },
 
     loadProjects() {
@@ -57,9 +57,9 @@ var ProjectStore = Reflux.createStore({
     },
 
     showDetailsSuccess(json) {
-        this.details = json;
+        this.project = json;
         this.trigger({
-            details: this.details,
+            project: this.project,
             loading: false
         })
     },

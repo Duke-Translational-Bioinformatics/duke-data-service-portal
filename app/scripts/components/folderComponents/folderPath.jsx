@@ -31,7 +31,7 @@ class FolderPath extends React.Component {
                         <FolderOptionsMenu {...this.props} />
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                        <Link to={'/project/' + this.props.params.id}><i className="material-icons" style={styles.backIcon}>keyboard_backspace</i>Back</Link>
+                        <Link to={'/project/' + this.props.params.id} className="mdl-color-text--grey-800"><i className="material-icons" style={styles.backIcon}>keyboard_backspace</i>Back</Link>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col" style={styles.detailsTitle}>
                         <span className="mdl-color-text--grey-800" style={styles.breadcrumbs}>Test Project 123

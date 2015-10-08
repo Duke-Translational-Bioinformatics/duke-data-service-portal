@@ -19,10 +19,6 @@ class ProjectContents extends React.Component {
         };
     }
 
-    componentDidUpdate() {
-        componentHandler.upgradeDom();
-    }
-
     render() {
 
         var error = '';
@@ -31,7 +27,7 @@ class ProjectContents extends React.Component {
         let folders = this.props.folders.map((folder) => {
             return (
                 <tr key={ folder.id }>
-                    <td className="mdl-data-table__cell--non-numeric"><i className="material-icons" style={styles.icon}>folder</i><Link to={"/folder/" + folder.id}>{ folder.name }</Link>
+                    <td className="mdl-data-table__cell--non-numeric"><i className="material-icons" style={styles.icon}>folder</i><Link to={"/folder/" + folder.id} className="mdl-color-text--grey-800">{ folder.name }</Link>
                     </td>
                     <td style={styles.tableText}>{ folder.id }</td>
                 </tr>

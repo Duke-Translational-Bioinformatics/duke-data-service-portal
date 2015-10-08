@@ -8,36 +8,45 @@ class AccountOverview extends React.Component {
 
     constructor() {
     }
-        render () {
-            let numProjects = this.props.projects.length;///Todo: Need to account for deleted projects i.e: is_deleted: true////////////////
 
-            return (
-                    <div className="project-container account-overview-container mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800 " style={styles.overviewContainer}>
-                        <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.accountOverviewTitle}>
-                            <div style={styles.accountOverviewTitle}>
-                                <h4>Account Overview</h4>
-                            </div>
-                        </div>
-                        <div style={styles.cardSquare}
-                             className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
-                            <h4 style={styles.cardHeader}>
-                                {numProjects + ' Projects'}</h4>
-                            <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>content_paste</i>
-                        </div>
-                        <div style={styles.cardSquare}
-                             className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
-                            <h4 style={styles.cardHeader}>
-                                370 Files</h4>
-                            <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>description</i>
-                        </div>
-                        <div style={styles.cardSquare}
-                             className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
-                            <h4 style={styles.cardHeader}>
-                                99.9 GB</h4>
-                            <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>save</i>
-                        </div>
+    render() {
+        let numProjects = 0;
+        let projects = this.props.projects.map((project) => {
+            if (!project.is_deleted) {
+                numProjects++;
+                return numProjects;
+            }
+        });
+
+        return (
+            <div
+                className="mdl-grid account-overview mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800 "
+                style={styles.overviewContainer}>
+                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.accountOverviewTitle}>
+                    <div style={styles.accountOverviewTitle}>
+                        <h4>Account Overview</h4>
                     </div>
-            );
+                </div>
+                <div style={styles.cardSquare}
+                     className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
+                    <h4>
+                        {numProjects + ' Projects'}</h4>
+                    <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>content_paste</i>
+                </div>
+                <div style={styles.cardSquare}
+                     className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
+                    <h4>
+                        370 Files</h4>
+                    <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>description</i>
+                </div>
+                <div style={styles.cardSquare}
+                     className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
+                    <h4>
+                        99.9 GB</h4>
+                    <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>save</i>
+                </div>
+            </div>
+        );
     }
 }
 

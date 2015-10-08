@@ -8,7 +8,7 @@ var mui = require('material-ui'),
     Dialog = mui.Dialog;
 
 
-class FilePreview extends React.Component {
+class FileProvenance extends React.Component {
 
     constructor() {
         this.state = {
@@ -22,17 +22,14 @@ class FilePreview extends React.Component {
             <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
 
         return (
-            <div className="project-container mdl-grid" style={styles.container}>
+            <div className="mdl-grid project-container mdl-color--white content mdl-color-text--grey-800" style={styles.container}>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.listTitle}>
-                    <div style={styles.listTitle}>
-                        <h4>Preview</h4>
-                    </div>
                     <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored" style={styles.fullView}>
                         FULL VIEW
                     </button>
                 </div>
                 <div className="mdl-cell mdl-cell--12-col mdl-shadow--2dp mdl-color-text--grey-800" style={styles.container2}>
-                    <img src="http://link.springer.com/article/10.1007%2FBF02710080/lookinside/000.png" style={styles.image}/>
+
                 </div>
             </div>
         );
@@ -43,40 +40,27 @@ class FilePreview extends React.Component {
 
 var styles = {
     container: {
-        //overflow: 'hidden',
-        //height: 'auto'
+        height: 'auto'
     },
     container2: {
-        overflow: 'hidden',
         height: 250
     },
     fullView: {
         float: 'right',
-        position: 'relative',
-        margin: '18px -10px 0px 0px'
-    },
-    image: {
-        maxWidth: '50%',
-        maxHeight: '100%'
-    },
-    listTitle: {
-        margin: '0px 0px -5px 0px',
-        textAlign: 'left',
-        float: 'left',
-        paddingLeft: 5
+        position: 'relative'
     }
 };
 
-FilePreview.contextTypes = {
+FileProvenance.contextTypes = {
     muiTheme: React.PropTypes.object
 };
 
-FilePreview.propTypes = {
+FileProvenance.propTypes = {
     loading: React.PropTypes.bool,
     details: React.PropTypes.array,
     error: React.PropTypes.string
 };
 
 
-export default FilePreview;
+export default FileProvenance;
 

@@ -2,6 +2,8 @@ import React from 'react'
 import ProjectListActions from '../actions/projectListActions';
 import ProjectStore from '../stores/projectStore';
 import FileDetails from '../components/fileComponents/fileDetails.jsx';
+import FilePreview from '../components/fileComponents/filePreview.jsx';
+import FileProvenance from '../components/fileComponents/fileProvenance.jsx';
 import Header from '../components/globalComponents/header.jsx';
 
 class File extends React.Component {
@@ -26,6 +28,8 @@ class File extends React.Component {
         return (
             <div>
                 <FileDetails {...this.props} {...this.state} />
+                <FilePreview {...this.props} {...this.state} />
+                <FileProvenance {...this.props} {...this.state} />
             </div>
         );
     }
