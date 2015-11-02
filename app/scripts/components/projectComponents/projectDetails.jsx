@@ -9,6 +9,7 @@ import FolderStore from '../../stores/folderStore';
 import ProjectOptionsMenu from './projectOptionsMenu.jsx';
 import CurrentUser from '../../components/globalComponents/currentUser.jsx';
 import cookie from 'react-cookie';
+import urlGen from '../../../util/urlGen.js';
 
 var mui = require('material-ui'),
     TextField = mui.TextField,
@@ -22,12 +23,13 @@ class ProjectDetails extends React.Component {
         this.state = {
             showDetails: false,
             currentUser: cookie.load('currentUser'),
-            project: ProjectStore.project
+            project: ProjectStore.project,
+            projects: ProjectStore.projects
         }
     }
 
     componentDidMount() {
-        let id = this.props.params.id;
+        let id = this.props.params.id;  //Todo: Need to fix this. Needs to get ID of project
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
         ProjectListActions.showDetails(id);
     }
@@ -42,9 +44,7 @@ class ProjectDetails extends React.Component {
             return <span key={user.id}>{user.first_name + " " + user.last_name}</span>
         });
         let details = this.state.project.map((detail) => { //TODO: Fix this!!!!
-            return <div key={detail.id}>
-                <h4>{detail.name}</h4>
-            </div>
+            return detail.name;
         });
 
         let error = '';
@@ -54,16 +54,22 @@ class ProjectDetails extends React.Component {
 
         return (
             <div
-                className="project-container account-overview-container mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800"
+                className="project-container mdl-color--white mdl-shadow--2dp mdl-color-text--grey-800"
                 style={styles.container}>
+                <button
+                    className="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-button--colored"
+                    style={styles.floatingButton}>
+                    <i className="material-icons">file_upload</i>
+                </button>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div style={styles.menuIcon}>
                         <ProjectOptionsMenu {...this.props} />
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                        <Link to={'/home'} style={styles.back}><i className="material-icons" style={styles.backIcon}>keyboard_backspace</i>Back</Link>
+                        <a href={urlGen.routes.baseUrl + 'home'} style={styles.back} className="external mdl-color-text--grey-800"><i className="material-icons mdl-color-text--grey-800" style={styles.backIcon}>keyboard_backspace</i>Back</a>
                     </div>
-                    <div className="mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
+                    <div className="mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet mdl-cell--4-col-phone"
+                         style={styles.detailsTitle}>
                         <h4>{details}</h4>
                     </div>
                     <div className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.details}>
@@ -71,9 +77,6 @@ class ProjectDetails extends React.Component {
                     </div>
                     <div className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.details}>
                         <p><span style={styles.span}>Created On:</span> 7/30/2015</p>
-                    </div>
-                    <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.details}>
-                        <!--<p style={styles.summary}><span style={styles.span}>Summary:</span> Fake project summary Fake project summary Fake project summary Fake project summary Fake project summary Fake project summary Fake project summary Fake project summary Fake project summary vFake project summary Fake project summary Fake project summary </p>-->
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.detailsButton}>
                         <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
@@ -129,7 +132,7 @@ var Details = React.createClass({
 
 var styles = {
     container: {
-        marginTop: 20,
+        marginTop: 30,
         position: 'relative',
         overflow: 'visible',
         padding: '10px 0px 10px 0px'
@@ -143,7 +146,7 @@ var styles = {
     details: {
         textAlign: 'left',
         float: 'left',
-        marginLeft: -4
+        marginLeft: -3
     },
     summary: {
         float: 'left',
@@ -157,15 +160,12 @@ var styles = {
     textStyles: {
         textAlign: 'left'
     },
-    span: {
-        fontWeight: 'bold'
-    },
     moreDetails: {
         textAlign: 'left'
     },
     menuIcon: {
         float: 'right',
-        marginTop: 8
+        marginTop: 38
     },
     backIcon: {
         fontSize: 24,
@@ -176,6 +176,13 @@ var styles = {
     },
     back: {
         verticalAlign: -2
+    },
+    floatingButton: {
+        position: 'absolute',
+        top: -20,
+        right: '2%',
+        zIndex: '2',
+        color: '#ffffff'
     }
 };
 

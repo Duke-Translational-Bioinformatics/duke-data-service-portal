@@ -25,6 +25,7 @@ var ProjectListActions = Reflux.createActions([
 ]);
 ProjectListActions.loadProjects.preEmit = function () {
     let url = mockUrl + 'db';
+    //let url = "https://dds-dev.duhs.duke.edu/api/v1/projects";
     fetch(url)
         .then(function(response) {
             return response.json()
@@ -64,7 +65,6 @@ ProjectListActions.showDetails.preEmit = function (id) {
     let url = mockUrl + 'projects?id=' + id;
     fetch(url)
         .then(function(response) {
-            console.log('parsed json', response);
             return response.json()
         }).then(function(json) {
             ProjectListActions.showDetailsSuccess(json)
@@ -96,8 +96,8 @@ ProjectListActions.addProject.preEmit = function () {
         })
 };
 
-ProjectListActions.deleteProject.preEmit = function (currentPath) {
-    let url = mockUrl + 'projects/' + currentPath;
+ProjectListActions.deleteProject.preEmit = function (id) {
+    let url = mockUrl + 'projects/' + id;
     fetch(url, {
         method: 'delete'
     }).then(function(response) {

@@ -51,35 +51,19 @@ var FolderStore = Reflux.createStore ({
         });
     },
     deleteFolder() {
-        this.msg = 'Folder Deleted!';
-        this.ref = 'snackbarDelete';
-        this.toastState = true;
         this.trigger({
-            toastState: this.toastState,
-            msg: this.msg,
-            ref: this.ref,
             loading: true
         })
     },
     deleteFolderSuccess(folders) {
         FolderActions.loadFolders();
-        this.ref = '';
-        this.toastState = null;
         this.trigger({
-            toastState: this.toastState,
-            ref: this.ref,
             loading: false
         })
     },
     deleteFolderError() {
         let errMsg = error && error.message ? "Error: " : + 'An error occurred while trying to delete this project.';
-        this.msg = "There was an error and your folder didn't delete";
-        this.ref = 'snackbarDelete';
-        this.toastState = true;
         this.trigger({
-            toastState: this.toastState,
-            msg: this.msg,
-            ref: this.ref,
             error: errMsg,
             loading: false
         });

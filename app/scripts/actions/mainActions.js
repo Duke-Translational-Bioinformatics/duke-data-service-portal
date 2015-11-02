@@ -15,7 +15,10 @@ var MainActions = Reflux.createActions([
     'getCurrentUserError',
     'isLoggedInHandler',
     'addToast',
-    'removeToast'
+    'removeToast',
+    'closePhiModal',
+    'addBreadCrumbs',
+    'removeBreadCrumbs'
 ]);
 
 MainActions.authenticationServiceValidate.preEmit = (appConfig, accessToken) => {
@@ -29,7 +32,6 @@ MainActions.authenticationServiceValidate.preEmit = (appConfig, accessToken) => 
     }).then(function (response) {
         return response.json()
     }).then(function (json) {
-        console.log('parsed json', json);
         if (json.signed_info) {
             MainActions.authenticationServiceValidateSuccess(json.signed_info)
         } else {
@@ -50,7 +52,6 @@ MainActions.getDdsApiToken.preEmit = (appConfig, signedInfo) => {
     }).then(function (response) {
         return response.json()
     }).then(function (json) {
-        console.log('parsed json', json);
         if (json && json.api_token) {
             MainActions.setApiToken(json.api_token);
             MainActions.getDdsApiTokenSuccess(json.api_token);

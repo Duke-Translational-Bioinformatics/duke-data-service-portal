@@ -24,119 +24,60 @@
       "name": "Edit Name",
       "description": "new description",
       "is_deleted": true,
-      "id": 2
+      "id": "c1179f73-0558-4f96-afc7-9d251e65b7bb"
     },
     {
-      "name": "asdasdasd",
-      "description": "asdasd",
+      "name": "Test Project 1",
+      "description": "this is a test project. ",
       "is_deleted": false,
-      "id": 4
+      "id": "9b922a2b-df9a-4d2d-aa48-460797902c38"
     },
     {
       "name": "New Name",
-      "description": "lakjajsdasd",
+      "description": "testing",
       "is_deleted": false,
-      "id": 5
+      "id": "5e9b992f-74ab-4681-b8ea-ab86aff1cd97"
     },
     {
-      "name": "Edited Again",
-      "description": "lksdfsdf",
+      "name": "Test 123",
+      "description": "testing",
       "is_deleted": false,
-      "id": 6
-    },
-    {
-      "name": "dfsdfsdf",
-      "description": "sdfsdf",
-      "is_deleted": false,
-      "id": 7
-    },
-    {
-      "name": "wdfewcd",
-      "description": "wdcwdc",
-      "is_deleted": false,
-      "id": 8
-    },
-    {
-      "name": "New Name Again",
-      "description": "kadjsjdfswdf",
-      "is_deleted": false,
-      "id": 9
+      "id": "9d35a0e6-0574-4306-8b84-e19635b40d94"
     }
   ],
   "folders": [
     {
-      "name": "daasdasd",
-      "is_deleted": false,
-      "id": 4
-    },
-    {
-      "name": "asdasdasd",
-      "is_deleted": false,
-      "id": 6
-    },
-    {
-      "name": "asdasdasd",
-      "is_deleted": false,
-      "id": 7
-    },
-    {
-      "name": "zxczxczxc",
-      "is_deleted": false,
-      "id": 8
-    },
-    {
-      "name": "zxczxczcx",
-      "is_deleted": false,
-      "id": 9
-    },
-    {
-      "name": "Edited Name",
-      "is_deleted": false,
-      "id": 10
-    },
-    {
-      "name": "New Folder",
-      "is_deleted": false,
-      "id": 11
-    },
-    {
-      "name": "New",
-      "is_deleted": false,
-      "id": 12
-    },
-    {
-      "name": "New",
-      "is_deleted": false,
-      "id": 13
-    },
-    {
-      "name": "ad",
+      "name": "Folder 1234567",
       "is_deleted": false,
       "id": 14
     },
     {
-      "name": "asdasd",
+      "name": "Folder0987654",
       "is_deleted": false,
-      "id": 15
+      "id": 18
+    },
+    {
+      "name": "Test Folder",
+      "is_deleted": false,
+      "id": 19
+    },
+    {
+      "name": "Testing Folders",
+      "is_deleted": false,
+      "id": 20
     }
   ],
   "files": [
     {
-      "id": "ae759205-8246-45be-b4b6-3463c7894a9a",
-      "name": "File inside project #ae759205",
-      "description": "Limb file file file",
+      "id": "8fa07234b-f15f-4a7b-a310-6b01d9fef02b",
+      "name": "KOMP Data",
+      "description": "Inject file file file file",
       "is_deleted": false
     },
     {
-      "id": "8fa07d6b-f15f-4a7b-a310-6b01d9fef02b",
-      "name": "File inside project id#8fa07d6b",
+      "id": "8fa07d23b-f15f-4a7b-a310-6b01d9fef02b",
+      "name": "TestFile_1234_09876",
       "description": "Inject file file file file",
-      "is_deleted": true
-    },
-    {
-      "id": "5f0dc2d1-dd68-47ae-ad6a-a1080441f66b",
-      "name": "File inside proj #5f0dc2d1",
-      "description": "File file file file",
       "is_deleted": false
     }
   ]

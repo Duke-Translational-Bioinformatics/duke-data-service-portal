@@ -4,6 +4,8 @@ import FileActions from '../../actions/fileActions';
 import FileStore from '../../stores/fileStore';
 import FolderActions from '../../actions/folderActions';
 import FolderStore from '../../stores/folderStore';
+import UploadFileModal from './uploadFileModal.jsx';
+import urlGen from '../../../util/urlGen.js';
 var mui = require('material-ui'),
     TextField = mui.TextField,
     Dialog = mui.Dialog,
@@ -14,6 +16,7 @@ class FileList extends React.Component {
 
     constructor() {
         this.state = {
+            urlGen: this.urlGen,
             files: [],
             folders: []
         };
@@ -27,7 +30,8 @@ class FileList extends React.Component {
         let folders = this.props.folders.map((folder) => {
             return (
                 <tr key={ folder.id }>
-                    <td className="mdl-data-table__cell--non-numeric"><i className="material-icons" style={styles.icon}>folder</i></td>
+                    <td className="mdl-data-table__cell--non-numeric"><i className="material-icons" style={styles.icon}>folder</i>
+                    </td>
                     <td style={styles.tableText}>{ folder.id }</td>
                 </tr>
             );
@@ -35,7 +39,9 @@ class FileList extends React.Component {
         let files = this.props.files.map((folder) => {
             return (
                 <tr key={ folder.id }>
-                    <td className="mdl-data-table__cell--non-numeric"><i className="material-icons mdl-color-text--grey-800" style={styles.icon}>description</i><Link to={"/file/" + folder.id}>{ folder.name }</Link>
+                    <td className="mdl-data-table__cell--non-numeric"><i
+                        className="material-icons mdl-color-text--grey-800" style={styles.icon}>description</i>
+                        <a href={urlGen.routes.baseUrl + "file/" + folder.id} className="mdl-color-text--grey-800 external">{ folder.name }</a>
                     </td>
                     <td style={styles.tableText}>{ folder.id }</td>
                 </tr>
@@ -52,7 +58,7 @@ class FileList extends React.Component {
             <div className="project-container">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.listTitle}>
                     <div style={styles.addFolder}>
-                     
+                        <UploadFileModal {...this.props} {...this.state} />
                     </div>
                 </div>
                 { error }

@@ -27,7 +27,7 @@ class ProjectOptionsMenu extends React.Component {
             {text: 'UPDATE', onTouchTap: this.handleUpdateButton.bind(this)},
             {text: 'CANCEL'}
         ];
-        let iconButtonElement = <a href="#"><i className="material-icons">settings</i></a>;
+        let iconButtonElement = <a href="#"><i className="material-icons mdl-color-text--grey-800">more_vert</i></a>;
 
         return (
             <div>
@@ -36,6 +36,8 @@ class ProjectOptionsMenu extends React.Component {
                     title="Are you sure you want to delete this project?"
                     actions={deleteActions}
                     ref="deleteProject">
+                    <i className="material-icons" style={styles.warning}>warning</i>
+                    <p style={styles.msg}>Deleting this project will also delete any folders or files contained inside of the project.</p>
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
@@ -67,6 +69,7 @@ class ProjectOptionsMenu extends React.Component {
                 <IconMenu iconButtonElement={iconButtonElement}>
                     <MenuItem primaryText="Delete Project" onTouchTap={this.handleTouchTapDelete.bind(this)}/>
                     <MenuItem primaryText="Edit Project" onTouchTap={this.handleTouchTapEdit.bind(this)}/>
+                    <MenuItem primaryText="Member Management"/>
                 </IconMenu>
             </div>
         );
@@ -81,8 +84,8 @@ class ProjectOptionsMenu extends React.Component {
     }
 
     handleDeleteButton() {
-        let currentPath = this.props.params.id;
-        ProjectListActions.deleteProject(currentPath, this.refs.deleteProject.dismiss(
+        let id = this.props.params.id;
+        ProjectListActions.deleteProject(id, this.refs.deleteProject.dismiss(
             setTimeout(()=>this.props.appRouter.transitionTo('/home'),500)
         ));
     }
@@ -97,7 +100,6 @@ class ProjectOptionsMenu extends React.Component {
                 floatingErrorText: 'This field is required.',
                 floatingErrorText2: 'This field is required'
             }));
-            ProjectListActions.showDetails(id);
             this.refs.editProject.dismiss();
         }
     };
@@ -128,6 +130,15 @@ var styles = {
     textStyles: {
         textAlign: 'left',
         fontColor: '#303F9F'
+    },
+    msg: {
+        textAlign: 'center',
+        marginLeft: 30
+    },
+    warning: {
+        fontSize: 48,
+        textAlign: 'center',
+        color: '#F44336'
     }
 };
 

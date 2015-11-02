@@ -27,7 +27,44 @@ var FileStore = Reflux.createStore ({
             error: msg,
             loading: false
         })
+    },
+    deleteFile() {
+        this.trigger({
+            loading: true
+        })
+    },
+    deleteFileSuccess() {
+        FileActions.loadFiles();
+        this.trigger({
+            loading: false
+        })
+    },
+    deleteFileError() {
+        let errMsg = error && error.message ? "Error: " : + 'An error occurred while trying to delete this file.';
+        this.trigger({
+            error: errMsg,
+            loading: false
+        });
+    },
+    editFile() {
+        this.trigger({
+            loading: true
+        })
+    },
+    editFileSuccess() {
+        FileActions.loadFiles();
+        this.trigger({
+            loading: false
+        })
+    },
+    editFileError() {
+        let errMsg = error && error.message ? "Error: " : + 'An error occurred while trying to delete this file.';
+        this.trigger({
+            error: errMsg,
+            loading: false
+        });
     }
+
 });
 
 export default FileStore;

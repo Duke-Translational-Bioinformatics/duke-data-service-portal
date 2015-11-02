@@ -20,6 +20,7 @@ var FolderActions = Reflux.createActions ([
 
 FolderActions.loadFolders.preEmit = function () {
     let url = mockUrl + 'db';
+    //let url = "https://dds-dev.duhs.duke.edu/duke_authentication_service/api/v1/folders";
     fetch(url)
         .then(function(response) {
             return response.json()

@@ -7,9 +7,6 @@ var ProjectStore = Reflux.createStore({
     init() {
         this.listenToMany(ProjectListActions);
         this.projects = [];
-        this.toastState = null;
-        this.ref = '';
-        this.msg = '';
         this.project = [];
     },
 
@@ -94,11 +91,16 @@ var ProjectStore = Reflux.createStore({
     },
 
     deleteProject() {
-
+        this.trigger({
+            loading: true
+        })
     },
 
     deleteProjectSuccess() {
         ProjectListActions.loadProjects();
+        this.trigger({
+            loading: false
+        })
     },
 
     deleteProjectError() {
@@ -109,16 +111,17 @@ var ProjectStore = Reflux.createStore({
         });
     },
 
-    editProject() {
+    editProject(id) {
+        ProjectListActions.showDetails(id);
         this.trigger({
-            editProjectLoading: true
+            loading: true
         })
     },
 
     editProjectSuccess() {
         ProjectListActions.loadProjects();
         this.trigger({
-            addProjectLoading: false
+            loading: false
         })
     },
 

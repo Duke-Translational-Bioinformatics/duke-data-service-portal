@@ -1,6 +1,7 @@
 import React from 'react';
 import { RouteHandler, Link } from 'react-router';
 import Header from '../components/globalComponents/header.jsx';
+import Footer from '../components/globalComponents/footer.jsx';
 import LeftMenu from '../components/globalComponents/leftMenu.jsx';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions';
@@ -24,7 +25,7 @@ class App extends React.Component {
             appConfig: MainStore.appConfig,
             apiToken: cookie.load('apiToken'),
             currentUser: cookie.load('currentUser'),
-            isLoggingIn: cookie.load('isLoggingIn'),
+            isLoggingIn: cookie.load('isLoggingIn')
         }
     }
 
@@ -63,12 +64,30 @@ class App extends React.Component {
         let toasts = null;
         if (this.state.toasts) {
             toasts = this.state.toasts.map(obj => {
-                return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} autoHideDuration={1500} openOnMount={true}/>
+                return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} autoHideDuration={1500}
+                                 openOnMount={true}/>
             });
         }
         let content = <RouteHandler {...this.props} {...this.state}/>;
         if (!this.state.appConfig.apiToken && !this.state.isLoggingIn && this.props.routerPath !== '/login') {
             this.props.appRouter.transitionTo('/login');
+        }
+        let search = '';
+        if (this.props.routerPath === '/home') {
+            search = <form className="searchbar" action="#">
+                <div className="searchbar-input">
+                    <a href="#" className="searchbar-clear"></a>
+                </div>
+                <a href="#" className="searchbar-cancel">Cancel</a>
+            </form>
+        } else {
+            search = <form className="searchbar" action="#">
+                <div className="searchbar-input">
+                    <input type="search" placeholder="Search" style={styles.searchBar}/>
+                    <a href="#" className="searchbar-clear"></a>
+                </div>
+                <a href="#" className="searchbar-cancel">Cancel</a>
+            </form>
         }
         return (
             <span>
@@ -81,13 +100,7 @@ class App extends React.Component {
 
                         <div className="pages navbar-through toolbar-through">
                             <div data-page="index" className="page">
-                                {!this.state.appConfig.apiToken ? '' : <form className="searchbar" action="#">
-                                    <div className="searchbar-input">
-                                        <input type="search" placeholder="Search" style={styles.searchBar}/>
-                                        <a href="#" className="searchbar-clear"></a>
-                                    </div>
-                                    <a href="#" className="searchbar-cancel">Cancel</a>
-                                </form>}
+                                {!this.state.appConfig.apiToken ? '' : search}
                                 <div className="searchbar-overlay"></div>
                                 <div className="page-content">
                                     {content}
@@ -96,6 +109,7 @@ class App extends React.Component {
                             </div>
                         </div>
                     </div>
+                    <Footer {...this.props} {...this.state}/>
                 </div>
             </span>
         );
@@ -114,7 +128,8 @@ class App extends React.Component {
 var styles = {
     searchBar: {
         width: '50vw',
-        margin: '0 auto'
+        margin: '0 auto',
+        fontSize: '.9em'
     },
     loginWrapper: {
         width: '90vw',
@@ -126,12 +141,8 @@ var styles = {
     }
 }
 
-App
-    .
-    childContextTypes = {
+App.childContextTypes = {
     muiTheme: React.PropTypes.object
 };
 
-export
-default
-App;
+export default App;

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router';
 import cookie from 'react-cookie';
+import FileOptionsMenu from './fileOptionsMenu.jsx';
+import urlGen from '../../../util/urlGen.js';
 
 var mui = require('material-ui'),
     TextField = mui.TextField,
@@ -20,29 +22,29 @@ class FileDetails extends React.Component {
             <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
 
         return (
-            <div>
-                <div className="account-overview mdl-grid mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800"
-                    style={styles.container}>
-                    <button
-                        className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab mdl-button--colored"
-                        style={styles.floatingButton}>
-                        <i className="material-icons">get_app</i>
-                    </button>
+            <div className="project-container mdl-grid mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800"
+                 style={styles.container}>
+                <button
+                    className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab mdl-button--colored"
+                    style={styles.floatingButton}>
+                    <i className="material-icons">get_app</i>
+                </button>
+                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                        <Link to={'/folder/' + this.props.params.id} className="mdl-color-text--grey-800"
-                              style={styles.back}><i className="material-icons" style={styles.backIcon}>keyboard_backspace</i>Back</Link>
+                        <a href={urlGen.routes.baseUrl + 'folder/' + this.props.params.id}
+                           className="mdl-color-text--grey-800 external"
+                           style={styles.back}>
+                            <i className="material-icons" style={styles.backIcon}>keyboard_backspace</i>Back
+                        </a>
+                    </div>
+                    <div style={styles.menuIcon}>
+                        <FileOptionsMenu {...this.props} />
                     </div>
                     <div className="mdl-cell mdl-cell--12-col" style={styles.detailsTitle}>
-                        <span className="mdl-color-text--grey-800" style={styles.breadcrumbs}>Test Project 123
-                            <i className="material-icons mdl-color-text--grey-600" style={styles.moreIcon}>keyboard_arrow_right</i>
-                            <span className="mdl-color-text--grey-600" style={styles.folderName}><a href="#">KOMP
-                                Data</a></span><i className="material-icons mdl-color-text--grey-600"
-                                                  style={styles.moreIcon}>keyboard_arrow_right</i>
-                            <span className="mdl-color-text--grey-600" style={styles.folderName}>KOMP Data</span>
-                        </span>
+                            <span className="mdl-color-text--grey-800" style={styles.breadcrumbs}>Test Project 123</span>
                     </div>
                     <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.details}>
-                        <span style={styles.spanTitle}>Test File 123</span>
+                        <span style={styles.spanTitle}>KOMP Data</span>
                     </div>
                     <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.details}>
                         <span style={styles.span}>Created By: Jon Doe</span>
@@ -63,7 +65,7 @@ class FileDetails extends React.Component {
                         <span style={styles.span}>SHA-1: 123-123123-123-1231</span>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.detailsButton}>
-                        <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
+                        <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored" style={styles.detailsButton}
                                 onClick={this.handleTouchTapDetails.bind(this)}>
                             {!this.state.showDetails ? 'FILE HISTORY' : 'HIDE HISTORY'}
                         </button>
@@ -73,12 +75,12 @@ class FileDetails extends React.Component {
                             { this.state.showDetails ? <Details className={this.state.newClass}/> : null }
                         </div>
                     </div>
-                    { loading }
-                    { error }
-                </div><!--end of grid div-->
-
+                </div>
+                { loading }
+                { error }
             </div>
-        );
+        )
+            ;
     }
 
     handleTouchTapDetails() {
@@ -89,11 +91,14 @@ class FileDetails extends React.Component {
         }
     }
 }
-
+//<button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
+//        onClick={this.handleTouchTapDetails.bind(this)}>
+//    {!this.state.showDetails ? 'FILE HISTORY' : 'HIDE HISTORY'}
+//</button>
 
 var styles = {
     container: {
-        marginTop: 24,
+        marginTop: 30,
         position: 'relative',
         overflow: 'visible',
         padding: '10px 0px 10px 0px'
@@ -101,7 +106,8 @@ var styles = {
     details: {
         textAlign: 'left',
         float: 'left',
-        marginLeft: 8
+        marginLeft: 8,
+        marginTop: 20
     },
     summary: {
         float: 'left',
@@ -110,7 +116,8 @@ var styles = {
     detailsButton: {
         align: 'center',
         clear: 'both',
-        textAlign: 'center'
+        textAlign: 'center',
+        marginBottom: -10
     },
     textStyles: {
         textAlign: 'left'
@@ -161,6 +168,10 @@ var styles = {
     },
     fullView: {
         float: 'right'
+    },
+    menuIcon: {
+        float: 'right',
+        marginTop: 10
     }
 };
 
@@ -183,4 +194,10 @@ export default FileDetails;
 //</button>
 //<div className="project-container mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800"
 //style={styles.container}>
-//</div>
+//</div>color-text--grey-600" style={styles.folderName}>KOMP Data</span>
+//
+//<i className="material-icons mdl-color-text--grey-600" style={styles.moreIcon}>keyboard_arrow_right</i>
+//<span className="mdl-color-text--grey-600" style={styles.folderName}><a href="#" className="mdl-color-text--grey-600">KOMP
+//    Data</a></span><i className="material-icons mdl-color-text--grey-600"
+//                      style={styles.moreIcon}>keyboard_arrow_right</i>
+//<span className="mdl-color-text--grey-600" style={styles.folderName}>KOMP Data</span>

@@ -5,6 +5,7 @@ import FolderActions from '../../actions/folderActions';
 import FolderStore from '../../stores/folderStore';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
 import Header from '../../components/globalComponents/header.jsx';
+import urlGen from '../../../util/urlGen.js';
 var mui = require('material-ui'),
     TextField = mui.TextField,
     Dialog = mui.Dialog,
@@ -27,7 +28,9 @@ class ProjectContents extends React.Component {
         let folders = this.props.folders.map((folder) => {
             return (
                 <tr key={ folder.id }>
-                    <td className="mdl-data-table__cell--non-numeric"><i className="material-icons" style={styles.icon}>folder</i><Link to={"/folder/" + folder.id} className="mdl-color-text--grey-800">{ folder.name }</Link>
+                    <td className="mdl-data-table__cell--non-numeric">
+                        <i className="material-icons mdl-color-text--grey-800" style={styles.icon}>folder</i>
+                        <a href={urlGen.routes.baseUrl + "folder/" + folder.id} className="mdl-color-text--grey-800 external" onClick={this.addBreadCrumb()}>{ folder.name }</a>
                     </td>
                     <td style={styles.tableText}>{ folder.id }</td>
                 </tr>
@@ -67,6 +70,9 @@ class ProjectContents extends React.Component {
     handleTouchTap() {
         this.refs.addFolder.show();
     }
+    addBreadCrumb() {
+
+    }
 }
 
 ProjectContents.contextTypes = {
@@ -76,7 +82,8 @@ ProjectContents.contextTypes = {
 var styles = {
     table: {
         width: '100%',
-        margin: '0 auto'
+        margin: '0 auto',
+        overflow: 'visible'
     },
     tableText: {
         textAlign: 'left'

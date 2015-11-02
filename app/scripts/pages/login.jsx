@@ -50,14 +50,14 @@ class Login extends React.Component {
                 content = this.state.error
             }
             else if (this.state.asValidateLoading || this.state.ddsApiTokenLoading) {
-                content = (<div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader"></div>);
+                content = (<div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader" style={styles.loader}></div>);
             }
             else if (this.state.signedInfo) {
                 MainActions.getDdsApiToken(this.state.appConfig, this.state.signedInfo);
             }
             else if (accessToken) {
                 MainActions.authenticationServiceValidate(this.state.appConfig, accessToken);
-                MainActions.getCurrentUser(accessToken);
+                MainActions.getCurrentUser(this.state.appConfig, accessToken);
             }
         } else {
             this.props.appRouter.transitionTo('/home');
@@ -82,8 +82,8 @@ var styles = {
         padding: 10,
         marginTop: 80
     },
-    loginMessage: {
-
+    loader: {
+        margin: '0 auto'
     }
 };
 

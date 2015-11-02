@@ -7,9 +7,11 @@ import FolderStore from '../stores/folderStore';
 import FileStore from '../stores/fileStore';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions';
+import cookie from 'react-cookie';
 
 let mui = require('material-ui'),
-    Snackbar = mui.Snackbar;
+    Snackbar = mui.Snackbar,
+    Dialog = mui.Dialog;
 
 class Home extends React.Component {
 
@@ -19,9 +21,11 @@ class Home extends React.Component {
             projects: ProjectStore.projects,
             files: FileStore.files,
             folders: FolderStore.folders,
-            loading: false
+            loading: false,
+            modalOpen: cookie.load('modalOpen')
         };
     }
+
 
     componentDidMount() {
         let id = this.props.params.id;
@@ -34,14 +38,54 @@ class Home extends React.Component {
     }
 
     render() {
+        let standardActions = [
+            {text: 'ACCEPT', onTouchTap: this.handleAcceptButton.bind(this)},
+            {text: 'DECLINE', onTouchTap: this.handleDeclineButton.bind(this)}
+        ];
+        let modal = (
+                <Dialog
+                    style={styles.dialogStyles}
+                    title="Terms of Use - Protected Health Information"
+                    actions={standardActions}
+                    ref="phi"
+                    openImmediately={this.state.modalOpen}
+                    modal={true}>
+                    <div style={{height: '300px'}}>
+                        <p style={styles.main}><b>The Health Insurance Portability and Accountability Act of 1996 (HIPAA) established standards
+                            for health information that must be kept private and secure, called Protected Health Information
+                            (PHI).</b><br/>The use of PHI within Duke Data Service is prohibited. By clicking “accept” below, you
+                            attest that you will not enter PHI. If you are unclear about what constitutes PHI, or are
+                            uncertain about the nature of the data you use, click “decline” and contact the Duke University
+                            IT Security Office (security@duke.edu) for further information.</p>
+                    </div>
+                </Dialog>
+        );
+
         return (
             <div>
                 <AccountOverview { ...this.state } { ...this.props } />
                 <ProjectList { ...this.state } { ...this.props } />
+                {modal}
             </div>
         );
     }
+    handleAcceptButton() {
+        this.refs.phi.dismiss(MainActions.closePhiModal(), ProjectListActions.loadProjects());
+    }
+    handleDeclineButton() {
+        MainStore.handleLogout();
+    }
 }
+
+var styles = {
+    dialogStyles: {
+        textAlign: 'center',
+        fontColor: '#303F9F'
+    },
+    main: {
+        textAlign: 'left'
+    }
+};
 
 
 export default Home;

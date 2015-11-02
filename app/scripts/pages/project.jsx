@@ -36,7 +36,6 @@ class Project extends React.Component {
     render() {
         return (
             <div>
-                <!--<RouteHandler {...this.props} {...this.state} />-->
                 <ProjectDetails {...this.props} {...this.state} />
                 <ProjectContents {...this.props} {...this.state} />
             </div>

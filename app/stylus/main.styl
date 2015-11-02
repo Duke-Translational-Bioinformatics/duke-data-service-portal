@@ -11,7 +11,7 @@ html
 button
 input
 select
-textarea 
+textarea
   color: $black
 
 a
@@ -20,16 +20,20 @@ a:visited
   text-decoration: none
 
 a:hover
-  color: lighten($linkColor,10%)
+  color: lighten($linkColor, 10%)
 
 body
   color: $black
   font-size: 1em
   line-height: 1.5
 
-//.content
-//  padding: .5em
-//  margin: 0px auto
+.content
+  padding-top 100px
+
+.group:after
+  content: "";
+  display: table;
+  clear: both;
 
 .account-overview
   max-width: 1200px
@@ -39,7 +43,78 @@ body
   max-width: 1230px
   margin: 0 auto
 
+.preview-container
+  max-width: 1260px
+  margin: 0 auto
 
+  //Breadcrumb CSS
 
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  #breadcrumbs {
+    overflow: auto;
+    width: 100%;
+  }
 
+#breadcrumbs li {
+  float: left;
+  margin: 0 .5em .5em .8em;
+}
 
+#breadcrumbs a {
+  background: #ddd;
+  padding: 0 1em;
+  float: left;
+  text-decoration: none;
+  color: #444;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+  position: relative;
+}
+
+#breadcrumbs a:hover {
+  background: #5ac8fa;
+}
+
+#breadcrumbs a::before,
+#breadcrumbs a::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1em;
+  background: #ddd;
+  transform: skew(-10deg);
+}
+
+#breadcrumbs a::before {
+
+  left: -.5em;
+  border-radius: 5px 0 0 5px;
+}
+
+#breadcrumbs a:hover::before {
+  background: #5ac8fa;
+}
+
+#breadcrumbs a::after {
+  right: -.5em;
+  border-radius: 0 5px 5px 0;
+}
+
+#breadcrumbs a:hover::after {
+  background: #5ac8fa;
+}
+
+#breadcrumbs .current,
+#breadcrumbs .current:hover {
+  font-weight: bold;
+  background: none;
+}
+
+#breadcrumbs .current::after,
+#breadcrumbs .current::before {
+  content: normal;
+}

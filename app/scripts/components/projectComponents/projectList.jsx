@@ -4,6 +4,7 @@ import ProjectListActions from '../../actions/projectListActions';
 import AccountOverview from '../../components/globalComponents/accountOverview.jsx';
 import Header from '../../components/globalComponents/header.jsx';
 import AddProjectModal from '../projectComponents/addProjectModal.jsx';
+import urlGen from '../../../util/urlGen.js';
 
 let mui = require('material-ui'),
     Table = mui.Table,
@@ -27,7 +28,12 @@ class ProjectList extends React.Component {
                         <div key={ project.id } style={styles.cardSquare} className="card mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
                             <div className="mdl-card__title mdl-card--expand">
                                 <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>content_paste</i>
-                                <Link to={"/project/" + project.id}><h1 className="mdl-card__title-text content mdl-color-text--grey-800" style={styles.cardHeader}>{ project.name }</h1></Link>
+                                <a href={urlGen.routes.baseUrl + "project/" + project.id} className="external">
+                                    <h1 className="mdl-card__title-text mdl-color-text--grey-800"
+                                    style={styles.cardHeader}
+                                    onTouchTap={this.handleTouchTap.bind(this, project.id)}
+                                    projectId={project.id}>{ project.name }</h1>
+                                </a>
                             </div>
                             <div className="mdl-card__supporting-text mdl-color-text--grey-800">
                                 <p>ID: {project.id}</p>
@@ -37,6 +43,7 @@ class ProjectList extends React.Component {
                     );
                 }
             });
+
 
         let loading = this.props.loading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
         let addProjectLoading = this.props.addProjectLoading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
@@ -55,6 +62,9 @@ class ProjectList extends React.Component {
                     { projects }
                 </div>
         );
+    }
+    handleTouchTap(id){
+        ProjectListActions.showDetails(id);
     }
 }
 

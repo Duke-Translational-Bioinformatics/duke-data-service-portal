@@ -1,6 +1,6 @@
 import React from 'react';
-import FolderActions from '../../actions/folderActions';
-import FolderStore from '../../stores/folderStore';
+import FileActions from '../../actions/fileActions';
+import FileStore from '../../stores/fileStore';
 var mui = require('material-ui'),
     TextField = mui.TextField,
     IconMenu = mui.IconMenu,
@@ -9,12 +9,11 @@ var mui = require('material-ui'),
 
 let MenuItem = require('material-ui/lib/menus/menu-item');
 
-class FolderOptionsMenu extends React.Component {
+class FileOptionsMenu extends React.Component {
 
     constructor() {
         this.state = {
-            floatingErrorText: 'This field is required.',
-            floatingErrorText2: 'This field is required'
+            floatingErrorText: 'This field is required.'
         }
     }
 
@@ -28,68 +27,65 @@ class FolderOptionsMenu extends React.Component {
             {text: 'CANCEL'}
         ];
         let iconButtonElement = <a href="#"><i className="material-icons mdl-color-text--grey-800">more_vert</i></a>;
-        let loading = this.props.loading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
+
         return (
             <div>
                 <Dialog
                     style={styles.dialogStyles}
-                    title="Are you sure you want to delete this folder?"
+                    title="Are you sure you want to delete this file?"
                     actions={deleteActions}
-                    ref="deleteFolder">
-                    <i className="material-icons" style={styles.warning}>warning</i>
-                    <p style={styles.msg}>Deleting this folder will also delete any folders or files contained inside of this folder.</p>
+                    ref="deleteFile">
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
-                    title="Update Folder"
+                    title="Update File Name"
                     actions={editActions}
-                    ref="editFolder">
-                    <form action="#" id="newFolderForm">
+                    ref="editFile">
+                    <form action="#" id="editFileForm">
                         <TextField
                             style={styles.textStyles}
-                            hintText="Folder Name"
+                            hintText="Project Name"
                             errorText={this.state.floatingErrorText}
-                            floatingLabelText="Folder Name"
-                            id="folderNameText"
+                            floatingLabelText="File Name"
+                            id="fileNameText"
                             type="text"
                             multiLine={true}
                             onChange={this.handleFloatingErrorInputChange.bind(this)}/> <br/>
                     </form>
                 </Dialog>
                 <IconMenu iconButtonElement={iconButtonElement}>
-                    <MenuItem primaryText="Delete Folder" onTouchTap={this.handleTouchTapDelete.bind(this)}/>
-                    <MenuItem primaryText="Edit Folder" onTouchTap={this.handleTouchTapEdit.bind(this)}/>
+                    <MenuItem primaryText="Delete File" onTouchTap={this.handleTouchTapDelete.bind(this)}/>
+                    <MenuItem primaryText="Edit File" onTouchTap={this.handleTouchTapEdit.bind(this)}/>
                 </IconMenu>
             </div>
         );
     }
 
     handleTouchTapDelete() {
-        this.refs.deleteFolder.show();
+        this.refs.deleteFile.show();
     }
 
     handleTouchTapEdit() {
-        this.refs.editFolder.show();
+        this.refs.editFile.show();
     }
 
     handleDeleteButton() {
-        let currentPath = this.props.params.id;
-        let ref = 'snackbarDelete';
-        FolderActions.deleteFolder(currentPath, ref, this.refs.deleteFolder.dismiss(
-            setTimeout(()=>this.props.appRouter.transitionTo('/project/' + currentPath),500)
+        let id = this.props.params.id;
+        FileActions.deleteFile(id, this.refs.deleteFile.dismiss(
+            setTimeout(()=>this.props.appRouter.transitionTo('/folder/' + id),500)
         ));
     }
 
+
     handleUpdateButton() {
-        let currentPath = this.props.params.id;
-        let ref = 'snackbarUpdate';
-        if (this.state.floatingErrorText) {
+        let id = this.props.params.id;
+        if (this.state.floatingErrorText != '') {
             return null
         } else {
-            FolderActions.editFolder(currentPath, this.setState({
+            FileActions.editFile(id, this.setState({
                 floatingErrorText: 'This field is required.'
             }));
-            this.refs.editFolder.dismiss();
+            this.refs.editFile.dismiss();
         }
     };
 
@@ -98,16 +94,9 @@ class FolderOptionsMenu extends React.Component {
             floatingErrorText: e.target.value ? '' : 'This field is required.'
         });
     }
-
-    handleFloatingErrorInputChange2(e) {
-        this.setState({
-            floatingErrorText2: e.target.value ? '' : 'This field is required.'
-        });
-    }
-
 }
 var styles = {
-    addFolder: {
+    deleteFile: {
         float: 'right',
         position: 'relative',
         margin: '12px 8px 0px 0px'
@@ -119,17 +108,8 @@ var styles = {
     textStyles: {
         textAlign: 'left',
         fontColor: '#303F9F'
-    },
-    msg: {
-        textAlign: 'left',
-        marginLeft: 30
-    },
-    warning: {
-        fontSize: 48,
-        textAlign: 'center',
-        color: '#F44336'
     }
 };
 
-export default FolderOptionsMenu;
+export default FileOptionsMenu;
 

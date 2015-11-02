@@ -14,10 +14,12 @@ var MainStore = Reflux.createStore({
         this.asValidateLoading = false;
         this.ddsApiTokenLoading = false;
         this.appConfig.apiToken = cookie.load('apiToken');
+        this.apiToken = cookie.load('apiToken');
         this.signedInfo = null;
         this.isLoggingIn = cookie.load('isLoggingIn');
-        this.dialog = null;
         this.toasts = [];
+        this.modalOpen = cookie.load('modalOpen');
+        this.breadCrumbs = [];
     },
 
     authenticationServiceValidate(appConfig, accessToken) {
@@ -79,7 +81,7 @@ var MainStore = Reflux.createStore({
             appConfig: this.appConfig
         });
     },
-    getCurrentUserSuccess (currentUser) {
+    getCurrentUserSuccess (currentUser, appConfig) {
         this.currentUser = currentUser;
         cookie.save('currentUser', this.currentUser);
         this.trigger({
@@ -95,8 +97,10 @@ var MainStore = Reflux.createStore({
     isLoggedInHandler() {
         this.isLoggingIn = true;
         cookie.save('isLoggingIn', this.isLoggingIn);
+        cookie.save('modalOpen', this.modalOpen);
         this.trigger({
-            isLoggingIn: this.isLoggingIn
+            isLoggingIn: this.isLoggingIn,
+            modalOpen: this.modalOpen
         });
     },
     handleLogout () {
@@ -129,6 +133,39 @@ var MainStore = Reflux.createStore({
         }
         this.trigger({
             toasts: this.toasts
+        })
+    },
+
+    closePhiModal() {
+        let expiresAt = new Date(Date.now() + (7 * 24 * 60 * 60 * 1000));
+        this.modalOpen = false;
+        cookie.save('modalOpen', this.modalOpen, {expires: expiresAt});
+        this.trigger({
+            modalOpen: this.modalOpen
+        })
+    },
+
+    addBreadCrumbs(url) {
+        this.breadCrumbs.push({
+            url: url,
+            id: '',
+            name: '',
+            ref: 'breadCrumb' + Math.floor(Math.random()*10000)
+        });
+        this.trigger({
+            breadCrumbs: this.breadCrumbs
+        });
+    },
+
+    removeBreadCrumbs(refId) {
+        for(let i=0; i < this.breadCrumbs.length; i++){
+            if (this.breadCrumbs[i].ref === refId) {
+                this.breadCrumbs.splice(i, 1);
+                break;
+            }
+        }
+        this.trigger({
+            breadCrumbs: this.breadCrumbs
         })
     }
 

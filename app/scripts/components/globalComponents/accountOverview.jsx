@@ -63,7 +63,7 @@ var styles = {
         marginTop: -10,
         marginBottom: -10,
         float: 'left',
-        paddingLeft: 14
+        paddingLeft: 8
     },
     overviewContainer: {
         marginTop: 20,

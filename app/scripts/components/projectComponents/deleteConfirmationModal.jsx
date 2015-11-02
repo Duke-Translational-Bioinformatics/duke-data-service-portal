@@ -32,11 +32,8 @@ class DeleteConfirmationModal extends React.Component {
                         title="Are you sure you want to delete this project?"
                         actions={standardActions}
                         ref="deleteProject">
+                        Deleting this project will also delete any folders or files contained inside of the project.
                     </Dialog>
-                    <Snackbar
-                        ref="snackbar"
-                        message= "Project Deleted!"
-                        autoHideDuration={1500}/>
                 </div>
             </div>
         );
