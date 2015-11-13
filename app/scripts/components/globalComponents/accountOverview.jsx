@@ -1,7 +1,5 @@
 import React from 'react';
-import ProjectListActions from '../../actions/projectListActions';
-import FolderActions from '../../actions/folderActions';
-import FileActions from '../../actions/fileActions';
+import ProjectActions from '../../actions/projectActions';
 var mui = require('material-ui');
 
 class AccountOverview extends React.Component {

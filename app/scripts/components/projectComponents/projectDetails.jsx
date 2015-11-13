@@ -1,11 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router';
-import ProjectListActions from '../../actions/projectListActions';
+import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import MainActions from '../../actions/mainActions';
 import MainStore from '../../stores/mainStore';
-import FolderActions from '../../actions/folderActions';
-import FolderStore from '../../stores/folderStore';
 import ProjectOptionsMenu from './projectOptionsMenu.jsx';
 import CurrentUser from '../../components/globalComponents/currentUser.jsx';
 import cookie from 'react-cookie';
@@ -22,30 +20,18 @@ class ProjectDetails extends React.Component {
     constructor() {
         this.state = {
             showDetails: false,
-            currentUser: cookie.load('currentUser'),
             project: ProjectStore.project,
-            projects: ProjectStore.projects
+            audit: ProjectStore.audit
         }
-    }
-
-    componentDidMount() {
-        let id = this.props.params.id;  //Todo: Need to fix this. Needs to get ID of project
-        this.unsubscribe = ProjectStore.listen(state => this.setState(state));
-        ProjectListActions.showDetails(id);
-    }
-
-    componentWillUnmount() {
-        this.unsubscribe();
     }
 
     render() {
         let id = this.props.params.id;
-        let currentUser = cookie.load('currentUser').map((user)=> {
-            return <span key={user.id}>{user.first_name + " " + user.last_name}</span>
-        });
-        let details = this.state.project.map((detail) => { //TODO: Fix this!!!!
-            return detail.name;
-        });
+        let details = this.props.project;
+        let auditDetails = this.props.audit;
+        let createdOn = ProjectStore.createdOn;
+        let createdBy = ProjectStore.createdBy;
+        let projectName = details.name;
 
         let error = '';
 
@@ -66,17 +52,21 @@ class ProjectDetails extends React.Component {
                         <ProjectOptionsMenu {...this.props} />
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                        <a href={urlGen.routes.baseUrl + 'home'} style={styles.back} className="external mdl-color-text--grey-800"><i className="material-icons mdl-color-text--grey-800" style={styles.backIcon}>keyboard_backspace</i>Back</a>
+                        <a href={urlGen.routes.baseUrl + 'home'} style={styles.back}
+                           className="external mdl-color-text--grey-800"><i
+                            className="material-icons mdl-color-text--grey-800" style={styles.backIcon}>keyboard_backspace</i>Back</a>
                     </div>
-                    <div className="mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet mdl-cell--4-col-phone"
+                    <div className="mdl-cell mdl-cell--3-col mdl-cell--4-col-tablet mdl-cell--4-col-phone"
                          style={styles.detailsTitle}>
-                        <h4>{details}</h4>
+                        <h4>{ projectName }</h4>
                     </div>
-                    <div className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.details}>
-                        <p><span style={styles.span}>Created By:</span> {currentUser}</p>
+                    <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.details}>
+                        <p><span className="mdl-color-text--grey-900"
+                                 style={styles.span}>Created By:</span> { createdBy } </p>
                     </div>
-                    <div className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.details}>
-                        <p><span style={styles.span}>Created On:</span> 7/30/2015</p>
+                    <div className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.details2}>
+                        <p><span className="mdl-color-text--grey-900"
+                                 style={styles.span}>Created On:</span> { createdOn } </p>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.detailsButton}>
                         <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
@@ -86,7 +76,7 @@ class ProjectDetails extends React.Component {
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                         <div style={styles.moreDetails} className={!this.state.showDetails ? 'less' : 'more'}>
-                            { this.state.showDetails ? <Details className={this.state.newClass}/> : null }
+                            { this.state.showDetails ? <Details {...this.props}/> : null }
                         </div>
                     </div>
                 </div>
@@ -110,22 +100,68 @@ var Details = React.createClass({
         return {}
     },
     render() {
+        let description = ProjectStore.project.description;
+        let projectId = ProjectStore.project.id;
+        let lastUpdatedOn = ProjectStore.lastUpdatedOn;
+        let lastUpdatedBy = ProjectStore.lastUpdatedBy;
+        let users = ProjectStore.projectMembers;
+        console.log(users[1].user.id);
+
+        let members = ProjectStore.projectMembers.map((users)=> {
+            return <li key={users.user.id}>
+                <div className="item-content">
+                    <div className="item-media"><i className="material-icons">face</i></div>
+                    <div className="item-inner">
+                        <div className="item-title">{users.user.full_name}</div>
+                        <div className="item-after"><a href="#" onTouchTap={this.handleTouchTap()}>
+                            <i className="material-icons" style={styles.deleteIcon}>cancel</i></a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        });
         return (
             <div>
-                <h5>Project Members</h5>
-                <ul>
-                    <li>Jon</li>
-                    <li>Darin</li>
-                    <li>Darrin</li>
-                    <li>Casey</li>
-                </ul>
-                <p>Placeholder for additional project details. Placeholder for additional project details. Placeholder
-                    for additional project details and other things.</p>
+                <div className="list-block">
+                    <ul>
+                        <li className="item-divider">Project ID</li>
+                        <li className="item-content">
+                            <div className="item-inner">
+                                <div className="item-title">{ projectId }</div>
+                            </div>
+                        </li>
+                        <li className="item-divider">Last Updated By</li>
+                        <li className="item-content">
+                            <div className="item-inner">
+                                <div className="item-title">{ lastUpdatedBy }</div>
+                            </div>
+                        </li>
+                        <li className="item-divider">Last Updated On</li>
+                        <li className="item-content">
+                            <div className="item-inner">
+                                <div className="item-title">{ lastUpdatedOn }</div>
+                            </div>
+                        </li>
+                        <li className="item-divider">Description</li>
+                        <li className="item-content">
+                            <div className="item-inner">
+                                <div>{ description }</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
 
-                <p>Placeholder for additional project details. Placeholder for additional project details. Placeholder
-                    for additional project details and other things.</p>
+                <div className="list-block">
+                    <ul>
+                        <li className="item-divider">Project Members</li>
+                        { members }
+                    </ul>
+                </div>
             </div>
         )
+    },
+    handleTouchTap(userId){
+        console.log(userId);
     }
 });
 
@@ -139,14 +175,28 @@ var styles = {
     },
     detailsTitle: {
         textAlign: 'left',
-        marginTop: -16,
+        marginTop: -15,
         float: 'left',
-        marginLeft: 5
+        marginLeft: 8
     },
     details: {
         textAlign: 'left',
         float: 'left',
-        marginLeft: -3
+        marginLeft: 7,
+        marginTop: 16
+    },
+    details2: {
+        textAlign: 'left',
+        float: 'left',
+        marginLeft: 7,
+        marginRight: -20,
+        marginTop: 16
+    },
+    deleteIcon: {
+        fontSize: 18,
+        color: '#F44336',
+        verticalAlign: -5
+
     },
     summary: {
         float: 'left',
@@ -155,7 +205,7 @@ var styles = {
     detailsButton: {
         align: 'center',
         clear: 'both',
-        textAlign: 'center'
+        textAlign: 'right'
     },
     textStyles: {
         textAlign: 'left'

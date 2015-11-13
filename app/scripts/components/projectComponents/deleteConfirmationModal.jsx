@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import ProjectListActions from '../../actions/projectListActions';
+import ProjectActions from '../../actions/projectActions';
 
 let MenuItem = require('material-ui/lib/menus/menu-item');
 
@@ -41,7 +41,7 @@ class DeleteConfirmationModal extends React.Component {
 
     handleDeleteButton() {
             this.refs.snackbar.show();
-            ProjectListActions.deleteProject();
+            ProjectActions.deleteProject();
             this.refs.deleteProject.dismiss(
             );
     }

@@ -2,7 +2,7 @@ import React from 'react';
 import { RouteHandler, Link } from 'react-router';
 import MainStore from '../../stores/mainStore';
 import MainActions from '../../actions/mainActions';
-import ProjectListActions from '../../actions/projectListActions';
+import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import cookie from 'react-cookie';
 
@@ -56,7 +56,7 @@ class NavChildren extends React.Component {
 
     handleDeleteButton() {
         new Framework7().closePanel();
-        ProjectListActions.deleteProject();
+        ProjectActions.deleteProject();
         this.refs.deleteProject.dismiss();
     }
 }

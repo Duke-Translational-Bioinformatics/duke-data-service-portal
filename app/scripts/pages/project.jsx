@@ -1,10 +1,8 @@
 import React from 'react';
 import { RouteHandler } from 'react-router';
-import ProjectListActions from '../actions/projectListActions';
+import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
-import FolderActions from '../actions/folderActions';
-import FolderStore from '../stores/folderStore';
-import ProjectContents from '../components/projectComponents/projectContents.jsx';
+import ProjectChildren from '../components/projectComponents/projectChildren.jsx';
 import ProjectDetails from '../components/projectComponents/projectDetails.jsx';
 import Header from '../components/globalComponents/header.jsx';
 
@@ -16,17 +14,21 @@ class Project extends React.Component {
 
     constructor(props) {
         super(props);
+        this.props = props;
         this.state = {
-            folders: FolderStore.folders,
+            children: ProjectStore.children,
             projects: ProjectStore.projects,
+            project: ProjectStore.project,
             loading: false
         };
     }
 
     componentDidMount() {
         let id = this.props.params.id;
-        this.unsubscribe = FolderStore.listen(state => this.setState(state));
-        FolderActions.loadFolders(id);
+        this.unsubscribe = ProjectStore.listen(state => this.setState(state));
+        ProjectActions.loadProjectChildren(id);
+        ProjectActions.showDetails(id);
+        ProjectActions.getProjectMembers(id);
     }
 
     componentWillUnmount() {
@@ -37,7 +39,7 @@ class Project extends React.Component {
         return (
             <div>
                 <ProjectDetails {...this.props} {...this.state} />
-                <ProjectContents {...this.props} {...this.state} />
+                <ProjectChildren {...this.props} {...this.state} />
             </div>
         );
     }

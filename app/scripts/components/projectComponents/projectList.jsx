@@ -1,6 +1,6 @@
 import React from 'react';
 import { RouteHandler, Link } from 'react-router';
-import ProjectListActions from '../../actions/projectListActions';
+import ProjectActions from '../../actions/projectActions';
 import AccountOverview from '../../components/globalComponents/accountOverview.jsx';
 import Header from '../../components/globalComponents/header.jsx';
 import AddProjectModal from '../projectComponents/addProjectModal.jsx';
@@ -31,7 +31,6 @@ class ProjectList extends React.Component {
                                 <a href={urlGen.routes.baseUrl + "project/" + project.id} className="external">
                                     <h1 className="mdl-card__title-text mdl-color-text--grey-800"
                                     style={styles.cardHeader}
-                                    onTouchTap={this.handleTouchTap.bind(this, project.id)}
                                     projectId={project.id}>{ project.name }</h1>
                                 </a>
                             </div>
@@ -63,9 +62,6 @@ class ProjectList extends React.Component {
                 </div>
         );
     }
-    handleTouchTap(id){
-        ProjectListActions.showDetails(id);
-    }
 }
 
 ProjectList.contextTypes = {
@@ -76,7 +72,9 @@ var styles = {
     cardSquare: {
         height: 260,
         textAlign: 'left',
-        display: 'inline-block'
+        display: 'inline-block',
+        overflow: 'hidden',
+        padding: 10
     },
     icon: {
         fontSize: 36
@@ -94,7 +92,7 @@ ProjectList.propTypes = {
     addProjectLoading: React.PropTypes.bool,
     projects: React.PropTypes.array,
     error: React.PropTypes.string,
-    is_deleted: React.PropTypes.bool,
+    is_deleted: React.PropTypes.bool
 };
 
 export default ProjectList;

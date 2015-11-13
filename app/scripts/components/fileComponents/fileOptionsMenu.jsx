@@ -1,6 +1,6 @@
 import React from 'react';
-import FileActions from '../../actions/fileActions';
-import FileStore from '../../stores/fileStore';
+import ProjectActions from '../../actions/projectActions';
+import ProjectStore from '../../stores/projectStore';
 var mui = require('material-ui'),
     TextField = mui.TextField,
     IconMenu = mui.IconMenu,
@@ -71,7 +71,7 @@ class FileOptionsMenu extends React.Component {
 
     handleDeleteButton() {
         let id = this.props.params.id;
-        FileActions.deleteFile(id, this.refs.deleteFile.dismiss(
+        ProjectActions.deleteFile(id, this.refs.deleteFile.dismiss(
             setTimeout(()=>this.props.appRouter.transitionTo('/folder/' + id),500)
         ));
     }
@@ -82,7 +82,7 @@ class FileOptionsMenu extends React.Component {
         if (this.state.floatingErrorText != '') {
             return null
         } else {
-            FileActions.editFile(id, this.setState({
+            ProjectActions.editFile(id, this.setState({
                 floatingErrorText: 'This field is required.'
             }));
             this.refs.editFile.dismiss();

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router';
-import FolderActions from '../../actions/folderActions';
-import FolderStore from '../../stores/folderStore';
+import ProjectActions from '../../actions/projectActions';
+import ProjectStore from '../../stores/projectStore';
 import FolderOptionsMenu from './folderOptionsMenu.jsx';
 import urlGen from '../../../util/urlGen.js';
 
@@ -11,30 +11,30 @@ class FolderPath extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            folders: []
-        };
-    }
-
-    componentDidMount() {
-        this.unsubscribe = FolderStore.listen(state => this.setState(state));
-    }
-
-    componentWillUnmount() {
-        this.unsubscribe();
+            projectObj: ProjectStore.projectObj
+        }
     }
 
     render() {
-        let breadCrumbs = null;
-        if (this.state.breadCrumbs) {
-            breadCrumbs = this.state.breadCrumbs.map(obj => {
-                return <li key={obj.ref}><a href={obj.url + "/" + obj.id}>{obj.name}</a></li>
-            });
+        let id = this.props.params.id;
+        let details = ProjectStore.project;
+        let projectName = details.name;
+        let parentKind = ProjectStore.parentObj.kind;
+        let parentId = ProjectStore.parentObj.id;
+
+        let urlPath = '';
+        if (parentKind === 'dds-project') {
+            urlPath = 'project/'
+        } else {
+            urlPath = 'folder/'
         }
+
         return (
             <div className="project-container group mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800"
                  style={styles.container}>
-                <button className="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-button--colored"
-                        style={styles.floatingButton}>
+                <button
+                    className="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-button--colored"
+                    style={styles.floatingButton}>
                     <i className="material-icons">file_upload</i>
                 </button>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
@@ -42,11 +42,15 @@ class FolderPath extends React.Component {
                         <FolderOptionsMenu {...this.props} />
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                        <a href={urlGen.routes.baseUrl + 'project/' + this.props.params.id} className="mdl-color-text--grey-800 external"><i className="material-icons" style={styles.backIcon}>keyboard_backspace</i>Back</a>
+                        <a href={urlGen.routes.baseUrl + urlPath + parentId }
+                           className="mdl-color-text--grey-800 external"
+                           onTouchTap={this.handleTouchTap.bind(this, parentKind, parentId)}><i
+                            className="material-icons"
+                            style={styles.backIcon}>keyboard_backspace</i>Back</a>
                     </div>
                     <div className="mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet mdl-cell--4-col-phone"
                          style={styles.detailsTitle}>
-                        <h4>Test Project 123</h4>
+                        <h4>{projectName}</h4>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col" style={styles.breadcrumbs}>
                         <ul id="breadcrumbs">
@@ -59,13 +63,14 @@ class FolderPath extends React.Component {
             </div>
         );
     }
-    buildBreadCrumbs() {
-        if (this.state.breadCrumbs) {
-            this.state.breadCrumbs.map(obj => {
-                setTimeout(() => MainActions.removeBreadCrumbs(obj.ref), 1500);
-            });
-        }
 
+    handleTouchTap(parentKind, parentId) {
+        let id = parentId;
+        if (parentKind === 'dds-project') {
+            ProjectActions.loadProjectChildren(id);
+        } else {
+            ProjectActions.loadFolderChildren(id, ProjectActions.getParent(id));
+        }
     }
 }
 
@@ -82,7 +87,8 @@ var styles = {
     },
     detailsTitle: {
         textAlign: 'left',
-        float: 'left'
+        float: 'left',
+        marginTop: -20
     },
     breadcrumbs: {
         marginTop: -30,
@@ -113,10 +119,3 @@ var styles = {
 };
 
 export default FolderPath;
-
-//<span className="mdl-color-text--grey-800" style={styles.breadcrumbs}>Test Project 123
-//                            <i className="material-icons mdl-color-text--grey-600" style={styles.moreIcon}>keyboard_arrow_right</i>
-//                            <span className="mdl-color-text--grey-600" style={styles.folderName}>KOMP Data</span><i className="material-icons mdl-color-text--grey-600" style={styles.moreIcon}>keyboard_arrow_right</i>
-//                            <span className="mdl-color-text--grey-600" style={styles.folderName}>KOMP Data</span><i className="material-icons mdl-color-text--grey-600" style={styles.moreIcon}>keyboard_arrow_right</i>
-//                            <span className="mdl-color-text--grey-600" style={styles.folderName}>KOMP Data</span>
-//                        </span>

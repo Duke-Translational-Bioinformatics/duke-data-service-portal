@@ -16,8 +16,8 @@ var FolderStore = Reflux.createStore ({
             loading: true
         })
     },
-    loadFoldersSuccess(folders) {
-        this.folders = folders;
+    loadFoldersSuccess(results) {
+        this.folders = results;
         this.trigger({
             folders: this.folders,
             loading: false
@@ -36,8 +36,8 @@ var FolderStore = Reflux.createStore ({
         })
     },
 
-    addFolderSuccess() {
-        FolderActions.loadFolders();
+    addFolderSuccess(id) {
+        FolderActions.loadFolders(id);
         this.trigger({
             loading: false
         })
@@ -74,7 +74,7 @@ var FolderStore = Reflux.createStore ({
         })
     },
     editFolderSuccess() {
-        FolderActions.loadFolders();
+        //FolderActions.loadFolders();
         this.trigger({
             loading: false
         })

@@ -14,10 +14,10 @@ var FileStore = Reflux.createStore ({
             loading: true
         })
     },
-    loadFilesSuccess(files) {
-        this.files = files;
+    loadFilesSuccess(results) {
+        this.folderChildren = results;
         this.trigger({
-            files: this.files,
+            folderChildren: this.folderChildren,
             loading: false
         })
     },

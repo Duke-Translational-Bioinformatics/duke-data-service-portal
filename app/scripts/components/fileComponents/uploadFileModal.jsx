@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import FileActions from '../../actions/fileActions';
+import ProjectActions from '../../actions/projectActions';
 
 let mui = require('material-ui'),
     RaisedButton = mui.RaisedButton,
@@ -50,7 +50,7 @@ class UploadFileModal extends React.Component {
         if (this.state.floatingErrorText || this.state.floatingErrorText2) {
             return null
         } else {
-            FileActions.uploadFile(this.setState({
+            ProjectActions.uploadFile(this.setState({
                 floatingErrorText: 'This field is required.',
                 floatingErrorText2: 'This field is required'
             }));

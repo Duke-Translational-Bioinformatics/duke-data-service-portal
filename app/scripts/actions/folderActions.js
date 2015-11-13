@@ -1,9 +1,11 @@
 import Reflux from 'reflux';
 import MainActions from '../actions/mainActions';
+import MainStore from '../stores/mainStore';
+import urlGen from '../../util/urlGen.js';
 
 var mockUrl = 'http://localhost:3000/';
 
-var FolderActions = Reflux.createActions ([
+var FolderActions = Reflux.createActions([
     'loadFolders',
     'loadFoldersSuccess',
     'loadFoldersError',
@@ -16,81 +18,81 @@ var FolderActions = Reflux.createActions ([
     'editFolder',
     'editFolderSuccess',
     'editFolderError'
-])
+]);
 
-FolderActions.loadFolders.preEmit = function () {
-    let url = mockUrl + 'db';
-    //let url = "https://dds-dev.duhs.duke.edu/duke_authentication_service/api/v1/folders";
-    fetch(url)
-        .then(function(response) {
+FolderActions.loadFolders.preEmit = function (id) {
+    fetch(urlGen.routes.ddsUrl + 'projects/' + id + '/children', {
+        method: 'get',
+        headers: {
+            'Authorization': MainStore.appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    })
+        .then(function (response) {
             return response.json()
-        }).then(function(json) {
-            FolderActions.loadFoldersSuccess(json.folders)
-        }).catch(function(ex) {
+        }).then(function (json) {
+                FolderActions.loadFoldersSuccess(json.results)
+        }).catch(function (ex) {
             FolderActions.loadFoldersError(ex)
         })
 };
 
-FolderActions.addFolder.preEmit = function () {
-    fetch(mockUrl + 'folders/', {
+FolderActions.addFolder.preEmit = function (id) {
+    fetch(urlGen.routes.ddsUrl + 'folders/', {
         method: 'post',
         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Authorization': MainStore.appConfig.apiToken,
+            'Accept': 'application/json'
         },
         body: JSON.stringify({
-            //"kind": 'dds#folder',
             "name": document.getElementById('folderNameText').value,
-            //"description": document.getElementById('folderDescriptionText').value,
-            //"parent": {"id": parent},
-            //"Folder": {"id": parent},
-            "is_deleted": false
+            "parent": {
+                "kind": "dds-project",
+                "id": id
+            }
         })
-    }).then(function(response) {
+    }).then(function (response) {
         return response.json()
-    }).then(function(json) {
+    }).then(function (json) {
         MainActions.addToast('Folder Added');
-        FolderActions.addFolderSuccess()
-    }).catch(function(ex) {
+        FolderActions.addFolderSuccess(id)
+    }).catch(function (ex) {
         MainActions.addToast('Failed to Add a New Folder');
         FolderActions.addFolderError(ex)
     })
 };
 
-FolderActions.deleteFolder.preEmit = function (currentPath, ref) {
-    let url = mockUrl + 'folders/' + currentPath;
-    fetch(url, {
+FolderActions.deleteFolder.preEmit = function (id, ref) {
+    fetch(urlGen.routes.ddsUrl + 'folders/' + id, {
         method: 'delete'
-    }).then(function(response) {
+    }).then(function (response) {
         return response.json()
-    }).then(function(json) {
+    }).then(function (json) {
         MainActions.addToast('Folder Deleted!');
         FolderActions.deleteFolderSuccess(ref)
-    }).catch(function(ex) {
+    }).catch(function (ex) {
         MainActions.addToast('Folder Deleted Failed!');
         FolderActions.deleteFolderError(ex)
     });
 };
 
-FolderActions.editFolder.preEmit = function (currentPath) {
-    let url = mockUrl + 'folders/' + currentPath;
-    fetch(url, {
+FolderActions.editFolder.preEmit = function (id) {
+    fetch(urlGen.routes.ddsUrl + 'folders/' + id + '/rename', {
         method: 'put',
         headers: {
+            'Authorization': MainStore.appConfig.apiToken,
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
             "name": document.getElementById('folderNameText').value,
-            //"description": document.getElementById('folderDescriptionText').value,
-            "is_deleted": false
         })
-    }).then(function(response) {
+    }).then(function (response) {
         return response.json()
-    }).then(function(json) {
+    }).then(function (json) {
         MainActions.addToast('Folder Updated!');
         FolderActions.editFolderSuccess()
-    }).catch(function(ex) {
+    }).catch(function (ex) {
         MainActions.addToast('Failed to Update Folder');
         FolderActions.editFolderError(ex)
     });

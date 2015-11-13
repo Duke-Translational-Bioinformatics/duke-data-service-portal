@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router';
-import FolderActions from '../../actions/folderActions';
+import ProjectActions from '../../actions/projectActions';
+import ProjectStore from '../../stores/projectStore';
 
 let mui = require('material-ui'),
     RaisedButton = mui.RaisedButton,
@@ -12,12 +13,12 @@ class AddFolderModal extends React.Component {
 
     constructor() {
         this.state = {
-            floatingErrorText: 'This field is required.'
+            floatingErrorText: 'This field is required.',
+            parentObj: ProjectStore.parentObj
         }
     }
 
     render() {
-
         let standardActions = [
             {text: 'Submit', onTouchTap: this.handleFolderButton.bind(this)},
             {text: 'Cancel'}
@@ -57,13 +58,27 @@ class AddFolderModal extends React.Component {
     }
 
     handleFolderButton() {
-        let parent = this.props.params.id;
+            let kindString = this.props.appRouter.getCurrentPathname();
+            let start_pos = kindString.indexOf('/') + 1;
+            let end_pos = kindString.indexOf('/',start_pos);
+            let kind = kindString.substring(start_pos,end_pos);
+
         if (this.state.floatingErrorText) {
             return null
         } else {
-            FolderActions.addFolder(parent,this.setState({
-                floatingErrorText: 'This field is required.'
-            }));
+            if(kind === 'folder'){
+                let id = this.props.params.id;
+                let parentKind = 'dds-folder';
+                ProjectActions.addFolder(id, parentKind, this.setState({
+                    floatingErrorText: 'This field is required.'
+                }));
+            } else {
+                let id = this.props.params.id;
+                let parentKind = 'dds-project';
+                ProjectActions.addFolder(id, parentKind, this.setState({
+                    floatingErrorText: 'This field is required.'
+                }));
+            }
             this.refs.addFolder.dismiss();
         }
     }

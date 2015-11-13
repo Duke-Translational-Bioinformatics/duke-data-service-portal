@@ -25,7 +25,7 @@ class App extends React.Component {
             appConfig: MainStore.appConfig,
             apiToken: cookie.load('apiToken'),
             currentUser: cookie.load('currentUser'),
-            isLoggingIn: cookie.load('isLoggingIn')
+            isLoggingIn: cookie.load('isLoggingIn'),
         }
     }
 
@@ -53,7 +53,6 @@ class App extends React.Component {
     componentDidUpdate(prevProps, prevState) {
         this.showToasts();
     }
-
 
     createLoginUrl() {
         return this.state.appConfig.authServiceUri + "/authenticate?client_id=" + this.state.appConfig.serviceId + "&state=" + this.state.appConfig.securityState;

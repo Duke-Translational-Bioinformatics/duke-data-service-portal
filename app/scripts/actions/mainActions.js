@@ -1,4 +1,5 @@
 import Reflux from 'reflux';
+import urlGen from '../../util/urlGen.js';
 
 var mockUrl = 'http://localhost:3000/';//Todo: Change this. It is only used for getting the currentUser from json-server mock DB
 
@@ -18,7 +19,8 @@ var MainActions = Reflux.createActions([
     'removeToast',
     'closePhiModal',
     'addBreadCrumbs',
-    'removeBreadCrumbs'
+    'removeBreadCrumbs',
+    'handleLogout',
 ]);
 
 MainActions.authenticationServiceValidate.preEmit = (appConfig, accessToken) => {
@@ -63,18 +65,27 @@ MainActions.getDdsApiToken.preEmit = (appConfig, signedInfo) => {
     });
 };
 
-MainActions.getCurrentUser.preEmit = (appConfig, apiToken, currentUser) => {
-    let url = mockUrl + 'db';
-    fetch(url)
+MainActions.getCurrentUser.preEmit = (apiToken) => {
+    fetch(urlGen.routes.ddsUrl + 'current_user', {
+        method: 'get',
+        headers: {
+            'Authorization': apiToken,
+            'Accept': 'application/json'
+        }
+    })
         .then(function (response) {
             return response.json()
         }).then(function (json) {
-            MainActions.getCurrentUserSuccess(json.current_user)
+            MainActions.getCurrentUserSuccess(json)
         })
         .catch(function (ex) {
             MainActions.getCurrentUserError(ex)
         });
 };
+
+MainActions.handleLogout.preEmit = () => {
+
+}
 
 
 export default MainActions;

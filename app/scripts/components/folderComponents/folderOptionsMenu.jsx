@@ -1,6 +1,6 @@
 import React from 'react';
-import FolderActions from '../../actions/folderActions';
-import FolderStore from '../../stores/folderStore';
+import ProjectActions from '../../actions/projectActions';
+import ProjectStore from '../../stores/projectStore';
 var mui = require('material-ui'),
     TextField = mui.TextField,
     IconMenu = mui.IconMenu,
@@ -73,20 +73,24 @@ class FolderOptionsMenu extends React.Component {
     }
 
     handleDeleteButton() {
-        let currentPath = this.props.params.id;
+        let id = this.props.params.id;
+        let parentId = ProjectStore.parentObj.id;
+        let parentKind = ProjectStore.parentObj.kind;
         let ref = 'snackbarDelete';
-        FolderActions.deleteFolder(currentPath, ref, this.refs.deleteFolder.dismiss(
-            setTimeout(()=>this.props.appRouter.transitionTo('/project/' + currentPath),500)
+        if(parentKind === 'dds-project'){var urlPath = '/project/'} else {var urlPath = '/folder/'}
+        ProjectActions.deleteFolder(id, parentId, parentKind, urlPath, ref, this.refs.deleteFolder.dismiss(
+            setTimeout(()=>this.props.appRouter.transitionTo(urlPath + parentId),500)
         ));
     }
 
     handleUpdateButton() {
-        let currentPath = this.props.params.id;
+        let id = this.props.params.id;
+        let parentId = ProjectStore.parentObj.id;
         let ref = 'snackbarUpdate';
         if (this.state.floatingErrorText) {
             return null
         } else {
-            FolderActions.editFolder(currentPath, this.setState({
+            ProjectActions.editFolder(id, parentId, this.setState({
                 floatingErrorText: 'This field is required.'
             }));
             this.refs.editFolder.dismiss();

@@ -1,15 +1,17 @@
-import React from 'react'
+import React from 'react';
+import { RouteHandler } from 'react-router';
 import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
-import FileDetails from '../components/fileComponents/fileDetails.jsx';
-import FilePreview from '../components/fileComponents/filePreview.jsx';
-import FileProvenance from '../components/fileComponents/fileProvenance.jsx';
+import ProjectChildren from '../components/projectComponents/projectChildren.jsx';
+import MemberManagement from '../components/projectComponents/memberManagement.jsx';
 import Header from '../components/globalComponents/header.jsx';
 
-class File extends React.Component {
+
+class Members extends React.Component {
 
     constructor(props) {
         super(props);
+        this.props = props;
         this.state = {
 
         };
@@ -17,6 +19,7 @@ class File extends React.Component {
 
     componentDidMount() {
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
+        ProjectActions.getProjectMembers(id);
     }
 
     componentWillUnmount() {
@@ -24,15 +27,12 @@ class File extends React.Component {
     }
 
     render() {
-
         return (
             <div>
-                <FileDetails {...this.props} {...this.state} />
-                <FilePreview {...this.props} {...this.state} />
-                <FileProvenance {...this.props} {...this.state} />
+                <MemberManagement {...this.props} {...this.state} />
             </div>
         );
     }
 }
 
-export default File;
+export default Members;

@@ -2,9 +2,7 @@ import React from 'react';
 import ProjectList from '../components/projectComponents/projectList.jsx';
 import AccountOverview from '../components/globalComponents/accountOverview.jsx';
 import ProjectStore from '../stores/projectStore';
-import ProjectListActions from '../actions/projectListActions';
-import FolderStore from '../stores/folderStore';
-import FileStore from '../stores/fileStore';
+import ProjectActions from '../actions/projectActions';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions';
 import cookie from 'react-cookie';
@@ -19,8 +17,8 @@ class Home extends React.Component {
         super(props);
         this.state = {
             projects: ProjectStore.projects,
-            files: FileStore.files,
-            folders: FolderStore.folders,
+            files: ProjectStore.files,
+            folders: ProjectStore.folders,
             loading: false,
             modalOpen: cookie.load('modalOpen')
         };
@@ -30,7 +28,7 @@ class Home extends React.Component {
     componentDidMount() {
         let id = this.props.params.id;
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
-        ProjectListActions.loadProjects(id);
+        ProjectActions.loadProjects(id);
     }
 
     componentWillUnmount() {
@@ -70,7 +68,7 @@ class Home extends React.Component {
         );
     }
     handleAcceptButton() {
-        this.refs.phi.dismiss(MainActions.closePhiModal(), ProjectListActions.loadProjects());
+        this.refs.phi.dismiss(MainActions.closePhiModal(), ProjectActions.loadProjects());
     }
     handleDeclineButton() {
         MainStore.handleLogout();

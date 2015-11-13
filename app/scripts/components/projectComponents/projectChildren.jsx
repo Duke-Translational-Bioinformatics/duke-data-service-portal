@@ -1,10 +1,10 @@
 import React from 'react';
 import { RouteHandler, Link } from 'react-router';
-import FileActions from '../../actions/fileActions';
-import FileStore from '../../stores/fileStore';
-import FolderActions from '../../actions/folderActions';
-import FolderStore from '../../stores/folderStore';
-import UploadFileModal from './uploadFileModal.jsx';
+import ProjectDetails from './projectDetails.jsx';
+import ProjectActions from '../../actions/projectActions';
+import ProjectStore from '../../stores/projectStore';
+import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
+import Header from '../../components/globalComponents/header.jsx';
 import urlGen from '../../../util/urlGen.js';
 var mui = require('material-ui'),
     TextField = mui.TextField,
@@ -12,38 +12,30 @@ var mui = require('material-ui'),
     Checkbox = mui.Checkbox,
     Table = mui.Table;
 
-class FileList extends React.Component {
-
-    constructor() {
-        this.state = {
-            urlGen: this.urlGen,
-            files: [],
-            folders: []
-        };
-    }
+class ProjectChildren extends React.Component {
 
     render() {
-
         var error = '';
         if (this.props.error)
             error = (<h4>{this.props.error}</h4>);
-        let folders = this.props.folders.map((folder) => {
-            return (
-                <tr key={ folder.id }>
-                    <td className="mdl-data-table__cell--non-numeric"><i className="material-icons" style={styles.icon}>folder</i>
-                    </td>
-                    <td style={styles.tableText}>{ folder.id }</td>
-                </tr>
-            );
+
+        let kind = this.props.children.map((children) => {
+            if (children.kind === 'dds-folder') {
+                return true;
+            } else {
+                return false
+            }
         });
-        let files = this.props.files.map((folder) => {
+
+        let projectChildren = this.props.children.map((children) => {
             return (
-                <tr key={ folder.id }>
-                    <td className="mdl-data-table__cell--non-numeric"><i
-                        className="material-icons mdl-color-text--grey-800" style={styles.icon}>description</i>
-                        <a href={urlGen.routes.baseUrl + "file/" + folder.id} className="mdl-color-text--grey-800 external">{ folder.name }</a>
-                    </td>
-                    <td style={styles.tableText}>{ folder.id }</td>
+                <tr key={ children.id }>
+                        <td className="mdl-data-table__cell--non-numeric">
+                            <i className="material-icons mdl-color-text--grey-800" style={styles.icon}>{!kind ? 'description' : 'folder'}</i>
+                            <a href={!kind ? urlGen.routes.baseUrl + "file/" + children.id : urlGen.routes.baseUrl + "folder/" + children.id}
+                               className="mdl-color-text--grey-800 external">{ children.name }</a>
+                        </td>
+                        <td style={styles.tableText}>{ children.id }</td>
                 </tr>
             );
         });
@@ -58,12 +50,12 @@ class FileList extends React.Component {
             <div className="project-container">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.listTitle}>
                     <div style={styles.addFolder}>
-                        <UploadFileModal {...this.props} {...this.state} />
+                        <AddFolderModal {...this.props}/>
                     </div>
                 </div>
                 { error }
                 { loading }
-                <table className="mdl-data-table" style={styles.table}>
+                <table className="mdl-data-table mdl-data-table mdl-shadow--2dp" style={styles.table}>
                     <thead>
                     <tr>
                         <th className="mdl-data-table__cell--non-numeric" style={styles.tableText}>Name</th>
@@ -71,28 +63,23 @@ class FileList extends React.Component {
                     </tr>
                     </thead>
                     <tbody>
-                    {folders}
-                    { files }
+                    { projectChildren }
                     </tbody>
                 </table>
             </div>
         );
     }
-
-    handleTouchTap() {
-        this.refs.addFolder.show();
-    }
 }
 
-
-FileList.contextTypes = {
+ProjectChildren.contextTypes = {
     muiTheme: React.PropTypes.object
 };
 
 var styles = {
     table: {
         width: '100%',
-        margin: '0 auto'
+        margin: '0 auto',
+        overflow: 'visible'
     },
     tableText: {
         textAlign: 'left'
@@ -128,12 +115,12 @@ var styles = {
     }
 };
 
-FileList.propTypes = {
+ProjectChildren.propTypes = {
     loading: React.PropTypes.bool,
     projects: React.PropTypes.array,
     error: React.PropTypes.string,
     is_deleted: React.PropTypes.bool,
 };
 
-export default FileList;
+export default ProjectChildren;
 

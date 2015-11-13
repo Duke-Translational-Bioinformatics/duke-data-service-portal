@@ -57,12 +57,11 @@ class Login extends React.Component {
             }
             else if (accessToken) {
                 MainActions.authenticationServiceValidate(this.state.appConfig, accessToken);
-                MainActions.getCurrentUser(this.state.appConfig, accessToken);
             }
         } else {
+            //MainActions.getCurrentUser(this.state.appConfig);
             this.props.appRouter.transitionTo('/home');
         }
-
         return (
             <div>
                 <div className="content">

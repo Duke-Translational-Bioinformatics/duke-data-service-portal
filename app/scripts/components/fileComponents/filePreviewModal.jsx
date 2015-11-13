@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import FileActions from '../../actions/fileActions';
+import ProjectActions from '../../actions/projectActions';
 
 let mui = require('material-ui'),
     RaisedButton = mui.RaisedButton,
@@ -71,7 +71,7 @@ class FilePreviewModal extends React.Component {
         if (this.state.floatingErrorText || this.state.floatingErrorText2) {
             return null
         } else {
-            ProjectListActions.addProject(this.setState({
+            ProjectActions.addProject(this.setState({
                 floatingErrorText: 'This field is required.',
                 floatingErrorText2: 'This field is required'
             }));

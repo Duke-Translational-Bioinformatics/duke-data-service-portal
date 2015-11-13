@@ -1,6 +1,6 @@
 import Reflux from 'reflux';
 import MainActions from '../actions/mainActions';
-import appConfig from '../../lib/config';
+import appConfig from '../config';
 import cookie from 'react-cookie';
 
 var MainStore = Reflux.createStore({
@@ -10,6 +10,7 @@ var MainStore = Reflux.createStore({
 
     init() {
         this.currentUser = cookie.load('currentUser');
+        this.currentUser = {};
         this.appConfig = appConfig;
         this.asValidateLoading = false;
         this.ddsApiTokenLoading = false;
@@ -19,7 +20,6 @@ var MainStore = Reflux.createStore({
         this.isLoggingIn = cookie.load('isLoggingIn');
         this.toasts = [];
         this.modalOpen = cookie.load('modalOpen');
-        this.breadCrumbs = [];
     },
 
     authenticationServiceValidate(appConfig, accessToken) {
@@ -56,6 +56,7 @@ var MainStore = Reflux.createStore({
     getDdsApiTokenSuccess (apiToken) {
         this.appConfig.apiToken = apiToken;
         this.ddsApiTokenLoading = false;
+        MainActions.getCurrentUser(apiToken);
         this.trigger({
             ddsApiTokenLoading: this.ddsApiTokenLoading,
             appConfig: this.appConfig
@@ -75,14 +76,11 @@ var MainStore = Reflux.createStore({
             appConfig: this.appConfig
         });
     },
-    getCurrentUser (currentUser) {
-        this.appConfig.currentUser = currentUser;
-        this.trigger({
-            appConfig: this.appConfig
-        });
+    getCurrentUser () {
+       
     },
-    getCurrentUserSuccess (currentUser, appConfig) {
-        this.currentUser = currentUser;
+    getCurrentUserSuccess (json) {
+        this.currentUser = json;
         cookie.save('currentUser', this.currentUser);
         this.trigger({
             currentUser: this.currentUser
