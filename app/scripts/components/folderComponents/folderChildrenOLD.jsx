@@ -36,17 +36,16 @@ class FolderChildren extends React.Component {
 
             let folderChildren = this.props.children.map((children) => {
                 return (
-                    <li key={ children.id }>
-                        <a href={!kind ? urlGen.routes.baseUrl + "file/" + children.id : urlGen.routes.baseUrl + "folder/" + children.id} className="item-content external" onTouchTap={this.handleTouchTap.bind(this, kind, children.id)}>
-                            <div className="item-media"><i className="material-icons mdl-color-text--grey-800" style={styles.icon}>{!kind ? 'description' : 'folder'}</i></div>
-                            <div className="item-inner">
-                                <div className="item-title-row">
-                                    <div className="item-title mdl-color-text--grey-800">{ children.name }</div>
-                                </div>
-                                <div className="item-subtitle mdl-color-text--grey-600">ID: { children.id }</div>
-                            </div>
-                        </a>
-                    </li>
+                    <tr key={ children.id }>
+                        <td className="mdl-data-table__cell--non-numeric"><i
+                            className="material-icons mdl-color-text--grey-800"
+                            style={styles.icon}>{!kind ? 'description' : 'folder'}</i>
+                            <a href={!kind ? urlGen.routes.baseUrl + "file/" + children.id : urlGen.routes.baseUrl + "folder/" + children.id}
+                               className="mdl-color-text--grey-800 external"
+                               onTouchTap={this.handleTouchTap.bind(this, kind, children.id)}>{ children.name }</a>
+                        </td>
+                        <td style={styles.tableText}>{ children.id }</td>
+                    </tr>
                 );
             });
             let loading = this.props.loading ?
@@ -65,13 +64,17 @@ class FolderChildren extends React.Component {
                     </div>
                     { error }
                     { loading }
-                    <div className="mdl-cell mdl-cell--12-col content-block">
-                        <div className="list-block media-list">
-                            <ul>
-                                {folderChildren}
-                            </ul>
-                        </div>
-                    </div>
+                    <table className="mdl-data-table" style={styles.table}>
+                        <thead>
+                        <tr>
+                            <th className="mdl-data-table__cell--non-numeric" style={styles.tableText}>Name</th>
+                            <th style={styles.tableText}>ID</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {folderChildren}
+                        </tbody>
+                    </table>
                 </div>
             );
         }
@@ -100,7 +103,9 @@ var styles = {
         textAlign: 'left'
     },
     icon: {
-        fontSize: 36
+        fontSize: 24,
+        paddingRight: 5,
+        verticalAlign: -5
     },
     addFile: {
         float: 'right',

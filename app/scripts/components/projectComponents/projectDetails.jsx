@@ -105,7 +105,6 @@ var Details = React.createClass({
         let lastUpdatedOn = ProjectStore.lastUpdatedOn;
         let lastUpdatedBy = ProjectStore.lastUpdatedBy;
         let users = ProjectStore.projectMembers;
-        console.log(users[1].user.id);
 
         let members = ProjectStore.projectMembers.map((users)=> {
             return <li key={users.user.id}>
@@ -113,7 +112,7 @@ var Details = React.createClass({
                     <div className="item-media"><i className="material-icons">face</i></div>
                     <div className="item-inner">
                         <div className="item-title">{users.user.full_name}</div>
-                        <div className="item-after"><a href="#" onTouchTap={this.handleTouchTap()}>
+                        <div className="item-after"><a href="#" onTouchTap={() => this.handleTouchTap(users.user.id, users.user.full_name)}>
                             <i className="material-icons" style={styles.deleteIcon}>cancel</i></a>
                         </div>
                     </div>
@@ -160,8 +159,9 @@ var Details = React.createClass({
             </div>
         )
     },
-    handleTouchTap(userId){
-        console.log(userId);
+    handleTouchTap(userId, userName){
+        let id = this.props.params.id;
+        ProjectActions.deleteProjectMember(id, userId, userName);
     }
 });
 

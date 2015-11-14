@@ -56,7 +56,7 @@ class FolderOptionsMenu extends React.Component {
                             onChange={this.handleFloatingErrorInputChange.bind(this)}/> <br/>
                     </form>
                 </Dialog>
-                <IconMenu iconButtonElement={iconButtonElement}>
+                <IconMenu iconButtonElement={iconButtonElement} style={styles.zInd}>
                     <MenuItem primaryText="Delete Folder" onTouchTap={this.handleTouchTapDelete.bind(this)}/>
                     <MenuItem primaryText="Edit Folder" onTouchTap={this.handleTouchTapEdit.bind(this)}/>
                 </IconMenu>
@@ -116,9 +116,13 @@ var styles = {
         position: 'relative',
         margin: '12px 8px 0px 0px'
     },
+    zInd: {
+        zIndex: '9999'
+    },
     dialogStyles: {
         textAlign: 'center',
-        fontColor: '#303F9F'
+        fontColor: '#303F9F',
+        zIndex: '9999'
     },
     textStyles: {
         textAlign: 'left',

@@ -10,8 +10,7 @@ class CurrentUser extends React.Component {
         super(props);
         this.state = {
             appConfig: MainStore.appConfig,
-            currentUser: cookie.load('currentUser'),
-            //currentUser: MainStore.currentUser
+            currentUser: MainStore.currentUser
         }
     }
 
@@ -20,16 +19,13 @@ class CurrentUser extends React.Component {
             return null
         }
         else if (this.state.appConfig.apiToken) {
-            //let currentUser = this.props.currentUser.map((user) => {
-            //    return (
-            //        <span style={styles.currentUser} key={user.id}>{user.username}</span>
-            //    );
-            //});
+            let user = cookie.load('currentUser');
+            let currentUser = user.first_name;
             return (
                 <span>
                     <i className="material-icons" style={styles.icon}>account_box</i>
-
-                    </span>
+                    <span style={styles.currentUser}>{currentUser}</span>
+                </span>
             );
         }
     }
@@ -37,7 +33,7 @@ class CurrentUser extends React.Component {
 
 var styles = {
     currentUser: {
-        fontSize: '.5em',
+        fontSize: '.6em',
         verticalAlign: -14,
         paddingRight: 10
     },
@@ -49,19 +45,3 @@ var styles = {
 };
 
 export default CurrentUser;
-//
-//let currentUser = cookie.load('currentUser').map((user) => {
-//    return (
-//        <span style={styles.currentUser} key={user.id}>{user.username}</span>
-//    );
-//});
-//let currentUser = this.props.currentUser.map((user) => {
-//    return (
-//        <span style={styles.currentUser} key={user.id}>{user.username}</span>
-//    );
-//});
-//return (
-//    <span>
-//                <i className="material-icons" style={styles.icon}>account_box</i>
-//        {currentUser}
-//            </span>

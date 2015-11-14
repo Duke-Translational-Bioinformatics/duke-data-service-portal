@@ -93,8 +93,9 @@ class AddFolderModal extends React.Component {
 let styles = {
     addFolder: {
         float: 'right',
+        zIndex: '9999',
         position: 'relative',
-        margin: '12px 8px 0px 0px'
+        margin: '10px 22px 0px 0px'
     },
     dialogStyles: {
         textAlign: 'center',

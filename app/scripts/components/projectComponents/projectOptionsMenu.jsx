@@ -1,11 +1,12 @@
 import React from 'react';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
+const Dialog = require('material-ui/lib/dialog');
 var mui = require('material-ui'),
     TextField = mui.TextField,
     IconMenu = mui.IconMenu,
-    Snackbar = mui.Snackbar,
-    Dialog = mui.Dialog;
+    Snackbar = mui.Snackbar;
+    //Dialog = mui.Dialog;
 
 let MenuItem = require('material-ui/lib/menus/menu-item');
 
@@ -13,10 +14,8 @@ class ProjectOptionsMenu extends React.Component {
 
     constructor() {
         this.state = {
-            floatingErrorText: 'This field is required.',
-            floatingErrorText2: 'This field is required',
-            floatingErrorText3: 'This field is required.',
-            floatingErrorText4: 'This field is required'
+            floatingErrorText: 'This field is required',
+            floatingErrorText2: 'This field is required'
         }
     }
 
@@ -27,11 +26,11 @@ class ProjectOptionsMenu extends React.Component {
         ];
         let editActions = [
             {text: 'UPDATE', onTouchTap: this.handleUpdateButton.bind(this)},
-            {text: 'CANCEL'}
+            {text: 'CANCEL', onTouchTap: this.handleCancel.bind(this)}
         ];
         let memberActions = [
             {text: 'ADD', onTouchTap: this.handleMemberButton.bind(this)},
-            {text: 'CANCEL'}
+            {text: 'CANCEL', onTouchTap: this.handleCancel.bind(this)}
         ];
         let iconButtonElement = <a href="#"><i className="material-icons mdl-color-text--grey-800">more_vert</i></a>;
 
@@ -86,7 +85,7 @@ class ProjectOptionsMenu extends React.Component {
                             id="firstNameText"
                             type="text"
                             multiLine={true}
-                            onChange={this.handleFloatingErrorInputChange3.bind(this)}/><br/>
+                            onChange={this.handleFloatingErrorInputChange.bind(this)}/><br/>
                         <TextField
                             style={styles.textStyles}
                             hintText="Last Name Starts With"
@@ -95,16 +94,25 @@ class ProjectOptionsMenu extends React.Component {
                             id="lastNameText"
                             type="text"
                             multiLine={true}
-                            onChange={this.handleFloatingErrorInputChange4.bind(this)}/> <br/>
+                            onChange={this.handleFloatingErrorInputChange2.bind(this)}/> <br/>
                     </form>
                 </Dialog>
-                <IconMenu iconButtonElement={iconButtonElement}>
+                <IconMenu iconButtonElement={iconButtonElement} style={styles.dropDownMenu}>
                     <MenuItem primaryText="Delete Project" onTouchTap={this.handleTouchTapDelete.bind(this)}/>
                     <MenuItem primaryText="Edit Project" onTouchTap={this.handleTouchTapEdit.bind(this)}/>
                     <MenuItem primaryText="Member Management" onTouchTap={this.handleTouchTapMembers.bind(this)}/>
                 </IconMenu>
             </div>
         );
+    }
+
+    handleCancel() {
+            this.setState({
+                floatingErrorText: 'This field is required.',
+                floatingErrorText2: 'This field is required',
+            });
+            this.refs.editProject.dismiss();
+            this.refs.addMembers.dismiss();
     }
 
     handleTouchTapDelete() {
@@ -144,12 +152,12 @@ class ProjectOptionsMenu extends React.Component {
         let  firstName = document.getElementById("firstNameText").value;
         let  lastName = document.getElementById("lastNameText").value;
         let id = this.props.params.id;
-        if (this.state.floatingErrorText3 || this.state.floatingErrorText4 != '') {
+        if (this.state.floatingErrorText || this.state.floatingErrorText2 != '') {
             return null
         } else {
             ProjectActions.getUserId(firstName, lastName, id, this.setState({
-                floatingErrorText3: 'This field is required.',
-                floatingErrorText4: 'This field is required.'
+                floatingErrorText: 'This field is required.',
+                floatingErrorText3: 'This field is required.'
             }));
             this.refs.addMembers.dismiss();
         }
@@ -166,20 +174,6 @@ class ProjectOptionsMenu extends React.Component {
             floatingErrorText2: e.target.value ? '' : 'This field is required.'
         });
     }
-
-    handleFloatingErrorInputChange3(e) {
-        this.setState({
-            floatingErrorText3: e.target.value ? '' : 'This field is required.'
-        });
-    }
-
-    handleFloatingErrorInputChange4(e) {
-        this.setState({
-            floatingErrorText4: e.target.value ? '' : 'This field is required.'
-        });
-    }
-
-
 }
 var styles = {
     addProject: {
@@ -187,9 +181,13 @@ var styles = {
         position: 'relative',
         margin: '12px 8px 0px 0px'
     },
+    dropDownMenu: {
+        zIndex: '9999'
+    },
     dialogStyles: {
         textAlign: 'center',
-        fontColor: '#303F9F'
+        fontColor: '#303F9F',
+        zIndex: '9999'
     },
     textStyles: {
         textAlign: 'left',

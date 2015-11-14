@@ -233,12 +233,16 @@ body {
   max-width: 1260px;
   margin: 0 auto;
 }
-.preview-container ul {
+.list-container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.list-container ul {
   margin: 0;
   padding: 0;
   list-style: none;
 }
-.preview-container #breadcrumbs {
+.list-container #breadcrumbs {
   overflow: auto;
   width: 100%;
 }

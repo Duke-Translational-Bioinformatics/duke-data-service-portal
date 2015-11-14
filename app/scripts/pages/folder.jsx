@@ -11,7 +11,6 @@ class Folder extends React.Component {
         this.state = {
             children: ProjectStore.children,
             project: ProjectStore.project,
-            projectName: ProjectStore.projectName,
             loading: false
         };
     }

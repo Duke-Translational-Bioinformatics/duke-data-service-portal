@@ -4,23 +4,26 @@ import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import FolderOptionsMenu from './folderOptionsMenu.jsx';
 import urlGen from '../../../util/urlGen.js';
-
+import cookie from 'react-cookie';
 
 class FolderPath extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            projectObj: ProjectStore.projectObj
+            projectObj: ProjectStore.projectObj,
+            objName: ProjectStore.objName,
+            projName: cookie.load('projName')
         }
     }
 
     render() {
         let id = this.props.params.id;
         let details = ProjectStore.project;
-        let projectName = details.name;
         let parentKind = ProjectStore.parentObj.kind;
         let parentId = ProjectStore.parentObj.id;
+        let name = ProjectStore.objName;
+        let projectName = cookie.load('projName');
 
         let urlPath = '';
         if (parentKind === 'dds-project') {
@@ -52,12 +55,8 @@ class FolderPath extends React.Component {
                          style={styles.detailsTitle}>
                         <h4>{projectName}</h4>
                     </div>
-                    <div className="mdl-cell mdl-cell--12-col" style={styles.breadcrumbs}>
-                        <ul id="breadcrumbs">
-                            <li><a href="">Test Folder</a></li>
-                            <li><a href="">Test Folder 2</a></li>
-                            <li><a href="">Folder Inside Folder</a></li>
-                        </ul>
+                    <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.breadcrumbs}>
+                        <h5>{name}</h5>
                     </div>
                 </div>
             </div>

@@ -29,6 +29,7 @@ var MainStore = Reflux.createStore({
             appConfig: this.appConfig
         });
     },
+
     authenticationServiceValidateSuccess (signedInfo) {
         this.signedInfo = signedInfo;
         this.asValidateLoading = false;
@@ -38,6 +39,7 @@ var MainStore = Reflux.createStore({
         });
 
     },
+
     authenticationServiceValidateError (error) {
         let msg = error && error.message ? error.message : 'An error occurred.';
         this.trigger({
@@ -62,6 +64,7 @@ var MainStore = Reflux.createStore({
             appConfig: this.appConfig
         });
     },
+
     getDdsApiTokenError (error) {
         let msg = error && error.message ? error.message : 'An error occurred.';
         this.trigger({
@@ -69,6 +72,7 @@ var MainStore = Reflux.createStore({
             ddsValidateLoading: false
         });
     },
+
     setApiToken (apiToken) {
         this.appConfig.apiToken = apiToken;
         cookie.save('apiToken', this.appConfig.apiToken);
@@ -76,22 +80,26 @@ var MainStore = Reflux.createStore({
             appConfig: this.appConfig
         });
     },
+
     getCurrentUser () {
        
     },
-    getCurrentUserSuccess (json) {
-        this.currentUser = json;
+
+    getCurrentUserSuccess (json, currentUser) {
+        this.currentUser = currentUser;
         cookie.save('currentUser', this.currentUser);
         this.trigger({
             currentUser: this.currentUser
         });
     },
+
     getCurrentUserError (error) {
         let msg = error && error.message ? error.message : 'An error occurred.';
         this.trigger({
             error: msg
         });
     },
+
     isLoggedInHandler() {
         this.isLoggingIn = true;
         cookie.save('isLoggingIn', this.isLoggingIn);
@@ -101,6 +109,7 @@ var MainStore = Reflux.createStore({
             modalOpen: this.modalOpen
         });
     },
+
     handleLogout () {
         this.appConfig.apiToken = null;
         this.isLoggingIn = null;
@@ -112,6 +121,7 @@ var MainStore = Reflux.createStore({
         });
         location.reload();
     },
+
     addToast(msg) {
         this.toasts.push({
           msg: msg,

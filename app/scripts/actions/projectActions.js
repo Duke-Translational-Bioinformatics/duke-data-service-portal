@@ -2,6 +2,7 @@ import Reflux from 'reflux';
 import MainActions from '../actions/mainActions';
 import MainStore from '../stores/mainStore';
 import urlGen from '../../util/urlGen.js';
+import appConfig from '../config';
 import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.js';
 
 var mockUrl = 'http://localhost:3000/';
@@ -30,6 +31,9 @@ var ProjectActions = Reflux.createActions([
     'loadFolderChildren',
     'loadFolderChildrenSuccess',
     'loadFolderChildrenError',
+    'getFolderInfo',
+    'getFolderInfoSuccess',
+    'getFolderInfoError',
     'addFolder',
     'addFolderSuccess',
     'addFolderError',
@@ -69,7 +73,7 @@ ProjectActions.loadProjects.preEmit = function () {
     fetch(urlGen.routes.ddsUrl + 'projects/', {
         method: 'get',
         headers: {
-            'Authorization': MainStore.appConfig.apiToken,
+            'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
         }
     }).then(checkResponse).then(function (response) {
@@ -85,7 +89,7 @@ ProjectActions.loadProjectChildren.preEmit = function (id) {
     fetch(urlGen.routes.ddsUrl + 'projects/' + id + '/children', {
         method: 'get',
         headers: {
-            'Authorization': MainStore.appConfig.apiToken,
+            'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
         }
     }).then(checkResponse).then(function (response) {
@@ -101,7 +105,7 @@ ProjectActions.showDetails.preEmit = function (id) {
     fetch(urlGen.routes.ddsUrl + 'projects/' + id, {
         method: 'get',
         headers: {
-            'Authorization': MainStore.appConfig.apiToken,
+            'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
         }
     }).then(checkResponse).then(function (response) {
@@ -122,7 +126,7 @@ ProjectActions.addProject.preEmit = function () {
     fetch(urlGen.routes.ddsUrl + 'projects/', {
         method: 'post',
         headers: {
-            'Authorization': MainStore.apiToken,
+            'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
         },
         body: JSON.stringify({
@@ -144,7 +148,7 @@ ProjectActions.deleteProject.preEmit = function (id) {
     fetch(urlGen.routes.ddsUrl + 'projects/' + id, {
         method: 'delete',
         headers: {
-            'Authorization': MainStore.appConfig.apiToken,
+            'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
         }
     }).then(checkResponse).then(function (response) {
@@ -162,7 +166,7 @@ ProjectActions.editProject.preEmit = function (id) {
     fetch(urlGen.routes.ddsUrl + 'projects/' + id, {
         method: 'put',
         headers: {
-            'Authorization': MainStore.appConfig.apiToken,
+            'Authorization': appConfig.apiToken,
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
@@ -185,7 +189,7 @@ ProjectActions.loadFolderChildren.preEmit = function (id) {
     fetch(urlGen.routes.ddsUrl + 'folders/' + id + '/children', {
         method: 'get',
         headers: {
-            'Authorization': MainStore.appConfig.apiToken,
+            'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
         }
     }).then(checkResponse).then(function (response) {
@@ -196,12 +200,29 @@ ProjectActions.loadFolderChildren.preEmit = function (id) {
             ProjectActions.loadFolderChildrenError(ex)
         })
 };
+//Todo: Use it or remove it!!!!!!!!!!
+//ProjectActions.getFolderInfo.preEmit = function (id) {
+//    fetch(urlGen.routes.ddsUrl + 'folders/' + id, {
+//        method: 'get',
+//        headers: {
+//            'Authorization': MainStore.appConfig.apiToken,
+//            'Accept': 'application/json'
+//        }
+//    }).then(checkResponse).then(function (response) {
+//        return response.json()
+//    }).then(function (json) {
+//        ProjectActions.getFolderInfoSuccess(json.results)
+//    }).catch(function (ex) {
+//        ProjectActions.getFolderInfoError(ex)
+//    })
+//};
+
 
 ProjectActions.addFolder.preEmit = function (id, parentKind) {
     fetch(urlGen.routes.ddsUrl + 'folders/', {
         method: 'post',
         headers: {
-            'Authorization': MainStore.appConfig.apiToken,
+            'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
         },
         body: JSON.stringify({
@@ -226,7 +247,7 @@ ProjectActions.deleteFolder.preEmit = function (id, parentId, parentKind, ref) {
     fetch(urlGen.routes.ddsUrl + 'folders/' + id, {
         method: 'delete',
         headers: {
-            'Authorization': MainStore.appConfig.apiToken,
+            'Authorization': appConfig.apiToken,
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
@@ -245,7 +266,7 @@ ProjectActions.editFolder.preEmit = function (id) {
     fetch(urlGen.routes.ddsUrl + 'folders/' + id + '/rename', {
         method: 'put',
         headers: {
-            'Authorization': MainStore.appConfig.apiToken,
+            'Authorization': appConfig.apiToken,
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
@@ -267,7 +288,7 @@ ProjectActions.loadFiles.preEmit = function (id) {
     fetch(urlGen.routes.ddsUrl + 'folders/' + id + '/children', {
         method: 'get',
         headers: {
-            'Authorization': MainStore.appConfig.apiToken,
+            'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
         }
     }).then(checkResponse).then(function(response) {
@@ -321,13 +342,13 @@ ProjectActions.getParent.preEmit = (id) => {
     fetch(urlGen.routes.ddsUrl + 'folders/' + id, {
         method: 'get',
         headers: {
-            'Authorization': MainStore.apiToken,
+            'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
         }
     }).then(checkResponse).then(function (response) {
             return response.json()
         }).then(function (json) {
-            ProjectActions.getParentSuccess(json.parent)
+            ProjectActions.getParentSuccess(json.parent, json.name)
         })
         .catch(function (ex) {
             ProjectActions.getParentError(ex)
@@ -338,13 +359,12 @@ ProjectActions.getProjectMembers.preEmit = (id) => {
     fetch(urlGen.routes.ddsUrl + 'projects/' + id + '/permissions', {
         method: 'get',
         headers: {
-            'Authorization': MainStore.apiToken,
+            'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
         }
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        console.log('parsed: ' + json);
         ProjectActions.getProjectMembersSuccess(json.results)
     })
         .catch(function (ex) {
@@ -356,7 +376,7 @@ ProjectActions.getUserId.preEmit = (firstName, lastName, id) => {
     fetch(urlGen.routes.ddsUrl + 'users?' + 'last_name_begins_with=' + lastName + '&first_name_begins_with=' + firstName, {
         method: 'get',
         headers: {
-            'Authorization': MainStore.apiToken,
+            'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
         }
     }).then(checkResponse).then(function (response) {
@@ -374,7 +394,7 @@ ProjectActions.addProjectMember.preEmit = (id, userId) => {
     fetch(urlGen.routes.ddsUrl + 'projects/' + id + '/permissions/' + userId, {
         method: 'put',
         headers: {
-            'Authorization': MainStore.apiToken,
+            'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
         },
         body: JSON.stringify({
@@ -383,28 +403,30 @@ ProjectActions.addProjectMember.preEmit = (id, userId) => {
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        console.log('parsed: ' + json);
+        MainActions.addToast('New Member Added to Project');
         ProjectActions.addProjectMemberSuccess(id)
     })
         .catch(function (ex) {
+            MainActions.addToast('Could Not Add Member to Project or Member Does Not Exist');
             ProjectActions.addProjectMemberError(ex)
         });
 };
 
-ProjectActions.deleteProjectMember.preEmit = (id, userId) => {
+ProjectActions.deleteProjectMember.preEmit = (id, userId, userName) => {
     fetch(urlGen.routes.ddsUrl + 'projects/' + id + '/permissions/' + userId, {
         method: 'delete',
         headers: {
-            'Authorization': MainStore.apiToken,
+            'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
         },
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        console.log('parsed: ' + json);
-        ProjectActions.deleteProjectMemberSuccess(id)
+        MainActions.addToast(userName + ' ' + 'Has Been Removed From This Project');
+        ProjectActions.deleteProjectMemberSuccess(id, userId)
     })
         .catch(function (ex) {
+            MainActions.addToast('Unable to Remove ' + userName + ' From This Project');
             ProjectActions.deleteProjectMemberError(ex)
         });
 };

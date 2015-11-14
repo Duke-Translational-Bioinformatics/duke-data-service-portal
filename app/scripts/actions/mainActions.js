@@ -76,7 +76,8 @@ MainActions.getCurrentUser.preEmit = (apiToken) => {
         .then(function (response) {
             return response.json()
         }).then(function (json) {
-            MainActions.getCurrentUserSuccess(json)
+            let currentUser = json.username
+            MainActions.getCurrentUserSuccess(currentUser, json)
         })
         .catch(function (ex) {
             MainActions.getCurrentUserError(ex)

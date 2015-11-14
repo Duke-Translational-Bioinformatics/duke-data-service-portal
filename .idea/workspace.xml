@@ -2,46 +2,27 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0cf15d1e-a3ea-493c-832c-6467930d357e" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/build-and-copy.sh" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/scripts/components/projectComponents/memberManagement.jsx" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/scripts/pages/members.jsx" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/app/scripts/actions/fileActions.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/app/scripts/components/fileComponents/test.jsx" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/app/lib/config.js" afterPath="$PROJECT_DIR$/app/scripts/config.js" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/app/scripts/actions/projectListActions.js" afterPath="$PROJECT_DIR$/app/scripts/actions/projectActions.js" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/app/scripts/components/fileComponents/fileList.jsx" afterPath="$PROJECT_DIR$/app/scripts/components/folderComponents/folderChildren.jsx" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/app/scripts/components/projectComponents/projectContents.jsx" afterPath="$PROJECT_DIR$/app/scripts/components/projectComponents/projectChildren.jsx" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/scripts/components/folderComponents/folderChildrenOLD.jsx" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/scripts/components/globalComponents/popup.jsx" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/scripts/components/projectComponents/projectChildrenOld.jsx" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/components/globalComponents/accountOverview.jsx" afterPath="$PROJECT_DIR$/app/scripts/components/globalComponents/accountOverview.jsx" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/components/folderComponents/addFolderModal.jsx" afterPath="$PROJECT_DIR$/app/scripts/components/folderComponents/addFolderModal.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/components/projectComponents/addProjectModal.jsx" afterPath="$PROJECT_DIR$/app/scripts/components/projectComponents/addProjectModal.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/pages/app.jsx" afterPath="$PROJECT_DIR$/app/scripts/pages/app.jsx" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/components/globalComponents/currentUser.jsx" afterPath="$PROJECT_DIR$/app/scripts/components/globalComponents/currentUser.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/json-server-api/db.json" afterPath="$PROJECT_DIR$/json-server-api/db.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/components/projectComponents/deleteConfirmationModal.jsx" afterPath="$PROJECT_DIR$/app/scripts/components/projectComponents/deleteConfirmationModal.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/util/fetchUtil.js" afterPath="$PROJECT_DIR$/app/util/fetchUtil.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/pages/file.jsx" afterPath="$PROJECT_DIR$/app/scripts/pages/file.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/components/fileComponents/fileOptionsMenu.jsx" afterPath="$PROJECT_DIR$/app/scripts/components/fileComponents/fileOptionsMenu.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/components/fileComponents/filePreviewModal.jsx" afterPath="$PROJECT_DIR$/app/scripts/components/fileComponents/filePreviewModal.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/stores/fileStore.js" afterPath="$PROJECT_DIR$/app/scripts/stores/fileStore.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/pages/folder.jsx" afterPath="$PROJECT_DIR$/app/scripts/pages/folder.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/actions/folderActions.js" afterPath="$PROJECT_DIR$/app/scripts/actions/folderActions.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/components/folderComponents/folderChildren.jsx" afterPath="$PROJECT_DIR$/app/scripts/components/folderComponents/folderChildren.jsx" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/components/folderComponents/folderOptionsMenu.jsx" afterPath="$PROJECT_DIR$/app/scripts/components/folderComponents/folderOptionsMenu.jsx" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/components/folderComponents/folderPath.jsx" afterPath="$PROJECT_DIR$/app/scripts/components/folderComponents/folderPath.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/stores/folderStore.js" afterPath="$PROJECT_DIR$/app/scripts/stores/folderStore.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/pages/home.jsx" afterPath="$PROJECT_DIR$/app/scripts/pages/home.jsx" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/components/globalComponents/leftMenu.jsx" afterPath="$PROJECT_DIR$/app/scripts/components/globalComponents/leftMenu.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/pages/login.jsx" afterPath="$PROJECT_DIR$/app/scripts/pages/login.jsx" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dist/css/main.css" afterPath="$PROJECT_DIR$/dist/css/main.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dist/js/main.js" afterPath="$PROJECT_DIR$/dist/js/main.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/stylus/main.styl" afterPath="$PROJECT_DIR$/app/stylus/main.styl" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/actions/mainActions.js" afterPath="$PROJECT_DIR$/app/scripts/actions/mainActions.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/stores/mainStore.js" afterPath="$PROJECT_DIR$/app/scripts/stores/mainStore.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/components/globalComponents/navChildren.jsx" afterPath="$PROJECT_DIR$/app/scripts/components/globalComponents/navChildren.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/pages/project.jsx" afterPath="$PROJECT_DIR$/app/scripts/pages/project.jsx" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/actions/projectActions.js" afterPath="$PROJECT_DIR$/app/scripts/actions/projectActions.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/components/projectComponents/projectChildren.jsx" afterPath="$PROJECT_DIR$/app/scripts/components/projectComponents/projectChildren.jsx" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/components/projectComponents/projectDetails.jsx" afterPath="$PROJECT_DIR$/app/scripts/components/projectComponents/projectDetails.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/components/projectComponents/projectList.jsx" afterPath="$PROJECT_DIR$/app/scripts/components/projectComponents/projectList.jsx" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/components/projectComponents/projectOptionsMenu.jsx" afterPath="$PROJECT_DIR$/app/scripts/components/projectComponents/projectOptionsMenu.jsx" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/stores/projectStore.js" afterPath="$PROJECT_DIR$/app/scripts/stores/projectStore.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/components/fileComponents/uploadFileModal.jsx" afterPath="$PROJECT_DIR$/app/scripts/components/fileComponents/uploadFileModal.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/util/urlGen.js" afterPath="$PROJECT_DIR$/app/util/urlGen.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="duke-data-service-portal.iws" />
@@ -64,41 +45,80 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="projectActions.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/scripts/actions/projectActions.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="386" column="50" selection-start-line="386" selection-start-column="50" selection-end-line="386" selection-end-column="50" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="projectStore.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/scripts/stores/projectStore.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="390" column="6" selection-start-line="390" selection-start-column="6" selection-end-line="390" selection-end-column="6" />
+              <caret line="84" column="34" selection-start-line="84" selection-start-column="34" selection-end-line="84" selection-end-column="34" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="projectDetails.jsx" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/app/scripts/components/projectComponents/projectDetails.jsx">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.47792494">
-              <caret line="61" column="26" selection-start-line="61" selection-start-column="26" selection-end-line="61" selection-end-column="26" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="project.jsx" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/scripts/pages/project.jsx">
+      <file leaf-file-name="addFolderModal.jsx" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/scripts/components/folderComponents/addFolderModal.jsx">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="20" column="42" selection-start-line="20" selection-start-column="42" selection-end-line="20" selection-end-column="42" />
+              <caret line="92" column="14" selection-start-line="92" selection-start-column="14" selection-end-line="92" selection-end-column="14" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="projectList.jsx" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/scripts/components/projectComponents/projectList.jsx">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="50" column="50" selection-start-line="50" selection-start-column="50" selection-end-line="50" selection-end-column="58" />
+              <folding>
+                <marker date="1446866005000" expanded="true" signature="908:1947" placeholder="&lt;xml/&gt;" />
+                <marker date="1446866005000" expanded="true" signature="1052:1652" placeholder="&lt;xml/&gt;" />
+                <marker date="1446866005000" expanded="true" signature="1260:1617" placeholder="&lt;xml/&gt;" />
+                <marker date="1446866005000" expanded="true" signature="1376:1580" placeholder="&lt;xml/&gt;" />
+                <marker date="1446866005000" expanded="true" signature="1681:1916" placeholder="&lt;xml/&gt;" />
+                <marker date="1446866005000" expanded="true" signature="2321:2858" placeholder="&lt;xml/&gt;" />
+                <marker date="1446866005000" expanded="true" signature="2386:2698" placeholder="&lt;xml/&gt;" />
+                <marker date="1446866005000" expanded="true" signature="2504:2611" placeholder="&lt;xml/&gt;" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="folderOptionsMenu.jsx" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/scripts/components/folderComponents/folderOptionsMenu.jsx">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-7.5272727">
+              <caret line="58" column="64" selection-start-line="58" selection-start-column="64" selection-end-line="58" selection-end-column="83" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="folderChildren.jsx" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/scripts/components/folderComponents/folderChildren.jsx">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.26760563">
+              <caret line="80" column="20" selection-start-line="80" selection-start-column="20" selection-end-line="80" selection-end-column="20" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="projectChildren.jsx" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/scripts/components/projectComponents/projectChildren.jsx">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-7.8727274">
+              <caret line="41" column="21" selection-start-line="31" selection-start-column="16" selection-end-line="41" selection-end-column="21" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="folderChildrenOLD.jsx" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/scripts/components/folderComponents/folderChildrenOLD.jsx">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="149" column="0" selection-start-line="149" selection-start-column="0" selection-end-line="149" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -107,28 +127,18 @@
       <file leaf-file-name="projectOptionsMenu.jsx" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/scripts/components/projectComponents/projectOptionsMenu.jsx">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="111" column="5" selection-start-line="111" selection-start-column="5" selection-end-line="111" selection-end-column="5" />
+            <state vertical-scroll-proportion="-12.62963">
+              <caret line="170" column="0" selection-start-line="170" selection-start-column="0" selection-end-line="170" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="memberManagement.jsx" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/scripts/components/projectComponents/memberManagement.jsx">
+      <file leaf-file-name="projectChildrenOld.jsx" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/scripts/components/projectComponents/projectChildrenOld.jsx">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="24" column="55" selection-start-line="24" selection-start-column="55" selection-end-line="24" selection-end-column="55" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="members.jsx" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/scripts/pages/members.jsx">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="23" column="0" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
+            <state vertical-scroll-proportion="-5.181818">
+              <caret line="40" column="11" selection-start-line="40" selection-start-column="11" selection-end-line="40" selection-end-column="11" />
               <folding />
             </state>
           </provider>
@@ -154,13 +164,8 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/app/scripts/components/fileComponents/test.jsx" />
-        <option value="$PROJECT_DIR$/app/index.html" />
-        <option value="$PROJECT_DIR$/json-server-api/db.json" />
-        <option value="$PROJECT_DIR$/app/scripts/components/fileComponents/fileProvenance.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/components/fileComponents/filePreview.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/components/fileComponents/fileDetails.jsx" />
-        <option value="$PROJECT_DIR$/app/stylus/main.styl" />
         <option value="$PROJECT_DIR$/app/scripts/components/globalComponents/footer.jsx" />
         <option value="$PROJECT_DIR$/app/lib/config.js" />
         <option value="$PROJECT_DIR$/app/util/urlGen.js" />
@@ -177,34 +182,39 @@
         <option value="$PROJECT_DIR$/app/scripts/components/fileComponents/fileOptionsMenu.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/components/fileComponents/filePreviewModal.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/components/fileComponents/uploadFileModal.jsx" />
-        <option value="$PROJECT_DIR$/app/scripts/components/globalComponents/accountOverview.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/pages/home.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/components/fileComponents/fileList.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/components/projectComponents/projectContents.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/components/fileComponents/folderChildren.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/pages/login.jsx" />
-        <option value="$PROJECT_DIR$/app/scripts/components/globalComponents/currentUser.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/components/projectComponents/projectList.jsx" />
-        <option value="$PROJECT_DIR$/app/scripts/components/globalComponents/leftMenu.jsx" />
-        <option value="$PROJECT_DIR$/app/scripts/actions/mainActions.js" />
-        <option value="$PROJECT_DIR$/app/scripts/stores/mainStore.js" />
         <option value="$PROJECT_DIR$/app/util/fetchUtil.js" />
-        <option value="$PROJECT_DIR$/app/scripts/components/folderComponents/folderChildren.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/pages/app.jsx" />
-        <option value="$PROJECT_DIR$/app/scripts/components/folderComponents/addFolderModal.jsx" />
-        <option value="$PROJECT_DIR$/app/scripts/components/folderComponents/folderOptionsMenu.jsx" />
-        <option value="$PROJECT_DIR$/app/scripts/components/folderComponents/folderPath.jsx" />
-        <option value="$PROJECT_DIR$/app/scripts/pages/folder.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/components/projectComponents/test.js" />
-        <option value="$PROJECT_DIR$/app/scripts/components/projectComponents/projectChildren.jsx" />
-        <option value="$PROJECT_DIR$/app/scripts/components/projectComponents/projectOptionsMenu.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/pages/project.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/pages/members.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/components/projectComponents/memberManagement.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/routes.js" />
-        <option value="$PROJECT_DIR$/app/scripts/stores/projectStore.js" />
-        <option value="$PROJECT_DIR$/app/scripts/actions/projectActions.js" />
+        <option value="$PROJECT_DIR$/app/scripts/components/globalComponents/popup.jsx" />
+        <option value="$PROJECT_DIR$/app/scripts/components/globalComponents/accountOverview.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/components/projectComponents/projectDetails.jsx" />
+        <option value="$PROJECT_DIR$/app/scripts/config.js" />
+        <option value="$PROJECT_DIR$/app/scripts/pages/folder.jsx" />
+        <option value="$PROJECT_DIR$/app/scripts/actions/projectActions.js" />
+        <option value="$PROJECT_DIR$/app/scripts/stores/projectStore.js" />
+        <option value="$PROJECT_DIR$/app/scripts/actions/mainActions.js" />
+        <option value="$PROJECT_DIR$/app/scripts/stores/mainStore.js" />
+        <option value="$PROJECT_DIR$/app/scripts/components/globalComponents/currentUser.jsx" />
+        <option value="$PROJECT_DIR$/app/scripts/components/globalComponents/leftMenu.jsx" />
+        <option value="$PROJECT_DIR$/app/scripts/components/projectComponents/test.jsx" />
+        <option value="$PROJECT_DIR$/app/scripts/components/folderComponents/folderPath.jsx" />
+        <option value="$PROJECT_DIR$/app/scripts/components/projectComponents/projectChildren.jsx" />
+        <option value="$PROJECT_DIR$/app/stylus/main.styl" />
+        <option value="$PROJECT_DIR$/app/scripts/components/folderComponents/addFolderModal.jsx" />
+        <option value="$PROJECT_DIR$/app/scripts/components/folderComponents/folderChildrenOLD.jsx" />
+        <option value="$PROJECT_DIR$/app/scripts/components/folderComponents/folderOptionsMenu.jsx" />
+        <option value="$PROJECT_DIR$/app/scripts/components/projectComponents/projectOptionsMenu.jsx" />
+        <option value="$PROJECT_DIR$/app/scripts/components/folderComponents/folderChildren.jsx" />
       </list>
     </option>
   </component>
@@ -223,10 +233,9 @@
     <order />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1709" />
     <option name="y" value="22" />
-    <option name="width" value="1651" />
-    <option name="height" value="1058" />
+    <option name="width" value="1575" />
+    <option name="height" value="878" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -298,6 +307,24 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="util" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="duke-data-service-portal" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="duke-data-service-portal" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="stylus" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -4352,15 +4379,15 @@
       <workItem from="1446669823632" duration="42022000" />
       <workItem from="1447091440460" duration="28091000" />
       <workItem from="1447212882995" duration="1388000" />
-      <workItem from="1447215928575" duration="25977000" />
+      <workItem from="1447215928575" duration="47797000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="720415000" />
+    <option name="totallyTimeSpent" value="742235000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1709" y="22" width="1651" height="1058" extended-state="0" />
+    <frame x="0" y="22" width="1575" height="878" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -4379,7 +4406,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.15142338" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16126984" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24984385" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="REST Client" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.34416243" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
@@ -4441,27 +4468,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/dc-dev.utils.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.09015421">
-          <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/json-server-api/routes.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/db.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/json-server-api/db.json">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-6.714286">
@@ -4473,13 +4479,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.44186047">
           <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/stylus/main.styl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="28" column="0" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -4561,13 +4560,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/components/globalComponents/header.jsx">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.2741078">
-          <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/scripts/components/globalComponents/navChildren.jsx">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.4183751">
@@ -4589,24 +4581,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/components/globalComponents/accountOverview.jsx">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6113256">
-          <caret line="25" column="26" selection-start-line="25" selection-start-column="26" selection-end-line="25" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/scripts/stores/fileStore.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.4234234">
           <caret line="23" column="22" selection-start-line="23" selection-start-column="22" selection-end-line="23" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/components/globalComponents/currentUser.jsx">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.17868339">
-          <caret line="13" column="14" selection-start-line="13" selection-start-column="14" selection-end-line="13" selection-end-column="14" />
         </state>
       </provider>
     </entry>
@@ -4632,42 +4610,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/components/projectComponents/projectList.jsx">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.2455776">
-          <caret line="63" column="5" selection-start-line="63" selection-start-column="5" selection-end-line="63" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/components/projectComponents/addProjectModal.jsx">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.61290324">
-          <caret line="31" column="31" selection-start-line="31" selection-start-column="31" selection-end-line="31" selection-end-column="31" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/components/globalComponents/leftMenu.jsx">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="13" column="9" selection-start-line="13" selection-start-column="9" selection-end-line="13" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/actions/mainActions.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="76" column="34" selection-start-line="76" selection-start-column="34" selection-end-line="76" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/stores/mainStore.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="89" column="80" selection-start-line="89" selection-start-column="80" selection-end-line="89" selection-end-column="80" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/util/fetchUtil.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -4675,77 +4617,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/config.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.31633714">
-          <caret line="16" column="21" selection-start-line="16" selection-start-column="21" selection-end-line="16" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/scripts/pages/file.jsx">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.39542145">
           <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/pages/app.jsx">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="52" column="46" selection-start-line="52" selection-start-column="46" selection-end-line="52" selection-end-column="46" />
-          <folding>
-            <marker date="1447210310000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
-            <marker date="1447210310000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
-            <marker date="1447210310000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
-            <marker date="1447210310000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
-            <marker date="1447210310000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
-            <marker date="1447210310000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
-            <marker date="1447210310000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
-            <marker date="1447210310000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
-            <marker date="1447210310000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
-            <marker date="1447210310000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
-            <marker date="1447210310000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/components/folderComponents/addFolderModal.jsx">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="66" column="23" selection-start-line="66" selection-start-column="23" selection-end-line="66" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/components/folderComponents/folderChildren.jsx">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="26" column="16" selection-start-line="26" selection-start-column="16" selection-end-line="26" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/components/folderComponents/folderPath.jsx">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="49" column="26" selection-start-line="49" selection-start-column="26" selection-end-line="49" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/pages/folder.jsx">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/components/folderComponents/folderOptionsMenu.jsx">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="83" column="5" selection-start-line="83" selection-start-column="5" selection-end-line="83" selection-end-column="5" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -4781,10 +4656,42 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/stores/projectStore.js">
+    <entry file="file://$PROJECT_DIR$/app/scripts/components/globalComponents/popup.jsx">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="390" column="6" selection-start-line="390" selection-start-column="6" selection-end-line="390" selection-end-column="6" />
+          <caret line="12" column="11" selection-start-line="12" selection-start-column="11" selection-end-line="12" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/components/globalComponents/accountOverview.jsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="16" column="11" selection-start-line="16" selection-start-column="11" selection-end-line="16" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/components/projectComponents/addProjectModal.jsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="31" column="31" selection-start-line="31" selection-start-column="31" selection-end-line="31" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/pages/app.jsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.3103448">
+          <caret line="66" column="53" selection-start-line="66" selection-start-column="53" selection-end-line="66" selection-end-column="53" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/config.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.35736677">
+          <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -4792,39 +4699,170 @@
     <entry file="file://$PROJECT_DIR$/app/scripts/actions/projectActions.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="386" column="50" selection-start-line="386" selection-start-column="50" selection-end-line="386" selection-end-column="50" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/components/projectComponents/projectOptionsMenu.jsx">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="111" column="5" selection-start-line="111" selection-start-column="5" selection-end-line="111" selection-end-column="5" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/pages/project.jsx">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="20" column="42" selection-start-line="20" selection-start-column="42" selection-end-line="20" selection-end-column="42" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/components/projectComponents/projectChildren.jsx">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.1107628">
-          <caret line="17" column="23" selection-start-line="17" selection-start-column="23" selection-end-line="17" selection-end-column="23" />
+          <caret line="399" column="30" selection-start-line="399" selection-start-column="30" selection-end-line="399" selection-end-column="30" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/scripts/components/projectComponents/projectDetails.jsx">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.47792494">
-          <caret line="61" column="26" selection-start-line="61" selection-start-column="26" selection-end-line="61" selection-end-column="26" />
+        <state vertical-scroll-proportion="0.56430155">
+          <caret line="110" column="46" selection-start-line="110" selection-start-column="46" selection-end-line="110" selection-end-column="46" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/pages/folder.jsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.13897596">
+          <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/pages/project.jsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5956113">
+          <caret line="30" column="45" selection-start-line="30" selection-start-column="45" selection-end-line="30" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/actions/mainActions.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="71" column="38" selection-start-line="71" selection-start-column="38" selection-end-line="71" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/stores/mainStore.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="80" column="11" selection-start-line="80" selection-start-column="11" selection-end-line="80" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/components/globalComponents/currentUser.jsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.22570533">
+          <caret line="14" column="5" selection-start-line="14" selection-start-column="5" selection-end-line="14" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/components/globalComponents/header.jsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/components/globalComponents/leftMenu.jsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.1661442">
+          <caret line="17" column="20" selection-start-line="17" selection-start-column="20" selection-end-line="17" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/components/folderComponents/folderPath.jsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="15" column="45" selection-start-line="15" selection-start-column="45" selection-end-line="15" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/stores/projectStore.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="84" column="34" selection-start-line="84" selection-start-column="34" selection-end-line="84" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/components/projectComponents/projectChildrenOld.jsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.181818">
+          <caret line="40" column="11" selection-start-line="40" selection-start-column="11" selection-end-line="40" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/components/projectComponents/projectList.jsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="50" column="50" selection-start-line="50" selection-start-column="50" selection-end-line="50" selection-end-column="58" />
+          <folding>
+            <marker date="1446866005000" expanded="true" signature="908:1947" placeholder="&lt;xml/&gt;" />
+            <marker date="1446866005000" expanded="true" signature="1052:1652" placeholder="&lt;xml/&gt;" />
+            <marker date="1446866005000" expanded="true" signature="1260:1617" placeholder="&lt;xml/&gt;" />
+            <marker date="1446866005000" expanded="true" signature="1376:1580" placeholder="&lt;xml/&gt;" />
+            <marker date="1446866005000" expanded="true" signature="1681:1916" placeholder="&lt;xml/&gt;" />
+            <marker date="1446866005000" expanded="true" signature="2321:2858" placeholder="&lt;xml/&gt;" />
+            <marker date="1446866005000" expanded="true" signature="2386:2698" placeholder="&lt;xml/&gt;" />
+            <marker date="1446866005000" expanded="true" signature="2504:2611" placeholder="&lt;xml/&gt;" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/stylus/main.styl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="42" column="19" selection-start-line="42" selection-start-column="19" selection-end-line="42" selection-end-column="19" />
+          <folding>
+            <marker date="1447470141000" expanded="true" signature="-1:-1" placeholder="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/components/folderComponents/folderChildrenOLD.jsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="149" column="0" selection-start-line="149" selection-start-column="0" selection-end-line="149" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/components/projectComponents/projectChildren.jsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-7.8727274">
+          <caret line="41" column="21" selection-start-line="31" selection-start-column="16" selection-end-line="41" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/components/folderComponents/addFolderModal.jsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="92" column="14" selection-start-line="92" selection-start-column="14" selection-end-line="92" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/components/folderComponents/folderOptionsMenu.jsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-7.5272727">
+          <caret line="58" column="64" selection-start-line="58" selection-start-column="64" selection-end-line="58" selection-end-column="83" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/components/projectComponents/projectOptionsMenu.jsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-12.62963">
+          <caret line="170" column="0" selection-start-line="170" selection-start-column="0" selection-end-line="170" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/components/folderComponents/folderChildren.jsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.26760563">
+          <caret line="80" column="20" selection-start-line="80" selection-start-column="20" selection-end-line="80" selection-end-column="20" />
           <folding />
         </state>
       </provider>

@@ -68,6 +68,7 @@ var ProjectStore = Reflux.createStore({
 
     showDetailsSuccess(projectName, createdOn, createdBy, lastUpdatedOn, lastUpdatedBy, audit, json) {
         this.projectName = projectName;
+        cookie.save('projName', this.projectName);
         this.createdOn = createdOn;
         this.createdBy = createdBy;
         this.lastUpdatedOn = lastUpdatedOn;
@@ -87,7 +88,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     showDetailsError(error) {
-        let msg = error && error.message ? "Error: " : +'An error occurred.';
+        let msg = error && error.message ? "Error: " + error : '';
         this.trigger({
             error: msg,
             loading: false
@@ -108,7 +109,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     addProjectError(error) {
-        let msg = error && error.message ? "Error: " : +'An error occurred while trying to add a new project.';
+        let msg = error && error.message ? "Error: " + error : '';
         this.trigger({
             error: msg,
             addProjectLoading: false
@@ -129,7 +130,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     deleteProjectError(error) {
-        let msg = error && error.message ? "Error: " : +'An error occurred while trying to add a new project.';
+        let msg = error && error.message ? "Error: " + error : '';
         this.trigger({
             error: msg,
             loading: false
@@ -151,7 +152,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     editProjectError(error) {
-        let msg = error && error.message ? "Error: " : +'An error occurred while trying to add a new project.';
+        let msg = error && error.message ? "Error: " + error : '';
         this.trigger({
             error: msg,
             loading: false
@@ -172,12 +173,28 @@ var ProjectStore = Reflux.createStore({
     },
 
     loadFolderChildrenError(error) {
-        let msg = error && error.message ? "Error: " : +'An error occurred while loading folders.';
+        let msg = error && error.message ? "Error: " + error : '';
         this.trigger({
             error: msg,
             loading: false
         })
     },
+    //Todo: Use it or Remove it!!!!!!!!!!
+    //getFolderInfo(){
+    //
+    //},
+    //
+    //getFolderInfoSuccess(){
+    //
+    //},
+    //
+    //getFolderInfoError(){
+    //    let msg = error && error.message ? "Error: " + error : '';
+    //    this.trigger({
+    //        error: msg,
+    //        loading: false
+    //    })
+    //},
 
     addFolder() {
         this.trigger({
@@ -197,7 +214,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     addFolderError(error) {
-        let msg = error && error.message ? "Error: " : +'An error occurred.';
+        let msg = error && error.message ? "Error: " + error : '';
         this.trigger({
             error: msg,
             loading: false
@@ -222,7 +239,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     deleteFolderError(error) {
-        let errMsg = error && error.message ? "Error: " : +'An error occurred while trying to delete this project.';
+        let errMsg = error && error.message ? 'Error: ' + error : '';
         this.trigger({
             error: errMsg,
             loading: false
@@ -320,10 +337,11 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    getParentSuccess(parent) {
+    getParentSuccess(parent, name) {
         this.parentObj = parent;
+        this.objName = name;
         this.trigger({
-            parentObj: this.parentObj,
+            objName: this.objName,
             loading: false
         })
     },
@@ -369,7 +387,6 @@ var ProjectStore = Reflux.createStore({
             return result.id
         });
         let userId = userInfo.toString();
-        console.log(id)
         ProjectActions.addProjectMember(id, userId);
         this.trigger({
             loading: false
@@ -399,6 +416,27 @@ var ProjectStore = Reflux.createStore({
 
     addProjectMemberError(error) {
         let errMsg = error && error.message ? "Error: " : + 'An error occurred while trying to delete this file.';
+        this.trigger({
+            error: errMsg,
+            loading: false
+        });
+    },
+
+    deleteProjectMember() {
+        this.trigger({
+            loading: true
+        })
+    },
+
+    deleteProjectMemberSuccess(id) {
+        ProjectActions.getProjectMembers(id);
+        this.trigger({
+            loading: false
+        })
+    },
+
+    deleteProjectMemberError(error) {
+        let errMsg = error && error.message ? "Error: " + error : '';
         this.trigger({
             error: errMsg,
             loading: false

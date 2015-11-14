@@ -34,13 +34,13 @@ class AccountOverview extends React.Component {
                 <div style={styles.cardSquare}
                      className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
                     <h4>
-                        370 Files</h4>
+                        0 Files</h4>
                     <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>description</i>
                 </div>
                 <div style={styles.cardSquare}
                      className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
                     <h4>
-                        99.9 GB</h4>
+                        0 GB</h4>
                     <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>save</i>
                 </div>
             </div>
