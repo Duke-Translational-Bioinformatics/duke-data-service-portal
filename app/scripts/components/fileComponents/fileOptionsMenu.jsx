@@ -54,7 +54,7 @@ class FileOptionsMenu extends React.Component {
                     </form>
                 </Dialog>
                 <IconMenu iconButtonElement={iconButtonElement} style={styles.dropDown}>
-                    {/* <MenuItem primaryText="Delete File" onTouchTap={this.handleTouchTapDelete.bind(this)}/>*/}
+                    <MenuItem primaryText="Delete File" onTouchTap={this.handleTouchTapDelete.bind(this)}/>
                     <MenuItem primaryText="Edit File" onTouchTap={this.handleTouchTapEdit.bind(this)}/>
                 </IconMenu>
             </div>
@@ -73,8 +73,10 @@ class FileOptionsMenu extends React.Component {
         let id = this.props.params.id;
         let parentId = ProjectStore.parentObj.id;
         let parentKind = ProjectStore.parentObj.kind;
+        let urlPath = '';
+        {parentKind === 'dds-project' ? urlPath = '/project/' : urlPath = '/folder/'}
         ProjectActions.deleteFile(id, parentId, parentKind, this.refs.deleteFile.dismiss(
-            setTimeout(()=>this.props.appRouter.transitionTo('/folder/' + id),500)
+            setTimeout(()=>this.props.appRouter.transitionTo(urlPath + parentId),500)
         ));
     }
 
