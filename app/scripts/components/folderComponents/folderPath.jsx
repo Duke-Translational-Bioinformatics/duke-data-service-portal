@@ -56,7 +56,7 @@ class FolderPath extends React.Component {
                         <h4>{projectName}</h4>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.breadcrumbs}>
-                        <h5>{name}</h5>
+                        <h5><i className="material-icons" style={styles.folderIcon}>folder_open</i>{name}</h5>
                     </div>
                 </div>
             </div>
@@ -95,6 +95,11 @@ var styles = {
     },
     folderName: {
         fontSize: 14
+    },
+    folderIcon: {
+        fontSize: 36,
+        verticalAlign: -7,
+        marginRight: 10
     },
     moreIcon: {
         fontSize: 36,

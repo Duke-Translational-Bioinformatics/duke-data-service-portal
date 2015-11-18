@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router';
-import cookie from 'react-cookie';
+import ProjectActions from '../../actions/projectActions';
+import ProjectStore from '../../stores/projectStore';
 import FileOptionsMenu from './fileOptionsMenu.jsx';
 import urlGen from '../../../util/urlGen.js';
+import cookie from 'react-cookie';
 
 var mui = require('material-ui'),
     TextField = mui.TextField,
@@ -13,13 +15,58 @@ var mui = require('material-ui'),
 class FileDetails extends React.Component {
 
     constructor() {
-        this.state = {}
+        this.state = {
+            projectObj: ProjectStore.projectObj,
+            objName: ProjectStore.objName,
+            projName: cookie.load('projName')
+        }
     }
 
     render() {
         let error = '';
         let loading = this.props.loading ?
             <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
+        let id = this.props.params.id;
+        let details = ProjectStore.project;
+        let parentKind = ProjectStore.parentObj.kind;
+        let parentId = ProjectStore.parentObj.id;
+        let name = ProjectStore.objName;
+        let projectName = cookie.load('projName');
+        let createdOn = ProjectStore.createdOn;
+        let createdBy = ProjectStore.createdBy;
+        let lastUpdatedOn = ProjectStore.lastUpdatedOn;
+
+        function updatedBy () {
+                if(ProjectStore.lastUpdatedBy != null){
+                    var lastUpdatedBy = ProjectStore.lastUpdatedBy;
+                } else {
+                    return 'N/A';
+                }
+            return lastUpdatedBy.full_name;
+        };
+
+        function getFilePath () {
+            if (ProjectStore.ancestors != undefined) {
+                var ancestors = ProjectStore.ancestors;
+            } else {
+                return null
+            }
+            let path = ancestors.map((path)=> {
+                return path.name + ' ' + '>' + ' ';
+            });
+            return path.join('');
+        }
+
+        function getUrlPath () {
+            let urlPath = '';
+            if (parentKind === 'dds-project') {
+                urlPath = 'project/'
+            } else {
+                urlPath = 'folder/'
+            }
+            return urlPath;
+        }
+
 
         return (
             <div className="project-container mdl-grid mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800"
@@ -30,64 +77,85 @@ class FileDetails extends React.Component {
                     <i className="material-icons">get_app</i>
                 </button>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                    <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                        <a href={urlGen.routes.baseUrl + 'folder/' + this.props.params.id}
-                           className="mdl-color-text--grey-800 external"
-                           style={styles.back}>
-                            <i className="material-icons" style={styles.backIcon}>keyboard_backspace</i>Back
-                        </a>
-                    </div>
                     <div style={styles.menuIcon}>
-                        <FileOptionsMenu {...this.props} />
+                        <FileOptionsMenu {...this.props} {...this.state}/>
                     </div>
-                    <div className="mdl-cell mdl-cell--12-col" style={styles.detailsTitle}>
-                            <span className="mdl-color-text--grey-800" style={styles.breadcrumbs}>Test Project 123</span>
+                    <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
+                        <a href={urlGen.routes.baseUrl + getUrlPath() + parentId } style={styles.back}
+                           className="mdl-color-text--grey-800 external"
+                           onTouchTap={this.handleTouchTap.bind(this, parentKind, parentId)}><i
+                            className="material-icons"
+                            style={styles.backIcon}>keyboard_backspace</i>Back</a>
                     </div>
-                    <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.details}>
-                        <span style={styles.spanTitle}>KOMP Data</span>
+                    <div className="mdl-cell mdl-cell--3-col mdl-cell--4-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
+                            <span className="mdl-color-text--grey-800" style={styles.title}>{projectName}</span>
                     </div>
-                    <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.details}>
-                        <span style={styles.span}>Created By: Jon Doe</span>
+                    <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.details}>
+                        <span style={styles.spanTitle}>{name}</span>
                     </div>
-                    <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.details}>
-                        <span style={styles.span}>Created On: 9/29/2015</span>
-                    </div>
-                    <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.details}>
-                        <span style={styles.span}>ID: 12345678901</span>
-                    </div>
-                    <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.details}>
-                        <span style={styles.span}>File Size: 46.2 MB</span>
-                    </div>
-                    <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.details}>
-                        <span style={styles.span}>Storage: Isolon</span>
-                    </div>
-                    <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.details}>
-                        <span style={styles.span}>SHA-1: 123-123123-123-1231</span>
-                    </div>
-                    <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.detailsButton}>
-                        <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored" style={styles.detailsButton}
-                                onClick={this.handleTouchTapDetails.bind(this)}>
-                            {!this.state.showDetails ? 'FILE HISTORY' : 'HIDE HISTORY'}
-                        </button>
-                    </div>
-                    <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                        <div style={styles.moreDetails} className={!this.state.showDetails ? 'less' : 'more'}>
-                            { this.state.showDetails ? <Details className={this.state.newClass}/> : null }
+                    <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
+                        <div className="list-block">
+                            <ul>
+                                <li className="item-divider">Created By</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ createdBy }</div>
+                                    </div>
+                                </li>
+                                <li className="item-divider">Created On</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ createdOn }</div>
+                                    </div>
+                                </li>
+                                <li className="item-divider">File ID</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ id }</div>
+                                    </div>
+                                </li>
+                                <li className="item-divider">Last Updated By</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ updatedBy() }</div>
+                                    </div>
+                                </li>
+                                <li className="item-divider">Last Updated On</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ lastUpdatedOn === null ? 'N/A' : lastUpdatedOn }</div>
+                                    </div>
+                                </li>
+                                <li className="item-divider">File Path</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{getFilePath() + name}</div>
+                                    </div>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
                 { loading }
                 { error }
             </div>
-        )
-            ;
+        );
     }
 
-    handleTouchTapDetails() {
-        if (!this.state.showDetails) {
-            this.setState({showDetails: true})
+    //handleTouchTapDetails() {
+    //    if (!this.state.showDetails) {
+    //        this.setState({showDetails: true})
+    //    } else {
+    //        this.setState({showDetails: false})
+    //    }
+    //}
+    //
+    handleTouchTap(parentKind, parentId) {
+        let id = parentId;
+        if (parentKind === 'dds-project') {
+            ProjectActions.loadProjectChildren(id);
         } else {
-            this.setState({showDetails: false})
+            ProjectActions.loadFolderChildren(id, ProjectActions.getParent(id));
         }
     }
 }
@@ -109,6 +177,9 @@ var styles = {
         marginLeft: 8,
         marginTop: 20
     },
+    list: {
+        paddingTop: 100
+    },
     summary: {
         float: 'left',
         textAlign: 'left'
@@ -122,11 +193,7 @@ var styles = {
     textStyles: {
         textAlign: 'left'
     },
-    span: {
-        fontWeight: 'bold'
-    },
     spanTitle: {
-        fontWeight: 'bold',
         fontSize: '1.5em'
     },
     moreDetails: {
@@ -140,17 +207,18 @@ var styles = {
         float: 'left'
     },
     arrow: {
-        textAlign: 'left'
+        textAlign: 'left',
+        marginTop: -5
     },
     back: {
-        verticalAlign: -2
+        verticalAlign:-7
     },
     detailsTitle: {
         textAlign: 'left',
         float: 'left'
     },
-    breadcrumbs: {
-        fontSize: 24
+    title: {
+        fontSize: 24,
     },
     folderName: {
         fontSize: 14
@@ -171,7 +239,7 @@ var styles = {
     },
     menuIcon: {
         float: 'right',
-        marginTop: 10
+        marginTop: 38
     }
 };
 

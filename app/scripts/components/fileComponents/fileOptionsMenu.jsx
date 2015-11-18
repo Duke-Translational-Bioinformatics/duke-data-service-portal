@@ -53,8 +53,8 @@ class FileOptionsMenu extends React.Component {
                             onChange={this.handleFloatingErrorInputChange.bind(this)}/> <br/>
                     </form>
                 </Dialog>
-                <IconMenu iconButtonElement={iconButtonElement}>
-                    <MenuItem primaryText="Delete File" onTouchTap={this.handleTouchTapDelete.bind(this)}/>
+                <IconMenu iconButtonElement={iconButtonElement} style={styles.dropDown}>
+                    {/* <MenuItem primaryText="Delete File" onTouchTap={this.handleTouchTapDelete.bind(this)}/>*/}
                     <MenuItem primaryText="Edit File" onTouchTap={this.handleTouchTapEdit.bind(this)}/>
                 </IconMenu>
             </div>
@@ -71,7 +71,9 @@ class FileOptionsMenu extends React.Component {
 
     handleDeleteButton() {
         let id = this.props.params.id;
-        ProjectActions.deleteFile(id, this.refs.deleteFile.dismiss(
+        let parentId = ProjectStore.parentObj.id;
+        let parentKind = ProjectStore.parentObj.kind;
+        ProjectActions.deleteFile(id, parentId, parentKind, this.refs.deleteFile.dismiss(
             setTimeout(()=>this.props.appRouter.transitionTo('/folder/' + id),500)
         ));
     }
@@ -79,10 +81,11 @@ class FileOptionsMenu extends React.Component {
 
     handleUpdateButton() {
         let id = this.props.params.id;
+        let  fileName = document.getElementById("fileNameText").value;
         if (this.state.floatingErrorText != '') {
             return null
         } else {
-            ProjectActions.editFile(id, this.setState({
+            ProjectActions.editFile(id, fileName, this.setState({
                 floatingErrorText: 'This field is required.'
             }));
             this.refs.editFile.dismiss();
@@ -96,6 +99,9 @@ class FileOptionsMenu extends React.Component {
     }
 }
 var styles = {
+    dropDown: {
+        zIndex: '999'
+    },
     deleteFile: {
         float: 'right',
         position: 'relative',
@@ -103,7 +109,8 @@ var styles = {
     },
     dialogStyles: {
         textAlign: 'center',
-        fontColor: '#303F9F'
+        fontColor: '#303F9F',
+        zIndex: '999'
     },
     textStyles: {
         textAlign: 'left',

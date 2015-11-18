@@ -2,6 +2,7 @@ import React from 'react';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 const Dialog = require('material-ui/lib/dialog');
+const DropDownMenu = require('material-ui/lib/drop-down-menu');
 var mui = require('material-ui'),
     TextField = mui.TextField,
     IconMenu = mui.IconMenu,
@@ -32,6 +33,7 @@ class ProjectOptionsMenu extends React.Component {
             {text: 'ADD', onTouchTap: this.handleMemberButton.bind(this)},
             {text: 'CANCEL', onTouchTap: this.handleCancel.bind(this)}
         ];
+
         let iconButtonElement = <a href="#"><i className="material-icons mdl-color-text--grey-800">more_vert</i></a>;
 
         return (
@@ -100,7 +102,7 @@ class ProjectOptionsMenu extends React.Component {
                 <IconMenu iconButtonElement={iconButtonElement} style={styles.dropDownMenu}>
                     <MenuItem primaryText="Delete Project" onTouchTap={this.handleTouchTapDelete.bind(this)}/>
                     <MenuItem primaryText="Edit Project" onTouchTap={this.handleTouchTapEdit.bind(this)}/>
-                    <MenuItem primaryText="Member Management" onTouchTap={this.handleTouchTapMembers.bind(this)}/>
+                    <MenuItem primaryText="Add Project Member" onTouchTap={this.handleTouchTapMembers.bind(this)}/>
                 </IconMenu>
             </div>
         );
@@ -109,7 +111,7 @@ class ProjectOptionsMenu extends React.Component {
     handleCancel() {
             this.setState({
                 floatingErrorText: 'This field is required.',
-                floatingErrorText2: 'This field is required',
+                floatingErrorText2: 'This field is required'
             });
             this.refs.editProject.dismiss();
             this.refs.addMembers.dismiss();
@@ -137,10 +139,12 @@ class ProjectOptionsMenu extends React.Component {
 
     handleUpdateButton() {
         let id = this.props.params.id;
+        let name = document.getElementById('projectNameText').value;
+        let desc = document.getElementById('projectDescriptionText').value;
         if (this.state.floatingErrorText || this.state.floatingErrorText2 != '') {
             return null
         } else {
-            ProjectActions.editProject(id, this.setState({
+            ProjectActions.editProject(id, name, desc, this.setState({
                 floatingErrorText: 'This field is required.',
                 floatingErrorText2: 'This field is required'
             }));
@@ -183,6 +187,9 @@ var styles = {
     },
     dropDownMenu: {
         zIndex: '9999'
+    },
+    selectStyle: {
+        //float: 'right'
     },
     dialogStyles: {
         textAlign: 'center',

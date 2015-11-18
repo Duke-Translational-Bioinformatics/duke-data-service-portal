@@ -55,6 +55,9 @@ var ProjectActions = Reflux.createActions([
     'getParent',
     'getParentSuccess',
     'getParentError',
+    'getFileParent',
+    'getFileParentSuccess',
+    'getFileParentError',
     'getProjectMembers',
     'getProjectMembersSuccess',
     'getProjectMembersError',
@@ -77,12 +80,12 @@ ProjectActions.loadProjects.preEmit = function () {
             'Accept': 'application/json'
         }
     }).then(checkResponse).then(function (response) {
-            return response.json()
-        }).then(function (json) {
-            ProjectActions.loadProjectsSuccess(json.results)
-        }).catch(function (ex) {
-            ProjectActions.loadProjectsError(ex)
-        })
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.loadProjectsSuccess(json.results)
+    }).catch(function (ex) {
+        ProjectActions.loadProjectsError(ex)
+    })
 };
 
 ProjectActions.loadProjectChildren.preEmit = function (id) {
@@ -93,12 +96,12 @@ ProjectActions.loadProjectChildren.preEmit = function (id) {
             'Accept': 'application/json'
         }
     }).then(checkResponse).then(function (response) {
-            return response.json()
-        }).then(function (json) {
-            ProjectActions.loadProjectChildrenSuccess(json.results)
-        }).catch(function (ex) {
-            ProjectActions.loadProjectChildrenError(ex)
-        })
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.loadProjectChildrenSuccess(json.results)
+    }).catch(function (ex) {
+        ProjectActions.loadProjectChildrenError(ex)
+    })
 };
 
 ProjectActions.showDetails.preEmit = function (id) {
@@ -109,20 +112,20 @@ ProjectActions.showDetails.preEmit = function (id) {
             'Accept': 'application/json'
         }
     }).then(checkResponse).then(function (response) {
-            return response.json()
-        }).then(function (json) {
-            let projectName = json.name;
-            let createdOn = json.audit.created_on;
-            let createdBy = json.audit.created_by.full_name;
-            let lastUpdateOn = json.audit.last_updated_on;
-            let lastUpdateBy = json.audit.last_updated_by.full_name;
-            ProjectActions.showDetailsSuccess(projectName, createdOn, createdBy, lastUpdateOn, lastUpdateBy, json.audit, json)
-        }).catch(function (ex) {
-            ProjectActions.showDetailsError(ex)
-        })
+        return response.json()
+    }).then(function (json) {
+        let projectName = json.name;
+        let createdOn = json.audit.created_on;
+        let createdBy = json.audit.created_by.full_name;
+        let lastUpdateOn = json.audit.last_updated_on;
+        let lastUpdateBy = json.audit.last_updated_by.full_name;
+        ProjectActions.showDetailsSuccess(projectName, createdOn, createdBy, lastUpdateOn, lastUpdateBy, json.audit, json)
+    }).catch(function (ex) {
+        ProjectActions.showDetailsError(ex)
+    })
 };
 
-ProjectActions.addProject.preEmit = function () {
+ProjectActions.addProject.preEmit = function (name, desc) {
     fetch(urlGen.routes.ddsUrl + 'projects/', {
         method: 'post',
         headers: {
@@ -130,8 +133,8 @@ ProjectActions.addProject.preEmit = function () {
             'Accept': 'application/json'
         },
         body: JSON.stringify({
-            "name": document.getElementById('projectNameText').value,
-            "description": document.getElementById('projectDescriptionText').value
+            "name": name,
+            "description": desc
         })
     }).then(checkResponse).then(function (response) {
         return response.json()
@@ -152,7 +155,6 @@ ProjectActions.deleteProject.preEmit = function (id) {
             'Accept': 'application/json'
         }
     }).then(checkResponse).then(function (response) {
-        return response.json()
     }).then(function (json) {
         MainActions.addToast('Project Deleted');
         ProjectActions.deleteProjectSuccess(json)
@@ -162,7 +164,7 @@ ProjectActions.deleteProject.preEmit = function (id) {
     });
 };
 
-ProjectActions.editProject.preEmit = function (id) {
+ProjectActions.editProject.preEmit = function (id, name, desc) {
     fetch(urlGen.routes.ddsUrl + 'projects/' + id, {
         method: 'put',
         headers: {
@@ -171,8 +173,8 @@ ProjectActions.editProject.preEmit = function (id) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            "name": document.getElementById('projectNameText').value,
-            "description": document.getElementById('projectDescriptionText').value
+            "name": name,
+            "description": desc
         })
     }).then(checkResponse).then(function (response) {
         return response.json()
@@ -193,32 +195,15 @@ ProjectActions.loadFolderChildren.preEmit = function (id) {
             'Accept': 'application/json'
         }
     }).then(checkResponse).then(function (response) {
-            return response.json()
-        }).then(function (json) {
-            ProjectActions.loadFolderChildrenSuccess(json.results)
-        }).catch(function (ex) {
-            ProjectActions.loadFolderChildrenError(ex)
-        })
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.loadFolderChildrenSuccess(json.results)
+    }).catch(function (ex) {
+        ProjectActions.loadFolderChildrenError(ex)
+    })
 };
-//Todo: Use it or remove it!!!!!!!!!!
-//ProjectActions.getFolderInfo.preEmit = function (id) {
-//    fetch(urlGen.routes.ddsUrl + 'folders/' + id, {
-//        method: 'get',
-//        headers: {
-//            'Authorization': MainStore.appConfig.apiToken,
-//            'Accept': 'application/json'
-//        }
-//    }).then(checkResponse).then(function (response) {
-//        return response.json()
-//    }).then(function (json) {
-//        ProjectActions.getFolderInfoSuccess(json.results)
-//    }).catch(function (ex) {
-//        ProjectActions.getFolderInfoError(ex)
-//    })
-//};
 
-
-ProjectActions.addFolder.preEmit = function (id, parentKind) {
+ProjectActions.addFolder.preEmit = function (id, parentKind, name) {
     fetch(urlGen.routes.ddsUrl + 'folders/', {
         method: 'post',
         headers: {
@@ -226,7 +211,7 @@ ProjectActions.addFolder.preEmit = function (id, parentKind) {
             'Accept': 'application/json'
         },
         body: JSON.stringify({
-            "name": document.getElementById('folderNameText').value,
+            "name": name,
             "parent": {
                 "kind": parentKind,
                 "id": id
@@ -243,7 +228,7 @@ ProjectActions.addFolder.preEmit = function (id, parentKind) {
     })
 };
 
-ProjectActions.deleteFolder.preEmit = function (id, parentId, parentKind, ref) {
+ProjectActions.deleteFolder.preEmit = function (id, parentId, parentKind) {
     fetch(urlGen.routes.ddsUrl + 'folders/' + id, {
         method: 'delete',
         headers: {
@@ -252,17 +237,16 @@ ProjectActions.deleteFolder.preEmit = function (id, parentId, parentKind, ref) {
             'Content-Type': 'application/json'
         }
     }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
+    }).then(function () {
         MainActions.addToast('Folder Deleted!');
-        ProjectActions.deleteFolderSuccess(ref, parentId, parentKind)
+        ProjectActions.deleteFolderSuccess(parentId, parentKind)
     }).catch(function (ex) {
         MainActions.addToast('Folder Deleted Failed!');
         ProjectActions.deleteFolderError(ex)
     });
 };
 
-ProjectActions.editFolder.preEmit = function (id) {
+ProjectActions.editFolder.preEmit = function (id, name) {
     fetch(urlGen.routes.ddsUrl + 'folders/' + id + '/rename', {
         method: 'put',
         headers: {
@@ -271,13 +255,13 @@ ProjectActions.editFolder.preEmit = function (id) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            "name": document.getElementById('folderNameText').value
+            "name": name
         })
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
         MainActions.addToast('Folder Updated!');
-        ProjectActions.editFolderSuccess()
+        ProjectActions.editFolderSuccess(id)
     }).catch(function (ex) {
         MainActions.addToast('Failed to Update Folder');
         ProjectActions.editFolderError(ex)
@@ -291,48 +275,48 @@ ProjectActions.loadFiles.preEmit = function (id) {
             'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
         }
-    }).then(checkResponse).then(function(response) {
-            return response.json()
-        }).then(function(json) {
-            ProjectActions.loadFilesSuccess(json.results)
-        }).catch(function(ex) {
-            ProjectActions.loadFilesError(ex)
-        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.loadFilesSuccess(json.results)
+    }).catch(function (ex) {
+        ProjectActions.loadFilesError(ex)
+    })
 };
 
-ProjectActions.deleteFile.preEmit = function (id, ref) {
-    let url = mockUrl + 'files/' + id;
-    fetch(url, {
-        method: 'delete'
-    }).then(checkResponse).then(function(response) {
-        return response.json()
-    }).then(function(json) {
+ProjectActions.deleteFile.preEmit = function (id, parentId, parentKind) {
+    fetch(urlGen.routes.ddsUrl + 'files/' + id, {
+        method: 'delete',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+    }).then(function () {
         MainActions.addToast('File Deleted!');
-        ProjectActions.deleteFileSuccess(ref)
-    }).catch(function(ex) {
+        ProjectActions.deleteFileSuccess(parentId, parentKind)
+    }).catch(function (ex) {
         MainActions.addToast('Failed to Delete File!');
         ProjectActions.deleteFileError(ex)
     });
 };
 
-ProjectActions.editFile.preEmit = function (id) {
-    let url = mockUrl + 'files/' + id;
-    fetch(url, {
+ProjectActions.editFile.preEmit = function (id, fileName) {
+    fetch(urlGen.routes.ddsUrl + 'files/' + id + '/rename', {
         method: 'put',
         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
         },
         body: JSON.stringify({
-            "name": document.getElementById('fileNameText').value,
-            "is_deleted": false
+            "name": fileName
         })
-    }).then(checkResponse).then(function(response) {
+    }).then(checkResponse).then(function (response) {
         return response.json()
-    }).then(function(json) {
+    }).then(function (json) {
         MainActions.addToast('File Updated!');
-        ProjectActions.editFileSuccess()
-    }).catch(function(ex) {
+        ProjectActions.editFileSuccess(id)
+    }).catch(function (ex) {
         MainActions.addToast('Failed to Update File');
         ProjectActions.editFileError(ex)
     });
@@ -346,12 +330,35 @@ ProjectActions.getParent.preEmit = (id) => {
             'Accept': 'application/json'
         }
     }).then(checkResponse).then(function (response) {
-            return response.json()
-        }).then(function (json) {
-            ProjectActions.getParentSuccess(json.parent, json.name)
-        })
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getParentSuccess(json.parent, json.name)
+    })
         .catch(function (ex) {
             ProjectActions.getParentError(ex)
+        });
+};
+
+ProjectActions.getFileParent.preEmit = (id) => {
+    fetch(urlGen.routes.ddsUrl + 'files/' + id, {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        let fileName = json.name;
+        let createdOn = json.audit.created_on;
+        let createdBy = json.audit.created_by.full_name;
+        let lastUpdateOn = json.audit.last_updated_on;
+        let lastUpdateBy = json.audit.last_updated_by;
+        let ancestors = json.ancestors;
+        ProjectActions.getFileParentSuccess(json.parent, json.name, fileName, createdOn, createdBy, lastUpdateOn, lastUpdateBy, ancestors, json.audit, json)
+    })
+        .catch(function (ex) {
+            ProjectActions.getFileParentError(ex)
         });
 };
 
@@ -372,7 +379,7 @@ ProjectActions.getProjectMembers.preEmit = (id) => {
         });
 };
 
-ProjectActions.getUserId.preEmit = (firstName, lastName, id) => {
+ProjectActions.getUserId.preEmit = (firstName, lastName, id, roleId) => {
     fetch(urlGen.routes.ddsUrl + 'users?' + 'last_name_begins_with=' + lastName + '&first_name_begins_with=' + firstName, {
         method: 'get',
         headers: {
@@ -382,15 +389,14 @@ ProjectActions.getUserId.preEmit = (firstName, lastName, id) => {
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        console.log('parsed: ' + json);
-        ProjectActions.getUserIdSuccess(json.results, id)
+        ProjectActions.getUserIdSuccess(json.results, id, roleId)
     })
         .catch(function (ex) {
             ProjectActions.getUserIdError(ex)
         });
 };
 
-ProjectActions.addProjectMember.preEmit = (id, userId) => {
+ProjectActions.addProjectMember.preEmit = (id, userId, roleId) => {
     fetch(urlGen.routes.ddsUrl + 'projects/' + id + '/permissions/' + userId, {
         method: 'put',
         headers: {
@@ -418,12 +424,11 @@ ProjectActions.deleteProjectMember.preEmit = (id, userId, userName) => {
         headers: {
             'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
-        },
+        }
     }).then(checkResponse).then(function (response) {
-        return response.json()
     }).then(function (json) {
         MainActions.addToast(userName + ' ' + 'Has Been Removed From This Project');
-        ProjectActions.deleteProjectMemberSuccess(id, userId)
+        ProjectActions.deleteProjectMemberSuccess(id, userId);
     })
         .catch(function (ex) {
             MainActions.addToast('Unable to Remove ' + userName + ' From This Project');

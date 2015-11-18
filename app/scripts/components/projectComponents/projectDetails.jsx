@@ -233,6 +233,9 @@ var styles = {
         right: '2%',
         zIndex: '2',
         color: '#ffffff'
+    },
+    span: {
+        color: '#212121'
     }
 };
 

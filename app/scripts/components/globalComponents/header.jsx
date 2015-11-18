@@ -14,7 +14,7 @@ class Header extends React.Component {
     constructor(props, context) {
         super(props);
         this.state = {
-            appConfig: MainStore.appConfig,
+            appConfig: MainStore.appConfig
         }
     }
 
@@ -28,7 +28,7 @@ class Header extends React.Component {
                     <div className="center">
                     </div>
                     <div className="right">
-                        <CurrentUser {...this.state}/>
+                        <CurrentUser {...this.state} {...this.props}/>
                     </div>
                 </div>
             </div>

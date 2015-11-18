@@ -85,7 +85,7 @@ var MainStore = Reflux.createStore({
        
     },
 
-    getCurrentUserSuccess (json, currentUser) {
+    getCurrentUserSuccess (currentUser, json) {
         this.currentUser = currentUser;
         cookie.save('currentUser', this.currentUser);
         this.trigger({

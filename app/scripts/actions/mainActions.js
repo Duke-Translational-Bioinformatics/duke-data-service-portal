@@ -20,7 +20,7 @@ var MainActions = Reflux.createActions([
     'closePhiModal',
     'addBreadCrumbs',
     'removeBreadCrumbs',
-    'handleLogout',
+    'handleLogout'
 ]);
 
 MainActions.authenticationServiceValidate.preEmit = (appConfig, accessToken) => {
@@ -76,7 +76,7 @@ MainActions.getCurrentUser.preEmit = (apiToken) => {
         .then(function (response) {
             return response.json()
         }).then(function (json) {
-            let currentUser = json.username
+            let currentUser = json.full_name;
             MainActions.getCurrentUserSuccess(currentUser, json)
         })
         .catch(function (ex) {

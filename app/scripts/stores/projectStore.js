@@ -179,22 +179,6 @@ var ProjectStore = Reflux.createStore({
             loading: false
         })
     },
-    //Todo: Use it or Remove it!!!!!!!!!!
-    //getFolderInfo(){
-    //
-    //},
-    //
-    //getFolderInfoSuccess(){
-    //
-    //},
-    //
-    //getFolderInfoError(){
-    //    let msg = error && error.message ? "Error: " + error : '';
-    //    this.trigger({
-    //        error: msg,
-    //        loading: false
-    //    })
-    //},
 
     addFolder() {
         this.trigger({
@@ -227,11 +211,12 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    deleteFolderSuccess(id, parentId, parentKind) {
+    deleteFolderSuccess(parentId, parentKind) {
         if(parentKind === 'dds-folder'){
-            ProjectActions.loadFolderChildren(id);
+            ProjectActions.loadFolderChildren(parentId);
+            ProjectActions.getParent(parentId);
         } else {
-            ProjectActions.loadProjectChildren(id);
+            ProjectActions.loadProjectChildren(parentId);
         }
         this.trigger({
             loading: false
@@ -252,8 +237,9 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    editFolderSuccess() {
-        //ProjectActions.loadFolders();
+    editFolderSuccess(id) {
+        ProjectActions.loadFolderChildren(id);
+        ProjectActions.getParent(id);
         this.trigger({
             loading: false
         })
@@ -295,8 +281,13 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    deleteFileSuccess() {
-        ProjectActions.loadFiles();
+    deleteFileSuccess(parentId, parentKind) {
+        if(parentKind === 'dds-folder'){
+            ProjectActions.loadFolderChildren(parentId);
+            ProjectActions.getParent(parentId);
+        } else {
+            ProjectActions.loadProjectChildren(parentId);
+        }
         this.trigger({
             loading: false
         })
@@ -316,20 +307,21 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    editFileSuccess() {
-        ProjectActions.loadFiles();
+    editFileSuccess(id) {
+        ProjectActions.getFileParent(id);
         this.trigger({
             loading: false
         })
     },
     
     editFileError(error) {
-        let errMsg = error && error.message ? "Error: " : + 'An error occurred while trying to delete this file.';
+        let errMsg = error && error.message ? "Error: " + error : '';
         this.trigger({
             error: errMsg,
             loading: false
         });
     },
+
 
     getParent() {
         this.trigger({
@@ -347,6 +339,44 @@ var ProjectStore = Reflux.createStore({
     },
 
     getParentError(error) {
+        let errMsg = error && error.message ? "Error: " : + 'An error occurred while trying to delete this file.';
+        this.trigger({
+            error: errMsg,
+            loading: false
+        });
+    },
+
+    getFileParent() {
+        this.trigger({
+            loading: true
+        })
+    },
+
+    getFileParentSuccess(parent, name, projectName, createdOn, createdBy, lastUpdatedOn, lastUpdatedBy, ancestors, audit, json) {
+        this.parentObj = parent;
+        this.objName = name;
+        this.createdOn = createdOn;
+        this.createdBy = createdBy;
+        this.lastUpdatedOn = lastUpdatedOn;
+        this.lastUpdatedBy = lastUpdatedBy;
+        this.ancestors = ancestors;
+        this.audit = audit;
+        this.project = json;
+        this.trigger({
+            parentObj: this.parentObj,
+            objName: this.objName,
+            createdOn: this.createdOn,
+            createdBy: this.createdBy,
+            lastUpdatedOn: this.lastUpdatedOn,
+            lastUpdatedBy: this.lastUpdatedBy,
+            ancestors: this.ancestors,
+            audit: this.audit,
+            project: this.project,
+            loading: false
+        })
+    },
+
+    getFileParentError(error) {
         let errMsg = error && error.message ? "Error: " : + 'An error occurred while trying to delete this file.';
         this.trigger({
             error: errMsg,
@@ -382,12 +412,12 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    getUserIdSuccess(results, id) {
+    getUserIdSuccess(results, id, roleId) {
         let userInfo = results.map((result) => {
             return result.id
         });
         let userId = userInfo.toString();
-        ProjectActions.addProjectMember(id, userId);
+        ProjectActions.addProjectMember(id, userId, roleId);
         this.trigger({
             loading: false
         })
@@ -415,7 +445,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     addProjectMemberError(error) {
-        let errMsg = error && error.message ? "Error: " : + 'An error occurred while trying to delete this file.';
+        let errMsg = error && error.message ? alert('This member could not be added. Check the name and try again or verify they have access to the Duke Data Service application') : '';
         this.trigger({
             error: errMsg,
             loading: false

@@ -11,12 +11,14 @@ class File extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-
+            loading: false
         };
     }
 
     componentDidMount() {
+        let id = this.props.params.id;
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
+        ProjectActions.getFileParent(id);
     }
 
     componentWillUnmount() {
@@ -28,11 +30,12 @@ class File extends React.Component {
         return (
             <div>
                 <FileDetails {...this.props} {...this.state} />
-                <FilePreview {...this.props} {...this.state} />
-                <FileProvenance {...this.props} {...this.state} />
             </div>
         );
     }
 }
 
 export default File;
+
+//<FilePreview {...this.props} {...this.state} />///Todo: These components are for further file viewing to be added
+//<FileProvenance {...this.props} {...this.state} />

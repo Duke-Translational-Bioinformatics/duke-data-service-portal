@@ -48,6 +48,7 @@
     "query-string": "^2.4.0",
     "react": "^0.13.3",
     "react-router": "^0.13.2",
+    "react-cookie": "^0.3.4",
     "reflux": "^0.2.7"
   },
   "jest": {

@@ -56,7 +56,7 @@ class FolderOptionsMenu extends React.Component {
                             onChange={this.handleFloatingErrorInputChange.bind(this)}/> <br/>
                     </form>
                 </Dialog>
-                <IconMenu iconButtonElement={iconButtonElement} style={styles.zInd}>
+                <IconMenu iconButtonElement={iconButtonElement} style={styles.dropDown}>
                     <MenuItem primaryText="Delete Folder" onTouchTap={this.handleTouchTapDelete.bind(this)}/>
                     <MenuItem primaryText="Edit Folder" onTouchTap={this.handleTouchTapEdit.bind(this)}/>
                 </IconMenu>
@@ -77,7 +77,8 @@ class FolderOptionsMenu extends React.Component {
         let parentId = ProjectStore.parentObj.id;
         let parentKind = ProjectStore.parentObj.kind;
         let ref = 'snackbarDelete';
-        if(parentKind === 'dds-project'){var urlPath = '/project/'} else {var urlPath = '/folder/'}
+        let urlPath = '';
+        {parentKind === 'dds-project' ? urlPath = '/project/' : urlPath = '/folder/'}
         ProjectActions.deleteFolder(id, parentId, parentKind, urlPath, ref, this.refs.deleteFolder.dismiss(
             setTimeout(()=>this.props.appRouter.transitionTo(urlPath + parentId),500)
         ));
@@ -86,11 +87,11 @@ class FolderOptionsMenu extends React.Component {
     handleUpdateButton() {
         let id = this.props.params.id;
         let parentId = ProjectStore.parentObj.id;
-        let ref = 'snackbarUpdate';
+        let name = document.getElementById('folderNameText').value;
         if (this.state.floatingErrorText) {
             return null
         } else {
-            ProjectActions.editFolder(id, parentId, this.setState({
+            ProjectActions.editFolder(id, name, this.setState({
                 floatingErrorText: 'This field is required.'
             }));
             this.refs.editFolder.dismiss();
@@ -116,7 +117,7 @@ var styles = {
         position: 'relative',
         margin: '12px 8px 0px 0px'
     },
-    zInd: {
+    dropDown: {
         zIndex: '9999'
     },
     dialogStyles: {

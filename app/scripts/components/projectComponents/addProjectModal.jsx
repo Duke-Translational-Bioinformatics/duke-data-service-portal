@@ -70,7 +70,9 @@ class AddProjectModal extends React.Component {
         if (this.state.floatingErrorText || this.state.floatingErrorText2) {
             return null
         } else {
-            ProjectActions.addProject(this.setState({
+            let name = document.getElementById('projectNameText').value;
+            let desc = document.getElementById('projectDescriptionText').value;
+            ProjectActions.addProject(name, desc, this.setState({
                 floatingErrorText: 'This field is required.',
                 floatingErrorText2: 'This field is required'
             }));

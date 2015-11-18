@@ -20,11 +20,11 @@ class CurrentUser extends React.Component {
         }
         else if (this.state.appConfig.apiToken) {
             let user = cookie.load('currentUser');
-            let currentUser = user.first_name;
+            let currentUser = user;
             return (
                 <span>
-                    <i className="material-icons" style={styles.icon}>account_box</i>
                     <span style={styles.currentUser}>{currentUser}</span>
+                    <i className="material-icons" style={styles.icon}>account_box</i>
                 </span>
             );
         }

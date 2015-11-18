@@ -58,10 +58,11 @@ class AddFolderModal extends React.Component {
     }
 
     handleFolderButton() {
-            let kindString = this.props.appRouter.getCurrentPathname();
-            let start_pos = kindString.indexOf('/') + 1;
-            let end_pos = kindString.indexOf('/',start_pos);
-            let kind = kindString.substring(start_pos,end_pos);
+        let kindString = this.props.appRouter.getCurrentPathname();
+        let start_pos = kindString.indexOf('/') + 1;
+        let end_pos = kindString.indexOf('/',start_pos);
+        let kind = kindString.substring(start_pos,end_pos);
+        let name = document.getElementById('folderNameText').value;
 
         if (this.state.floatingErrorText) {
             return null
@@ -69,13 +70,13 @@ class AddFolderModal extends React.Component {
             if(kind === 'folder'){
                 let id = this.props.params.id;
                 let parentKind = 'dds-folder';
-                ProjectActions.addFolder(id, parentKind, this.setState({
+                ProjectActions.addFolder(id, parentKind, name, this.setState({
                     floatingErrorText: 'This field is required.'
                 }));
             } else {
                 let id = this.props.params.id;
                 let parentKind = 'dds-project';
-                ProjectActions.addFolder(id, parentKind, this.setState({
+                ProjectActions.addFolder(id, parentKind, name, this.setState({
                     floatingErrorText: 'This field is required.'
                 }));
             }
@@ -93,13 +94,14 @@ class AddFolderModal extends React.Component {
 let styles = {
     addFolder: {
         float: 'right',
-        zIndex: '9999',
+        zIndex: '9995',
         position: 'relative',
-        margin: '10px 22px 0px 0px'
+        margin: '10px 16px 0px 0px'
     },
     dialogStyles: {
         textAlign: 'center',
-        fontColor: '#303F9F'
+        fontColor: '#303F9F',
+        zIndex: '9996'
     },
     textStyles: {
         textAlign: 'left',

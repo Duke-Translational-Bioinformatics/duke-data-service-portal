@@ -23,15 +23,36 @@ class ProjectChildren extends React.Component {
             if (children.kind === 'dds-folder') {
                 return true;
             } else {
-                return false
+                return false;
             }
         });
 
         let projectChildren = this.props.children.map((children) => {
-            return (
-                <li key={ children.id }>
-                    <a href={!kind ? urlGen.routes.baseUrl + "file/" + children.id : urlGen.routes.baseUrl + "folder/" + children.id} className="item-content external" onTouchTap={() => this.handleTouchTap(children.id, kind)}>
-                        <div className="item-media"><i className="material-icons mdl-color-text--grey-800" style={styles.icon}>{!kind ? 'description' : 'folder'}</i></div>
+            if(children.kind === 'dds-folder') {
+                return (
+                    <li key={ children.id } className="hover">
+                        <a href={urlGen.routes.baseUrl + "folder/" + children.id}
+                           className="item-content external" onTouchTap={() => this.handleTouchTap(children.id, kind)}>
+                            <div className="item-media"><i className="material-icons"
+                                                           style={styles.icon}>folder</i>
+                            </div>
+                            <div className="item-inner">
+                                <div className="item-title-row">
+                                    <div className="item-title mdl-color-text--grey-800">{ children.name }</div>
+                                </div>
+                                <div className="item-subtitle mdl-color-text--grey-600">ID: { children.id }</div>
+                            </div>
+                        </a>
+                    </li>
+                );
+            } else {
+                return (
+                <li key={ children.id } className="hover">
+                    <a href={urlGen.routes.baseUrl + "file/" + children.id}
+                       className="item-content external" onTouchTap={() => this.handleTouchTap(children.id, kind)}>
+                        <div className="item-media"><i className="material-icons"
+                                                       style={styles.icon}>description</i>
+                        </div>
                         <div className="item-inner">
                             <div className="item-title-row">
                                 <div className="item-title mdl-color-text--grey-800">{ children.name }</div>
@@ -40,8 +61,9 @@ class ProjectChildren extends React.Component {
                         </div>
                     </a>
                 </li>
-            );
+            );}
         });
+
 
         let loading = this.props.loading ?
             <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
@@ -52,14 +74,14 @@ class ProjectChildren extends React.Component {
 
         return (
             <div className="list-container">
-                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.listTitle}>
+                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div style={styles.addFolder}>
                         <AddFolderModal {...this.props}/>
                     </div>
                 </div>
                 { error }
                 { loading }
-                <div className="mdl-cell mdl-cell--12-col content-block">
+                <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                 <div className="list-block media-list">
                     <ul>
                         {projectChildren}
@@ -94,12 +116,8 @@ var styles = {
     icon: {
         fontSize: 36
     },
-    listTitle: {
-        margin: 20,
-        marginBottom: -2,
-        marginTop: -2,
-        float: 'left',
-        paddingLeft: 20
+    list: {
+        paddingTop: 40
     },
     dialogStyles: {
         textAlign: 'center'
