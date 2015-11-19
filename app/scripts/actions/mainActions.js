@@ -1,8 +1,6 @@
 import Reflux from 'reflux';
 import urlGen from '../../util/urlGen.js';
 
-var mockUrl = 'http://localhost:3000/';//Todo: Change this. It is only used for getting the currentUser from json-server mock DB
-
 var MainActions = Reflux.createActions([
     'authenticationServiceValidate',
     'authenticationServiceValidateSuccess',
@@ -18,8 +16,6 @@ var MainActions = Reflux.createActions([
     'addToast',
     'removeToast',
     'closePhiModal',
-    'addBreadCrumbs',
-    'removeBreadCrumbs',
     'handleLogout'
 ]);
 

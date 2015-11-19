@@ -129,7 +129,7 @@ class FileDetails extends React.Component {
                                 <li className="item-divider">File Path</li>
                                 <li className="item-content">
                                     <div className="item-inner">
-                                        <div>{getFilePath() + name}</div>
+                                        <div>{ getFilePath() + name}</div>
                                     </div>
                                 </li>
                             </ul>

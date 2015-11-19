@@ -3,20 +3,19 @@ import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 const Dialog = require('material-ui/lib/dialog');
 const DropDownMenu = require('material-ui/lib/drop-down-menu');
-var mui = require('material-ui'),
-    TextField = mui.TextField,
-    IconMenu = mui.IconMenu,
-    Snackbar = mui.Snackbar;
-    //Dialog = mui.Dialog;
+const MenuItem = require('material-ui/lib/menus/menu-item');
+const IconMenu = require('material-ui/lib/menus/icon-menu');
+const TextField = require('material-ui/lib/text-field');
+const SelectField = require('material-ui/lib/select-field');
 
-let MenuItem = require('material-ui/lib/menus/menu-item');
 
 class ProjectOptionsMenu extends React.Component {
 
     constructor() {
         this.state = {
             floatingErrorText: 'This field is required',
-            floatingErrorText2: 'This field is required'
+            floatingErrorText2: 'This field is required',
+            selectValue: 'project_admin'
         }
     }
 
@@ -32,6 +31,12 @@ class ProjectOptionsMenu extends React.Component {
         let memberActions = [
             {text: 'ADD', onTouchTap: this.handleMemberButton.bind(this)},
             {text: 'CANCEL', onTouchTap: this.handleCancel.bind(this)}
+        ];
+        let roleOptions = [ 
+            { id: 'project_admin', text: 'Project Administrator' }, 
+            { id: 'project_viewer', text: 'Project Viewer' }, 
+            { id: 'file_downloader', text: 'File Downloader' }, 
+            { id: 'file_editor', text: 'File Editor' } 
         ];
 
         let iconButtonElement = <a href="#"><i className="material-icons mdl-color-text--grey-800">more_vert</i></a>;
@@ -81,7 +86,7 @@ class ProjectOptionsMenu extends React.Component {
                     <form action="#" id="newMemberForm">
                         <TextField
                             style={styles.textStyles}
-                            hintText="First Name Starts With"
+                            hintText="First Name Starts With (3 letters)"
                             errorText={this.state.floatingErrorText}
                             floatingLabelText="First Name"
                             id="firstNameText"
@@ -90,13 +95,22 @@ class ProjectOptionsMenu extends React.Component {
                             onChange={this.handleFloatingErrorInputChange.bind(this)}/><br/>
                         <TextField
                             style={styles.textStyles}
-                            hintText="Last Name Starts With"
+                            hintText="Last Name Starts With (3 letters)"
                             errorText={this.state.floatingErrorText}
                             floatingLabelText="Last Name"
                             id="lastNameText"
                             type="text"
                             multiLine={true}
                             onChange={this.handleFloatingErrorInputChange2.bind(this)}/> <br/>
+                        <div style={{height: '150px'}}>
+                            <SelectField
+                                id="roleSelect"
+                                floatingLabelText="Project Role"
+                                value={this.state.selectValue}
+                                valueMember="id"
+                                onChange={this.handleSelectValueChange.bind(this, 'selectValue')}
+                                menuItems={roleOptions} /><br/>
+                        </div>
                     </form>
                 </Dialog>
                 <IconMenu iconButtonElement={iconButtonElement} style={styles.dropDownMenu}>
@@ -106,6 +120,12 @@ class ProjectOptionsMenu extends React.Component {
                 </IconMenu>
             </div>
         );
+    }
+    handleClose() {
+        this.setState({
+            floatingErrorText: 'This field is required.',
+            floatingErrorText2: 'This field is required'
+        });
     }
 
     handleCancel() {
@@ -136,7 +156,6 @@ class ProjectOptionsMenu extends React.Component {
         ));
     }
 
-
     handleUpdateButton() {
         let id = this.props.params.id;
         let name = document.getElementById('projectNameText').value;
@@ -152,16 +171,24 @@ class ProjectOptionsMenu extends React.Component {
         }
     };
 
+    handleSelectValueChange(name, e) {
+        let change = {};
+        change[name] = e.target.value;
+        this.setState(change);
+    }
+
     handleMemberButton() {
         let  firstName = document.getElementById("firstNameText").value;
         let  lastName = document.getElementById("lastNameText").value;
+        let role = this.state.selectValue;
         let id = this.props.params.id;
         if (this.state.floatingErrorText || this.state.floatingErrorText2 != '') {
             return null
         } else {
-            ProjectActions.getUserId(firstName, lastName, id, this.setState({
+            ProjectActions.getUserId(firstName, lastName, id, role, this.setState({
                 floatingErrorText: 'This field is required.',
-                floatingErrorText3: 'This field is required.'
+                floatingErrorText2: 'This field is required.',
+                selectValue: 'project_admin'
             }));
             this.refs.addMembers.dismiss();
         }

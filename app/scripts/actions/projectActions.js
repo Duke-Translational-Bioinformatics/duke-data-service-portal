@@ -332,7 +332,8 @@ ProjectActions.getParent.preEmit = (id) => {
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        ProjectActions.getParentSuccess(json.parent, json.name)
+        let ancestors = json.ancestors;
+        ProjectActions.getParentSuccess(json.parent, json.name, ancestors)
     })
         .catch(function (ex) {
             ProjectActions.getParentError(ex)
@@ -379,7 +380,7 @@ ProjectActions.getProjectMembers.preEmit = (id) => {
         });
 };
 
-ProjectActions.getUserId.preEmit = (firstName, lastName, id, roleId) => {
+ProjectActions.getUserId.preEmit = (firstName, lastName, id, role) => {
     fetch(urlGen.routes.ddsUrl + 'users?' + 'last_name_begins_with=' + lastName + '&first_name_begins_with=' + firstName, {
         method: 'get',
         headers: {
@@ -389,14 +390,14 @@ ProjectActions.getUserId.preEmit = (firstName, lastName, id, roleId) => {
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        ProjectActions.getUserIdSuccess(json.results, id, roleId)
+        ProjectActions.getUserIdSuccess(json.results, id, role)
     })
         .catch(function (ex) {
             ProjectActions.getUserIdError(ex)
         });
 };
 
-ProjectActions.addProjectMember.preEmit = (id, userId, roleId) => {
+ProjectActions.addProjectMember.preEmit = (id, userId, role, name) => {
     fetch(urlGen.routes.ddsUrl + 'projects/' + id + '/permissions/' + userId, {
         method: 'put',
         headers: {
@@ -404,16 +405,16 @@ ProjectActions.addProjectMember.preEmit = (id, userId, roleId) => {
             'Accept': 'application/json'
         },
         body: JSON.stringify({
-            'auth_role': {'id': 'project_admin'}
+            'auth_role': {'id': role}
         })
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        MainActions.addToast('New Member Added to Project');
+        MainActions.addToast(name + ' ' + 'has been added to this project');
         ProjectActions.addProjectMemberSuccess(id)
     })
         .catch(function (ex) {
-            MainActions.addToast('Could Not Add Member to Project or Member Does Not Exist');
+            MainActions.addToast('Could not add member to this project or member does not exist');
             ProjectActions.addProjectMemberError(ex)
         });
 };
@@ -427,11 +428,11 @@ ProjectActions.deleteProjectMember.preEmit = (id, userId, userName) => {
         }
     }).then(checkResponse).then(function (response) {
     }).then(function (json) {
-        MainActions.addToast(userName + ' ' + 'Has Been Removed From This Project');
+        MainActions.addToast(userName + ' ' + 'has been removed from this project');
         ProjectActions.deleteProjectMemberSuccess(id, userId);
     })
         .catch(function (ex) {
-            MainActions.addToast('Unable to Remove ' + userName + ' From This Project');
+            MainActions.addToast('Unable to remove ' + userName + ' from this project');
             ProjectActions.deleteProjectMemberError(ex)
         });
 };

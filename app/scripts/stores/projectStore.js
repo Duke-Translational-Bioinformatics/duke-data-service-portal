@@ -329,11 +329,14 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    getParentSuccess(parent, name) {
+    getParentSuccess(parent, name, ancestors) {
         this.parentObj = parent;
         this.objName = name;
+        this.ancestors = ancestors;
         this.trigger({
+            parentObj: this.parentObj,
             objName: this.objName,
+            ancestors: this.ancestors,
             loading: false
         })
     },
@@ -412,12 +415,16 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    getUserIdSuccess(results, id, roleId) {
+    getUserIdSuccess(results, id, role) {
         let userInfo = results.map((result) => {
             return result.id
         });
+        let getName = results.map((result) => {
+            return result.full_name
+        });
         let userId = userInfo.toString();
-        ProjectActions.addProjectMember(id, userId, roleId);
+        let name = getName.toString();
+        ProjectActions.addProjectMember(id, userId, role, name);
         this.trigger({
             loading: false
         })
