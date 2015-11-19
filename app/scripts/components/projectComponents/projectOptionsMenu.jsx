@@ -104,6 +104,7 @@ class ProjectOptionsMenu extends React.Component {
                             onChange={this.handleFloatingErrorInputChange2.bind(this)}/> <br/>
                         <div style={{height: '150px'}}>
                             <SelectField
+                                style={styles.selectStyle}
                                 id="roleSelect"
                                 floatingLabelText="Project Role"
                                 value={this.state.selectValue}
@@ -216,7 +217,7 @@ var styles = {
         zIndex: '9999'
     },
     selectStyle: {
-        //float: 'right'
+        textAlign: 'left'
     },
     dialogStyles: {
         textAlign: 'center',

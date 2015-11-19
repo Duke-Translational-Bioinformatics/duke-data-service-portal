@@ -82,7 +82,7 @@ class FolderChildren extends React.Component {
                     { error }
                     { loading }
                     <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
-                        <div className="list-block media-list">
+                        <div className="list-block list-block-search searchbar-found media-list">
                             <ul>
                                 {folderChildren}
                             </ul>
