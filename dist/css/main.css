@@ -214,24 +214,129 @@ body {
   line-height: 1.5;
 }
 .content {
-  padding: 0.5em;
-  margin: 0px auto;
+  padding-top: 100px;
 }
-.project-list-grid {
-  max-width: 1100px;
+.group:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.account-overview {
+  max-width: 1200px;
+  margin: 0 auto;
 }
 .project-container {
-  overflow: auto;
-  margin: 20px auto;
-  max-width: 1100px;
+  max-width: 1230px;
+  margin: 0 auto;
+}
+.preview-container {
+  max-width: 1260px;
+  margin: 0 auto;
+}
+.list-container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.hover a {
+  color: #616161;
+}
+.hover a:hover {
+  background: #f5f5f5;
+}
+/* ==========  Select Field Variables ========== */
+/* ==========  Select Field ========== */
+/* Style Select Field */
+select {
+  font-family: inherit;
+  background-color: transparent;
+  width: 38%;
+  padding: 4px 0;
+  font-size: 16px;
+  color: rgba(#{$color-black}, 0.26) false;
+  border: none;
+  border-bottom: 1px solid rgba(#{$color-black}, 0.12) false;
+}
+/* Remove focus */
+select:focus {
+  outline: none;
+}
+/* Hide label */
+/* Use custom arrow */
+.mdl-selectfield {
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
   position: relative;
-  text-align: center;
 }
-.account-overview-container {
-  margin-top: -100px;
+.mdl-selectfield:after {
+  position: absolute;
+  top: 0.75em;
+  right: 0.5em;
+/* Styling the down arrow */
+  width: 0;
+  height: 0;
+  padding: 0;
+  content: '';
+  border-left: 0.25em solid transparent;
+  border-right: 0.25em solid transparent;
+  border-top: 0.375em solid rgba(#{$color-black}, 0.12) false;
+  pointer-events: none;
 }
-.ribbon {
-  height: 200px;
-  width: 200%;
-  background-color: #fff;
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+#breadcrumbs {
+  overflow: auto;
+  width: 100%;
+}
+#breadcrumbs li {
+  float: left;
+  margin: 0 0.5em 0.5em 0.8em;
+}
+#breadcrumbs a {
+  background: #ddd;
+  padding: 0 1em;
+  float: left;
+  text-decoration: none;
+  color: #444;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+  position: relative;
+}
+#breadcrumbs a:hover {
+  background: #5ac8fa;
+}
+#breadcrumbs a::before,
+#breadcrumbs a::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1em;
+  background: #ddd;
+  -webkit-transform: skew(-10deg);
+      -ms-transform: skew(-10deg);
+          transform: skew(-10deg);
+}
+#breadcrumbs a::before {
+  left: -0.5em;
+  border-radius: 5px 0 0 5px;
+}
+#breadcrumbs a:hover::before {
+  background: #5ac8fa;
+}
+#breadcrumbs a::after {
+  right: -0.5em;
+  border-radius: 0 5px 5px 0;
+}
+#breadcrumbs a:hover::after {
+  background: #5ac8fa;
+}
+#breadcrumbs .current,
+#breadcrumbs .current:hover {
+  font-weight: bold;
+  background: none;
+}
+#breadcrumbs .current::after,
+#breadcrumbs .current::before {
+  content: normal;
 }

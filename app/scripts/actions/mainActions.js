@@ -1,6 +1,5 @@
 import Reflux from 'reflux';
-
-var mockUrl = 'http://localhost:3000/';
+import urlGen from '../../util/urlGen.js';
 
 var MainActions = Reflux.createActions([
     'authenticationServiceValidate',
@@ -14,8 +13,10 @@ var MainActions = Reflux.createActions([
     'getCurrentUserSuccess',
     'getCurrentUserError',
     'isLoggedInHandler',
-    'showDialog',
-    'setPopupCmp'
+    'addToast',
+    'removeToast',
+    'closePhiModal',
+    'handleLogout'
 ]);
 
 MainActions.authenticationServiceValidate.preEmit = (appConfig, accessToken) => {
@@ -60,27 +61,28 @@ MainActions.getDdsApiToken.preEmit = (appConfig, signedInfo) => {
     });
 };
 
-MainActions.getCurrentUser.preEmit = (appConfig, apiToken, currentUser) => {
-    let url = mockUrl + 'db';
-    fetch(url)
+MainActions.getCurrentUser.preEmit = (apiToken) => {
+    fetch(urlGen.routes.ddsUrl + 'current_user', {
+        method: 'get',
+        headers: {
+            'Authorization': apiToken,
+            'Accept': 'application/json'
+        }
+    })
         .then(function (response) {
             return response.json()
         }).then(function (json) {
-            MainActions.getCurrentUserSuccess(json.current_user)
+            let currentUser = json.full_name;
+            MainActions.getCurrentUserSuccess(currentUser, json)
         })
         .catch(function (ex) {
             MainActions.getCurrentUserError(ex)
         });
 };
 
-MainActions.showDialog.preEmit = () => {
-    //this.refs.deleteProject.show();
-    console.log('clicked');
-};
+MainActions.handleLogout.preEmit = () => {
 
-//MainActions.setPopupCmp.preEmit = () => {
-//
-//};
+}
 
 
 export default MainActions;

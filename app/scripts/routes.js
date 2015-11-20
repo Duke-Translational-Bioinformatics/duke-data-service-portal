@@ -11,11 +11,10 @@ import NotFound from './pages/notFound.jsx';
 
 var routes = (
     <Route name="app" path="/" handler={ App }>
-        <Route name="access_token" handler={ Home } />
         <Route name="login" handler={ Login } />
         <Route name="loginTokens" path="/login/:tokens" handler={ Login } />
         <Route name="home" handler={ Home } />
-            <Route name="project/:id" handler={ Project } />
+        <Route name="project/:id" handler={ Project } />
         <Route name="folder/:id" handler={ Folder } />
         <Route name="file/:id" handler={File} />
         <DefaultRoute handler={ Home } />

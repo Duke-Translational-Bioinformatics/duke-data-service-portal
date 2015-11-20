@@ -3,31 +3,22 @@ import { RouteHandler } from 'react-router';
 import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
 import ProjectChildren from '../components/projectComponents/projectChildren.jsx';
-import ProjectDetails from '../components/projectComponents/projectDetails.jsx';
+import MemberManagement from '../components/projectComponents/memberManagement.jsx';
 import Header from '../components/globalComponents/header.jsx';
 
-let mui = require('material-ui'),
-    Snackbar = mui.Snackbar;
 
-
-class Project extends React.Component {
+class Members extends React.Component {
 
     constructor(props) {
         super(props);
         this.props = props;
         this.state = {
-            children: ProjectStore.children,
-            projects: ProjectStore.projects,
-            project: ProjectStore.project,
-            loading: false
+
         };
     }
 
     componentDidMount() {
-        let id = this.props.params.id;
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
-        ProjectActions.loadProjectChildren(id);
-        ProjectActions.showDetails(id);
         ProjectActions.getProjectMembers(id);
     }
 
@@ -38,11 +29,10 @@ class Project extends React.Component {
     render() {
         return (
             <div>
-                <ProjectDetails {...this.props} {...this.state} />
-                <ProjectChildren {...this.props} {...this.state} />
+                <MemberManagement {...this.props} {...this.state} />
             </div>
         );
     }
 }
 
-export default Project;
+export default Members;

@@ -1,8 +1,8 @@
-# React Material Starterkit
+# Duke Data Service Portal
 
-This react starterkit provides a prepared development environment based on [gulp](https://github.com/gulpjs/gulp), [stylus](https://github.com/LearnBoost/stylus) and [webpack](https://github.com/webpack/webpack). The internal data flow is handled with  [Reflux](https://github.com/spoike/refluxjs) and the routing is managed with the [React-Router](https://github.com/rackt/react-router). The UI is handled by [material-ui](http://material-ui.com/). This is just a slight addition to [react-starterkit](https://github.com/wbkd/react-starterkit). 
+This is a UI portal built for use with the Duke Data Service API. It is based on [gulp](https://github.com/gulpjs/gulp), [stylus](https://github.com/LearnBoost/stylus) and [webpack](https://github.com/webpack/webpack). The internal data flow is handled with  [Reflux](https://github.com/spoike/refluxjs) and the routing is managed with the [React-Router](https://github.com/rackt/react-router). The UI is handled by [material-ui](http://material-ui.com/) and Material Design Lite.
 
-## Get the kit
+## Get the portal
 
 ```
 $ git clone https://github.com/Duke-Translational-Bioinformatics/duke-data-service-portal.git 

@@ -1,12 +1,14 @@
 import React from 'react';
 import { RouteHandler, Link } from 'react-router';
-import Header from '../components/header.jsx';
-import LeftMenu from '../components/leftMenu.jsx';
+import Header from '../components/globalComponents/header.jsx';
+import Footer from '../components/globalComponents/footer.jsx';
+import LeftMenu from '../components/globalComponents/leftMenu.jsx';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions';
 import cookie from 'react-cookie';
 
-let mui = require('material-ui');
+let mui = require('material-ui'),
+    Snackbar = mui.Snackbar;
 let ThemeManager = new mui.Styles.ThemeManager();
 let appPalette = {
     primary1Color: "#303F9F",
@@ -23,6 +25,7 @@ class App extends React.Component {
             appConfig: MainStore.appConfig,
             apiToken: cookie.load('apiToken'),
             currentUser: cookie.load('currentUser'),
+            isLoggingIn: cookie.load('isLoggingIn'),
         }
     }
 
@@ -38,13 +41,17 @@ class App extends React.Component {
 
     componentDidMount() {
         this.unsubscribe = MainStore.listen(state => this.setState(state));
+        this.showToasts();
         new Framework7().addView('.view-main', {dynamicNavbar: true});
     }
 
     componentWillUnmount() {
         this.unsubscribe();
         new Framework7().closePanel();
+    }
 
+    componentDidUpdate(prevProps, prevState) {
+        this.showToasts();
     }
 
     createLoginUrl() {
@@ -53,9 +60,34 @@ class App extends React.Component {
 
 
     render() {
+        let str = this.props.appRouter.getCurrentPathname();
+        let fileRoute = str.substring(str.lastIndexOf("/")-6,str.lastIndexOf("/"));
+
+        let toasts = null;
+        if (this.state.toasts) {
+            toasts = this.state.toasts.map(obj => {
+                return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} autoHideDuration={1500}
+                                 openOnMount={true}/>
+            });
+        }
         let content = <RouteHandler {...this.props} {...this.state}/>;
-        if (!this.state.appConfig.apiToken && this.state.isLoggingIn == false && this.props.routerPath !== '/login') {
+        if (!this.state.appConfig.apiToken && !this.state.isLoggingIn && this.props.routerPath !== '/login') {
             this.props.appRouter.transitionTo('/login');
+        }
+        let search = '';
+        if (this.props.routerPath === '/' || this.props.routerPath === '/home' || fileRoute === '/file') {
+            search = <form className="searchbar" action="#">
+                <div className="searchbar-input">
+                    <a href="#" className="searchbar-clear"></a>
+                </div>
+                <a href="#" className="searchbar-cancel">Cancel</a>
+            </form>
+        } else {
+            search = <form data-search-list=".list-block-search" data-search-in=".item-title" className="searchbar searchbar-init" action="#">
+                <div className="searchbar-input">
+                    <input type="search" placeholder="Search" style={styles.searchBar}/>
+                </div>
+            </form>
         }
         return (
             <span>
@@ -64,33 +96,43 @@ class App extends React.Component {
                 {!this.state.appConfig.apiToken ? '' : <LeftMenu />}
                 <div className="views">
                     <div className="view view-main">
-                            <Header />
-                            <div className="pages navbar-through toolbar-through">
+                        <Header {...this.props} {...this.state}/>
+
+                        <div className="pages navbar-through toolbar-through">
                             <div data-page="index" className="page">
-                                {!this.state.appConfig.apiToken ? '' : <form className="searchbar" action="#">
-                                    <div className="searchbar-input">
-                                        <input type="search" placeholder="Search" style={styles.searchBar}/>
-                                        <a href="#" className="searchbar-clear"></a>
-                                    </div>
-                                    <a href="#" className="searchbar-cancel">Cancel</a>
-                                </form>}
+                                {!this.state.appConfig.apiToken ? '' : search}
                                 <div className="searchbar-overlay"></div>
                                 <div className="page-content">
                                     {content}
-                                    {this.props.children}
+                                    {toasts}
+                                    <div className="content-block searchbar-not-found">
+                                        <div className="content-block-inner">Nothing Found</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <Footer {...this.props} {...this.state}/>
                 </div>
             </span>
         );
     }
+
+    showToasts() {
+        if (this.state.toasts) {
+            this.state.toasts.map(obj => {
+                setTimeout(() => MainActions.removeToast(obj.ref), 1500);
+            });
+        }
+
+    }
 }
+
 var styles = {
     searchBar: {
         width: '50vw',
-        margin: '0 auto'
+        margin: '0 auto',
+        fontSize: '.9em'
     },
     loginWrapper: {
         width: '90vw',

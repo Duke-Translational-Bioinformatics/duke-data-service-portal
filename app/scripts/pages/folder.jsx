@@ -1,42 +1,36 @@
 import React from 'react'
-import FileActions from '../actions/fileActions';
-import FileStore from '../stores/fileStore';
-import FolderActions from '../actions/folderActions';
-import FolderStore from '../stores/folderStore';
-import FolderPath from '../components/folderPath.jsx';
-import FileList from '../components/fileList.jsx';
+import ProjectActions from '../actions/projectActions';
+import ProjectStore from '../stores/projectStore';
+import FolderPath from '../components/folderComponents/folderPath.jsx';
+import FolderChildren from '../components/folderComponents/folderChildren.jsx';
 
 class Folder extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            files: [],
-            folders: [],
+            children: ProjectStore.children,
+            project: ProjectStore.project,
             loading: false
         };
     }
 
     componentDidMount() {
-        this.unsubscribe = FileStore.listen(this.onStatusChange.bind(this));
-        FolderActions.loadFolders();
-        FileActions.loadFiles();
+        let id = this.props.params.id;
+        this.unsubscribe = ProjectStore.listen(state => this.setState(state));
+        ProjectActions.loadFolderChildren(id);
+        ProjectActions.getParent(id);
     }
 
     componentWillUnmount() {
         this.unsubscribe();
     }
 
-    onStatusChange(state) {
-        this.setState(state);
-    }
-
     render() {
-
         return (
             <div>
                 <FolderPath {...this.state} {...this.props} />
-                <FileList {...this.state} {...this.props} />
+                <FolderChildren {...this.state} {...this.props} />
             </div>
         );
     }

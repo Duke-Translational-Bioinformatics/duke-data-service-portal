@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import Header from '../components/header.jsx';
+import Header from '../components/globalComponents/header.jsx';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions.js';
 var mui = require('material-ui'),
@@ -37,33 +37,31 @@ class Login extends React.Component {
 
                         <h3>Please Login</h3>
                     </div>
-                    <a href={this.createLoginUrl()} className="external">
-                        <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored" onClick={MainStore.isLoggedInHandler}>
+                    <a href={this.createLoginUrl()} className="external" onClick={MainStore.isLoggedInHandler}>
+                        <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored">
                             LOGIN
                         </button>
                     </a>
                 </div>
             );
-            var splitUrl = window.location.hash.split('&');//Todo //////Need to fix this to be more defensive////////////
-            var accessToken = splitUrl[0].split('=')[1];
+            let splitUrl = window.location.hash.split('&');//Todo //////Need to fix this to be more defensive////////////
+            let accessToken = splitUrl[0].split('=')[1];
             if (this.state.error) {
                 content = this.state.error
             }
             else if (this.state.asValidateLoading || this.state.ddsApiTokenLoading) {
-                content = (<div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader"></div>);
+                content = (<div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader" style={styles.loader}></div>);
             }
             else if (this.state.signedInfo) {
                 MainActions.getDdsApiToken(this.state.appConfig, this.state.signedInfo);
             }
             else if (accessToken) {
                 MainActions.authenticationServiceValidate(this.state.appConfig, accessToken);
-                MainActions.getCurrentUser(accessToken);
             }
         } else {
+            //MainActions.getCurrentUser(this.state.appConfig);
             this.props.appRouter.transitionTo('/home');
         }
-
-
         return (
             <div>
                 <div className="content">
@@ -83,8 +81,8 @@ var styles = {
         padding: 10,
         marginTop: 80
     },
-    loginMessage: {
-
+    loader: {
+        margin: '0 auto'
     }
 };
 
