@@ -103,11 +103,11 @@ class App extends React.Component {
                                 {!this.state.appConfig.apiToken ? '' : search}
                                 <div className="searchbar-overlay"></div>
                                 <div className="page-content">
+                                    {content}
+                                    {toasts}
                                     <div className="content-block searchbar-not-found">
                                         <div className="content-block-inner">Nothing Found</div>
                                     </div>
-                                    {content}
-                                    {toasts}
                                 </div>
                             </div>
                         </div>

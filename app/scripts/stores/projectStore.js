@@ -355,7 +355,7 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    getFileParentSuccess(parent, name, projectName, createdOn, createdBy, lastUpdatedOn, lastUpdatedBy, ancestors, audit, json) {
+    getFileParentSuccess(parent, name, projectName, createdOn, createdBy, lastUpdatedOn, lastUpdatedBy, ancestors, storage, audit, json) {
         this.parentObj = parent;
         this.objName = name;
         this.createdOn = createdOn;
@@ -363,6 +363,7 @@ var ProjectStore = Reflux.createStore({
         this.lastUpdatedOn = lastUpdatedOn;
         this.lastUpdatedBy = lastUpdatedBy;
         this.ancestors = ancestors;
+        this.storage = storage;
         this.audit = audit;
         this.project = json;
         this.trigger({
@@ -373,6 +374,7 @@ var ProjectStore = Reflux.createStore({
             lastUpdatedOn: this.lastUpdatedOn,
             lastUpdatedBy: this.lastUpdatedBy,
             ancestors: this.ancestors,
+            storage: this.storage,
             audit: this.audit,
             project: this.project,
             loading: false

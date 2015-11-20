@@ -356,7 +356,8 @@ ProjectActions.getFileParent.preEmit = (id) => {
         let lastUpdateOn = json.audit.last_updated_on;
         let lastUpdateBy = json.audit.last_updated_by;
         let ancestors = json.ancestors;
-        ProjectActions.getFileParentSuccess(json.parent, json.name, fileName, createdOn, createdBy, lastUpdateOn, lastUpdateBy, ancestors, json.audit, json)
+        let storage = json.upload.storage_provider.description;
+        ProjectActions.getFileParentSuccess(json.parent, json.name, fileName, createdOn, createdBy, lastUpdateOn, lastUpdateBy, ancestors, storage, json.audit, json)
     })
         .catch(function (ex) {
             ProjectActions.getFileParentError(ex)

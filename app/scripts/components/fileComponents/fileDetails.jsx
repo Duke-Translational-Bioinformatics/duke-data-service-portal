@@ -35,6 +35,7 @@ class FileDetails extends React.Component {
         let createdOn = ProjectStore.createdOn;
         let createdBy = ProjectStore.createdBy;
         let lastUpdatedOn = ProjectStore.lastUpdatedOn;
+        let storage = ProjectStore.storage;
 
         function updatedBy () {
                 if(ProjectStore.lastUpdatedBy != null){
@@ -91,7 +92,7 @@ class FileDetails extends React.Component {
                             <span className="mdl-color-text--grey-800" style={styles.title}>{projectName}</span>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.details}>
-                        <span style={styles.spanTitle}>{name}</span>
+                        <span style={styles.spanTitle}>{name}</span><span></span>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                         <div className="list-block">
@@ -124,6 +125,12 @@ class FileDetails extends React.Component {
                                 <li className="item-content">
                                     <div className="item-inner">
                                         <div>{ lastUpdatedOn === null ? 'N/A' : lastUpdatedOn }</div>
+                                    </div>
+                                </li>
+                                <li className="item-divider">Storage Location</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ storage }</div>
                                     </div>
                                 </li>
                                 <li className="item-divider">File Path</li>

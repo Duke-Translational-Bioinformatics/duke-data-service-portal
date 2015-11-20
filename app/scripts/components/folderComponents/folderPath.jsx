@@ -25,7 +25,7 @@ class FolderPath extends React.Component {
         let name = ProjectStore.objName;
         let projectName = cookie.load('projName');
 
-        function getFilePath () {
+        function getFilePath() {
             if (ProjectStore.ancestors != undefined) {
                 var ancestors = ProjectStore.ancestors;
             } else {
@@ -37,7 +37,7 @@ class FolderPath extends React.Component {
             return path.join('');
         }
 
-        function getUrlPath () {
+        function getUrlPath() {
             let urlPath = '';
             if (parentKind === 'dds-project') {
                 urlPath = 'project/'
@@ -46,6 +46,8 @@ class FolderPath extends React.Component {
             }
             return urlPath;
         }
+
+        getFilePath();
 
         return (
             <div className="project-container group mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800"
