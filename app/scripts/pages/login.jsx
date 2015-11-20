@@ -44,8 +44,8 @@ class Login extends React.Component {
                     </a>
                 </div>
             );
-            var splitUrl = window.location.hash.split('&');//Todo //////Need to fix this to be more defensive////////////
-            var accessToken = splitUrl[0].split('=')[1];
+            let splitUrl = window.location.hash.split('&');//Todo //////Need to fix this to be more defensive////////////
+            let accessToken = splitUrl[0].split('=')[1];
             if (this.state.error) {
                 content = this.state.error
             }

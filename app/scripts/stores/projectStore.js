@@ -329,11 +329,14 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    getParentSuccess(parent, name) {
+    getParentSuccess(parent, name, ancestors) {
         this.parentObj = parent;
         this.objName = name;
+        this.ancestors = ancestors;
         this.trigger({
+            parentObj: this.parentObj,
             objName: this.objName,
+            ancestors: this.ancestors,
             loading: false
         })
     },
@@ -352,7 +355,7 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    getFileParentSuccess(parent, name, projectName, createdOn, createdBy, lastUpdatedOn, lastUpdatedBy, ancestors, audit, json) {
+    getFileParentSuccess(parent, name, projectName, createdOn, createdBy, lastUpdatedOn, lastUpdatedBy, ancestors, storage, audit, json) {
         this.parentObj = parent;
         this.objName = name;
         this.createdOn = createdOn;
@@ -360,6 +363,7 @@ var ProjectStore = Reflux.createStore({
         this.lastUpdatedOn = lastUpdatedOn;
         this.lastUpdatedBy = lastUpdatedBy;
         this.ancestors = ancestors;
+        this.storage = storage;
         this.audit = audit;
         this.project = json;
         this.trigger({
@@ -370,6 +374,7 @@ var ProjectStore = Reflux.createStore({
             lastUpdatedOn: this.lastUpdatedOn,
             lastUpdatedBy: this.lastUpdatedBy,
             ancestors: this.ancestors,
+            storage: this.storage,
             audit: this.audit,
             project: this.project,
             loading: false
@@ -412,12 +417,16 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    getUserIdSuccess(results, id, roleId) {
+    getUserIdSuccess(results, id, role) {
         let userInfo = results.map((result) => {
             return result.id
         });
+        let getName = results.map((result) => {
+            return result.full_name
+        });
         let userId = userInfo.toString();
-        ProjectActions.addProjectMember(id, userId, roleId);
+        let name = getName.toString();
+        ProjectActions.addProjectMember(id, userId, role, name);
         this.trigger({
             loading: false
         })

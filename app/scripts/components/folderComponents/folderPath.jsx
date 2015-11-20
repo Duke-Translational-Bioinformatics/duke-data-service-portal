@@ -25,12 +25,29 @@ class FolderPath extends React.Component {
         let name = ProjectStore.objName;
         let projectName = cookie.load('projName');
 
-        let urlPath = '';
-        if (parentKind === 'dds-project') {
-            urlPath = 'project/'
-        } else {
-            urlPath = 'folder/'
+        function getFilePath() {
+            if (ProjectStore.ancestors != undefined) {
+                var ancestors = ProjectStore.ancestors;
+            } else {
+                return null
+            }
+            let path = ancestors.map((path)=> {
+                return path.name + ' ' + '>' + ' ';
+            });
+            return path.join('');
         }
+
+        function getUrlPath() {
+            let urlPath = '';
+            if (parentKind === 'dds-project') {
+                urlPath = 'project/'
+            } else {
+                urlPath = 'folder/'
+            }
+            return urlPath;
+        }
+
+        getFilePath();
 
         return (
             <div className="project-container group mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800"
@@ -45,7 +62,7 @@ class FolderPath extends React.Component {
                         <FolderOptionsMenu {...this.props} />
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                        <a href={urlGen.routes.baseUrl + urlPath + parentId }
+                        <a href={urlGen.routes.baseUrl + getUrlPath() + parentId }
                            className="mdl-color-text--grey-800 external"
                            onTouchTap={this.handleTouchTap.bind(this, parentKind, parentId)}><i
                             className="material-icons"
@@ -57,6 +74,9 @@ class FolderPath extends React.Component {
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.breadcrumbs}>
                         <h5><i className="material-icons" style={styles.folderIcon}>folder_open</i>{name}</h5>
+                    </div>
+                    <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.breadcrumbs}>
+                        <h6>{ getFilePath() + name }</h6>
                     </div>
                 </div>
             </div>

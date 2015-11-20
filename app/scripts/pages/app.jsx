@@ -60,6 +60,9 @@ class App extends React.Component {
 
 
     render() {
+        let str = this.props.appRouter.getCurrentPathname();
+        let fileRoute = str.substring(str.lastIndexOf("/")-6,str.lastIndexOf("/"));
+
         let toasts = null;
         if (this.state.toasts) {
             toasts = this.state.toasts.map(obj => {
@@ -72,7 +75,7 @@ class App extends React.Component {
             this.props.appRouter.transitionTo('/login');
         }
         let search = '';
-        if (this.props.routerPath === '/home') {
+        if (this.props.routerPath === '/' || this.props.routerPath === '/home' || fileRoute === '/file') {
             search = <form className="searchbar" action="#">
                 <div className="searchbar-input">
                     <a href="#" className="searchbar-clear"></a>
@@ -80,12 +83,10 @@ class App extends React.Component {
                 <a href="#" className="searchbar-cancel">Cancel</a>
             </form>
         } else {
-            search = <form className="searchbar" action="#">
+            search = <form data-search-list=".list-block-search" data-search-in=".item-title" className="searchbar searchbar-init" action="#">
                 <div className="searchbar-input">
                     <input type="search" placeholder="Search" style={styles.searchBar}/>
-                    <a href="#" className="searchbar-clear"></a>
                 </div>
-                <a href="#" className="searchbar-cancel">Cancel</a>
             </form>
         }
         return (
@@ -104,6 +105,9 @@ class App extends React.Component {
                                 <div className="page-content">
                                     {content}
                                     {toasts}
+                                    <div className="content-block searchbar-not-found">
+                                        <div className="content-block-inner">Nothing Found</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

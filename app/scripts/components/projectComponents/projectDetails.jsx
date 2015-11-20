@@ -105,6 +105,7 @@ var Details = React.createClass({
         let lastUpdatedOn = ProjectStore.lastUpdatedOn;
         let lastUpdatedBy = ProjectStore.lastUpdatedBy;
         let users = ProjectStore.projectMembers;
+        let currentUser = cookie.load('currentUser');
 
         let members = ProjectStore.projectMembers.map((users)=> {
             return <li key={users.user.id}>
@@ -113,7 +114,7 @@ var Details = React.createClass({
                     <div className="item-inner">
                         <div className="item-title">{users.user.full_name}</div>
                         <div className="item-after"><a href="#" onTouchTap={() => this.handleTouchTap(users.user.id, users.user.full_name)}>
-                            <i className="material-icons" style={styles.deleteIcon}>cancel</i></a>
+                            {users.user.full_name != currentUser ? <i className="material-icons" style={styles.deleteIcon}>cancel</i> : ''}</a>
                         </div>
                     </div>
                 </div>
