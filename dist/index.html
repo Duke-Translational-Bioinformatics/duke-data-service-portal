@@ -19,6 +19,22 @@
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
     <script type='text/javascript'> //Todo: ////////remove this for release////////////////////////////////////////
+    function randomString(length, chars) {
+        var result = '';
+        for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
+        return result;
+    }
+    var randString = randomString(32, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+    var DDS_PORTAL_CONFIG = {
+        baseUrl : 'https://192.168.99.100:3001',
+        authServiceUri: 'https://dds-dev.duhs.duke.edu/duke_authentication_service',
+        serviceId: 'c87de9f2-1690-4523-87dc-6395f665a757',
+        authServiceName: 'Duke Authentication Service',
+        securityState: randString,
+        apiToken: null,
+        isLoggedIn: null,
+        currentUser: null
+    };
         (function (d, t) {
             var bh = d.createElement(t), s = d.getElementsByTagName(t)[0];
             bh.type = 'text/javascript';

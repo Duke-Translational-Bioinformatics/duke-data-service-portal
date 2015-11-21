@@ -11,7 +11,8 @@ class File extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            loading: false
+            loading: false,
+            project: ProjectStore.project
         };
     }
 

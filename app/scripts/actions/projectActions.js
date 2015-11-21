@@ -5,7 +5,6 @@ import urlGen from '../../util/urlGen.js';
 import appConfig from '../config';
 import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.js';
 
-var mockUrl = 'http://localhost:3000/';
 //var urlGen.routes.ddsUrl = 'https://dukeds-dev.herokuapp.com/api/v1/';
 
 var ProjectActions = Reflux.createActions([

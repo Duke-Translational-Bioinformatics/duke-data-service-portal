@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
@@ -33,7 +34,7 @@ class FileDetails extends React.Component {
         let name = ProjectStore.objName;
         let projectName = cookie.load('projName');
         let createdOn = ProjectStore.createdOn;
-        let createdBy = ProjectStore.createdBy;
+        let createdBy = this.props.project && this.props.project.audit ? this.props.project.audit.created_by.full_name : null;  //ProjectStore.createdBy;
         let lastUpdatedOn = ProjectStore.lastUpdatedOn;
         let storage = ProjectStore.storage;
 
@@ -255,24 +256,10 @@ FileDetails.contextTypes = {
 };
 
 FileDetails.propTypes = {
-    loading: React.PropTypes.bool,
-    details: React.PropTypes.array,
-    error: React.PropTypes.string
+    project: object.isRequired,
+    loading: bool,
+    details: array,
+    error: string
 };
 
-
 export default FileDetails;
-
-//<button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
-//        style={styles.fullView}>
-//    FULL VIEW
-//</button>
-//<div className="project-container mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800"
-//style={styles.container}>
-//</div>color-text--grey-600" style={styles.folderName}>KOMP Data</span>
-//
-//<i className="material-icons mdl-color-text--grey-600" style={styles.moreIcon}>keyboard_arrow_right</i>
-//<span className="mdl-color-text--grey-600" style={styles.folderName}><a href="#" className="mdl-color-text--grey-600">KOMP
-//    Data</a></span><i className="material-icons mdl-color-text--grey-600"
-//                      style={styles.moreIcon}>keyboard_arrow_right</i>
-//<span className="mdl-color-text--grey-600" style={styles.folderName}>KOMP Data</span>
