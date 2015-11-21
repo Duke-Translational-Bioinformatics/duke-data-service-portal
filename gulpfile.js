@@ -36,7 +36,7 @@ gulp.task('scripts', function() {
 
 // copy html from app to dist
 gulp.task('html', function() {
-  return gulp.src(app + 'index.html').src(app + 'index.erb')
+  return gulp.src(app + 'index.html')//.src(app + 'index.erb')
       .pipe(gulp.dest(dist))
       .pipe($.size({ title : 'html' }))
       .pipe($.connect.reload());

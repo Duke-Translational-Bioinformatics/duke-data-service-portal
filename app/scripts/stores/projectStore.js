@@ -67,19 +67,13 @@ var ProjectStore = Reflux.createStore({
     },
 
     showDetailsSuccess(projectName, createdOn, createdBy, lastUpdatedOn, lastUpdatedBy, audit, json) {
-        let projectName = json.name;
-        let createdOn = json.audit.created_on;
-        let createdBy = json.audit.created_by.full_name;
-        let lastUpdateOn = json.audit.last_updated_on;
-        let lastUpdateBy = json.audit.last_updated_by.full_name;
-
-        //this.projectName = projectName;
+        this.projectName = projectName;
         cookie.save('projName', this.projectName);
-        //this.createdOn = createdOn;
-        //this.createdBy = createdBy;
-        //this.lastUpdatedOn = lastUpdatedOn;
-        //this.lastUpdatedBy = lastUpdatedBy;
-        this.audit = json.audit;
+        this.createdOn = createdOn;
+        this.createdBy = createdBy;
+        this.lastUpdatedOn = lastUpdatedOn;
+        this.lastUpdatedBy = lastUpdatedBy;
+        this.audit = audit;
         this.project = json;
         this.trigger({
             projectName: this.projectName,
