@@ -18,12 +18,22 @@ class Folder extends React.Component {
     componentDidMount() {
         let id = this.props.params.id;
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
-        ProjectActions.loadFolderChildren(id);
-        ProjectActions.getParent(id);
+        this._loadFolder(id);
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        let id = this.props.params.id;
+        if(prevProps.params.id !== this.props.params.id)
+            this._loadFolder(id);
     }
 
     componentWillUnmount() {
         this.unsubscribe();
+    }
+
+    _loadFolder(id) {
+        ProjectActions.loadFolderChildren(id);
+        ProjectActions.getContainer(id);
     }
 
     render() {

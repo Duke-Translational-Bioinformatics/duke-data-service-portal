@@ -17,8 +17,15 @@
           content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
-    <script src="<%= @asset_path %>lib/dds_portal_config.js"></script>
     <script type='text/javascript'>
+    var DDS_PORTAL_CONFIG = {
+        serviceId: '<%= @serviceID -%>',
+        baseUrl: '<%= @baseUrl -%>',
+        authServiceUri: '<%= @authServiceUri -%>',
+        authServiceName: '<%= @authServiceName -%>',
+        securityState:'<%= @securityState -%>'
+    };
+
     if (DDS_PORTAL_CONFIG.stack != 'production') {
         (function (d, t) {
             var bh = d.createElement(t), s = d.getElementsByTagName(t)[0];

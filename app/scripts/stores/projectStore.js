@@ -201,7 +201,7 @@ var ProjectStore = Reflux.createStore({
     deleteFolderSuccess(parentId, parentKind) {
         if(parentKind === 'dds-folder'){
             ProjectActions.loadFolderChildren(parentId);
-            ProjectActions.getParent(parentId);
+            ProjectActions.getContainer(parentId);
         } else {
             ProjectActions.loadProjectChildren(parentId);
         }
@@ -226,7 +226,7 @@ var ProjectStore = Reflux.createStore({
 
     editFolderSuccess(id) {
         ProjectActions.loadFolderChildren(id);
-        ProjectActions.getParent(id);
+        ProjectActions.getContainer(id);
         this.trigger({
             loading: false
         })
@@ -271,7 +271,7 @@ var ProjectStore = Reflux.createStore({
     deleteFileSuccess(parentId, parentKind) {
         if(parentKind === 'dds-folder'){
             ProjectActions.loadFolderChildren(parentId);
-            ProjectActions.getParent(parentId);
+            ProjectActions.getContainer(parentId);
         } else {
             ProjectActions.loadProjectChildren(parentId);
         }
@@ -310,25 +310,21 @@ var ProjectStore = Reflux.createStore({
     },
 
 
-    getParent() {
+    getContainer() {
         this.trigger({
             loading: true
         })
     },
 
-    getParentSuccess(parent, name, ancestors) {
-        this.parentObj = parent;
-        this.objName = name;
-        this.ancestors = ancestors;
+    getContainerSuccess(json) {
+        this.parentObj = json;
         this.trigger({
             parentObj: this.parentObj,
-            objName: this.objName,
-            ancestors: this.ancestors,
             loading: false
         })
     },
 
-    getParentError(error) {
+    getContainerError(error) {
         let errMsg = error && error.message ? "Error: " : + 'An error occurred while trying to delete this file.';
         this.trigger({
             error: errMsg,

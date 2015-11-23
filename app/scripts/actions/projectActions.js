@@ -51,9 +51,9 @@ var ProjectActions = Reflux.createActions([
     'editFile',
     'editFileSuccess',
     'editFileError',
-    'getParent',
-    'getParentSuccess',
-    'getParentError',
+    'getContainer',
+    'getContainerSuccess',
+    'getContainerError',
     'getFileParent',
     'getFileParentSuccess',
     'getFileParentError',
@@ -316,7 +316,7 @@ ProjectActions.editFile.preEmit = function (id, fileName) {
     });
 };
 
-ProjectActions.getParent.preEmit = (id) => {
+ProjectActions.getContainer.preEmit = (id) => {
     fetch(urlGen.routes.ddsUrl + 'folders/' + id, {
         method: 'get',
         headers: {
@@ -326,11 +326,10 @@ ProjectActions.getParent.preEmit = (id) => {
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        let ancestors = json.ancestors;
-        ProjectActions.getParentSuccess(json.parent, json.name, ancestors)
+        ProjectActions.getContainerSuccess(json)
     })
         .catch(function (ex) {
-            ProjectActions.getParentError(ex)
+            ProjectActions.getContainerError(ex)
         });
 };
 
