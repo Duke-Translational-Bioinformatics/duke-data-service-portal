@@ -4,9 +4,7 @@
     <bookmark url="file://$PROJECT_DIR$/package.json" line="50" mnemonic="7" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0cf15d1e-a3ea-493c-832c-6467930d357e" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/config.js" afterPath="$PROJECT_DIR$/app/scripts/config.js" />
-    </list>
+    <list default="true" id="0cf15d1e-a3ea-493c-832c-6467930d357e" name="Default" comment="" />
     <ignored path="duke-data-service-portal.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -71,7 +69,7 @@
         <entry file="file://$PROJECT_DIR$/app/scripts/config.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.284492">
-              <caret line="14" column="25" selection-start-line="14" selection-start-column="25" selection-end-line="14" selection-end-column="25" />
+              <caret line="14" column="17" selection-start-line="14" selection-start-column="17" selection-end-line="14" selection-end-column="17" />
               <folding />
             </state>
           </provider>
@@ -4367,12 +4365,12 @@
       <workItem from="1447808181787" duration="28637000" />
       <workItem from="1447971355208" duration="30884000" />
       <workItem from="1448317032832" duration="4457000" />
-      <workItem from="1448321807070" duration="89000" />
+      <workItem from="1448321807070" duration="123000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="832124000" />
+    <option name="totallyTimeSpent" value="832158000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -4829,7 +4827,7 @@
     <entry file="file://$PROJECT_DIR$/app/scripts/config.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.284492">
-          <caret line="14" column="25" selection-start-line="14" selection-start-column="25" selection-end-line="14" selection-end-column="25" />
+          <caret line="14" column="17" selection-start-line="14" selection-start-column="17" selection-end-line="14" selection-end-column="17" />
           <folding />
         </state>
       </provider>
