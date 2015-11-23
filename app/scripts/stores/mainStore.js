@@ -82,7 +82,7 @@ var MainStore = Reflux.createStore({
     },
 
     getCurrentUser () {
-       
+
     },
 
     getCurrentUserSuccess (currentUser, json) {
@@ -124,8 +124,8 @@ var MainStore = Reflux.createStore({
 
     addToast(msg) {
         this.toasts.push({
-          msg: msg,
-          ref: 'toast' + Math.floor(Math.random()*10000)
+            msg: msg,
+            ref: 'toast' + Math.floor(Math.random()*10000)
         });
         this.trigger({
             toasts: this.toasts
@@ -150,30 +150,6 @@ var MainStore = Reflux.createStore({
         cookie.save('modalOpen', this.modalOpen, {expires: expiresAt});
         this.trigger({
             modalOpen: this.modalOpen
-        })
-    },
-
-    addBreadCrumbs(url) {
-        this.breadCrumbs.push({
-            url: url,
-            id: '',
-            name: '',
-            ref: 'breadCrumb' + Math.floor(Math.random()*10000)
-        });
-        this.trigger({
-            breadCrumbs: this.breadCrumbs
-        });
-    },
-
-    removeBreadCrumbs(refId) {
-        for(let i=0; i < this.breadCrumbs.length; i++){
-            if (this.breadCrumbs[i].ref === refId) {
-                this.breadCrumbs.splice(i, 1);
-                break;
-            }
-        }
-        this.trigger({
-            breadCrumbs: this.breadCrumbs
         })
     }
 

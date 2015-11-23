@@ -113,12 +113,7 @@ ProjectActions.showDetails.preEmit = function (id) {
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        let projectName = json.name;
-        let createdOn = json.audit.created_on;
-        let createdBy = json.audit.created_by.full_name;
-        let lastUpdateOn = json.audit.last_updated_on;
-        let lastUpdateBy = json.audit.last_updated_by.full_name;
-        ProjectActions.showDetailsSuccess(projectName, createdOn, createdBy, lastUpdateOn, lastUpdateBy, json.audit, json)
+        ProjectActions.showDetailsSuccess(json)
     }).catch(function (ex) {
         ProjectActions.showDetailsError(ex)
     })

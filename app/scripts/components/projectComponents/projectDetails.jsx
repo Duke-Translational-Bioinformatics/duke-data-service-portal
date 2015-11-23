@@ -19,20 +19,15 @@ class ProjectDetails extends React.Component {
 
     constructor() {
         this.state = {
-            showDetails: false,
-            project: ProjectStore.project,
-            audit: ProjectStore.audit
+            showDetails: false
         }
     }
 
     render() {
         let id = this.props.params.id;
-        let details = this.props.project;
-        let auditDetails = this.props.audit;
-        let createdOn = ProjectStore.createdOn;
-        let createdBy = ProjectStore.createdBy;
-        let projectName = details.name;
-
+        let createdBy = this.props.project && this.props.project.audit ? this.props.project.audit.created_by.full_name : null;
+        let projectName = this.props.project ? this.props.project.name : null;
+        let createdOn = this.props.project && this.props.project.audit ? this.props.project.audit.created_on : null;
         let error = '';
 
         let addProjectLoading = this.props.addProjectLoading ?
@@ -76,7 +71,7 @@ class ProjectDetails extends React.Component {
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                         <div style={styles.moreDetails} className={!this.state.showDetails ? 'less' : 'more'}>
-                            { this.state.showDetails ? <Details {...this.props}/> : null }
+                            { this.state.showDetails ? <Details {...this.props} {...this.state}/> : null }
                         </div>
                     </div>
                 </div>
@@ -96,18 +91,15 @@ class ProjectDetails extends React.Component {
 }
 
 var Details = React.createClass({
-    getInitialState(){
-        return {}
-    },
     render() {
-        let description = ProjectStore.project.description;
-        let projectId = ProjectStore.project.id;
-        let lastUpdatedOn = ProjectStore.lastUpdatedOn;
-        let lastUpdatedBy = ProjectStore.lastUpdatedBy;
-        let users = ProjectStore.projectMembers;
-        let currentUser = cookie.load('currentUser');
+        let description = this.props.project ? this.props.project.description : null;
+        let projectId =  this.props.project ? this.props.project.id : null;
+        let lastUpdatedOn = this.props.project && this.props.project.audit ? this.props.project.audit.last_updated_on : null;
+        let lastUpdatedBy = this.props.project && this.props.project.audit ? this.props.project.audit.last_updated_by : null;
+        let users = this.props.projectMembers ? this.props.projectMembers : null;
+        let currentUser = this.props.currentUser ? this.props.currentUser : null;
 
-        let members = ProjectStore.projectMembers.map((users)=> {
+        let members = users.map((users)=> {
             return <li key={users.user.id}>
                 <div className="item-content">
                     <div className="item-media"><i className="material-icons">face</i></div>

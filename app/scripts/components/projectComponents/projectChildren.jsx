@@ -32,7 +32,7 @@ class ProjectChildren extends React.Component {
                 return (
                     <li key={ children.id } className="hover">
                         <a href={urlGen.routes.baseUrl + "folder/" + children.id}
-                           className="item-content external" onTouchTap={() => this.handleTouchTap(children.id, kind)}>
+                           className="item-content external">
                             <div className="item-media"><i className="material-icons"
                                                            style={styles.icon}>folder</i>
                             </div>
@@ -49,7 +49,7 @@ class ProjectChildren extends React.Component {
                 return (
                 <li key={ children.id } className="hover">
                     <a href={urlGen.routes.baseUrl + "file/" + children.id}
-                       className="item-content external" onTouchTap={() => this.handleTouchTap(children.id, kind)}>
+                       className="item-content external">
                         <div className="item-media"><i className="material-icons"
                                                        style={styles.icon}>description</i>
                         </div>
@@ -91,13 +91,6 @@ class ProjectChildren extends React.Component {
             </div>
         );
     }
-    handleTouchTap(id, kind) {
-        if(!kind){
-            return null
-        }else{
-            ProjectActions.getFolderInfo(id);
-        }
-    }
 }
 
 ProjectChildren.contextTypes = {
@@ -137,7 +130,7 @@ ProjectChildren.propTypes = {
     loading: React.PropTypes.bool,
     projects: React.PropTypes.array,
     error: React.PropTypes.string,
-    is_deleted: React.PropTypes.bool,
+    is_deleted: React.PropTypes.bool
 };
 
 export default ProjectChildren;

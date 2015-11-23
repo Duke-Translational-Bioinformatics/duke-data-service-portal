@@ -14,9 +14,7 @@ var mui = require('material-ui'),
 class FolderChildren extends React.Component {
 
     constructor() {
-        this.state = {
-            objName: ProjectStore.objName
-        }
+
     }
 
     render() {
@@ -140,9 +138,10 @@ var styles = {
 
 FolderChildren.propTypes = {
     loading: React.PropTypes.bool,
+    children: React.PropTypes.array,
     projects: React.PropTypes.array,
     error: React.PropTypes.string,
-    is_deleted: React.PropTypes.bool,
+    is_deleted: React.PropTypes.bool
 };
 
 export default FolderChildren;

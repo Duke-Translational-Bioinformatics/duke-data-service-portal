@@ -46,7 +46,7 @@ class Home extends React.Component {
                     title="Terms of Use - Protected Health Information"
                     actions={standardActions}
                     ref="phi"
-                    defaultOpen={this.state.modalOpen}
+                    openImmediately={this.state.modalOpen}
                     modal={true}>
                     <div style={{height: '300px'}}>
                         <p style={styles.main}><b>The Health Insurance Portability and Accountability Act of 1996 (HIPAA) established standards

@@ -5,8 +5,10 @@ let appConfig = {
     baseUrl: DDS_PORTAL_CONFIG.baseUrl,
     authServiceUri: DDS_PORTAL_CONFIG.authServiceUri,
     authServiceName:  DDS_PORTAL_CONFIG.authServiceName,
-    securityState: DDS_PORTAL_CONFIG.securityState
+    securityState: DDS_PORTAL_CONFIG.securityState,
+    apiToken: null,
+    isLoggedIn: null,
+    currentUser: null
 };
-
 
 export default appConfig;
