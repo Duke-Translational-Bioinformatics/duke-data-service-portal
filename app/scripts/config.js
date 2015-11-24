@@ -1,5 +1,3 @@
-import DDS_PORTAL_CONFIG from '../lib/dds_portal_config.js';
-
 let appConfig = {
     serviceId: DDS_PORTAL_CONFIG.serviceId,
     baseUrl: DDS_PORTAL_CONFIG.baseUrl,
