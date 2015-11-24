@@ -3,6 +3,7 @@ import { RouteHandler } from 'react-router';
 import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
 import MainStore from '../stores/mainStore';
+import MainActions from '../actions/mainActions';
 import ProjectChildren from '../components/projectComponents/projectChildren.jsx';
 import ProjectDetails from '../components/projectComponents/projectDetails.jsx';
 import Header from '../components/globalComponents/header.jsx';
@@ -31,6 +32,7 @@ class Project extends React.Component {
         ProjectActions.loadProjectChildren(id);
         ProjectActions.showDetails(id);
         ProjectActions.getProjectMembers(id);
+        MainActions.getCurrentUser();
     }
 
     componentWillUnmount() {

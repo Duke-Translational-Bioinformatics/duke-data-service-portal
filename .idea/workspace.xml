@@ -5,7 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0cf15d1e-a3ea-493c-832c-6467930d357e" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/config.js" afterPath="$PROJECT_DIR$/app/scripts/config.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/pages/project.jsx" afterPath="$PROJECT_DIR$/app/scripts/pages/project.jsx" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/scripts/components/projectComponents/projectDetails.jsx" afterPath="$PROJECT_DIR$/app/scripts/components/projectComponents/projectDetails.jsx" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="duke-data-service-portal.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -47,11 +49,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="config.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="config.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/scripts/config.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.24385026">
-              <caret line="12" column="25" selection-start-line="12" selection-start-column="25" selection-end-line="12" selection-end-column="25" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="4" column="56" selection-start-line="4" selection-start-column="56" selection-end-line="4" selection-end-column="56" />
               <folding />
             </state>
           </provider>
@@ -67,11 +69,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="projectDetails.jsx" pinned="false" current-in-tab="false">
+      <file leaf-file-name="projectDetails.jsx" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/scripts/components/projectComponents/projectDetails.jsx">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="19" column="22" selection-start-line="19" selection-start-column="22" selection-end-line="19" selection-end-column="22" />
+            <state vertical-scroll-proportion="0.1828877">
+              <caret line="16" column="46" selection-start-line="16" selection-start-column="46" selection-end-line="16" selection-end-column="46" />
               <folding />
             </state>
           </provider>
@@ -81,7 +83,7 @@
         <entry file="file://$PROJECT_DIR$/app/scripts/pages/project.jsx">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="32" column="45" selection-start-line="32" selection-start-column="45" selection-end-line="32" selection-end-column="45" />
+              <caret line="23" column="47" selection-start-line="23" selection-start-column="47" selection-end-line="23" selection-end-column="47" />
               <folding />
             </state>
           </provider>
@@ -138,7 +140,6 @@
         <option value="$PROJECT_DIR$/app/lib/dds_portal_config.js" />
         <option value="$PROJECT_DIR$/app/scripts/pages/home.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/components/projectComponents/projectList.jsx" />
-        <option value="$PROJECT_DIR$/app/scripts/components/projectComponents/projectDetails.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/pages/file.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/components/folderComponents/folderPath.jsx" />
         <option value="$PROJECT_DIR$/app/util/urlGen.js" />
@@ -152,12 +153,13 @@
         <option value="$PROJECT_DIR$/app/scripts/components/globalComponents/currentUser.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/stores/mainStore.js" />
         <option value="$PROJECT_DIR$/app/scripts/components/globalComponents/header.jsx" />
-        <option value="$PROJECT_DIR$/app/scripts/pages/project.jsx" />
         <option value="$PROJECT_DIR$/app/stylus/main.styl" />
         <option value="$PROJECT_DIR$/app/scripts/pages/app.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/components/projectComponents/projectChildren.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/components/folderComponents/folderChildren.jsx" />
         <option value="$PROJECT_DIR$/app/scripts/config.js" />
+        <option value="$PROJECT_DIR$/app/scripts/pages/project.jsx" />
+        <option value="$PROJECT_DIR$/app/scripts/components/projectComponents/projectDetails.jsx" />
       </list>
     </option>
   </component>
@@ -4347,12 +4349,12 @@
       <workItem from="1448322703984" duration="52000" />
       <workItem from="1448322758712" duration="370000" />
       <workItem from="1448323754207" duration="11939000" />
-      <workItem from="1448388354146" duration="4357000" />
+      <workItem from="1448388354146" duration="4714000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="841729000" />
+    <option name="totallyTimeSpent" value="842086000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -4777,14 +4779,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/pages/project.jsx">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="32" column="45" selection-start-line="32" selection-start-column="45" selection-end-line="32" selection-end-column="45" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/scripts/stores/projectStore.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -4801,14 +4795,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/scripts/components/projectComponents/projectDetails.jsx">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="19" column="22" selection-start-line="19" selection-start-column="22" selection-end-line="19" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/scripts/pages/app.jsx">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -4819,8 +4805,24 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/scripts/config.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.24385026">
-          <caret line="12" column="25" selection-start-line="12" selection-start-column="25" selection-end-line="12" selection-end-column="25" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="4" column="56" selection-start-line="4" selection-start-column="56" selection-end-line="4" selection-end-column="56" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/pages/project.jsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="23" column="47" selection-start-line="23" selection-start-column="47" selection-end-line="23" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/scripts/components/projectComponents/projectDetails.jsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.1828877">
+          <caret line="16" column="46" selection-start-line="16" selection-start-column="46" selection-end-line="16" selection-end-column="46" />
           <folding />
         </state>
       </provider>
