@@ -8,19 +8,14 @@ class CurrentUser extends React.Component {
 
     constructor(props, context) {
         super(props);
-        this.state = {
-            appConfig: MainStore.appConfig,
-            currentUser: MainStore.currentUser
-        }
     }
 
     render() {
-        if (!this.state.appConfig.apiToken) {
+        if (!this.props.appConfig.apiToken) {
             return null
         }
-        else if (this.state.appConfig.apiToken) {
-            let user = cookie.load('currentUser');
-            let currentUser = user;
+        else if (this.props.appConfig.apiToken) {
+            let currentUser = this.props.currentUser ? this.props.currentUser.full_name : null;
             return (
                 <span>
                     <span style={styles.currentUser}>{currentUser}</span>

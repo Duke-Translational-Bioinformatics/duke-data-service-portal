@@ -14,8 +14,8 @@ let mui = require('material-ui'),
 
 class ProjectList extends React.Component {
 
-    constructor() {
-
+    constructor(props) {
+        super(props)
     }
 
     render() {

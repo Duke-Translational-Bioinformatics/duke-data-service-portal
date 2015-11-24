@@ -16,11 +16,7 @@ var mui = require('material-ui'),
 class FileDetails extends React.Component {
 
     constructor() {
-        this.state = {
-            projectObj: ProjectStore.projectObj,
-            objName: ProjectStore.objName,
-            projName: cookie.load('projName')
-        }
+
     }
 
     render() {
@@ -28,35 +24,26 @@ class FileDetails extends React.Component {
         let loading = this.props.loading ?
             <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
         let id = this.props.params.id;
-        let details = ProjectStore.project;
-        let parentKind = ProjectStore.parentObj.kind;
-        let parentId = ProjectStore.parentObj.id;
-        let name = ProjectStore.objName;
-        let projectName = cookie.load('projName');
-        let createdOn = ProjectStore.createdOn;
-        let createdBy = this.props.project && this.props.project.audit ? this.props.project.audit.created_by.full_name : null;  //ProjectStore.createdBy;
-        let lastUpdatedOn = ProjectStore.lastUpdatedOn;
-        let storage = ProjectStore.storage;
+        let ancestors = this.props.parentObj ? this.props.parentObj.ancestors : null;
+        let parentKind = this.props.parentObj ? this.props.parentObj.parent.kind : null;
+        let parentId = this.props.parentObj ? this.props.parentObj.parent.id : null;
+        let name = this.props.parentObj ? this.props.parentObj.name : null;
+        let projectName = this.props.parentObj && this.props.parentObj.ancestors ? this.props.parentObj.ancestors[0].name : null;
+        let createdOn = this.props.parentObj && this.props.parentObj.audit ? this.props.parentObj.audit.created_on : null;
+        let createdBy = this.props.parentObj && this.props.parentObj.audit ? this.props.parentObj.audit.created_by.full_name : null;
+        let lastUpdatedOn = this.props.parentObj && this.props.parentObj.audit ? this.props.parentObj.audit.last_updated_on : null;
+        let lastUpdatedBy = this.props.parentObj && this.props.parentObj.audit ? this.props.parentObj.audit.last_updated_by.full_name : null;
+        let storage =  this.props.parentObj && this.props.parentObj.audit ? this.props.parentObj.upload.storage_provider.description : null;
 
-        function updatedBy () {
-                if(ProjectStore.lastUpdatedBy != null){
-                    var lastUpdatedBy = ProjectStore.lastUpdatedBy;
-                } else {
-                    return 'N/A';
-                }
-            return lastUpdatedBy.full_name;
-        };
-
-        function getFilePath () {
-            if (ProjectStore.ancestors != undefined) {
-                var ancestors = ProjectStore.ancestors;
-            } else {
+        function getFilePath() {
+            if (ancestors != undefined) {
+                let path = ancestors.map((path)=> {
+                    return path.name + ' ' + '>' + ' ';
+                });
+                return path.join('');
+            }else{
                 return null
             }
-            let path = ancestors.map((path)=> {
-                return path.name + ' ' + '>' + ' ';
-            });
-            return path.join('');
         }
 
         function getUrlPath () {
@@ -84,9 +71,8 @@ class FileDetails extends React.Component {
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
                         <a href={urlGen.routes.baseUrl + getUrlPath() + parentId } style={styles.back}
-                           className="mdl-color-text--grey-800 external"
-                           onTouchTap={this.handleTouchTap.bind(this, parentKind, parentId)}><i
-                            className="material-icons"
+                           className="mdl-color-text--grey-800 external">
+                            <i className="material-icons"
                             style={styles.backIcon}>keyboard_backspace</i>Back</a>
                     </div>
                     <div className="mdl-cell mdl-cell--3-col mdl-cell--4-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
@@ -119,7 +105,7 @@ class FileDetails extends React.Component {
                                 <li className="item-divider">Last Updated By</li>
                                 <li className="item-content">
                                     <div className="item-inner">
-                                        <div>{ updatedBy() }</div>
+                                        <div>{ lastUpdatedBy === null ? 'N/A' : lastUpdatedBy}</div>
                                     </div>
                                 </li>
                                 <li className="item-divider">Last Updated On</li>
@@ -149,28 +135,7 @@ class FileDetails extends React.Component {
             </div>
         );
     }
-
-    //handleTouchTapDetails() {
-    //    if (!this.state.showDetails) {
-    //        this.setState({showDetails: true})
-    //    } else {
-    //        this.setState({showDetails: false})
-    //    }
-    //}
-    //
-    handleTouchTap(parentKind, parentId) {
-        let id = parentId;
-        if (parentKind === 'dds-project') {
-            ProjectActions.loadProjectChildren(id);
-        } else {
-            ProjectActions.loadFolderChildren(id, ProjectActions.getParent(id));
-        }
-    }
 }
-//<button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
-//        onClick={this.handleTouchTapDetails.bind(this)}>
-//    {!this.state.showDetails ? 'FILE HISTORY' : 'HIDE HISTORY'}
-//</button>
 
 var styles = {
     container: {

@@ -15,11 +15,11 @@ class FolderPath extends React.Component {
     render() {
         let id = this.props.params.id;
         let parentObj = this.props.parentObj ? this.props.parentObj : null;
+        let projectName = this.props.parentObj && this.props.parentObj.ancestors ? this.props.parentObj.ancestors[0].name : null;
         let ancestors = this.props.parentObj ? this.props.parentObj.ancestors : null;
         let parentKind = this.props.parentObj ? this.props.parentObj.parent.kind : null;
         let parentId = this.props.parentObj ? this.props.parentObj.parent.id : null;
         let name = this.props.parentObj ? this.props.parentObj.name : null;
-        let projectName = this.props.project ? this.props.project.name : null;
 
         function getFilePath() {
             if (ancestors != undefined) {

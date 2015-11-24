@@ -16,6 +16,7 @@ class Home extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            currentUser: ProjectStore.currentUser,
             projects: ProjectStore.projects,
             files: ProjectStore.files,
             folders: ProjectStore.folders,

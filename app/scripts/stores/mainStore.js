@@ -7,9 +7,7 @@ var MainStore = Reflux.createStore({
 
     listenables: MainActions,
 
-
     init() {
-        this.currentUser = cookie.load('currentUser');
         this.currentUser = {};
         this.appConfig = appConfig;
         this.asValidateLoading = false;
@@ -58,7 +56,6 @@ var MainStore = Reflux.createStore({
     getDdsApiTokenSuccess (apiToken) {
         this.appConfig.apiToken = apiToken;
         this.ddsApiTokenLoading = false;
-        MainActions.getCurrentUser(apiToken);
         this.trigger({
             ddsApiTokenLoading: this.ddsApiTokenLoading,
             appConfig: this.appConfig
@@ -85,9 +82,8 @@ var MainStore = Reflux.createStore({
 
     },
 
-    getCurrentUserSuccess (currentUser, json) {
-        this.currentUser = currentUser;
-        cookie.save('currentUser', this.currentUser);
+    getCurrentUserSuccess (json) {
+        this.currentUser = json;
         this.trigger({
             currentUser: this.currentUser
         });
@@ -114,7 +110,6 @@ var MainStore = Reflux.createStore({
         this.appConfig.apiToken = null;
         this.isLoggingIn = null;
         cookie.remove('apiToken');
-        cookie.remove('currentUser');
         cookie.remove('isLoggingIn');
         this.trigger({
             appConfig: this.appConfig

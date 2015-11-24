@@ -23,8 +23,9 @@ class Folder extends React.Component {
 
     componentDidUpdate(prevProps, prevState) {
         let id = this.props.params.id;
-        if(prevProps.params.id !== this.props.params.id)
+        if(prevProps.params.id !== this.props.params.id) {
             this._loadFolder(id);
+        }
     }
 
     componentWillUnmount() {

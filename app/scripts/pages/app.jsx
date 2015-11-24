@@ -59,6 +59,9 @@ class App extends React.Component {
 
 
     render() {
+        if(this.props.routerPath != '/login'){
+            MainActions.getCurrentUser();
+        }
         let str = this.props.appRouter.getCurrentPathname();
         let fileRoute = str.substring(str.lastIndexOf("/")-6,str.lastIndexOf("/"));
 

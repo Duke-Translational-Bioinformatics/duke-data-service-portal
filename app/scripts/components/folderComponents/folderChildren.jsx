@@ -13,10 +13,6 @@ var mui = require('material-ui'),
 
 class FolderChildren extends React.Component {
 
-    constructor() {
-
-    }
-
     render() {
         var error = '';
         if (this.props.error)
@@ -25,7 +21,7 @@ class FolderChildren extends React.Component {
             return false
         } else {
             let folderChildren = this.props.children.map((children) => {
-                if(children.kind === 'dds-folder') {
+                if (children.kind === 'dds-folder') {
                     return (
                         <li key={ children.id } className="hover">
                             <a href={urlGen.routes.baseUrl + "folder/" + children.id}
@@ -46,8 +42,7 @@ class FolderChildren extends React.Component {
                     return (
                         <li key={ children.id } className="hover">
                             <a href={urlGen.routes.baseUrl + "file/" + children.id}
-                               className="item-content external"
-                               onTouchTap={this.handleTouchTapFile.bind(this, children.kind, children.id)}>
+                               className="item-content external">
                                 <div className="item-media"><i className="material-icons"
                                                                style={styles.icon}>description</i>
                                 </div>
@@ -88,10 +83,6 @@ class FolderChildren extends React.Component {
                 </div>
             );
         }
-    }
-
-    handleTouchTapFile(kind, id) {
-        ProjectActions.getFileParent(id);
     }
 }
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { RouteHandler, Link } from 'react-router';
+import ProjectStore from '../../stores/projectStore';
 import MainStore from '../../stores/mainStore';
 import MainActions from '../../actions/mainActions';
 import CurrentUser from './currentUser.jsx';
@@ -13,8 +14,13 @@ class Header extends React.Component {
 
     constructor(props, context) {
         super(props);
-
     }
+    //componentDidMount(){
+    //    if(this.props.routerPath === '/home'){
+    //        MainActions.getCurrentUser();
+    //    }
+    //}
+
 
     render() {
         return (

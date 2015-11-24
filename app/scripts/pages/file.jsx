@@ -19,7 +19,7 @@ class File extends React.Component {
     componentDidMount() {
         let id = this.props.params.id;
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
-        ProjectActions.getFileParent(id);
+        ProjectActions.getFileContainer(id);
     }
 
     componentWillUnmount() {

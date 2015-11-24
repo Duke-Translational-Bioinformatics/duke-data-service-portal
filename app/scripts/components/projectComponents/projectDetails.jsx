@@ -5,7 +5,6 @@ import ProjectStore from '../../stores/projectStore';
 import MainActions from '../../actions/mainActions';
 import MainStore from '../../stores/mainStore';
 import ProjectOptionsMenu from './projectOptionsMenu.jsx';
-import CurrentUser from '../../components/globalComponents/currentUser.jsx';
 import cookie from 'react-cookie';
 import urlGen from '../../../util/urlGen.js';
 
@@ -97,7 +96,7 @@ var Details = React.createClass({
         let lastUpdatedOn = this.props.project && this.props.project.audit ? this.props.project.audit.last_updated_on : null;
         let lastUpdatedBy = this.props.project && this.props.project.audit ? this.props.project.audit.last_updated_by : null;
         let users = this.props.projectMembers ? this.props.projectMembers : null;
-        let currentUser = this.props.currentUser ? this.props.currentUser : null;
+        let currentUser = cookie.load('currentUser');//Todo: Change this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         let members = users.map((users)=> {
             return <li key={users.user.id}>
