@@ -111,6 +111,7 @@ var Details = React.createClass({
                 </div>
             </li>
         });
+
         return (
             <div>
                 <div className="list-block">
@@ -124,7 +125,7 @@ var Details = React.createClass({
                         <li className="item-divider">Last Updated By</li>
                         <li className="item-content">
                             <div className="item-inner">
-                                <div className="item-title">{ lastUpdatedBy }</div>
+                                <div className="item-title">{ lastUpdatedBy.full_name }</div>
                             </div>
                         </li>
                         <li className="item-divider">Last Updated On</li>

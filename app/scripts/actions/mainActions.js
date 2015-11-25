@@ -62,7 +62,7 @@ MainActions.getDdsApiToken.preEmit = (appConfig, signedInfo) => {
     });
 };
 
-MainActions.getCurrentUser.preEmit = (apiToken) => {
+MainActions.getCurrentUser.preEmit = () => {
     fetch(urlGen.routes.ddsUrl + 'current_user', {
         method: 'get',
         headers: {

@@ -32,7 +32,7 @@ class FileDetails extends React.Component {
         let createdOn = this.props.parentObj && this.props.parentObj.audit ? this.props.parentObj.audit.created_on : null;
         let createdBy = this.props.parentObj && this.props.parentObj.audit ? this.props.parentObj.audit.created_by.full_name : null;
         let lastUpdatedOn = this.props.parentObj && this.props.parentObj.audit ? this.props.parentObj.audit.last_updated_on : null;
-        let lastUpdatedBy = this.props.parentObj && this.props.parentObj.audit ? this.props.parentObj.audit.last_updated_by.full_name : null;
+        let lastUpdatedBy = this.props.parentObj && this.props.parentObj.audit.last_updated_by ? this.props.parentObj.audit.last_updated_by.full_name : null;
         let storage =  this.props.parentObj && this.props.parentObj.audit ? this.props.parentObj.upload.storage_provider.description : null;
 
         function getFilePath() {
