@@ -34,9 +34,8 @@ class LeftMenu extends React.Component {
                 </span>
             );
     }
-
     handleTouchTap() {
-        MainStore.handleLogout();
+        MainStore.handleLogout()
     }
 }
 

@@ -39,7 +39,7 @@ class ProjectDetails extends React.Component {
                 <button
                     className="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-button--colored"
                     style={styles.floatingButton}>
-                    <i className="material-icons">file_upload</i>
+                        <i className="material-icons">file_upload</i>
                 </button>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div style={styles.menuIcon}>

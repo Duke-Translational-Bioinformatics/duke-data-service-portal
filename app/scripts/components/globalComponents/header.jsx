@@ -15,12 +15,6 @@ class Header extends React.Component {
     constructor(props, context) {
         super(props);
     }
-    //componentDidMount(){
-    //    if(this.props.routerPath === '/home'){
-    //        MainActions.getCurrentUser();
-    //    }
-    //}
-
 
     render() {
         return (
