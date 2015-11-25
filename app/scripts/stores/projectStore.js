@@ -1,6 +1,5 @@
 import Reflux from 'reflux';
 import ProjectActions from '../actions/projectActions';
-import MainActions from '../actions/mainActions';
 import cookie from 'react-cookie';
 
 var ProjectStore = Reflux.createStore({
@@ -66,22 +65,9 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    showDetailsSuccess(projectName, createdOn, createdBy, lastUpdatedOn, lastUpdatedBy, audit, json) {
-        this.projectName = projectName;
-        cookie.save('projName', this.projectName);
-        this.createdOn = createdOn;
-        this.createdBy = createdBy;
-        this.lastUpdatedOn = lastUpdatedOn;
-        this.lastUpdatedBy = lastUpdatedBy;
-        this.audit = audit;
+    showDetailsSuccess(json) {
         this.project = json;
         this.trigger({
-            projectName: this.projectName,
-            createdOn: this.createdOn,
-            createdBy: this.createdBy,
-            lastUpdatedOn: this.lastUpdatedOn,
-            lastUpdatedBy: this.lastUpdatedBy,
-            audit: this.audit,
             project: this.project,
             loading: false
         })
@@ -186,7 +172,7 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    addFolderSuccess(id, parentKind) {
+    addFolderSuccess(id, parentKind) { //todo: remove this and check for new children state in folder.jsx & project.jsx
         if(parentKind === 'dds-project'){
             ProjectActions.loadProjectChildren(id);
         } else {
@@ -211,13 +197,7 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    deleteFolderSuccess(parentId, parentKind) {
-        if(parentKind === 'dds-folder'){
-            ProjectActions.loadFolderChildren(parentId);
-            ProjectActions.getParent(parentId);
-        } else {
-            ProjectActions.loadProjectChildren(parentId);
-        }
+    deleteFolderSuccess() {
         this.trigger({
             loading: false
         })
@@ -239,7 +219,7 @@ var ProjectStore = Reflux.createStore({
 
     editFolderSuccess(id) {
         ProjectActions.loadFolderChildren(id);
-        ProjectActions.getParent(id);
+        ProjectActions.getContainer(id);
         this.trigger({
             loading: false
         })
@@ -281,13 +261,7 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    deleteFileSuccess(parentId, parentKind) {
-        if(parentKind === 'dds-folder'){
-            ProjectActions.loadFolderChildren(parentId);
-            ProjectActions.getParent(parentId);
-        } else {
-            ProjectActions.loadProjectChildren(parentId);
-        }
+    deleteFileSuccess() {
         this.trigger({
             loading: false
         })
@@ -308,7 +282,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     editFileSuccess(id) {
-        ProjectActions.getFileParent(id);
+        ProjectActions.getFileContainer(id);
         this.trigger({
             loading: false
         })
@@ -323,66 +297,44 @@ var ProjectStore = Reflux.createStore({
     },
 
 
-    getParent() {
+    getContainer() {
         this.trigger({
             loading: true
         })
     },
 
-    getParentSuccess(parent, name, ancestors) {
-        this.parentObj = parent;
-        this.objName = name;
-        this.ancestors = ancestors;
+    getContainerSuccess(json) {
+        this.parentObj = json;
         this.trigger({
             parentObj: this.parentObj,
-            objName: this.objName,
-            ancestors: this.ancestors,
             loading: false
         })
     },
 
-    getParentError(error) {
-        let errMsg = error && error.message ? "Error: " : + 'An error occurred while trying to delete this file.';
+    getContainerError(error) {
+        let errMsg = error && error.message ? "Error: " + error : '';
         this.trigger({
             error: errMsg,
             loading: false
         });
     },
 
-    getFileParent() {
+    getFileContainer() {
         this.trigger({
             loading: true
         })
     },
 
-    getFileParentSuccess(parent, name, projectName, createdOn, createdBy, lastUpdatedOn, lastUpdatedBy, ancestors, storage, audit, json) {
-        this.parentObj = parent;
-        this.objName = name;
-        this.createdOn = createdOn;
-        this.createdBy = createdBy;
-        this.lastUpdatedOn = lastUpdatedOn;
-        this.lastUpdatedBy = lastUpdatedBy;
-        this.ancestors = ancestors;
-        this.storage = storage;
-        this.audit = audit;
-        this.project = json;
+    getFileContainerSuccess(json) {
+        this.parentObj = json;
         this.trigger({
             parentObj: this.parentObj,
-            objName: this.objName,
-            createdOn: this.createdOn,
-            createdBy: this.createdBy,
-            lastUpdatedOn: this.lastUpdatedOn,
-            lastUpdatedBy: this.lastUpdatedBy,
-            ancestors: this.ancestors,
-            storage: this.storage,
-            audit: this.audit,
-            project: this.project,
             loading: false
         })
     },
 
-    getFileParentError(error) {
-        let errMsg = error && error.message ? "Error: " : + 'An error occurred while trying to delete this file.';
+    getFileContainerError(error) {
+        let errMsg = error && error.message ? "Error: " + error : '';
         this.trigger({
             error: errMsg,
             loading: false

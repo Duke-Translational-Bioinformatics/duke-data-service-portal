@@ -16,6 +16,7 @@ class Home extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            currentUser: ProjectStore.currentUser,
             projects: ProjectStore.projects,
             files: ProjectStore.files,
             folders: ProjectStore.folders,
@@ -46,7 +47,7 @@ class Home extends React.Component {
                     title="Terms of Use - Protected Health Information"
                     actions={standardActions}
                     ref="phi"
-                    defaultOpen={this.state.modalOpen}
+                    openImmediately={this.state.modalOpen}
                     modal={true}>
                     <div style={{height: '300px'}}>
                         <p style={styles.main}><b>The Health Insurance Portability and Accountability Act of 1996 (HIPAA) established standards

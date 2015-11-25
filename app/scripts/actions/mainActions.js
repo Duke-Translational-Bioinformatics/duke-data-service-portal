@@ -1,4 +1,5 @@
 import Reflux from 'reflux';
+import appConfig from '../config';
 import urlGen from '../../util/urlGen.js';
 
 var MainActions = Reflux.createActions([
@@ -61,19 +62,18 @@ MainActions.getDdsApiToken.preEmit = (appConfig, signedInfo) => {
     });
 };
 
-MainActions.getCurrentUser.preEmit = (apiToken) => {
+MainActions.getCurrentUser.preEmit = () => {
     fetch(urlGen.routes.ddsUrl + 'current_user', {
         method: 'get',
         headers: {
-            'Authorization': apiToken,
+            'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
         }
     })
         .then(function (response) {
             return response.json()
         }).then(function (json) {
-            let currentUser = json.full_name;
-            MainActions.getCurrentUserSuccess(currentUser, json)
+            MainActions.getCurrentUserSuccess(json)
         })
         .catch(function (ex) {
             MainActions.getCurrentUserError(ex)

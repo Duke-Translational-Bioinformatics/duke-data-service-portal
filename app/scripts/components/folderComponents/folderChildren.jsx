@@ -13,12 +13,6 @@ var mui = require('material-ui'),
 
 class FolderChildren extends React.Component {
 
-    constructor() {
-        this.state = {
-            objName: ProjectStore.objName
-        }
-    }
-
     render() {
         var error = '';
         if (this.props.error)
@@ -27,12 +21,11 @@ class FolderChildren extends React.Component {
             return false
         } else {
             let folderChildren = this.props.children.map((children) => {
-                if(children.kind === 'dds-folder') {
+                if (children.kind === 'dds-folder') {
                     return (
                         <li key={ children.id } className="hover">
                             <a href={urlGen.routes.baseUrl + "folder/" + children.id}
-                               className="item-content external"
-                               onTouchTap={this.handleTouchTap.bind(this, children.kind, children.id)}>
+                               className="item-content external">
                                 <div className="item-media"><i className="material-icons"
                                                                style={styles.icon}>folder</i>
                                 </div>
@@ -49,8 +42,7 @@ class FolderChildren extends React.Component {
                     return (
                         <li key={ children.id } className="hover">
                             <a href={urlGen.routes.baseUrl + "file/" + children.id}
-                               className="item-content external"
-                               onTouchTap={this.handleTouchTapFile.bind(this, children.kind, children.id)}>
+                               className="item-content external">
                                 <div className="item-media"><i className="material-icons"
                                                                style={styles.icon}>description</i>
                                 </div>
@@ -92,17 +84,6 @@ class FolderChildren extends React.Component {
             );
         }
     }
-    handleTouchTap(kind, id) {
-        if (kind === 'project') {
-            return null;
-        } else {
-            ProjectActions.loadFolderChildren(id, ProjectActions.getParent(id));
-        }
-    }
-
-    handleTouchTapFile(kind, id) {
-        ProjectActions.getFileParent(id);
-    }
 }
 
 
@@ -140,9 +121,10 @@ var styles = {
 
 FolderChildren.propTypes = {
     loading: React.PropTypes.bool,
+    children: React.PropTypes.array,
     projects: React.PropTypes.array,
     error: React.PropTypes.string,
-    is_deleted: React.PropTypes.bool,
+    is_deleted: React.PropTypes.bool
 };
 
 export default FolderChildren;

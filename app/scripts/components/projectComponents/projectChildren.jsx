@@ -18,21 +18,12 @@ class ProjectChildren extends React.Component {
         var error = '';
         if (this.props.error)
             error = (<h4>{this.props.error}</h4>);
-
-        let kind = this.props.children.map((children) => {
-            if (children.kind === 'dds-folder') {
-                return true;
-            } else {
-                return false;
-            }
-        });
-
         let projectChildren = this.props.children.map((children) => {
-            if(children.kind === 'dds-folder') {
+            if (children.kind === 'dds-folder') {
                 return (
                     <li key={ children.id } className="hover">
                         <a href={urlGen.routes.baseUrl + "folder/" + children.id}
-                           className="item-content external" onTouchTap={() => this.handleTouchTap(children.id, kind)}>
+                           className="item-content external">
                             <div className="item-media"><i className="material-icons"
                                                            style={styles.icon}>folder</i>
                             </div>
@@ -47,21 +38,22 @@ class ProjectChildren extends React.Component {
                 );
             } else {
                 return (
-                <li key={ children.id } className="hover">
-                    <a href={urlGen.routes.baseUrl + "file/" + children.id}
-                       className="item-content external" onTouchTap={() => this.handleTouchTap(children.id, kind)}>
-                        <div className="item-media"><i className="material-icons"
-                                                       style={styles.icon}>description</i>
-                        </div>
-                        <div className="item-inner">
-                            <div className="item-title-row">
-                                <div className="item-title mdl-color-text--grey-800">{ children.name }</div>
+                    <li key={ children.id } className="hover">
+                        <a href={urlGen.routes.baseUrl + "file/" + children.id}
+                           className="item-content external">
+                            <div className="item-media"><i className="material-icons"
+                                                           style={styles.icon}>description</i>
                             </div>
-                            <div className="item-subtitle mdl-color-text--grey-600">ID: { children.id }</div>
-                        </div>
-                    </a>
-                </li>
-            );}
+                            <div className="item-inner">
+                                <div className="item-title-row">
+                                    <div className="item-title mdl-color-text--grey-800">{ children.name }</div>
+                                </div>
+                                <div className="item-subtitle mdl-color-text--grey-600">ID: { children.id }</div>
+                            </div>
+                        </a>
+                    </li>
+                );
+            }
         });
 
 
@@ -82,21 +74,14 @@ class ProjectChildren extends React.Component {
                 { error }
                 { loading }
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
-                <div className="list-block list-block-search searchbar-found media-list">
-                    <ul>
-                        {projectChildren}
-                    </ul>
-                </div>
+                    <div className="list-block list-block-search searchbar-found media-list">
+                        <ul>
+                            {projectChildren}
+                        </ul>
+                    </div>
                 </div>
             </div>
         );
-    }
-    handleTouchTap(id, kind) {
-        if(!kind){
-            return null
-        }else{
-            ProjectActions.getFolderInfo(id);
-        }
     }
 }
 
@@ -137,7 +122,7 @@ ProjectChildren.propTypes = {
     loading: React.PropTypes.bool,
     projects: React.PropTypes.array,
     error: React.PropTypes.string,
-    is_deleted: React.PropTypes.bool,
+    is_deleted: React.PropTypes.bool
 };
 
 export default ProjectChildren;

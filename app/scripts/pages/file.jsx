@@ -11,14 +11,15 @@ class File extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            loading: false
+            loading: false,
+            project: ProjectStore.project
         };
     }
 
     componentDidMount() {
         let id = this.props.params.id;
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
-        ProjectActions.getFileParent(id);
+        ProjectActions.getFileContainer(id);
     }
 
     componentWillUnmount() {

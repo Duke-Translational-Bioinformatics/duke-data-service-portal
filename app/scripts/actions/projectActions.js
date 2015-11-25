@@ -5,9 +5,6 @@ import urlGen from '../../util/urlGen.js';
 import appConfig from '../config';
 import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.js';
 
-var mockUrl = 'http://localhost:3000/';
-//var urlGen.routes.ddsUrl = 'https://dukeds-dev.herokuapp.com/api/v1/';
-
 var ProjectActions = Reflux.createActions([
     'loadProjects',
     'loadProjectsSuccess',
@@ -52,12 +49,12 @@ var ProjectActions = Reflux.createActions([
     'editFile',
     'editFileSuccess',
     'editFileError',
-    'getParent',
-    'getParentSuccess',
-    'getParentError',
-    'getFileParent',
-    'getFileParentSuccess',
-    'getFileParentError',
+    'getContainer',
+    'getContainerSuccess',
+    'getContainerError',
+    'getFileContainer',
+    'getFileContainerSuccess',
+    'getFileContainerError',
     'getProjectMembers',
     'getProjectMembersSuccess',
     'getProjectMembersError',
@@ -114,12 +111,7 @@ ProjectActions.showDetails.preEmit = function (id) {
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        let projectName = json.name;
-        let createdOn = json.audit.created_on;
-        let createdBy = json.audit.created_by.full_name;
-        let lastUpdateOn = json.audit.last_updated_on;
-        let lastUpdateBy = json.audit.last_updated_by.full_name;
-        ProjectActions.showDetailsSuccess(projectName, createdOn, createdBy, lastUpdateOn, lastUpdateBy, json.audit, json)
+        ProjectActions.showDetailsSuccess(json)
     }).catch(function (ex) {
         ProjectActions.showDetailsError(ex)
     })
@@ -228,7 +220,7 @@ ProjectActions.addFolder.preEmit = function (id, parentKind, name) {
     })
 };
 
-ProjectActions.deleteFolder.preEmit = function (id, parentId, parentKind) {
+ProjectActions.deleteFolder.preEmit = function (id) {
     fetch(urlGen.routes.ddsUrl + 'folders/' + id, {
         method: 'delete',
         headers: {
@@ -239,7 +231,7 @@ ProjectActions.deleteFolder.preEmit = function (id, parentId, parentKind) {
     }).then(checkResponse).then(function (response) {
     }).then(function () {
         MainActions.addToast('Folder Deleted!');
-        ProjectActions.deleteFolderSuccess(parentId, parentKind)
+        ProjectActions.deleteFolderSuccess()
     }).catch(function (ex) {
         MainActions.addToast('Folder Deleted Failed!');
         ProjectActions.deleteFolderError(ex)
@@ -322,7 +314,7 @@ ProjectActions.editFile.preEmit = function (id, fileName) {
     });
 };
 
-ProjectActions.getParent.preEmit = (id) => {
+ProjectActions.getContainer.preEmit = (id) => {
     fetch(urlGen.routes.ddsUrl + 'folders/' + id, {
         method: 'get',
         headers: {
@@ -332,15 +324,14 @@ ProjectActions.getParent.preEmit = (id) => {
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        let ancestors = json.ancestors;
-        ProjectActions.getParentSuccess(json.parent, json.name, ancestors)
+        ProjectActions.getContainerSuccess(json)
     })
         .catch(function (ex) {
-            ProjectActions.getParentError(ex)
+            ProjectActions.getContainerError(ex)
         });
 };
 
-ProjectActions.getFileParent.preEmit = (id) => {
+ProjectActions.getFileContainer.preEmit = (id) => {
     fetch(urlGen.routes.ddsUrl + 'files/' + id, {
         method: 'get',
         headers: {
@@ -350,17 +341,10 @@ ProjectActions.getFileParent.preEmit = (id) => {
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        let fileName = json.name;
-        let createdOn = json.audit.created_on;
-        let createdBy = json.audit.created_by.full_name;
-        let lastUpdateOn = json.audit.last_updated_on;
-        let lastUpdateBy = json.audit.last_updated_by;
-        let ancestors = json.ancestors;
-        let storage = json.upload.storage_provider.description;
-        ProjectActions.getFileParentSuccess(json.parent, json.name, fileName, createdOn, createdBy, lastUpdateOn, lastUpdateBy, ancestors, storage, json.audit, json)
+        ProjectActions.getFileContainerSuccess(json)
     })
         .catch(function (ex) {
-            ProjectActions.getFileParentError(ex)
+            ProjectActions.getFileContainerError(ex)
         });
 };
 

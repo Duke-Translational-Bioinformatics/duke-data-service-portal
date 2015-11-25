@@ -1,18 +1,18 @@
-function randomString(length, chars) {
-    var result = '';
-    for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
-    return result;
-}
-let randString = randomString(32, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
-
 let appConfig = {
-    //baseUrl: 'https://192.168.99.100:3001',///Todo: Use for local development
-    //authServiceUri: 'https://192.168.99.100:3000',///Todo: Use for local development
+    //serviceId: DDS_PORTAL_CONFIG.serviceId,
+    //baseUrl: DDS_PORTAL_CONFIG.baseUrl,
+    //authServiceUri: DDS_PORTAL_CONFIG.authServiceUri,
+    //authServiceName:  DDS_PORTAL_CONFIG.authServiceName,
+    //securityState: DDS_PORTAL_CONFIG.securityState,
+    //apiToken: null,
+    //isLoggedIn: null,
+    //currentUser: null
+
     baseUrl: 'https://dukeds-dev.herokuapp.com',
     authServiceUri: 'https://dds-dev.duhs.duke.edu/duke_authentication_service',
     serviceId: 'c87de9f2-1690-4523-87dc-6395f665a757',
     authServiceName: 'Duke Authentication Service',
-    securityState: randString,
+    securityState: '0123',
     apiToken: null,
     isLoggedIn: null,
     currentUser: null

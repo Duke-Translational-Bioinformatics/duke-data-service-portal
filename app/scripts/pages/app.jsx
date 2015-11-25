@@ -24,8 +24,7 @@ class App extends React.Component {
         this.state = {
             appConfig: MainStore.appConfig,
             apiToken: cookie.load('apiToken'),
-            currentUser: cookie.load('currentUser'),
-            isLoggingIn: cookie.load('isLoggingIn'),
+            isLoggingIn: cookie.load('isLoggingIn')
         }
     }
 
@@ -60,6 +59,11 @@ class App extends React.Component {
 
 
     render() {
+        if(this.state.appConfig.apiToken) {
+            if (this.props.routerPath != '/login' && !this.state.currentUser) {
+                MainActions.getCurrentUser();
+            }
+        }
         let str = this.props.appRouter.getCurrentPathname();
         let fileRoute = str.substring(str.lastIndexOf("/")-6,str.lastIndexOf("/"));
 
@@ -93,7 +97,7 @@ class App extends React.Component {
             <span>
                 <div className="statusbar-overlay"></div>
                 <div className="panel-overlay"></div>
-                {!this.state.appConfig.apiToken ? '' : <LeftMenu />}
+                {!this.state.appConfig.apiToken ? '' : <LeftMenu {...this.props} {...this.state} />}
                 <div className="views">
                     <div className="view view-main">
                         <Header {...this.props} {...this.state}/>
