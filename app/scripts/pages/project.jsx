@@ -32,7 +32,7 @@ class Project extends React.Component {
         ProjectActions.loadProjectChildren(id);
         ProjectActions.showDetails(id);
         ProjectActions.getProjectMembers(id);
-        MainActions.getCurrentUser();
+        //MainActions.getCurrentUser();
     }
 
     componentWillUnmount() {

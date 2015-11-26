@@ -10,7 +10,7 @@ var ProjectStore = Reflux.createStore({
         this.children = [];
         this.projects = [];
         this.project = {};
-        this.parentObj = {};
+        this.entityObj = {};
         this.file = {};
         this.projectMembers = [];
     },
@@ -218,8 +218,9 @@ var ProjectStore = Reflux.createStore({
     },
 
     editFolderSuccess(id) {
+        let kind = 'folders/';
         ProjectActions.loadFolderChildren(id);
-        ProjectActions.getContainer(id);
+        ProjectActions.getEntity(id, kind);
         this.trigger({
             loading: false
         })
@@ -282,7 +283,8 @@ var ProjectStore = Reflux.createStore({
     },
 
     editFileSuccess(id) {
-        ProjectActions.getFileContainer(id);
+        let kind = 'files/';
+        ProjectActions.getEntity(id, kind);
         this.trigger({
             loading: false
         })
@@ -297,21 +299,21 @@ var ProjectStore = Reflux.createStore({
     },
 
 
-    getContainer() {
+    getEntity() {
         this.trigger({
             loading: true
         })
     },
 
-    getContainerSuccess(json) {
-        this.parentObj = json;
+    getEntitySuccess(json) {
+        this.entityObj = json;
         this.trigger({
-            parentObj: this.parentObj,
+            entityObj: this.entityObj,
             loading: false
         })
     },
 
-    getContainerError(error) {
+    getEntityError(error) {
         let errMsg = error && error.message ? "Error: " + error : '';
         this.trigger({
             error: errMsg,
@@ -326,9 +328,9 @@ var ProjectStore = Reflux.createStore({
     },
 
     getFileContainerSuccess(json) {
-        this.parentObj = json;
+        this.entityObj = json;
         this.trigger({
-            parentObj: this.parentObj,
+            entityObj: this.entityObj,
             loading: false
         })
     },
