@@ -97,7 +97,7 @@ class App extends React.Component {
             <span>
                 <div className="statusbar-overlay"></div>
                 <div className="panel-overlay"></div>
-                {!this.state.appConfig.apiToken ? '' : <LeftMenu {...this.props} {...this.state} />}
+                {!this.state.appConfig.apiToken ? '' : <LeftMenu />}
                 <div className="views">
                     <div className="view view-main">
                         <Header {...this.props} {...this.state}/>

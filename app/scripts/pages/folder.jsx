@@ -16,15 +16,17 @@ class Folder extends React.Component {
     }
 
     componentDidMount() {
+        let kind = 'folders/';
         let id = this.props.params.id;
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
-        this._loadFolder(id);
+        this._loadFolder(id, kind);
     }
 
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate(prevProps) {
+        let kind = 'folders/';
         let id = this.props.params.id;
         if(prevProps.params.id !== this.props.params.id) {
-            this._loadFolder(id);
+            this._loadFolder(id, kind);
         }
     }
 
@@ -32,9 +34,9 @@ class Folder extends React.Component {
         this.unsubscribe();
     }
 
-    _loadFolder(id) {
-        ProjectActions.loadFolderChildren(id);
-        ProjectActions.getContainer(id);
+    _loadFolder(id, kind) {
+        ProjectActions.loadFolderChildren(id, kind);
+        ProjectActions.getEntity(id, kind);
     }
 
     render() {

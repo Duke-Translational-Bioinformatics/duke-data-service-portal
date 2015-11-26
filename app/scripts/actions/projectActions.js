@@ -49,12 +49,9 @@ var ProjectActions = Reflux.createActions([
     'editFile',
     'editFileSuccess',
     'editFileError',
-    'getContainer',
-    'getContainerSuccess',
-    'getContainerError',
-    'getFileContainer',
-    'getFileContainerSuccess',
-    'getFileContainerError',
+    'getEntity',
+    'getEntitySuccess',
+    'getEntityError',
     'getProjectMembers',
     'getProjectMembersSuccess',
     'getProjectMembersError',
@@ -314,8 +311,8 @@ ProjectActions.editFile.preEmit = function (id, fileName) {
     });
 };
 
-ProjectActions.getContainer.preEmit = (id) => {
-    fetch(urlGen.routes.ddsUrl + 'folders/' + id, {
+ProjectActions.getEntity.preEmit = (id, kind) => {
+    fetch(urlGen.routes.ddsUrl + kind + id, {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -324,27 +321,10 @@ ProjectActions.getContainer.preEmit = (id) => {
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        ProjectActions.getContainerSuccess(json)
+        ProjectActions.getEntitySuccess(json)
     })
         .catch(function (ex) {
-            ProjectActions.getContainerError(ex)
-        });
-};
-
-ProjectActions.getFileContainer.preEmit = (id) => {
-    fetch(urlGen.routes.ddsUrl + 'files/' + id, {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.getFileContainerSuccess(json)
-    })
-        .catch(function (ex) {
-            ProjectActions.getFileContainerError(ex)
+            ProjectActions.getEntityError(ex)
         });
 };
 

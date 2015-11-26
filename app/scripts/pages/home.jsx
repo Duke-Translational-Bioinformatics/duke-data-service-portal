@@ -16,12 +16,11 @@ class Home extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            currentUser: ProjectStore.currentUser,
             projects: ProjectStore.projects,
             files: ProjectStore.files,
             folders: ProjectStore.folders,
             loading: false,
-            modalOpen: cookie.load('modalOpen')
+            modalOpen: MainStore.modalOpen
         };
     }
 
@@ -69,7 +68,7 @@ class Home extends React.Component {
         );
     }
     handleAcceptButton() {
-        this.refs.phi.dismiss(MainActions.closePhiModal(), ProjectActions.loadProjects());
+        this.refs.phi.dismiss(MainActions.closePhiModal());
     }
     handleDeclineButton() {
         MainStore.handleLogout();

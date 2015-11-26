@@ -24,16 +24,16 @@ class FileDetails extends React.Component {
         let loading = this.props.loading ?
             <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
         let id = this.props.params.id;
-        let ancestors = this.props.parentObj ? this.props.parentObj.ancestors : null;
-        let parentKind = this.props.parentObj ? this.props.parentObj.parent.kind : null;
-        let parentId = this.props.parentObj ? this.props.parentObj.parent.id : null;
-        let name = this.props.parentObj ? this.props.parentObj.name : null;
-        let projectName = this.props.parentObj && this.props.parentObj.ancestors ? this.props.parentObj.ancestors[0].name : null;
-        let createdOn = this.props.parentObj && this.props.parentObj.audit ? this.props.parentObj.audit.created_on : null;
-        let createdBy = this.props.parentObj && this.props.parentObj.audit ? this.props.parentObj.audit.created_by.full_name : null;
-        let lastUpdatedOn = this.props.parentObj && this.props.parentObj.audit ? this.props.parentObj.audit.last_updated_on : null;
-        let lastUpdatedBy = this.props.parentObj && this.props.parentObj.audit.last_updated_by ? this.props.parentObj.audit.last_updated_by.full_name : null;
-        let storage =  this.props.parentObj && this.props.parentObj.audit ? this.props.parentObj.upload.storage_provider.description : null;
+        let ancestors = this.props.entityObj ? this.props.entityObj.ancestors : null;
+        let parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : null;
+        let parentId = this.props.entityObj ? this.props.entityObj.parent.id : null;
+        let name = this.props.entityObj ? this.props.entityObj.name : null;
+        let projectName = this.props.entityObj && this.props.entityObj.ancestors ? this.props.entityObj.ancestors[0].name : null;
+        let createdOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.created_on : null;
+        let createdBy = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.created_by.full_name : null;
+        let lastUpdatedOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.last_updated_on : null;
+        let lastUpdatedBy = this.props.entityObj && this.props.entityObj.audit.last_updated_by ? this.props.entityObj.audit.last_updated_by.full_name : null;
+        let storage =  this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.upload.storage_provider.description : null;
 
         function getFilePath() {
             if (ancestors != undefined) {

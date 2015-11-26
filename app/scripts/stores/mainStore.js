@@ -110,6 +110,7 @@ var MainStore = Reflux.createStore({
         this.appConfig.apiToken = null;
         this.isLoggingIn = null;
         cookie.remove('apiToken');
+        cookie.remove('currentUser');
         cookie.remove('isLoggingIn');
         this.trigger({
             appConfig: this.appConfig
