@@ -16,14 +16,14 @@ class Folder extends React.Component {
     }
 
     componentDidMount() {
-        let kind = 'folders/';
+        let kind = 'folders';
         let id = this.props.params.id;
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
         this._loadFolder(id, kind);
     }
 
     componentDidUpdate(prevProps) {
-        let kind = 'folders/';
+        let kind = 'folders';
         let id = this.props.params.id;
         if(prevProps.params.id !== this.props.params.id) {
             this._loadFolder(id, kind);

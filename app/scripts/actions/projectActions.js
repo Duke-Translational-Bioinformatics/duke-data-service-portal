@@ -312,7 +312,7 @@ ProjectActions.editFile.preEmit = function (id, fileName) {
 };
 
 ProjectActions.getEntity.preEmit = (id, kind) => {
-    fetch(urlGen.routes.ddsUrl + kind + id, {
+    fetch(urlGen.routes.ddsUrl + kind + '/' + id, {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,

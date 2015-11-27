@@ -17,14 +17,14 @@ class File extends React.Component {
     }
 
     componentDidMount() {
-        let kind = 'files/';
+        let kind = 'files';
         let id = this.props.params.id;
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
         this._loadFile(id, kind);
     }
 
     componentDidUpdate(prevProps) {
-        let kind = 'files/';
+        let kind = 'files';
         let id = this.props.params.id;
         if(prevProps.params.id !== this.props.params.id) {
             this._loadFile(id, kind);
