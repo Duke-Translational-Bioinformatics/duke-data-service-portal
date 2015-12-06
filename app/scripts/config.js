@@ -8,14 +8,14 @@ let appConfig = {
     isLoggedIn: null,
     currentUser: null
 
-    //baseUrl: 'https://dukeds-dev.herokuapp.com',
-    //authServiceUri: 'https://dds-dev.duhs.duke.edu/duke_authentication_service',
-    //serviceId: 'c87de9f2-1690-4523-87dc-6395f665a757',
-    //authServiceName: 'Duke Authentication Service',
-    //securityState: '0123',
-    //apiToken: null,
-    //isLoggedIn: null,
-    //currentUser: null
+    // baseUrl: 'https://dukeds-dev.herokuapp.com',
+    // authServiceUri: 'https://dds-dev.duhs.duke.edu/duke_authentication_service',
+    // serviceId: 'c87de9f2-1690-4523-87dc-6395f665a757',
+    // authServiceName: 'Duke Authentication Service',
+    // securityState: '0123',
+    // apiToken: null,
+    // isLoggedIn: null,
+    // currentUser: null
 };
 
 
