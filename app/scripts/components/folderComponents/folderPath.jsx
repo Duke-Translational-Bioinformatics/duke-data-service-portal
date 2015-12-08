@@ -35,9 +35,9 @@ class FolderPath extends React.Component {
         function getUrlPath() {
             let urlPath = '';
             if (parentKind === 'dds-project') {
-                urlPath = 'project/'
+                urlPath = '/project/'
             } else {
-                urlPath = 'folder/'
+                urlPath = '/folder/'
             }
             return urlPath;
         }
