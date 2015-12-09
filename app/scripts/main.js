@@ -11,7 +11,7 @@ injectTapEventPlugin();
 
 let appRouter = Router.create({
     routes: routes,
-    location: Router.HistoryLocation
+    location: Router.HashLocation
 });
 
 appRouter.run((Handler, state) => {
