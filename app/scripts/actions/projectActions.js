@@ -63,7 +63,10 @@ var ProjectActions = Reflux.createActions([
     'addProjectMemberError',
     'deleteProjectMember',
     'deleteProjectMemberSuccess',
-    'deleteProjectMemberError'
+    'deleteProjectMemberError',
+    'getDownloadUrl',
+    'getDownloadUrlSuccess',
+    'getDownloadUrlError'
 ]);
 
 ProjectActions.loadProjects.preEmit = function () {
@@ -402,6 +405,21 @@ ProjectActions.deleteProjectMember.preEmit = (id, userId, userName) => {
         });
 };
 
+ProjectActions.getDownloadUrl.preEmit = function (id) {
+    fetch(urlGen.routes.ddsUrl + 'files/' + id + '/url', {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getDownloadUrlSuccess(json)
+    }).catch(function (ex) {
+        ProjectActions.getDownloadUrlError(ex)
+    })
+};
 
 function checkResponse(response) {
     return checkStatus(response, MainActions);

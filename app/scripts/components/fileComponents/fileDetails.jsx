@@ -62,7 +62,8 @@ class FileDetails extends React.Component {
                  style={styles.container}>
                 <button
                     className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab mdl-button--colored"
-                    style={styles.floatingButton}>
+                    style={styles.floatingButton}
+                    onTouchTap={this.handleDownload.bind(this)}>
                     <i className="material-icons">get_app</i>
                 </button>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
@@ -134,6 +135,10 @@ class FileDetails extends React.Component {
                 { error }
             </div>
         );
+    }
+    handleDownload(){
+        let id = this.props.params.id;
+        ProjectActions.getDownloadUrl(id);
     }
 }
 
