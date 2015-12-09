@@ -1,7 +1,8 @@
 let UrlGen = {
     routes: {
-        ddsUrl: 'https://dukeds-dev.herokuapp.com/api/v1/',
+        ddsUrl: 'https://dev.dataservice.duke.edu/api/v1/',
         baseUrl: DDS_PORTAL_CONFIG.baseUrl,
+        prefix: '/portal/#',
         login: () => '/login',
         home: (id) => '/',
         project: (projectId) => '/project' + projectId,
