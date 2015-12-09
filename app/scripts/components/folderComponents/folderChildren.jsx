@@ -24,7 +24,7 @@ class FolderChildren extends React.Component {
                 if (children.kind === 'dds-folder') {
                     return (
                         <li key={ children.id } className="hover">
-                            <a href={urlGen.routes.baseUrl + "/folder/" + children.id}
+                            <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + "/folder/" + children.id}
                                className="item-content external">
                                 <div className="item-media"><i className="material-icons"
                                                                style={styles.icon}>folder</i>
@@ -41,7 +41,7 @@ class FolderChildren extends React.Component {
                 } else {
                     return (
                         <li key={ children.id } className="hover">
-                            <a href={urlGen.routes.baseUrl + "/file/" + children.id}
+                            <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + "/file/" + children.id}
                                className="item-content external">
                                 <div className="item-media"><i className="material-icons"
                                                                style={styles.icon}>description</i>
