@@ -69,6 +69,22 @@ var ProjectActions = Reflux.createActions([
     'getDownloadUrlError'
 ]);
 
+ProjectActions.getUsageDetails.preEmit = function () {
+    fetch(urlGen.routes.ddsUrl + 'current_user/usage', {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getUsageDetailsSuccess(json)
+    }).catch(function (ex) {
+        ProjectActions.getUsageDetailsError(ex)
+    })
+};
+
 ProjectActions.loadProjects.preEmit = function () {
     fetch(urlGen.routes.ddsUrl + 'projects/', {
         method: 'get',
