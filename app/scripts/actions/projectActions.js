@@ -6,6 +6,9 @@ import appConfig from '../config';
 import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.js';
 
 var ProjectActions = Reflux.createActions([
+    'getUsageDetails',
+    'getUsageDetailsSuccess',
+    'getUsageDetailsError',
     'loadProjects',
     'loadProjectsSuccess',
     'loadProjectsError',
