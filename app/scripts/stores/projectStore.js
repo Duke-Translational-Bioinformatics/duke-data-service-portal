@@ -462,6 +462,28 @@ var ProjectStore = Reflux.createStore({
             error: msg,
             loading: false
         })
+    },
+
+    getUsageDetails() {
+        this.trigger({
+            loading: true
+        })
+    },
+
+    getUsageDetailsSuccess(json) {
+        this.usage = json;
+        this.trigger({
+            usage: this.usage,
+            loading: false
+        })
+    },
+
+    getUsageDetailsError(error) {
+        let errMsg = error && error.message ? "Error: " + error : '';
+        this.trigger({
+            error: errMsg,
+            loading: false
+        });
     }
 });
 

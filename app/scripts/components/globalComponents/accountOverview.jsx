@@ -8,13 +8,15 @@ class AccountOverview extends React.Component {
     }
 
     render() {
-        let numProjects = 0;
-        let projects = this.props.projects.map((project) => {
-            if (!project.is_deleted) {
-                numProjects++;
-                return numProjects;
-            }
-        });
+        let numProjects = this.props.usage ? this.props.usage.project_count : null;
+        let numFiles = this.props.usage ? this.props.usage.file_count : null;
+        let bytes = this.props.usage ? this.props.usage.storage_bytes : null;
+
+        function bytesToSize(bytes) {
+            if (bytes == 0) return '0 Byte';
+            var i = Math.floor(Math.log(bytes) / Math.log(1024));
+            return ( bytes / Math.pow(1024, i) ).toFixed(2) * 1 + ' ' + ['B', 'KB', 'MB', 'GB', 'TB'][i];
+        }
 
         return (
             <div
@@ -34,13 +36,13 @@ class AccountOverview extends React.Component {
                 <div style={styles.cardSquare}
                      className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
                     <h4>
-                        0 Files</h4>
+                        {numFiles + ' Files' }</h4>
                     <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>description</i>
                 </div>
                 <div style={styles.cardSquare}
                      className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
                     <h4>
-                        0 GB</h4>
+                        {bytesToSize(bytes)}</h4>
                     <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>save</i>
                 </div>
             </div>

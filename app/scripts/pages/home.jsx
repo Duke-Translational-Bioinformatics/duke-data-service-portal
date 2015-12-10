@@ -29,6 +29,7 @@ class Home extends React.Component {
         let id = this.props.params.id;
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
         ProjectActions.loadProjects(id);
+        ProjectActions.getUsageDetails();
     }
 
     componentWillUnmount() {
