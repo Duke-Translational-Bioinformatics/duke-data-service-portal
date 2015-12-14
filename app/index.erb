@@ -23,10 +23,11 @@
         baseUrl: '<%= @baseUrl -%>',
         authServiceUri: '<%= @authServiceUri -%>',
         authServiceName: '<%= @authServiceName -%>',
-        securityState:'<%= @securityState -%>'
+        securityState:'<%= @securityState -%>',
+        environment:'<%= @environment -%>'
     };
 
-    if (DDS_PORTAL_CONFIG.stack != 'production') {
+    if (DDS_PORTAL_CONFIG.environment != 'production') {
         (function (d, t) {
             var bh = d.createElement(t), s = d.getElementsByTagName(t)[0];
             bh.type = 'text/javascript';

@@ -289,7 +289,7 @@ var ProjectStore = Reflux.createStore({
             loading: false
         })
     },
-    
+
     editFileError(error) {
         let errMsg = error && error.message ? "Error: " + error : '';
         this.trigger({
@@ -434,12 +434,57 @@ var ProjectStore = Reflux.createStore({
             error: errMsg,
             loading: false
         });
+    },
+
+    getDownloadUrl() {
+        this.trigger({
+            loading: true
+        })
+    },
+
+    getDownloadUrlSuccess(json) {
+        let host = json.host;
+        let url = json.url;
+        var win = window.open(host + url, '_blank');
+        if(win){
+            win.focus();
+        }else{
+            alert('Please allow popups for this site and try downloading again');
+        }
+        this.trigger({
+            loading: false
+        })
+    },
+
+    getDownloadUrlError(error) {
+        let msg = error && error.message ? "Error: " : +'An error occurred while loading projects.';
+        this.trigger({
+            error: msg,
+            loading: false
+        })
+    },
+
+    getUsageDetails() {
+        this.trigger({
+            loading: true
+        })
+    },
+
+    getUsageDetailsSuccess(json) {
+        this.usage = json;
+        this.trigger({
+            usage: this.usage,
+            loading: false
+        })
+    },
+
+    getUsageDetailsError(error) {
+        let errMsg = error && error.message ? "Error: " + error : '';
+        this.trigger({
+            error: errMsg,
+            loading: false
+        });
     }
-
-
-
-
-
 });
 
 export default ProjectStore;

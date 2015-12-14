@@ -6,6 +6,9 @@ import appConfig from '../config';
 import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.js';
 
 var ProjectActions = Reflux.createActions([
+    'getUsageDetails',
+    'getUsageDetailsSuccess',
+    'getUsageDetailsError',
     'loadProjects',
     'loadProjectsSuccess',
     'loadProjectsError',
@@ -63,8 +66,27 @@ var ProjectActions = Reflux.createActions([
     'addProjectMemberError',
     'deleteProjectMember',
     'deleteProjectMemberSuccess',
-    'deleteProjectMemberError'
+    'deleteProjectMemberError',
+    'getDownloadUrl',
+    'getDownloadUrlSuccess',
+    'getDownloadUrlError'
 ]);
+
+ProjectActions.getUsageDetails.preEmit = function () {
+    fetch(urlGen.routes.ddsUrl + 'current_user/usage', {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getUsageDetailsSuccess(json)
+    }).catch(function (ex) {
+        ProjectActions.getUsageDetailsError(ex)
+    })
+};
 
 ProjectActions.loadProjects.preEmit = function () {
     fetch(urlGen.routes.ddsUrl + 'projects/', {
@@ -402,6 +424,21 @@ ProjectActions.deleteProjectMember.preEmit = (id, userId, userName) => {
         });
 };
 
+ProjectActions.getDownloadUrl.preEmit = function (id) {
+    fetch(urlGen.routes.ddsUrl + 'files/' + id + '/url', {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getDownloadUrlSuccess(json)
+    }).catch(function (ex) {
+        ProjectActions.getDownloadUrlError(ex)
+    })
+};
 
 function checkResponse(response) {
     return checkStatus(response, MainActions);
