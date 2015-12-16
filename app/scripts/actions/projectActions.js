@@ -23,7 +23,7 @@ var ProjectActions = Reflux.createActions([
     'deleteProjectSuccess',
     'deleteProjectError',
     'editProject',
-    'editProjectSuccess',
+    'editProjectSuccess',               
     'editProjectError',
     'showDetails',
     'showDetailsSuccess',
