@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import FolderOptionsMenu from './folderOptionsMenu.jsx';
+import UploadModal from '../globalComponents/uploadModal.jsx';
 import urlGen from '../../../util/urlGen.js';
 import cookie from 'react-cookie';
 
@@ -45,11 +46,7 @@ class FolderPath extends React.Component {
         return (
             <div className="project-container group mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800"
                  style={styles.container}>
-                <button
-                    className="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-button--colored"
-                    style={styles.floatingButton}>
-                    <i className="material-icons">file_upload</i>
-                </button>
+                <UploadModal {...this.props} />
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div style={styles.menuIcon}>
                         <FolderOptionsMenu {...this.props} />
