@@ -71,8 +71,8 @@ class FileOptionsMenu extends React.Component {
 
     handleDeleteButton() {
         let id = this.props.params.id;
-        let parentId = this.props.parentObj ? this.props.parentObj.parent.id : null;
-        let parentKind = this.props.parentObj ? this.props.parentObj.parent.kind : null;
+        let parentId = this.props.entityObj ? this.props.entityObj.parent.id : null;
+        let parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : null;
         let urlPath = '';
         {parentKind === 'dds-project' ? urlPath = '/project/' : urlPath = '/folder/'}
         ProjectActions.deleteFile(id, parentId, parentKind, this.refs.deleteFile.dismiss(
