@@ -80,9 +80,4 @@ MainActions.getCurrentUser.preEmit = () => {
         });
 };
 
-MainActions.handleLogout.preEmit = () => {
-
-}
-
-
 export default MainActions;

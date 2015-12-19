@@ -8,16 +8,15 @@ var MainStore = Reflux.createStore({
     listenables: MainActions,
 
     init() {
-        this.currentUser = {};
         this.appConfig = appConfig;
-        this.asValidateLoading = false;
-        this.ddsApiTokenLoading = false;
         this.appConfig.apiToken = cookie.load('apiToken');
-        this.apiToken = cookie.load('apiToken');
-        this.signedInfo = null;
-        this.isLoggingIn = cookie.load('isLoggingIn');
-        this.toasts = [];
+        this.appConfig.isLoggedIn = cookie.load('isLoggedIn');
+        this.asValidateLoading = false;
+        this.currentUser = {};
+        this.ddsApiTokenLoading = false;
         this.modalOpen = cookie.load('modalOpen');
+        this.signedInfo = null;
+        this.toasts = [];
     },
 
     authenticationServiceValidate(appConfig, accessToken) {
@@ -97,21 +96,21 @@ var MainStore = Reflux.createStore({
     },
 
     isLoggedInHandler() {
-        this.isLoggingIn = true;
-        cookie.save('isLoggingIn', this.isLoggingIn);
+        this.appConfig.isLoggedIn = true;
+        cookie.save('isLoggedIn', this.appConfig.isLoggedIn);
         cookie.save('modalOpen', this.modalOpen);
         this.trigger({
-            isLoggingIn: this.isLoggingIn,
+            appConfig: this.appConfig,
             modalOpen: this.modalOpen
         });
     },
 
     handleLogout () {
         this.appConfig.apiToken = null;
-        this.isLoggingIn = null;
+        this.appConfig.isLoggedIn = null;
         cookie.remove('apiToken');
         cookie.remove('currentUser');
-        cookie.remove('isLoggingIn');
+        cookie.remove('isLoggedIn');
         this.trigger({
             appConfig: this.appConfig
         });
