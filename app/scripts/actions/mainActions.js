@@ -17,7 +17,8 @@ var MainActions = Reflux.createActions([
     'addToast',
     'removeToast',
     'closePhiModal',
-    'handleLogout'
+    'handleLogout',
+    'removeLoginCookie'
 ]);
 
 MainActions.authenticationServiceValidate.preEmit = (appConfig, accessToken) => {

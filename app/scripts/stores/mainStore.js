@@ -77,9 +77,7 @@ var MainStore = Reflux.createStore({
         });
     },
 
-    getCurrentUser () {
-
-    },
+    getCurrentUser(){},
 
     getCurrentUserSuccess (json) {
         this.currentUser = json;
@@ -98,19 +96,24 @@ var MainStore = Reflux.createStore({
     isLoggedInHandler() {
         this.appConfig.isLoggedIn = true;
         cookie.save('isLoggedIn', this.appConfig.isLoggedIn);
-        cookie.save('modalOpen', this.modalOpen);
+        this.modalOpen = MainStore.modalOpen;
         this.trigger({
             appConfig: this.appConfig,
             modalOpen: this.modalOpen
         });
     },
 
+    removeLoginCookie() {
+        this.appConfig.isLoggedIn = null;
+        cookie.remove('isLoggedIn');
+        this.trigger({
+            appConfig: this.appConfig
+        });
+    },
+
     handleLogout () {
         this.appConfig.apiToken = null;
-        this.appConfig.isLoggedIn = null;
         cookie.remove('apiToken');
-        cookie.remove('currentUser');
-        cookie.remove('isLoggedIn');
         this.trigger({
             appConfig: this.appConfig
         });
