@@ -50,7 +50,8 @@ class Login extends React.Component {
                 content = this.state.error
             }
             else if (this.state.asValidateLoading || this.state.ddsApiTokenLoading) {
-                content = (<div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader" style={styles.loader}></div>);
+                content = (<div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader"
+                                style={styles.loader}></div>);
             }
             else if (this.state.signedInfo) {
                 MainActions.getDdsApiToken(this.state.appConfig, this.state.signedInfo);

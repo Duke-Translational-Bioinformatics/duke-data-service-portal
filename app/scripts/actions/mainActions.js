@@ -17,7 +17,8 @@ var MainActions = Reflux.createActions([
     'addToast',
     'removeToast',
     'closePhiModal',
-    'handleLogout'
+    'handleLogout',
+    'removeLoginCookie'
 ]);
 
 MainActions.authenticationServiceValidate.preEmit = (appConfig, accessToken) => {
@@ -79,10 +80,5 @@ MainActions.getCurrentUser.preEmit = () => {
             MainActions.getCurrentUserError(ex)
         });
 };
-
-MainActions.handleLogout.preEmit = () => {
-
-}
-
 
 export default MainActions;
