@@ -3,8 +3,8 @@ import { RouteHandler, Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import AddFolderModal from '../folderComponents/addFolderModal.jsx';
-import UploadFileModal from '../fileComponents/uploadFileModal.jsx';
 import urlGen from '../../../util/urlGen.js';
+const LinearProgress = require('material-ui/lib/linear-progress');
 var mui = require('material-ui'),
     TextField = mui.TextField,
     Dialog = mui.Dialog,
@@ -14,6 +14,8 @@ var mui = require('material-ui'),
 class FolderChildren extends React.Component {
 
     render() {
+        let uploading = this.props.uploading ? <div><LinearProgress color={"#2196f3"} mode="determinate" value={ProjectStore.uploadProgress} style={styles.uploader}/><div className="mdl-color-text--grey-600" style={styles.uploadText}>uploading...</div></div> : '';
+        let loading = this.props.loading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader"></div> : '';
         var error = '';
         if (this.props.error)
             error = (<h4>{this.props.error}</h4>);
@@ -57,12 +59,6 @@ class FolderChildren extends React.Component {
                     );
                 }
             });
-            let loading = this.props.loading ?
-                <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
-            let standardActions = [
-                {text: 'Submit'},
-                {text: 'Cancel'}
-            ];
 
             return (
                 <div className="list-container">
@@ -111,20 +107,22 @@ var styles = {
     textStyles: {
         textAlign: 'left'
     },
-    upLoadBox: {
+    uploader: {
+        width: '80%',
+        marginTop: 10,
+        margin: '0 auto'
+    },
+    uploadText: {
         textAlign: 'center',
-        height: 200,
-        border: '1px solid grey',
-        margin: '0px 20px 20px 20px'
+        fontSize: '.8em'
     }
 };
 
 FolderChildren.propTypes = {
     loading: React.PropTypes.bool,
+    uploading: React.PropTypes.bool,
     children: React.PropTypes.array,
-    projects: React.PropTypes.array,
-    error: React.PropTypes.string,
-    is_deleted: React.PropTypes.bool
+    error: React.PropTypes.string
 };
 
 export default FolderChildren;
