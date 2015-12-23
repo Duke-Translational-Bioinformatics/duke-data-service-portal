@@ -486,7 +486,7 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
             return response.json()
         }).then(function (json) {
             let uploadObj = json;
-            if (!uploadObj || !uploadObj.id) throw Exception("Problem, no upload created");
+            if (!uploadObj || !uploadObj.id) throw "Problem, no upload created";
 
             let details = {
                 size: SIZE,
