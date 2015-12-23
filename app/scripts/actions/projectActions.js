@@ -546,7 +546,8 @@ ProjectActions.getChunkUrl.preEmit = function (uploadId, chunkBlob, chunkNum, si
                 // upload chunks
                 uploadChunk(uploadId, chunkObj.host + chunkObj.url, chunkBlob, size, parentId, parentKind, chunkNum)
             } else {
-                console.log("Problem, no upload created");
+                let status = 2;
+                ProjectActions.updateAndProcessChunks(uploadId, chunkNum, status);
             }
             ProjectActions.startUploadSuccess()
         }).catch(function (ex) {
@@ -557,26 +558,19 @@ ProjectActions.getChunkUrl.preEmit = function (uploadId, chunkBlob, chunkNum, si
 }
 
 function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKind, chunkNum) {
-    let uploaders = [];
-    let progress = [];
     var xhr = new XMLHttpRequest();
-    uploaders.push(xhr);
     xhr.upload.onprogress = uploadProgress;
     function uploadProgress(e) {
         if (e.lengthComputable) {
             let percentOfChunkUploaded = (e.loaded / e.total) * 100;
-            if(percentOfChunkUploaded < 100){
-                ProjectActions.computeUploadProgress(percentOfChunkUploaded);
-            }
-        } else {
-            alert('cant compute progress')
+            ProjectActions.computeUploadProgress(percentOfChunkUploaded);
         }
     }
 
     xhr.onload = onComplete;
     function onComplete() {
         if (xhr.status >= 200 && xhr.status < 300) {
-            var status = 1;//TODO: should grab this from Project store. For some reason when I do it's undefined
+            var status = 1;
         }
         else {
             status = 2;
@@ -603,9 +597,8 @@ ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentK
         return response.json()
     }).then(function (json) {
         ProjectActions.addFile(uploadId, parentId, parentKind);
-        console.log('File Upload Complete');
     }).catch(function (ex) {
-        console.log('File Upload Failed');
+        MainActions.addToast('Failed to upload file!');
     })
 }
 
