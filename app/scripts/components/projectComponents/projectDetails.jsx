@@ -87,6 +87,7 @@ var Details = React.createClass({
     render() {
         let description = this.props.project ? this.props.project.description : null;
         let projectId = this.props.project ? this.props.project.id : null;
+        let createdBy = this.props.project && this.props.project.audit ? this.props.project.audit.created_by.full_name : null;
         let lastUpdatedOn = this.props.project && this.props.project.audit ? this.props.project.audit.last_updated_on : null;
         let lastUpdatedBy = this.props.project && this.props.project.audit ? this.props.project.audit.last_updated_by : null;
         let users = this.props.projectMembers ? this.props.projectMembers : null;
@@ -98,10 +99,9 @@ var Details = React.createClass({
                     <div className="item-media"><i className="material-icons">face</i></div>
                     <div className="item-inner">
                         <div className="item-title">{users.user.full_name}</div>
-                        <div className="item-after"><a href="#"
-                                                       onTouchTap={() => this.handleTouchTap(users.user.id, users.user.full_name)}>
-                            {users.user.full_name != currentUser ?
-                                <i className="material-icons" style={styles.deleteIcon}>cancel</i> : ''}</a>
+                        <div className="item-after">
+                            <a href="#" onTouchTap={() => this.handleTouchTap(users.user.id, users.user.full_name)}>
+                            {users.user.full_name != currentUser && users.user.full_name != createdBy ? <i className="material-icons" style={styles.deleteIcon}>cancel</i> : ''}</a>
                         </div>
                     </div>
                 </div>
