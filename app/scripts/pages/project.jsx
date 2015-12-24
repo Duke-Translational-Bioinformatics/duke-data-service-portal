@@ -29,10 +29,11 @@ class Project extends React.Component {
     componentDidMount() {
         let id = this.props.params.id;
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
+        this.unsubscribe = MainStore.listen(state => this.setState(state));
         ProjectActions.loadProjectChildren(id);
         ProjectActions.showDetails(id);
         ProjectActions.getProjectMembers(id);
-        //MainActions.getCurrentUser();
+        MainActions.getCurrentUser();
     }
 
     componentWillUnmount() {
