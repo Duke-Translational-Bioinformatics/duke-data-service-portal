@@ -84,7 +84,7 @@ var ProjectActions = Reflux.createActions([
 ]);
 
 ProjectActions.getUsageDetails.preEmit = function () {
-    fetch(urlGen.routes.ddsUrl + 'current_user/usage', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'current_user/usage', {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -100,7 +100,7 @@ ProjectActions.getUsageDetails.preEmit = function () {
 };
 
 ProjectActions.loadProjects.preEmit = function () {
-    fetch(urlGen.routes.ddsUrl + 'projects/', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'projects/', {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -116,7 +116,7 @@ ProjectActions.loadProjects.preEmit = function () {
 };
 
 ProjectActions.loadProjectChildren.preEmit = function (id) {
-    fetch(urlGen.routes.ddsUrl + 'projects/' + id + '/children', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'projects/' + id + '/children', {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -132,7 +132,7 @@ ProjectActions.loadProjectChildren.preEmit = function (id) {
 };
 
 ProjectActions.showDetails.preEmit = function (id) {
-    fetch(urlGen.routes.ddsUrl + 'projects/' + id, {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'projects/' + id, {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -148,7 +148,7 @@ ProjectActions.showDetails.preEmit = function (id) {
 };
 
 ProjectActions.addProject.preEmit = function (name, desc) {
-    fetch(urlGen.routes.ddsUrl + 'projects/', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'projects/', {
         method: 'post',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -170,7 +170,7 @@ ProjectActions.addProject.preEmit = function (name, desc) {
 };
 
 ProjectActions.deleteProject.preEmit = function (id) {
-    fetch(urlGen.routes.ddsUrl + 'projects/' + id, {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'projects/' + id, {
         method: 'delete',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -187,7 +187,7 @@ ProjectActions.deleteProject.preEmit = function (id) {
 };
 
 ProjectActions.editProject.preEmit = function (id, name, desc) {
-    fetch(urlGen.routes.ddsUrl + 'projects/' + id, {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'projects/' + id, {
         method: 'put',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -210,7 +210,7 @@ ProjectActions.editProject.preEmit = function (id, name, desc) {
 };
 
 ProjectActions.loadFolderChildren.preEmit = function (id) {
-    fetch(urlGen.routes.ddsUrl + 'folders/' + id + '/children', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'folders/' + id + '/children', {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -226,7 +226,7 @@ ProjectActions.loadFolderChildren.preEmit = function (id) {
 };
 
 ProjectActions.addFolder.preEmit = function (id, parentKind, name) {
-    fetch(urlGen.routes.ddsUrl + 'folders/', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'folders/', {
         method: 'post',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -251,7 +251,7 @@ ProjectActions.addFolder.preEmit = function (id, parentKind, name) {
 };
 
 ProjectActions.deleteFolder.preEmit = function (id) {
-    fetch(urlGen.routes.ddsUrl + 'folders/' + id, {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'folders/' + id, {
         method: 'delete',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -269,7 +269,7 @@ ProjectActions.deleteFolder.preEmit = function (id) {
 };
 
 ProjectActions.editFolder.preEmit = function (id, name) {
-    fetch(urlGen.routes.ddsUrl + 'folders/' + id + '/rename', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'folders/' + id + '/rename', {
         method: 'put',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -291,7 +291,7 @@ ProjectActions.editFolder.preEmit = function (id, name) {
 };
 
 ProjectActions.loadFiles.preEmit = function (id) {
-    fetch(urlGen.routes.ddsUrl + 'folders/' + id + '/children', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'folders/' + id + '/children', {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -307,7 +307,7 @@ ProjectActions.loadFiles.preEmit = function (id) {
 };
 
 ProjectActions.deleteFile.preEmit = function (id, parentId, parentKind) {
-    fetch(urlGen.routes.ddsUrl + 'files/' + id, {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/' + id, {
         method: 'delete',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -324,7 +324,7 @@ ProjectActions.deleteFile.preEmit = function (id, parentId, parentKind) {
 };
 
 ProjectActions.editFile.preEmit = function (id, fileName) {
-    fetch(urlGen.routes.ddsUrl + 'files/' + id + '/rename', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/' + id + '/rename', {
         method: 'put',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -345,7 +345,7 @@ ProjectActions.editFile.preEmit = function (id, fileName) {
 };
 
 ProjectActions.getEntity.preEmit = (id, kind) => {
-    fetch(urlGen.routes.ddsUrl + kind + '/' + id, {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + kind + '/' + id, {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -362,7 +362,7 @@ ProjectActions.getEntity.preEmit = (id, kind) => {
 };
 
 ProjectActions.getProjectMembers.preEmit = (id) => {
-    fetch(urlGen.routes.ddsUrl + 'projects/' + id + '/permissions', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'projects/' + id + '/permissions', {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -379,7 +379,7 @@ ProjectActions.getProjectMembers.preEmit = (id) => {
 };
 
 ProjectActions.getUserId.preEmit = (firstName, lastName, id, role) => {
-    fetch(urlGen.routes.ddsUrl + 'users?' + 'last_name_begins_with=' + lastName + '&first_name_begins_with=' + firstName, {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'users?' + 'last_name_begins_with=' + lastName + '&first_name_begins_with=' + firstName, {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -396,7 +396,7 @@ ProjectActions.getUserId.preEmit = (firstName, lastName, id, role) => {
 };
 
 ProjectActions.addProjectMember.preEmit = (id, userId, role, name) => {
-    fetch(urlGen.routes.ddsUrl + 'projects/' + id + '/permissions/' + userId, {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'projects/' + id + '/permissions/' + userId, {
         method: 'put',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -418,7 +418,7 @@ ProjectActions.addProjectMember.preEmit = (id, userId, role, name) => {
 };
 
 ProjectActions.deleteProjectMember.preEmit = (id, userId, userName) => {
-    fetch(urlGen.routes.ddsUrl + 'projects/' + id + '/permissions/' + userId, {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'projects/' + id + '/permissions/' + userId, {
         method: 'delete',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -436,7 +436,7 @@ ProjectActions.deleteProjectMember.preEmit = (id, userId, userName) => {
 };
 
 ProjectActions.getDownloadUrl.preEmit = function (id) {
-    fetch(urlGen.routes.ddsUrl + 'files/' + id + '/url', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/' + id + '/url', {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -467,7 +467,7 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
         let arrayBuffer = event.target.result;
         var wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
         var md5crc = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
-        fetch(urlGen.routes.ddsUrl + 'projects/' + projId + '/uploads', {
+        fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'projects/' + projId + '/uploads', {
             method: 'post',
             headers: {
                 'Authorization': appConfig.apiToken,
@@ -521,7 +521,7 @@ ProjectActions.getChunkUrl.preEmit = function (uploadId, chunkBlob, chunkNum, si
         var arrayBuffer = event.target.result;
         var wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
         var md5crc = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
-        fetch(urlGen.routes.ddsUrl + 'uploads/' + uploadId + '/chunks', {
+        fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'uploads/' + uploadId + '/chunks', {
             method: 'put',
             headers: {
                 'Authorization': appConfig.apiToken,
@@ -587,7 +587,7 @@ function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKi
 }
 
 ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentKind) {
-    fetch(urlGen.routes.ddsUrl + 'uploads/' + uploadId + '/complete', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'uploads/' + uploadId + '/complete', {
         method: 'put',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -604,7 +604,7 @@ ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentK
 }
 
 ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind) {
-    fetch(urlGen.routes.ddsUrl + 'files/', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/', {
         method: 'post',
         headers: {
             'Authorization': appConfig.apiToken,
