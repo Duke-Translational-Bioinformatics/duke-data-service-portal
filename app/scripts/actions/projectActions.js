@@ -456,7 +456,7 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
         fileName = blob.name,
         contentType = blob.type,
         BYTES_PER_CHUNK, SIZE, NUM_CHUNKS, start, end;
-    BYTES_PER_CHUNK = 2097152;
+    BYTES_PER_CHUNK = 5000000;
     SIZE = blob.size;
     NUM_CHUNKS = Math.max(Math.ceil(SIZE / BYTES_PER_CHUNK), 1);
     start = 0;
@@ -486,7 +486,7 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
             return response.json()
         }).then(function (json) {
             let uploadObj = json;
-            if (!uploadObj || !uploadObj.id) throw Exception("Problem, no upload created");
+            if (!uploadObj || !uploadObj.id) throw "Problem, no upload created";
 
             let details = {
                 size: SIZE,
@@ -495,7 +495,6 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
                 parentKind: parentKind,
                 chunks: []
             };
-            // describe chunk details
             while (start < SIZE) {
                 details.chunks.push({
                     number: chunkNum,
@@ -504,7 +503,6 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
                     status: null,
                     retry: 0
                 });
-                // increment to next chunk
                 start = end;
                 end = start + BYTES_PER_CHUNK;
                 chunkNum++;
@@ -546,7 +544,10 @@ ProjectActions.getChunkUrl.preEmit = function (uploadId, chunkBlob, chunkNum, si
                 // upload chunks
                 uploadChunk(uploadId, chunkObj.host + chunkObj.url, chunkBlob, size, parentId, parentKind, chunkNum)
             } else {
-                console.log("Problem, no upload created");
+                if(ProjectStore.STATUS_RETRY != null){
+                    var status = ProjectStore.STATUS_RETRY
+                }
+                ProjectActions.updateAndProcessChunks(uploadId, chunkNum, status);
             }
             ProjectActions.startUploadSuccess()
         }).catch(function (ex) {
@@ -557,37 +558,30 @@ ProjectActions.getChunkUrl.preEmit = function (uploadId, chunkBlob, chunkNum, si
 }
 
 function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKind, chunkNum) {
-    let uploaders = [];
-    let progress = [];
     var xhr = new XMLHttpRequest();
-    uploaders.push(xhr);
     xhr.upload.onprogress = uploadProgress;
     function uploadProgress(e) {
         if (e.lengthComputable) {
             let percentOfChunkUploaded = (e.loaded / e.total) * 100;
-            if(percentOfChunkUploaded < 100){
-                ProjectActions.computeUploadProgress(percentOfChunkUploaded);
-            }
-        } else {
-            alert('cant compute progress')
+            ProjectActions.computeUploadProgress(percentOfChunkUploaded);
         }
     }
 
     xhr.onload = onComplete;
     function onComplete() {
         if (xhr.status >= 200 && xhr.status < 300) {
-            var status = 1;//TODO: should grab this from Project store. For some reason when I do it's undefined
+            if(ProjectStore.STATUS_SUCCESS != null){
+                var status = ProjectStore.STATUS_SUCCESS
+            }
         }
         else {
-            status = 2;
+            if(ProjectStore.STATUS_RETRY != null){
+                status = ProjectStore.STATUS_RETRY
+            }
         }
         ProjectActions.updateAndProcessChunks(uploadId, chunkNum, status);
     }
 
-    xhr.onloadend = function (e) {
-        uploaders.pop();
-        if (!uploaders.length) {}
-    };
     xhr.open('PUT', presignedUrl, true);
     xhr.send(chunkBlob);
 }
@@ -603,8 +597,8 @@ ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentK
         return response.json()
     }).then(function (json) {
         ProjectActions.addFile(uploadId, parentId, parentKind);
-        console.log('File Upload Complete');
     }).catch(function (ex) {
+        MainActions.addToast('Failed to upload file!');
         console.log('File Upload Failed');
     })
 }
@@ -624,7 +618,6 @@ ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind) {
             'upload': {
                 'id': uploadId
             }
-
         })
     }).then(checkResponse).then(function (response) {
         return response.json()
