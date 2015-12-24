@@ -2,6 +2,7 @@ let UrlGen = {
     routes: {
         ddsUrl: 'https://dev.dataservice.duke.edu/api/v1/',
         baseUrl: DDS_PORTAL_CONFIG.baseUrl,
+        apiPrefix: '/api/v1/',
         prefix: '/portal/#',
         login: () => '/login',
         home: (id) => '/',
