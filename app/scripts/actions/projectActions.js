@@ -1,11 +1,16 @@
 import Reflux from 'reflux';
 import MainActions from '../actions/mainActions';
 import MainStore from '../stores/mainStore';
+import ProjectStore from '../stores/projectStore';
 import urlGen from '../../util/urlGen.js';
 import appConfig from '../config';
+import StatusEnum from '../enum';
 import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.js';
 
 var ProjectActions = Reflux.createActions([
+    'getUser',
+    'getUserSuccess',
+    'getUserError',
     'getUsageDetails',
     'getUsageDetailsSuccess',
     'getUsageDetailsError',
@@ -23,7 +28,7 @@ var ProjectActions = Reflux.createActions([
     'deleteProjectSuccess',
     'deleteProjectError',
     'editProject',
-    'editProjectSuccess',               
+    'editProjectSuccess',
     'editProjectError',
     'showDetails',
     'showDetailsSuccess',
@@ -46,6 +51,9 @@ var ProjectActions = Reflux.createActions([
     'loadFiles',
     'loadFilesSuccess',
     'loadFilesError',
+    'addFile',
+    'addFileSuccess',
+    'addFileError',
     'deleteFile',
     'deleteFileSuccess',
     'deleteFileError',
@@ -69,8 +77,33 @@ var ProjectActions = Reflux.createActions([
     'deleteProjectMemberError',
     'getDownloadUrl',
     'getDownloadUrlSuccess',
-    'getDownloadUrlError'
+    'getDownloadUrlError',
+    'startUpload',
+    'startUploadSuccess',
+    'startUploadError',
+    'updateAndProcessChunks',
+    'allChunksUploaded',
+    'getChunkUrl',
+    'computeUploadProgress'
 ]);
+
+ProjectActions.getUser.preEmit = () => {
+    fetch(urlGen.routes.ddsUrl + 'current_user', {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    })
+        .then(function (response) {
+            return response.json()
+        }).then(function (json) {
+            ProjectActions.getUserSuccess(json)
+        })
+        .catch(function (ex) {
+            ProjectActions.getUserError(ex)
+        });
+};
 
 ProjectActions.getUsageDetails.preEmit = function () {
     fetch(urlGen.routes.ddsUrl + 'current_user/usage', {
@@ -439,6 +472,185 @@ ProjectActions.getDownloadUrl.preEmit = function (id) {
         ProjectActions.getDownloadUrlError(ex)
     })
 };
+
+ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKind) {
+    let chunkNum = 0,
+        fileName = blob.name,
+        contentType = blob.type,
+        BYTES_PER_CHUNK, SIZE, NUM_CHUNKS, start, end;
+    BYTES_PER_CHUNK = 5000000;
+    SIZE = blob.size;
+    NUM_CHUNKS = Math.max(Math.ceil(SIZE / BYTES_PER_CHUNK), 1);
+    start = 0;
+    end = BYTES_PER_CHUNK;
+    var fileReader = new FileReader();
+    fileReader.onload = function (event, files) {
+        // create project upload
+        let arrayBuffer = event.target.result;
+        var wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
+        var md5crc = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
+        fetch(urlGen.routes.ddsUrl + 'projects/' + projId + '/uploads', {
+            method: 'post',
+            headers: {
+                'Authorization': appConfig.apiToken,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                'name': fileName,
+                'content_type': contentType,
+                'size': SIZE,
+                'hash': {
+                    'value': md5crc,
+                    'algorithm': 'MD5'
+                }
+            })
+        }).then(checkResponse).then(function (response) {
+            return response.json()
+        }).then(function (json) {
+            let uploadObj = json;
+            if (!uploadObj || !uploadObj.id) throw "Problem, no upload created";
+
+            let details = {
+                size: SIZE,
+                blob: blob,
+                parentId: parentId,
+                parentKind: parentKind,
+                chunks: []
+            };
+            // describe chunk details
+            while (start < SIZE) {
+                details.chunks.push({
+                    number: chunkNum,
+                    start: start,
+                    end: end,
+                    status: null,
+                    retry: 0
+                });
+                // increment to next chunk
+                start = end;
+                end = start + BYTES_PER_CHUNK;
+                chunkNum++;
+            }
+            ProjectActions.startUploadSuccess(uploadObj.id, details);
+        }).catch(function (ex) {
+            ProjectActions.startUploadError(ex)
+        })
+    };
+    fileReader.readAsArrayBuffer(blob);
+};
+
+ProjectActions.getChunkUrl.preEmit = function (uploadId, chunkBlob, chunkNum, size, parentId, parentKind) {
+    var fileReader = new FileReader();
+    fileReader.onload = function (event) {
+        var arrayBuffer = event.target.result;
+        var wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
+        var md5crc = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
+        fetch(urlGen.routes.ddsUrl + 'uploads/' + uploadId + '/chunks', {
+            method: 'put',
+            headers: {
+                'Authorization': appConfig.apiToken,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                "number": chunkNum,
+                "size": chunkBlob.size,
+                'hash': {
+                    'value': md5crc,
+                    'algorithm': 'MD5'
+                }
+            })
+
+        }).then(checkResponse).then(function (response) {
+            return response.json()
+        }).then(function (json) {
+            let chunkObj = json;
+            if (chunkObj && chunkObj.url && chunkObj.host) {
+                // upload chunks
+                uploadChunk(uploadId, chunkObj.host + chunkObj.url, chunkBlob, size, parentId, parentKind, chunkNum)
+            } else {
+                throw 'Unexpected response';
+            }
+        }).catch(function (ex) {
+            ProjectActions.updateAndProcessChunks(uploadId, chunkNum, StatusEnum.STATUS_RETRY);
+        });
+    };
+    fileReader.readAsArrayBuffer(chunkBlob);
+}
+
+function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKind, chunkNum) {
+    var xhr = new XMLHttpRequest();
+    xhr.upload.onprogress = uploadProgress;
+    function uploadProgress(e) {
+        if (e.lengthComputable) {
+            let percentOfChunkUploaded = (e.loaded / e.total) * 100;
+            ProjectActions.computeUploadProgress(percentOfChunkUploaded);
+        }
+    }
+
+    xhr.onload = onComplete;
+    function onComplete() {
+        let status = null;
+        if (xhr.status >= 200 && xhr.status < 300) {
+            status = StatusEnum.STATUS_SUCCESS;
+        }
+        else {
+            status = StatusEnum.STATUS_RETRY;
+        }
+        ProjectActions.updateAndProcessChunks(uploadId, chunkNum, status);
+    }
+    xhr.open('PUT', presignedUrl, true);
+    xhr.send(chunkBlob);
+}
+
+ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentKind) {
+    let retry = 0;
+    let maxRetry = 2;
+    fetch(urlGen.routes.ddsUrl + 'uploads/' + uploadId + '/complete', {
+        method: 'put',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.addFile(uploadId, parentId, parentKind);
+    }).catch(function (ex) {
+        while (retry <= maxRetry) {
+            ProjectActions.allChunksUploaded(uploadId, parentId, parentKind);
+            retry++;
+        }
+        MainActions.addToast('Failed to upload file!');
+    })
+}
+
+ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind) {
+    fetch(urlGen.routes.ddsUrl + 'files/', {
+        method: 'post',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            'parent': {
+                'kind': parentKind,
+                'id': parentId
+            },
+            'upload': {
+                'id': uploadId
+            }
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('File Uploaded');
+        ProjectActions.addFileSuccess(parentId, parentKind, uploadId)
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to upload file!');
+        ProjectActions.addFileError(ex)
+    })
+};
+
 
 function checkResponse(response) {
     return checkStatus(response, MainActions);
