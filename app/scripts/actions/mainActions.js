@@ -64,7 +64,7 @@ MainActions.getDdsApiToken.preEmit = (appConfig, signedInfo) => {
 };
 
 MainActions.getCurrentUser.preEmit = () => {
-    fetch(urlGen.routes.ddsUrl + 'current_user', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'current_user', {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,

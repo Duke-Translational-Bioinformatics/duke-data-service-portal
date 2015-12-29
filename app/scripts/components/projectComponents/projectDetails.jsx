@@ -30,14 +30,12 @@ class ProjectDetails extends React.Component {
         let createdOn = this.props.project && this.props.project.audit ? this.props.project.audit.created_on : null;
         let error = '';
 
-        let addProjectLoading = this.props.addProjectLoading ?
-            <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
-
         return (
             <div
                 className="project-container mdl-color--white mdl-shadow--2dp mdl-color-text--grey-800"
                 style={styles.container}>
                 <UploadModal {...this.props}/>
+
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div style={styles.menuIcon}>
                         <ProjectOptionsMenu {...this.props} />
@@ -71,7 +69,6 @@ class ProjectDetails extends React.Component {
                         </div>
                     </div>
                 </div>
-                { addProjectLoading }
                 { error }
             </div>
         );

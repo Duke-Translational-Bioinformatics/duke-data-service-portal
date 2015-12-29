@@ -30,6 +30,7 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             error: msg
         });
+
     },
 
     loadProjects() {
@@ -571,6 +572,12 @@ var ProjectStore = Reflux.createStore({
                         return;
                     }
                     if (status === StatusEnum.STATUS_RETRY) chunks[i].retry++;
+                    if (status === StatusEnum.STATUS_RETRY && chunks[i].retry > this.MAX_RETRY) {
+                        chunks[i].status = StatusEnum.STATUS_FAILED;
+                        ProjectStore.uploadError(uploadId);
+                        return;
+                    }
+                    if (status === StatusEnum.STATUS_RETRY) chunks[i].retry++;
                     chunks[i].status = status;
                     break;
                 }
@@ -591,6 +598,15 @@ var ProjectStore = Reflux.createStore({
             }
         }
         if(allDone === true)ProjectActions.allChunksUploaded(uploadId, upload.parentId, upload.parentKind);
+        for (let i = 0; i < chunks.length; i++) {
+            let chunk = chunks[i];
+            if (chunk.status === StatusEnum.STATUS_WAITING_FOR_UPLOAD || chunk.status === StatusEnum.STATUS_RETRY) {
+                chunk.status = StatusEnum.STATUS_UPLOADING;
+                ProjectActions.getChunkUrl(uploadId, upload.blob.slice(chunk.start, chunk.end), chunk.number, upload.size, upload.parentId, upload.parentKind);
+                return;
+            }
+        }
+        ProjectActions.allChunksUploaded(uploadId, upload.parentId, upload.parentKind);
     },
 
     computeUploadProgress(percent){
