@@ -552,12 +552,12 @@ var ProjectStore = Reflux.createStore({
             for (let i = 0; i < chunks.length; i++) {
                 if (chunks[i].number === chunkNum) {
                     if (status === StatusEnum.STATUS_RETRY && chunks[i].retry > StatusEnum.MAX_RETRY) {
-                        chunks[i].chunkUpdates.status = StatusEnum.STATUS_FAILED;
+                        chunks[i].status = StatusEnum.STATUS_FAILED;
                         ProjectStore.uploadError(uploadId, chunks[i].name);
                         return;
                     }
                     if (status === StatusEnum.STATUS_RETRY) chunks[i].retry++;
-                    chunks[i].chunkUpdates.status = status;
+                    chunks[i].status = status;
                     break;
                 }
             }
@@ -565,12 +565,12 @@ var ProjectStore = Reflux.createStore({
         let allDone = null;
         for (let i = 0; i < chunks.length; i++) {
             let chunk = chunks[i];
-            if (chunk.chunkUpdates.status === StatusEnum.STATUS_WAITING_FOR_UPLOAD || chunk.chunkUpdates.status === StatusEnum.STATUS_RETRY) {
-                chunk.chunkUpdates.status = StatusEnum.STATUS_UPLOADING;
+            if (chunk.status === StatusEnum.STATUS_WAITING_FOR_UPLOAD || chunk.status === StatusEnum.STATUS_RETRY) {
+                chunk.status = StatusEnum.STATUS_UPLOADING;
                 ProjectActions.getChunkUrl(uploadId, upload.blob.slice(chunk.start, chunk.end), chunk.number, upload.size, upload.parentId, upload.parentKind);
                 return;
             }
-            allDone = chunk.chunkUpdates.status !== StatusEnum.STATUS_UPLOADING ? true : false;
+            allDone = chunk.status !== StatusEnum.STATUS_UPLOADING ? true : false;
         }
         if(allDone === true)ProjectActions.allChunksUploaded(uploadId, upload.parentId, upload.parentKind, upload.name);
     },
