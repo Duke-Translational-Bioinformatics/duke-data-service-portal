@@ -14,7 +14,7 @@ var mui = require('material-ui'),
 class FolderChildren extends React.Component {
 
     render() {
-        let uploading = this.props.uploading ? <div><LinearProgress color={"#2196f3"} mode="determinate" value={ProjectStore.uploadProgress} style={styles.uploader}/><div className="mdl-color-text--grey-600" style={styles.uploadText}>uploading...</div></div> : '';
+        let uploading = this.props.uploading ? <div><LinearProgress color={"#2196f3"} mode="indeterminate" style={styles.uploader}/><div className="mdl-color-text--grey-600" style={styles.uploadText}>uploading...</div></div> : '';
         let loading = this.props.loading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader"></div> : '';
         var error = '';
         if (this.props.error)

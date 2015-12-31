@@ -4,9 +4,13 @@ import MainStore from '../stores/mainStore';
 import ProjectStore from '../stores/projectStore';
 import urlGen from '../../util/urlGen.js';
 import appConfig from '../config';
+import StatusEnum from '../enum';
 import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.js';
 
 var ProjectActions = Reflux.createActions([
+    'getUser',
+    'getUserSuccess',
+    'getUserError',
     'getUsageDetails',
     'getUsageDetailsSuccess',
     'getUsageDetailsError',
@@ -82,6 +86,24 @@ var ProjectActions = Reflux.createActions([
     'getChunkUrl',
     'computeUploadProgress'
 ]);
+
+ProjectActions.getUser.preEmit = () => {
+    fetch(urlGen.routes.ddsUrl + 'current_user', {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    })
+        .then(function (response) {
+            return response.json()
+        }).then(function (json) {
+            ProjectActions.getUserSuccess(json)
+        })
+        .catch(function (ex) {
+            ProjectActions.getUserError(ex)
+        });
+};
 
 ProjectActions.getUsageDetails.preEmit = function () {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'current_user/usage', {
@@ -489,12 +511,14 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
             if (!uploadObj || !uploadObj.id) throw "Problem, no upload created";
 
             let details = {
+                name: fileName,
                 size: SIZE,
                 blob: blob,
                 parentId: parentId,
                 parentKind: parentKind,
                 chunks: []
             };
+            // describe chunk details
             while (start < SIZE) {
                 details.chunks.push({
                     number: chunkNum,
@@ -503,6 +527,7 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
                     status: null,
                     retry: 0
                 });
+                // increment to next chunk
                 start = end;
                 end = start + BYTES_PER_CHUNK;
                 chunkNum++;
@@ -544,14 +569,10 @@ ProjectActions.getChunkUrl.preEmit = function (uploadId, chunkBlob, chunkNum, si
                 // upload chunks
                 uploadChunk(uploadId, chunkObj.host + chunkObj.url, chunkBlob, size, parentId, parentKind, chunkNum)
             } else {
-                if(ProjectStore.STATUS_RETRY != null){
-                    var status = ProjectStore.STATUS_RETRY
-                }
-                ProjectActions.updateAndProcessChunks(uploadId, chunkNum, status);
+                throw 'Unexpected response';
             }
-            ProjectActions.startUploadSuccess()
         }).catch(function (ex) {
-            ProjectActions.startUploadError(ex)
+            ProjectActions.updateAndProcessChunks(uploadId, chunkNum, StatusEnum.STATUS_RETRY);
         });
     };
     fileReader.readAsArrayBuffer(chunkBlob);
@@ -569,24 +590,22 @@ function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKi
 
     xhr.onload = onComplete;
     function onComplete() {
+        let status = null;
         if (xhr.status >= 200 && xhr.status < 300) {
-            if(ProjectStore.STATUS_SUCCESS != null){
-                var status = ProjectStore.STATUS_SUCCESS
-            }
+            status = StatusEnum.STATUS_SUCCESS;
         }
         else {
-            if(ProjectStore.STATUS_RETRY != null){
-                status = ProjectStore.STATUS_RETRY
-            }
+            status = StatusEnum.STATUS_RETRY;
         }
         ProjectActions.updateAndProcessChunks(uploadId, chunkNum, status);
     }
-
     xhr.open('PUT', presignedUrl, true);
     xhr.send(chunkBlob);
 }
 
-ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentKind) {
+ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentKind, fileName) {
+    let retry = 0;
+    let maxRetry = 2;
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'uploads/' + uploadId + '/complete', {
         method: 'put',
         headers: {
@@ -596,14 +615,19 @@ ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentK
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        ProjectActions.addFile(uploadId, parentId, parentKind);
+        ProjectActions.addFile(uploadId, parentId, parentKind, fileName);
     }).catch(function (ex) {
-        MainActions.addToast('Failed to upload file!');
-        console.log('File Upload Failed');
+        while (retry <= maxRetry) {
+            ProjectActions.allChunksUploaded(uploadId, parentId, parentKind, fileName);
+            retry++;
+        }
+        MainActions.addToast('Failed to upload file '+fileName+'!');
     })
 }
 
-ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind) {
+ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind, fileName) {
+    let retry = 0;
+    let maxRetry = 2;
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/', {
         method: 'post',
         headers: {
@@ -622,14 +646,17 @@ ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind) {
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        MainActions.addToast('File Uploaded');
+        MainActions.addToast(fileName + ' uploaded successfully');
         ProjectActions.addFileSuccess(parentId, parentKind, uploadId)
     }).catch(function (ex) {
-        MainActions.addToast('Failed to upload file!');
+        while (retry <= maxRetry) {
+            ProjectActions.addFile(uploadId, parentId, parentKind, fileName);
+            retry++;
+        }
+        MainActions.addToast('Failed to upload ' +fileName+ '!');
         ProjectActions.addFileError(ex)
     })
 };
-
 
 function checkResponse(response) {
     return checkStatus(response, MainActions);

@@ -1,29 +1,38 @@
 import Reflux from 'reflux';
 import ProjectActions from '../actions/projectActions';
-import cookie from 'react-cookie';
+import StatusEnum from '../enum.js';
 
 var ProjectStore = Reflux.createStore({
 
     init() {
-        // Status ENUM
-        this.STATUS_WAITING_FOR_UPLOAD = null;
-        this.STATUS_SUCCESS = 1;
-        this.STATUS_RETRY = 2;
-        this.STATUS_UPLOADING = 3;
-        this.STATUS_FAILED = 4;
-
-        this.MAX_RETRY = 2;
-
         this.listenToMany(ProjectActions);
         this.audit = {};
         this.children = [];
+        this.currentUser = {};
         this.projects = [];
         this.project = {};
         this.entityObj = {};
         this.file = {};
         this.projectMembers = [];
+        this.uploading = false;
+        this.uploadCount = [];
         this.uploads = {};
+        this.chunkUpdates = {};
         this.uploadProgress = 0;
+    },
+
+    getUserSuccess (json) {
+        this.currentUser = json;
+        this.trigger({
+            currentUser: this.currentUser
+        });
+    },
+
+    getUserError (error) {
+        let msg = error && error.message ? error.message : 'An error occurred.';
+        this.trigger({
+            error: msg
+        });
     },
 
     loadProjects() {
@@ -282,8 +291,11 @@ var ProjectStore = Reflux.createStore({
         if (this.uploads.hasOwnProperty(uploadId)) {
             delete this.uploads[uploadId];
         }
+        this.uploadCount.pop();
+        let ul = true;
+        if(!this.uploadCount.length) ul = false;
         this.trigger({
-            uploading: false,
+            uploading: ul,
             uploads: this.uploads
 
         })
@@ -355,28 +367,6 @@ var ProjectStore = Reflux.createStore({
     },
 
     getEntityError(error) {
-        let errMsg = error && error.message ? "Error: " + error : '';
-        this.trigger({
-            error: errMsg,
-            loading: false
-        });
-    },
-
-    getFileContainer() {
-        this.trigger({
-            loading: true
-        })
-    },
-
-    getFileContainerSuccess(json) {
-        this.entityObj = json;
-        this.trigger({
-            entityObj: this.entityObj,
-            loading: false
-        })
-    },
-
-    getFileContainerError(error) {
         let errMsg = error && error.message ? "Error: " + error : '';
         this.trigger({
             error: errMsg,
@@ -535,7 +525,12 @@ var ProjectStore = Reflux.createStore({
 
     startUploadSuccess(uploadId, details) {
         this.uploads[uploadId] = details;
+        this.uploadCount = Object.keys(this.uploads).map(key => this.uploads[key]);
         ProjectActions.updateAndProcessChunks(uploadId, null, null);
+        this.trigger({
+            uploads: this.uploads,
+            uploadCount: this.uploadCount
+        })
     },
 
     startUploadError(error) {
@@ -546,37 +541,38 @@ var ProjectStore = Reflux.createStore({
         });
     },
 
-    updateAndProcessChunks(uploadId, chunkNum, status) {
+    updateAndProcessChunks(uploadId, chunkNum, chunkUpdates) {
         if (!uploadId && !this.uploads[uploadId]) {
             return;
         }
         let upload = this.uploads[uploadId];
-        let chunks = this.uploads[uploadId].chunks;
+        let chunks = this.uploads[uploadId] ? this.uploads[uploadId].chunks : '';
         // update chunk
         if (chunkNum !== null) {
             for (let i = 0; i < chunks.length; i++) {
                 if (chunks[i].number === chunkNum) {
-                    if (status === this.STATUS_RETRY && chunks[i].retry > this.MAX_RETRY) {
-                        chunks[i].status = this.STATUS_FAILED;
-                        ProjectStore.uploadError(uploadId);
+                    if (status === StatusEnum.STATUS_RETRY && chunks[i].retry > StatusEnum.MAX_RETRY) {
+                        chunks[i].status = StatusEnum.STATUS_FAILED;
+                        ProjectStore.uploadError(uploadId, chunks[i].name);
                         return;
                     }
-                    if (status === this.STATUS_RETRY) chunks[i].retry++;
+                    if (status === StatusEnum.STATUS_RETRY) chunks[i].retry++;
                     chunks[i].status = status;
                     break;
                 }
             }
         }
-
+        let allDone = null;
         for (let i = 0; i < chunks.length; i++) {
             let chunk = chunks[i];
-            if (chunk.status === this.STATUS_WAITING_FOR_UPLOAD || chunk.status === this.STATUS_RETRY) {
-                chunk.status = this.STATUS_UPLOADING;
+            if (chunk.status === StatusEnum.STATUS_WAITING_FOR_UPLOAD || chunk.status === StatusEnum.STATUS_RETRY) {
+                chunk.status = StatusEnum.STATUS_UPLOADING;
                 ProjectActions.getChunkUrl(uploadId, upload.blob.slice(chunk.start, chunk.end), chunk.number, upload.size, upload.parentId, upload.parentKind);
                 return;
             }
+            allDone = chunk.status !== StatusEnum.STATUS_UPLOADING ? true : false;
         }
-        ProjectActions.allChunksUploaded(uploadId, upload.parentId, upload.parentKind);
+        if(allDone === true)ProjectActions.allChunksUploaded(uploadId, upload.parentId, upload.parentKind, upload.name);
     },
 
     computeUploadProgress(percent){
@@ -586,13 +582,19 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    uploadError(uploadId) {
-        MainActions.addToast('Upload failed! Please try again.');
+    uploadError(uploadId, fileName) {
+        MainActions.addToast('Failed to upload '+fileName+ '!  Please try again.');
         if (this.uploads.hasOwnProperty(uploadId)) {
             delete this.uploads[uploadId];
         }
+        if(!this.uploads.hasOwnProperty(uploadId)){
+            this.uploading = false;
+        }
+        this.uploadCount.pop();
+        let ul = true;
+        if(!this.uploadCount.length) ul = false;
         this.trigger({
-            uploading: false,
+            uploading: ul,
             uploads: this.uploads
         })
     }

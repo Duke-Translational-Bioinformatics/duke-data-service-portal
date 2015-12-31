@@ -21,19 +21,19 @@ class Project extends React.Component {
             children: ProjectStore.children,
             projects: ProjectStore.projects,
             project: ProjectStore.project,
-            currentUser: MainStore.currentUser,
-            loading: false
+            currentUser: ProjectStore.currentUser,
+            loading: false,
+            uploading: false
         };
     }
 
     componentDidMount() {
         let id = this.props.params.id;
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
-        this.unsubscribe = MainStore.listen(state => this.setState(state));
         ProjectActions.loadProjectChildren(id);
         ProjectActions.showDetails(id);
         ProjectActions.getProjectMembers(id);
-        MainActions.getCurrentUser();
+        ProjectActions.getUser();
     }
 
     componentWillUnmount() {

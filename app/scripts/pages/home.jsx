@@ -17,8 +17,6 @@ class Home extends React.Component {
         super(props);
         this.state = {
             projects: ProjectStore.projects,
-            files: ProjectStore.files,
-            folders: ProjectStore.folders,
             loading: false,
             modalOpen: MainStore.modalOpen
         };
@@ -33,8 +31,18 @@ class Home extends React.Component {
         MainActions.removeLoginCookie();
     }
 
+    componentDidUpdate(prevProps){
+        if(prevProps.usage !== this.props.usage) {
+            this._loadUsage();
+        }
+    }
+
     componentWillUnmount() {
         this.unsubscribe();
+    }
+
+    _loadUsage(){
+        ProjectActions.getUsageDetails();
     }
 
     render() {
