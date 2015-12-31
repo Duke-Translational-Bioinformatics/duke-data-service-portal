@@ -12,8 +12,7 @@ class Folder extends React.Component {
             children: ProjectStore.children,
             project: ProjectStore.project,
             loading: false,
-            uploading: false,
-            uploadProgress: ProjectStore.uploadProgress
+            uploading: false
         };
     }
 
@@ -50,33 +49,5 @@ class Folder extends React.Component {
         );
     }
 }
-
-var styles = {
-    container: {
-        marginTop: 20,
-        padding: '10px 0px 10px 0px'
-    },
-    arrow: {
-        textAlign: 'left'
-    },
-    detailsTitle: {
-        textAlign: 'left',
-        float: 'left'
-    },
-    breadcrumbs: {
-        fontSize: 24
-    },
-    folderName: {
-        fontSize: 14
-    },
-    moreIcon: {
-        fontSize: 36,
-        verticalAlign: -11
-    },
-    backIcon: {
-        fontSize: 24,
-        verticalAlign: -6
-    }
-};
 
 export default Folder;

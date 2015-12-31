@@ -511,6 +511,7 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
             if (!uploadObj || !uploadObj.id) throw "Problem, no upload created";
 
             let details = {
+                name: fileName,
                 size: SIZE,
                 blob: blob,
                 parentId: parentId,
@@ -602,7 +603,7 @@ function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKi
     xhr.send(chunkBlob);
 }
 
-ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentKind) {
+ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentKind, fileName) {
     let retry = 0;
     let maxRetry = 2;
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'uploads/' + uploadId + '/complete', {
@@ -614,17 +615,17 @@ ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentK
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        ProjectActions.addFile(uploadId, parentId, parentKind);
+        ProjectActions.addFile(uploadId, parentId, parentKind, fileName);
     }).catch(function (ex) {
         while (retry <= maxRetry) {
-            ProjectActions.allChunksUploaded(uploadId, parentId, parentKind);
+            ProjectActions.allChunksUploaded(uploadId, parentId, parentKind, fileName);
             retry++;
         }
-        MainActions.addToast('Failed to upload file!');
+        MainActions.addToast('Failed to upload file '+fileName+'!');
     })
 }
 
-ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind) {
+ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind, fileName) {
     let retry = 0;
     let maxRetry = 2;
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/', {
@@ -645,18 +646,17 @@ ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind) {
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        MainActions.addToast('File Uploaded');
+        MainActions.addToast(fileName + ' uploaded successfully');
         ProjectActions.addFileSuccess(parentId, parentKind, uploadId)
     }).catch(function (ex) {
         while (retry <= maxRetry) {
-            ProjectActions.addFile(uploadId, parentId, parentKind);
+            ProjectActions.addFile(uploadId, parentId, parentKind, fileName);
             retry++;
         }
-        MainActions.addToast('Failed to upload file!');
+        MainActions.addToast('Failed to upload ' +fileName+ '!');
         ProjectActions.addFileError(ex)
     })
 };
-
 
 function checkResponse(response) {
     return checkStatus(response, MainActions);
