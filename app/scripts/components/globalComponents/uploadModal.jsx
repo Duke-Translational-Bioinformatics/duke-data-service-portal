@@ -58,12 +58,15 @@ class UploadModal extends React.Component {
     handleUploadButton() {
         if (document.getElementById("uploadFile").value) {
             if (!this.props.entityObj) {
-                var projId = this.props.params.id
+                var projId = this.props.params.id;
+                var parentKind = 'dds-project';
             } else {
                 projId = this.props.entityObj ? this.props.entityObj.ancestors[0].id : null;
+                parentKind = this.props.entityObj ? this.props.entityObj.kind : null;
             }
+            let parentId = this.props.params.id;
             let blob = document.getElementById('afile').files[0];
-            ProjectActions.startUpload(projId, blob);
+            ProjectActions.startUpload(projId, blob, parentId, parentKind);
             this.refs.fileU.dismiss();
         } else {
             return null
