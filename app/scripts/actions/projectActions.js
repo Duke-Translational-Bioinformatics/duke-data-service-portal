@@ -88,7 +88,7 @@ var ProjectActions = Reflux.createActions([
 ]);
 
 ProjectActions.getUser.preEmit = () => {
-    fetch(urlGen.routes.ddsUrl + 'current_user', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'current_user', {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -604,8 +604,6 @@ function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKi
 }
 
 ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentKind, fileName) {
-    let retry = 0;
-    let maxRetry = 2;
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'uploads/' + uploadId + '/complete', {
         method: 'put',
         headers: {
@@ -617,17 +615,11 @@ ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentK
     }).then(function (json) {
         ProjectActions.addFile(uploadId, parentId, parentKind, fileName);
     }).catch(function (ex) {
-        while (retry <= maxRetry) {
-            ProjectActions.allChunksUploaded(uploadId, parentId, parentKind, fileName);
-            retry++;
-        }
         MainActions.addToast('Failed to upload file '+fileName+'!');
     })
 }
 
 ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind, fileName) {
-    let retry = 0;
-    let maxRetry = 2;
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/', {
         method: 'post',
         headers: {
@@ -649,10 +641,6 @@ ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind, fileN
         MainActions.addToast(fileName + ' uploaded successfully');
         ProjectActions.addFileSuccess(parentId, parentKind, uploadId)
     }).catch(function (ex) {
-        while (retry <= maxRetry) {
-            ProjectActions.addFile(uploadId, parentId, parentKind, fileName);
-            retry++;
-        }
         MainActions.addToast('Failed to upload ' +fileName+ '!');
         ProjectActions.addFileError(ex)
     })
