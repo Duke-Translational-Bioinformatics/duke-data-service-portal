@@ -69,6 +69,7 @@ class FolderChildren extends React.Component {
                     </div>
                     { error }
                     { loading }
+                    { uploading }
                     <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                         <div className="list-block list-block-search searchbar-found media-list">
                             <ul>
