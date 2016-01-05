@@ -67,6 +67,9 @@ ProjectList.contextTypes = {
 };
 
 var styles = {
+    cardHeader: {
+        paddingLeft: 10
+    },
     cardSquare: {
         height: 260,
         textAlign: 'left',
