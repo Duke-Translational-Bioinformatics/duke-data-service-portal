@@ -15,10 +15,6 @@ var mui = require('material-ui'),
 
 class FileDetails extends React.Component {
 
-    constructor() {
-
-    }
-
     render() {
         let error = '';
         let loading = this.props.loading ?
