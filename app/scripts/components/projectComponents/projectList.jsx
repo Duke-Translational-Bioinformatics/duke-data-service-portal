@@ -19,7 +19,8 @@ class ProjectList extends React.Component {
     }
 
     render() {
-        let loading = this.props.loading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader"></div> : '';
+        let loading = this.props.loading ?
+            <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader"></div> : '';
         var error = '';
         if (this.props.error)
             error = (<h4>{this.props.error}</h4>);
@@ -33,13 +34,12 @@ class ProjectList extends React.Component {
                             <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + "/project/" + project.id}
                                className="external">
                                 <h1 className="mdl-card__title-text mdl-color-text--grey-800"
-                                    projectId={project.id}>{ project.name }</h1>
+                                    projectId={project.id}>{ project.name.length > 35 ? project.name.substring(0, 35) + '...' : project.name }</h1>
                             </a>
                         </div>
                         <div className="mdl-card__supporting-text mdl-color-text--grey-800">
                             <p>ID: {project.id}</p>
-
-                            <p>Description: { project.description }</p>
+                            <p>Description: { project.description.length > 150 ? project.description.substring(0, 150) + '...' : project.description }</p>
                         </div>
                     </div>
                 );

@@ -2,8 +2,6 @@ import React from 'react'
 import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
 import FileDetails from '../components/fileComponents/fileDetails.jsx';
-import FilePreview from '../components/fileComponents/filePreview.jsx';
-import FileProvenance from '../components/fileComponents/fileProvenance.jsx';
 import Header from '../components/globalComponents/header.jsx';
 
 class File extends React.Component {
