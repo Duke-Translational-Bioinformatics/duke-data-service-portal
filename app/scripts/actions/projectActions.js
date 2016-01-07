@@ -478,7 +478,7 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
         fileName = blob.name,
         contentType = blob.type,
         BYTES_PER_CHUNK, SIZE, NUM_CHUNKS, start, end;
-    BYTES_PER_CHUNK = 5000000;
+    BYTES_PER_CHUNK = 5242880;
     SIZE = blob.size;
     NUM_CHUNKS = Math.max(Math.ceil(SIZE / BYTES_PER_CHUNK), 1);
     start = 0;
