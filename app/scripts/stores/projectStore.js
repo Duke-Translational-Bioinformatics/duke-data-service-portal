@@ -18,7 +18,6 @@ var ProjectStore = Reflux.createStore({
         this.uploadCount = [];
         this.uploads = {};
         this.chunkUpdates = {};
-        this.uploadProgress = 0;
     },
 
     getUserSuccess (json) {
@@ -573,13 +572,6 @@ var ProjectStore = Reflux.createStore({
             allDone = chunk.status !== StatusEnum.STATUS_UPLOADING ? true : false;
         }
         if(allDone === true)ProjectActions.allChunksUploaded(uploadId, upload.parentId, upload.parentKind, upload.name);
-    },
-
-    computeUploadProgress(percent){
-        this.uploadProgress = percent;
-        this.trigger({
-            uploadProgress: this.uploadProgress
-        })
     },
 
     uploadError(uploadId, fileName) {

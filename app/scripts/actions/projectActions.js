@@ -486,9 +486,6 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
     var fileReader = new FileReader();
     fileReader.onload = function (event, files) {
         // create project upload
-        let arrayBuffer = event.target.result;
-        var wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
-        var md5crc = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
         fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'projects/' + projId + '/uploads', {
             method: 'post',
             headers: {
@@ -498,11 +495,7 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
             body: JSON.stringify({
                 'name': fileName,
                 'content_type': contentType,
-                'size': SIZE,
-                'hash': {
-                    'value': md5crc,
-                    'algorithm': 'MD5'
-                }
+                'size': SIZE
             })
         }).then(checkResponse).then(function (response) {
             return response.json()
