@@ -43,6 +43,9 @@ class FolderChildren extends React.Component {
                 } else {
                     return (
                         <li key={ children.id } className="hover">
+                            <a className="mdl-button mdl-js-button mdl-button--icon external" style={styles.dlIcon} onTouchTap={() => this.handleTouchTap(children.id)}>
+                                <i className="material-icons">get_app</i>
+                            </a>
                             <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + "/file/" + children.id}
                                className="item-content external">
                                 <div className="item-media"><i className="material-icons"
@@ -81,6 +84,10 @@ class FolderChildren extends React.Component {
             );
         }
     }
+
+    handleTouchTap(id){
+        ProjectActions.getDownloadUrl(id);
+    }
 }
 
 
@@ -107,6 +114,12 @@ var styles = {
     },
     textStyles: {
         textAlign: 'left'
+    },
+    dlIcon: {
+        float: 'right',
+        fontSize: 18,
+        color: '#E91E63',
+        marginTop: 22
     },
     uploader: {
         width: '80%',
