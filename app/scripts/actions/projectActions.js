@@ -580,7 +580,6 @@ function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKi
             ProjectActions.computeUploadProgress(percentOfChunkUploaded);
         }
     }
-
     xhr.onload = onComplete;
     function onComplete() {
         let status = null;
