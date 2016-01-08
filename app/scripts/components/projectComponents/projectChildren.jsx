@@ -116,7 +116,7 @@ var styles = {
     dlIcon: {
         float: 'right',
         fontSize: 18,
-        color: '#E91E63',
+        color: '#EC407A',
         marginTop: 22
     },
     uploader: {
