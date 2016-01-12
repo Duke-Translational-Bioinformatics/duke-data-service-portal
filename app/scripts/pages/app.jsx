@@ -22,10 +22,7 @@ let appPalette = {
 class App extends React.Component {
     constructor() {
         this.state = {
-            appConfig: MainStore.appConfig,
-            apiToken: cookie.load('apiToken'),
-            currentUser: cookie.load('currentUser'),
-            isLoggingIn: cookie.load('isLoggingIn'),
+            appConfig: MainStore.appConfig
         }
     }
 
@@ -60,8 +57,13 @@ class App extends React.Component {
 
 
     render() {
+        if (this.state.appConfig.apiToken) {
+            if (this.props.routerPath != '/login' && !this.state.currentUser) {
+                MainActions.getCurrentUser();
+            }
+        }
         let str = this.props.appRouter.getCurrentPathname();
-        let fileRoute = str.substring(str.lastIndexOf("/")-6,str.lastIndexOf("/"));
+        let fileRoute = str.substring(str.lastIndexOf("/") - 6, str.lastIndexOf("/"));
 
         let toasts = null;
         if (this.state.toasts) {
@@ -71,8 +73,8 @@ class App extends React.Component {
             });
         }
         let content = <RouteHandler {...this.props} {...this.state}/>;
-        if (!this.state.appConfig.apiToken && !this.state.isLoggingIn && this.props.routerPath !== '/login') {
-            this.props.appRouter.transitionTo('/login');
+        if (!this.state.appConfig.apiToken && !this.state.appConfig.isLoggedIn && this.props.routerPath !== '/login') {
+            this.props.appRouter.transitionTo('/login')
         }
         let search = '';
         if (this.props.routerPath === '/' || this.props.routerPath === '/home' || fileRoute === '/file') {
@@ -83,7 +85,8 @@ class App extends React.Component {
                 <a href="#" className="searchbar-cancel">Cancel</a>
             </form>
         } else {
-            search = <form data-search-list=".list-block-search" data-search-in=".item-title" className="searchbar searchbar-init" action="#">
+            search = <form data-search-list=".list-block-search" data-search-in=".item-title"
+                           className="searchbar searchbar-init" action="#">
                 <div className="searchbar-input">
                     <input type="search" placeholder="Search" style={styles.searchBar}/>
                 </div>
@@ -142,7 +145,7 @@ var styles = {
         marginTop: 50,
         padding: 10
     }
-}
+};
 
 App.childContextTypes = {
     muiTheme: React.PropTypes.object

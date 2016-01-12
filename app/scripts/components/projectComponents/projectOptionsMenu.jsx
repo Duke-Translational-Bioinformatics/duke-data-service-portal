@@ -96,7 +96,7 @@ class ProjectOptionsMenu extends React.Component {
                         <TextField
                             style={styles.textStyles}
                             hintText="Last Name Starts With (3 letters)"
-                            errorText={this.state.floatingErrorText}
+                            errorText={this.state.floatingErrorText2}
                             floatingLabelText="Last Name"
                             id="lastNameText"
                             type="text"

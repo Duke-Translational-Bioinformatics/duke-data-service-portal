@@ -1,11 +1,13 @@
 let UrlGen = {
     routes: {
-        ddsUrl: 'https://dukeds-dev.herokuapp.com/api/v1/',
-        baseUrl: 'http://localhost:1337/#/',
+        ddsUrl: 'https://dev.dataservice.duke.edu/api/v1/',
+        baseUrl: DDS_PORTAL_CONFIG.baseUrl,
+        apiPrefix: '/api/v1/',
+        prefix: '/portal/#',
         login: () => '/login',
         home: (id) => '/',
         project: (projectId) => '/project' + projectId,
-        folder: (projectId, folderId) => '/project' + projectId + folderId,
+        folder: (projectId, folderId) => '/project' + projectId + folderId
     }
 };
 

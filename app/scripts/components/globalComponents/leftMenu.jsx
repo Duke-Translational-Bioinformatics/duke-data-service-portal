@@ -9,9 +9,6 @@ class LeftMenu extends React.Component {
 
     constructor(props, context) {
         super(props);
-        this.state = {
-            appConfig: MainStore.appConfig
-        }
     }
 
     render() {
@@ -34,9 +31,8 @@ class LeftMenu extends React.Component {
                 </span>
             );
     }
-
     handleTouchTap() {
-        MainStore.handleLogout();
+        MainStore.handleLogout()
     }
 }
 

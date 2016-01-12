@@ -1,5 +1,6 @@
 import React from 'react';
 import { RouteHandler, Link } from 'react-router';
+import ProjectStore from '../../stores/projectStore';
 import MainStore from '../../stores/mainStore';
 import MainActions from '../../actions/mainActions';
 import CurrentUser from './currentUser.jsx';
@@ -13,9 +14,6 @@ class Header extends React.Component {
 
     constructor(props, context) {
         super(props);
-        this.state = {
-            appConfig: MainStore.appConfig
-        }
     }
 
     render() {
@@ -23,7 +21,7 @@ class Header extends React.Component {
             <div className="navbar">
                 <div className="navbar-inner">
                     <div className="left">
-                        {!this.state.appConfig.apiToken ? '' : <p><a href="#" className="open-panel"><i className="material-icons" style={styles.openIcon}>menu</i></a></p>}
+                        {!this.props.appConfig.apiToken ? '' : <p><a href="#" className="open-panel"><i className="material-icons" style={styles.openIcon}>menu</i></a></p>}
                     </div>
                     <div className="center">
                     </div>

@@ -2,6 +2,8 @@ import React from 'react';
 import { RouteHandler } from 'react-router';
 import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
+import MainStore from '../stores/mainStore';
+import MainActions from '../actions/mainActions';
 import ProjectChildren from '../components/projectComponents/projectChildren.jsx';
 import ProjectDetails from '../components/projectComponents/projectDetails.jsx';
 import Header from '../components/globalComponents/header.jsx';
@@ -19,7 +21,9 @@ class Project extends React.Component {
             children: ProjectStore.children,
             projects: ProjectStore.projects,
             project: ProjectStore.project,
-            loading: false
+            currentUser: ProjectStore.currentUser,
+            loading: false,
+            uploading: false
         };
     }
 
@@ -29,6 +33,7 @@ class Project extends React.Component {
         ProjectActions.loadProjectChildren(id);
         ProjectActions.showDetails(id);
         ProjectActions.getProjectMembers(id);
+        ProjectActions.getUser();
     }
 
     componentWillUnmount() {

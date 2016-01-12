@@ -5,7 +5,7 @@ import ProjectStore from '../../stores/projectStore';
 import MainActions from '../../actions/mainActions';
 import MainStore from '../../stores/mainStore';
 import ProjectOptionsMenu from './projectOptionsMenu.jsx';
-import CurrentUser from '../../components/globalComponents/currentUser.jsx';
+import UploadModal from '../globalComponents/uploadModal.jsx';
 import cookie from 'react-cookie';
 import urlGen from '../../../util/urlGen.js';
 
@@ -19,40 +19,29 @@ class ProjectDetails extends React.Component {
 
     constructor() {
         this.state = {
-            showDetails: false,
-            project: ProjectStore.project,
-            audit: ProjectStore.audit
+            showDetails: false
         }
     }
 
     render() {
         let id = this.props.params.id;
-        let details = this.props.project;
-        let auditDetails = this.props.audit;
-        let createdOn = ProjectStore.createdOn;
-        let createdBy = ProjectStore.createdBy;
-        let projectName = details.name;
-
+        let createdBy = this.props.project && this.props.project.audit ? this.props.project.audit.created_by.full_name : null;
+        let projectName = this.props.project ? this.props.project.name : null;
+        let createdOn = this.props.project && this.props.project.audit ? this.props.project.audit.created_on : null;
         let error = '';
-
-        let addProjectLoading = this.props.addProjectLoading ?
-            <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
 
         return (
             <div
                 className="project-container mdl-color--white mdl-shadow--2dp mdl-color-text--grey-800"
                 style={styles.container}>
-                <button
-                    className="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-button--colored"
-                    style={styles.floatingButton}>
-                    <i className="material-icons">file_upload</i>
-                </button>
+                <UploadModal {...this.props}/>
+
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div style={styles.menuIcon}>
                         <ProjectOptionsMenu {...this.props} />
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                        <a href={urlGen.routes.baseUrl + 'home'} style={styles.back}
+                        <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + '/home'} style={styles.back}
                            className="external mdl-color-text--grey-800"><i
                             className="material-icons mdl-color-text--grey-800" style={styles.backIcon}>keyboard_backspace</i>Back</a>
                     </div>
@@ -76,11 +65,10 @@ class ProjectDetails extends React.Component {
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                         <div style={styles.moreDetails} className={!this.state.showDetails ? 'less' : 'more'}>
-                            { this.state.showDetails ? <Details {...this.props}/> : null }
+                            { this.state.showDetails ? <Details {...this.props} {...this.state}/> : null }
                         </div>
                     </div>
                 </div>
-                { addProjectLoading }
                 { error }
             </div>
         );
@@ -96,30 +84,29 @@ class ProjectDetails extends React.Component {
 }
 
 var Details = React.createClass({
-    getInitialState(){
-        return {}
-    },
     render() {
-        let description = ProjectStore.project.description;
-        let projectId = ProjectStore.project.id;
-        let lastUpdatedOn = ProjectStore.lastUpdatedOn;
-        let lastUpdatedBy = ProjectStore.lastUpdatedBy;
-        let users = ProjectStore.projectMembers;
-        let currentUser = cookie.load('currentUser');
+        let description = this.props.project ? this.props.project.description : null;
+        let projectId =  this.props.project ? this.props.project.id : null;
+        let createdById = this.props.project && this.props.project.audit ? this.props.project.audit.created_by.id : null;
+        let lastUpdatedOn = this.props.project && this.props.project.audit ? this.props.project.audit.last_updated_on : null;
+        let lastUpdatedBy = this.props.project && this.props.project.audit ? this.props.project.audit.last_updated_by : null;
+        let users = this.props.projectMembers ? this.props.projectMembers : null;
+        let currentUserId = this.props.currentUser ? this.props.currentUser.id : null;
 
-        let members = ProjectStore.projectMembers.map((users)=> {
+        let members = users.map((users)=> {
             return <li key={users.user.id}>
                 <div className="item-content">
                     <div className="item-media"><i className="material-icons">face</i></div>
                     <div className="item-inner">
                         <div className="item-title">{users.user.full_name}</div>
                         <div className="item-after"><a href="#" onTouchTap={() => this.handleTouchTap(users.user.id, users.user.full_name)}>
-                            {users.user.full_name != currentUser ? <i className="material-icons" style={styles.deleteIcon}>cancel</i> : ''}</a>
+                            {users.user.id != currentUserId && users.user.id != createdById ? <i className="material-icons" style={styles.deleteIcon}>cancel</i> : ''}</a>
                         </div>
                     </div>
                 </div>
             </li>
         });
+
         return (
             <div>
                 <div className="list-block">
@@ -133,7 +120,7 @@ var Details = React.createClass({
                         <li className="item-divider">Last Updated By</li>
                         <li className="item-content">
                             <div className="item-inner">
-                                <div className="item-title">{ lastUpdatedBy }</div>
+                                <div className="item-title">{ lastUpdatedBy.full_name }</div>
                             </div>
                         </li>
                         <li className="item-divider">Last Updated On</li>

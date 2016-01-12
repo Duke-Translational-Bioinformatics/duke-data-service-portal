@@ -12,12 +12,6 @@ let mui = require('material-ui'),
 
 class DeleteConfirmationModal extends React.Component {
 
-    constructor() {
-        this.state = {
-
-        }
-    }
-
     render() {
         let standardActions = [
             {text: 'DELETE', onTouchTap: this.handleDeleteButton.bind(this)},
@@ -40,11 +34,12 @@ class DeleteConfirmationModal extends React.Component {
     }
 
     handleDeleteButton() {
-            this.refs.snackbar.show();
-            ProjectActions.deleteProject();
-            this.refs.deleteProject.dismiss(
-            );
+        this.refs.snackbar.show();
+        ProjectActions.deleteProject();
+        this.refs.deleteProject.dismiss(
+        );
     }
+
     handleTouchTapDelete() {
         this.refs.deleteProject.show();
     }
@@ -68,10 +63,6 @@ var styles = {
 
 DeleteConfirmationModal.contextTypes = {
     muiTheme: React.PropTypes.object
-};
-
-DeleteConfirmationModal.propTypes = {
-    addProjectLoading: React.PropTypes.bool,
 };
 
 export default DeleteConfirmationModal;

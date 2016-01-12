@@ -37,7 +37,7 @@ class Login extends React.Component {
 
                         <h3>Please Login</h3>
                     </div>
-                    <a href={this.createLoginUrl()} className="external" onClick={MainStore.isLoggedInHandler}>
+                    <a href={this.createLoginUrl()} className="external" onClick={MainActions.isLoggedInHandler}>
                         <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored">
                             LOGIN
                         </button>
@@ -50,7 +50,8 @@ class Login extends React.Component {
                 content = this.state.error
             }
             else if (this.state.asValidateLoading || this.state.ddsApiTokenLoading) {
-                content = (<div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader" style={styles.loader}></div>);
+                content = (<div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader"
+                                style={styles.loader}></div>);
             }
             else if (this.state.signedInfo) {
                 MainActions.getDdsApiToken(this.state.appConfig, this.state.signedInfo);
@@ -59,7 +60,6 @@ class Login extends React.Component {
                 MainActions.authenticationServiceValidate(this.state.appConfig, accessToken);
             }
         } else {
-            //MainActions.getCurrentUser(this.state.appConfig);
             this.props.appRouter.transitionTo('/home');
         }
         return (
@@ -70,6 +70,7 @@ class Login extends React.Component {
             </div>
         );
     }
+
 }
 
 var styles = {

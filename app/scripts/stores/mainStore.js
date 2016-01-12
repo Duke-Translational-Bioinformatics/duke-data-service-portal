@@ -7,19 +7,16 @@ var MainStore = Reflux.createStore({
 
     listenables: MainActions,
 
-
     init() {
-        this.currentUser = cookie.load('currentUser');
-        this.currentUser = {};
         this.appConfig = appConfig;
-        this.asValidateLoading = false;
-        this.ddsApiTokenLoading = false;
         this.appConfig.apiToken = cookie.load('apiToken');
-        this.apiToken = cookie.load('apiToken');
-        this.signedInfo = null;
-        this.isLoggingIn = cookie.load('isLoggingIn');
-        this.toasts = [];
+        this.appConfig.isLoggedIn = cookie.load('isLoggedIn');
+        this.asValidateLoading = false;
+        this.currentUser = {};
+        this.ddsApiTokenLoading = false;
         this.modalOpen = cookie.load('modalOpen');
+        this.signedInfo = null;
+        this.toasts = [];
     },
 
     authenticationServiceValidate(appConfig, accessToken) {
@@ -58,7 +55,6 @@ var MainStore = Reflux.createStore({
     getDdsApiTokenSuccess (apiToken) {
         this.appConfig.apiToken = apiToken;
         this.ddsApiTokenLoading = false;
-        MainActions.getCurrentUser(apiToken);
         this.trigger({
             ddsApiTokenLoading: this.ddsApiTokenLoading,
             appConfig: this.appConfig
@@ -81,13 +77,10 @@ var MainStore = Reflux.createStore({
         });
     },
 
-    getCurrentUser () {
-       
-    },
+    getCurrentUser(){},
 
-    getCurrentUserSuccess (currentUser, json) {
-        this.currentUser = currentUser;
-        cookie.save('currentUser', this.currentUser);
+    getCurrentUserSuccess (json) {
+        this.currentUser = json;
         this.trigger({
             currentUser: this.currentUser
         });
@@ -101,21 +94,28 @@ var MainStore = Reflux.createStore({
     },
 
     isLoggedInHandler() {
-        this.isLoggingIn = true;
-        cookie.save('isLoggingIn', this.isLoggingIn);
-        cookie.save('modalOpen', this.modalOpen);
+        this.appConfig.isLoggedIn = true;
+        cookie.save('isLoggedIn', this.appConfig.isLoggedIn);
+        this.modalOpen = MainStore.modalOpen;
         this.trigger({
-            isLoggingIn: this.isLoggingIn,
+            appConfig: this.appConfig,
             modalOpen: this.modalOpen
+        });
+    },
+
+    removeLoginCookie() {
+        this.appConfig.isLoggedIn = null;
+        cookie.remove('isLoggedIn');
+        this.trigger({
+            appConfig: this.appConfig
         });
     },
 
     handleLogout () {
         this.appConfig.apiToken = null;
-        this.isLoggingIn = null;
         cookie.remove('apiToken');
-        cookie.remove('currentUser');
-        cookie.remove('isLoggingIn');
+        this.appConfig.isLoggedIn = null;
+        cookie.remove('isLoggedIn');
         this.trigger({
             appConfig: this.appConfig
         });
@@ -124,8 +124,8 @@ var MainStore = Reflux.createStore({
 
     addToast(msg) {
         this.toasts.push({
-          msg: msg,
-          ref: 'toast' + Math.floor(Math.random()*10000)
+            msg: msg,
+            ref: 'toast' + Math.floor(Math.random()*10000)
         });
         this.trigger({
             toasts: this.toasts
@@ -150,30 +150,6 @@ var MainStore = Reflux.createStore({
         cookie.save('modalOpen', this.modalOpen, {expires: expiresAt});
         this.trigger({
             modalOpen: this.modalOpen
-        })
-    },
-
-    addBreadCrumbs(url) {
-        this.breadCrumbs.push({
-            url: url,
-            id: '',
-            name: '',
-            ref: 'breadCrumb' + Math.floor(Math.random()*10000)
-        });
-        this.trigger({
-            breadCrumbs: this.breadCrumbs
-        });
-    },
-
-    removeBreadCrumbs(refId) {
-        for(let i=0; i < this.breadCrumbs.length; i++){
-            if (this.breadCrumbs[i].ref === refId) {
-                this.breadCrumbs.splice(i, 1);
-                break;
-            }
-        }
-        this.trigger({
-            breadCrumbs: this.breadCrumbs
         })
     }
 

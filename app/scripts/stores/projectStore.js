@@ -1,7 +1,6 @@
 import Reflux from 'reflux';
 import ProjectActions from '../actions/projectActions';
-import MainActions from '../actions/mainActions';
-import cookie from 'react-cookie';
+import StatusEnum from '../enum.js';
 
 var ProjectStore = Reflux.createStore({
 
@@ -9,11 +8,30 @@ var ProjectStore = Reflux.createStore({
         this.listenToMany(ProjectActions);
         this.audit = {};
         this.children = [];
+        this.currentUser = {};
         this.projects = [];
         this.project = {};
-        this.parentObj = {};
+        this.entityObj = {};
         this.file = {};
         this.projectMembers = [];
+        this.uploading = false;
+        this.uploadCount = [];
+        this.uploads = {};
+        this.chunkUpdates = {};
+    },
+
+    getUserSuccess (json) {
+        this.currentUser = json;
+        this.trigger({
+            currentUser: this.currentUser
+        });
+    },
+
+    getUserError (error) {
+        let msg = error && error.message ? error.message : 'An error occurred.';
+        this.trigger({
+            error: msg
+        });
     },
 
     loadProjects() {
@@ -66,22 +84,9 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    showDetailsSuccess(projectName, createdOn, createdBy, lastUpdatedOn, lastUpdatedBy, audit, json) {
-        this.projectName = projectName;
-        cookie.save('projName', this.projectName);
-        this.createdOn = createdOn;
-        this.createdBy = createdBy;
-        this.lastUpdatedOn = lastUpdatedOn;
-        this.lastUpdatedBy = lastUpdatedBy;
-        this.audit = audit;
+    showDetailsSuccess(json) {
         this.project = json;
         this.trigger({
-            projectName: this.projectName,
-            createdOn: this.createdOn,
-            createdBy: this.createdBy,
-            lastUpdatedOn: this.lastUpdatedOn,
-            lastUpdatedBy: this.lastUpdatedBy,
-            audit: this.audit,
             project: this.project,
             loading: false
         })
@@ -97,14 +102,14 @@ var ProjectStore = Reflux.createStore({
 
     addProject() {
         this.trigger({
-            addProjectLoading: true
+            loading: true
         })
     },
 
     addProjectSuccess() {
         ProjectActions.loadProjects();
         this.trigger({
-            addProjectLoading: false
+            loading: false
         })
     },
 
@@ -112,7 +117,7 @@ var ProjectStore = Reflux.createStore({
         let msg = error && error.message ? "Error: " + error : '';
         this.trigger({
             error: msg,
-            addProjectLoading: false
+            loading: false
         })
     },
 
@@ -186,8 +191,8 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    addFolderSuccess(id, parentKind) {
-        if(parentKind === 'dds-project'){
+    addFolderSuccess(id, parentKind) { //todo: remove this and check for new children state in folder.jsx & project.jsx
+        if (parentKind === 'dds-project') {
             ProjectActions.loadProjectChildren(id);
         } else {
             ProjectActions.loadFolderChildren(id);
@@ -211,13 +216,7 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    deleteFolderSuccess(parentId, parentKind) {
-        if(parentKind === 'dds-folder'){
-            ProjectActions.loadFolderChildren(parentId);
-            ProjectActions.getParent(parentId);
-        } else {
-            ProjectActions.loadProjectChildren(parentId);
-        }
+    deleteFolderSuccess() {
         this.trigger({
             loading: false
         })
@@ -238,8 +237,9 @@ var ProjectStore = Reflux.createStore({
     },
 
     editFolderSuccess(id) {
+        let kind = 'folders/';
         ProjectActions.loadFolderChildren(id);
-        ProjectActions.getParent(id);
+        ProjectActions.getEntity(id, kind);
         this.trigger({
             loading: false
         })
@@ -268,11 +268,44 @@ var ProjectStore = Reflux.createStore({
     },
 
     loadFilesError(error) {
-        let msg = error && error.message ? "Error: " : + 'An error occurred while loading files.';
+        let msg = error && error.message ? "Error: " : +'An error occurred while loading files.';
         this.trigger({
             error: msg,
             loading: false
         })
+    },
+
+    addFile() {
+        this.trigger({
+            loading: true
+        })
+    },
+
+    addFileSuccess(id, parentKind, uploadId) {
+        if (parentKind === 'dds-project') {
+            ProjectActions.loadProjectChildren(id);
+        } else {
+            ProjectActions.loadFolderChildren(id);
+        }
+        if (this.uploads.hasOwnProperty(uploadId)) {
+            delete this.uploads[uploadId];
+        }
+        this.uploadCount.pop();
+        let ul = true;
+        if(!this.uploadCount.length) ul = false;
+        this.trigger({
+            uploading: ul,
+            uploads: this.uploads
+
+        })
+    },
+
+    addFileError(error) {
+        let msg = error && error.message ? "Error: " + error : '';
+        this.trigger({
+            error: msg,
+            loading: false
+        });
     },
 
     deleteFile() {
@@ -281,20 +314,14 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    deleteFileSuccess(parentId, parentKind) {
-        if(parentKind === 'dds-folder'){
-            ProjectActions.loadFolderChildren(parentId);
-            ProjectActions.getParent(parentId);
-        } else {
-            ProjectActions.loadProjectChildren(parentId);
-        }
+    deleteFileSuccess() {
         this.trigger({
             loading: false
         })
     },
 
     deleteFileError(error) {
-        let errMsg = error && error.message ? "Error: " : + 'An error occurred while trying to delete this file.';
+        let errMsg = error && error.message ? "Error: " : +'An error occurred while trying to delete this file.';
         this.trigger({
             error: errMsg,
             loading: false
@@ -308,12 +335,13 @@ var ProjectStore = Reflux.createStore({
     },
 
     editFileSuccess(id) {
-        ProjectActions.getFileParent(id);
+        let kind = 'files/';
+        ProjectActions.getEntity(id, kind);
         this.trigger({
             loading: false
         })
     },
-    
+
     editFileError(error) {
         let errMsg = error && error.message ? "Error: " + error : '';
         this.trigger({
@@ -323,66 +351,22 @@ var ProjectStore = Reflux.createStore({
     },
 
 
-    getParent() {
+    getEntity() {
         this.trigger({
             loading: true
         })
     },
 
-    getParentSuccess(parent, name, ancestors) {
-        this.parentObj = parent;
-        this.objName = name;
-        this.ancestors = ancestors;
+    getEntitySuccess(json) {
+        this.entityObj = json;
         this.trigger({
-            parentObj: this.parentObj,
-            objName: this.objName,
-            ancestors: this.ancestors,
+            entityObj: this.entityObj,
             loading: false
         })
     },
 
-    getParentError(error) {
-        let errMsg = error && error.message ? "Error: " : + 'An error occurred while trying to delete this file.';
-        this.trigger({
-            error: errMsg,
-            loading: false
-        });
-    },
-
-    getFileParent() {
-        this.trigger({
-            loading: true
-        })
-    },
-
-    getFileParentSuccess(parent, name, projectName, createdOn, createdBy, lastUpdatedOn, lastUpdatedBy, ancestors, storage, audit, json) {
-        this.parentObj = parent;
-        this.objName = name;
-        this.createdOn = createdOn;
-        this.createdBy = createdBy;
-        this.lastUpdatedOn = lastUpdatedOn;
-        this.lastUpdatedBy = lastUpdatedBy;
-        this.ancestors = ancestors;
-        this.storage = storage;
-        this.audit = audit;
-        this.project = json;
-        this.trigger({
-            parentObj: this.parentObj,
-            objName: this.objName,
-            createdOn: this.createdOn,
-            createdBy: this.createdBy,
-            lastUpdatedOn: this.lastUpdatedOn,
-            lastUpdatedBy: this.lastUpdatedBy,
-            ancestors: this.ancestors,
-            storage: this.storage,
-            audit: this.audit,
-            project: this.project,
-            loading: false
-        })
-    },
-
-    getFileParentError(error) {
-        let errMsg = error && error.message ? "Error: " : + 'An error occurred while trying to delete this file.';
+    getEntityError(error) {
+        let errMsg = error && error.message ? "Error: " + error : '';
         this.trigger({
             error: errMsg,
             loading: false
@@ -404,7 +388,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     getProjectMembersError(error) {
-        let errMsg = error && error.message ? "Error: " : + 'An error occurred while trying to delete this file.';
+        let errMsg = error && error.message ? "Error: " : +'An error occurred while trying to delete this file.';
         this.trigger({
             error: errMsg,
             loading: false
@@ -433,7 +417,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     getUserIdError(error) {
-        let errMsg = error && error.message ? "Error: " : + 'An error occurred while trying to delete this file.';
+        let errMsg = error && error.message ? "Error: " : +'An error occurred while trying to delete this file.';
         this.trigger({
             error: errMsg,
             loading: false
@@ -480,12 +464,132 @@ var ProjectStore = Reflux.createStore({
             error: errMsg,
             loading: false
         });
+    },
+
+    getDownloadUrl() {
+        this.trigger({
+            loading: true
+        })
+    },
+
+    getDownloadUrlSuccess(json) {
+        let host = json.host;
+        let url = json.url;
+        var win = window.open(host + url, '_blank');
+        if (win) {
+            win.focus();
+        } else {
+            alert('Please allow popups for this site and try downloading again');
+        }
+        this.trigger({
+            loading: false
+        })
+    },
+
+    getDownloadUrlError(error) {
+        let msg = error && error.message ? "Error: " : +'An error occurred while loading projects.';
+        this.trigger({
+            error: msg,
+            loading: false
+        })
+    },
+
+    getUsageDetails() {
+        this.trigger({
+            loading: true
+        })
+    },
+
+    getUsageDetailsSuccess(json) {
+        this.usage = json;
+        this.trigger({
+            usage: this.usage,
+            loading: false
+        })
+    },
+
+    getUsageDetailsError(error) {
+        let errMsg = error && error.message ? "Error: " + error : '';
+        this.trigger({
+            error: errMsg,
+            loading: false
+        });
+    },
+
+    startUpload() {
+        this.trigger({
+            uploading: true
+        })
+    },
+
+    startUploadSuccess(uploadId, details) {
+        this.uploads[uploadId] = details;
+        this.uploadCount = Object.keys(this.uploads).map(key => this.uploads[key]);
+        ProjectActions.updateAndProcessChunks(uploadId, null, null);
+        this.trigger({
+            uploads: this.uploads,
+            uploadCount: this.uploadCount
+        })
+    },
+
+    startUploadError(error) {
+        let errMsg = error && error.message ? "Error: " + error : '';
+        this.trigger({
+            error: errMsg,
+            uploading: false
+        });
+    },
+
+    updateAndProcessChunks(uploadId, chunkNum, chunkUpdates) {
+        if (!uploadId && !this.uploads[uploadId]) {
+            return;
+        }
+        let upload = this.uploads[uploadId];
+        let chunks = this.uploads[uploadId] ? this.uploads[uploadId].chunks : '';
+        // update chunk
+        if (chunkNum !== null) {
+            for (let i = 0; i < chunks.length; i++) {
+                if (chunks[i].number === chunkNum) {
+                    if (status === StatusEnum.STATUS_RETRY && chunks[i].retry > StatusEnum.MAX_RETRY) {
+                        chunks[i].status = StatusEnum.STATUS_FAILED;
+                        ProjectStore.uploadError(uploadId, chunks[i].name);
+                        return;
+                    }
+                    if (status === StatusEnum.STATUS_RETRY) chunks[i].retry++;
+                    chunks[i].status = status;
+                    break;
+                }
+            }
+        }
+        let allDone = null;
+        for (let i = 0; i < chunks.length; i++) {
+            let chunk = chunks[i];
+            if (chunk.status === StatusEnum.STATUS_WAITING_FOR_UPLOAD || chunk.status === StatusEnum.STATUS_RETRY) {
+                chunk.status = StatusEnum.STATUS_UPLOADING;
+                ProjectActions.getChunkUrl(uploadId, upload.blob.slice(chunk.start, chunk.end), chunk.number, upload.size, upload.parentId, upload.parentKind);
+                return;
+            }
+            allDone = chunk.status !== StatusEnum.STATUS_UPLOADING ? true : false;
+        }
+        if(allDone === true)ProjectActions.allChunksUploaded(uploadId, upload.parentId, upload.parentKind, upload.name);
+    },
+
+    uploadError(uploadId, fileName) {
+        MainActions.addToast('Failed to upload '+fileName+ '!  Please try again.');
+        if (this.uploads.hasOwnProperty(uploadId)) {
+            delete this.uploads[uploadId];
+        }
+        if(!this.uploads.hasOwnProperty(uploadId)){
+            this.uploading = false;
+        }
+        this.uploadCount.pop();
+        let ul = true;
+        if(!this.uploadCount.length) ul = false;
+        this.trigger({
+            uploading: ul,
+            uploads: this.uploads
+        })
     }
-
-
-
-
-
 });
 
 export default ProjectStore;

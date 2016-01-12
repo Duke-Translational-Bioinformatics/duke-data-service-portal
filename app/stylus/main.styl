@@ -55,125 +55,35 @@ body
 .hover a:hover
   background #F5F5F5
 
-/* ==========  Select Field Variables ========== */
-$color-black = "0,0,0";
-$select-background-color = transparent;
-$select-border-color = unquote("rgba(#{$color-black}, 0.12)") !default;
-$select-font-size = 16px;
-$select-color = unquote("rgba(#{$color-black}, 0.26)") !default;
-$select-padding = 4px;
+//Styles for File Input//
 
-/* ==========  Select Field ========== */
-
-/* Style Select Field */
-select {
-  font-family: inherit;
-  background-color: transparent;
-  width: 38%;
-  padding: $select-padding 0;
-  font-size: $select-font-size;
-  color: $select-color;
-  border: none;
-  border-bottom: 1px solid $select-border-color;
-}
-
-/* Remove focus */
-select:focus {
-  outline: none}
-
-/* Hide label */
-//.mdl-selectfield label {display: none;}
-/* Use custom arrow */
-//.mdl-selectfield select {appearance: none}
-.mdl-selectfield {
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  position: relative;
-  &:after {
-    position: absolute;
-    top: 0.75em;
-    right: 0.5em;
-    /* Styling the down arrow */
-    width: 0;
-    height: 0;
-    padding: 0;
-    content: '';
-    border-left: .25em solid transparent;
-    border-right: .25em solid transparent;
-    border-top: .375em solid $select-border-color;
-    pointer-events: none;
+.mdl-button--file {
+  input {
+    cursor: pointer;
+    height: 100%;
+    right: 0;
+    opacity: 0;
+    position: relative;
+    top: 0;
+    width: 300px;
+    z-index: 4;
   }
 }
 
-
-
-  //Breadcrumb CSS
-
-  ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
+.mdl-textfield--file {
+  .mdl-textfield__input {
+    box-sizing: border-box;
+    width: calc(100% - 32px);
   }
-  #breadcrumbs {
-    overflow: auto;
-    width: 100%;
+  .mdl-button--file {
+    right: 0;
   }
-
-#breadcrumbs li {
-  float: left;
-  margin: 0 .5em .5em .8em;
 }
 
-#breadcrumbs a {
-  background: #ddd;
-  padding: 0 1em;
-  float: left;
-  text-decoration: none;
-  color: #444;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
-  position: relative;
-}
+//Styles for progress bar//
 
-#breadcrumbs a:hover {
-  background: #5ac8fa;
-}
-
-#breadcrumbs a::before,
-#breadcrumbs a::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 1em;
-  background: #ddd;
-  transform: skew(-10deg);
-}
-
-#breadcrumbs a::before {
-
-  left: -.5em;
-  border-radius: 5px 0 0 5px;
-}
-
-#breadcrumbs a:hover::before {
-  background: #5ac8fa;
-}
-
-#breadcrumbs a::after {
-  right: -.5em;
-  border-radius: 0 5px 5px 0;
-}
-
-#breadcrumbs a:hover::after {
-  background: #5ac8fa;
-}
-
-#breadcrumbs .current,
-#breadcrumbs .current:hover {
-  font-weight: bold;
-  background: none;
-}
-
-#breadcrumbs .current::after,
-#breadcrumbs .current::before {
-  content: normal;
+.loader {
+  width: 80%
+  marginTop: 10px
+  margin: 0 auto
 }

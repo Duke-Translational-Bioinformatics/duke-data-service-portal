@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
@@ -14,48 +15,31 @@ var mui = require('material-ui'),
 
 class FileDetails extends React.Component {
 
-    constructor() {
-        this.state = {
-            projectObj: ProjectStore.projectObj,
-            objName: ProjectStore.objName,
-            projName: cookie.load('projName')
-        }
-    }
-
     render() {
         let error = '';
         let loading = this.props.loading ?
             <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
         let id = this.props.params.id;
-        let details = ProjectStore.project;
-        let parentKind = ProjectStore.parentObj.kind;
-        let parentId = ProjectStore.parentObj.id;
-        let name = ProjectStore.objName;
-        let projectName = cookie.load('projName');
-        let createdOn = ProjectStore.createdOn;
-        let createdBy = ProjectStore.createdBy;
-        let lastUpdatedOn = ProjectStore.lastUpdatedOn;
-        let storage = ProjectStore.storage;
+        let ancestors = this.props.entityObj ? this.props.entityObj.ancestors : null;
+        let parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : null;
+        let parentId = this.props.entityObj ? this.props.entityObj.parent.id : null;
+        let name = this.props.entityObj ? this.props.entityObj.name : null;
+        let projectName = this.props.entityObj && this.props.entityObj.ancestors ? this.props.entityObj.ancestors[0].name : null;
+        let createdOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.created_on : null;
+        let createdBy = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.created_by.full_name : null;
+        let lastUpdatedOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.last_updated_on : null;
+        let lastUpdatedBy = this.props.entityObj && this.props.entityObj.audit.last_updated_by ? this.props.entityObj.audit.last_updated_by.full_name : null;
+        let storage =  this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.upload.storage_provider.description : null;
 
-        function updatedBy () {
-                if(ProjectStore.lastUpdatedBy != null){
-                    var lastUpdatedBy = ProjectStore.lastUpdatedBy;
-                } else {
-                    return 'N/A';
-                }
-            return lastUpdatedBy.full_name;
-        };
-
-        function getFilePath () {
-            if (ProjectStore.ancestors != undefined) {
-                var ancestors = ProjectStore.ancestors;
-            } else {
+        function getFilePath() {
+            if (ancestors != undefined) {
+                let path = ancestors.map((path)=> {
+                    return path.name + ' ' + '>' + ' ';
+                });
+                return path.join('');
+            }else{
                 return null
             }
-            let path = ancestors.map((path)=> {
-                return path.name + ' ' + '>' + ' ';
-            });
-            return path.join('');
         }
 
         function getUrlPath () {
@@ -74,7 +58,8 @@ class FileDetails extends React.Component {
                  style={styles.container}>
                 <button
                     className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab mdl-button--colored"
-                    style={styles.floatingButton}>
+                    style={styles.floatingButton}
+                    onTouchTap={this.handleDownload.bind(this)}>
                     <i className="material-icons">get_app</i>
                 </button>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
@@ -82,10 +67,9 @@ class FileDetails extends React.Component {
                         <FileOptionsMenu {...this.props} {...this.state}/>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                        <a href={urlGen.routes.baseUrl + getUrlPath() + parentId } style={styles.back}
-                           className="mdl-color-text--grey-800 external"
-                           onTouchTap={this.handleTouchTap.bind(this, parentKind, parentId)}><i
-                            className="material-icons"
+                        <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + '/' + getUrlPath() + parentId } style={styles.back}
+                           className="mdl-color-text--grey-800 external">
+                            <i className="material-icons"
                             style={styles.backIcon}>keyboard_backspace</i>Back</a>
                     </div>
                     <div className="mdl-cell mdl-cell--3-col mdl-cell--4-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
@@ -118,7 +102,7 @@ class FileDetails extends React.Component {
                                 <li className="item-divider">Last Updated By</li>
                                 <li className="item-content">
                                     <div className="item-inner">
-                                        <div>{ updatedBy() }</div>
+                                        <div>{ lastUpdatedBy === null ? 'N/A' : lastUpdatedBy}</div>
                                     </div>
                                 </li>
                                 <li className="item-divider">Last Updated On</li>
@@ -148,28 +132,11 @@ class FileDetails extends React.Component {
             </div>
         );
     }
-
-    //handleTouchTapDetails() {
-    //    if (!this.state.showDetails) {
-    //        this.setState({showDetails: true})
-    //    } else {
-    //        this.setState({showDetails: false})
-    //    }
-    //}
-    //
-    handleTouchTap(parentKind, parentId) {
-        let id = parentId;
-        if (parentKind === 'dds-project') {
-            ProjectActions.loadProjectChildren(id);
-        } else {
-            ProjectActions.loadFolderChildren(id, ProjectActions.getParent(id));
-        }
+    handleDownload(){
+        let id = this.props.params.id;
+        ProjectActions.getDownloadUrl(id);
     }
 }
-//<button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
-//        onClick={this.handleTouchTapDetails.bind(this)}>
-//    {!this.state.showDetails ? 'FILE HISTORY' : 'HIDE HISTORY'}
-//</button>
 
 var styles = {
     container: {
@@ -255,24 +222,10 @@ FileDetails.contextTypes = {
 };
 
 FileDetails.propTypes = {
-    loading: React.PropTypes.bool,
-    details: React.PropTypes.array,
-    error: React.PropTypes.string
+    project: object.isRequired,
+    loading: bool,
+    details: array,
+    error: string
 };
 
-
 export default FileDetails;
-
-//<button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
-//        style={styles.fullView}>
-//    FULL VIEW
-//</button>
-//<div className="project-container mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800"
-//style={styles.container}>
-//</div>color-text--grey-600" style={styles.folderName}>KOMP Data</span>
-//
-//<i className="material-icons mdl-color-text--grey-600" style={styles.moreIcon}>keyboard_arrow_right</i>
-//<span className="mdl-color-text--grey-600" style={styles.folderName}><a href="#" className="mdl-color-text--grey-600">KOMP
-//    Data</a></span><i className="material-icons mdl-color-text--grey-600"
-//                      style={styles.moreIcon}>keyboard_arrow_right</i>
-//<span className="mdl-color-text--grey-600" style={styles.folderName}>KOMP Data</span>

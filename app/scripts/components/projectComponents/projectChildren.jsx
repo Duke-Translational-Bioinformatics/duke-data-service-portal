@@ -6,6 +6,7 @@ import ProjectStore from '../../stores/projectStore';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
 import Header from '../../components/globalComponents/header.jsx';
 import urlGen from '../../../util/urlGen.js';
+const LinearProgress = require('material-ui/lib/linear-progress');
 var mui = require('material-ui'),
     TextField = mui.TextField,
     Dialog = mui.Dialog,
@@ -15,24 +16,17 @@ var mui = require('material-ui'),
 class ProjectChildren extends React.Component {
 
     render() {
+        let uploading = this.props.uploading ? <div><LinearProgress color={"#2196f3"} mode="indeterminate" style={styles.uploader}/><div className="mdl-color-text--grey-600" style={styles.uploadText}>uploading...</div></div> : '';
+        let loading = this.props.loading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader"></div> : '';
         var error = '';
         if (this.props.error)
             error = (<h4>{this.props.error}</h4>);
-
-        let kind = this.props.children.map((children) => {
-            if (children.kind === 'dds-folder') {
-                return true;
-            } else {
-                return false;
-            }
-        });
-
         let projectChildren = this.props.children.map((children) => {
-            if(children.kind === 'dds-folder') {
+            if (children.kind === 'dds-folder') {
                 return (
                     <li key={ children.id } className="hover">
-                        <a href={urlGen.routes.baseUrl + "folder/" + children.id}
-                           className="item-content external" onTouchTap={() => this.handleTouchTap(children.id, kind)}>
+                        <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + "/folder/" + children.id}
+                           className="item-content external">
                             <div className="item-media"><i className="material-icons"
                                                            style={styles.icon}>folder</i>
                             </div>
@@ -47,30 +41,26 @@ class ProjectChildren extends React.Component {
                 );
             } else {
                 return (
-                <li key={ children.id } className="hover">
-                    <a href={urlGen.routes.baseUrl + "file/" + children.id}
-                       className="item-content external" onTouchTap={() => this.handleTouchTap(children.id, kind)}>
-                        <div className="item-media"><i className="material-icons"
-                                                       style={styles.icon}>description</i>
-                        </div>
-                        <div className="item-inner">
-                            <div className="item-title-row">
-                                <div className="item-title mdl-color-text--grey-800">{ children.name }</div>
+                    <li key={ children.id } className="hover">
+                        <a className="mdl-button mdl-js-button mdl-button--icon external" style={styles.dlIcon} onTouchTap={() => this.handleTouchTap(children.id)}>
+                            <i className="material-icons">get_app</i>
+                        </a>
+                        <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + "/file/" + children.id}
+                           className="item-content external">
+                            <div className="item-media"><i className="material-icons"
+                                                           style={styles.icon}>description</i>
                             </div>
-                            <div className="item-subtitle mdl-color-text--grey-600">ID: { children.id }</div>
-                        </div>
-                    </a>
-                </li>
-            );}
+                            <div className="item-inner">
+                                <div className="item-title-row">
+                                    <div className="item-title mdl-color-text--grey-800">{ children.name }</div>
+                                </div>
+                                <div className="item-subtitle mdl-color-text--grey-600">ID: { children.id }</div>
+                            </div>
+                        </a>
+                    </li>
+                );
+            }
         });
-
-
-        let loading = this.props.loading ?
-            <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
-        let standardActions = [
-            {text: 'Submit'},
-            {text: 'Cancel'}
-        ];
 
         return (
             <div className="list-container">
@@ -81,22 +71,20 @@ class ProjectChildren extends React.Component {
                 </div>
                 { error }
                 { loading }
+                { uploading }
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
-                <div className="list-block list-block-search searchbar-found media-list">
-                    <ul>
-                        {projectChildren}
-                    </ul>
-                </div>
+                    <div className="list-block list-block-search searchbar-found media-list">
+                        <ul>
+                            {projectChildren}
+                        </ul>
+                    </div>
                 </div>
             </div>
         );
     }
-    handleTouchTap(id, kind) {
-        if(!kind){
-            return null
-        }else{
-            ProjectActions.getFolderInfo(id);
-        }
+
+    handleTouchTap(id){
+        ProjectActions.getDownloadUrl(id);
     }
 }
 
@@ -125,19 +113,27 @@ var styles = {
     textStyles: {
         textAlign: 'left'
     },
-    upLoadBox: {
+    dlIcon: {
+        float: 'right',
+        fontSize: 18,
+        color: '#EC407A',
+        marginTop: 22
+    },
+    uploader: {
+        width: '80%',
+        marginTop: 10,
+        margin: '0 auto'
+    },
+    uploadText: {
         textAlign: 'center',
-        height: 200,
-        border: '1px solid grey',
-        margin: '0px 20px 20px 20px'
+        fontSize: '.8em'
     }
 };
 
 ProjectChildren.propTypes = {
     loading: React.PropTypes.bool,
-    projects: React.PropTypes.array,
-    error: React.PropTypes.string,
-    is_deleted: React.PropTypes.bool,
+    uploading: React.PropTypes.bool,
+    error: React.PropTypes.string
 };
 
 export default ProjectChildren;

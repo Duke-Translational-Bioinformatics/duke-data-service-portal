@@ -52,7 +52,7 @@ Javascript entry file: `app/scripts/main.js` <br />
 
 **Reflux**
 
-We are using Reflux, which is an implemantion of the [Flux Architecture](http://facebook.github.io/flux/docs/overview.html). If you want to read more about Reflux, check out the readme of the [reflux git repo](https://github.com/spoike/refluxjs). 
+We are using Reflux, which is an implementation of the [Flux Architecture](http://facebook.github.io/flux/docs/overview.html). If you want to read more about Reflux, check out the readme of the [reflux git repo](https://github.com/spoike/refluxjs). 
 
 **React-Router**
 

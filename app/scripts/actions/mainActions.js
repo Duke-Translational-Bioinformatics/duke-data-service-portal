@@ -1,4 +1,5 @@
 import Reflux from 'reflux';
+import appConfig from '../config';
 import urlGen from '../../util/urlGen.js';
 
 var MainActions = Reflux.createActions([
@@ -16,7 +17,8 @@ var MainActions = Reflux.createActions([
     'addToast',
     'removeToast',
     'closePhiModal',
-    'handleLogout'
+    'handleLogout',
+    'removeLoginCookie'
 ]);
 
 MainActions.authenticationServiceValidate.preEmit = (appConfig, accessToken) => {
@@ -61,28 +63,22 @@ MainActions.getDdsApiToken.preEmit = (appConfig, signedInfo) => {
     });
 };
 
-MainActions.getCurrentUser.preEmit = (apiToken) => {
-    fetch(urlGen.routes.ddsUrl + 'current_user', {
+MainActions.getCurrentUser.preEmit = () => {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'current_user', {
         method: 'get',
         headers: {
-            'Authorization': apiToken,
+            'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
         }
     })
         .then(function (response) {
             return response.json()
         }).then(function (json) {
-            let currentUser = json.full_name;
-            MainActions.getCurrentUserSuccess(currentUser, json)
+            MainActions.getCurrentUserSuccess(json)
         })
         .catch(function (ex) {
             MainActions.getCurrentUserError(ex)
         });
 };
-
-MainActions.handleLogout.preEmit = () => {
-
-}
-
 
 export default MainActions;

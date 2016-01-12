@@ -2,8 +2,6 @@ import React from 'react'
 import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
 import FileDetails from '../components/fileComponents/fileDetails.jsx';
-import FilePreview from '../components/fileComponents/filePreview.jsx';
-import FileProvenance from '../components/fileComponents/fileProvenance.jsx';
 import Header from '../components/globalComponents/header.jsx';
 
 class File extends React.Component {
@@ -11,22 +9,35 @@ class File extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            loading: false
+            loading: false,
+            project: ProjectStore.project
         };
     }
 
     componentDidMount() {
+        let kind = 'files';
         let id = this.props.params.id;
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
-        ProjectActions.getFileParent(id);
+        this._loadFile(id, kind);
+    }
+
+    componentDidUpdate(prevProps) {
+        let kind = 'files';
+        let id = this.props.params.id;
+        if(prevProps.params.id !== this.props.params.id) {
+            this._loadFile(id, kind);
+        }
     }
 
     componentWillUnmount() {
         this.unsubscribe();
     }
 
-    render() {
+    _loadFile(id, kind) {
+        ProjectActions.getEntity(id, kind);
+    }
 
+    render() {
         return (
             <div>
                 <FileDetails {...this.props} {...this.state} />

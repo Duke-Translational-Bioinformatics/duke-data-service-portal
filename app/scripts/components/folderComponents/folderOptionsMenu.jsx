@@ -74,19 +74,18 @@ class FolderOptionsMenu extends React.Component {
 
     handleDeleteButton() {
         let id = this.props.params.id;
-        let parentId = ProjectStore.parentObj.id;
-        let parentKind = ProjectStore.parentObj.kind;
-        let ref = 'snackbarDelete';
+        let parentId = this.props.entityObj ? this.props.entityObj.parent.id : null;
+        let parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : null;
         let urlPath = '';
         {parentKind === 'dds-project' ? urlPath = '/project/' : urlPath = '/folder/'}
-        ProjectActions.deleteFolder(id, parentId, parentKind, urlPath, ref, this.refs.deleteFolder.dismiss(
+        ProjectActions.deleteFolder(id, urlPath, this.refs.deleteFolder.dismiss(
             setTimeout(()=>this.props.appRouter.transitionTo(urlPath + parentId),500)
         ));
     }
 
     handleUpdateButton() {
         let id = this.props.params.id;
-        let parentId = ProjectStore.parentObj.id;
+        let parentId = this.props.entityObj ? this.props.entityObj.parent.id : null;
         let name = document.getElementById('folderNameText').value;
         if (this.state.floatingErrorText) {
             return null
