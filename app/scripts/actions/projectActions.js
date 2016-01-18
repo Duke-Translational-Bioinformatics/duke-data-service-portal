@@ -530,6 +530,11 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
             ProjectActions.startUploadError(ex)
         })
     };
+    fileReader.onerror = function(e) {
+        ProjectActions.startUploadError();
+        console.log("error", e);
+        console.log (e.target.error.message);
+    };
     fileReader.readAsArrayBuffer(blob);
 };
 
