@@ -19,7 +19,7 @@ class Header extends React.Component {
                         {!this.props.appConfig.apiToken ? '' : <p><a href="#" className="open-panel"><i className="material-icons" style={styles.openIcon}>menu</i></a></p>}
                     </div>
                     <div className="center">
-                        {!this.props.appConfig.apiToken ? '' : <img src="../images/dukeDSLogo.png" style={styles.logo}/>}
+                        {!this.props.appConfig.apiToken ? '' : <img src="images/dukeDSLogo.png" style={styles.logo}/>}
                     </div>
                     <div className="right">
                         <CurrentUser {...this.props}/>
