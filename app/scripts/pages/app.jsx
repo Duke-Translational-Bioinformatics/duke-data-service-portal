@@ -61,6 +61,22 @@ class App extends React.Component {
             if (this.props.routerPath != '/login' && !this.state.currentUser) {
                 MainActions.getCurrentUser();
             }
+            if (DDS_PORTAL_CONFIG.environment != 'production' && this.state.currentUser) {
+                let email = this.state.currentUser ? this.state.currentUser.email : null;
+                var BugHerdConfig = {
+                    "reporter": {
+                        "email": email,
+                        "required": "true"
+                    }
+                };
+
+                (function (d, t) {
+                    var bh = d.createElement(t), s = d.getElementsByTagName(t)[0];
+                    bh.type = 'text/javascript';
+                    bh.src = '//www.bugherd.com/sidebarv2.js?apikey=zhcaqqrxbp37fy04xao8yg';
+                    s.parentNode.insertBefore(bh, s);
+                })(document, 'script');
+            }
         }
         let str = this.props.appRouter.getCurrentPathname();
         let fileRoute = str.substring(str.lastIndexOf("/") - 6, str.lastIndexOf("/"));
