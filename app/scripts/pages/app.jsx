@@ -88,7 +88,7 @@ class App extends React.Component {
             search = <form data-search-list=".list-block-search" data-search-in=".item-title"
                            className="searchbar searchbar-init" action="#">
                 <div className="searchbar-input">
-                    <input type="search" placeholder="Search" style={styles.searchBar}/>
+                    {/*<input type="search" placeholder="Search" style={styles.searchBar}/>*/}
                 </div>
             </form>
         }
