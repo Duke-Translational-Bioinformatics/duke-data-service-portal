@@ -6,6 +6,7 @@ import ProjectStore from '../../stores/projectStore';
 import FileOptionsMenu from './fileOptionsMenu.jsx';
 import urlGen from '../../../util/urlGen.js';
 import Tooltip from '../../../util/tooltip.js';
+import BaseUtils from '../../../util/baseUtils.js';
 
 var mui = require('material-ui'),
     TextField = mui.TextField,
@@ -33,33 +34,6 @@ class FileDetails extends React.Component {
         let bytes = this.props.entityObj && this.props.entityObj.upload ? this.props.entityObj.upload.size : null;
         let hash = this.props.entityObj && this.props.entityObj.upload.hash ? this.props.entityObj.upload.hash.algorithm +': '+ this.props.entityObj.upload.hash.value : null;
 
-        function bytesToSize(bytes) {
-            if (bytes == 0) return '0 Byte';
-            var i = Math.floor(Math.log(bytes) / Math.log(1024));
-            return ( bytes / Math.pow(1024, i) ).toFixed(2) * 1 + ' ' + ['B', 'KB', 'MB', 'GB', 'TB'][i];
-        }
-
-        function getFilePath() {
-            if (ancestors != undefined) {
-                let path = ancestors.map((path)=> {
-                    return path.name + ' ' + '>' + ' ';
-                });
-                return path.join('');
-            }else{
-                return null
-            }
-        }
-
-        function getUrlPath () {
-            let urlPath = '';
-            if (parentKind === 'dds-project') {
-                urlPath = 'project/'
-            } else {
-                urlPath = 'folder/'
-            }
-            return urlPath;
-        }
-
         Tooltip.bindEvents();
 
         return (
@@ -79,7 +53,7 @@ class FileDetails extends React.Component {
                         <FileOptionsMenu {...this.props} {...this.state}/>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                        <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + '/' + getUrlPath() + parentId } style={styles.back}
+                        <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + '/' + BaseUtils.getUrlPath(parentKind) + parentId } style={styles.back}
                            className="mdl-color-text--grey-800 external">
                             <i className="material-icons"
                             style={styles.backIcon}>keyboard_backspace</i>Back</a>
@@ -108,7 +82,7 @@ class FileDetails extends React.Component {
                                 <li className="item-divider">Size</li>
                                 <li className="item-content">
                                     <div className="item-inner">
-                                        <div>{ bytesToSize(bytes) }</div>
+                                        <div>{ BaseUtils.bytesToSize(bytes) }</div>
                                     </div>
                                 </li>
                                 <li className="item-divider">File ID</li>
@@ -144,7 +118,7 @@ class FileDetails extends React.Component {
                                 <li className="item-divider">File Path</li>
                                 <li className="item-content">
                                     <div className="item-inner">
-                                        <div>{ getFilePath() + name}</div>
+                                        <div>{ BaseUtils.getFilePath() + name}</div>
                                     </div>
                                 </li>
                             </ul>
