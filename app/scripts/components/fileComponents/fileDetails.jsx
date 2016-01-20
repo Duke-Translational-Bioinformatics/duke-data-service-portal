@@ -5,7 +5,8 @@ import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import FileOptionsMenu from './fileOptionsMenu.jsx';
 import urlGen from '../../../util/urlGen.js';
-import cookie from 'react-cookie';
+import Tooltip from '../../../util/tooltip.js';
+import BaseUtils from '../../../util/baseUtils.js';
 
 var mui = require('material-ui'),
     TextField = mui.TextField,
@@ -30,44 +31,29 @@ class FileDetails extends React.Component {
         let lastUpdatedOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.last_updated_on : null;
         let lastUpdatedBy = this.props.entityObj && this.props.entityObj.audit.last_updated_by ? this.props.entityObj.audit.last_updated_by.full_name : null;
         let storage =  this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.upload.storage_provider.description : null;
+        let bytes = this.props.entityObj && this.props.entityObj.upload ? this.props.entityObj.upload.size : null;
+        let hash = this.props.entityObj && this.props.entityObj.upload.hash ? this.props.entityObj.upload.hash.algorithm +': '+ this.props.entityObj.upload.hash.value : null;
 
-        function getFilePath() {
-            if (ancestors != undefined) {
-                let path = ancestors.map((path)=> {
-                    return path.name + ' ' + '>' + ' ';
-                });
-                return path.join('');
-            }else{
-                return null
-            }
-        }
-
-        function getUrlPath () {
-            let urlPath = '';
-            if (parentKind === 'dds-project') {
-                urlPath = 'project/'
-            } else {
-                urlPath = 'folder/'
-            }
-            return urlPath;
-        }
-
+        Tooltip.bindEvents();
 
         return (
             <div className="project-container mdl-grid mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800"
                  style={styles.container}>
                 <button
+                    title="Download File"
+                    rel="tooltip"
                     className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab mdl-button--colored"
                     style={styles.floatingButton}
                     onTouchTap={this.handleDownload.bind(this)}>
                     <i className="material-icons">get_app</i>
                 </button>
+                <div id="tooltip"></div>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div style={styles.menuIcon}>
                         <FileOptionsMenu {...this.props} {...this.state}/>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                        <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + '/' + getUrlPath() + parentId } style={styles.back}
+                        <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + '/' + BaseUtils.getUrlPath(parentKind) + parentId } style={styles.back}
                            className="mdl-color-text--grey-800 external">
                             <i className="material-icons"
                             style={styles.backIcon}>keyboard_backspace</i>Back</a>
@@ -93,10 +79,22 @@ class FileDetails extends React.Component {
                                         <div>{ createdOn }</div>
                                     </div>
                                 </li>
+                                <li className="item-divider">Size</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ BaseUtils.bytesToSize(bytes) }</div>
+                                    </div>
+                                </li>
                                 <li className="item-divider">File ID</li>
                                 <li className="item-content">
                                     <div className="item-inner">
                                         <div>{ id }</div>
+                                    </div>
+                                </li>
+                                <li className="item-divider">Hash</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ hash }</div>
                                     </div>
                                 </li>
                                 <li className="item-divider">Last Updated By</li>
@@ -120,7 +118,7 @@ class FileDetails extends React.Component {
                                 <li className="item-divider">File Path</li>
                                 <li className="item-content">
                                     <div className="item-inner">
-                                        <div>{ getFilePath() + name}</div>
+                                        <div>{ BaseUtils.getFilePath(ancestors) + name}</div>
                                     </div>
                                 </li>
                             </ul>
