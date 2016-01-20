@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
+import Tooltip from '../../../util/tooltip.js';
+
 const RaisedButton = require('material-ui/lib/raised-button');
 let mui = require('material-ui'),
     TextField = mui.TextField,
@@ -9,28 +11,26 @@ let mui = require('material-ui'),
 
 class UploadModal extends React.Component {
 
-    constructor() {
-        this.state = {}
-    }
-
     render() {
 
         let standardActions = [
             {text: 'Upload', onTouchTap: this.handleUploadButton.bind(this)},
             {text: 'Cancel'}
         ];
+
+        Tooltip.bindEvents();
+
         return (
             <div style={styles.fileUpload}>
                 <button
-                    id="ub"
+                    title="Upload File"
+                    rel="tooltip"
                     className='mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-button--colored'
                     style={styles.floatingButton}
                     onTouchTap={this.handleTouchTap.bind(this)}>
                     <i className='material-icons'>file_upload</i>
                 </button>
-                <div className="mdl-tooltip" htmlFor="ub">
-                    UPLOAD FILES
-                </div>
+                <div id="tooltip"></div>
                 <Dialog
                     style={styles.dialogStyles}
                     title='Upload Files'
