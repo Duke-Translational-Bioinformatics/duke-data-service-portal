@@ -26,6 +26,7 @@ class FileOptionsMenu extends React.Component {
             {text: 'UPDATE', onTouchTap: this.handleUpdateButton.bind(this)},
             {text: 'CANCEL'}
         ];
+        let fileName = this.props.entityObj ? this.props.entityObj.name : null;
         let iconButtonElement = <a href="#"><i className="material-icons mdl-color-text--grey-800">more_vert</i></a>;
 
         return (
@@ -45,6 +46,7 @@ class FileOptionsMenu extends React.Component {
                         <TextField
                             style={styles.textStyles}
                             hintText="Project Name"
+                            defaultValue={fileName}
                             errorText={this.state.floatingErrorText}
                             floatingLabelText="File Name"
                             id="fileNameText"
@@ -74,16 +76,18 @@ class FileOptionsMenu extends React.Component {
         let parentId = this.props.entityObj ? this.props.entityObj.parent.id : null;
         let parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : null;
         let urlPath = '';
-        {parentKind === 'dds-project' ? urlPath = '/project/' : urlPath = '/folder/'}
+        {
+            parentKind === 'dds-project' ? urlPath = '/project/' : urlPath = '/folder/'
+        }
         ProjectActions.deleteFile(id, parentId, parentKind, this.refs.deleteFile.dismiss(
-            setTimeout(()=>this.props.appRouter.transitionTo(urlPath + parentId),500)
+            setTimeout(()=>this.props.appRouter.transitionTo(urlPath + parentId), 500)
         ));
     }
 
 
     handleUpdateButton() {
         let id = this.props.params.id;
-        let  fileName = document.getElementById("fileNameText").value;
+        let fileName = document.getElementById("fileNameText").value;
         if (this.state.floatingErrorText != '') {
             return null
         } else {
@@ -92,7 +96,9 @@ class FileOptionsMenu extends React.Component {
             }));
             this.refs.editFile.dismiss();
         }
-    };
+    }
+
+;
 
     handleFloatingErrorInputChange(e) {
         this.setState({

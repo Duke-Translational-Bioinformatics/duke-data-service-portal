@@ -178,7 +178,7 @@ var styles = {
     },
     backIcon: {
         fontSize: 24,
-        float: 'left'
+        verticalAlign:-7
     },
     arrow: {
         textAlign: 'left',

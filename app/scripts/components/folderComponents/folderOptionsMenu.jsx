@@ -27,6 +27,7 @@ class FolderOptionsMenu extends React.Component {
             {text: 'UPDATE', onTouchTap: this.handleUpdateButton.bind(this)},
             {text: 'CANCEL'}
         ];
+        let fName = this.props.entityObj ? this.props.entityObj.name : null;
         let iconButtonElement = <a href="#"><i className="material-icons mdl-color-text--grey-800">more_vert</i></a>;
         let loading = this.props.loading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
         return (
@@ -48,6 +49,7 @@ class FolderOptionsMenu extends React.Component {
                         <TextField
                             style={styles.textStyles}
                             hintText="Folder Name"
+                            defaultValue={fName}
                             errorText={this.state.floatingErrorText}
                             floatingLabelText="Folder Name"
                             id="folderNameText"
