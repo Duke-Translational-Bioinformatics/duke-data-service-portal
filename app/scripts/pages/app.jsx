@@ -61,7 +61,7 @@ class App extends React.Component {
             if (this.props.routerPath != '/login' && !this.state.currentUser) {
                 MainActions.getCurrentUser();
             }
-            if (DDS_PORTAL_CONFIG.environment != 'production' && this.state.currentUser) {
+            if (DDS_PORTAL_CONFIG.environment != 'development' && this.state.currentUser) {
                 let email = this.state.currentUser ? this.state.currentUser.email : null;
                 var BugHerdConfig = {
                     "reporter": {

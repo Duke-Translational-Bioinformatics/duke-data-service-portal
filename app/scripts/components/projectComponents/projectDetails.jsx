@@ -98,7 +98,10 @@ var Details = React.createClass({
                 <div className="item-content">
                     <div className="item-media"><i className="material-icons">face</i></div>
                     <div className="item-inner">
-                        <div className="item-title">{users.user.full_name}</div>
+                        <div className="item-title-row">
+                            <div className="item-title">{users.user.full_name}</div>
+                            <span className="mdl-color-text--grey-600">{ users.auth_role.name }</span>
+                        </div>
                         <div className="item-after"><a href="#" onTouchTap={() => this.handleTouchTap(users.user.id, users.user.full_name)}>
                             {users.user.id != currentUserId && users.user.id != createdById ? <i className="material-icons" style={styles.deleteIcon}>cancel</i> : ''}</a>
                         </div>

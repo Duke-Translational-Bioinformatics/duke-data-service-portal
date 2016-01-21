@@ -1,5 +1,6 @@
 import Reflux from 'reflux';
 import ProjectActions from '../actions/projectActions';
+import MainActions from '../actions/mainActions';
 import StatusEnum from '../enum.js';
 
 var ProjectStore = Reflux.createStore({
