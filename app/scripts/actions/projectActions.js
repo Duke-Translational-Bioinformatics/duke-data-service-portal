@@ -530,10 +530,10 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
             ProjectActions.startUploadError(ex)
         })
     };
-    fileReader.onerror = function(e) {
+    fileReader.onerror = function (e) {
         ProjectActions.startUploadError();
         console.log("error", e);
-        console.log (e.target.error.message);
+        console.log(e.target.error.message);
     };
     fileReader.readAsArrayBuffer(blob);
 };
@@ -574,7 +574,7 @@ ProjectActions.getChunkUrl.preEmit = function (uploadId, chunkBlob, chunkNum, si
         });
     };
     fileReader.readAsArrayBuffer(chunkBlob);
-}
+};
 
 function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKind, chunkNum) {
     var xhr = new XMLHttpRequest();
@@ -585,6 +585,7 @@ function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKi
             ProjectActions.computeUploadProgress(percentOfChunkUploaded);
         }
     }
+
     xhr.onload = onComplete;
     function onComplete() {
         let status = null;
@@ -596,9 +597,10 @@ function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKi
         }
         ProjectActions.updateAndProcessChunks(uploadId, chunkNum, status);
     }
+
     xhr.open('PUT', presignedUrl, true);
     xhr.send(chunkBlob);
-}
+};
 
 ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentKind, fileName) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'uploads/' + uploadId + '/complete', {
@@ -612,9 +614,9 @@ ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentK
     }).then(function (json) {
         ProjectActions.addFile(uploadId, parentId, parentKind, fileName);
     }).catch(function (ex) {
-        MainActions.addToast('Failed to upload file '+fileName+'!');
+        ProjectActions.uploadError(uploadId, fileName);
     })
-}
+};
 
 ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind, fileName) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/', {
@@ -638,7 +640,7 @@ ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind, fileN
         MainActions.addToast(fileName + ' uploaded successfully');
         ProjectActions.addFileSuccess(parentId, parentKind, uploadId)
     }).catch(function (ex) {
-        MainActions.addToast('Failed to upload ' +fileName+ '!');
+        MainActions.addToast('Failed to upload ' + fileName + '!');
         ProjectActions.addFileError(ex)
     })
 };
