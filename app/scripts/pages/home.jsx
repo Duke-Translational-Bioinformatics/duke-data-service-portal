@@ -18,7 +18,7 @@ class Home extends React.Component {
         this.state = {
             projects: ProjectStore.projects,
             loading: false,
-            modalOpen: MainStore.modalOpen
+            modalOpen: MainStore.modalOpen === undefined ? true : MainStore.modalOpen
         };
     }
 
