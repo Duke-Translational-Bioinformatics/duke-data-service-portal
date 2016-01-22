@@ -64,7 +64,9 @@ class AddProjectModal extends React.Component {
 
     handleTouchTap() {
         this.refs.addProject.show();
-    };
+    }
+
+;
 
     handleProjectButton() {
         if (this.state.floatingErrorText || this.state.floatingErrorText2) {
@@ -78,19 +80,25 @@ class AddProjectModal extends React.Component {
             }));
             this.refs.addProject.dismiss();
         }
-    };
+    }
+
+;
 
     handleFloatingErrorInputChange(e) {
         this.setState({
             floatingErrorText: e.target.value ? '' : 'This field is required.'
         });
-    };
+    }
+
+;
 
     handleFloatingErrorInputChange2(e) {
         this.setState({
             floatingErrorText2: e.target.value ? '' : 'This field is required.'
         });
-    };
+    }
+
+;
 }
 
 var styles = {
@@ -111,10 +119,6 @@ var styles = {
 
 AddProjectModal.contextTypes = {
     muiTheme: React.PropTypes.object
-};
-
-AddProjectModal.propTypes = {
-    addProjectLoading: React.PropTypes.bool,
 };
 
 export default AddProjectModal;

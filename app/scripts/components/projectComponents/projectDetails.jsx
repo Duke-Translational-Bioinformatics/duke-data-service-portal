@@ -5,6 +5,7 @@ import ProjectStore from '../../stores/projectStore';
 import MainActions from '../../actions/mainActions';
 import MainStore from '../../stores/mainStore';
 import ProjectOptionsMenu from './projectOptionsMenu.jsx';
+import UploadModal from '../globalComponents/uploadModal.jsx';
 import cookie from 'react-cookie';
 import urlGen from '../../../util/urlGen.js';
 
@@ -29,18 +30,12 @@ class ProjectDetails extends React.Component {
         let createdOn = this.props.project && this.props.project.audit ? this.props.project.audit.created_on : null;
         let error = '';
 
-        let addProjectLoading = this.props.addProjectLoading ?
-            <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
-
         return (
             <div
                 className="project-container mdl-color--white mdl-shadow--2dp mdl-color-text--grey-800"
                 style={styles.container}>
-                <button
-                    className="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-button--colored"
-                    style={styles.floatingButton}>
-                        <i className="material-icons">file_upload</i>
-                </button>
+                <UploadModal {...this.props}/>
+
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div style={styles.menuIcon}>
                         <ProjectOptionsMenu {...this.props} />
@@ -74,7 +69,6 @@ class ProjectDetails extends React.Component {
                         </div>
                     </div>
                 </div>
-                { addProjectLoading }
                 { error }
             </div>
         );
@@ -93,19 +87,23 @@ var Details = React.createClass({
     render() {
         let description = this.props.project ? this.props.project.description : null;
         let projectId =  this.props.project ? this.props.project.id : null;
+        let createdById = this.props.project && this.props.project.audit ? this.props.project.audit.created_by.id : null;
         let lastUpdatedOn = this.props.project && this.props.project.audit ? this.props.project.audit.last_updated_on : null;
         let lastUpdatedBy = this.props.project && this.props.project.audit ? this.props.project.audit.last_updated_by : null;
         let users = this.props.projectMembers ? this.props.projectMembers : null;
-        let currentUser = this.props.currentUser ? this.props.currentUser.full_name : null;
+        let currentUserId = this.props.currentUser ? this.props.currentUser.id : null;
 
         let members = users.map((users)=> {
             return <li key={users.user.id}>
                 <div className="item-content">
                     <div className="item-media"><i className="material-icons">face</i></div>
                     <div className="item-inner">
-                        <div className="item-title">{users.user.full_name}</div>
+                        <div className="item-title-row">
+                            <div className="item-title">{users.user.full_name}</div>
+                            <span className="mdl-color-text--grey-600">{ users.auth_role.name }</span>
+                        </div>
                         <div className="item-after"><a href="#" onTouchTap={() => this.handleTouchTap(users.user.id, users.user.full_name)}>
-                            {users.user.full_name != currentUser ? <i className="material-icons" style={styles.deleteIcon}>cancel</i> : ''}</a>
+                            {users.user.id != currentUserId && users.user.id != createdById ? <i className="material-icons" style={styles.deleteIcon}>cancel</i> : ''}</a>
                         </div>
                     </div>
                 </div>

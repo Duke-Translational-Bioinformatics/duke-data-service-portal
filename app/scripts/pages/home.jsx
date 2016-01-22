@@ -17,10 +17,8 @@ class Home extends React.Component {
         super(props);
         this.state = {
             projects: ProjectStore.projects,
-            files: ProjectStore.files,
-            folders: ProjectStore.folders,
             loading: false,
-            modalOpen: MainStore.modalOpen
+            modalOpen: MainStore.modalOpen === undefined ? true : MainStore.modalOpen
         };
     }
 
@@ -30,10 +28,21 @@ class Home extends React.Component {
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
         ProjectActions.loadProjects(id);
         ProjectActions.getUsageDetails();
+        MainActions.removeLoginCookie();
+    }
+
+    componentDidUpdate(prevProps){
+        if(prevProps.usage !== this.props.usage) {
+            this._loadUsage();
+        }
     }
 
     componentWillUnmount() {
         this.unsubscribe();
+    }
+
+    _loadUsage(){
+        ProjectActions.getUsageDetails();
     }
 
     render() {
@@ -42,22 +51,24 @@ class Home extends React.Component {
             {text: 'DECLINE', onTouchTap: this.handleDeclineButton.bind(this)}
         ];
         let modal = (
-                <Dialog
-                    style={styles.dialogStyles}
-                    title="Terms of Use - Protected Health Information"
-                    actions={standardActions}
-                    ref="phi"
-                    openImmediately={this.state.modalOpen}
-                    modal={true}>
-                    <div style={{height: '300px'}}>
-                        <p style={styles.main}><b>The Health Insurance Portability and Accountability Act of 1996 (HIPAA) established standards
-                            for health information that must be kept private and secure, called Protected Health Information
-                            (PHI).</b><br/>The use of PHI within Duke Data Service is prohibited. By clicking “accept” below, you
-                            attest that you will not enter PHI. If you are unclear about what constitutes PHI, or are
-                            uncertain about the nature of the data you use, click “decline” and contact the Duke University
-                            IT Security Office (security@duke.edu) for further information.</p>
-                    </div>
-                </Dialog>
+            <Dialog
+                style={styles.dialogStyles}
+                title="Terms of Use - Protected Health Information"
+                actions={standardActions}
+                ref="phi"
+                openImmediately={this.state.modalOpen}
+                modal={true}>
+                <div style={{height: '300px'}}>
+                    <p style={styles.main}><b>The Health Insurance Portability and Accountability Act of 1996 (HIPAA)
+                        established standards
+                        for health information that must be kept private and secure, called Protected Health Information
+                        (PHI).</b><br/>The use of PHI within Duke Data Service is prohibited. By clicking “accept”
+                        below, you
+                        attest that you will not enter PHI. If you are unclear about what constitutes PHI, or are
+                        uncertain about the nature of the data you use, click “decline” and contact the Duke University
+                        IT Security Office (security@duke.edu) for further information.</p>
+                </div>
+            </Dialog>
         );
 
         return (
@@ -68,9 +79,11 @@ class Home extends React.Component {
             </div>
         );
     }
+
     handleAcceptButton() {
         this.refs.phi.dismiss(MainActions.closePhiModal());
     }
+
     handleDeclineButton() {
         MainStore.handleLogout();
     }
@@ -85,6 +98,5 @@ var styles = {
         textAlign: 'left'
     }
 };
-
 
 export default Home;

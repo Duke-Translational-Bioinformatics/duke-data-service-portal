@@ -17,7 +17,8 @@ var MainActions = Reflux.createActions([
     'addToast',
     'removeToast',
     'closePhiModal',
-    'handleLogout'
+    'handleLogout',
+    'removeLoginCookie'
 ]);
 
 MainActions.authenticationServiceValidate.preEmit = (appConfig, accessToken) => {
@@ -63,7 +64,7 @@ MainActions.getDdsApiToken.preEmit = (appConfig, signedInfo) => {
 };
 
 MainActions.getCurrentUser.preEmit = () => {
-    fetch(urlGen.routes.ddsUrl + 'current_user', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'current_user', {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -79,10 +80,5 @@ MainActions.getCurrentUser.preEmit = () => {
             MainActions.getCurrentUserError(ex)
         });
 };
-
-MainActions.handleLogout.preEmit = () => {
-
-}
-
 
 export default MainActions;

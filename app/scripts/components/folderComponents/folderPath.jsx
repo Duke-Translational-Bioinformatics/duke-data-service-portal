@@ -3,8 +3,9 @@ import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import FolderOptionsMenu from './folderOptionsMenu.jsx';
+import UploadModal from '../globalComponents/uploadModal.jsx';
 import urlGen from '../../../util/urlGen.js';
-import cookie from 'react-cookie';
+import BaseUtils from '../../../util/baseUtils';
 
 class FolderPath extends React.Component {
 
@@ -21,41 +22,16 @@ class FolderPath extends React.Component {
         let parentId = this.props.entityObj ? this.props.entityObj.parent.id : null;
         let name = this.props.entityObj ? this.props.entityObj.name : null;
 
-        function getFilePath() {
-            if (ancestors != undefined) {
-                let path = ancestors.map((path)=> {
-                    return path.name + ' ' + '>' + ' ';
-                });
-                return path.join('');
-            }else{
-                return null
-            }
-        }
-
-        function getUrlPath() {
-            let urlPath = '';
-            if (parentKind === 'dds-project') {
-                urlPath = 'project/'
-            } else {
-                urlPath = 'folder/'
-            }
-            return urlPath;
-        }
-
         return (
             <div className="project-container group mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800"
                  style={styles.container}>
-                <button
-                    className="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-button--colored"
-                    style={styles.floatingButton}>
-                    <i className="material-icons">file_upload</i>
-                </button>
+                <UploadModal {...this.props} />
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div style={styles.menuIcon}>
                         <FolderOptionsMenu {...this.props} />
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                        <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + '/' +  getUrlPath() + parentId }
+                        <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + '/' + BaseUtils.getUrlPath(parentKind) + parentId }
                            className="mdl-color-text--grey-800 external"><i
                             className="material-icons"
                             style={styles.backIcon}>keyboard_backspace</i>Back</a>
@@ -68,7 +44,7 @@ class FolderPath extends React.Component {
                         <h5><i className="material-icons" style={styles.folderIcon}>folder_open</i>{ name }</h5>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.breadcrumbs}>
-                        <h6>{ getFilePath() + name }</h6>
+                        <h6>{ BaseUtils.getFilePath(ancestors) + name }</h6>
                     </div>
                 </div>
             </div>

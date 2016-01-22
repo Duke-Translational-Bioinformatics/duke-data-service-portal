@@ -32,13 +32,14 @@ class ProjectOptionsMenu extends React.Component {
             {text: 'ADD', onTouchTap: this.handleMemberButton.bind(this)},
             {text: 'CANCEL', onTouchTap: this.handleCancel.bind(this)}
         ];
-        let roleOptions = [ 
-            { id: 'project_admin', text: 'Project Administrator' }, 
-            { id: 'project_viewer', text: 'Project Viewer' }, 
-            { id: 'file_downloader', text: 'File Downloader' }, 
-            { id: 'file_editor', text: 'File Editor' } 
+        let roleOptions = [
+            { id: 'project_admin', text: 'Project Administrator' },
+            { id: 'project_viewer', text: 'Project Viewer' },
+            { id: 'file_downloader', text: 'File Downloader' },
+            { id: 'file_editor', text: 'File Editor' }
         ];
-
+        let prName = this.props.project ? this.props.project.name : null;
+        let desc = this.props.project ? this.props.project.description : null;
         let iconButtonElement = <a href="#"><i className="material-icons mdl-color-text--grey-800">more_vert</i></a>;
 
         return (
@@ -60,6 +61,7 @@ class ProjectOptionsMenu extends React.Component {
                         <TextField
                             style={styles.textStyles}
                             hintText="Project Name"
+                            defaultValue={prName}
                             errorText={this.state.floatingErrorText}
                             floatingLabelText="Project Name"
                             id="projectNameText"
@@ -69,6 +71,7 @@ class ProjectOptionsMenu extends React.Component {
                         <TextField
                             style={styles.textStyles}
                             hintText="Project Description"
+                            defaultValue={desc}
                             errorText={this.state.floatingErrorText2}
                             floatingLabelText="Project Description"
                             id="projectDescriptionText"
@@ -96,7 +99,7 @@ class ProjectOptionsMenu extends React.Component {
                         <TextField
                             style={styles.textStyles}
                             hintText="Last Name Starts With (3 letters)"
-                            errorText={this.state.floatingErrorText}
+                            errorText={this.state.floatingErrorText2}
                             floatingLabelText="Last Name"
                             id="lastNameText"
                             type="text"

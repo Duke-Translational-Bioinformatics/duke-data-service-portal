@@ -27,6 +27,7 @@ class FolderOptionsMenu extends React.Component {
             {text: 'UPDATE', onTouchTap: this.handleUpdateButton.bind(this)},
             {text: 'CANCEL'}
         ];
+        let fName = this.props.entityObj ? this.props.entityObj.name : null;
         let iconButtonElement = <a href="#"><i className="material-icons mdl-color-text--grey-800">more_vert</i></a>;
         let loading = this.props.loading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
         return (
@@ -48,6 +49,7 @@ class FolderOptionsMenu extends React.Component {
                         <TextField
                             style={styles.textStyles}
                             hintText="Folder Name"
+                            defaultValue={fName}
                             errorText={this.state.floatingErrorText}
                             floatingLabelText="Folder Name"
                             id="folderNameText"
@@ -74,8 +76,8 @@ class FolderOptionsMenu extends React.Component {
 
     handleDeleteButton() {
         let id = this.props.params.id;
-        let parentId = this.props.parentObj ? this.props.parentObj.parent.id : null;
-        let parentKind = this.props.parentObj ? this.props.parentObj.parent.kind : null;
+        let parentId = this.props.entityObj ? this.props.entityObj.parent.id : null;
+        let parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : null;
         let urlPath = '';
         {parentKind === 'dds-project' ? urlPath = '/project/' : urlPath = '/folder/'}
         ProjectActions.deleteFolder(id, urlPath, this.refs.deleteFolder.dismiss(
@@ -85,7 +87,7 @@ class FolderOptionsMenu extends React.Component {
 
     handleUpdateButton() {
         let id = this.props.params.id;
-        let parentId = this.props.parentObj ? this.props.parentObj.parent.id : null;
+        let parentId = this.props.entityObj ? this.props.entityObj.parent.id : null;
         let name = document.getElementById('folderNameText').value;
         if (this.state.floatingErrorText) {
             return null

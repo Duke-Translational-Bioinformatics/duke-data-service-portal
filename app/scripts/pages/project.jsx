@@ -21,8 +21,9 @@ class Project extends React.Component {
             children: ProjectStore.children,
             projects: ProjectStore.projects,
             project: ProjectStore.project,
-            currentUser: MainStore.currentUser,
-            loading: false
+            currentUser: ProjectStore.currentUser,
+            loading: false,
+            uploading: false
         };
     }
 
@@ -32,7 +33,7 @@ class Project extends React.Component {
         ProjectActions.loadProjectChildren(id);
         ProjectActions.showDetails(id);
         ProjectActions.getProjectMembers(id);
-        //MainActions.getCurrentUser();
+        ProjectActions.getUser();
     }
 
     componentWillUnmount() {
