@@ -534,8 +534,12 @@ var ProjectStore = Reflux.createStore({
     },
 
     startUploadError(error) {
-        alert('Error: File is too large to upload. Future versions of Duke Data Service will support uploading' +
-            ' larger files.');
+        alert('Error: File is too large to upload for the current Alpha version of the Duke Data Service. Please' +
+            ' compress the' +
+            ' file to a .zip format and' +
+            ' try uploading' +
+            ' again. Future versions of Duke Data Service will support' +
+            ' larger files without compression.');
         let errMsg = error && error.message ? "Error: " + error : '';
         this.trigger({
             error: errMsg,
