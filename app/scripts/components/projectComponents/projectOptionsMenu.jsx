@@ -15,6 +15,7 @@ class ProjectOptionsMenu extends React.Component {
         this.state = {
             floatingErrorText: 'This field is required',
             floatingErrorText2: 'This field is required',
+            floatingErrorText3: 'Enter the project name exactly to delete',
             selectValue: 'project_admin'
         }
     }
@@ -50,7 +51,15 @@ class ProjectOptionsMenu extends React.Component {
                     actions={deleteActions}
                     ref="deleteProject">
                     <i className="material-icons" style={styles.warning}>warning</i>
-                    <p style={styles.msg}>Deleting this project will also delete any folders or files contained inside of the project.</p>
+                    <p style={styles.msg}>Deleting this project will also delete any folders or files contained inside of the project. As a failsafe, you must enter the project name exactly in the form below before you can delete this project.</p>
+                    <TextField
+                        style={styles.textStyles}
+                        errorText={this.state.floatingErrorText3}
+                        floatingLabelText="Enter the project name exactly"
+                        id="projName"
+                        type="text"
+                        multiLine={true}
+                        onChange={this.handleFloatingErrorInputChange3.bind(this)}/> <br/>
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
@@ -125,20 +134,16 @@ class ProjectOptionsMenu extends React.Component {
             </div>
         );
     }
-    handleClose() {
-        this.setState({
-            floatingErrorText: 'This field is required.',
-            floatingErrorText2: 'This field is required'
-        });
-    }
 
     handleCancel() {
-            this.setState({
-                floatingErrorText: 'This field is required.',
-                floatingErrorText2: 'This field is required'
-            });
-            this.refs.editProject.dismiss();
-            this.refs.addMembers.dismiss();
+        this.setState({
+            floatingErrorText: 'This field is required.',
+            floatingErrorText2: 'This field is required',
+            floatingErrorText3: 'Enter the project name exactly to delete'
+        });
+        this.refs.editProject.dismiss();
+        this.refs.addMembers.dismiss();
+        this.refs.deleteProject.dismiss();
     }
 
     handleTouchTapDelete() {
@@ -155,9 +160,17 @@ class ProjectOptionsMenu extends React.Component {
 
     handleDeleteButton() {
         let id = this.props.params.id;
-        ProjectActions.deleteProject(id, this.refs.deleteProject.dismiss(
-            setTimeout(()=>this.props.appRouter.transitionTo('/home'),500)
-        ));
+        let prName = this.props.project ? this.props.project.name : null;
+        if(document.getElementById('projName').value != prName){
+            this.setState({
+                floatingErrorText3: 'Enter the project name exactly to delete'
+            });
+            return null
+        }else{
+            ProjectActions.deleteProject(id, this.refs.deleteProject.dismiss(
+                setTimeout(()=>this.props.appRouter.transitionTo('/home'),500)
+            ));
+        }
     }
 
     handleUpdateButton() {
@@ -200,13 +213,20 @@ class ProjectOptionsMenu extends React.Component {
 
     handleFloatingErrorInputChange(e) {
         this.setState({
-            floatingErrorText: e.target.value ? '' : 'This field is required.'
+            floatingErrorText: e.target.value ? '' : 'This field is required'
         });
     }
 
     handleFloatingErrorInputChange2(e) {
         this.setState({
-            floatingErrorText2: e.target.value ? '' : 'This field is required.'
+            floatingErrorText2: e.target.value ? '' : 'This field is required'
+        });
+    }
+
+    handleFloatingErrorInputChange3(e) {
+        let prName = this.props.project ? this.props.project.name : null;
+        this.setState({
+            floatingErrorText3: e.target.value === prName ? '' : 'Enter the project name exactly to delete'
         });
     }
 }
@@ -232,7 +252,7 @@ var styles = {
         fontColor: '#303F9F'
     },
     msg: {
-        textAlign: 'center',
+        textAlign: 'left',
         marginLeft: 30
     },
     warning: {
