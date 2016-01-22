@@ -60,11 +60,9 @@ class Home extends React.Component {
                 modal={true}>
                 <div style={{height: '300px'}}>
                     <p style={styles.main}><b>The Health Insurance Portability and Accountability Act of 1996 (HIPAA)
-                        established standards
-                        for health information that must be kept private and secure, called Protected Health Information
-                        (PHI).</b><br/>The use of PHI within Duke Data Service is prohibited. By clicking “accept”
-                        below, you
-                        attest that you will not enter PHI. If you are unclear about what constitutes PHI, or are
+                        established standards for health information that must be kept private and secure, called Protected Health Information
+                        (PHI).</b><br/>The use of PHI within the Duke Data Service is prohibited in this Alpha release. By clicking “accept”
+                        below, you attest that you will not enter PHI. If you are unclear about what constitutes PHI, or are
                         uncertain about the nature of the data you use, click “decline” and contact the Duke University
                         IT Security Office (security@duke.edu) for further information.</p>
                 </div>
@@ -91,6 +89,7 @@ class Home extends React.Component {
 
 var styles = {
     dialogStyles: {
+        marginTop: 100,
         textAlign: 'center',
         fontColor: '#303F9F'
     },
