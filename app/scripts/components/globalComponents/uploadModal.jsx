@@ -17,6 +17,9 @@ class UploadModal extends React.Component {
             {text: 'Upload', onTouchTap: this.handleUploadButton.bind(this)},
             {text: 'Cancel'}
         ];
+        let standardActionsWarn = [
+            {text: 'Cancel'}
+        ];
 
         Tooltip.bindEvents();
 
@@ -47,6 +50,14 @@ class UploadModal extends React.Component {
 
                     </form>
                 </Dialog>
+                <Dialog
+                    style={styles.dialogStyles}
+                    title='File exceeds size limit for the current Alpha version of Duke Data Service'
+                    actions={standardActionsWarn}
+                    ref='fileWarn'>
+                    <i className="material-icons" style={styles.warning}>announcement</i>
+                    <p style={styles.msg}>Please compress this file into a .zip format before uploading. <br/>We apologize for the inconvenience.</p>
+                </Dialog>
             </div>
         );
     }
@@ -68,8 +79,12 @@ class UploadModal extends React.Component {
             }
             let parentId = this.props.params.id;
             let blob = document.getElementById('afile').files[0];
-            ProjectActions.startUpload(projId, blob, parentId, parentKind);
-            this.refs.fileU.dismiss();
+            if(blob.size > 1073741824 * 3.5){
+                this.refs.fileWarn.show();
+            }else{
+                ProjectActions.startUpload(projId, blob, parentId, parentKind);
+                this.refs.fileU.dismiss();
+            }
         } else {
             return null
         }
@@ -102,6 +117,15 @@ var styles = {
         right: '2%',
         zIndex: '2',
         color: '#ffffff'
+    },
+    msg: {
+        textAlign: 'center',
+        marginLeft: 30
+    },
+    warning: {
+        fontSize: 48,
+        textAlign: 'center',
+        color: '#FFEB3B'
     }
 };
 
