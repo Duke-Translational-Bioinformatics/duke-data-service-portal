@@ -35,8 +35,8 @@ var styles = {
         width: '13%',
         maxWidth: '13%',
         minWidth: 58,
-        height: 'auto',
-        marginTop: 39,
+        minHeight: 46,
+        marginTop: 12,
         marginLeft: 22
     },
     logoDiv: {
@@ -45,7 +45,7 @@ var styles = {
     openIcon: {
         fontSize: 24,
         color: '#fff',
-        verticalAlign: -30,
+        verticalAlign: -34,
         paddingLeft: 10
     }
 };
