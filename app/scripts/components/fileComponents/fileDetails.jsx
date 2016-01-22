@@ -32,7 +32,6 @@ class FileDetails extends React.Component {
         let lastUpdatedBy = this.props.entityObj && this.props.entityObj.audit.last_updated_by ? this.props.entityObj.audit.last_updated_by.full_name : null;
         let storage =  this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.upload.storage_provider.description : null;
         let bytes = this.props.entityObj && this.props.entityObj.upload ? this.props.entityObj.upload.size : null;
-        let hash = this.props.entityObj && this.props.entityObj.upload.hash ? this.props.entityObj.upload.hash.algorithm +': '+ this.props.entityObj.upload.hash.value : null;
 
         Tooltip.bindEvents();
 
@@ -89,12 +88,6 @@ class FileDetails extends React.Component {
                                 <li className="item-content">
                                     <div className="item-inner">
                                         <div>{ id }</div>
-                                    </div>
-                                </li>
-                                <li className="item-divider">Hash</li>
-                                <li className="item-content">
-                                    <div className="item-inner">
-                                        <div>{ hash }</div>
                                     </div>
                                 </li>
                                 <li className="item-divider">Last Updated By</li>
