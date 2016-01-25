@@ -14,7 +14,7 @@ var mui = require('material-ui'),
 class FolderChildren extends React.Component {
 
     render() {
-        let uploading = this.props.uploading ? <div><LinearProgress color={"#2196f3"} mode="indeterminate" style={styles.uploader}/><div className="mdl-color-text--grey-600" style={styles.uploadText}>uploading...</div></div> : '';
+        let uploading = this.props.uploading || this.props.uploadCount.length ? <div><LinearProgress color={"#2196f3"} mode="indeterminate" style={styles.uploader}/><div className="mdl-color-text--grey-600" style={styles.uploadText}>uploading...</div></div> : '';
         let loading = this.props.loading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader"></div> : '';
         var error = '';
         if (this.props.error)
@@ -66,13 +66,13 @@ class FolderChildren extends React.Component {
             return (
                 <div className="list-container">
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                        <div style={styles.addFolder}>
-                            <AddFolderModal {...this.props} {...this.state}/>
+                        <div>
+                            <AddFolderModal {...this.props}/>
                         </div>
+                        { loading }
+                        { uploading }
                     </div>
                     { error }
-                    { loading }
-                    { uploading }
                     <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                         <div className="list-block list-block-search searchbar-found media-list">
                             <ul>
@@ -122,8 +122,7 @@ var styles = {
         marginTop: 22
     },
     uploader: {
-        width: '80%',
-        marginTop: 10,
+        width: '95%',
         margin: '0 auto'
     },
     uploadText: {

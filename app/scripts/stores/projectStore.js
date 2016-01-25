@@ -15,7 +15,6 @@ var ProjectStore = Reflux.createStore({
         this.entityObj = {};
         this.file = {};
         this.projectMembers = [];
-        this.uploading = false;
         this.uploadCount = [];
         this.uploads = {};
         this.chunkUpdates = {};
@@ -573,7 +572,7 @@ var ProjectStore = Reflux.createStore({
             let chunk = chunks[i];
             if (chunk.status === StatusEnum.STATUS_WAITING_FOR_UPLOAD || chunk.status === StatusEnum.STATUS_RETRY) {
                 chunk.status = StatusEnum.STATUS_UPLOADING;
-                ProjectActions.getChunkUrl(uploadId, upload.blob.slice(chunk.start, chunk.end), chunk.number, upload.size, upload.parentId, upload.parentKind);
+                ProjectActions.getChunkUrl(uploadId, upload.blob.slice(chunk.start, chunk.end), chunk.number, upload.size, upload.parentId, upload.parentKind, upload.name);
                 return;
             }
             allDone = chunk.status !== StatusEnum.STATUS_UPLOADING ? true : false;
@@ -582,16 +581,16 @@ var ProjectStore = Reflux.createStore({
     },
 
     uploadError(uploadId, fileName) {
-        MainActions.addToast('Failed to upload '+fileName+ '!  Please try again.');
+        MainActions.addToast('Failed to upload ' + fileName + '!  Please try again.');
         if (this.uploads.hasOwnProperty(uploadId)) {
             delete this.uploads[uploadId];
         }
-        if(!this.uploads.hasOwnProperty(uploadId)){
+        if (!this.uploads.hasOwnProperty(uploadId)) {
             this.uploading = false;
         }
         this.uploadCount.pop();
-        let ul = true;
-        if(!this.uploadCount.length) ul = false;
+        let ul = null;
+        !this.uploadCount.length ? ul = false : ul = true;
         this.trigger({
             uploading: ul,
             uploads: this.uploads

@@ -23,7 +23,8 @@ class Project extends React.Component {
             project: ProjectStore.project,
             currentUser: ProjectStore.currentUser,
             loading: false,
-            uploading: false
+            uploading: ProjectStore.uploading,
+            uploadCount: ProjectStore.uploadCount
         };
     }
 

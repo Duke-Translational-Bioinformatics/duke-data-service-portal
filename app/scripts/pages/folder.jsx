@@ -12,7 +12,8 @@ class Folder extends React.Component {
             children: ProjectStore.children,
             project: ProjectStore.project,
             loading: false,
-            uploading: false
+            uploading: ProjectStore.uploading,
+            uploadCount: ProjectStore.uploadCount
         };
     }
 

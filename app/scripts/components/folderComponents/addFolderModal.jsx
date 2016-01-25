@@ -6,8 +6,7 @@ import ProjectStore from '../../stores/projectStore';
 let mui = require('material-ui'),
     RaisedButton = mui.RaisedButton,
     TextField = mui.TextField,
-    Dialog = mui.Dialog,
-    Snackbar = mui.Snackbar;
+    Dialog = mui.Dialog;
 
 class AddFolderModal extends React.Component {
 
@@ -70,15 +69,17 @@ class AddFolderModal extends React.Component {
             if(kind === 'folder'){
                 let id = this.props.params.id;
                 let parentKind = 'dds-folder';
-                ProjectActions.addFolder(id, parentKind, name, this.setState({
+                ProjectActions.addFolder(id, parentKind, name);
+                this.setState({
                     floatingErrorText: 'This field is required.'
-                }));
+                });
             } else {
                 let id = this.props.params.id;
                 let parentKind = 'dds-project';
-                ProjectActions.addFolder(id, parentKind, name, this.setState({
+                ProjectActions.addFolder(id, parentKind, name);
+                this.setState({
                     floatingErrorText: 'This field is required.'
-                }));
+                });
             }
             this.refs.addFolder.dismiss();
         }
@@ -96,7 +97,7 @@ let styles = {
         float: 'right',
         zIndex: '9995',
         position: 'relative',
-        margin: '10px 16px 0px 0px'
+        margin: '10px 16px 8px 0px'
     },
     dialogStyles: {
         textAlign: 'center',
@@ -114,7 +115,7 @@ AddFolderModal.contextTypes = {
 };
 
 AddFolderModal.propTypes = {
-    addFolderLoading: React.PropTypes.bool,
+    addFolderLoading: React.PropTypes.bool
 };
 
 export default AddFolderModal;
