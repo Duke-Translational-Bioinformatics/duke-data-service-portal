@@ -538,7 +538,7 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
     fileReader.readAsArrayBuffer(blob);
 };
 
-ProjectActions.getChunkUrl.preEmit = function (uploadId, chunkBlob, chunkNum, size, parentId, parentKind) {
+ProjectActions.getChunkUrl.preEmit = function (uploadId, chunkBlob, chunkNum, size, parentId, parentKind, fileName) {
     var fileReader = new FileReader();
     fileReader.onload = function (event) {
         var arrayBuffer = event.target.result;
@@ -565,7 +565,7 @@ ProjectActions.getChunkUrl.preEmit = function (uploadId, chunkBlob, chunkNum, si
             let chunkObj = json;
             if (chunkObj && chunkObj.url && chunkObj.host) {
                 // upload chunks
-                uploadChunk(uploadId, chunkObj.host + chunkObj.url, chunkBlob, size, parentId, parentKind, chunkNum)
+                uploadChunk(uploadId, chunkObj.host + chunkObj.url, chunkBlob, size, parentId, parentKind, chunkNum, fileName)
             } else {
                 throw 'Unexpected response';
             }
@@ -576,7 +576,10 @@ ProjectActions.getChunkUrl.preEmit = function (uploadId, chunkBlob, chunkNum, si
     fileReader.readAsArrayBuffer(chunkBlob);
 };
 
-function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKind, chunkNum) {
+function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKind, chunkNum, fileName) {
+    window.addEventListener('offline', function(){
+        ProjectActions.uploadError(uploadId, fileName)
+    });
     var xhr = new XMLHttpRequest();
     xhr.upload.onprogress = uploadProgress;
     function uploadProgress(e) {

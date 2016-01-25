@@ -5,7 +5,6 @@ import ProjectActions from '../../actions/projectActions';
 let mui = require('material-ui'),
     RaisedButton = mui.RaisedButton,
     TextField = mui.TextField,
-    Snackbar = mui.Snackbar,
     Dialog = mui.Dialog;
 
 class AddProjectModal extends React.Component {
@@ -64,9 +63,7 @@ class AddProjectModal extends React.Component {
 
     handleTouchTap() {
         this.refs.addProject.show();
-    }
-
-;
+    };
 
     handleProjectButton() {
         if (this.state.floatingErrorText || this.state.floatingErrorText2) {
@@ -74,31 +71,26 @@ class AddProjectModal extends React.Component {
         } else {
             let name = document.getElementById('projectNameText').value;
             let desc = document.getElementById('projectDescriptionText').value;
-            ProjectActions.addProject(name, desc, this.setState({
+            ProjectActions.addProject(name, desc);
+            this.setState({
                 floatingErrorText: 'This field is required.',
                 floatingErrorText2: 'This field is required'
-            }));
+            });
             this.refs.addProject.dismiss();
         }
-    }
-
-;
+    };
 
     handleFloatingErrorInputChange(e) {
         this.setState({
             floatingErrorText: e.target.value ? '' : 'This field is required.'
         });
-    }
-
-;
+    };
 
     handleFloatingErrorInputChange2(e) {
         this.setState({
             floatingErrorText2: e.target.value ? '' : 'This field is required.'
         });
-    }
-
-;
+    };
 }
 
 var styles = {

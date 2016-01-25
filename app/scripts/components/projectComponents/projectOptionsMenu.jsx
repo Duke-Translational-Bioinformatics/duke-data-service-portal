@@ -180,10 +180,11 @@ class ProjectOptionsMenu extends React.Component {
         if (this.state.floatingErrorText || this.state.floatingErrorText2 != '') {
             return null
         } else {
-            ProjectActions.editProject(id, name, desc, this.setState({
+            ProjectActions.editProject(id, name, desc);
+            this.setState({
                 floatingErrorText: 'This field is required.',
                 floatingErrorText2: 'This field is required'
-            }));
+            });
             this.refs.editProject.dismiss();
         }
     };
@@ -202,11 +203,12 @@ class ProjectOptionsMenu extends React.Component {
         if (this.state.floatingErrorText || this.state.floatingErrorText2 != '') {
             return null
         } else {
-            ProjectActions.getUserId(firstName, lastName, id, role, this.setState({
+            ProjectActions.getUserId(firstName, lastName, id, role);
+            this.setState({
                 floatingErrorText: 'This field is required.',
                 floatingErrorText2: 'This field is required.',
                 selectValue: 'project_admin'
-            }));
+            });
             this.refs.addMembers.dismiss();
         }
     }
