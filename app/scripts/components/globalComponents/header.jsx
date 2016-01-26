@@ -12,21 +12,28 @@ class Header extends React.Component {
     }
 
     render() {
-        return (
-            <div className="navbar">
-                <div className="navbar-inner" style={styles.logoDiv}>
-                    <div className="left">
-                        {!this.props.appConfig.apiToken ? '' : <p><a href="#" className="open-panel"><i className="material-icons" style={styles.openIcon}>menu</i></a></p>}
-                    </div>
-                    <div className="center">
-                        {!this.props.appConfig.apiToken ? '' : <img src="../images/dukeDSLogo.png" style={styles.logo}/>}
-                    </div>
-                    <div className="right">
-                        <CurrentUser {...this.props}/>
+        if(!this.props.appConfig.apiToken) {
+            return null;
+        } else {
+            return (
+                <div className="navbar">
+                    <div className="navbar-inner" style={styles.logoDiv}>
+                        <div className="left">
+                            {!this.props.appConfig.apiToken ? '' :
+                                <p><a href="#" className="open-panel"><i className="material-icons"
+                                                                         style={styles.openIcon}>menu</i></a></p>}
+                        </div>
+                        <div className="center">
+                            {!this.props.appConfig.apiToken ? '' :
+                                <img src="images/dukeDSLogo.png" style={styles.logo}/>}
+                        </div>
+                        <div className="right">
+                            <CurrentUser {...this.props}/>
+                        </div>
                     </div>
                 </div>
-            </div>
-        );
+            );
+        }
     }
 }
 

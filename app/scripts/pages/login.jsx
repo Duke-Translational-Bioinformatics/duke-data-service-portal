@@ -3,8 +3,6 @@ import { Link } from 'react-router';
 import Header from '../components/globalComponents/header.jsx';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions.js';
-var mui = require('material-ui'),
-    Paper = mui.Paper;
 
 class Login extends React.Component {
 
@@ -31,17 +29,16 @@ class Login extends React.Component {
         let content = '';
         if (!this.state.appConfig.apiToken) {
             content = (
-                <div className="mdl-card mdl-shadow--2dp mdl-color-text--grey-700" style={styles.loginWrapper}>
-                    <div style={styles.loginMessage}>
-                        <h2>Welcome to Duke Data Service</h2>
-
-                        <h3>Please Login</h3>
+                <div className="mdl-cell mdl-cell--12-col mdl-shadow--2dp" style={styles.loginWrapper}>
+                    <div className="mdl-cell mdl-cell--12-col mdl-color-text--white">
+                        <img src="images/dukeDSLogo.png" style={styles.logo}/>
+                        <h1>Duke Data Service</h1>
+                        <a href={this.createLoginUrl()} className="external" onClick={MainActions.isLoggedInHandler}>
+                            <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--raised mdl-color-text--white" style={styles.loginButton}>
+                                LOGIN
+                            </button>
+                        </a>
                     </div>
-                    <a href={this.createLoginUrl()} className="external" onClick={MainActions.isLoggedInHandler}>
-                        <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored">
-                            LOGIN
-                        </button>
-                    </a>
                 </div>
             );
             let splitUrl = window.location.hash.split('&');//Todo //////Need to fix this to be more defensive////////////
@@ -75,12 +72,20 @@ class Login extends React.Component {
 
 var styles = {
     loginWrapper: {
-        width: '90vw',
         height: 'auto',
         textAlign: 'center',
-        margin: '0 auto',
-        padding: 10,
-        marginTop: 80
+        padding: 20,
+        overflow: 'auto',
+        backgroundColor: '#03a9f4',
+        fontColor: '#f9f9f9'
+    },
+    logo: {
+        maxWidth: '10%'
+    },
+    loginButton: {
+        width: 100,
+        backgroundColor: '#1976D2',
+        marginBottom: 10
     },
     loader: {
         margin: '0 auto'
