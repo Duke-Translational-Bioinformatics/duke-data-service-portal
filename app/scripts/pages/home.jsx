@@ -55,6 +55,7 @@ class Home extends React.Component {
                 style={styles.dialogStyles}
                 title="Terms of Use - Protected Health Information"
                 actions={standardActions}
+                autoScrollBodyContent={true}
                 ref="phi"
                 openImmediately={this.state.modalOpen}
                 modal={true}>
