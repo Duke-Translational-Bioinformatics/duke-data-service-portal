@@ -124,7 +124,7 @@ var MainStore = Reflux.createStore({
     addToast(msg) {
         this.toasts.push({
             msg: msg,
-            ref: 'toast' + Math.floor(Math.random()*10000)
+            ref: 'toast' + Math.floor(Math.random() * 10000)
         });
         this.trigger({
             toasts: this.toasts
@@ -132,7 +132,7 @@ var MainStore = Reflux.createStore({
     },
 
     removeToast(refId) {
-        for(let i=0; i < this.toasts.length; i++){
+        for (let i = 0; i < this.toasts.length; i++) {
             if (this.toasts[i].ref === refId) {
                 this.toasts.splice(i, 1);
                 break;
