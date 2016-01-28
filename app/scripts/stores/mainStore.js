@@ -78,8 +78,6 @@ var MainStore = Reflux.createStore({
         });
     },
 
-    getCurrentUser(){},
-
     getCurrentUserSuccess (json) {
         this.currentUser = json;
         this.trigger({
