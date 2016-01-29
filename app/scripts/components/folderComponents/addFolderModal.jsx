@@ -2,25 +2,31 @@ import React from 'react';
 import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-
-let mui = require('material-ui'),
-    RaisedButton = mui.RaisedButton,
-    TextField = mui.TextField,
-    Dialog = mui.Dialog;
+import AutoComplete from 'material-ui/lib/auto-complete';
+import FlatButton from 'material-ui/lib/flat-button';
+import Dialog from 'material-ui/lib/dialog';
+import TextField from 'material-ui/lib/text-field';
 
 class AddFolderModal extends React.Component {
 
     constructor() {
         this.state = {
             floatingErrorText: 'This field is required.',
+            open: false,
             parentObj: ProjectStore.parentObj
         }
     }
 
     render() {
-        let standardActions = [
-            {text: 'Submit', onTouchTap: this.handleFolderButton.bind(this)},
-            {text: 'Cancel'}
+        const actions = [
+            <FlatButton
+                label="Cancel"
+                secondary={true}
+                onTouchTap={this.handleClose.bind(this)}/>,
+            <FlatButton
+                label="Submit"
+                secondary={true}
+                onTouchTap={this.handleFolderButton.bind(this)}/>
         ];
 
         return (
@@ -34,8 +40,11 @@ class AddFolderModal extends React.Component {
                 <Dialog
                     style={styles.dialogStyles}
                     title="Add New Folder"
-                    actions={standardActions}
-                    ref="addFolder">
+                    autoDetectWindowHeight={true}
+                    autoScrollBodyContent={true}
+                    actions={actions}
+                    open={this.state.open}
+                    onRequestClose={this.handleClose.bind(this)}>
                     <form action="#" id="newFolderForm">
                         <TextField
                             style={styles.textStyles}
@@ -53,43 +62,42 @@ class AddFolderModal extends React.Component {
     }
 
     handleTouchTap() {
-        this.refs.addFolder.show();
-    }
+        this.setState({open: true});
+    };
 
     handleFolderButton() {
-        let kindString = this.props.appRouter.getCurrentPathname();
-        let start_pos = kindString.indexOf('/') + 1;
-        let end_pos = kindString.indexOf('/',start_pos);
-        let kind = kindString.substring(start_pos,end_pos);
         let name = document.getElementById('folderNameText').value;
-
         if (this.state.floatingErrorText) {
             return null
         } else {
-            if(kind === 'folder'){
-                let id = this.props.params.id;
-                let parentKind = 'dds-folder';
-                ProjectActions.addFolder(id, parentKind, name);
-                this.setState({
-                    floatingErrorText: 'This field is required.'
-                });
-            } else {
+            if (!this.props.entityObj) {
                 let id = this.props.params.id;
                 let parentKind = 'dds-project';
                 ProjectActions.addFolder(id, parentKind, name);
                 this.setState({
                     floatingErrorText: 'This field is required.'
                 });
+            } else {
+                let id = this.props.params.id;
+                let parentKind = 'dds-folder';
+                ProjectActions.addFolder(id, parentKind, name);
+                this.setState({
+                    floatingErrorText: 'This field is required.'
+                });
             }
-            this.refs.addFolder.dismiss();
+            this.setState({open: false});
         }
-    }
+    };
 
     handleFloatingErrorInputChange(e) {
         this.setState({
             floatingErrorText: e.target.value ? '' : 'This field is required.'
         });
-    }
+    };
+
+    handleClose() {
+        this.setState({open: false});
+    };
 }
 
 let styles = {
@@ -97,7 +105,7 @@ let styles = {
         float: 'right',
         zIndex: '9995',
         position: 'relative',
-        margin: '10px 16px 8px 0px'
+        margin: '10px 16px 08px 0px'
     },
     dialogStyles: {
         textAlign: 'center',
@@ -112,10 +120,6 @@ let styles = {
 
 AddFolderModal.contextTypes = {
     muiTheme: React.PropTypes.object
-};
-
-AddFolderModal.propTypes = {
-    addFolderLoading: React.PropTypes.bool
 };
 
 export default AddFolderModal;

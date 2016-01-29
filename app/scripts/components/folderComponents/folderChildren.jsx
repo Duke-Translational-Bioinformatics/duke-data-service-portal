@@ -4,12 +4,7 @@ import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import AddFolderModal from '../folderComponents/addFolderModal.jsx';
 import urlGen from '../../../util/urlGen.js';
-const LinearProgress = require('material-ui/lib/linear-progress');
-var mui = require('material-ui'),
-    TextField = mui.TextField,
-    Dialog = mui.Dialog,
-    Checkbox = mui.Checkbox,
-    Table = mui.Table;
+import LinearProgress from 'material-ui/lib/linear-progress';
 
 class FolderChildren extends React.Component {
 

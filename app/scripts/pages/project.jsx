@@ -8,10 +8,6 @@ import ProjectChildren from '../components/projectComponents/projectChildren.jsx
 import ProjectDetails from '../components/projectComponents/projectDetails.jsx';
 import Header from '../components/globalComponents/header.jsx';
 
-let mui = require('material-ui'),
-    Snackbar = mui.Snackbar;
-
-
 class Project extends React.Component {
 
     constructor(props) {

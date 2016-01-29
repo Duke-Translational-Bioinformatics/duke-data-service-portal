@@ -6,14 +6,7 @@ import MainActions from '../../actions/mainActions';
 import MainStore from '../../stores/mainStore';
 import ProjectOptionsMenu from './projectOptionsMenu.jsx';
 import UploadModal from '../globalComponents/uploadModal.jsx';
-import cookie from 'react-cookie';
 import urlGen from '../../../util/urlGen.js';
-
-var mui = require('material-ui'),
-    TextField = mui.TextField,
-    IconMenu = mui.IconMenu,
-    Dialog = mui.Dialog;
-
 
 class ProjectDetails extends React.Component {
 
@@ -240,6 +233,4 @@ ProjectDetails.propTypes = {
     error: React.PropTypes.string
 };
 
-
 export default ProjectDetails;
-

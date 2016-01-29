@@ -7,12 +7,7 @@ import FileOptionsMenu from './fileOptionsMenu.jsx';
 import urlGen from '../../../util/urlGen.js';
 import Tooltip from '../../../util/tooltip.js';
 import BaseUtils from '../../../util/baseUtils.js';
-
-var mui = require('material-ui'),
-    TextField = mui.TextField,
-    IconMenu = mui.IconMenu,
-    Dialog = mui.Dialog;
-
+import IconButton from 'material-ui/lib/icon-button';
 
 class FileDetails extends React.Component {
 
@@ -183,7 +178,7 @@ var styles = {
         float: 'left'
     },
     title: {
-        fontSize: 24,
+        fontSize: 24
     },
     folderName: {
         fontSize: 14

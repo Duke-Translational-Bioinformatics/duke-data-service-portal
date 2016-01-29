@@ -3,7 +3,6 @@ import MainActions from '../../actions/mainActions';
 import MainStore from '../../stores/mainStore';
 import cookie from 'react-cookie';
 
-
 class CurrentUser extends React.Component {
 
     constructor(props, context) {

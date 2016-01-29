@@ -1,16 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
-
-let mui = require('material-ui'),
-    RaisedButton = mui.RaisedButton,
-    TextField = mui.TextField,
-    Dialog = mui.Dialog;
+import FlatButton from 'material-ui/lib/flat-button';
+import Dialog from 'material-ui/lib/dialog';
+import TextField from 'material-ui/lib/text-field';
 
 class AddProjectModal extends React.Component {
 
     constructor() {
         this.state = {
+            open: false,
             floatingErrorText: 'This field is required.',
             floatingErrorText2: 'This field is required'
         }
@@ -18,9 +17,15 @@ class AddProjectModal extends React.Component {
 
     render() {
 
-        let standardActions = [
-            {text: 'Save', onTouchTap: this.handleProjectButton.bind(this)},
-            {text: 'Cancel'}
+        const actions = [
+            <FlatButton
+                label="Cancel"
+                secondary={true}
+                onTouchTap={this.handleClose.bind(this)} />,
+            <FlatButton
+                label="Submit"
+                secondary={true}
+                onTouchTap={this.handleProjectButton.bind(this)} />
         ];
 
         return (
@@ -32,9 +37,12 @@ class AddProjectModal extends React.Component {
                 </button>
                 <Dialog
                     style={styles.dialogStyles}
-                    title="Add New Project"
-                    actions={standardActions}
-                    ref="addProject">
+                    title="Add New Folder"
+                    autoDetectWindowHeight={true}
+                    autoScrollBodyContent={true}
+                    actions={actions}
+                    open={this.state.open}
+                    onRequestClose={this.handleClose.bind(this)}>
                     <form action="#" id="newProjectForm">
                         <TextField
                             style={styles.textStyles}
@@ -62,7 +70,7 @@ class AddProjectModal extends React.Component {
     }
 
     handleTouchTap() {
-        this.refs.addProject.show();
+        this.setState({open: true});
     };
 
     handleProjectButton() {
@@ -73,10 +81,10 @@ class AddProjectModal extends React.Component {
             let desc = document.getElementById('projectDescriptionText').value;
             ProjectActions.addProject(name, desc);
             this.setState({
+                open: false,
                 floatingErrorText: 'This field is required.',
                 floatingErrorText2: 'This field is required'
             });
-            this.refs.addProject.dismiss();
         }
     };
 
@@ -91,6 +99,10 @@ class AddProjectModal extends React.Component {
             floatingErrorText2: e.target.value ? '' : 'This field is required.'
         });
     };
+
+    handleClose() {
+        this.setState({open: false});
+    };
 }
 
 var styles = {
@@ -101,7 +113,8 @@ var styles = {
     },
     dialogStyles: {
         textAlign: 'center',
-        fontColor: '#303F9F'
+        fontColor: '#303F9F',
+        zIndex: '9999'
     },
     textStyles: {
         textAlign: 'left',
@@ -114,4 +127,3 @@ AddProjectModal.contextTypes = {
 };
 
 export default AddProjectModal;
-

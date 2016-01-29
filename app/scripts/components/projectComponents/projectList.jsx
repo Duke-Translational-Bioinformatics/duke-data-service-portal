@@ -5,12 +5,7 @@ import AccountOverview from '../../components/globalComponents/accountOverview.j
 import Header from '../../components/globalComponents/header.jsx';
 import AddProjectModal from '../projectComponents/addProjectModal.jsx';
 import urlGen from '../../../util/urlGen.js';
-
-let mui = require('material-ui'),
-    Table = mui.Table,
-    RaisedButton = mui.RaisedButton,
-    TextField = mui.TextField,
-    Dialog = mui.Dialog;
+import LinearProgress from 'material-ui/lib/linear-progress';
 
 class ProjectList extends React.Component {
 

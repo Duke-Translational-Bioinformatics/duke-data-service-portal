@@ -1,17 +1,13 @@
 import React from 'react';
 import { RouteHandler, Link } from 'react-router';
+import MainActions from '../../actions/mainActions';
 import ProjectDetails from './projectDetails.jsx';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
 import Header from '../../components/globalComponents/header.jsx';
 import urlGen from '../../../util/urlGen.js';
-const LinearProgress = require('material-ui/lib/linear-progress');
-var mui = require('material-ui'),
-    TextField = mui.TextField,
-    Dialog = mui.Dialog,
-    Checkbox = mui.Checkbox,
-    Table = mui.Table;
+import LinearProgress from 'material-ui/lib/linear-progress';
 
 class ProjectChildren extends React.Component {
 
