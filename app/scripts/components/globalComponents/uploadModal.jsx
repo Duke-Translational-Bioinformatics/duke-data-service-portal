@@ -44,7 +44,7 @@ class UploadModal extends React.Component {
                             <input className="mdl-textfield__input" placeholder="File" type="text" id="uploadFile" readOnly/>
                             <div className="mdl-button mdl-button--primary mdl-button--icon mdl-button--file">
                                 <i className="material-icons">attach_file</i>
-                                <input type='file' id="uploadBtn" id='afile' ref='fileUpload' onChange={this.handleFileName.bind(this)}/>
+                                <input type='file' id="uploadBtn" ref='fileUpload' onChange={this.handleFileName.bind(this)}/>
                             </div>
                         </div>
 
@@ -78,7 +78,7 @@ class UploadModal extends React.Component {
                 parentKind = this.props.entityObj ? this.props.entityObj.kind : null;
             }
             let parentId = this.props.params.id;
-            let blob = document.getElementById('afile').files[0];
+            let blob = document.getElementById('uploadBtn').files[0];
             if(blob.size > 1073741824 * 3.5){
                 this.refs.fileWarn.show();
             }else{
@@ -91,7 +91,7 @@ class UploadModal extends React.Component {
     }
 
     handleFileName() {
-        document.getElementById("uploadFile").value = document.getElementById('afile').files[0].name;
+        document.getElementById('uploadFile').value = document.getElementById('uploadBtn').files[0].name;
     }
 }
 
