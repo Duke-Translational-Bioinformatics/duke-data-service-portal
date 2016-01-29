@@ -177,7 +177,7 @@ class ProjectOptionsMenu extends React.Component {
         let id = this.props.params.id;
         let name = document.getElementById('projectNameText').value;
         let desc = document.getElementById('projectDescriptionText').value;
-        if (this.state.floatingErrorText || this.state.floatingErrorText2 != '') {
+        if (this.state.floatingErrorText != '' && this.state.floatingErrorText2 != '') {
             return null
         } else {
             ProjectActions.editProject(id, name, desc);
