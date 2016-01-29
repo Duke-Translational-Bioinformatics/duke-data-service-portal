@@ -1,7 +1,6 @@
 import React from 'react';
 import ProjectActions from '../../actions/projectActions';
 import BaseUtils from '../../../util/baseUtils.js';
-var mui = require('material-ui');
 
 class AccountOverview extends React.Component {
 

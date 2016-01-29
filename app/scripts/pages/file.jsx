@@ -47,6 +47,3 @@ class File extends React.Component {
 }
 
 export default File;
-
-//<FilePreview {...this.props} {...this.state} />///Todo: These components are for further file viewing to be added
-//<FileProvenance {...this.props} {...this.state} />

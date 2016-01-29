@@ -2,23 +2,35 @@ import React from 'react';
 import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import Tooltip from '../../../util/tooltip.js';
-
-const RaisedButton = require('material-ui/lib/raised-button');
-let mui = require('material-ui'),
-    TextField = mui.TextField,
-    Snackbar = mui.Snackbar,
-    Dialog = mui.Dialog;
+import FlatButton from 'material-ui/lib/flat-button';
+import Dialog from 'material-ui/lib/dialog';
+import TextField from 'material-ui/lib/text-field';
+import RaisedButton from 'material-ui/lib/raised-button';
 
 class UploadModal extends React.Component {
+    constructor() {
+        this.state = {
+            open: false,
+            warnOpen: false
+        }
+    }
 
     render() {
-
         let standardActions = [
-            {text: 'Upload', onTouchTap: this.handleUploadButton.bind(this)},
-            {text: 'Cancel'}
+            <FlatButton
+                label="Cancel"
+                secondary={true}
+                onTouchTap={this.handleClose.bind(this)} />,
+            <FlatButton
+                label="Submit"
+                secondary={true}
+                onTouchTap={this.handleUploadButton.bind(this)} />
         ];
-        let standardActionsWarn = [
-            {text: 'Cancel'}
+        let warnActions = [
+            <FlatButton
+                label="Okay"
+                secondary={true}
+                onTouchTap={this.handleClose.bind(this)} />,
         ];
 
         Tooltip.bindEvents();
@@ -37,14 +49,17 @@ class UploadModal extends React.Component {
                 <Dialog
                     style={styles.dialogStyles}
                     title='Upload Files'
+                    autoDetectWindowHeight={true}
+                    autoScrollBodyContent={true}
                     actions={standardActions}
-                    ref='fileU'>
+                    onRequestClose={this.handleClose.bind(this)}
+                    open={this.state.open}>
                     <form action='#' id='newFileForm'>
-                        <div className="mdl-textfield mdl-js-textfield mdl-textfield--file">
+                        <div className="mdl-textfield mdl-textfield--file">
                             <input className="mdl-textfield__input" placeholder="File" type="text" id="uploadFile" readOnly/>
                             <div className="mdl-button mdl-button--primary mdl-button--icon mdl-button--file">
                                 <i className="material-icons">attach_file</i>
-                                <input type='file' id="uploadBtn" ref='fileUpload' onChange={this.handleFileName.bind(this)}/>
+                                <input type='file' id="uploadBtn" ref='fileUpload' onChange={this.handleFileName.bind(this)} multiple/>
                             </div>
                         </div>
 
@@ -53,8 +68,9 @@ class UploadModal extends React.Component {
                 <Dialog
                     style={styles.dialogStyles}
                     title='File exceeds size limit for the current Alpha version of Duke Data Service'
-                    actions={standardActionsWarn}
-                    ref='fileWarn'>
+                    actions={warnActions}
+                    onRequestClose={this.handleClose.bind(this)}
+                    open={this.state.warnOpen}>
                     <i className="material-icons" style={styles.warning}>announcement</i>
                     <p style={styles.msg}>Please compress this file into a .zip format before uploading. <br/>We apologize for the inconvenience.</p>
                 </Dialog>
@@ -63,7 +79,7 @@ class UploadModal extends React.Component {
     }
 
     handleTouchTap() {
-        this.refs.fileU.show();
+        this.setState({open: true});
     }
 
     handleUploadButton() {
@@ -80,10 +96,10 @@ class UploadModal extends React.Component {
             let parentId = this.props.params.id;
             let blob = document.getElementById('uploadBtn').files[0];
             if(blob.size > 1073741824 * 3.5){
-                this.refs.fileWarn.show();
+                this.setState({warnOpen: true});
             }else{
                 ProjectActions.startUpload(projId, blob, parentId, parentKind);
-                this.refs.fileU.dismiss();
+                this.setState({open: false});
             }
         } else {
             return null
@@ -92,6 +108,13 @@ class UploadModal extends React.Component {
 
     handleFileName() {
         document.getElementById('uploadFile').value = document.getElementById('uploadBtn').files[0].name;
+    }
+
+    handleClose() {
+        this.setState({
+            open: false,
+            warnOpen: false
+        });
     }
 }
 
@@ -134,4 +157,3 @@ UploadModal.contextTypes = {
 };
 
 export default UploadModal;
-

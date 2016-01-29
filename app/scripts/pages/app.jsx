@@ -6,17 +6,15 @@ import LeftMenu from '../components/globalComponents/leftMenu.jsx';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions';
 import cookie from 'react-cookie';
+import Snackbar from 'material-ui/lib/snackbar';
+import ThemeManager from 'material-ui/lib/styles/theme-manager';
+import MyRawTheme from '../theme/customTheme.js';
 
-let mui = require('material-ui'),
-    Snackbar = mui.Snackbar;
-let ThemeManager = new mui.Styles.ThemeManager();
-let appPalette = {
-    primary1Color: "#303F9F",
-    primary2Color: "#3F51B5",
-    primary3Color: "#C5CAE9",
-    accent1Color: "#448AFF",
-    accent2Color: "#ED2B2B",
-    accent3Color: "#F58C8C"
+let zIndex = {
+    zIndex: {
+        popover: 5001,
+        layer: 5000
+    }
 };
 
 class App extends React.Component {
@@ -28,12 +26,8 @@ class App extends React.Component {
 
     getChildContext() {
         return {
-            muiTheme: ThemeManager.getCurrentTheme()
+            muiTheme: ThemeManager.getMuiTheme(MyRawTheme, zIndex)
         };
-    }
-
-    componentWillMount() {
-        ThemeManager.setPalette(appPalette);
     }
 
     componentDidMount() {
@@ -55,10 +49,9 @@ class App extends React.Component {
         return this.state.appConfig.authServiceUri + "/authenticate?client_id=" + this.state.appConfig.serviceId + "&state=" + this.state.appConfig.securityState;
     }
 
-
     render() {
         if (this.state.appConfig.apiToken) {
-            if (this.props.routerPath != '/login' && !this.state.currentUser) {
+            if (this.props.routerPath !== '/login' && !this.state.currentUser) {
                 MainActions.getCurrentUser();
             }
         }
@@ -68,8 +61,8 @@ class App extends React.Component {
         let toasts = null;
         if (this.state.toasts) {
             toasts = this.state.toasts.map(obj => {
-                return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} autoHideDuration={1500}
-                                 openOnMount={true}/>
+                return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} autoHideDuration={3000} onRequestClose={this.handleRequestClose}
+                                 open={true} style={styles.toast}/>
             });
         }
         let content = <RouteHandler {...this.props} {...this.state}/>;
@@ -96,11 +89,10 @@ class App extends React.Component {
             <span>
                 <div className="statusbar-overlay"></div>
                 <div className="panel-overlay"></div>
-                {!this.state.appConfig.apiToken ? '' : <LeftMenu />}
+                {!this.state.appConfig.apiToken ? '' : <LeftMenu/>}
                 <div className="views">
                     <div className="view view-main">
                         <Header {...this.props} {...this.state}/>
-
                         <div className="pages navbar-through toolbar-through">
                             <div data-page="index" className="page">
                                 {!this.state.appConfig.apiToken ? '' : search}
@@ -124,11 +116,17 @@ class App extends React.Component {
     showToasts() {
         if (this.state.toasts) {
             this.state.toasts.map(obj => {
-                setTimeout(() => MainActions.removeToast(obj.ref), 1500);
+                setTimeout(() => MainActions.removeToast(obj.ref), 2500);
             });
         }
 
     }
+
+    handleRequestClose () {
+        this.setState({
+            open: false
+        });
+    };
 }
 
 var styles = {
@@ -144,6 +142,11 @@ var styles = {
         margin: '0 auto',
         marginTop: 50,
         padding: 10
+    },
+    toast: {
+        position: 'absolute',
+        bottom: 20,
+        left: 0
     }
 };
 

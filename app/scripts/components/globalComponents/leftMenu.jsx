@@ -36,7 +36,6 @@ class LeftMenu extends React.Component {
     }
 }
 
-
 var styles = {
     navIcon: {
         paddingRight: 5,
@@ -44,11 +43,4 @@ var styles = {
     }
 };
 
-
 export default LeftMenu;
-
-//<p><Link to="home" className="mdl-color-text--grey-400"><i className="material-icons"
-//style={styles.navIcon}>settings</i>Settings</Link></p>
-//<p><Link to="home" className="mdl-color-text--grey-400"><i className="material-icons" style={styles.navIcon}>help</i>Help</Link></p>
-//<p><Link to="home" className="mdl-color-text--grey-400">Governance</Link></p>
-//<p><Link to="home" className="mdl-color-text--grey-400">Terms &amp; Conditions</Link></p>
