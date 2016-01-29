@@ -26,7 +26,7 @@ class Footer extends React.Component {
                     <div className="mdl-logo"><h6>Duke Data Service</h6><h5>{ appName }</h5></div>
                 </div>
                 <div className="mdl-mini-footer__right-section">
-                    <p style={styles.phiFontColor}><b>The Health Insurance Portability and Accountability Act of 1996 (HIPAA)
+                    <p style={styles.phi}><b>The Health Insurance Portability and Accountability Act of 1996 (HIPAA)
                         established standards for health information that must be kept private and secure, called Protected Health Information
                         (PHI).</b><br/>The use of PHI within the Duke Data Service is prohibited in this Alpha release. By reading this, you
                         attest that you will not enter PHI. If you are unclear about what constitutes PHI, or are
@@ -41,8 +41,9 @@ var styles = {
     color: {
         backgroundColor: '#2196f3'
     },
-    phiFontColor: {
-        color: '#f9f9f9'
+    phi: {
+        color: '#f9f9f9',
+        fontSize: '.8em'
     }
 };
 
