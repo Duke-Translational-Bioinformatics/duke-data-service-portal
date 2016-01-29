@@ -74,7 +74,9 @@ class FileOptionsMenu extends React.Component {
                             onChange={this.handleFloatingErrorInputChange.bind(this)}/> <br/>
                     </form>
                 </Dialog>
-                <IconMenu iconButtonElement={<IconButton iconClassName="material-icons">more_vert</IconButton>}>
+                <IconMenu iconButtonElement={<IconButton iconClassName="material-icons">more_vert</IconButton>}
+                          anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+                          targetOrigin={{horizontal: 'right', vertical: 'top'}}>
                     <MenuItem primaryText="Delete File" leftIcon={<i className="material-icons">delete</i>} onTouchTap={this.handleTouchTapDelete.bind(this)}/>
                     <MenuItem primaryText="Edit File" leftIcon={<i className="material-icons">mode_edit</i>} onTouchTap={this.handleTouchTapEdit.bind(this)}/>
                 </IconMenu>
