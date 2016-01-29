@@ -145,7 +145,9 @@ class ProjectOptionsMenu extends React.Component {
                         </SelectField><br/>
                     </form>
                 </Dialog>
-                <IconMenu iconButtonElement={<IconButton iconClassName="material-icons">more_vert</IconButton>}>
+                <IconMenu iconButtonElement={<IconButton iconClassName="material-icons">more_vert</IconButton>}
+                          anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+                          targetOrigin={{horizontal: 'right', vertical: 'top'}}>
                     <MenuItem primaryText="Delete Project" leftIcon={<i className="material-icons">delete</i>} onTouchTap={this.handleTouchTapDelete.bind(this)}/>
                     <MenuItem primaryText="Edit Project" leftIcon={<i className="material-icons">mode_edit</i>} onTouchTap={this.handleTouchTapEdit.bind(this)}/>
                     <MenuItem primaryText="Add Project Member" leftIcon={<i className="material-icons">person_add</i>} onTouchTap={this.handleTouchTapMembers.bind(this)}/>
