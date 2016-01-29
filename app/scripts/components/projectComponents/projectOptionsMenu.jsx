@@ -232,6 +232,7 @@ class ProjectOptionsMenu extends React.Component {
         });
     }
 }
+
 var styles = {
     addProject: {
         float: 'right',
