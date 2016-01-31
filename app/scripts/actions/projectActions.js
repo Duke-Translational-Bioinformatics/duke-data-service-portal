@@ -66,6 +66,8 @@ var ProjectActions = Reflux.createActions([
     'getProjectMembers',
     'getProjectMembersSuccess',
     'getProjectMembersError',
+    'getUserName',
+    'getUserNameSuccess',
     'getUserId',
     'getUserIdSuccess',
     'getUserIdError',
@@ -400,8 +402,25 @@ ProjectActions.getProjectMembers.preEmit = (id) => {
         });
 };
 
-ProjectActions.getUserId.preEmit = (firstName, lastName, id, role) => {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'users?' + 'last_name_begins_with=' + lastName + '&first_name_begins_with=' + firstName, {
+ProjectActions.getUserName.preEmit = (text) => {
+    fetch(urlGen.routes.ddsUrl + urlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + text , {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getUserNameSuccess(json.results)
+    })
+        .catch(function (ex) {
+            ProjectActions.getUserIdError(ex)
+        });
+};
+
+ProjectActions.getUserId.preEmit = (fullName, id, role) => {
+    fetch(urlGen.routes.ddsUrl + urlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + fullName, {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,

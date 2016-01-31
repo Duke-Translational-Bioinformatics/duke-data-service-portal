@@ -1,6 +1,7 @@
 import React from 'react';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
+import AutoComplete from 'material-ui/lib/auto-complete';
 import TextField from 'material-ui/lib/text-field';
 import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
@@ -15,10 +16,11 @@ class ProjectOptionsMenu extends React.Component {
         this.state = {
             deleteOpen: false,
             editOpen: false,
-            memberOpen: false,
             floatingErrorText: 'This field is required',
             floatingErrorText2: 'This field is required',
             floatingErrorText3: 'Enter the project name exactly to delete',
+            memberOpen: false,
+            users: ProjectStore.users,
             value: 0
         }
     }
@@ -55,8 +57,10 @@ class ProjectOptionsMenu extends React.Component {
                 onTouchTap={this.handleMemberButton.bind(this)} />
         ];
 
+        let names = this.props.users && this.props.users.length ? this.props.users : [];
         let prName = this.props.project ? this.props.project.name : null;
         let desc = this.props.project ? this.props.project.description : null;
+
         return (
             <div>
                 <Dialog
@@ -119,24 +123,13 @@ class ProjectOptionsMenu extends React.Component {
                     onRequestClose={this.handleClose.bind(this)}
                     open={this.state.memberOpen}>
                     <form action="#" id="newMemberForm">
-                        <TextField
-                            style={styles.textStyles}
-                            hintText="First Name Starts With (3 letters)"
+                        <AutoComplete
+                            id="fullName"
+                            floatingLabelText="Name"
+                            filter={AutoComplete.fuzzyFilter}
+                            dataSource={names}
                             errorText={this.state.floatingErrorText}
-                            floatingLabelText="First Name"
-                            id="firstNameText"
-                            type="text"
-                            multiLine={true}
-                            onChange={this.handleFloatingErrorInputChange.bind(this)}/><br/>
-                        <TextField
-                            style={styles.textStyles}
-                            hintText="Last Name Starts With (3 letters)"
-                            errorText={this.state.floatingErrorText2}
-                            floatingLabelText="Last Name"
-                            id="lastNameText"
-                            type="text"
-                            multiLine={true}
-                            onChange={this.handleFloatingErrorInputChange2.bind(this)}/> <br/>
+                            onUpdateInput={this.handleUpdateInput.bind(this)}/>
                         <SelectField value={this.state.value} onChange={this.handleSelectValueChange.bind(this, 'value')}>
                             <MenuItem value={0} primaryText='Project Administrator'/>
                             <MenuItem value={1} primaryText='Project Viewer'/>
@@ -154,17 +147,6 @@ class ProjectOptionsMenu extends React.Component {
                 </IconMenu>
             </div>
         );
-    }
-
-    handleCancel() {
-        this.setState({
-            floatingErrorText: 'This field is required.',
-            floatingErrorText2: 'This field is required',
-            floatingErrorText3: 'Enter the project name exactly to delete'
-        });
-        this.refs.editProject.dismiss();
-        this.refs.addMembers.dismiss();
-        this.refs.deleteProject.dismiss();
     }
 
     handleTouchTapDelete() {
@@ -213,9 +195,16 @@ class ProjectOptionsMenu extends React.Component {
         this.setState({value});
     };
 
+    handleUpdateInput (text) {
+        ProjectActions.getUserName(text);
+        this.setState({
+            floatingErrorText: document.getElementById("fullName").value ? '' : 'This field is required'
+        });
+    };
+
+
     handleMemberButton() {
-        let  firstName = document.getElementById("firstNameText").value;
-        let  lastName = document.getElementById("lastNameText").value;
+        let  fullName = document.getElementById("fullName").value;
         let role = null;
         switch(this.state.value){
             case 0:
@@ -232,10 +221,10 @@ class ProjectOptionsMenu extends React.Component {
                 break;
         }
         let id = this.props.params.id;
-        if (this.state.floatingErrorText || this.state.floatingErrorText2 != '') {
+        if (this.state.floatingErrorText != '') {
             return null
         } else {
-            ProjectActions.getUserId(firstName, lastName, id, role);
+            ProjectActions.getUserId(fullName, id, role);
             this.setState({
                 memberOpen: false,
                 floatingErrorText: 'This field is required.',

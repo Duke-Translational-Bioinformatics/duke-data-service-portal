@@ -15,12 +15,13 @@ class Project extends React.Component {
         this.props = props;
         this.state = {
             children: ProjectStore.children,
-            projects: ProjectStore.projects,
-            project: ProjectStore.project,
             currentUser: ProjectStore.currentUser,
             loading: false,
+            projects: ProjectStore.projects,
+            project: ProjectStore.project,
             uploading: ProjectStore.uploading,
-            uploadCount: ProjectStore.uploadCount
+            uploadCount: ProjectStore.uploadCount,
+            users: ProjectStore.users
         };
     }
 
