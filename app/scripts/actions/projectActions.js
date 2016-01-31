@@ -403,7 +403,7 @@ ProjectActions.getProjectMembers.preEmit = (id) => {
 };
 
 ProjectActions.getUserName.preEmit = (text) => {
-    fetch(urlGen.routes.ddsUrl + urlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + text , {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + text , {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -420,7 +420,7 @@ ProjectActions.getUserName.preEmit = (text) => {
 };
 
 ProjectActions.getUserId.preEmit = (fullName, id, role) => {
-    fetch(urlGen.routes.ddsUrl + urlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + fullName, {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + fullName, {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
