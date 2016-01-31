@@ -131,7 +131,7 @@ class ProjectOptionsMenu extends React.Component {
                             errorText={this.state.floatingErrorText}
                             onUpdateInput={this.handleUpdateInput.bind(this)}/><br/>
                         <SelectField value={this.state.value} onChange={this.handleSelectValueChange.bind(this, 'value')}>
-                            <MenuItem value={0} primaryText='Project Administrator'/>
+                            <MenuItem value={0} primaryText='Project Administrator' style={styles.textStyles}/>
                             <MenuItem value={1} primaryText='Project Viewer'/>
                             <MenuItem value={2} primaryText='File Downloader'/>
                             <MenuItem value={3} primaryText='File Editor'/>
