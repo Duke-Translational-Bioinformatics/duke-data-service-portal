@@ -129,7 +129,7 @@ class ProjectOptionsMenu extends React.Component {
                             filter={AutoComplete.fuzzyFilter}
                             dataSource={names}
                             errorText={this.state.floatingErrorText}
-                            onUpdateInput={this.handleUpdateInput.bind(this)}/>
+                            onUpdateInput={this.handleUpdateInput.bind(this)}/><br/>
                         <SelectField value={this.state.value} onChange={this.handleSelectValueChange.bind(this, 'value')}>
                             <MenuItem value={0} primaryText='Project Administrator'/>
                             <MenuItem value={1} primaryText='Project Viewer'/>
