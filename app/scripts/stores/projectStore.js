@@ -395,6 +395,13 @@ var ProjectStore = Reflux.createStore({
         });
     },
 
+    getUserNameSuccess(results) {
+        this.users = results.map(function(users) {return users.full_name});
+        this.trigger({
+            users: this.users
+        });
+    },
+
     getUserId() {
         this.trigger({
             loading: true
