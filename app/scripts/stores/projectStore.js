@@ -417,7 +417,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     getUserIdError(error) {
-        let errMsg = error && error.message ? "Error: " : +'An error occurred while trying to delete this file.';
+        let errMsg = error && error.message ? "Error: " : +'An error occurred.';
         this.trigger({
             error: errMsg,
             loading: false
