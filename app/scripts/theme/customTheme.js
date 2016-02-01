@@ -8,9 +8,9 @@ export default {
     zIndex: zIndex,
     fontFamily: 'Roboto, sans-serif',
     palette: {
-        primary1Color: "#303F9F",
-        primary2Color: "#3F51B5",
-        primary3Color: "#C5CAE9",
+        primary1Color: "#235F9C",
+        primary2Color: "#003366",
+        primary3Color: "#0680CD",
         accent1Color: "#448AFF",
         accent2Color: "#ED2B2B",
         accent3Color: "#F58C8C",

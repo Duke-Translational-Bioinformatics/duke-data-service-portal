@@ -7,7 +7,7 @@ class Footer extends React.Component {
         let appName = '';
         switch(DDS_PORTAL_CONFIG.environment){
             case 'production':
-                envColor = '#2196f3';
+                envColor = '#235F9C';
                 appName = '';
                 break;
             case 'development':
@@ -39,8 +39,8 @@ class Footer extends React.Component {
 }
 
 var styles = {
-    color: {
-        backgroundColor: '#2196f3'
+    themeColor: {
+        backgroundColor: '#235F9C'
     },
     phi: {
         color: '#f9f9f9',

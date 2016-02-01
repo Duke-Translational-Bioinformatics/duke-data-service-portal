@@ -57,8 +57,8 @@ class UploadModal extends React.Component {
                     <form action='#' id='newFileForm'>
                         <div className="mdl-textfield mdl-textfield--file">
                             <input className="mdl-textfield__input" placeholder="File" type="text" id="uploadFile" readOnly/>
-                            <div className="mdl-button mdl-button--primary mdl-button--icon mdl-button--file">
-                                <i className="material-icons">attach_file</i>
+                            <div className="mdl-button mdl-button--icon mdl-button--file">
+                                <i className="material-icons" style={styles.iconColor}>attach_file</i>
                                 <input type='file' id="uploadBtn" ref='fileUpload' onChange={this.handleFileName.bind(this)} multiple/>
                             </div>
                         </div>
@@ -86,6 +86,8 @@ class UploadModal extends React.Component {
         if (document.getElementById("uploadFile").value) {
             let projId = '';
             let parentKind = '';
+            let parentId = this.props.params.id;
+            let blob = document.getElementById('uploadBtn').files[0];
             if (!this.props.entityObj) {
                 projId = this.props.params.id;
                 parentKind = 'dds-project';
@@ -93,8 +95,6 @@ class UploadModal extends React.Component {
                 projId = this.props.entityObj ? this.props.entityObj.ancestors[0].id : null;
                 parentKind = this.props.entityObj ? this.props.entityObj.kind : null;
             }
-            let parentId = this.props.params.id;
-            let blob = document.getElementById('uploadBtn').files[0];
             if(blob.size > 1073741824 * 3.5){
                 this.setState({warnOpen: true});
             }else{
@@ -123,6 +123,9 @@ var styles = {
         float: 'right',
         position: 'relative',
         margin: '12px 8px 0px 0px'
+    },
+    iconColor: {
+        color: '#235F9C'
     },
     dialogStyles: {
         zIndex: '9996',

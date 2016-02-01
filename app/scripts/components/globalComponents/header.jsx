@@ -16,7 +16,7 @@ class Header extends React.Component {
             return null;
         } else {
             return (
-                <div className="navbar">
+                <div className="navbar" style={styles.themeColor}>
                     <div className="navbar-inner" style={styles.logoDiv}>
                         <div className="left">
                             {!this.props.appConfig.apiToken ? '' :
@@ -54,6 +54,9 @@ var styles = {
         color: '#fff',
         verticalAlign: -34,
         paddingLeft: 10
+    },
+    themeColor: {
+        backgroundColor: '#235F9C'
     }
 };
 

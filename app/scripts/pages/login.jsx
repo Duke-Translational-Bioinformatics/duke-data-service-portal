@@ -76,7 +76,7 @@ var styles = {
         textAlign: 'center',
         padding: 20,
         overflow: 'auto',
-        backgroundColor: '#03a9f4',
+        backgroundColor: '#235F9C',
         fontColor: '#f9f9f9'
     },
     logo: {
@@ -84,7 +84,7 @@ var styles = {
     },
     loginButton: {
         width: 100,
-        backgroundColor: '#1976D2',
+        backgroundColor: '#0680CD',
         marginBottom: 10
     },
     loader: {

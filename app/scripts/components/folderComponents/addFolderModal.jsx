@@ -30,13 +30,12 @@ class AddFolderModal extends React.Component {
         ];
 
         return (
-            <div style={styles.addFolder}>
-
-                <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
-                        style={styles.addFolder}
-                        onTouchTap={this.handleTouchTap.bind(this)}>
-                    ADD FOLDER
-                </button>
+            <div>
+                <FlatButton
+                    label="Add Folder"
+                    secondary={true}
+                    style={styles.addFolder}
+                    onTouchTap={this.handleTouchTap.bind(this)}/>
                 <Dialog
                     style={styles.dialogStyles}
                     title="Add New Folder"
@@ -105,7 +104,8 @@ let styles = {
         float: 'right',
         zIndex: '9995',
         position: 'relative',
-        margin: '10px 16px 08px 0px'
+        margin: '10px 32px 08px 0px',
+        textColor: '#235F9C'
     },
     dialogStyles: {
         textAlign: 'center',
@@ -123,4 +123,3 @@ AddFolderModal.contextTypes = {
 };
 
 export default AddFolderModal;
-
