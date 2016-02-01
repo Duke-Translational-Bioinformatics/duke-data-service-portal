@@ -29,12 +29,12 @@ class AddProjectModal extends React.Component {
         ];
 
         return (
-            <div style={styles.addProject}>
-                <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
-                        style={styles.addProject}
-                        onTouchTap={this.handleTouchTap.bind(this)}>
-                    ADD PROJECT
-                </button>
+            <div>
+                <FlatButton
+                    label="Add Project"
+                    secondary={true}
+                    style={styles.addProject}
+                    onTouchTap={this.handleTouchTap.bind(this)} />
                 <Dialog
                     style={styles.dialogStyles}
                     title="Add New Folder"

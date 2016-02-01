@@ -7,6 +7,7 @@ import MainStore from '../../stores/mainStore';
 import ProjectOptionsMenu from './projectOptionsMenu.jsx';
 import UploadModal from '../globalComponents/uploadModal.jsx';
 import urlGen from '../../../util/urlGen.js';
+import FlatButton from 'material-ui/lib/flat-button';
 
 class ProjectDetails extends React.Component {
 
@@ -51,10 +52,10 @@ class ProjectDetails extends React.Component {
                                  style={styles.span}>Created On:</span> { createdOn } </p>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.detailsButton}>
-                        <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
-                                onClick={this.handleTouchTapDetails.bind(this)}>
-                            {!this.state.showDetails ? 'MORE DETAILS' : 'LESS DETAILS'}
-                        </button>
+                        <FlatButton
+                            label={!this.state.showDetails ? 'MORE DETAILS' : 'LESS DETAILS'}
+                            secondary={true}
+                            onTouchTap={this.handleTouchTapDetails.bind(this)}/>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                         <div style={styles.moreDetails} className={!this.state.showDetails ? 'less' : 'more'}>

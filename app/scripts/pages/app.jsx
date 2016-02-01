@@ -71,16 +71,16 @@ class App extends React.Component {
         }
         let search = '';
         if (this.props.routerPath === '/' || this.props.routerPath === '/home' || fileRoute === '/file') {
-            search = <form className="searchbar" action="#">
-                <div className="searchbar-input">
+            search = <form className="searchbar" action="#" style={styles.themeColor}>
+                <div className="searchbar-input" style={styles.themeColor}>
                     <a href="#" className="searchbar-clear"></a>
                 </div>
                 <a href="#" className="searchbar-cancel">Cancel</a>
             </form>
         } else {
             search = <form data-search-list=".list-block-search" data-search-in=".item-title"
-                           className="searchbar searchbar-init" action="#">
-                <div className="searchbar-input">
+                           className="searchbar searchbar-init" action="#" style={styles.themeColor}>
+                <div className="searchbar-input" style={styles.themeColor}>
                     {/*<input type="search" placeholder="Search" style={styles.searchBar}/>*/}
                 </div>
             </form>
@@ -147,6 +147,9 @@ var styles = {
         position: 'absolute',
         bottom: 20,
         left: 0
+    },
+    themeColor: {
+        backgroundColor: '#235F9C'
     }
 };
 
