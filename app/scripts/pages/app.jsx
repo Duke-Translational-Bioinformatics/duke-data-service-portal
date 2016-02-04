@@ -61,7 +61,7 @@ class App extends React.Component {
         let toasts = null;
         if (this.state.toasts) {
             toasts = this.state.toasts.map(obj => {
-                return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} autoHideDuration={3000} onRequestClose={this.handleRequestClose}
+                return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} autoHideDuration={3000} onRequestClose={this.handleRequestClose.bind(this)}
                                  open={true} style={styles.toast}/>
             });
         }
@@ -123,9 +123,7 @@ class App extends React.Component {
     }
 
     handleRequestClose () {
-        this.setState({
-            open: false
-        });
+
     };
 }
 
