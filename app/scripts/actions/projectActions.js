@@ -496,6 +496,7 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
     let chunkNum = 0,
         fileName = blob.name,
         contentType = blob.type,
+        slicedFile = null,
         BYTES_PER_CHUNK, SIZE, NUM_CHUNKS, start, end;
     BYTES_PER_CHUNK = 5242880;
     SIZE = blob.size;
@@ -503,6 +504,29 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
     start = 0;
     end = BYTES_PER_CHUNK;
     var fileReader = new FileReader();
+    let details = {
+        name: fileName,
+        size: SIZE,
+        blob: blob,
+        parentId: parentId,
+        parentKind: parentKind,
+        chunks: []
+    };
+    // describe chunk details
+    while (start < SIZE) {
+        slicedFile = blob.slice(start, end);
+        details.chunks.push({
+            number: chunkNum,
+            start: start,
+            end: end,
+            status: null,
+            retry: 0
+        });
+        // increment to next chunk
+        start = end;
+        end = start + BYTES_PER_CHUNK;
+        chunkNum++;
+    }
     fileReader.onload = function (event, files) {
         // create project upload
         fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'projects/' + projId + '/uploads', {
@@ -521,29 +545,6 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
         }).then(function (json) {
             let uploadObj = json;
             if (!uploadObj || !uploadObj.id) throw "Problem, no upload created";
-
-            let details = {
-                name: fileName,
-                size: SIZE,
-                blob: blob,
-                parentId: parentId,
-                parentKind: parentKind,
-                chunks: []
-            };
-            // describe chunk details
-            while (start < SIZE) {
-                details.chunks.push({
-                    number: chunkNum,
-                    start: start,
-                    end: end,
-                    status: null,
-                    retry: 0
-                });
-                // increment to next chunk
-                start = end;
-                end = start + BYTES_PER_CHUNK;
-                chunkNum++;
-            }
             ProjectActions.startUploadSuccess(uploadObj.id, details);
         }).catch(function (ex) {
             ProjectActions.startUploadError(ex)
@@ -554,7 +555,7 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
         console.log("error", e);
         console.log(e.target.error.message);
     };
-    fileReader.readAsArrayBuffer(blob);
+    fileReader.readAsArrayBuffer(slicedFile);
 };
 
 ProjectActions.getChunkUrl.preEmit = function (uploadId, chunkBlob, chunkNum, size, parentId, parentKind, fileName) {
