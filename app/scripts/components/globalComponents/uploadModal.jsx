@@ -56,7 +56,7 @@ class UploadModal extends React.Component {
                     open={this.state.open}>
                     <form action='#' id='newFileForm'>
                         <div className="mdl-textfield mdl-textfield--file">
-                            <input className="mdl-textfield__input" placeholder="File" type="text" id="uploadFile" readOnly/>
+                            <input className="mdl-textfield__input" placeholder="Files" type="text" id="uploadFile" readOnly/>
                             <div className="mdl-button mdl-button--icon mdl-button--file">
                                 <i className="material-icons" style={styles.iconColor}>attach_file</i>
                                 <input type='file' id="uploadBtn" ref='fileUpload' onChange={this.handleFileName.bind(this)} multiple/>
@@ -87,23 +87,31 @@ class UploadModal extends React.Component {
             let projId = '';
             let parentKind = '';
             let parentId = this.props.params.id;
-            let blob = document.getElementById('uploadBtn').files[0];
-            if (!this.props.entityObj) {
-                projId = this.props.params.id;
-                parentKind = 'dds-project';
-            } else {
-                projId = this.props.entityObj ? this.props.entityObj.ancestors[0].id : null;
-                parentKind = this.props.entityObj ? this.props.entityObj.kind : null;
+            let fileList = document.getElementById('uploadBtn').files;
+            for (var i = 0; i < fileList.length; i++) {
+                let blob = fileList[i];
+                if (!this.props.entityObj) {
+                    projId = this.props.params.id;
+                    parentKind = 'dds-project';
+                } else {
+                    projId = this.props.entityObj ? this.props.entityObj.ancestors[0].id : null;
+                    parentKind = this.props.entityObj ? this.props.entityObj.kind : null;
+                }
+                ProjectActions.startUpload(projId, blob, parentId, parentKind);
+                this.setState({open: false});
             }
-            ProjectActions.startUpload(projId, blob, parentId, parentKind);
-            this.setState({open: false});
         } else {
             return null
         }
     }
 
     handleFileName() {
-        document.getElementById('uploadFile').value = document.getElementById('uploadBtn').files[0].name;
+        let fileList = document.getElementById('uploadBtn').files;
+        if(fileList.length > 1){
+            document.getElementById('uploadFile').value = fileList.length + ' files';
+        }else{
+            document.getElementById('uploadFile').value = fileList[0].name;
+        }
     }
 
     handleClose() {
