@@ -95,12 +95,8 @@ class UploadModal extends React.Component {
                 projId = this.props.entityObj ? this.props.entityObj.ancestors[0].id : null;
                 parentKind = this.props.entityObj ? this.props.entityObj.kind : null;
             }
-            if(blob.size > 1073741824 * 3.5){
-                this.setState({warnOpen: true});
-            }else{
-                ProjectActions.startUpload(projId, blob, parentId, parentKind);
-                this.setState({open: false});
-            }
+            ProjectActions.startUpload(projId, blob, parentId, parentKind);
+            this.setState({open: false});
         } else {
             return null
         }
