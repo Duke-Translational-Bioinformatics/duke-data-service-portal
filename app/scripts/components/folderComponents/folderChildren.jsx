@@ -16,7 +16,8 @@ class FolderChildren extends React.Component {
                     <div className="mdl-color-text--grey-600" style={styles.uploadText}>uploading { uploads.name }...</div>
                 </div>;
             });
-        }        let loading = this.props.loading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader"></div> : '';
+        }
+        let loading = this.props.loading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader"></div> : '';
         var error = '';
         if (this.props.error)
             error = (<h4>{this.props.error}</h4>);
