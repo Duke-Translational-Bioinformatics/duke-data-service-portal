@@ -9,8 +9,14 @@ import LinearProgress from 'material-ui/lib/linear-progress';
 class FolderChildren extends React.Component {
 
     render() {
-        let uploading = this.props.uploading || this.props.uploadCount.length ? <div><LinearProgress color={"#2196f3"} mode="indeterminate" style={styles.uploader}/><div className="mdl-color-text--grey-600" style={styles.uploadText}>uploading...</div></div> : '';
-        let loading = this.props.loading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader"></div> : '';
+        if (this.props.uploading || this.props.uploadCount.length) {
+            var uploading = this.props.uploadCount.map((uploads)=> {
+                return <div key={Math.random()}>
+                    <LinearProgress color={"#2196f3"} mode="indeterminate" style={styles.uploader}/>
+                    <div className="mdl-color-text--grey-600" style={styles.uploadText}>uploading { uploads.name }...</div>
+                </div>;
+            });
+        }        let loading = this.props.loading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader"></div> : '';
         var error = '';
         if (this.props.error)
             error = (<h4>{this.props.error}</h4>);
