@@ -25,7 +25,7 @@ class Header extends React.Component {
                         </div>
                         <div className="center">
                             {!this.props.appConfig.apiToken ? '' :
-                                <img src="images/dukeDSLogo.png" style={styles.logo}/>}
+                                <img src="images/dukeDSVertical.png" style={styles.logo}/>}
                         </div>
                         <div className="right">
                             <CurrentUser {...this.props}/>
@@ -39,8 +39,8 @@ class Header extends React.Component {
 
 var styles = {
     logo: {
-        width: '13%',
-        maxWidth: '13%',
+        width: '40%',
+        maxWidth: '40%',
         minWidth: 58,
         minHeight: 46,
         marginTop: 12,
