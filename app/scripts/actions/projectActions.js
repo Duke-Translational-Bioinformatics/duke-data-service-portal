@@ -83,6 +83,7 @@ var ProjectActions = Reflux.createActions([
     'startUpload',
     'startUploadSuccess',
     'startUploadError',
+    'updateChunkProgress',
     'updateAndProcessChunks',
     'allChunksUploaded',
     'getChunkUrl',
@@ -503,13 +504,16 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
     NUM_CHUNKS = Math.max(Math.ceil(SIZE / BYTES_PER_CHUNK), 1);
     start = 0;
     end = BYTES_PER_CHUNK;
+
     var fileReader = new FileReader();
+
     let details = {
         name: fileName,
         size: SIZE,
         blob: blob,
         parentId: parentId,
         parentKind: parentKind,
+        uploadProgress: null,
         chunks: []
     };
     // describe chunk details
@@ -519,7 +523,10 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
             number: chunkNum,
             start: start,
             end: end,
-            status: null,
+            chunkUpdates: {
+                status: null,
+                progress: 0
+            },
             retry: 0
         });
         // increment to next chunk
@@ -558,7 +565,7 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
     fileReader.readAsArrayBuffer(slicedFile);
 };
 
-ProjectActions.getChunkUrl.preEmit = function (uploadId, chunkBlob, chunkNum, size, parentId, parentKind, fileName) {
+ProjectActions.getChunkUrl.preEmit = function (uploadId, chunkBlob, chunkNum, size, parentId, parentKind, fileName, chunkUpdates) {
     var fileReader = new FileReader();
     fileReader.onload = function (event) {
         var arrayBuffer = event.target.result;
@@ -585,27 +592,26 @@ ProjectActions.getChunkUrl.preEmit = function (uploadId, chunkBlob, chunkNum, si
             let chunkObj = json;
             if (chunkObj && chunkObj.url && chunkObj.host) {
                 // upload chunks
-                uploadChunk(uploadId, chunkObj.host + chunkObj.url, chunkBlob, size, parentId, parentKind, chunkNum, fileName)
+                uploadChunk(uploadId, chunkObj.host + chunkObj.url, chunkBlob, size, parentId, parentKind, chunkNum, fileName, chunkUpdates)
             } else {
                 throw 'Unexpected response';
             }
         }).catch(function (ex) {
-            ProjectActions.updateAndProcessChunks(uploadId, chunkNum, StatusEnum.STATUS_RETRY);
+            ProjectActions.updateAndProcessChunks(uploadId, chunkNum, {status: StatusEnum.STATUS_RETRY});
         });
     };
     fileReader.readAsArrayBuffer(chunkBlob);
 };
 
-function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKind, chunkNum, fileName) {
-    window.addEventListener('offline', function(){
+function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKind, chunkNum, fileName, chunkUpdates) {
+    window.addEventListener('offline', function () {
         ProjectActions.uploadError(uploadId, fileName)
     });
     var xhr = new XMLHttpRequest();
     xhr.upload.onprogress = uploadProgress;
     function uploadProgress(e) {
         if (e.lengthComputable) {
-            let percentOfChunkUploaded = (e.loaded / e.total) * 100;
-            ProjectActions.computeUploadProgress(percentOfChunkUploaded);
+            ProjectActions.updateChunkProgress(uploadId, chunkNum, e.loaded/e.total * (chunkBlob.size));
         }
     }
 
@@ -613,12 +619,12 @@ function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKi
     function onComplete() {
         let status = null;
         if (xhr.status >= 200 && xhr.status < 300) {
-            status = StatusEnum.STATUS_SUCCESS;
+            chunkUpdates.status = StatusEnum.STATUS_SUCCESS;
         }
         else {
-            status = StatusEnum.STATUS_RETRY;
+            chunkUpdates.status = StatusEnum.STATUS_RETRY;
         }
-        ProjectActions.updateAndProcessChunks(uploadId, chunkNum, status);
+        ProjectActions.updateAndProcessChunks(uploadId, chunkNum, {status: chunkUpdates.status});
     }
 
     xhr.open('PUT', presignedUrl, true);
@@ -673,4 +679,3 @@ function checkResponse(response) {
 }
 
 export default ProjectActions;
-

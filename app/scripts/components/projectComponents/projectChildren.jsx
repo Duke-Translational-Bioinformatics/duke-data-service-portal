@@ -12,11 +12,13 @@ import LinearProgress from 'material-ui/lib/linear-progress';
 class ProjectChildren extends React.Component {
 
     render() {
-        if (this.props.uploading || this.props.uploadCount.length) {
-            var uploading = this.props.uploadCount.map((uploads)=> {
-                return <div key={Math.random()}>
-                    <LinearProgress color={"#2196f3"} mode="indeterminate" style={styles.uploader}/>
-                    <div className="mdl-color-text--grey-600" style={styles.uploadText}>uploading { uploads.name }...</div>
+        let uploading = null;
+        if (this.props.uploads) {
+            uploading = Object.keys(this.props.uploads).map(uploadId => {
+                let upload = this.props.uploads[uploadId];
+                return <div key={'pgrs'+uploadId}>
+                    <LinearProgress mode="determinate" color={'#003366'} style={styles.uploader} value={upload.uploadProgress} max={100} min={0}/>
+                    <div className="mdl-color-text--grey-600" style={styles.uploadText}>{Math.round(upload.uploadProgress) + '% of '+ upload.name } uploaded...</div>
                 </div>;
             });
         }

@@ -17,7 +17,6 @@ var ProjectStore = Reflux.createStore({
         this.projectMembers = [];
         this.uploadCount = [];
         this.uploads = {};
-        this.chunkUpdates = {};
     },
 
     getUserSuccess (json) {
@@ -290,13 +289,8 @@ var ProjectStore = Reflux.createStore({
         if (this.uploads.hasOwnProperty(uploadId)) {
             delete this.uploads[uploadId];
         }
-        this.uploadCount.pop();
-        let ul = true;
-        if(!this.uploadCount.length) ul = false;
         this.trigger({
-            uploading: ul,
             uploads: this.uploads
-
         })
     },
 
@@ -396,7 +390,9 @@ var ProjectStore = Reflux.createStore({
     },
 
     getUserNameSuccess(results) {
-        this.users = results.map(function(users) {return users.full_name});
+        this.users = results.map(function (users) {
+            return users.full_name
+        });
         this.trigger({
             users: this.users
         });
@@ -531,25 +527,46 @@ var ProjectStore = Reflux.createStore({
 
     startUploadSuccess(uploadId, details) {
         this.uploads[uploadId] = details;
-        this.uploadCount = Object.keys(this.uploads).map(key => this.uploads[key]);
         ProjectActions.updateAndProcessChunks(uploadId, null, null);
         this.trigger({
             uploads: this.uploads,
-            uploadCount: this.uploadCount
         })
     },
 
     startUploadError(error) {
-        alert('Error: File is too large to upload for the current Alpha version of the Duke Data Service. Please' +
-            ' compress the' +
-            ' file to a .zip format and' +
-            ' try uploading' +
-            ' again. Future versions of Duke Data Service will support' +
-            ' larger files without compression.');
         let errMsg = error && error.message ? "Error: " + error : '';
         this.trigger({
             error: errMsg,
             uploading: false
+        });
+    },
+
+    updateChunkProgress(uploadId, chunkNum, progress) {
+        if (!uploadId && !this.uploads[uploadId]) {
+            return;
+        }
+        let upload = this.uploads[uploadId];
+        let chunks = this.uploads[uploadId] ? this.uploads[uploadId].chunks : '';
+        if (chunkNum !== null) {
+            for (let i = 0; i < chunks.length; i++) {
+                // find chunk to update
+                if (chunks[i].number === chunkNum) {
+                    // update progress of chunk in bytes
+                    if (progress) chunks[i].chunkUpdates.progress = progress;
+                    break;
+                }
+            }
+        }
+
+        // calculate % uploaded
+        let bytesUploaded = 0;
+        if (chunks) {
+            chunks.map(chunk => bytesUploaded += chunk.chunkUpdates.progress);
+            upload.uploadProgress = upload.size > 0 ? (bytesUploaded / upload.size) * 100 : 0;
+        }
+
+        this.trigger({
+            uploads: this.uploads
         });
     },
 
@@ -559,32 +576,34 @@ var ProjectStore = Reflux.createStore({
         }
         let upload = this.uploads[uploadId];
         let chunks = this.uploads[uploadId] ? this.uploads[uploadId].chunks : '';
-        // update chunk
         if (chunkNum !== null) {
             for (let i = 0; i < chunks.length; i++) {
+                // find chunk to update
                 if (chunks[i].number === chunkNum) {
-                    if (status === StatusEnum.STATUS_RETRY && chunks[i].retry > StatusEnum.MAX_RETRY) {
-                        chunks[i].status = StatusEnum.STATUS_FAILED;
+                    // update status
+                    if (chunks[i].chunkUpdates.status === StatusEnum.STATUS_RETRY && chunks[i].retry > StatusEnum.MAX_RETRY) {
+                        chunks[i].chunkUpdates.status = StatusEnum.STATUS_FAILED;
                         ProjectStore.uploadError(uploadId, chunks[i].name);
                         return;
                     }
-                    if (status === StatusEnum.STATUS_RETRY) chunks[i].retry++;
-                    chunks[i].status = status;
+                    if (chunks[i].chunkUpdates.status === StatusEnum.STATUS_RETRY) chunks[i].retry++;
                     break;
                 }
             }
         }
+
+        // Decide what action to do next
         let allDone = null;
         for (let i = 0; i < chunks.length; i++) {
             let chunk = chunks[i];
-            if (chunk.status === StatusEnum.STATUS_WAITING_FOR_UPLOAD || chunk.status === StatusEnum.STATUS_RETRY) {
-                chunk.status = StatusEnum.STATUS_UPLOADING;
-                ProjectActions.getChunkUrl(uploadId, upload.blob.slice(chunk.start, chunk.end), chunk.number, upload.size, upload.parentId, upload.parentKind, upload.name);
+            if (chunk.chunkUpdates.status === StatusEnum.STATUS_WAITING_FOR_UPLOAD || chunk.chunkUpdates.status === StatusEnum.STATUS_RETRY) {
+                chunk.chunkUpdates.status = StatusEnum.STATUS_UPLOADING;
+                ProjectActions.getChunkUrl(uploadId, upload.blob.slice(chunk.start, chunk.end), chunk.number, upload.size, upload.parentId, upload.parentKind, upload.name, chunk.chunkUpdates);
                 return;
             }
-            allDone = chunk.status !== StatusEnum.STATUS_UPLOADING ? true : false;
+            allDone = chunk.chunkUpdates.status !== StatusEnum.STATUS_UPLOADING ? true : false;
         }
-        if(allDone === true)ProjectActions.allChunksUploaded(uploadId, upload.parentId, upload.parentKind, upload.name);
+        if (allDone === true)ProjectActions.allChunksUploaded(uploadId, upload.parentId, upload.parentKind, upload.name);
     },
 
     uploadError(uploadId, fileName) {
@@ -592,14 +611,7 @@ var ProjectStore = Reflux.createStore({
         if (this.uploads.hasOwnProperty(uploadId)) {
             delete this.uploads[uploadId];
         }
-        if (!this.uploads.hasOwnProperty(uploadId)) {
-            this.uploading = false;
-        }
-        this.uploadCount.pop();
-        let ul = null;
-        !this.uploadCount.length ? ul = false : ul = true;
         this.trigger({
-            uploading: ul,
             uploads: this.uploads
         })
     }
