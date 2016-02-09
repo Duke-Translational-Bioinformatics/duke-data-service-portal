@@ -28,8 +28,9 @@ class ProjectList extends React.Component {
                             <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>content_paste</i>
                             <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + "/project/" + project.id}
                                className="external">
-                                <h1 className="mdl-card__title-text mdl-color-text--grey-800"
-                                    projectId={project.id}>{ project.name.length > 35 ? project.name.substring(0, 35) + '...' : project.name }</h1>
+                                <h1 className="mdl-card__title-text mdl-color-text--grey-800" style={styles.cardHeader}>
+                                    { project.name.length > 35 ? project.name.substring(0, 35) + '...' : project.name }
+                                </h1>
                             </a>
                         </div>
                         <div className="mdl-card__supporting-text mdl-color-text--grey-800">
@@ -63,7 +64,7 @@ ProjectList.contextTypes = {
 
 var styles = {
     cardHeader: {
-        paddingLeft: 10
+        paddingLeft: 15
     },
     cardSquare: {
         height: 260,
