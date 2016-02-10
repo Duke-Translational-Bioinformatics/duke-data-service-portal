@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom'
 import Router from 'react-router';
 import routes from './routes';
 
+require('es6-promise').polyfill();
+
 //Needed for onTouchTap
 //Can go away when react 1.0 release
 //Check this repo:
