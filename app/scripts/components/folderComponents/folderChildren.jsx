@@ -130,7 +130,8 @@ var styles = {
         margin: '0 auto'
     },
     uploadText: {
-        textAlign: 'center',
+        textAlign: 'left',
+        marginLeft: 25,
         fontSize: '.8em'
     }
 };
