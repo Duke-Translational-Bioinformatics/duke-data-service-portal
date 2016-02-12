@@ -13,10 +13,31 @@ var ProjectStore = Reflux.createStore({
         this.projects = [];
         this.project = {};
         this.entityObj = {};
-        this.file = {};
         this.projectMembers = [];
+        this.users = [];
         this.uploadCount = [];
         this.uploads = {};
+        this.filesChecked = [];
+        this.foldersChecked = [];
+        this.showBatchOps = false;
+    },
+
+    showBatchOptions () {
+        this.showBatchOps = false;
+        this.trigger({
+            showBatchOps: this.showBatchOps
+        })
+    },
+
+    batchDelete (files, folders) {
+        this.filesChecked = files;
+        this.foldersChecked = folders;
+        this.showBatchOps = true;
+        this.trigger({
+            filesChecked: this.filesChecked,
+            foldersChecked: this.foldersChecked,
+            showBatchOps: this.showBatchOps
+        })
     },
 
     getUserSuccess (json) {
@@ -168,6 +189,7 @@ var ProjectStore = Reflux.createStore({
             loading: true
         })
     },
+
     loadFolderChildrenSuccess(results) {
         this.children = results;
         this.trigger({
@@ -215,9 +237,16 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    deleteFolderSuccess() {
+    deleteFolderSuccess(id, parentKind) {
+        if (parentKind === 'dds-project') {
+            ProjectActions.loadProjectChildren(id);
+        } else {
+            ProjectActions.loadFolderChildren(id);
+        }
+        this.showBatchOps = false;
         this.trigger({
-            loading: false
+            loading: false,
+            showBatchOps: this.showBatchOps
         })
     },
 
@@ -250,28 +279,6 @@ var ProjectStore = Reflux.createStore({
             error: msg,
             loading: false
         });
-    },
-
-    loadFiles() {
-        this.trigger({
-            loading: true
-        })
-    },
-
-    loadFilesSuccess(results) {
-        this.folderChildren = results;
-        this.trigger({
-            folderChildren: this.folderChildren,
-            loading: false
-        })
-    },
-
-    loadFilesError(error) {
-        let msg = error && error.message ? "Error: " : +'An error occurred while loading files.';
-        this.trigger({
-            error: msg,
-            loading: false
-        })
     },
 
     addFile() {
@@ -308,9 +315,16 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    deleteFileSuccess() {
+    deleteFileSuccess(id, parentKind) {
+        if (parentKind === 'dds-project') {
+            ProjectActions.loadProjectChildren(id);
+        } else {
+            ProjectActions.loadFolderChildren(id);
+        }
+        this.showBatchOps = false;
         this.trigger({
-            loading: false
+            loading: false,
+            showBatchOps: this.showBatchOps
         })
     },
 
@@ -390,9 +404,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     getUserNameSuccess(results) {
-        this.users = results.map(function (users) {
-            return users.full_name
-        });
+        this.users = results.map(function(users) {return users.full_name});
         this.trigger({
             users: this.users
         });
@@ -420,7 +432,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     getUserIdError(error) {
-        let errMsg = error && error.message ? "Error: " : +'An error occurred.';
+        let errMsg = error && error.message ? "Error: " : +'An error occurred while trying to delete this file.';
         this.trigger({
             error: errMsg,
             loading: false
@@ -552,7 +564,7 @@ var ProjectStore = Reflux.createStore({
                 // find chunk to update
                 if (chunks[i].number === chunkNum) {
                     // update progress of chunk in bytes
-                    if (progress) chunks[i].chunkUpdates.progress = progress;
+                    if(progress) chunks[i].chunkUpdates.progress = progress;
                     break;
                 }
             }
@@ -560,9 +572,9 @@ var ProjectStore = Reflux.createStore({
 
         // calculate % uploaded
         let bytesUploaded = 0;
-        if (chunks) {
+        if(chunks) {
             chunks.map(chunk => bytesUploaded += chunk.chunkUpdates.progress);
-            upload.uploadProgress = upload.size > 0 ? (bytesUploaded / upload.size) * 100 : 0;
+            upload.uploadProgress = upload.size > 0 ? (bytesUploaded/upload.size)*100 : 0;
         }
 
         this.trigger({
@@ -580,7 +592,7 @@ var ProjectStore = Reflux.createStore({
             for (let i = 0; i < chunks.length; i++) {
                 // find chunk to update
                 if (chunks[i].number === chunkNum) {
-                    // update status
+                    //update status
                     if (chunks[i].chunkUpdates.status === StatusEnum.STATUS_RETRY && chunks[i].retry > StatusEnum.MAX_RETRY) {
                         chunks[i].chunkUpdates.status = StatusEnum.STATUS_FAILED;
                         ProjectStore.uploadError(uploadId, chunks[i].name);

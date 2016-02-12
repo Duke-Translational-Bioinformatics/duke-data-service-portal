@@ -10,8 +10,10 @@ class Folder extends React.Component {
         super(props);
         this.state = {
             children: ProjectStore.children,
-            project: ProjectStore.project,
+            filesChecked: ProjectStore.filesChecked,
+            foldersChecked: ProjectStore.foldersChecked,
             loading: false,
+            project: ProjectStore.project,
             uploads: ProjectStore.uploads
         };
     }
