@@ -5,7 +5,6 @@ import ProjectDetails from './projectDetails.jsx';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
-import FolderOptionsMenu from '../folderComponents/folderOptionsMenu.jsx';
 import Header from '../../components/globalComponents/header.jsx';
 import urlGen from '../../../util/urlGen.js';
 import LinearProgress from 'material-ui/lib/linear-progress';
