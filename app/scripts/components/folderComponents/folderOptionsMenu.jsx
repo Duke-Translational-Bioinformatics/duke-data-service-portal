@@ -103,7 +103,7 @@ class FolderOptionsMenu extends React.Component {
         let parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : null;
         let urlPath = '';
         {parentKind === 'dds-project' ? urlPath = '/project/' : urlPath = '/folder/'}
-        ProjectActions.deleteFolder(id, urlPath);
+        ProjectActions.deleteFolder(id, parentId, parentKind);
         this.setState(
             {deleteOpen: false}
         );
