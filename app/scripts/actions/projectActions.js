@@ -513,7 +513,7 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
         blob: blob,
         parentId: parentId,
         parentKind: parentKind,
-        uploadProgress: null,
+        uploadProgress: 0,
         chunks: []
     };
     // describe chunk details

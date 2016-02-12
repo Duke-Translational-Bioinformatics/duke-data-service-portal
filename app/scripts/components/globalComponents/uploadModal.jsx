@@ -10,8 +10,7 @@ import RaisedButton from 'material-ui/lib/raised-button';
 class UploadModal extends React.Component {
     constructor() {
         this.state = {
-            open: false,
-            warnOpen: false
+            open: false
         }
     }
 
@@ -56,23 +55,13 @@ class UploadModal extends React.Component {
                     open={this.state.open}>
                     <form action='#' id='newFileForm'>
                         <div className="mdl-textfield mdl-textfield--file">
-                            <input className="mdl-textfield__input" placeholder="Files" type="text" id="uploadFile" readOnly/>
+                            <textarea className="mdl-textfield__input mdl-color-text--grey-800" placeholder="Files" type="text" id="uploadFile" rows="3" readOnly></textarea>
                             <div className="mdl-button mdl-button--icon mdl-button--file">
                                 <i className="material-icons" style={styles.iconColor}>attach_file</i>
                                 <input type='file' id="uploadBtn" ref='fileUpload' onChange={this.handleFileName.bind(this)} multiple/>
                             </div>
                         </div>
-
                     </form>
-                </Dialog>
-                <Dialog
-                    style={styles.dialogStyles}
-                    title='File exceeds size limit for the current Alpha version of Duke Data Service'
-                    actions={warnActions}
-                    onRequestClose={this.handleClose.bind(this)}
-                    open={this.state.warnOpen}>
-                    <i className="material-icons" style={styles.warning}>announcement</i>
-                    <p style={styles.msg}>Please compress this file into a .zip format before uploading. <br/>We apologize for the inconvenience.</p>
                 </Dialog>
             </div>
         );
@@ -106,18 +95,19 @@ class UploadModal extends React.Component {
     }
 
     handleFileName() {
-        let fileList = document.getElementById('uploadBtn').files;
-        if(fileList.length > 1){
-            document.getElementById('uploadFile').value = fileList.length + ' files';
-        }else{
-            document.getElementById('uploadFile').value = fileList[0].name;
+        let fList = [];
+        let fl = document.getElementById('uploadBtn').files;
+        for (var i = 0; i < fl.length; i++) {
+            fList.push(fl[i].name);
+            var fileList = fList.toString().split(',').join(', ');
         }
+        document.getElementById('uploadFile').value = 'Preparing to upload: ' + fileList;
     }
+
 
     handleClose() {
         this.setState({
-            open: false,
-            warnOpen: false
+            open: false
         });
     }
 }

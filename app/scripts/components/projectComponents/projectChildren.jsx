@@ -17,8 +17,8 @@ class ProjectChildren extends React.Component {
             uploading = Object.keys(this.props.uploads).map(uploadId => {
                 let upload = this.props.uploads[uploadId];
                 return <div key={'pgrs'+uploadId}>
-                    <LinearProgress mode="determinate" color={'#003366'} style={styles.uploader} value={upload.uploadProgress} max={100} min={0}/>
-                    <div className="mdl-color-text--grey-600" style={styles.uploadText}>{Math.round(upload.uploadProgress) + '% of '+ upload.name } uploaded...</div>
+                    <LinearProgress mode="determinate" color={'#C2185B'} style={styles.uploader} value={upload.uploadProgress} max={100} min={0}/>
+                    <div className="mdl-color-text--grey-600" style={styles.uploadText}>{upload.uploadProgress.toFixed(2) + '% of '+ upload.name } uploaded...</div>
                 </div>;
             });
         }
@@ -130,8 +130,8 @@ var styles = {
     },
     uploadText: {
         textAlign: 'left',
-        marginLeft: 25,
-        fontSize: '.8em'
+        marginLeft: 31,
+        fontSize: 13
     }
 };
 
