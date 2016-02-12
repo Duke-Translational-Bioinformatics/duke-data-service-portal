@@ -16,6 +16,8 @@ class Project extends React.Component {
         this.state = {
             children: ProjectStore.children,
             currentUser: ProjectStore.currentUser,
+            filesChecked: ProjectStore.filesChecked,
+            foldersChecked: ProjectStore.foldersChecked,
             loading: false,
             projects: ProjectStore.projects,
             project: ProjectStore.project,

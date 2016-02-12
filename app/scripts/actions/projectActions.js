@@ -8,6 +8,8 @@ import StatusEnum from '../enum';
 import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.js';
 
 var ProjectActions = Reflux.createActions([
+    'showBatchOptions',
+    'batchDelete',
     'getUser',
     'getUserSuccess',
     'getUserError',
@@ -275,7 +277,7 @@ ProjectActions.addFolder.preEmit = function (id, parentKind, name) {
     })
 };
 
-ProjectActions.deleteFolder.preEmit = function (id) {
+ProjectActions.deleteFolder.preEmit = function (id, parentId, parentKind) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'folders/' + id, {
         method: 'delete',
         headers: {
@@ -286,7 +288,7 @@ ProjectActions.deleteFolder.preEmit = function (id) {
     }).then(checkResponse).then(function (response) {
     }).then(function () {
         MainActions.addToast('Folder Deleted!');
-        ProjectActions.deleteFolderSuccess()
+        ProjectActions.deleteFolderSuccess(parentId, parentKind)
     }).catch(function (ex) {
         MainActions.addToast('Folder Deleted Failed!');
         ProjectActions.deleteFolderError(ex)
@@ -313,22 +315,6 @@ ProjectActions.editFolder.preEmit = function (id, name) {
         MainActions.addToast('Failed to Update Folder');
         ProjectActions.editFolderError(ex)
     });
-};
-
-ProjectActions.loadFiles.preEmit = function (id) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'folders/' + id + '/children', {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.loadFilesSuccess(json.results)
-    }).catch(function (ex) {
-        ProjectActions.loadFilesError(ex)
-    })
 };
 
 ProjectActions.deleteFile.preEmit = function (id, parentId, parentKind) {
@@ -404,7 +390,7 @@ ProjectActions.getProjectMembers.preEmit = (id) => {
 };
 
 ProjectActions.getUserName.preEmit = (text) => {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + text , {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + text, {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -611,7 +597,7 @@ function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKi
     xhr.upload.onprogress = uploadProgress;
     function uploadProgress(e) {
         if (e.lengthComputable) {
-            ProjectActions.updateChunkProgress(uploadId, chunkNum, e.loaded/e.total * (chunkBlob.size));
+            ProjectActions.updateChunkProgress(uploadId, chunkNum, e.loaded / e.total * (chunkBlob.size));
         }
     }
 
