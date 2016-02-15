@@ -166,7 +166,7 @@ var BatchOps = React.createClass({
                     secondary={true}
                     badgeStyle={{top: 30, left: 20,  backgroundColor: '#ef5350'}}
                     style={{float:'right'}}>
-                    <RaisedButton label="Delete" labelStyle={{color: '#ef5350', paddingLeft: 40}} style={styles.batchOpsButton}/>
+                    <RaisedButton label="Delete" labelStyle={{color: '#ef5350', paddingLeft: 40}} style={styles.batchOpsButton} onTouchTap={() => this.handleBatchDelete(files, folders)}/>
                 </Badge>
             </div>
         )
