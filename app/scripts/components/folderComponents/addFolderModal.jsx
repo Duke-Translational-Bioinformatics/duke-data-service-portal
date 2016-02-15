@@ -4,6 +4,7 @@ import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import AutoComplete from 'material-ui/lib/auto-complete';
 import FlatButton from 'material-ui/lib/flat-button';
+import RaisedButton from 'material-ui/lib/raised-button';
 import Dialog from 'material-ui/lib/dialog';
 import TextField from 'material-ui/lib/text-field';
 
@@ -31,11 +32,11 @@ class AddFolderModal extends React.Component {
 
         return (
             <div>
-                <FlatButton
+                <RaisedButton
                     label="Add Folder"
-                    secondary={true}
+                    labelStyle={{color: '#235F9C'}}
                     style={styles.addFolder}
-                    onTouchTap={this.handleTouchTap.bind(this)}/>
+                    onTouchTap={this.openModal.bind(this)}/>
                 <Dialog
                     style={styles.dialogStyles}
                     title="Add New Folder"
@@ -60,7 +61,7 @@ class AddFolderModal extends React.Component {
         );
     }
 
-    handleTouchTap() {
+    openModal() {
         this.setState({open: true});
     };
 
@@ -104,7 +105,7 @@ let styles = {
         float: 'right',
         zIndex: '9995',
         position: 'relative',
-        margin: '10px 32px 08px 0px',
+        margin: '24px 08px 08px 0px',
         textColor: '#235F9C'
     },
     dialogStyles: {

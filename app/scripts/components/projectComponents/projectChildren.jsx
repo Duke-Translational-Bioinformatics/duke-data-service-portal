@@ -9,9 +9,8 @@ import Header from '../../components/globalComponents/header.jsx';
 import urlGen from '../../../util/urlGen.js';
 import LinearProgress from 'material-ui/lib/linear-progress';
 import Checkbox from 'material-ui/lib/checkbox';
-import IconButton from 'material-ui/lib/icon-button';
 import Badge from 'material-ui/lib/badge';
-import FontIcon from 'material-ui/lib/font-icon';
+import RaisedButton from 'material-ui/lib/raised-button';
 
 class ProjectChildren extends React.Component {
 
@@ -164,15 +163,13 @@ var BatchOps = React.createClass({
         let files = this.props.filesChecked ? this.props.filesChecked : null;
         let folders = this.props.foldersChecked ? this.props.foldersChecked : null;
         return (
-            <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800 project-container">
+            <div >
                 <Badge
                     badgeContent={this.props.numSelected}
                     secondary={true}
-                    badgeStyle={{top: 12, right: 12 }}
+                    badgeStyle={{top: 30, left: 20,  backgroundColor: '#ef5350'}}
                     style={{float:'right'}}>
-                    <IconButton tooltip="Delete Selected" onTouchTap={() => this.handleBatchDelete(files, folders)}>
-                        <FontIcon className="material-icons" color={'#ef5350'}>delete</FontIcon>
-                    </IconButton>
+                    <RaisedButton label="Delete" labelStyle={{color: '#ef5350', paddingLeft: 40}} style={styles.batchOpsButton}/>
                 </Badge>
             </div>
         )
@@ -194,8 +191,8 @@ ProjectChildren.contextTypes = {
 };
 
 var styles = {
-    batchOpsButtons: {
-        float: 'right'
+    batchOpsButton: {
+        marginRight: -10
     },
     check: {
         float: 'right',
@@ -214,7 +211,7 @@ var styles = {
     },
     fillerDiv: {
         height: 24,
-        width: 32,
+        width:32,
         float: 'right',
         marginLeft: 51,
         padding: '08px 08px 08px 08px'
