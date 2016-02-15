@@ -105,7 +105,7 @@ let styles = {
         float: 'right',
         zIndex: '9995',
         position: 'relative',
-        margin: '24px 08px 08px 0px',
+        margin: '24px 17px 08px 0px',
         textColor: '#235F9C'
     },
     dialogStyles: {
