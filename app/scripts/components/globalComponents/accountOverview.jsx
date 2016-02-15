@@ -1,6 +1,7 @@
 import React from 'react';
 import ProjectActions from '../../actions/projectActions';
 import BaseUtils from '../../../util/baseUtils.js';
+import Card from 'material-ui/lib/card/card';
 
 class AccountOverview extends React.Component {
 
@@ -10,7 +11,7 @@ class AccountOverview extends React.Component {
         let bytes = this.props.usage ? this.props.usage.storage_bytes : '';
 
         return (
-            <div
+            <Card
                 className="mdl-grid account-overview mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800 "
                 style={styles.overviewContainer}>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.accountOverviewTitle}>
@@ -36,7 +37,7 @@ class AccountOverview extends React.Component {
                         {BaseUtils.bytesToSize(bytes)}</h4>
                     <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>save</i>
                 </div>
-            </div>
+            </Card>
         );
     }
 }
