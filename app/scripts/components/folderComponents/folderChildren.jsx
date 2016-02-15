@@ -172,8 +172,8 @@ var BatchOps = React.createClass({
         )
     },
     handleBatchDelete(files, folders){
-        let parentId = this.props.entityObj && this.props.entityObj.parent ? this.props.entityObj.parent.id : this.props.project.id;
-        let parentKind = this.props.entityObj && this.props.entityObj.parent ? this.props.entityObj.parent.kind : 'dds-project';
+        let parentId = this.props.entityObj ? this.props.entityObj.id : null;
+        let parentKind = 'dds-folder';
         for (let i = 0; i < files.length; i++) {
             ProjectActions.deleteFile(files[i], parentId, parentKind);
         }
