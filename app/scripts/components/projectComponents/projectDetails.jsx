@@ -8,6 +8,7 @@ import ProjectOptionsMenu from './projectOptionsMenu.jsx';
 import UploadModal from '../globalComponents/uploadModal.jsx';
 import urlGen from '../../../util/urlGen.js';
 import FlatButton from 'material-ui/lib/flat-button';
+import Card from 'material-ui/lib/card/card';
 
 class ProjectDetails extends React.Component {
 
@@ -25,8 +26,8 @@ class ProjectDetails extends React.Component {
         let error = '';
 
         return (
-            <div
-                className="project-container mdl-color--white mdl-shadow--2dp mdl-color-text--grey-800"
+            <Card
+                className="project-container mdl-color--white mdl-color-text--grey-800"
                 style={styles.container}>
                 <UploadModal {...this.props}/>
 
@@ -64,7 +65,7 @@ class ProjectDetails extends React.Component {
                     </div>
                 </div>
                 { error }
-            </div>
+            </Card>
         );
     }
 

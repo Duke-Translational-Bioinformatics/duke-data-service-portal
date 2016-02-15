@@ -6,6 +6,7 @@ import Header from '../../components/globalComponents/header.jsx';
 import AddProjectModal from '../projectComponents/addProjectModal.jsx';
 import urlGen from '../../../util/urlGen.js';
 import LinearProgress from 'material-ui/lib/linear-progress';
+import Card from 'material-ui/lib/card/card';
 
 class ProjectList extends React.Component {
 
@@ -14,30 +15,26 @@ class ProjectList extends React.Component {
     }
 
     render() {
-        let loading = this.props.loading ?
-            <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader"></div> : '';
+        let loading = this.props.loading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader"></div> : '';
         var error = '';
-        if (this.props.error)
-            error = (<h4>{this.props.error}</h4>);
+        if(this.props.error)
+            error = (<p className="mdl-color-text--grey-400">{this.props.error}</p>);
         let projects = this.props.projects.map((project) => {
-            if (!project.is_deleted) {
+            if (!project.is_deleted){
                 return (
-                    <div key={ project.id } style={styles.cardSquare}
-                         className="card mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
+                    <Card key={ project.id } style={styles.cardSquare} className="card mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
                         <div className="mdl-card__title mdl-card--expand">
                             <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>content_paste</i>
-                            <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + "/project/" + project.id}
-                               className="external">
-                                <h1 className="mdl-card__title-text mdl-color-text--grey-800" style={styles.cardHeader}>
-                                    { project.name.length > 35 ? project.name.substring(0, 35) + '...' : project.name }
-                                </h1>
+                            <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + "/project/" + project.id} className="external">
+                                <h1 className="mdl-card__title-text mdl-color-text--grey-800"
+                                    style={styles.cardHeader} projectId={project.id}>{ project.name.length > 35 ? project.name.substring(0,35)+'...' : project.name }</h1>
                             </a>
                         </div>
                         <div className="mdl-card__supporting-text mdl-color-text--grey-800">
                             <p>ID: {project.id}</p>
-                            <p>Description: { project.description.length > 150 ? project.description.substring(0, 150) + '...' : project.description }</p>
+                            <p>Description: { project.description.length > 150 ? project.description.substring(0,150)+'...' : project.description }</p>
                         </div>
-                    </div>
+                    </Card>
                 );
             }
         });
@@ -45,13 +42,14 @@ class ProjectList extends React.Component {
         return (
             <div className="project-container mdl-grid">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.listTitle}>
-                    <div style={styles.listTitle}>
+                    <div style={styles.title}>
                         <h4>Projects</h4>
                     </div>
                     <AddProjectModal {...this.props} />
+                    { loading }
+                    { uploading }
                 </div>
                 { error }
-                { loading }
                 { projects }
             </div>
         );
@@ -77,10 +75,16 @@ var styles = {
         fontSize: 36
     },
     listTitle: {
-        margin: '0px 0px -5px 0px',
+        margin: '0px 0px 0px 0px',
         textAlign: 'left',
         float: 'left',
         paddingLeft: 20
+    },
+    title: {
+        margin: '-10px 0px 0px 0px',
+        textAlign: 'left',
+        float: 'left',
+        marginLeft: -14
     }
 };
 

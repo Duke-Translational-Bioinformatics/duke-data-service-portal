@@ -6,6 +6,7 @@ import FolderOptionsMenu from './folderOptionsMenu.jsx';
 import UploadModal from '../globalComponents/uploadModal.jsx';
 import urlGen from '../../../util/urlGen.js';
 import BaseUtils from '../../../util/baseUtils';
+import Card from 'material-ui/lib/card/card';
 
 class FolderPath extends React.Component {
 
@@ -23,7 +24,7 @@ class FolderPath extends React.Component {
         let name = this.props.entityObj ? this.props.entityObj.name : null;
 
         return (
-            <div className="project-container group mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800"
+            <Card className="project-container group mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800"
                  style={styles.container}>
                 <UploadModal {...this.props} />
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
@@ -47,7 +48,7 @@ class FolderPath extends React.Component {
                         <h6>{ BaseUtils.getFilePath(ancestors) + name }</h6>
                     </div>
                 </div>
-            </div>
+            </Card>
         );
     }
 }

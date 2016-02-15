@@ -4,6 +4,7 @@ import ProjectActions from '../../actions/projectActions';
 import FlatButton from 'material-ui/lib/flat-button';
 import Dialog from 'material-ui/lib/dialog';
 import TextField from 'material-ui/lib/text-field';
+import RaisedButton from 'material-ui/lib/raised-button';
 
 class AddProjectModal extends React.Component {
 
@@ -30,9 +31,9 @@ class AddProjectModal extends React.Component {
 
         return (
             <div>
-                <FlatButton
+                <RaisedButton
                     label="Add Project"
-                    secondary={true}
+                    labelColor="#235F9C"
                     style={styles.addProject}
                     onTouchTap={this.handleTouchTap.bind(this)} />
                 <Dialog
