@@ -26,7 +26,7 @@ class ProjectChildren extends React.Component {
             uploading = Object.keys(this.props.uploads).map(uploadId => {
                 let upload = this.props.uploads[uploadId];
                 return <div key={'pgrs'+uploadId}>
-                    <LinearProgress mode="determinate" color={'#C2185B'} style={styles.uploader}
+                    <LinearProgress mode="determinate" color={'#EC407A'} style={styles.uploader}
                                     value={upload.uploadProgress} max={100} min={0}/>
 
                     <div className="mdl-color-text--grey-600" style={styles.uploadText}>
@@ -167,9 +167,9 @@ var BatchOps = React.createClass({
                 <Badge
                     badgeContent={this.props.numSelected}
                     secondary={true}
-                    badgeStyle={{top: 30, left: 20,  backgroundColor: '#ef5350'}}
+                    badgeStyle={{top: 30, left: 20,  backgroundColor: '#EC407A'}}
                     style={{float:'right'}}>
-                    <RaisedButton label="Delete" labelStyle={{color: '#ef5350', paddingLeft: 40}} style={styles.batchOpsButton} onTouchTap={() => this.handleBatchDelete(files, folders)}/>
+                    <RaisedButton label="Delete" labelStyle={{color: '#EC407A', paddingLeft: 40}} style={styles.batchOpsButton} onTouchTap={() => this.handleBatchDelete(files, folders)}/>
                 </Badge>
             </div>
         )
