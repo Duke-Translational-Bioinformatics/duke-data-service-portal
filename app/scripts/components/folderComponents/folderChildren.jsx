@@ -7,9 +7,8 @@ import Header from '../../components/globalComponents/header.jsx';
 import urlGen from '../../../util/urlGen.js';
 import LinearProgress from 'material-ui/lib/linear-progress';
 import Checkbox from 'material-ui/lib/checkbox';
-import IconButton from 'material-ui/lib/icon-button';
 import Badge from 'material-ui/lib/badge';
-import FontIcon from 'material-ui/lib/font-icon';
+import RaisedButton from 'material-ui/lib/raised-button';
 
 class FolderChildren extends React.Component {
 
@@ -104,7 +103,7 @@ class FolderChildren extends React.Component {
         return (
             <div className="list-container">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                    <div>
+                    <div className="mdl-cell mdl-cell--12-col">
                         <AddFolderModal {...this.props}/>
                         { this.props.showBatchOps ? <BatchOps {...this.props} {...this.state}/> : null }
                     </div>
@@ -161,22 +160,20 @@ var BatchOps = React.createClass({
         let files = this.props.filesChecked ? this.props.filesChecked : null;
         let folders = this.props.foldersChecked ? this.props.foldersChecked : null;
         return (
-            <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800 project-container">
+            <div >
                 <Badge
                     badgeContent={this.props.numSelected}
                     secondary={true}
-                    badgeStyle={{top: 12, right: 12 }}
+                    badgeStyle={{top: 30, left: 20,  backgroundColor: '#ef5350'}}
                     style={{float:'right'}}>
-                    <IconButton tooltip="Delete Selected" onTouchTap={() => this.handleBatchDelete(files, folders)}>
-                        <FontIcon className="material-icons" color={'#ef5350'}>delete</FontIcon>
-                    </IconButton>
+                    <RaisedButton label="Delete" labelStyle={{color: '#ef5350', paddingLeft: 40}} style={styles.batchOpsButton}/>
                 </Badge>
             </div>
         )
     },
     handleBatchDelete(files, folders){
-        let parentId = this.props.entityObj ? this.props.entityObj.id : null;
-        let parentKind = 'dds-folder';
+        let parentId = this.props.entityObj && this.props.entityObj.parent ? this.props.entityObj.parent.id : this.props.project.id;
+        let parentKind = this.props.entityObj && this.props.entityObj.parent ? this.props.entityObj.parent.kind : 'dds-project';
         for (let i = 0; i < files.length; i++) {
             ProjectActions.deleteFile(files[i], parentId, parentKind);
         }
@@ -192,8 +189,8 @@ FolderChildren.contextTypes = {
 };
 
 var styles = {
-    batchOpsButtons: {
-        float: 'right'
+    batchOpsButton: {
+        marginRight: -10
     },
     check: {
         float: 'right',
