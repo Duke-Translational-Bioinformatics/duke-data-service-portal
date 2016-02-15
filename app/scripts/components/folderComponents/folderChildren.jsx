@@ -103,10 +103,8 @@ class FolderChildren extends React.Component {
         return (
             <div className="list-container">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                    <div className="mdl-cell mdl-cell--12-col">
-                        <AddFolderModal {...this.props}/>
-                        { this.props.showBatchOps ? <BatchOps {...this.props} {...this.state}/> : null }
-                    </div>
+                    <AddFolderModal {...this.props}/>
+                    { this.props.showBatchOps ? <BatchOps {...this.props} {...this.state}/> : null }
                     { loading }
                     { uploading }
                 </div>
