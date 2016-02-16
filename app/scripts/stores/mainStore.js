@@ -93,8 +93,9 @@ var MainStore = Reflux.createStore({
     },
 
     isLoggedInHandler() {
+        let expiresAt = new Date(Date.now() + (60 * 1000));
         this.appConfig.isLoggedIn = true;
-        cookie.save('isLoggedIn', this.appConfig.isLoggedIn);
+        cookie.save('isLoggedIn', this.appConfig.isLoggedIn, {expires: expiresAt});
         this.modalOpen = MainStore.modalOpen;
         this.trigger({
             appConfig: this.appConfig,
