@@ -12,7 +12,7 @@ class AccountOverview extends React.Component {
 
         return (
             <Card
-                className="mdl-grid account-overview mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800 "
+                className="account-overview mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800"
                 style={styles.overviewContainer}>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.accountOverviewTitle}>
                     <div style={styles.accountOverviewTitle}>
