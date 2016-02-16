@@ -110,7 +110,7 @@ var styles = {
     addProject: {
         float: 'right',
         position: 'relative',
-        margin: '12px 8px 0px 0px'
+        margin: '12px -9px 0px 0px'
     },
     dialogStyles: {
         textAlign: 'center',
