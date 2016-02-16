@@ -4,12 +4,12 @@ import MainActions from '../../actions/mainActions';
 import ProjectDetails from './projectDetails.jsx';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
+import DeleteConfirmation from '../../components/globalComponents/deleteConfirmation.jsx';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
+import FolderOptionsMenu from '../folderComponents/folderOptionsMenu.jsx';
 import Header from '../../components/globalComponents/header.jsx';
 import urlGen from '../../../util/urlGen.js';
 import LinearProgress from 'material-ui/lib/linear-progress';
-import Checkbox from 'material-ui/lib/checkbox';
-import Badge from 'material-ui/lib/badge';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 class ProjectChildren extends React.Component {
@@ -61,7 +61,8 @@ class ProjectChildren extends React.Component {
                                         <input className="folderChkBoxes" type="checkbox" name="chkboxName"
                                                value={children.id} onChange={this.handleChange.bind(this)}/>
 
-                                        <div className="item-media"><i className="icon icon-form-checkbox"></i>
+                                        <div className="item-media">
+                                            <i className="icon icon-form-checkbox" style={styles.checkBox}></i>
                                         </div>
                                     </label>
                                 </div>
@@ -93,7 +94,7 @@ class ProjectChildren extends React.Component {
                                                value={children.id} onChange={this.handleChange.bind(this)}/>
 
                                         <div className="item-media">
-                                            <i className="icon icon-form-checkbox"></i>
+                                            <i className="icon icon-form-checkbox" style={styles.checkBox}></i>
                                         </div>
                                     </label>
                                 </div>
@@ -108,7 +109,7 @@ class ProjectChildren extends React.Component {
             <div className="list-container">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <AddFolderModal {...this.props}/>
-                    { this.props.showBatchOps ? <BatchOps {...this.props} {...this.state}/> : null }
+                    { this.props.showBatchOps ? <DeleteConfirmation {...this.props} {...this.state}/> : null }
                     { loading }
                     { uploading }
                 </div>
@@ -156,45 +157,18 @@ class ProjectChildren extends React.Component {
     }
 }
 
-var BatchOps = React.createClass({
-    render() {
-        let files = this.props.filesChecked ? this.props.filesChecked : null;
-        let folders = this.props.foldersChecked ? this.props.foldersChecked : null;
-        return (
-            <div >
-                <Badge
-                    badgeContent={this.props.numSelected}
-                    secondary={true}
-                    badgeStyle={{top: 30, left: 20,  backgroundColor: '#EC407A'}}
-                    style={{float:'right'}}>
-                    <RaisedButton label="Delete" labelStyle={{color: '#EC407A', paddingLeft: 40}} style={styles.batchOpsButton} onTouchTap={() => this.handleBatchDelete(files, folders)}/>
-                </Badge>
-            </div>
-        )
-    },
-    handleBatchDelete(files, folders){
-        let parentId = this.props.entityObj && this.props.entityObj.parent ? this.props.entityObj.parent.id : this.props.project.id;
-        let parentKind = this.props.entityObj && this.props.entityObj.parent ? this.props.entityObj.parent.kind : 'dds-project';
-        for (let i = 0; i < files.length; i++) {
-            ProjectActions.deleteFile(files[i], parentId, parentKind);
-        }
-        for (let i = 0; i < folders.length; i++) {
-            ProjectActions.deleteFolder(folders[i], parentId, parentKind);
-        }
-    }
-});
-
 ProjectChildren.contextTypes = {
     muiTheme: React.PropTypes.object
 };
 
 var styles = {
-    batchOpsButton: {
-        marginRight: -10
-    },
     check: {
         float: 'right',
         marginTop: -60
+    },
+    checkBox: {
+        width: 16,
+        height: 16
     },
     checkboxLabel: {
         borderRadius: 25
@@ -209,7 +183,7 @@ var styles = {
     },
     fillerDiv: {
         height: 24,
-        width:32,
+        width: 32,
         float: 'right',
         marginLeft: 51,
         padding: '08px 08px 08px 08px'
