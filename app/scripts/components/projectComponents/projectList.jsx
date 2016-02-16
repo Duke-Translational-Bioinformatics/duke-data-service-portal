@@ -47,7 +47,6 @@ class ProjectList extends React.Component {
                     </div>
                     <AddProjectModal {...this.props} />
                     { loading }
-                    { uploading }
                 </div>
                 { error }
                 { projects }

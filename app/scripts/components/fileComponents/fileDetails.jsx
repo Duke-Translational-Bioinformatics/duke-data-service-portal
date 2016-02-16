@@ -127,6 +127,7 @@ class FileDetails extends React.Component {
 var styles = {
     container: {
         marginTop: 30,
+        marginBottom: 30,
         position: 'relative',
         overflow: 'visible',
         padding: '10px 0px 10px 0px'
