@@ -31,6 +31,7 @@ class FolderOptionsMenu extends React.Component {
             <FlatButton
                 label="DELETE"
                 secondary={true}
+                keyboardFocused={true}
                 onTouchTap={this.handleDeleteButton.bind(this)} />
         ];
         let editActions = [
@@ -41,6 +42,7 @@ class FolderOptionsMenu extends React.Component {
             <FlatButton
                 label="UPDATE"
                 secondary={true}
+                keyboardFocused={true}
                 onTouchTap={this.handleUpdateButton.bind(this)} />
         ];
         let fName = this.props.entityObj ? this.props.entityObj.name : null;
