@@ -27,6 +27,7 @@ class FileOptionsMenu extends React.Component {
             <FlatButton
                 label="DELETE"
                 secondary={true}
+                keyboardFocused={true}
                 onTouchTap={this.handleDeleteButton.bind(this)} />
         ];
         let editActions = [
@@ -37,6 +38,7 @@ class FileOptionsMenu extends React.Component {
             <FlatButton
                 label="UPDATE"
                 secondary={true}
+                keyboardFocused={true}
                 onTouchTap={this.handleUpdateButton.bind(this)} />
         ];
         let fileName = this.props.entityObj ? this.props.entityObj.name : null;

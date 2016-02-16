@@ -27,6 +27,7 @@ class AddFolderModal extends React.Component {
             <FlatButton
                 label="Submit"
                 secondary={true}
+                keyboardFocused={true}
                 onTouchTap={this.handleFolderButton.bind(this)}/>
         ];
 

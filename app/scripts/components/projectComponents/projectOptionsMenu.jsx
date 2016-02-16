@@ -34,6 +34,7 @@ class ProjectOptionsMenu extends React.Component {
             <FlatButton
                 label="DELETE"
                 secondary={true}
+                keyboardFocused={true}
                 onTouchTap={this.handleDeleteButton.bind(this)} />
         ];
         let editActions = [
@@ -44,6 +45,7 @@ class ProjectOptionsMenu extends React.Component {
             <FlatButton
                 label="UPDATE"
                 secondary={true}
+                keyboardFocused={true}
                 onTouchTap={this.handleUpdateButton.bind(this)} />
         ];
         let memberActions = [
@@ -54,6 +56,7 @@ class ProjectOptionsMenu extends React.Component {
             <FlatButton
                 label="ADD"
                 secondary={true}
+                keyboardFocused={true}
                 onTouchTap={this.handleMemberButton.bind(this)} />
         ];
 
