@@ -28,7 +28,6 @@ class ProjectChildren extends React.Component {
                 return <div key={'pgrs'+uploadId}>
                     <LinearProgress mode="determinate" color={'#EC407A'} style={styles.uploader}
                                     value={upload.uploadProgress} max={100} min={0}/>
-
                     <div className="mdl-color-text--grey-600" style={styles.uploadText}>
                         {upload.uploadProgress.toFixed(2) + '% of ' + upload.name } uploaded...
                     </div>
@@ -62,9 +61,6 @@ class ProjectChildren extends React.Component {
                                          style={styles.title}>{ children.name }</div>
                                 </div>
                                 <div className="item-subtitle mdl-color-text--grey-600">ID: { children.id }</div>
-                                <div className="item-after" style={styles.check}>
-
-                                </div>
                             </div>
                         </a>
                     </li>
@@ -84,8 +80,8 @@ class ProjectChildren extends React.Component {
                                     <i className="icon icon-form-checkbox" style={styles.checkBox}></i>
                                 </div>
                             </label>
-                            <div className="item-media"><i className="material-icons"
-                                                           style={styles.icon}>description</i>
+                            <div className="item-media">
+                                <i className="material-icons" style={styles.icon}>description</i>
                             </div>
                             <div className="item-inner">
                                 <div className="item-title-row">

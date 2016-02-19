@@ -27,7 +27,6 @@ class FolderChildren extends React.Component {
                 return <div key={'pgrs'+uploadId}>
                     <LinearProgress mode="determinate" color={'#EC407A'} style={styles.uploader}
                                     value={upload.uploadProgress} max={100} min={0}/>
-
                     <div className="mdl-color-text--grey-600" style={styles.uploadText}>
                         {upload.uploadProgress.toFixed(2) + '% of ' + upload.name } uploaded...
                     </div>
@@ -49,12 +48,11 @@ class FolderChildren extends React.Component {
                             <label className="label-checkbox item-content" style={styles.checkboxLabel} onClick={e => this.change()}>
                                 <input className="folderChkBoxes" type="checkbox" name="chkboxName"
                                        value={children.id} />
-
                                 <div className="item-media"><i className="icon icon-form-checkbox" style={styles.checkBox}></i>
                                 </div>
                             </label>
-                            <div className="item-media"><i className="material-icons"
-                                                           style={styles.icon}>folder</i>
+                            <div className="item-media">
+                                <i className="material-icons" style={styles.icon}>folder</i>
                             </div>
                             <div className="item-inner">
                                 <div className="item-title-row">
@@ -81,8 +79,8 @@ class FolderChildren extends React.Component {
                                     <i className="icon icon-form-checkbox" style={styles.checkBox}></i>
                                 </div>
                             </label>
-                            <div className="item-media"><i className="material-icons"
-                                                           style={styles.icon}>description</i>
+                            <div className="item-media">
+                                <i className="material-icons" style={styles.icon}>description</i>
                             </div>
                             <div className="item-inner" >
                                 <div className="item-title-row">
