@@ -47,8 +47,14 @@ class ProjectChildren extends React.Component {
                         <div style={styles.fillerDiv}>{/*temporary filler div until add dropdown menu*/}</div>
                         <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + "/folder/" + children.id}
                            className="item-content external">
-                            <div className="item-media"><i className="material-icons"
-                                                           style={styles.icon}>folder</i>
+                            <label className="label-checkbox item-content" style={styles.checkboxLabel} onClick={e => this.change()}>
+                                <input className="folderChkBoxes" type="checkbox" name="chkboxName" value={children.id}/>
+                                <div className="item-media">
+                                    <i className="icon icon-form-checkbox" style={styles.checkBox}></i>
+                                </div>
+                            </label>
+                            <div className="item-media">
+                                <i className="material-icons" style={styles.icon}>folder</i>
                             </div>
                             <div className="item-inner">
                                 <div className="item-title-row">
@@ -57,14 +63,7 @@ class ProjectChildren extends React.Component {
                                 </div>
                                 <div className="item-subtitle mdl-color-text--grey-600">ID: { children.id }</div>
                                 <div className="item-after" style={styles.check}>
-                                    <label className="label-checkbox item-content" style={styles.checkboxLabel}>
-                                        <input className="folderChkBoxes" type="checkbox" name="chkboxName"
-                                               value={children.id} onChange={this.handleChange.bind(this)}/>
 
-                                        <div className="item-media">
-                                            <i className="icon icon-form-checkbox" style={styles.checkBox}></i>
-                                        </div>
-                                    </label>
                                 </div>
                             </div>
                         </a>
@@ -79,6 +78,12 @@ class ProjectChildren extends React.Component {
                         </a>
                         <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + "/file/" + children.id}
                            className="item-content external">
+                            <label className="label-checkbox item-content" style={styles.checkboxLabel} onClick={e => this.change()}>
+                                <input className="fileChkBoxes" type="checkbox" name="chkboxName" value={children.id} />
+                                <div className="item-media">
+                                    <i className="icon icon-form-checkbox" style={styles.checkBox}></i>
+                                </div>
+                            </label>
                             <div className="item-media"><i className="material-icons"
                                                            style={styles.icon}>description</i>
                             </div>
@@ -88,16 +93,6 @@ class ProjectChildren extends React.Component {
                                          style={styles.title}>{ children.name }</div>
                                 </div>
                                 <div className="item-subtitle mdl-color-text--grey-600">ID: { children.id }</div>
-                                <div className="item-after" style={styles.check}>
-                                    <label className="label-checkbox item-content" style={styles.checkboxLabel}>
-                                        <input className="fileChkBoxes" type="checkbox" name="chkboxName"
-                                               value={children.id} onChange={this.handleChange.bind(this)}/>
-
-                                        <div className="item-media">
-                                            <i className="icon icon-form-checkbox" style={styles.checkBox}></i>
-                                        </div>
-                                    </label>
-                                </div>
                             </div>
                         </a>
                     </li>
@@ -123,6 +118,14 @@ class ProjectChildren extends React.Component {
                 </div>
             </div>
         );
+    }
+
+    change() {
+        // clicking on F7 input[checkbox] does not fire onChange in iOS or Android. Instead, set onClick to label
+        // and wait for F7 to change the form before getting the form values. sheesh
+        setTimeout( () => {
+            this.handleChange()
+        }, 100);
     }
 
     handleChange() {
@@ -162,13 +165,12 @@ ProjectChildren.contextTypes = {
 };
 
 var styles = {
-    check: {
-        float: 'right',
-        marginTop: -60
-    },
     checkBox: {
         width: 16,
-        height: 16
+        height: 16,
+        marginBottom: 21,
+        marginRight: 20
+
     },
     checkboxLabel: {
         borderRadius: 25
@@ -178,7 +180,7 @@ var styles = {
         fontSize: 18,
         color: '#EC407A',
         marginTop: 6,
-        marginLeft: 35,
+        marginLeft: 15,
         padding: '08px 08px 08px 08px'
     },
     fillerDiv: {
@@ -189,7 +191,9 @@ var styles = {
         padding: '08px 08px 08px 08px'
     },
     icon: {
-        fontSize: 36
+        fontSize: 36,
+        marginTop: 4
+
     },
     list: {
         paddingTop: 40
