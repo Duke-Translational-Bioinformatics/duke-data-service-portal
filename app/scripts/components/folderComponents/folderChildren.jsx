@@ -63,7 +63,6 @@ class FolderChildren extends React.Component {
                             <label className="label-checkbox item-content"  style={styles.checkboxLabel} onClick={e => this.change()}>
                                 <input className="fileChkBoxes" type="checkbox" name="chkboxName"
                                        value={children.id}/>
-
                                 <div className="item-media">
                                     <i className="icon icon-form-checkbox" style={styles.checkBox}></i>
                                 </div>
