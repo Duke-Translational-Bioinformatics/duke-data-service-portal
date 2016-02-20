@@ -1,9 +1,10 @@
 import React from 'react';
 import { RouteHandler, Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
+import AddProjectModal from '../projectComponents/addProjectModal.jsx';
 import AccountOverview from '../../components/globalComponents/accountOverview.jsx';
 import Header from '../../components/globalComponents/header.jsx';
-import AddProjectModal from '../projectComponents/addProjectModal.jsx';
+import Loaders from '../../components/globalComponents/loaders.jsx';
 import urlGen from '../../../util/urlGen.js';
 import LinearProgress from 'material-ui/lib/linear-progress';
 import Card from 'material-ui/lib/card/card';
@@ -15,14 +16,14 @@ class ProjectList extends React.Component {
     }
 
     render() {
-        let loading = this.props.loading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader"></div> : '';
-        var error = '';
-        if(this.props.error)
-            error = (<p className="mdl-color-text--grey-400">{this.props.error}</p>);
+        if (this.props.error && this.props.error.response){
+            this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
+            this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
+        }
         let projects = this.props.projects.map((project) => {
             if (!project.is_deleted){
                 return (
-                    <Card key={ project.id } style={styles.cardSquare} className="card mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
+                    <Card key={ project.id } style={styles.cardSquare} className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
                         <div className="mdl-card__title mdl-card--expand">
                             <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>content_paste</i>
                             <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + "/project/" + project.id} className="external">
@@ -46,9 +47,8 @@ class ProjectList extends React.Component {
                         <h4>Projects</h4>
                     </div>
                     <AddProjectModal {...this.props} />
-                    { loading }
+                    <Loaders {...this.props}/>
                 </div>
-                { error }
                 { projects }
             </div>
         );
@@ -90,7 +90,7 @@ var styles = {
 ProjectList.propTypes = {
     loading: React.PropTypes.bool,
     projects: React.PropTypes.array,
-    error: React.PropTypes.string,
+    error: React.PropTypes.object,
     is_deleted: React.PropTypes.bool
 };
 

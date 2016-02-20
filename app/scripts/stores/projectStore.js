@@ -10,6 +10,8 @@ var ProjectStore = Reflux.createStore({
         this.audit = {};
         this.children = [];
         this.currentUser = {};
+        this.error = {};
+        this.errorModal = false;
         this.projects = [];
         this.project = {};
         this.entityObj = {};
@@ -40,17 +42,27 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
+    closeErrorModal(){
+        this.errorModal = false;
+        this.trigger({
+            errorModal: this.errorModal
+        });
+    },
+
+    handleErrors () {
+        this.errorModal = error && error.response.status === 403 ? true : false;
+        let err = error && error.message ? {msg: error.message, response: error.response.status} : null;
+        this.trigger({
+            error: err,
+            errorModal: this.errorModal,
+            loading: false
+        })
+    },
+
     getUserSuccess (json) {
         this.currentUser = json;
         this.trigger({
             currentUser: this.currentUser
-        });
-    },
-
-    getUserError (error) {
-        let msg = error && error.message ? error.message : 'An error occurred.';
-        this.trigger({
-            error: msg
         });
     },
 
@@ -64,14 +76,6 @@ var ProjectStore = Reflux.createStore({
         this.projects = results;
         this.trigger({
             projects: this.projects,
-            loading: false
-        })
-    },
-
-    loadProjectsError(error) {
-        let msg = error && error.message ? "Error: " : +'An error occurred while loading projects.';
-        this.trigger({
-            error: msg,
             loading: false
         })
     },
@@ -90,14 +94,6 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    loadProjectChildrenError(error) {
-        let msg = error && error.message ? "Error: " : +'An error occurred while loading projects.';
-        this.trigger({
-            error: msg,
-            loading: false
-        })
-    },
-
     showDetails() {
         this.trigger({
             loading: true
@@ -108,14 +104,6 @@ var ProjectStore = Reflux.createStore({
         this.project = json;
         this.trigger({
             project: this.project,
-            loading: false
-        })
-    },
-
-    showDetailsError(error) {
-        let msg = error && error.message ? "Error: " + error : '';
-        this.trigger({
-            error: msg,
             loading: false
         })
     },
@@ -133,14 +121,6 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    addProjectError(error) {
-        let msg = error && error.message ? "Error: " + error : '';
-        this.trigger({
-            error: msg,
-            loading: false
-        })
-    },
-
     deleteProject() {
         this.trigger({
             loading: true
@@ -152,14 +132,6 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             loading: false
         })
-    },
-
-    deleteProjectError(error) {
-        let msg = error && error.message ? "Error: " + error : '';
-        this.trigger({
-            error: msg,
-            loading: false
-        });
     },
 
     editProject(id) {
@@ -176,14 +148,6 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    editProjectError(error) {
-        let msg = error && error.message ? "Error: " + error : '';
-        this.trigger({
-            error: msg,
-            loading: false
-        });
-    },
-
     loadFolderChildren() {
         this.trigger({
             loading: true
@@ -194,14 +158,6 @@ var ProjectStore = Reflux.createStore({
         this.children = results;
         this.trigger({
             children: this.children,
-            loading: false
-        })
-    },
-
-    loadFolderChildrenError(error) {
-        let msg = error && error.message ? "Error: " + error : '';
-        this.trigger({
-            error: msg,
             loading: false
         })
     },
@@ -223,14 +179,6 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    addFolderError(error) {
-        let msg = error && error.message ? "Error: " + error : '';
-        this.trigger({
-            error: msg,
-            loading: false
-        });
-    },
-
     deleteFolder() {
         this.trigger({
             loading: true
@@ -250,14 +198,6 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    deleteFolderError(error) {
-        let errMsg = error && error.message ? 'Error: ' + error : '';
-        this.trigger({
-            error: errMsg,
-            loading: false
-        });
-    },
-
     editFolder() {
         this.trigger({
             loading: true
@@ -271,14 +211,6 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             loading: false
         })
-    },
-
-    editFolderError(error) {
-        let msg = error && error.message ? "Error: " : +'An error occurred while trying to edit this project.';
-        this.trigger({
-            error: msg,
-            loading: false
-        });
     },
 
     addFile() {
@@ -301,13 +233,6 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    addFileError(error) {
-        let msg = error && error.message ? "Error: " + error : '';
-        this.trigger({
-            error: msg,
-            loading: false
-        });
-    },
 
     deleteFile() {
         this.trigger({
@@ -328,14 +253,6 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    deleteFileError(error) {
-        let errMsg = error && error.message ? "Error: " : +'An error occurred while trying to delete this file.';
-        this.trigger({
-            error: errMsg,
-            loading: false
-        });
-    },
-
     editFile() {
         this.trigger({
             loading: true
@@ -349,15 +266,6 @@ var ProjectStore = Reflux.createStore({
             loading: false
         })
     },
-
-    editFileError(error) {
-        let errMsg = error && error.message ? "Error: " + error : '';
-        this.trigger({
-            error: errMsg,
-            loading: false
-        });
-    },
-
 
     getEntity() {
         this.trigger({
@@ -373,13 +281,6 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    getEntityError(error) {
-        let errMsg = error && error.message ? "Error: " + error : '';
-        this.trigger({
-            error: errMsg,
-            loading: false
-        });
-    },
 
     getProjectMembers() {
         this.trigger({
@@ -393,14 +294,6 @@ var ProjectStore = Reflux.createStore({
             projectMembers: this.projectMembers,
             loading: false
         })
-    },
-
-    getProjectMembersError(error) {
-        let errMsg = error && error.message ? "Error: " : +'An error occurred while trying to delete this file.';
-        this.trigger({
-            error: errMsg,
-            loading: false
-        });
     },
 
     getUserNameSuccess(results) {
@@ -431,14 +324,6 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    getUserIdError(error) {
-        let errMsg = error && error.message ? "Error: " : +'An error occurred while trying to delete this file.';
-        this.trigger({
-            error: errMsg,
-            loading: false
-        });
-    },
-
     addProjectMember() {
         this.trigger({
             loading: true
@@ -452,14 +337,6 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    addProjectMemberError(error) {
-        let errMsg = error && error.message ? alert('This member could not be added. Check the name and try again or verify they have access to the Duke Data Service application') : '';
-        this.trigger({
-            error: errMsg,
-            loading: false
-        });
-    },
-
     deleteProjectMember() {
         this.trigger({
             loading: true
@@ -471,14 +348,6 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             loading: false
         })
-    },
-
-    deleteProjectMemberError(error) {
-        let errMsg = error && error.message ? "Error: " + error : '';
-        this.trigger({
-            error: errMsg,
-            loading: false
-        });
     },
 
     getDownloadUrl() {
@@ -501,14 +370,6 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    getDownloadUrlError(error) {
-        let msg = error && error.message ? "Error: " : +'An error occurred while loading projects.';
-        this.trigger({
-            error: msg,
-            loading: false
-        })
-    },
-
     getUsageDetails() {
         this.trigger({
             loading: true
@@ -523,15 +384,7 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    getUsageDetailsError(error) {
-        let errMsg = error && error.message ? "Error: " + error : '';
-        this.trigger({
-            error: errMsg,
-            loading: false
-        });
-    },
-
-    startUpload() {
+    startUpload(projId, blob, parentId, parentKind) {
         this.trigger({
             uploading: true
         })
@@ -541,16 +394,8 @@ var ProjectStore = Reflux.createStore({
         this.uploads[uploadId] = details;
         ProjectActions.updateAndProcessChunks(uploadId, null, null);
         this.trigger({
-            uploads: this.uploads,
+            uploads: this.uploads
         })
-    },
-
-    startUploadError(error) {
-        let errMsg = error && error.message ? "Error: " + error : '';
-        this.trigger({
-            error: errMsg,
-            uploading: false
-        });
     },
 
     updateChunkProgress(uploadId, chunkNum, progress) {

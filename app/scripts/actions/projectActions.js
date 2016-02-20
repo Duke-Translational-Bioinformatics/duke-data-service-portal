@@ -8,88 +8,61 @@ import StatusEnum from '../enum';
 import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.js';
 
 var ProjectActions = Reflux.createActions([
-    'showBatchOptions',
     'batchDelete',
+    'closeErrorModal',
     'getUser',
     'getUserSuccess',
-    'getUserError',
     'getUsageDetails',
     'getUsageDetailsSuccess',
-    'getUsageDetailsError',
+    'handleErrors',
     'loadProjects',
     'loadProjectsSuccess',
-    'loadProjectsError',
     'loadProjectChildren',
     'loadProjectChildrenSuccess',
-    'loadProjectChildrenError',
-    'handleFloatingErrorInputChange',
     'addProject',
     'addProjectSuccess',
-    'addProjectError',
     'deleteProject',
     'deleteProjectSuccess',
-    'deleteProjectError',
     'editProject',
     'editProjectSuccess',
-    'editProjectError',
     'showDetails',
     'showDetailsSuccess',
-    'showDetailsError',
     'loadFolderChildren',
     'loadFolderChildrenSuccess',
-    'loadFolderChildrenError',
-    'getFolderInfo',
-    'getFolderInfoSuccess',
-    'getFolderInfoError',
     'addFolder',
     'addFolderSuccess',
-    'addFolderError',
     'deleteFolder',
     'deleteFolderSuccess',
-    'deleteFolderError',
     'editFolder',
     'editFolderSuccess',
-    'editFolderError',
-    'loadFiles',
-    'loadFilesSuccess',
-    'loadFilesError',
     'addFile',
     'addFileSuccess',
-    'addFileError',
     'deleteFile',
     'deleteFileSuccess',
-    'deleteFileError',
     'editFile',
     'editFileSuccess',
-    'editFileError',
     'getEntity',
     'getEntitySuccess',
-    'getEntityError',
     'getProjectMembers',
     'getProjectMembersSuccess',
-    'getProjectMembersError',
     'getUserName',
     'getUserNameSuccess',
     'getUserId',
     'getUserIdSuccess',
-    'getUserIdError',
     'addProjectMember',
     'addProjectMemberSuccess',
-    'addProjectMemberError',
     'deleteProjectMember',
     'deleteProjectMemberSuccess',
-    'deleteProjectMemberError',
     'getDownloadUrl',
     'getDownloadUrlSuccess',
-    'getDownloadUrlError',
+    'showBatchOptions',
     'startUpload',
     'startUploadSuccess',
-    'startUploadError',
     'updateChunkProgress',
     'updateAndProcessChunks',
     'allChunksUploaded',
-    'getChunkUrl',
-    'computeUploadProgress'
+    'uploadError',
+    'getChunkUrl'
 ]);
 
 ProjectActions.getUser.preEmit = () => {
@@ -106,7 +79,7 @@ ProjectActions.getUser.preEmit = () => {
             ProjectActions.getUserSuccess(json)
         })
         .catch(function (ex) {
-            ProjectActions.getUserError(ex)
+            ProjectActions.handleErrors(ex)
         });
 };
 
@@ -122,7 +95,7 @@ ProjectActions.getUsageDetails.preEmit = function () {
     }).then(function (json) {
         ProjectActions.getUsageDetailsSuccess(json)
     }).catch(function (ex) {
-        ProjectActions.getUsageDetailsError(ex)
+        ProjectActions.handleErrors(ex)
     })
 };
 
@@ -138,7 +111,7 @@ ProjectActions.loadProjects.preEmit = function () {
     }).then(function (json) {
         ProjectActions.loadProjectsSuccess(json.results)
     }).catch(function (ex) {
-        ProjectActions.loadProjectsError(ex)
+        ProjectActions.handleErrors(ex)
     })
 };
 
@@ -154,7 +127,7 @@ ProjectActions.loadProjectChildren.preEmit = function (id) {
     }).then(function (json) {
         ProjectActions.loadProjectChildrenSuccess(json.results)
     }).catch(function (ex) {
-        ProjectActions.loadProjectChildrenError(ex)
+        ProjectActions.handleErrors(ex)
     })
 };
 
@@ -170,7 +143,7 @@ ProjectActions.showDetails.preEmit = function (id) {
     }).then(function (json) {
         ProjectActions.showDetailsSuccess(json)
     }).catch(function (ex) {
-        ProjectActions.showDetailsError(ex)
+        ProjectActions.handleErrors(ex)
     })
 };
 
@@ -192,7 +165,7 @@ ProjectActions.addProject.preEmit = function (name, desc) {
         ProjectActions.addProjectSuccess()
     }).catch(function (ex) {
         MainActions.addToast('Failed to add new project');
-        ProjectActions.addProjectError(ex)
+        ProjectActions.handleErrors(ex)
     })
 };
 
@@ -209,7 +182,7 @@ ProjectActions.deleteProject.preEmit = function (id) {
         ProjectActions.deleteProjectSuccess(json)
     }).catch(function (ex) {
         MainActions.addToast('Project Delete Failed');
-        ProjectActions.deleteProjectError(ex)
+        ProjectActions.handleErrors(ex)
     });
 };
 
@@ -232,7 +205,7 @@ ProjectActions.editProject.preEmit = function (id, name, desc) {
         ProjectActions.editProjectSuccess()
     }).catch(function (ex) {
         MainActions.addToast('Project Update Failed');
-        ProjectActions.editProjectError(ex)
+        ProjectActions.handleErrors(ex)
     });
 };
 
@@ -248,7 +221,7 @@ ProjectActions.loadFolderChildren.preEmit = function (id) {
     }).then(function (json) {
         ProjectActions.loadFolderChildrenSuccess(json.results)
     }).catch(function (ex) {
-        ProjectActions.loadFolderChildrenError(ex)
+        ProjectActions.handleErrors(ex)
     })
 };
 
@@ -273,7 +246,7 @@ ProjectActions.addFolder.preEmit = function (id, parentKind, name) {
         ProjectActions.addFolderSuccess(id, parentKind);
     }).catch(function (ex) {
         MainActions.addToast('Failed to Add a New Folder');
-        ProjectActions.addFolderError(ex)
+        ProjectActions.handleErrors(ex)
     })
 };
 
@@ -291,7 +264,7 @@ ProjectActions.deleteFolder.preEmit = function (id, parentId, parentKind) {
         ProjectActions.deleteFolderSuccess(parentId, parentKind)
     }).catch(function (ex) {
         MainActions.addToast('Folder Deleted Failed!');
-        ProjectActions.deleteFolderError(ex)
+        ProjectActions.handleErrors(ex)
     });
 };
 
@@ -313,7 +286,7 @@ ProjectActions.editFolder.preEmit = function (id, name) {
         ProjectActions.editFolderSuccess(id)
     }).catch(function (ex) {
         MainActions.addToast('Failed to Update Folder');
-        ProjectActions.editFolderError(ex)
+        ProjectActions.handleErrors(ex)
     });
 };
 
@@ -330,7 +303,7 @@ ProjectActions.deleteFile.preEmit = function (id, parentId, parentKind) {
         ProjectActions.deleteFileSuccess(parentId, parentKind)
     }).catch(function (ex) {
         MainActions.addToast('Failed to Delete File!');
-        ProjectActions.deleteFileError(ex)
+        ProjectActions.handleErrors(ex)
     });
 };
 
@@ -351,7 +324,7 @@ ProjectActions.editFile.preEmit = function (id, fileName) {
         ProjectActions.editFileSuccess(id)
     }).catch(function (ex) {
         MainActions.addToast('Failed to Update File');
-        ProjectActions.editFileError(ex)
+        ProjectActions.handleErrors(ex)
     });
 };
 
@@ -368,7 +341,7 @@ ProjectActions.getEntity.preEmit = (id, kind) => {
         ProjectActions.getEntitySuccess(json)
     })
         .catch(function (ex) {
-            ProjectActions.getEntityError(ex)
+            ProjectActions.handleErrors(ex)
         });
 };
 
@@ -385,12 +358,12 @@ ProjectActions.getProjectMembers.preEmit = (id) => {
         ProjectActions.getProjectMembersSuccess(json.results)
     })
         .catch(function (ex) {
-            ProjectActions.getProjectMembersError(ex)
+            ProjectActions.handleErrors(ex)
         });
 };
 
 ProjectActions.getUserName.preEmit = (text) => {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + text, {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + text , {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -402,7 +375,7 @@ ProjectActions.getUserName.preEmit = (text) => {
         ProjectActions.getUserNameSuccess(json.results)
     })
         .catch(function (ex) {
-            ProjectActions.getUserIdError(ex)
+            console.log('Error occurred while filling autocomplete field');
         });
 };
 
@@ -419,7 +392,7 @@ ProjectActions.getUserId.preEmit = (fullName, id, role) => {
         ProjectActions.getUserIdSuccess(json.results, id, role)
     })
         .catch(function (ex) {
-            ProjectActions.getUserIdError(ex)
+            ProjectActions.handleErrors(ex)
         });
 };
 
@@ -441,7 +414,7 @@ ProjectActions.addProjectMember.preEmit = (id, userId, role, name) => {
     })
         .catch(function (ex) {
             MainActions.addToast('Could not add member to this project or member does not exist');
-            ProjectActions.addProjectMemberError(ex)
+            ProjectActions.handleErrors(ex)
         });
 };
 
@@ -459,7 +432,7 @@ ProjectActions.deleteProjectMember.preEmit = (id, userId, userName) => {
     })
         .catch(function (ex) {
             MainActions.addToast('Unable to remove ' + userName + ' from this project');
-            ProjectActions.deleteProjectMemberError(ex)
+            ProjectActions.handleErrors(ex)
         });
 };
 
@@ -475,7 +448,7 @@ ProjectActions.getDownloadUrl.preEmit = function (id) {
     }).then(function (json) {
         ProjectActions.getDownloadUrlSuccess(json)
     }).catch(function (ex) {
-        ProjectActions.getDownloadUrlError(ex)
+        ProjectActions.handleErrors(ex)
     })
 };
 
@@ -540,11 +513,11 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
             if (!uploadObj || !uploadObj.id) throw "Problem, no upload created";
             ProjectActions.startUploadSuccess(uploadObj.id, details);
         }).catch(function (ex) {
-            ProjectActions.startUploadError(ex)
+            ProjectActions.handleErrors(ex)
         })
     };
     fileReader.onerror = function (e) {
-        ProjectActions.startUploadError();
+        ProjectActions.handleErrors();
         console.log("error", e);
         console.log(e.target.error.message);
     };
@@ -597,7 +570,7 @@ function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKi
     xhr.upload.onprogress = uploadProgress;
     function uploadProgress(e) {
         if (e.lengthComputable) {
-            ProjectActions.updateChunkProgress(uploadId, chunkNum, e.loaded / e.total * (chunkBlob.size));
+            ProjectActions.updateChunkProgress(uploadId, chunkNum, e.loaded/e.total * (chunkBlob.size));
         }
     }
 
@@ -656,7 +629,7 @@ ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind, fileN
         ProjectActions.addFileSuccess(parentId, parentKind, uploadId)
     }).catch(function (ex) {
         MainActions.addToast('Failed to upload ' + fileName + '!');
-        ProjectActions.addFileError(ex)
+        ProjectActions.handleErrors(ex)
     })
 };
 

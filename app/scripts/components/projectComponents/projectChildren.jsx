@@ -5,12 +5,15 @@ import ProjectDetails from './projectDetails.jsx';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import DeleteConfirmation from '../../components/globalComponents/deleteConfirmation.jsx';
+import ErrorModal from '../../components/globalComponents/errorModal.jsx';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
 import FolderOptionsMenu from '../folderComponents/folderOptionsMenu.jsx';
 import Header from '../../components/globalComponents/header.jsx';
+import Loaders from '../../components/globalComponents/loaders.jsx';
 import urlGen from '../../../util/urlGen.js';
 import LinearProgress from 'material-ui/lib/linear-progress';
 import RaisedButton from 'material-ui/lib/raised-button';
+import Card from 'material-ui/lib/card';
 
 class ProjectChildren extends React.Component {
 
@@ -28,6 +31,7 @@ class ProjectChildren extends React.Component {
                 return <div key={'pgrs'+uploadId}>
                     <LinearProgress mode="determinate" color={'#EC407A'} style={styles.uploader}
                                     value={upload.uploadProgress} max={100} min={0}/>
+
                     <div className="mdl-color-text--grey-600" style={styles.uploadText}>
                         {upload.uploadProgress.toFixed(2) + '% of ' + upload.name } uploaded...
                     </div>
@@ -36,9 +40,10 @@ class ProjectChildren extends React.Component {
         }
         let loading = this.props.loading ?
             <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader"></div> : '';
-        var error = '';
-        if (this.props.error)
-            error = (<h5 className='mdl-color-text--grey-600'>{this.props.error}</h5>);
+        if (this.props.error && this.props.error.response){
+            this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
+            this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
+        }
         let projectChildren = this.props.children.map((children) => {
             if (children.kind === 'dds-folder') {
                 return (
@@ -61,6 +66,9 @@ class ProjectChildren extends React.Component {
                                          style={styles.title}>{ children.name }</div>
                                 </div>
                                 <div className="item-subtitle mdl-color-text--grey-600">ID: { children.id }</div>
+                                <div className="item-after" style={styles.check}>
+
+                                </div>
                             </div>
                         </a>
                     </li>
@@ -80,8 +88,8 @@ class ProjectChildren extends React.Component {
                                     <i className="icon icon-form-checkbox" style={styles.checkBox}></i>
                                 </div>
                             </label>
-                            <div className="item-media">
-                                <i className="material-icons" style={styles.icon}>description</i>
+                            <div className="item-media"><i className="material-icons"
+                                                           style={styles.icon}>description</i>
                             </div>
                             <div className="item-inner">
                                 <div className="item-title-row">
@@ -100,11 +108,10 @@ class ProjectChildren extends React.Component {
             <div className="list-container">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <AddFolderModal {...this.props}/>
+                    <ErrorModal {...this.props}/>
                     { this.props.showBatchOps ? <DeleteConfirmation {...this.props} {...this.state}/> : null }
-                    { loading }
-                    { uploading }
+                    { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
                 </div>
-                { error }
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     <div className="list-block list-block-search searchbar-found media-list" style={styles.listBlock}>
                         <ul>
@@ -199,22 +206,14 @@ var styles = {
     },
     title: {
         marginRight: 40
-    },
-    uploader: {
-        width: '95%',
-        margin: '0 auto'
-    },
-    uploadText: {
-        textAlign: 'left',
-        marginLeft: 31,
-        fontSize: 13
     }
 };
+
 
 ProjectChildren.propTypes = {
     loading: React.PropTypes.bool,
     uploading: React.PropTypes.bool,
-    error: React.PropTypes.string
+    error: React.PropTypes.object
 };
 
 export default ProjectChildren;
