@@ -4,8 +4,10 @@ import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
 import DeleteConfirmation from '../../components/globalComponents/deleteConfirmation.jsx';
+import ErrorModal from '../../components/globalComponents/errorModal.jsx';
 import FolderOptionsMenu from '../folderComponents/folderOptionsMenu.jsx';
 import Header from '../../components/globalComponents/header.jsx';
+import Loaders from '../../components/globalComponents/loaders.jsx';
 import urlGen from '../../../util/urlGen.js';
 import Badge from 'material-ui/lib/badge';
 import LinearProgress from 'material-ui/lib/linear-progress';
@@ -20,24 +22,10 @@ class FolderChildren extends React.Component {
     }
 
     render() {
-        let uploading = null;
-        if (this.props.uploads) {
-            uploading = Object.keys(this.props.uploads).map(uploadId => {
-                let upload = this.props.uploads[uploadId];
-                return <div key={'pgrs'+uploadId}>
-                    <LinearProgress mode="determinate" color={'#EC407A'} style={styles.uploader}
-                                    value={upload.uploadProgress} max={100} min={0}/>
-                    <div className="mdl-color-text--grey-600" style={styles.uploadText}>
-                        {upload.uploadProgress.toFixed(2) + '% of ' + upload.name } uploaded...
-                    </div>
-                </div>;
-            });
+        if (this.props.error && this.props.error.response){
+            this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
+            this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
         }
-        let loading = this.props.loading ?
-            <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader"></div> : '';
-        var error = '';
-        if (this.props.error)
-            error = (<h5 className='mdl-color-text--grey-600'>{this.props.error}</h5>);
         let folderChildren = this.props.children.map((children) => {
             if (children.kind === 'dds-folder') {
                 return (
@@ -51,8 +39,8 @@ class FolderChildren extends React.Component {
                                 <div className="item-media"><i className="icon icon-form-checkbox" style={styles.checkBox}></i>
                                 </div>
                             </label>
-                            <div className="item-media">
-                                <i className="material-icons" style={styles.icon}>folder</i>
+                            <div className="item-media"><i className="material-icons"
+                                                           style={styles.icon}>folder</i>
                             </div>
                             <div className="item-inner">
                                 <div className="item-title-row">
@@ -75,12 +63,13 @@ class FolderChildren extends React.Component {
                             <label className="label-checkbox item-content"  style={styles.checkboxLabel} onClick={e => this.change()}>
                                 <input className="fileChkBoxes" type="checkbox" name="chkboxName"
                                        value={children.id}/>
+
                                 <div className="item-media">
                                     <i className="icon icon-form-checkbox" style={styles.checkBox}></i>
                                 </div>
                             </label>
-                            <div className="item-media">
-                                <i className="material-icons" style={styles.icon}>description</i>
+                            <div className="item-media"><i className="material-icons"
+                                                           style={styles.icon}>description</i>
                             </div>
                             <div className="item-inner" >
                                 <div className="item-title-row">
@@ -98,11 +87,10 @@ class FolderChildren extends React.Component {
             <div className="list-container">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <AddFolderModal {...this.props}/>
+                    <ErrorModal {...this.props}/>
                     { this.props.showBatchOps ? <DeleteConfirmation {...this.props} {...this.state}/> : null }
-                    { loading }
-                    { uploading }
+                    { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
                 </div>
-                { error }
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     <div className="list-block list-block-search searchbar-found media-list" style={styles.listBlock}>
                         <ul>
@@ -195,22 +183,13 @@ var styles = {
     },
     title: {
         marginRight: 40
-    },
-    uploader: {
-        width: '95%',
-        margin: '0 auto'
-    },
-    uploadText: {
-        textAlign: 'left',
-        marginLeft: 31,
-        fontSize: 13
     }
 };
 
 FolderChildren.propTypes = {
     loading: React.PropTypes.bool,
     children: React.PropTypes.array,
-    error: React.PropTypes.string
+    error: React.PropTypes.object
 };
 
 export default FolderChildren;

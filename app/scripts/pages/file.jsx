@@ -9,6 +9,8 @@ class File extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            error: ProjectStore.error,
+            errorModal: ProjectStore.errorModal,
             loading: false,
             project: ProjectStore.project
         };
