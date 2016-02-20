@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import Header from '../components/globalComponents/header.jsx';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions.js';
+import RaisedButton from 'material-ui/lib/raised-button';
 
 class Login extends React.Component {
 
@@ -24,7 +25,6 @@ class Login extends React.Component {
         return this.state.appConfig.authServiceUri + "/authenticate?client_id=" + this.state.appConfig.serviceId + "&state=" + this.state.appConfig.securityState;
     }
 
-
     render() {
         let content = '';
         if (!this.state.appConfig.apiToken) {
@@ -32,11 +32,12 @@ class Login extends React.Component {
                 <div className="mdl-cell mdl-cell--12-col mdl-shadow--2dp" style={styles.loginWrapper}>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--white">
                         <img src="images/dukeDSLogo.png" style={styles.logo}/>
-                        <h1>Duke Data Service</h1>
-                        <a href={this.createLoginUrl()} className="external" onClick={MainActions.isLoggedInHandler}>
-                            <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--raised mdl-color-text--white" style={styles.loginButton}>
-                                LOGIN
-                            </button>
+                        <h2 style={{fontWeight: '100'}}>Duke Data Service</h2>
+                        <a href={this.createLoginUrl()} className="external">
+                            <RaisedButton label="Login" labelStyle={{fontWeight: '400'}} labelColor={'#f9f9f9'}
+                                          backgroundColor={'#0680CD'} style={{marginBottom: 10, width: 150}}
+                                          onClick={MainActions.isLoggedInHandler}>
+                            </RaisedButton>
                         </a>
                     </div>
                 </div>
@@ -67,7 +68,6 @@ class Login extends React.Component {
             </div>
         );
     }
-
 }
 
 var styles = {
@@ -81,11 +81,6 @@ var styles = {
     },
     logo: {
         maxWidth: '10%'
-    },
-    loginButton: {
-        width: 100,
-        backgroundColor: '#0680CD',
-        marginBottom: 10
     },
     loader: {
         margin: '0 auto'
