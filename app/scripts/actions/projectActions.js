@@ -476,7 +476,7 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
         chunks: []
     };
     // describe chunk details
-    while (start < SIZE) {
+    while (start <= SIZE) {
         slicedFile = blob.slice(start, end);
         details.chunks.push({
             number: chunkNum,
