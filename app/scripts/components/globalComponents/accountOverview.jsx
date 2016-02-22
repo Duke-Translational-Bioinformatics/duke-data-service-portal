@@ -71,7 +71,7 @@ AccountOverview.contextTypes = {
 AccountOverview.propTypes = {
     loading: React.PropTypes.bool,
     account: React.PropTypes.array,
-    error: React.PropTypes.string
+    error: React.PropTypes.object
 };
 
 export default AccountOverview;

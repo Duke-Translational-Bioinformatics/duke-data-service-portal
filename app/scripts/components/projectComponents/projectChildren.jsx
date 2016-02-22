@@ -24,22 +24,6 @@ class ProjectChildren extends React.Component {
     }
 
     render() {
-        let uploading = null;
-        if (this.props.uploads) {
-            uploading = Object.keys(this.props.uploads).map(uploadId => {
-                let upload = this.props.uploads[uploadId];
-                return <div key={'pgrs'+uploadId}>
-                    <LinearProgress mode="determinate" color={'#EC407A'} style={styles.uploader}
-                                    value={upload.uploadProgress} max={100} min={0}/>
-
-                    <div className="mdl-color-text--grey-600" style={styles.uploadText}>
-                        {upload.uploadProgress.toFixed(2) + '% of ' + upload.name } uploaded...
-                    </div>
-                </div>;
-            });
-        }
-        let loading = this.props.loading ?
-            <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader"></div> : '';
         if (this.props.error && this.props.error.response){
             this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
             this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
@@ -208,7 +192,6 @@ var styles = {
         marginRight: 40
     }
 };
-
 
 ProjectChildren.propTypes = {
     loading: React.PropTypes.bool,
