@@ -132,7 +132,7 @@ var styles = {
     },
     floatingButton: {
         position: 'absolute',
-        top: -42,
+        top: -50,
         marginRight: 17,
         right: '2%',
         zIndex: '2',

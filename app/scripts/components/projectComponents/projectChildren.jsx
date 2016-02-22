@@ -174,7 +174,7 @@ var styles = {
         height: 24,
         width: 32,
         float: 'right',
-        marginLeft: 51,
+        marginLeft: 32,
         padding: '08px 08px 08px 08px'
     },
     icon: {
