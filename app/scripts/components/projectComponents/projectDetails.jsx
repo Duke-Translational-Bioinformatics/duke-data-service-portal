@@ -232,7 +232,7 @@ ProjectDetails.contextTypes = {
 ProjectDetails.propTypes = {
     loading: React.PropTypes.bool,
     details: React.PropTypes.array,
-    error: React.PropTypes.string
+    error: React.PropTypes.object
 };
 
 export default ProjectDetails;
