@@ -134,15 +134,14 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    editProject(id) {
-        ProjectActions.showDetails(id);
+    editProject() {
         this.trigger({
             loading: true
         })
     },
 
-    editProjectSuccess() {
-        ProjectActions.loadProjects();
+    editProjectSuccess(id) {
+        ProjectActions.showDetails(id);
         this.trigger({
             loading: false
         })

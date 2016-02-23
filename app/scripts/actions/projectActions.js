@@ -202,7 +202,7 @@ ProjectActions.editProject.preEmit = function (id, name, desc) {
         return response.json()
     }).then(function (json) {
         MainActions.addToast('Project Updated');
-        ProjectActions.editProjectSuccess()
+        ProjectActions.editProjectSuccess(id)
     }).catch(function (ex) {
         MainActions.addToast('Project Update Failed');
         ProjectActions.handleErrors(ex)
