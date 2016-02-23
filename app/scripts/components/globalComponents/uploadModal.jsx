@@ -54,7 +54,7 @@ class UploadModal extends React.Component {
                     onRequestClose={this.handleClose.bind(this)}
                     open={this.state.open}>
                     <form action='#' id='newFileForm'>
-                        <div className="mdl-textfield mdl-textfield--file">
+                        <div className="mdl-cell mdl-cell--6-col mdl-textfield mdl-textfield--file">
                             <textarea className="mdl-textfield__input mdl-color-text--grey-800" placeholder="Files" type="text" id="uploadFile" rows="3" readOnly></textarea>
                             <div className="mdl-button mdl-button--icon mdl-button--file">
                                 <i className="material-icons" style={styles.iconColor}>attach_file</i>

@@ -1,6 +1,6 @@
 # Duke Data Service Portal
 
-This is a UI portal built for use with the Duke Data Service API. It is based on [gulp](https://github.com/gulpjs/gulp), [stylus](https://github.com/LearnBoost/stylus) and [webpack](https://github.com/webpack/webpack). The internal data flow is handled with  [Reflux](https://github.com/spoike/refluxjs) and the routing is managed with the [React-Router](https://github.com/rackt/react-router). The UI is handled by [material-ui](http://material-ui.com/) and Material Design Lite.
+This is a UI portal built for use with the [Duke Data Service API](https://github.com/Duke-Translational-Bioinformatics/duke-data-service/tree/master). It is based on [gulp](https://github.com/gulpjs/gulp), [stylus](https://github.com/LearnBoost/stylus) and [webpack](https://github.com/webpack/webpack). The internal data flow is handled with  [Reflux](https://github.com/spoike/refluxjs) and the routing is managed with the [React-Router](https://github.com/rackt/react-router). The UI is handled by [material-ui](http://material-ui.com/) and Material Design Lite.
 
 ## Get the portal
 
@@ -45,6 +45,12 @@ $ npm test
 ```
 
 In order to test files that are using the react-router we had to add [stubRouterContext.jsx](./test-utils/stubRouterContext.jsx) which we found [here](https://github.com/rackt/react-router/blob/master/docs/guides/testing.md). 
+
+## Duke Data Service
+
+The portal interfaces with the [Duke Data Service API](https://github
+.com/Duke-Translational-Bioinformatics/duke-data-service/tree/master). The API blueprint for Duke Data Service can be
+ found on this [API documentation page](http://docs.dukedataservices.apiary.io/#reference/api-usage).
 
 ## Javascript
 
