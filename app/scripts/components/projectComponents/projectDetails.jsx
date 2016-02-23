@@ -23,7 +23,6 @@ class ProjectDetails extends React.Component {
         let createdBy = this.props.project && this.props.project.audit ? this.props.project.audit.created_by.full_name : null;
         let projectName = this.props.project ? this.props.project.name : null;
         let createdOn = this.props.project && this.props.project.audit ? this.props.project.audit.created_on : null;
-        let error = '';
 
         return (
             <Card
@@ -64,7 +63,6 @@ class ProjectDetails extends React.Component {
                         </div>
                     </div>
                 </div>
-                { error }
             </Card>
         );
     }
@@ -230,9 +228,7 @@ ProjectDetails.contextTypes = {
 };
 
 ProjectDetails.propTypes = {
-    loading: React.PropTypes.bool,
-    details: React.PropTypes.array,
-    error: React.PropTypes.object
+    details: React.PropTypes.array
 };
 
 export default ProjectDetails;
