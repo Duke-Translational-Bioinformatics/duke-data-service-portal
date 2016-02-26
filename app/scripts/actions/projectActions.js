@@ -260,7 +260,7 @@ ProjectActions.deleteFolder.preEmit = function (id, parentId, parentKind) {
         }
     }).then(checkResponse).then(function (response) {
     }).then(function () {
-        MainActions.addToast('Folder Deleted!');
+        MainActions.addToast('Folder(s) Deleted!');
         ProjectActions.deleteFolderSuccess(parentId, parentKind)
     }).catch(function (ex) {
         MainActions.addToast('Folder Deleted Failed!');
@@ -299,7 +299,7 @@ ProjectActions.deleteFile.preEmit = function (id, parentId, parentKind) {
         }
     }).then(checkResponse).then(function (response) {
     }).then(function () {
-        MainActions.addToast('File Deleted!');
+        MainActions.addToast('File(s) Deleted!');
         ProjectActions.deleteFileSuccess(parentId, parentKind)
     }).catch(function (ex) {
         MainActions.addToast('Failed to Delete File!');
