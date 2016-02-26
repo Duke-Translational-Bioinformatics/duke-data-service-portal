@@ -72,15 +72,17 @@ class Login extends React.Component {
 
 var styles = {
     loginWrapper: {
+        maxWidth: 600,
         height: 'auto',
         textAlign: 'center',
+        margin: '0 auto',
         padding: 20,
         overflow: 'auto',
         backgroundColor: '#235F9C',
         fontColor: '#f9f9f9'
     },
     logo: {
-        maxWidth: '10%'
+        maxWidth: '26.333%'
     },
     loader: {
         margin: '0 auto'

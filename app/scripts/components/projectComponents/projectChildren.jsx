@@ -155,12 +155,11 @@ var styles = {
     checkBox: {
         width: 16,
         height: 16,
-        marginBottom: 21,
-        marginRight: 20
-
+        marginBottom: 21
     },
     checkboxLabel: {
-        borderRadius: 25
+        borderRadius: 35,
+        paddingRight: 20
     },
     dlIcon: {
         float: 'right',
