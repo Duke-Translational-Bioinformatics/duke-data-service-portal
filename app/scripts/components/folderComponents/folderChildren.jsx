@@ -3,7 +3,7 @@ import { RouteHandler, Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
-import DeleteConfirmation from '../../components/globalComponents/deleteConfirmation.jsx';
+import BatchOps from '../../components/globalComponents/batchOps.jsx';
 import ErrorModal from '../../components/globalComponents/errorModal.jsx';
 import FolderOptionsMenu from '../folderComponents/folderOptionsMenu.jsx';
 import Header from '../../components/globalComponents/header.jsx';
@@ -14,12 +14,6 @@ import LinearProgress from 'material-ui/lib/linear-progress';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 class FolderChildren extends React.Component {
-
-    constructor() {
-        this.state = {
-            numSelected: null
-        }
-    }
 
     render() {
         if (this.props.error && this.props.error.response){
@@ -84,14 +78,18 @@ class FolderChildren extends React.Component {
 
         return (
             <div className="list-container">
-                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                    <AddFolderModal {...this.props}/>
+                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
+                    <div className="mdl-cell mdl-cell--12-col">
+                        <AddFolderModal {...this.props}/>
+                    </div>
+                    <div className="mdl-cell mdl-cell--12-col" style={{marginBottom: -20}}>
+                        { this.props.showBatchOps ? <BatchOps {...this.props} {...this.state}/> : null }
+                    </div>
                     <ErrorModal {...this.props}/>
-                    { this.props.showBatchOps ? <DeleteConfirmation {...this.props} {...this.state}/> : null }
-                    { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
                 </div>
+                { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
-                    <div className="list-block list-block-search searchbar-found media-list" style={styles.listBlock}>
+                    <div className="list-block list-block-search searchbar-found media-list">
                         <ul>
                             {folderChildren}
                         </ul>
@@ -127,13 +125,9 @@ class FolderChildren extends React.Component {
             }
         }
 
-        ProjectActions.batchDelete(filesChecked, foldersChecked);
+        ProjectActions.handleBatch(filesChecked, foldersChecked);
 
         if (!checkedBoxes.length) ProjectActions.showBatchOptions();
-
-        this.setState({
-            numSelected: checkedBoxes.length
-        });
     }
 
     handleDownload(id) {
@@ -175,10 +169,9 @@ var styles = {
         marginTop: 4
     },
     list: {
-        paddingTop: 40
-    },
-    listBlock: {
-        paddingTop: 16
+        float:'right',
+        marginTop: -10
+
     },
     title: {
         marginRight: 40

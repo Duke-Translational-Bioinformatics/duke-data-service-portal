@@ -13,8 +13,7 @@ class AddFolderModal extends React.Component {
     constructor() {
         this.state = {
             floatingErrorText: 'This field is required.',
-            open: false,
-            parentObj: ProjectStore.parentObj
+            open: false
         }
     }
 
@@ -106,7 +105,7 @@ let styles = {
         float: 'right',
         zIndex: '9995',
         position: 'relative',
-        margin: '24px 17px 08px 0px',
+        margin: '20px 10px 0px  18px',
         textColor: '#235F9C'
     },
     dialogStyles: {

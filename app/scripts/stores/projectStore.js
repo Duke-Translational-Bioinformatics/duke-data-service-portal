@@ -10,18 +10,19 @@ var ProjectStore = Reflux.createStore({
         this.audit = {};
         this.children = [];
         this.currentUser = {};
+        this.entityObj = {};
         this.error = {};
         this.errorModal = false;
-        this.projects = [];
-        this.project = {};
-        this.entityObj = {};
-        this.projectMembers = [];
-        this.users = [];
-        this.uploadCount = [];
-        this.uploads = {};
         this.filesChecked = [];
         this.foldersChecked = [];
+        this.itemsSelected = null;
+        this.projects = [];
+        this.project = {};
+        this.projectMembers = [];
         this.showBatchOps = false;
+        this.uploadCount = [];
+        this.uploads = {};
+        this.users = [];
     },
 
     showBatchOptions () {
@@ -31,13 +32,15 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    batchDelete (files, folders) {
+    handleBatch (files, folders) {
         this.filesChecked = files;
         this.foldersChecked = folders;
+        this.itemsSelected = files.length + folders.length;
         this.showBatchOps = true;
         this.trigger({
             filesChecked: this.filesChecked,
             foldersChecked: this.foldersChecked,
+            itemsSelected: this.itemsSelected,
             showBatchOps: this.showBatchOps
         })
     },
@@ -356,6 +359,8 @@ var ProjectStore = Reflux.createStore({
     },
 
     getDownloadUrlSuccess(json) {
+        if(this.itemsSelected) this.itemsSelected = this.itemsSelected -1;
+        !this.itemsSelected.length ? this.showBatchOps = false : this.showBatchOps;
         let host = json.host;
         let url = json.url;
         var win = window.open(host + url, '_blank');
@@ -365,7 +370,9 @@ var ProjectStore = Reflux.createStore({
             alert('Please allow popups for this site and try downloading again');
         }
         this.trigger({
-            loading: false
+            loading: false,
+            itemsSelected: this.itemsSelected,
+            showBatchOps: this.showBatchOps
         })
     },
 
@@ -454,6 +461,7 @@ var ProjectStore = Reflux.createStore({
             let chunk = chunks[i];
             if (chunk.chunkUpdates.status === StatusEnum.STATUS_WAITING_FOR_UPLOAD || chunk.chunkUpdates.status === StatusEnum.STATUS_RETRY) {
                 chunk.chunkUpdates.status = StatusEnum.STATUS_UPLOADING;
+                // If processing chunks and user navigates away from page, send them a warning
                 window.onbeforeunload = function (e) {
                     return "If you refresh the page or close your browser, files being uploaded will be lost and you" +
                         " will have to start again. Are" +

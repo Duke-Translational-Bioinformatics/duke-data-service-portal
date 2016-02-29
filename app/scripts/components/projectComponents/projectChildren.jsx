@@ -4,43 +4,66 @@ import MainActions from '../../actions/mainActions';
 import ProjectDetails from './projectDetails.jsx';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-import DeleteConfirmation from '../../components/globalComponents/deleteConfirmation.jsx';
+import BatchOps from '../../components/globalComponents/batchOps.jsx';
 import ErrorModal from '../../components/globalComponents/errorModal.jsx';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
 import FolderOptionsMenu from '../folderComponents/folderOptionsMenu.jsx';
 import Header from '../../components/globalComponents/header.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import urlGen from '../../../util/urlGen.js';
+import Card from 'material-ui/lib/card';
 import LinearProgress from 'material-ui/lib/linear-progress';
 import RaisedButton from 'material-ui/lib/raised-button';
-import Card from 'material-ui/lib/card';
 
 class ProjectChildren extends React.Component {
 
     constructor() {
         this.state = {
-            numSelected: null
+            page: 0
         }
     }
 
     render() {
-        if (this.props.error && this.props.error.response){
+        let children = [];
+        if (this.props.error && this.props.error.response) {
             this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
             this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
         }
-        let projectChildren = this.props.children.map((children) => {
+        if (this.props.children.length > 20) {
+            switch (this.state.page) {
+                case 0:
+                    children = this.props.children.slice(0, 20);
+                    break;
+                case 1:
+                    children = this.props.children.slice(0, 40);
+                    break;
+                case 2:
+                    children = this.props.children.slice(0, 60);
+                    break;
+                case 3:
+                    children = this.props.children;
+                    break;
+            }
+        } else {
+            children = this.props.children;
+        }
+        let projectChildren = children.map((children) => {
             if (children.kind === 'dds-folder') {
                 return (
                     <li key={ children.id } className="hover">
                         <div style={styles.fillerDiv}>{/*temporary filler div until add dropdown menu*/}</div>
                         <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + "/folder/" + children.id}
                            className="item-content external">
-                            <label className="label-checkbox item-content" style={styles.checkboxLabel} onClick={e => this.change()}>
-                                <input className="folderChkBoxes" type="checkbox" name="chkboxName" value={children.id}/>
+                            <label className="label-checkbox item-content" style={styles.checkboxLabel}
+                                   onClick={e => this.change()}>
+                                <input className="folderChkBoxes" type="checkbox" name="chkboxName" value={children.id}
+                                       id={children.id}/>
+
                                 <div className="item-media">
                                     <i className="icon icon-form-checkbox" style={styles.checkBox}></i>
                                 </div>
                             </label>
+
                             <div className="item-media">
                                 <i className="material-icons" style={styles.icon}>folder</i>
                             </div>
@@ -66,21 +89,25 @@ class ProjectChildren extends React.Component {
                         </a>
                         <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + "/file/" + children.id}
                            className="item-content external">
-                            <label className="label-checkbox item-content" style={styles.checkboxLabel} onClick={e => this.change()}>
-                                <input className="fileChkBoxes" type="checkbox" name="chkboxName" value={children.id} />
+                            <label className="label-checkbox item-content" style={styles.checkboxLabel}
+                                   onClick={e => this.change()}>
+                                <input className="fileChkBoxes" type="checkbox" name="chkboxName" value={children.id}
+                                       id={children.id}/>
+
                                 <div className="item-media">
                                     <i className="icon icon-form-checkbox" style={styles.checkBox}></i>
                                 </div>
                             </label>
+
                             <div className="item-media"><i className="material-icons"
                                                            style={styles.icon}>description</i>
                             </div>
                             <div className="item-inner">
                                 <div className="item-title-row">
                                     <div className="item-title mdl-color-text--grey-800"
-                                         style={styles.title}>{ children.name }</div>
+                                         style={styles.title}>{children.name}</div>
                                 </div>
-                                <div className="item-subtitle mdl-color-text--grey-600">ID: { children.id }</div>
+                                <div className="item-subtitle mdl-color-text--grey-600">ID: {children.id}</div>
                             </div>
                         </a>
                     </li>
@@ -90,18 +117,31 @@ class ProjectChildren extends React.Component {
 
         return (
             <div className="list-container">
-                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                    <AddFolderModal {...this.props}/>
+                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
+                    <div className="mdl-cell mdl-cell--12-col">
+                        <AddFolderModal {...this.props}/>
+                    </div>
+                    <div className="mdl-cell mdl-cell--12-col" style={{marginBottom: -20}}>
+                        { this.props.showBatchOps ? <BatchOps {...this.props} {...this.state}/> : null }
+                    </div>
                     <ErrorModal {...this.props}/>
-                    { this.props.showBatchOps ? <DeleteConfirmation {...this.props} {...this.state}/> : null }
-                    { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
                 </div>
+                { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
-                    <div className="list-block list-block-search searchbar-found media-list" style={styles.listBlock}>
+                    <div className="list-block list-block-search searchbar-found media-list">
                         <ul>
                             {projectChildren}
                         </ul>
                     </div>
+                    {this.props.children.length > 25 && this.props.children.length > children.length && this.state.page < 3 ?
+                        <div className="mdl-cell mdl-cell--12-col" style={styles.loadMore}>
+                            <RaisedButton
+                                label="Load More"
+                                secondary={true}
+                                onTouchTap={this.loadMore.bind(this)}
+                                fullWidth={true}
+                                labelStyle={{fontWeight: '100'}}/>
+                        </div> : null}
                 </div>
             </div>
         );
@@ -110,16 +150,18 @@ class ProjectChildren extends React.Component {
     change() {
         // clicking on F7 input[checkbox] does not fire onChange in iOS or Android. Instead, set onClick to label
         // and wait for F7 to change the form before getting the form values. sheesh
-        setTimeout( () => {
+        setTimeout(() => {
             this.handleChange()
         }, 100);
     }
 
     handleChange() {
         let checked = null;
+        // See if checkboxes are selected
         let checkedBoxes = document.querySelectorAll('input[name=chkboxName]:checked');
         let filesChecked = [];
         let foldersChecked = [];
+        // Create arrays of checked boxes
         let fileInput = document.getElementsByClassName('fileChkBoxes');
         let folderInput = document.getElementsByClassName('folderChkBoxes');
         for (let i = 0; fileInput[i]; ++i) {
@@ -132,18 +174,18 @@ class ProjectChildren extends React.Component {
                 foldersChecked.push(folderInput[i].value);
             }
         }
-
-        ProjectActions.batchDelete(filesChecked, foldersChecked);
-
+        // Process files/folders
+        ProjectActions.handleBatch(filesChecked, foldersChecked);
+        // If nothing is selected, change state and hide options
         if (!checkedBoxes.length) ProjectActions.showBatchOptions();
-
-        this.setState({
-            numSelected: checkedBoxes.length
-        });
     }
 
     handleDownload(id) {
         ProjectActions.getDownloadUrl(id);
+    }
+
+    loadMore() {
+        this.setState({page: this.state.page + 1});
     }
 }
 
@@ -182,10 +224,11 @@ var styles = {
 
     },
     list: {
-        paddingTop: 40
+        float: 'right',
+        marginTop: -10
     },
-    listBlock: {
-        paddingTop: 16
+    loadMore: {
+        textAlign: 'center'
     },
     title: {
         marginRight: 40

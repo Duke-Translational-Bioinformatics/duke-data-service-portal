@@ -45,7 +45,7 @@ var styles = {
         verticalAlign: 'center'
     },
     overviewContainer: {
-        marginTop: 20,
+        marginTop: 30,
         padding: 20,
         textAlign: 'center'
     }
