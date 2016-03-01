@@ -26,10 +26,8 @@ class BatchOps extends React.Component {
         } else {
             msg= "Are you sure you want to delete this item?";
         }
-        let dlMsg = !this.props.filesChecked.length ? "If you want to download the contents of a folder, please open" +
-        " that" +
-        " folder and select the files to download" : "Are you sure" +
-        " you want to download "+this.props.filesChecked.length+" files?";
+        let dlMsg = !this.props.filesChecked.length ? "If you want to download the contents of a folder, please open that" +
+        " folder and select the files to download" : "Are you sure you want to download "+this.props.filesChecked.length+" files?";
         const deleteActions = [
             <FlatButton
                 label="Cancel"
@@ -125,7 +123,6 @@ class BatchOps extends React.Component {
         }
         for (let i = 0; i < folders.length; i++) {
             document.getElementById(folders[i]).checked = false;
-
         }
         this.setState({downloadOpen: false});
     }
