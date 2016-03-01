@@ -58,8 +58,8 @@ class FolderChildren extends React.Component {
                                 <div className="item-media"><i className="icon icon-form-checkbox" style={styles.checkBox}></i>
                                 </div>
                             </label>
-                            <div className="item-media"><i className="material-icons"
-                                                           style={styles.icon}>folder</i>
+                            <div className="item-media">
+                                <i className="material-icons" style={styles.icon}>folder</i>
                             </div>
                             <div className="item-inner">
                                 <div className="item-title-row">
