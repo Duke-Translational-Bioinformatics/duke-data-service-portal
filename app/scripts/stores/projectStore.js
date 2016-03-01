@@ -360,7 +360,7 @@ var ProjectStore = Reflux.createStore({
 
     getDownloadUrlSuccess(json) {
         if(this.itemsSelected) this.itemsSelected = this.itemsSelected -1;
-        !this.itemsSelected.length ? this.showBatchOps = false : this.showBatchOps;
+        !this.itemsSelected || !this.itemsSelected.length ? this.showBatchOps = false : this.showBatchOps;
         let host = json.host;
         let url = json.url;
         var win = window.open(host + url, '_blank');
