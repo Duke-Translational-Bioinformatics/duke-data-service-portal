@@ -105,7 +105,7 @@ class ProjectChildren extends React.Component {
                             <div className="item-inner">
                                 <div className="item-title-row">
                                     <div className="item-title mdl-color-text--grey-800"
-                                         style={styles.title}>{children.name}</div>
+                                         style={styles.title}>{children.name.length > 22 ? children.name.substring(0,22)+'...' : children.name}</div>
                                 </div>
                                 <div className="item-subtitle mdl-color-text--grey-600">ID: {children.id}</div>
                             </div>
@@ -209,7 +209,8 @@ var styles = {
         color: '#EC407A',
         marginTop: 6,
         marginLeft: 15,
-        padding: '08px 08px 08px 08px'
+        padding: '08px 08px 08px 08px',
+        zIndex: 100
     },
     fillerDiv: {
         height: 24,
