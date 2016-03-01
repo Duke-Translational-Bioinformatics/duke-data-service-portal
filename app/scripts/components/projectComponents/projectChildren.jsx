@@ -134,7 +134,7 @@ class ProjectChildren extends React.Component {
                         </ul>
                     </div>
                     {this.props.children.length > 25 && this.props.children.length > children.length && this.state.page < 3 ?
-                        <div className="mdl-cell mdl-cell--12-col" style={styles.loadMore}>
+                        <div className="mdl-cell mdl-cell--12-col">
                             <RaisedButton
                                 label="Load More"
                                 secondary={true}
@@ -226,9 +226,6 @@ var styles = {
     list: {
         float: 'right',
         marginTop: -10
-    },
-    loadMore: {
-        textAlign: 'center'
     },
     title: {
         marginRight: 40

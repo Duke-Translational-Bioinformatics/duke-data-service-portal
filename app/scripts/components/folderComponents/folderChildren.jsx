@@ -15,12 +15,37 @@ import RaisedButton from 'material-ui/lib/raised-button';
 
 class FolderChildren extends React.Component {
 
+    constructor() {
+        this.state = {
+            page: 0
+        }
+    }
+
     render() {
+        let children = [];
         if (this.props.error && this.props.error.response){
             this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
             this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
         }
-        let folderChildren = this.props.children.map((children) => {
+        if (this.props.children.length > 20) {
+            switch (this.state.page) {
+                case 0:
+                    children = this.props.children.slice(0, 20);
+                    break;
+                case 1:
+                    children = this.props.children.slice(0, 40);
+                    break;
+                case 2:
+                    children = this.props.children.slice(0, 60);
+                    break;
+                case 3:
+                    children = this.props.children;
+                    break;
+            }
+        } else {
+            children = this.props.children;
+        }
+        let folderChildren = children.map((children) => {
             if (children.kind === 'dds-folder') {
                 return (
                     <li key={ children.id } className="hover">
@@ -94,6 +119,15 @@ class FolderChildren extends React.Component {
                             {folderChildren}
                         </ul>
                     </div>
+                    {this.props.children.length > 25 && this.props.children.length > children.length && this.state.page < 3 ?
+                        <div className="mdl-cell mdl-cell--12-col">
+                            <RaisedButton
+                                label="Load More"
+                                secondary={true}
+                                onTouchTap={this.loadMore.bind(this)}
+                                fullWidth={true}
+                                labelStyle={{fontWeight: '100'}}/>
+                        </div> : null}
                 </div>
             </div>
         );
@@ -133,6 +167,10 @@ class FolderChildren extends React.Component {
     handleDownload(id) {
         ProjectActions.getDownloadUrl(id);
     }
+
+    loadMore() {
+        this.setState({page: this.state.page + 1});
+    }
 }
 
 FolderChildren.contextTypes = {
@@ -171,7 +209,6 @@ var styles = {
     list: {
         float:'right',
         marginTop: -10
-
     },
     title: {
         marginRight: 40
