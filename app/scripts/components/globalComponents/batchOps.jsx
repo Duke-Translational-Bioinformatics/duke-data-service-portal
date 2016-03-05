@@ -74,12 +74,12 @@ class BatchOps extends React.Component {
                 <h6 style={styles.numSelected}>{this.props.itemsSelected}  selected</h6>
                 <div style={styles.iconBtn} title="Delete selected items">
                     <IconButton onTouchTap={this.openDeleteModal.bind(this)} style={styles.deleteBtn}>
-                        <DeleteIcon color={'#757575'}/>
+                        <DeleteIcon color={'#EC407A'}/>
                     </IconButton>
                 </div>
                 <div style={styles.iconBtn} title="Download files">
                     <IconButton onTouchTap={this.openDownloadModal.bind(this)} style={styles.downloadBtn}>
-                        <GetAppIcon color={'#757575'}/>
+                        <GetAppIcon color={'#EC407A'}/>
                     </IconButton>
                 </div>
 
@@ -167,14 +167,15 @@ let styles = {
         zIndex: '9996'
     },
     deleteBtn: {
-        marginLeft: 5,
+        marginLeft: 10,
         marginRight: 5,
         padding: '5px 10px 01px 5px',
         height: 32,
         width: 32
     },
     downloadBtn: {
-        padding: '6px 0px 0px 5px',
+        marginRight: 5,
+        padding: '6px 10px 0px 5px',
         height: 32,
         width: 32
     },
@@ -183,9 +184,7 @@ let styles = {
     },
     numSelected: {
         float: 'left',
-        marginLeft: 18,
-        marginTop: 7,
-        marginBottom: 0,
+        margin: '7px 0px 0px 10px',
         fontWeight: '400'
     },
     textStyles: {
