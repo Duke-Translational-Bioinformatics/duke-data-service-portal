@@ -1,6 +1,8 @@
 import React from 'react';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
+import MoveItemModal from '../globalComponents/moveItemModal.jsx';
+import CircularProgress from 'material-ui/lib/circular-progress';
 import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
 import IconMenu from 'material-ui/lib/menus/icon-menu';
@@ -16,37 +18,47 @@ class FolderOptionsMenu extends React.Component {
         this.state = {
             deleteOpen: false,
             editOpen: false,
-            value: 2,
             floatingErrorText: 'This field is required.',
             floatingErrorText2: 'This field is required'
         }
     }
 
     render() {
-        let deleteActions = [
+        const deleteActions = [
             <FlatButton
                 label="CANCEL"
                 secondary={true}
-                onTouchTap={this.handleClose.bind(this)} />,
+                onTouchTap={this.handleClose.bind(this)}/>,
             <FlatButton
                 label="DELETE"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={this.handleDeleteButton.bind(this)} />
+                onTouchTap={this.handleDeleteButton.bind(this)}/>
         ];
-        let editActions = [
+        const editActions = [
             <FlatButton
                 label="CANCEL"
                 secondary={true}
-                onTouchTap={this.handleClose.bind(this)} />,
+                onTouchTap={this.handleClose.bind(this)}/>,
             <FlatButton
                 label="UPDATE"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={this.handleUpdateButton.bind(this)} />
+                onTouchTap={this.handleUpdateButton.bind(this)}/>
+        ];
+        const moveActions = [
+            <FlatButton
+                label="Cancel"
+                secondary={true}
+                onTouchTap={this.handleCloseMoveModal.bind(this)}/>
+        ];
+        const moveWarnActions = [
+            <FlatButton
+                label="Okay"
+                secondary={true}
+                onTouchTap={this.handleCloseMoveWarning.bind(this)}/>
         ];
         let fName = this.props.entityObj ? this.props.entityObj.name : null;
-        let loading = this.props.loading ? <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
         return (
             <div>
                 <Dialog
@@ -58,7 +70,9 @@ class FolderOptionsMenu extends React.Component {
                     onRequestClose={this.handleClose.bind(this)}
                     open={this.state.deleteOpen}>
                     <i className="material-icons" style={styles.warning}>warning</i>
-                    <p style={styles.msg}>Deleting this folder will also delete any folders or files contained inside of this folder.</p>
+
+                    <p style={styles.msg}>Deleting this folder will also delete any folders or files contained inside of
+                        this folder.</p>
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
@@ -81,22 +95,61 @@ class FolderOptionsMenu extends React.Component {
                             onChange={this.handleFloatingErrorInputChange.bind(this)}/> <br/>
                     </form>
                 </Dialog>
-                <IconMenu iconButtonElement={<IconButton iconClassName="material-icons">more_vert</IconButton>}
-                          anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-                          targetOrigin={{horizontal: 'right', vertical: 'top'}}>
-                    <MenuItem primaryText="Delete Folder" leftIcon={<i className="material-icons">delete</i>} onTouchTap={this.handleTouchTapDelete.bind(this)} />
-                    <MenuItem primaryText="Edit Folder" leftIcon={<i className="material-icons">mode_edit</i>} onTouchTap={this.handleTouchTapEdit.bind(this)} />
+                <Dialog
+                    {...this.props}
+                    style={styles.dialogStyles}
+                    title="Select Destination"
+                    autoDetectWindowHeight={true}
+                    autoScrollBodyContent={true}
+                    actions={moveActions}
+                    open={this.props.moveModal}
+                    onRequestClose={this.handleCloseMoveModal.bind(this)}>
+                    <MoveItemModal {...this.props}/>
+                </Dialog>
+                <Dialog
+                    style={styles.dialogStyles}
+                    title="Cannot Complete Action"
+                    autoDetectWindowHeight={true}
+                    autoScrollBodyContent={true}
+                    actions={moveWarnActions}
+                    open={this.props.moveErrorModal}
+                    onRequestClose={this.handleCloseMoveWarning.bind(this)}>
+                    <i className="material-icons" style={styles.warning}>warning</i>
+                    <p style={styles.msg}>The folder you're trying to move is already located here. Please pick another
+                        location to move to.</p>
+                </Dialog>
+                <IconMenu
+                    iconButtonElement={<IconButton iconClassName="material-icons" onTouchTap={this.getEntity.bind(this)}>more_vert</IconButton>}
+                    anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+                    targetOrigin={{horizontal: 'right', vertical: 'top'}}>
+                    <MenuItem primaryText="Delete Folder" leftIcon={<i className="material-icons">delete</i>}
+                              onTouchTap={this.handleTouchTapDelete.bind(this)}/>
+                    <MenuItem primaryText="Edit Folder" leftIcon={<i className="material-icons">mode_edit</i>}
+                              onTouchTap={this.handleTouchTapEdit.bind(this)}/>
+                    <MenuItem primaryText="Move Folder" leftIcon={<i className="material-icons">low_priority</i>}
+                              onTouchTap={this.handleTouchTapMove.bind(this)}/>
                 </IconMenu>
             </div>
         );
     }
 
+    handleTouchTapMove() {
+        ProjectActions.openMoveModal(true);
+    }
+
     handleTouchTapDelete() {
-        this.setState({deleteOpen:true})
+        this.setState({deleteOpen: true})
     }
 
     handleTouchTapEdit() {
-        this.setState({editOpen:true})
+        this.setState({editOpen: true})
+    }
+
+    getEntity() { // Get current folder object to access ancestors. Set parent in store.
+        let id = this.props.params.id;
+        let kind = 'folders';
+        let requester = 'optionsMenu'; // Use this to only set parent in store once.
+        ProjectActions.getEntity(id, kind, requester);
     }
 
     handleDeleteButton() {
@@ -104,12 +157,12 @@ class FolderOptionsMenu extends React.Component {
         let parentId = this.props.entityObj ? this.props.entityObj.parent.id : null;
         let parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : null;
         let urlPath = '';
-        {parentKind === 'dds-project' ? urlPath = '/project/' : urlPath = '/folder/'}
+        {
+            parentKind === 'dds-project' ? urlPath = '/project/' : urlPath = '/folder/'
+        }
         ProjectActions.deleteFolder(id, parentId, parentKind);
-        this.setState(
-            {deleteOpen: false}
-        );
-        setTimeout(()=>this.props.appRouter.transitionTo(urlPath + parentId),500)
+        this.setState({deleteOpen: false});
+        setTimeout(()=>this.props.appRouter.transitionTo(urlPath + parentId), 500)
     }
 
     handleUpdateButton() {
@@ -124,7 +177,7 @@ class FolderOptionsMenu extends React.Component {
             }));
             this.setState({editOpen: false});
         }
-    };
+    }
 
     handleFloatingErrorInputChange(e) {
         this.setState({
@@ -138,6 +191,18 @@ class FolderOptionsMenu extends React.Component {
         });
     }
 
+    handleCloseMoveModal() {
+        let id = this.props.params.id;
+        let kind = 'folders';
+        ProjectActions.getEntity(id, kind);
+        ProjectActions.loadFolderChildren(id);
+        ProjectActions.openMoveModal(false);
+    }
+
+    handleCloseMoveWarning() {
+        ProjectActions.moveItemWarning(false);
+    }
+
     handleClose() {
         this.setState({
             deleteOpen: false,
@@ -148,7 +213,6 @@ class FolderOptionsMenu extends React.Component {
 }
 var styles = {
     addFolder: {
-        float: 'right',
         position: 'relative',
         margin: '12px 8px 0px 0px'
     },
