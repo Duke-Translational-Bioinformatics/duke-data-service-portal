@@ -15,6 +15,8 @@ class Folder extends React.Component {
             filesChecked: ProjectStore.filesChecked,
             foldersChecked: ProjectStore.foldersChecked,
             loading: false,
+            moveModal: ProjectStore.moveModal,
+            moveErrorModal: ProjectStore.moveErrorModal,
             project: ProjectStore.project,
             uploads: ProjectStore.uploads
         };

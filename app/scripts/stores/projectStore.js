@@ -10,12 +10,18 @@ var ProjectStore = Reflux.createStore({
         this.audit = {};
         this.children = [];
         this.currentUser = {};
+        this.destination = null;
+        this.destinationKind = null;
         this.entityObj = {};
         this.error = {};
         this.errorModal = false;
         this.filesChecked = [];
         this.foldersChecked = [];
         this.itemsSelected = null;
+        this.moveModal = false;
+        this.moveToObj = {};
+        this.moveErrorModal = false;
+        this.parent = {};
         this.projects = [];
         this.project = {};
         this.projectMembers = [];
@@ -23,6 +29,29 @@ var ProjectStore = Reflux.createStore({
         this.uploadCount = [];
         this.uploads = {};
         this.users = [];
+    },
+
+    openMoveModal (open) {
+        this.moveModal = open;
+        this.trigger({
+            moveModal: this.moveModal
+        })
+    },
+
+    selectMoveLocation (id,kind){
+        this.destination = id;
+        this.destinationKind = kind;
+        this.trigger({
+            destination: this.destination,
+            destinationKind: this.destinationKind
+        })
+    },
+
+    moveItemWarning (error) {
+        this.moveErrorModal = error;
+        this.trigger({
+            moveErrorModal: this.moveErrorModal
+        })
     },
 
     showBatchOptions () {
@@ -132,12 +161,13 @@ var ProjectStore = Reflux.createStore({
 
     deleteProjectSuccess() {
         ProjectActions.loadProjects();
+        ProjectActions.getUsageDetails();
         this.trigger({
             loading: false
         })
     },
 
-    editProject() {
+    editProject(id) {
         this.trigger({
             loading: true
         })
@@ -215,6 +245,18 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
+    moveFolder() {
+        this.trigger({
+            loading: true
+        })
+    },
+
+    moveFolderSuccess() {
+        this.trigger({
+            loading: false
+        })
+    },
+
     addFile() {
         this.trigger({
             loading: true
@@ -269,16 +311,37 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
+    moveFile() {
+        this.trigger({
+            loading: true
+        })
+    },
+
+    moveFileSuccess() {
+        this.trigger({
+            loading: false
+        })
+    },
+
     getEntity() {
         this.trigger({
             loading: true
         })
     },
 
-    getEntitySuccess(json) {
-        this.entityObj = json;
+    getEntitySuccess(json, requester) {
+        if(requester === undefined) this.entityObj = json;
+        if(requester === 'optionsMenu') {
+            this.parent = json.parent;
+            this.moveToObj = json;
+        }
+        if(requester === 'moveItemModal') {
+            this.moveToObj = json;
+        }
         this.trigger({
             entityObj: this.entityObj,
+            moveToObj: this.moveToObj,
+            parent: this.parent,
             loading: false
         })
     },

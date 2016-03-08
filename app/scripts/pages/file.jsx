@@ -12,6 +12,8 @@ class File extends React.Component {
             error: ProjectStore.error,
             errorModal: ProjectStore.errorModal,
             loading: false,
+            moveModal: ProjectStore.moveModal,
+            moveErrorModal: ProjectStore.moveErrorModal,
             project: ProjectStore.project
         };
     }

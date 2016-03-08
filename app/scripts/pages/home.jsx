@@ -27,18 +27,8 @@ class Home extends React.Component {
         MainActions.removeLoginCookie();
     }
 
-    componentDidUpdate(prevProps){
-        if(prevProps.usage !== this.props.usage) {
-            this._loadUsage();
-        }
-    }
-
     componentWillUnmount() {
         this.unsubscribe();
-    }
-
-    _loadUsage(){
-        ProjectActions.getUsageDetails();
     }
 
     render() {
