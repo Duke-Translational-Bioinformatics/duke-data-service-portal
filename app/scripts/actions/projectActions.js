@@ -17,7 +17,6 @@ var ProjectActions = Reflux.createActions([
     'selectMoveLocation',
     'handleBatch',
     'closeErrorModal',
-    'getAffiliates',
     'getUser',
     'getUserSuccess',
     'getUsageDetails',

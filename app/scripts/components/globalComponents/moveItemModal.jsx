@@ -120,14 +120,14 @@ let MoveItemModal = React.createClass({
 
         return (
             <div>
-                <div style={{float: 'left', marginLeft: 4, marginTop: -30}}>
+                <div style={styles.backButtonWrapper}>
                     {this.state.goBack ? <a href="" onTouchTap={() => this.goBack()}><IconButton tooltip="Previous"
                                                                                                  style={{float: 'left'}}>
                         <KeyboardBackspace />
                     </IconButton>
 
                         <div className="mdl-color-text--grey-800"
-                             style={{float: 'left',marginLeft: -10, marginTop: 14}}>Back
+                             style={styles.backButton}>Back
                         </div>
                     </a> : null}
                 </div>
@@ -218,12 +218,24 @@ let MoveItemModal = React.createClass({
     }
 });
 var styles = {
+    backButton: {
+        float: 'left',
+        marginLeft: -10,
+        marginTop: 14
+    },
+    backButtonWrapper: {
+        float: 'left',
+        marginLeft: 4,
+        marginTop: -30
+    },
     listItem: {
         textAlign: 'left'
     },
     rightIcon: {
-        paddingTop: 12
-    },
+        position: 'absolute',
+        top: 10,
+        right: 4
+    }
 };
 
 export default MoveItemModal;
