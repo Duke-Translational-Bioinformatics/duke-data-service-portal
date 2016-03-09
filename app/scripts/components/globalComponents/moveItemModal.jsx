@@ -217,6 +217,7 @@ let MoveItemModal = React.createClass({
         })
     }
 });
+
 var styles = {
     backButton: {
         float: 'left',
