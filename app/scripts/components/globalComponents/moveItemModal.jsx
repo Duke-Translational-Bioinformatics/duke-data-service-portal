@@ -121,8 +121,8 @@ let MoveItemModal = React.createClass({
         return (
             <div>
                 <div style={styles.backButtonWrapper}>
-                    {this.state.goBack ? <a href="" onTouchTap={() => this.goBack()}><IconButton tooltip="Previous"
-                                                                                                 style={{float: 'left'}}>
+                    {this.state.goBack ? <a href="" onTouchTap={() => this.goBack()}>
+                        <IconButton tooltip="Previous" style={{float: 'left'}}>
                         <KeyboardBackspace />
                     </IconButton>
 
