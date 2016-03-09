@@ -19,7 +19,6 @@ let MoveItemModal = React.createClass({
             goBack: false
         };
     },
-
     render(){
         let ancestors = [];
         let children = [];
