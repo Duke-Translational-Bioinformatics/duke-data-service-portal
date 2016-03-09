@@ -360,7 +360,7 @@ ProjectActions.editFile.preEmit = function (id, fileName) {
 };
 
 ProjectActions.moveFile.preEmit = function (id, destination, destinationKind) {
-    fetch(urlGen.routes.ddsUrl + urlGen.routes.apiPrefix + 'files/' + id + '/move', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/' + id + '/move', {
         method: 'put',
         headers: {
             'Authorization': appConfig.apiToken,
