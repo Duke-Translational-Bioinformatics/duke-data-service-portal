@@ -383,7 +383,7 @@ ProjectActions.moveFile.preEmit = function (id, destination, destinationKind) {
     })
 };
 
-ProjectActions.getEntity.preEmit = (id, kind) => {
+ProjectActions.getEntity.preEmit = (id, kind, requester) => {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + kind + '/' + id, {
         method: 'get',
         headers: {
@@ -393,7 +393,7 @@ ProjectActions.getEntity.preEmit = (id, kind) => {
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        ProjectActions.getEntitySuccess(json)
+        ProjectActions.getEntitySuccess(json, requester)
     })
         .catch(function (ex) {
             ProjectActions.handleErrors(ex)
