@@ -298,7 +298,7 @@ ProjectActions.editFolder.preEmit = function (id, name) {
 };
 
 ProjectActions.moveFolder.preEmit = function (id, destination, destinationKind) {
-    fetch(urlGen.routes.ddsUrl + urlGen.routes.apiPrefix + 'folders/' + id + '/move', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'folders/' + id + '/move', {
         method: 'put',
         headers: {
             'Authorization': appConfig.apiToken,

@@ -203,6 +203,7 @@ class FileOptionsMenu extends React.Component {
         });
     }
 }
+
 var styles = {
     deleteFile: {
         float: 'right',
