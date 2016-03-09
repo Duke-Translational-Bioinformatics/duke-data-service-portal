@@ -87,7 +87,7 @@ class FileDetails extends React.Component {
                                 </div>
                             </li>
                             <li className="item-divider">File ID</li>
-                            <li className="item-content">s
+                            <li className="item-content">
                                 <div className="item-inner">
                                     <div>{ id }</div>
                                 </div>

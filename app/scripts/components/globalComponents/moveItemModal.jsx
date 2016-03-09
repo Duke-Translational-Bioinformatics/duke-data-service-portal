@@ -12,7 +12,7 @@ import KeyboardBackspace from 'material-ui/lib/svg-icons/hardware/keyboard-backs
 import Archive from 'material-ui/lib/svg-icons/content/archive.js';
 
 let MoveItemModal = React.createClass({
-
+    
     getInitialState() {
         return {
             openChildren: false,
@@ -41,9 +41,10 @@ let MoveItemModal = React.createClass({
                     primaryText={this.props.moveToObj.name}
                     leftIcon={<Folder />}
                     onTouchTap={() => this.selectedLocation(this.props.moveToObj.id, this.props.moveToObj.kind)}
-                    rightIconButton={<Archive touch={true} style={styles.rightIcon} color={'#EC407A'} onTouchTap={() => this.handleMove(children.id, children.kind)}/>}/>
+                    rightIconButton={<Archive touch={true} style={styles.rightIcon} color={'#EC407A'} onTouchTap={() => this.handleMove(this.props.moveToObj.id, this.props.moveToObj.kind)}/>}/>
             }
         }
+
         if (this.props.moveToObj && this.props.moveToObj.ancestors) {
             ancestors = this.props.moveToObj.ancestors.map((item) => {
                 if (item.id === this.props.params.id) {
@@ -126,9 +127,8 @@ let MoveItemModal = React.createClass({
                 <div style={styles.backButtonWrapper}>
                     {this.state.goBack ? <a href="" onTouchTap={() => this.goBack()}>
                         <IconButton tooltip="Previous" style={{float: 'left'}}>
-                        <KeyboardBackspace />
-                    </IconButton>
-
+                            <KeyboardBackspace />
+                        </IconButton>
                         <div className="mdl-color-text--grey-800"
                              style={styles.backButton}>Back
                         </div>
@@ -151,7 +151,7 @@ let MoveItemModal = React.createClass({
         let id = this.props.params.id;
         let parent = this.props.parent ? this.props.parent.id : null;
         let parentKind = this.props.parent ? this.props.parent.kind : null;
-        if (destinationId === this.props.parent.id || destinationId === this.props.moveToObj.id) {
+        if (destinationId === this.props.parent.id || destinationId === this.props.entityObj.id) {
             ProjectActions.moveItemWarning(true);
         } else {
             if (this.props.entityObj.kind === 'dds-folder') {
