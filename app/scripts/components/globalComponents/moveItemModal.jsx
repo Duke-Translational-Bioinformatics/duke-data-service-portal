@@ -26,6 +26,7 @@ let MoveItemModal = React.createClass({
         let children = [];
         let projectChildren = [];
         let openItem = <span></span>;
+        
         if (!this.state.projectChildren && this.props.moveToObj) {
             if (this.props.params.id === this.props.moveToObj.id) {
                 openItem = <span></span>
