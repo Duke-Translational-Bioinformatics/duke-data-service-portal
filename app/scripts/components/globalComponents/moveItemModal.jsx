@@ -12,6 +12,7 @@ import KeyboardBackspace from 'material-ui/lib/svg-icons/hardware/keyboard-backs
 import Archive from 'material-ui/lib/svg-icons/content/archive.js';
 
 let MoveItemModal = React.createClass({
+
     getInitialState() {
         return {
             openChildren: false,
