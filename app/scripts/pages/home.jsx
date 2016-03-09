@@ -85,7 +85,7 @@ class Home extends React.Component {
 
 var styles = {
     dialogStyles: {
-        marginTop: 100,
+        marginTop: 0,
         textAlign: 'center',
         fontColor: '#303F9F',
         zIndex: '9999'
