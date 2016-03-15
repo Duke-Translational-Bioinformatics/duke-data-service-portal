@@ -70,7 +70,7 @@ var MainStore = Reflux.createStore({
     },
 
     setApiToken (apiToken) {
-        let expiresAt = new Date(Date.now() + (60 * 60 * 4 * 1000));
+        let expiresAt = new Date(Date.now() + (60 * 60 * 2 * 1000));
         this.appConfig.apiToken = apiToken;
         cookie.save('apiToken', this.appConfig.apiToken, {expires: expiresAt});
         this.trigger({
