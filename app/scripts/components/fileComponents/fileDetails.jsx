@@ -32,9 +32,10 @@ class FileDetails extends React.Component {
         let createdBy = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.created_by.full_name : null;
         let lastUpdatedOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.last_updated_on : null;
         let lastUpdatedBy = this.props.entityObj && this.props.entityObj.audit.last_updated_by ? this.props.entityObj.audit.last_updated_by.full_name : null;
-        let storage =  this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.upload.storage_provider.description : null;
+        let storage =  this.props.entityObj && this.props.entityObj.upload ? this.props.entityObj.upload.storage_provider.description : null;
         let bytes = this.props.entityObj && this.props.entityObj.upload ? this.props.entityObj.upload.size : null;
-        let hash = this.props.entityObj && this.props.entityObj.upload.hash ? this.props.entityObj.upload.hash.algorithm +': '+ this.props.entityObj.upload.hash.value : null;
+        let hash = this.props.entityObj && this.props.entityObj.upload.hash ?
+        this.props.entityObj.upload.hash.algorithm +': '+ this.props.entityObj.upload.hash.value : null;
 
         Tooltip.bindEvents();
 
@@ -63,7 +64,7 @@ class FileDetails extends React.Component {
                     <span className="mdl-color-text--grey-800" style={styles.title}>{projectName}</span>
                 </div>
                 <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.details}>
-                    <span style={styles.spanTitle}>{name}</span><span></span>
+                    <span style={styles.spanTitle}>{name}</span>
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     <div className="list-block">
@@ -187,7 +188,8 @@ var styles = {
     },
     menuIcon: {
         float: 'right',
-        marginTop: 38
+        marginTop: 30,
+        marginRight: 10
     }
 };
 
