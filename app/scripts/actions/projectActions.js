@@ -513,7 +513,7 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
         contentType = blob.type,
         slicedFile = null,
         BYTES_PER_CHUNK, SIZE, NUM_CHUNKS, start, end;
-    BYTES_PER_CHUNK = 5242880;
+    BYTES_PER_CHUNK = 5242880 * 10;
     SIZE = blob.size;
     NUM_CHUNKS = Math.max(Math.ceil(SIZE / BYTES_PER_CHUNK), 1);
     start = 0;
@@ -550,6 +550,9 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
     }
     fileReader.onload = function (event, files) {
         // create project upload
+        var arrayBuffer = event.target.result;
+        var wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
+        var md5crc = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
         fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'projects/' + projId + '/uploads', {
             method: 'post',
             headers: {
@@ -559,7 +562,11 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
             body: JSON.stringify({
                 'name': fileName,
                 'content_type': contentType,
-                'size': SIZE
+                'size': SIZE,
+                'hash': {
+                    'value': md5crc,
+                    'algorithm': 'MD5'
+                }
             })
         }).then(checkResponse).then(function (response) {
             return response.json()
