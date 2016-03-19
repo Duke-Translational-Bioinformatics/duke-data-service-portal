@@ -7,6 +7,8 @@ import Home from './pages/home.jsx';
 import Project from './pages/project.jsx';
 import Folder from './pages/folder.jsx';
 import File from './pages/file.jsx';
+import Agents from './pages/agents.jsx';
+import Agent from './pages/agent.jsx';
 import NotFound from './pages/notFound.jsx';
 
 var routes = (
@@ -17,6 +19,8 @@ var routes = (
         <Route name="project/:id" handler={ Project } />
         <Route name="folder/:id" handler={ Folder } />
         <Route name="file/:id" handler={File} />
+        <Route name="agents" handler={ Agents } />
+        <Route name="agent/:id" handler={ Agent } />
         <DefaultRoute handler={ Home } />
         <NotFoundRoute handler={ NotFound } />
     </Route>

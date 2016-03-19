@@ -189,7 +189,7 @@ var styles = {
     menuIcon: {
         float: 'right',
         marginTop: 30,
-        marginRight: 10
+        marginRight: -10
     }
 };
 

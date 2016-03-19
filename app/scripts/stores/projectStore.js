@@ -7,6 +7,8 @@ var ProjectStore = Reflux.createStore({
 
     init() {
         this.listenToMany(ProjectActions);
+        this.agents = [];
+        this.agentKey = {};
         this.audit = {};
         this.children = [];
         this.currentUser = {};
@@ -29,6 +31,89 @@ var ProjectStore = Reflux.createStore({
         this.uploadCount = [];
         this.uploads = {};
         this.users = [];
+        this.userKey = {};
+    },
+
+    loadAgents () {
+        this.trigger({
+            loading: true
+        })
+    },
+
+    loadAgentsSuccess (results) {
+        this.agents = results;
+        this.trigger({
+            agents: this.agents,
+            loading: false
+        })
+    },
+
+    addAgent () {
+        this.trigger({
+            loading: true
+        })
+    },
+
+    addAgentSuccess () {
+        ProjectActions.loadAgents();
+        this.trigger({
+            loading: false
+        })
+    },
+
+    editAgent(id) {
+        this.trigger({
+            loading: true
+        })
+    },
+
+    editAgentSuccess(id) {
+        let kind = 'software_agents';
+        ProjectActions.getEntity(id, kind);
+        this.trigger({
+            loading: false
+        })
+    },
+
+    deleteAgent() {
+        this.trigger({
+            loading: true
+        })
+    },
+
+    deleteAgentSuccess() {
+        ProjectActions.loadAgents();
+        this.trigger({
+            loading: false
+        })
+    },
+
+    createAgentKey() {
+        this.trigger({
+            loading: true
+        })
+    },
+
+    createAgentKeySuccess(json) {
+        this.agentKey = json;
+        this.trigger({
+            agentKey: this.agentKey,
+            loading: false
+        })
+    },
+
+    getAgentKey() {
+        this.trigger({
+            loading: true
+        })
+    },
+
+    getAgentKeySuccess(json) {
+        this.agentKey = json;
+        this.trigger({
+            agentKey: this.agentKey,
+            loading: false
+        })
     },
 
     openMoveModal (open) {
@@ -96,6 +181,24 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             currentUser: this.currentUser
         });
+    },
+
+    getUserKeySuccess (json) {
+        this.userKey = json;
+        this.trigger({
+            userKey: this.userKey
+        });
+    },
+
+    createUserKeySuccess (json) {
+        this.userKey = json;
+        this.trigger({
+            userKey: this.userKey
+        });
+    },
+
+    deleteUserKeySuccess () {
+        ProjectActions.getUserKey();
     },
 
     loadProjects() {
