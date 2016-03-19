@@ -19,9 +19,27 @@ var ProjectActions = Reflux.createActions([
     'closeErrorModal',
     'getUser',
     'getUserSuccess',
+    'getUserKey',
+    'getUserKeySuccess',
+    'createUserKey',
+    'createUserKeySuccess',
+    'deleteUserKey',
+    'deleteUserKeySuccess',
     'getUsageDetails',
     'getUsageDetailsSuccess',
     'handleErrors',
+    'addAgent',
+    'addAgentSuccess',
+    'editAgent',
+    'editAgentSuccess',
+    'deleteAgent',
+    'deleteAgentSuccess',
+    'loadAgents',
+    'loadAgentsSuccess',
+    'createAgentKey',
+    'createAgentKeySuccess',
+    'getAgentKey',
+    'getAgentKeySuccess',
     'loadProjects',
     'loadProjectsSuccess',
     'loadProjectChildren',
@@ -72,6 +90,122 @@ var ProjectActions = Reflux.createActions([
     'getChunkUrl'
 ]);
 
+ProjectActions.addAgent.preEmit = function (name, desc, repo) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'software_agents/', {
+        method: 'post',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            "name": name,
+            "description": desc,
+            "repo_url": repo
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('New software agent added');
+        ProjectActions.addAgentSuccess()
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to add new software agent');
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.editAgent.preEmit = function (id, name, desc, repo) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'software_agents/' + id, {
+        method: 'put',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            "name": name,
+            "description": desc,
+            "repo_url": repo
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('Software Agent Updated');
+        ProjectActions.editAgentSuccess(id)
+    }).catch(function (ex) {
+        MainActions.addToast('Software Agent Update Failed');
+        ProjectActions.handleErrors(ex)
+    });
+};
+
+ProjectActions.deleteAgent.preEmit = function (id) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'software_agents/' + id, {
+        method: 'delete',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+    }).then(function (json) {
+        MainActions.addToast('Software Agent Deleted');
+        ProjectActions.deleteAgentSuccess(json)
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to delete software agent');
+        ProjectActions.handleErrors(ex)
+    });
+};
+
+ProjectActions.loadAgents.preEmit = function () {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'software_agents/', {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.loadAgentsSuccess(json.results)
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.createAgentKey.preEmit = function (id) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'software_agents/' + id + '/api_key', {
+        method: 'put',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('API Key created successfully');
+        ProjectActions.createAgentKeySuccess(json);
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to create new API key');
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.getAgentKey.preEmit = (id) => {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'software_agents/' + id + '/api_key', {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getAgentKeySuccess(json)
+    })
+        .catch(function (ex) {
+            ProjectActions.handleErrors(ex)
+        });
+};
+
+
 ProjectActions.getUser.preEmit = () => {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'current_user', {
         method: 'get',
@@ -88,6 +222,59 @@ ProjectActions.getUser.preEmit = () => {
         .catch(function (ex) {
             ProjectActions.handleErrors(ex)
         });
+};
+
+ProjectActions.getUserKey.preEmit = () => {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'current_user/api_key', {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    })
+        .then(function (response) {
+            return response.json()
+        }).then(function (json) {
+            ProjectActions.getUserKeySuccess(json)
+        })
+        .catch(function (ex) {
+            ProjectActions.handleErrors(ex)
+        });
+};
+
+ProjectActions.createUserKey.preEmit = function (id) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'current_user/api_key', {
+        method: 'put',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('User Key created successfully');
+        ProjectActions.createUserKeySuccess(json);
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to create new User key');
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.deleteUserKey.preEmit = function () {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'current_user/api_key', {
+        method: 'delete',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+    }).then(function (json) {
+        MainActions.addToast('User key deleted');
+        ProjectActions.deleteUserKeySuccess(json)
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to delete user key');
+        ProjectActions.handleErrors(ex)
+    });
 };
 
 ProjectActions.getUsageDetails.preEmit = function () {

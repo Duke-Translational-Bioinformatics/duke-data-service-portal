@@ -91,7 +91,8 @@ var styles = {
     },
     menuIcon: {
         float: 'right',
-        marginTop: 38
+        marginTop: 32,
+        marginRight: -5
     },
     floatingButton: {
         position: 'absolute',
