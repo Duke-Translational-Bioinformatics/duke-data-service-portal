@@ -14,6 +14,7 @@ class AgentOptionsMenu extends React.Component {
         this.state = {
             deleteOpen: false,
             deleteKeyWarn: false,
+            disabled: false,
             editOpen: false,
             floatingErrorText: 'This field is required',
             floatingErrorText2: 'This field is required',
@@ -30,7 +31,7 @@ class AgentOptionsMenu extends React.Component {
             <FlatButton
                 label="CANCEL"
                 secondary={true}
-                onTouchTap={this.handleClose.bind(this)} />,
+                onTouchTap={() => this.handleClose()} />,
             <FlatButton
                 label="DELETE"
                 secondary={true}
@@ -42,7 +43,7 @@ class AgentOptionsMenu extends React.Component {
             <FlatButton
                 label="CANCEL"
                 secondary={true}
-                onTouchTap={this.handleClose.bind(this)} />,
+                onTouchTap={() => this.handleClose()} />,
             <FlatButton
                 label="DELETE"
                 secondary={true}
@@ -54,7 +55,7 @@ class AgentOptionsMenu extends React.Component {
             <FlatButton
                 label="CANCEL"
                 secondary={true}
-                onTouchTap={this.handleClose.bind(this)} />,
+                onTouchTap={() => this.handleClose()} />,
             <FlatButton
                 label="UPDATE"
                 secondary={true}
@@ -66,7 +67,7 @@ class AgentOptionsMenu extends React.Component {
             <FlatButton
                 label="CANCEL"
                 secondary={true}
-                onTouchTap={this.handleClose.bind(this)} />,
+                onTouchTap={() => this.handleClose()} />,
             <FlatButton
                 label="CREATE NEW KEY"
                 secondary={true}
@@ -79,14 +80,14 @@ class AgentOptionsMenu extends React.Component {
                 label="OKAY"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={this.handleClose.bind(this)} />
+                onTouchTap={() => this.handleClose()} />
         ];
 
         let userKeyActions = [
             <FlatButton
                 label="CANCEL"
                 secondary={true}
-                onTouchTap={this.handleClose.bind(this)} />,
+                onTouchTap={() => this.handleClose()} />,
             <FlatButton
                 label="CREATE NEW KEY"
                 secondary={true}
@@ -105,7 +106,7 @@ class AgentOptionsMenu extends React.Component {
                 <FlatButton
                     label="CANCEL"
                     secondary={true}
-                    onTouchTap={this.handleClose.bind(this)} />,
+                    onTouchTap={() => this.handleClose()} />,
                 <FlatButton
                     label="CREATE NEW KEY"
                     secondary={true}
@@ -114,13 +115,12 @@ class AgentOptionsMenu extends React.Component {
             ];
         }
 
-
         let newUserKeyActions = [
             <FlatButton
                 label="OKAY"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={this.handleClose.bind(this)} />
+                onTouchTap={() => this.handleClose()} />
         ];
 
         let names = this.props.users && this.props.users.length ? this.props.users : [];
@@ -132,6 +132,7 @@ class AgentOptionsMenu extends React.Component {
         if(this.props.userKey && !this.props.userKey.key) {
             userKey = 'No user key found. You must create a new one.';
         }
+
         return (
             <div>
                 <Dialog
@@ -139,7 +140,7 @@ class AgentOptionsMenu extends React.Component {
                     title="Are you sure you want to delete this software agent?"
                     autoScrollBodyContent={true}
                     actions={deleteActions}
-                    onRequestClose={this.handleClose.bind(this)}
+                    onRequestClose={() => this.handleClose()}
                     open={this.state.deleteOpen}>
                     <i className="material-icons" style={styles.warning}>warning</i>
                     <p style={styles.msg}>Deleting this software agent will affect any programs or processes using this agent. As a failsafe, you must enter the agent name exactly in the form below before you can delete this agent.</p>
@@ -158,7 +159,7 @@ class AgentOptionsMenu extends React.Component {
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
                     actions={editActions}
-                    onRequestClose={this.handleClose.bind(this)}
+                    onRequestClose={() => this.handleClose()}
                     open={this.state.editOpen}>
                     <form action="#" id="newProjectForm">
                         <TextField
@@ -197,7 +198,7 @@ class AgentOptionsMenu extends React.Component {
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
                     actions={keyActions}
-                    onRequestClose={this.handleClose.bind(this)}
+                    onRequestClose={() => this.handleClose()}
                     open={this.state.apiKeyOpen}>
                     <i className="material-icons" style={styles.warning}>warning</i>
                     <h6 style={styles.msg}>Are you sure you want to generate a new API key? Changing this API key will affect any programs or processes using this key.</h6>
@@ -218,7 +219,7 @@ class AgentOptionsMenu extends React.Component {
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
                     actions={newKeyActions}
-                    onRequestClose={this.handleClose.bind(this)}
+                    onRequestClose={() => this.handleClose()}
                     open={this.state.newApiKeyOpen}>
                     <h6 style={{textAlign: 'center'}}>Here's your new API key. Your old key is no longer valid.</h6>
                     <form action="#" id="apiKeyForm">
@@ -234,17 +235,18 @@ class AgentOptionsMenu extends React.Component {
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
-                    title="Update API Key"
+                    title="Update User Key"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
                     actions={userKeyActions}
-                    onRequestClose={this.handleClose.bind(this)}
+                    onRequestClose={() => this.handleClose()}
                     open={this.state.userKeyOpen}>
                     <i className="material-icons" style={styles.warning}>warning</i>
                     <h6 style={styles.msg}>Are you sure you want to generate a new User Key? Changing your user key will make your current key invalid.</h6>
                     <form action="#" id="userKeyForm">
                         <TextField
                             style={styles.keyModal}
+                            disabled={this.props.userKey && !this.props.userKey.key ? true : false}
                             defaultValue={userKey}
                             floatingLabelText="Current User Key"
                             id="userKeyText"
@@ -259,7 +261,7 @@ class AgentOptionsMenu extends React.Component {
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
                     actions={newKeyActions}
-                    onRequestClose={this.handleClose.bind(this)}
+                    onRequestClose={() => this.handleClose()}
                     open={this.state.newUserKeyOpen}>
                     <h6 style={{textAlign: 'center'}}>Here's your new User key. Your old key is no longer valid.</h6>
                     <form action="#" id="userKeyForm">
@@ -278,7 +280,7 @@ class AgentOptionsMenu extends React.Component {
                     title="Are you sure you want to delete this user key?"
                     autoScrollBodyContent={true}
                     actions={deleteKeyActions}
-                    onRequestClose={this.handleClose.bind(this)}
+                    modal={true}
                     open={this.state.deleteKeyWarn}>
                     <i className="material-icons" style={styles.warning}>warning</i>
                 </Dialog>
