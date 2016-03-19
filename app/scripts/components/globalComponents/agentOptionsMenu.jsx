@@ -132,7 +132,6 @@ class AgentOptionsMenu extends React.Component {
         if(this.props.userKey && !this.props.userKey.key) {
             userKey = 'No user key found. You must create a new one.';
         }
-
         return (
             <div>
                 <Dialog
@@ -155,13 +154,13 @@ class AgentOptionsMenu extends React.Component {
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
-                    title="Update Project"
+                    title="Update Software Agent Details"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
                     actions={editActions}
                     onRequestClose={() => this.handleClose()}
                     open={this.state.editOpen}>
-                    <form action="#" id="newProjectForm">
+                    <form action="#" id="newAgentForm">
                         <TextField
                             style={styles.textStyles}
                             hintText="Software Agent Name"
@@ -402,7 +401,7 @@ class AgentOptionsMenu extends React.Component {
     handleFloatingErrorInputChange3(e) {
         let agName = this.props.entityObj ? this.props.entityObj.name  : null;
         this.setState({
-            floatingErrorText3: e.target.value === agName ? '' : 'Enter the project name exactly to delete'
+            floatingErrorText3: e.target.value === agName ? '' : 'Enter the agent name exactly to delete'
         });
     };
 
