@@ -414,10 +414,9 @@ class AgentOptionsMenu extends React.Component {
             userKeyOpen: false,
             newUserKeyOpen: false,
             deleteKeyWarn: false,
-            selectValue: 'project_admin',
             floatingErrorText: 'This field is required.',
             floatingErrorText2: 'This field is required',
-            floatingErrorText3: 'Enter the project name exactly to delete'
+            floatingErrorText3: 'Enter the agent name exactly to delete'
         });
     };
 }
