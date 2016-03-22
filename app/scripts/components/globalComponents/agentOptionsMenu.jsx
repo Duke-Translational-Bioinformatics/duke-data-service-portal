@@ -193,14 +193,14 @@ class AgentOptionsMenu extends React.Component {
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
-                    title="Update API Key"
+                    title="API Key"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
                     actions={keyActions}
                     onRequestClose={() => this.handleClose()}
                     open={this.state.apiKeyOpen}>
-                    <i className="material-icons" style={styles.warning}>warning</i>
-                    <h6 style={styles.msg}>Are you sure you want to generate a new API key? Changing this API key will affect any programs or processes using this key.</h6>
+                    <i className="material-icons" style={styles.warning}>vpn_key</i>
+                    <h6 style={styles.msg}>This is your current API key. You can use the current key or create a new key. Changing this API key will affect any programs or processes using this key.</h6>
                     <form action="#" id="apiKeyForm">
                         <TextField
                             style={styles.keyModal}
@@ -234,14 +234,14 @@ class AgentOptionsMenu extends React.Component {
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
-                    title="Update User Key"
+                    title="User Secret Key"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
                     actions={userKeyActions}
                     onRequestClose={() => this.handleClose()}
                     open={this.state.userKeyOpen}>
-                    <i className="material-icons" style={styles.warning}>warning</i>
-                    <h6 style={styles.msg}>Are you sure you want to generate a new User Key? Changing your user key will make your current key invalid.</h6>
+                    <i className="material-icons" style={styles.warning}>vpn_key</i>
+                    <h6 style={styles.msg}>This is your secret key. You can use the current key, create a new key or delete your key. Changing or deleting your user key will make your current key invalid.</h6>
                     <form action="#" id="userKeyForm">
                         <TextField
                             style={styles.keyModal}
@@ -262,7 +262,7 @@ class AgentOptionsMenu extends React.Component {
                     actions={newKeyActions}
                     onRequestClose={() => this.handleClose()}
                     open={this.state.newUserKeyOpen}>
-                    <h6 style={{textAlign: 'center'}}>Here's your new User key. Your old key is no longer valid.</h6>
+                    <h6 style={{textAlign: 'center'}}>Here's your new user key. Your old key is no longer valid.</h6>
                     <form action="#" id="userKeyForm">
                         <TextField
                             style={styles.keyModal}
