@@ -69,9 +69,13 @@ class AgentOptionsMenu extends React.Component {
                 secondary={true}
                 onTouchTap={() => this.handleClose()} />,
             <FlatButton
-                label="CREATE NEW KEY"
+                label="COPY KEY TO CLIPBOARD"
                 secondary={true}
                 keyboardFocused={true}
+                onTouchTap={this.handleCopyButton.bind(this)} />,
+            <FlatButton
+                label="CREATE NEW KEY"
+                secondary={true}
                 onTouchTap={this.handleApiButton.bind(this)} />
         ];
 
@@ -79,8 +83,12 @@ class AgentOptionsMenu extends React.Component {
             <FlatButton
                 label="OKAY"
                 secondary={true}
+                onTouchTap={() => this.handleClose()} />,
+            <FlatButton
+                label="COPY KEY TO CLIPBOARD"
+                secondary={true}
                 keyboardFocused={true}
-                onTouchTap={() => this.handleClose()} />
+                onTouchTap={this.handleCopyButton.bind(this)} />
         ];
 
         let userKeyActions = [
@@ -89,9 +97,13 @@ class AgentOptionsMenu extends React.Component {
                 secondary={true}
                 onTouchTap={() => this.handleClose()} />,
             <FlatButton
-                label="CREATE NEW KEY"
+                label="COPY KEY TO CLIPBOARD"
                 secondary={true}
                 keyboardFocused={true}
+                onTouchTap={this.handleCopyButton.bind(this)} />,
+            <FlatButton
+                label="CREATE NEW KEY"
+                secondary={true}
                 onTouchTap={this.handleUserKeyButton.bind(this)} />,
             <FlatButton
                 label="DELETE USER KEY"
@@ -119,8 +131,12 @@ class AgentOptionsMenu extends React.Component {
             <FlatButton
                 label="OKAY"
                 secondary={true}
+                onTouchTap={() => this.handleClose()} />,
+            <FlatButton
+                label="COPY KEY TO CLIPBOARD"
+                secondary={true}
                 keyboardFocused={true}
-                onTouchTap={() => this.handleClose()} />
+                onTouchTap={this.handleCopyButton.bind(this)} />
         ];
 
         let names = this.props.users && this.props.users.length ? this.props.users : [];
@@ -206,7 +222,7 @@ class AgentOptionsMenu extends React.Component {
                             style={styles.keyModal}
                             defaultValue={apiKey}
                             floatingLabelText="Current Api Key"
-                            id="apiKeyText"
+                            id="keyText"
                             type="text"
                             multiLine={true}
                             /><br/>
@@ -226,7 +242,7 @@ class AgentOptionsMenu extends React.Component {
                             style={styles.keyModal}
                             defaultValue={apiKey}
                             floatingLabelText="Current Api Key"
-                            id="apiKeyText"
+                            id="keyText"
                             type="text"
                             multiLine={true}
                             /><br/>
@@ -248,7 +264,7 @@ class AgentOptionsMenu extends React.Component {
                             disabled={this.props.userKey && !this.props.userKey.key ? true : false}
                             defaultValue={userKey}
                             floatingLabelText="Current User Key"
-                            id="userKeyText"
+                            id="keyText"
                             type="text"
                             multiLine={true}
                             /><br/>
@@ -268,7 +284,7 @@ class AgentOptionsMenu extends React.Component {
                             style={styles.keyModal}
                             defaultValue={userKey}
                             floatingLabelText="Current User Key"
-                            id="userKeyText"
+                            id="keyText"
                             type="text"
                             multiLine={true}
                             /><br/>
@@ -312,12 +328,12 @@ class AgentOptionsMenu extends React.Component {
 
     handleTouchTapApiKey() {
         this.setState({apiKeyOpen: true});
-        setTimeout(() => { document.getElementById('apiKeyText').select() }, 300);
+        setTimeout(() => { document.getElementById('keyText').select() }, 300);
     }
 
     handleTouchTapUserKey() {
         this.setState({userKeyOpen: true});
-        setTimeout(() => { document.getElementById('userKeyText').select() }, 300);
+        setTimeout(() => { document.getElementById('keyText').select() }, 300);
     }
 
     handleDeleteButton() {
@@ -369,7 +385,7 @@ class AgentOptionsMenu extends React.Component {
                 this.setState({
                     newApiKeyOpen: true
                 });
-                document.getElementById('apiKeyText').select() }, 500
+                document.getElementById('keyText').select() }, 500
         );
     };
 
@@ -382,7 +398,7 @@ class AgentOptionsMenu extends React.Component {
                 this.setState({
                     newUserKeyOpen: true
                 });
-                document.getElementById('userKeyText').select() }, 500
+                document.getElementById('keyText').select() }, 500
         );
     };
 
@@ -405,6 +421,18 @@ class AgentOptionsMenu extends React.Component {
         });
     };
 
+    handleCopyButton() {
+        let copyTextArea = document.querySelector('#keyText');
+        copyTextArea.select();
+        let clipText = document.execCommand('copy');
+        this.setState({
+            apiKeyOpen: false,
+            newApiKeyOpen: false,
+            userKeyOpen: false,
+            newUserKeyOpen: false
+        });
+    };
+
     handleClose() {
         this.setState({
             deleteOpen: false,
@@ -414,10 +442,9 @@ class AgentOptionsMenu extends React.Component {
             userKeyOpen: false,
             newUserKeyOpen: false,
             deleteKeyWarn: false,
-            selectValue: 'project_admin',
             floatingErrorText: 'This field is required.',
             floatingErrorText2: 'This field is required',
-            floatingErrorText3: 'Enter the project name exactly to delete'
+            floatingErrorText3: 'Enter the agent name exactly to delete'
         });
     };
 }
