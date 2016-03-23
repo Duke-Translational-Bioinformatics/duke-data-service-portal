@@ -1,5 +1,6 @@
 import React from 'react';
 import { RouteHandler, Link } from 'react-router';
+import MainActions from '../../actions/mainActions';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import AddAgentModal from '../../components/globalComponents/addAgentModal.jsx';
@@ -24,34 +25,46 @@ class AgentList extends React.Component {
     render() {
         let agents = [];
         let agentKey = this.props.agentKey ? this.props.agentKey.key : null;
+        let userKey = this.props.userKey ? this.props.userKey.key : null;
 
         let keyActions = [
             <FlatButton
                 label="OKAY"
                 secondary={true}
+                keyboardFocused={true}
                 onTouchTap={() => this.handleClose()} />,
             <FlatButton
-                label="COPY KEY TO CLIPBOARD"
+                label="COPY API KEY TO CLIPBOARD"
                 secondary={true}
-                keyboardFocused={true}
-                onTouchTap={this.handleCopyButton.bind(this)} />
+                onTouchTap={this.copyApiKey.bind(this)} />,
+            <FlatButton
+                label="COPY USER KEY TO CLIPBOARD"
+                secondary={true}
+                onTouchTap={this.copyUserKey.bind(this)} />
         ];
 
         let modal = <Dialog
             style={styles.dialogStyles}
-            title="Your API Key"
+            title="Your API Key and User Key"
             autoDetectWindowHeight={true}
             autoScrollBodyContent={true}
             actions={keyActions}
             onRequestClose={() => this.handleClose()}
             open={this.state.apiKeyOpen}>
-            <h6 style={{textAlign: 'center'}}>Here's your API key.</h6>
-            <form action="#" id="apiKeyForm">
+            <form action="#" id="apiKeyForm" className="keyText">
                 <TextField
                     style={styles.keyModal}
                     defaultValue={agentKey}
-                    floatingLabelText="Current Api Key"
+                    floatingLabelText="Api Key"
                     id="keyText"
+                    type="text"
+                    multiLine={true}
+                    /><br/>
+                <TextField
+                    style={styles.keyModal}
+                    defaultValue={userKey}
+                    floatingLabelText="User Key"
+                    id="userKeyText"
                     type="text"
                     multiLine={true}
                     /><br/>
@@ -69,7 +82,7 @@ class AgentList extends React.Component {
             if (agent.audit.created_by.id === this.props.currentUser.id) {
                 return (
                     <li key={ agent.id } className="hover">
-                        <FlatButton label="get api key" primary={true} style={{float: 'right', marginTop: 15}} onTouchTap={() => this.handleTouchTapApiKey(agent.id)}/>
+                        <FlatButton label="credentials" primary={true} style={styles.getKeyButton} onTouchTap={() => this.handleTouchTapApiKey(agent.id)}/>
                         <a href={urlGen.routes.baseUrl + urlGen.routes.prefix  + "/agent/" + agent.id} className="item-content external">
                             <div className="item-media">
                                 <i className="material-icons" style={styles.icon}>laptop_mac</i>
@@ -102,7 +115,9 @@ class AgentList extends React.Component {
                     </div>
                     <ErrorModal {...this.props}/>
                 </div>
-                { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
+                <div className="mdl-cell mdl-cell--12-col" style={styles.loading}>
+                    { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
+                </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     <div className="list-block list-block-search searchbar-found media-list">
                         <ul>
@@ -116,19 +131,23 @@ class AgentList extends React.Component {
 
     handleTouchTapApiKey(id) {
         ProjectActions.getAgentKey(id);
+        ProjectActions.getUserKey();
         setTimeout(() => {
             this.setState({apiKeyOpen: true});
-            document.getElementById('keyText').select()
-        }, 500);
+            document.getElementById('keyText').select();
+        }, 1000);
     }
 
-    handleCopyButton() {
-        let copyTextArea = document.querySelector('#keyText');
-        copyTextArea.select();
+    copyApiKey() {
+        document.getElementById('keyText').select();
         let clipText = document.execCommand('copy');
-        this.setState({
-            apiKeyOpen: false
-        });
+        MainActions.addToast('API Key copied to clipboard!');
+    };
+
+    copyUserKey() {
+        document.getElementById('userKeyText').select();
+        let clipText = document.execCommand('copy');
+        MainActions.addToast('User Key copied to clipboard!');
     };
 
     handleClose() {
@@ -173,6 +192,10 @@ var styles = {
         marginLeft: 32,
         padding: '08px 08px 08px 08px'
     },
+    getKeyButton: {
+        float: 'right',
+        marginTop: 15
+    },
     headerTitle: {
         float: 'left',
         margin: '10px 0px 0px 14px'
@@ -187,6 +210,9 @@ var styles = {
     list: {
         float: 'right',
         marginTop: -10
+    },
+    loaders: {
+        paddingTop: 40
     },
     title: {
         marginRight: 40
