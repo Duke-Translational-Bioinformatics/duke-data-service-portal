@@ -1,9 +1,7 @@
 import React from 'react';
-import { RouteHandler, Link } from 'react-router';
+import { RouteHandler } from 'react-router';
 import MainStore from '../../stores/mainStore';
 import MainActions from '../../actions/mainActions';
-import cookie from 'react-cookie';
-import NavChildren from './navChildren.jsx';
 import urlGen from '../../../util/urlGen.js';
 
 class LeftMenu extends React.Component {
@@ -13,18 +11,30 @@ class LeftMenu extends React.Component {
     }
 
     render() {
-            return (
-                <span>
+        let home = <span>
+                    <p>
+                        <a href={urlGen.routes.baseUrl + urlGen.routes.prefix}
+                           className="mdl-color-text--grey-800 item-content external" onTouchTap={this.closeLeftNav()}>
+                            <i className="material-icons" style={styles.navIcon}>home</i>Home
+
+                        </a>
+                    </p>
+               </span>;
+        if (this.props.routerPath === '/home' || this.props.routerPath === '/') {
+            home = <span></span>
+        }
+        return (
+            <span>
                     <div className="panel-overlay"></div>
                     <div className="panel panel-left panel-cover">
                         <div className="content-block">
-                            <NavChildren />
-                            <p><Link to="home" onTouchTap={this.handleTouchTap}>
+                            { home }
+                            <p><a href="#" className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.handleTouchTap()}>
                                 <i className="material-icons" style={styles.navIcon}>exit_to_app</i>
-                                Logout</Link>
+                                Logout</a>
                             </p>
-                            <p><a href={urlGen.routes.baseUrl + urlGen.routes.prefix + '/agents'}
-                                  className="mdl-color-text--grey-800 item-content external">
+                            <p><a href={urlGen.routes.baseUrl + urlGen.routes.prefix  + "agents"}
+                                  className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
                                 <i className="material-icons" style={styles.navIcon}>build</i>
                                 Software Agents</a>
                             </p>
@@ -36,10 +46,15 @@ class LeftMenu extends React.Component {
                         </div>
                     </div>
                 </span>
-            );
+        );
     }
+
     handleTouchTap() {
         MainStore.handleLogout()
+    }
+
+    closeLeftNav() {
+        new Framework7().closePanel();
     }
 }
 
