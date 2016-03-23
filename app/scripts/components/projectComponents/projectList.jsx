@@ -6,8 +6,10 @@ import AccountOverview from '../../components/globalComponents/accountOverview.j
 import Header from '../../components/globalComponents/header.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import urlGen from '../../../util/urlGen.js';
-import LinearProgress from 'material-ui/lib/linear-progress';
 import Card from 'material-ui/lib/card/card';
+import CardText from 'material-ui/lib/card/card-text';
+import CardTitle from 'material-ui/lib/card/card-title';
+import LinearProgress from 'material-ui/lib/linear-progress';
 
 class ProjectList extends React.Component {
 
@@ -23,18 +25,14 @@ class ProjectList extends React.Component {
         let projects = this.props.projects.map((project) => {
             if (!project.is_deleted){
                 return (
-                    <Card key={ project.id } style={styles.cardSquare} className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
-                        <div className="mdl-card__title mdl-card--expand">
-                            <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>content_paste</i>
-                            <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + "/project/" + project.id} className="external">
-                                <h1 className="mdl-card__title-text mdl-color-text--grey-800"
-                                    style={styles.cardHeader} projectId={project.id}>{ project.name.length > 35 ? project.name.substring(0,35)+'...' : project.name }</h1>
-                            </a>
-                        </div>
-                        <div className="mdl-card__supporting-text mdl-color-text--grey-800">
-                            <p>ID: {project.id}</p>
-                            <p>Description: { project.description.length > 150 ? project.description.substring(0,150)+'...' : project.description }</p>
-                        </div>
+                    <Card key={ project.id } className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
+                        <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>content_paste</i>
+                        <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + "/project/" + project.id} className="external">
+                            <CardTitle title={project.name} subtitle={'ID: ' + project.id} titleColor="#424242" style={styles.cardTitle}/>
+                        </a>
+                        <CardText>
+                            <span className="mdl-color-text--grey-900">Description:</span> { project.description }
+                        </CardText>
                     </Card>
                 );
             }
@@ -60,18 +58,14 @@ ProjectList.contextTypes = {
 };
 
 var styles = {
-    cardHeader: {
-        paddingLeft: 15
-    },
-    cardSquare: {
-        height: 260,
-        textAlign: 'left',
-        display: 'inline-block',
-        overflow: 'hidden',
-        padding: 10
+    cardTitle: {
+        fontWeight: 200,
+        marginBottom: -15
     },
     icon: {
-        fontSize: 36
+        fontSize: 36,
+        float: 'left',
+        margin: '20px 15px 0px 13px'
     },
     listTitle: {
         margin: '0px 0px 0px 0px',
