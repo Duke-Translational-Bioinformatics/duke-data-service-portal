@@ -33,7 +33,7 @@ class LeftMenu extends React.Component {
                                 <i className="material-icons" style={styles.navIcon}>exit_to_app</i>
                                 Logout</a>
                             </p>
-                            <p><a href={urlGen.routes.baseUrl + urlGen.routes.prefix  + "agents"}
+                            <p><a href={urlGen.routes.baseUrl + urlGen.routes.prefix  + "/agents"}
                                   className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
                                 <i className="material-icons" style={styles.navIcon}>build</i>
                                 Software Agents</a>
