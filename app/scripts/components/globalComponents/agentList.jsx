@@ -4,24 +4,60 @@ import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import AddAgentModal from '../../components/globalComponents/addAgentModal.jsx';
 import BatchOps from '../../components/globalComponents/batchOps.jsx';
+import Dialog from 'material-ui/lib/dialog';
+import FlatButton from 'material-ui/lib/flat-button';
 import ErrorModal from '../../components/globalComponents/errorModal.jsx';
 import Header from '../../components/globalComponents/header.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import urlGen from '../../../util/urlGen.js';
-import Badge from 'material-ui/lib/badge';
-import LinearProgress from 'material-ui/lib/linear-progress';
 import RaisedButton from 'material-ui/lib/raised-button';
+import TextField from 'material-ui/lib/text-field';
 
 class AgentList extends React.Component {
 
     constructor() {
         this.state = {
-            page: 0
+            apiKeyOpen: false
         }
     }
 
     render() {
         let agents = [];
+        let agentKey = this.props.agentKey ? this.props.agentKey.key : null;
+
+        let keyActions = [
+            <FlatButton
+                label="OKAY"
+                secondary={true}
+                onTouchTap={() => this.handleClose()} />,
+            <FlatButton
+                label="COPY KEY TO CLIPBOARD"
+                secondary={true}
+                keyboardFocused={true}
+                onTouchTap={this.handleCopyButton.bind(this)} />
+        ];
+
+        let modal = <Dialog
+            style={styles.dialogStyles}
+            title="Your API Key"
+            autoDetectWindowHeight={true}
+            autoScrollBodyContent={true}
+            actions={keyActions}
+            onRequestClose={() => this.handleClose()}
+            open={this.state.apiKeyOpen}>
+            <h6 style={{textAlign: 'center'}}>Here's your API key.</h6>
+            <form action="#" id="apiKeyForm">
+                <TextField
+                    style={styles.keyModal}
+                    defaultValue={agentKey}
+                    floatingLabelText="Current Api Key"
+                    id="keyText"
+                    type="text"
+                    multiLine={true}
+                    /><br/>
+            </form>
+        </Dialog>;
+
         if (this.props.error && this.props.error.response) {
             this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
             this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
@@ -33,16 +69,16 @@ class AgentList extends React.Component {
             if (agent.audit.created_by.id === this.props.currentUser.id) {
                 return (
                     <li key={ agent.id } className="hover">
-                        <a href={urlGen.routes.baseUrl + urlGen.routes.prefix  + "/agent/" + agent.id} className="item-content external">
+                        <FlatButton label="get api key" primary={true} style={{float: 'right', marginTop: 15}} onTouchTap={() => this.handleTouchTapApiKey(agent.id)}/>
+                        <a href={urlGen.routes.baseUrl + "agent/" + agent.id} className="item-content external">
                             <div className="item-media">
                                 <i className="material-icons" style={styles.icon}>laptop_mac</i>
                             </div>
                             <div className="item-inner">
                                 <div className="item-title-row">
-                                    <div className="item-title mdl-color-text--grey-800" style={styles.title}>{ agent.name }</div>
+                                    <div className="item-text mdl-color-text--grey-800" style={styles.title}>{ agent.name }</div>
                                 </div>
-                                <div className="item-subtitle mdl-color-text--grey-600">{ agent.description && agent.description.length > 180 ? agent.description.substring(0, 181) + '...' : agent.description }</div>
-                                <div className="item-subtitle mdl-color-text--grey-600">ID: { agent.id }</div>
+                                <div className="item-text mdl-color-text--grey-600">{ agent.description }</div>
                             </div>
                         </a>
                     </li>
@@ -56,6 +92,7 @@ class AgentList extends React.Component {
 
         return (
             <div className="list-container">
+                {modal}
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
                     <div style={styles.headerTitle}>
                         <h4>Software Agents</h4>
@@ -76,6 +113,29 @@ class AgentList extends React.Component {
             </div>
         );
     }
+
+    handleTouchTapApiKey(id) {
+        ProjectActions.getAgentKey(id);
+        setTimeout(() => {
+            this.setState({apiKeyOpen: true});
+            document.getElementById('keyText').select()
+        }, 500);
+    }
+
+    handleCopyButton() {
+        let copyTextArea = document.querySelector('#keyText');
+        copyTextArea.select();
+        var clipText = document.execCommand('copy');
+        this.setState({
+            apiKeyOpen: false
+        });
+    };
+
+    handleClose() {
+        this.setState({
+            apiKeyOpen: false
+        });
+    };
 }
 
 AgentList.contextTypes = {
@@ -91,6 +151,11 @@ var styles = {
     checkboxLabel: {
         borderRadius: 35,
         paddingRight: 20
+    },
+    dialogStyles: {
+        textAlign: 'center',
+        fontColor: '#303F9F',
+        zIndex: '5000'
     },
     dlIcon: {
         float: 'right',
@@ -114,6 +179,10 @@ var styles = {
     },
     icon: {
         fontSize: 36
+    },
+    keyModal: {
+        width: 300,
+        textAlign: 'left'
     },
     list: {
         float: 'right',
