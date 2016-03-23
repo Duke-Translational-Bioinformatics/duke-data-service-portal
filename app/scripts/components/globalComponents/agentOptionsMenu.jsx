@@ -1,4 +1,5 @@
 import React from 'react';
+import MainActions from '../../actions/mainActions';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import TextField from 'material-ui/lib/text-field';
@@ -425,6 +426,7 @@ class AgentOptionsMenu extends React.Component {
         let copyTextArea = document.querySelector('#keyText');
         copyTextArea.select();
         let clipText = document.execCommand('copy');
+        MainActions.addToast('Key copied to clipboard!');
         this.setState({
             apiKeyOpen: false,
             newApiKeyOpen: false,
