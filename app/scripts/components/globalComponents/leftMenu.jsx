@@ -14,7 +14,7 @@ class LeftMenu extends React.Component {
         let home = <span>
                     <p>
                         <a href={urlGen.routes.baseUrl + urlGen.routes.prefix}
-                           className="mdl-color-text--grey-800 item-content external" onTouchTap={this.closeLeftNav()}>
+                           className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
                             <i className="material-icons" style={styles.navIcon}>home</i>Home
 
                         </a>
