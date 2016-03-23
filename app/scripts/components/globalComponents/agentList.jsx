@@ -125,7 +125,7 @@ class AgentList extends React.Component {
     handleCopyButton() {
         let copyTextArea = document.querySelector('#keyText');
         copyTextArea.select();
-        var clipText = document.execCommand('copy');
+        let clipText = document.execCommand('copy');
         this.setState({
             apiKeyOpen: false
         });
