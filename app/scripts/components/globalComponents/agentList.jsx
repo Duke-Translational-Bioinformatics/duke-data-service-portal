@@ -16,16 +16,15 @@ import TextField from 'material-ui/lib/text-field';
 
 class AgentList extends React.Component {
 
-    constructor() {
-        this.state = {
-            apiKeyOpen: false
-        }
-    }
-
     render() {
         let agents = [];
         let agentKey = this.props.agentKey ? this.props.agentKey.key : null;
         let userKey = this.props.userKey ? this.props.userKey.key : null;
+        let apiToken = this.props.agentApiToken ? this.props.agentApiToken.api_token : null;
+        let open = this.props.modal ? this.props.modal : false;
+        let msg = Object.keys(ProjectStore.agentApiToken).length === 0 && JSON.stringify(ProjectStore.agentApiToken) === JSON.stringify({}) ?
+        "You must have a valid user key, please create one by selecting 'USER SECRET KEY' in the drop down" +
+        " menu." : 'This API key will expire in 2 hours.';
 
         let keyActions = [
             <FlatButton
@@ -34,40 +33,29 @@ class AgentList extends React.Component {
                 keyboardFocused={true}
                 onTouchTap={() => this.handleClose()} />,
             <FlatButton
-                label="COPY API KEY TO CLIPBOARD"
+                label="COPY API TOKEN TO CLIPBOARD"
                 secondary={true}
-                onTouchTap={this.copyApiKey.bind(this)} />,
-            <FlatButton
-                label="COPY USER KEY TO CLIPBOARD"
-                secondary={true}
-                onTouchTap={this.copyUserKey.bind(this)} />
+                onTouchTap={this.copyApiKey.bind(this)} />
         ];
 
         let modal = <Dialog
             style={styles.dialogStyles}
-            title="Your API Key and User Key"
+            title="API Token"
             autoDetectWindowHeight={true}
             autoScrollBodyContent={true}
             actions={keyActions}
             onRequestClose={() => this.handleClose()}
-            open={this.state.apiKeyOpen}>
+            open={open}>
+            <h6 style={{textAlign: 'center'}}>{ msg }</h6>
             <form action="#" id="apiKeyForm" className="keyText">
                 <TextField
                     style={styles.keyModal}
-                    defaultValue={agentKey}
+                    defaultValue={apiToken}
                     floatingLabelText="Api Key"
                     id="keyText"
                     type="text"
                     multiLine={true}
-                    /><br/>
-                <TextField
-                    style={styles.keyModal}
-                    defaultValue={userKey}
-                    floatingLabelText="User Key"
-                    id="userKeyText"
-                    type="text"
-                    multiLine={true}
-                    /><br/>
+                    />
             </form>
         </Dialog>;
 
@@ -133,27 +121,31 @@ class AgentList extends React.Component {
         ProjectActions.getAgentKey(id);
         ProjectActions.getUserKey();
         setTimeout(() => {
-            this.setState({apiKeyOpen: true});
-            document.getElementById('keyText').select();
-        }, 1000);
+            let agentKey = this.props.agentKey ? this.props.agentKey.key : null;
+            let userKey = this.props.userKey ? this.props.userKey.key : null;
+            let formData = new FormData();
+            formData.append('agent_key', agentKey);
+            formData.append('user_key', userKey);
+            if (!userKey || !agentKey){
+                ProjectActions.openModal();
+            } else {
+                ProjectActions.getAgentApiToken(agentKey, userKey, formData);
+            }
+        }, 800);
+
+
     }
 
     copyApiKey() {
         document.getElementById('keyText').select();
         let clipText = document.execCommand('copy');
-        MainActions.addToast('API Key copied to clipboard!');
-    };
-
-    copyUserKey() {
-        document.getElementById('userKeyText').select();
-        let clipText = document.execCommand('copy');
-        MainActions.addToast('User Key copied to clipboard!');
+        MainActions.addToast('API token copied to clipboard!');
+        ProjectActions.closeModal();
     };
 
     handleClose() {
-        this.setState({
-            apiKeyOpen: false
-        });
+        ProjectActions.closeModal();
+        ProjectActions.clearApiToken();
     };
 }
 

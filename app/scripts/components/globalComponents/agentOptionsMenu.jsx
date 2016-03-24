@@ -13,6 +13,7 @@ class AgentOptionsMenu extends React.Component {
 
     constructor() {
         this.state = {
+            apiTokenOpen: false,
             deleteOpen: false,
             deleteKeyWarn: false,
             disabled: false,
@@ -84,11 +85,11 @@ class AgentOptionsMenu extends React.Component {
             <FlatButton
                 label="OKAY"
                 secondary={true}
+                keyboardFocused={true}
                 onTouchTap={() => this.handleClose()} />,
             <FlatButton
                 label="COPY KEY TO CLIPBOARD"
                 secondary={true}
-                keyboardFocused={true}
                 onTouchTap={this.handleCopyButton.bind(this)} />
         ];
 
@@ -140,8 +141,13 @@ class AgentOptionsMenu extends React.Component {
                 onTouchTap={this.handleCopyButton.bind(this)} />
         ];
 
+        let apiToken = this.props.agentApiToken ? this.props.agentApiToken.api_token : null;
+        let msg = Object.keys(ProjectStore.agentApiToken).length === 0 && JSON.stringify(ProjectStore.agentApiToken) === JSON.stringify({}) ?
+        "You must have a valid user key, please create one by selecting 'USER SECRET KEY' in the drop down" +
+        " menu." : 'This API key will expire in 2 hours.';
+        let open = this.props.modal ? this.props.modal : false;
         let names = this.props.users && this.props.users.length ? this.props.users : [];
-        let apiKey = this.props.agentKey ? this.props.agentKey.key : null;
+        let agentKey = this.props.agentKey ? this.props.agentKey.key : null;
         let agName = this.props.entityObj ? this.props.entityObj.name : null;
         let desc = this.props.entityObj ? this.props.entityObj.description : null;
         let repoUrl = this.props.entityObj ? this.props.entityObj.repo_url : null;
@@ -210,18 +216,18 @@ class AgentOptionsMenu extends React.Component {
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
-                    title="API Key"
+                    title="Agent Secret Key"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
                     actions={keyActions}
                     onRequestClose={() => this.handleClose()}
                     open={this.state.apiKeyOpen}>
                     <i className="material-icons" style={styles.warning}>vpn_key</i>
-                    <h6 style={styles.msg}>This is your current API key. You can use the current key or create a new key. Changing this API key will affect any programs or processes using this key.</h6>
+                    <h6 style={styles.msg}>This is your current agent secret key. You can use the current key or create a new key. Changing this key will affect any programs or processes using this key.</h6>
                     <form action="#" id="apiKeyForm">
                         <TextField
                             style={styles.keyModal}
-                            defaultValue={apiKey}
+                            defaultValue={agentKey}
                             floatingLabelText="Current Api Key"
                             id="keyText"
                             type="text"
@@ -231,18 +237,18 @@ class AgentOptionsMenu extends React.Component {
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
-                    title="Your New API Key"
+                    title="Your New Agent Secret Key"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
                     actions={newKeyActions}
                     onRequestClose={() => this.handleClose()}
                     open={this.state.newApiKeyOpen}>
-                    <h6 style={{textAlign: 'center'}}>Here's your new API key. Your old key is no longer valid.</h6>
+                    <h6 style={{textAlign: 'center'}}>Here's your new agent secret key. Your old key is no longer valid.</h6>
                     <form action="#" id="apiKeyForm">
                         <TextField
                             style={styles.keyModal}
-                            defaultValue={apiKey}
-                            floatingLabelText="Current Api Key"
+                            defaultValue={agentKey}
+                            floatingLabelText="Current Agent Secret Key"
                             id="keyText"
                             type="text"
                             multiLine={true}
@@ -264,7 +270,7 @@ class AgentOptionsMenu extends React.Component {
                             style={styles.keyModal}
                             disabled={this.props.userKey && !this.props.userKey.key ? true : false}
                             defaultValue={userKey}
-                            floatingLabelText="Current User Key"
+                            floatingLabelText="Current User Secret Key"
                             id="keyText"
                             type="text"
                             multiLine={true}
@@ -293,6 +299,26 @@ class AgentOptionsMenu extends React.Component {
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
+                    title="Your API Token"
+                    autoDetectWindowHeight={true}
+                    autoScrollBodyContent={true}
+                    actions={newKeyActions}
+                    onRequestClose={() => this.handleClose()}
+                    open={open}>
+                    <h6 style={{textAlign: 'center'}}>{ msg }</h6>
+                    <form action="#" id="apiTokenForm">
+                        <TextField
+                            style={styles.keyModal}
+                            defaultValue={apiToken}
+                            floatingLabelText="API Token"
+                            id="keyText"
+                            type="text"
+                            multiLine={true}
+                            /><br/>
+                    </form>
+                </Dialog>
+                <Dialog
+                    style={styles.dialogStyles}
                     title="Are you sure you want to delete this user key?"
                     autoScrollBodyContent={true}
                     actions={deleteKeyActions}
@@ -305,8 +331,9 @@ class AgentOptionsMenu extends React.Component {
                           targetOrigin={{horizontal: 'right', vertical: 'top'}}>
                     <MenuItem primaryText="Delete Agent" leftIcon={<i className="material-icons">delete</i>} onTouchTap={this.handleTouchTapDelete.bind(this)}/>
                     <MenuItem primaryText="Edit Agent Details" leftIcon={<i className="material-icons">mode_edit</i>} onTouchTap={this.handleTouchTapEdit.bind(this)}/>
-                    <MenuItem primaryText="API Key" leftIcon={<i className="material-icons">vpn_key</i>} onTouchTap={this.handleTouchTapApiKey.bind(this)}/>
-                    <MenuItem primaryText="User Key" leftIcon={<i className="material-icons">stars</i>} onTouchTap={this.handleTouchTapUserKey.bind(this)}/>
+                    <MenuItem primaryText="Agent Secret Key" leftIcon={<i className="material-icons">vpn_key</i>} onTouchTap={this.handleTouchTapApiKey.bind(this)}/>
+                    <MenuItem primaryText="User Secret Key" leftIcon={<i className="material-icons">vpn_key</i>} onTouchTap={this.handleTouchTapUserKey.bind(this)}/>
+                    <MenuItem primaryText="API Token" leftIcon={<i className="material-icons">stars</i>} onTouchTap={this.handleTouchTapApiToken.bind(this)}/>
                 </IconMenu>
             </div>
         );
@@ -330,6 +357,21 @@ class AgentOptionsMenu extends React.Component {
     handleTouchTapApiKey() {
         this.setState({apiKeyOpen: true});
         setTimeout(() => { document.getElementById('keyText').select() }, 300);
+    }
+
+    handleTouchTapApiToken() {
+        let agentKey = this.props.agentKey ? this.props.agentKey.key : false;
+        let userKey = this.props.userKey && this.props.userKey.key ? this.props.userKey.key : false;
+        let formData = new FormData();
+        formData.append('agent_key', agentKey);
+        formData.append('user_key', userKey);
+        if (!userKey || !agentKey){
+            ProjectActions.openModal();
+        } else {
+            setTimeout(() => {
+                ProjectActions.getAgentApiToken(agentKey, userKey, formData);
+            }, 800);
+        }
     }
 
     handleTouchTapUserKey() {
@@ -386,7 +428,7 @@ class AgentOptionsMenu extends React.Component {
                 this.setState({
                     newApiKeyOpen: true
                 });
-                document.getElementById('keyText').select() }, 500
+                document.getElementById('keyText').select() }, 700
         );
     };
 
@@ -399,7 +441,7 @@ class AgentOptionsMenu extends React.Component {
                 this.setState({
                     newUserKeyOpen: true
                 });
-                document.getElementById('keyText').select() }, 500
+                document.getElementById('keyText').select() }, 800
         );
     };
 
@@ -427,6 +469,7 @@ class AgentOptionsMenu extends React.Component {
         copyTextArea.select();
         let clipText = document.execCommand('copy');
         MainActions.addToast('Key copied to clipboard!');
+        ProjectActions.closeModal();
         this.setState({
             apiKeyOpen: false,
             newApiKeyOpen: false,
@@ -436,10 +479,13 @@ class AgentOptionsMenu extends React.Component {
     };
 
     handleClose() {
+        ProjectActions.closeModal();
+        ProjectActions.clearApiToken();
         this.setState({
             deleteOpen: false,
             editOpen: false,
             apiKeyOpen: false,
+            apiTokenOpen: false,
             newApiKeyOpen: false,
             userKeyOpen: false,
             newUserKeyOpen: false,
