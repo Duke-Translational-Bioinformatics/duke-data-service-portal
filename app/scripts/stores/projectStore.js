@@ -9,6 +9,7 @@ var ProjectStore = Reflux.createStore({
         this.listenToMany(ProjectActions);
         this.agents = [];
         this.agentKey = {};
+        this.agentApiToken = {};
         this.audit = {};
         this.children = [];
         this.currentUser = {};
@@ -20,6 +21,7 @@ var ProjectStore = Reflux.createStore({
         this.filesChecked = [];
         this.foldersChecked = [];
         this.itemsSelected = null;
+        this.modal = false;
         this.moveModal = false;
         this.moveToObj = {};
         this.moveErrorModal = false;
@@ -32,6 +34,20 @@ var ProjectStore = Reflux.createStore({
         this.uploads = {};
         this.users = [];
         this.userKey = {};
+    },
+
+    openModal() {
+        this.modal = true;
+        this.trigger({
+            modal: true
+        })
+    },
+
+    closeModal() {
+        this.modal = false;
+        this.trigger({
+            modal: false
+        })
     },
 
     loadAgents () {
@@ -113,6 +129,29 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             agentKey: this.agentKey,
             loading: false
+        })
+    },
+
+    getAgentApiToken() {
+        this.trigger({
+            loading: true
+        })
+    },
+
+    getAgentApiTokenSuccess(json) {
+        this.agentApiToken = json;
+        ProjectActions.openModal();
+        this.trigger({
+            agentApiToken: this.agentApiToken,
+            loading: false
+        })
+
+    },
+
+    clearApiToken() {
+        this.agentApiToken = {};
+        this.trigger({
+            agentApiToken: this.agentApiToken
         })
     },
 
@@ -586,7 +625,6 @@ var ProjectStore = Reflux.createStore({
                 }
             }
         }
-
         // calculate % uploaded
         let bytesUploaded = 0;
         if(chunks) {
@@ -633,6 +671,7 @@ var ProjectStore = Reflux.createStore({
                         " will have to start again. Are" +
                         " you sure you want to do this?";
                 };
+
                 ProjectActions.getChunkUrl(uploadId, upload.blob.slice(chunk.start, chunk.end), chunk.number, upload.size, upload.parentId, upload.parentKind, upload.name, chunk.chunkUpdates);
                 return;
             }

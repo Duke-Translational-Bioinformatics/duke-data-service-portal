@@ -8,6 +8,8 @@ import StatusEnum from '../enum';
 import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.js';
 
 var ProjectActions = Reflux.createActions([
+    'openModal',
+    'closeModal',
     'openMoveModal',
     'moveItemWarning',
     'moveFolder',
@@ -40,6 +42,9 @@ var ProjectActions = Reflux.createActions([
     'createAgentKeySuccess',
     'getAgentKey',
     'getAgentKeySuccess',
+    'getAgentApiToken',
+    'getAgentApiTokenSuccess',
+    'clearApiToken',
     'loadProjects',
     'loadProjectsSuccess',
     'loadProjectChildren',
@@ -205,6 +210,23 @@ ProjectActions.getAgentKey.preEmit = (id) => {
         });
 };
 
+ProjectActions.getAgentApiToken.preEmit = function (agentKey, userKey, data) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'software_agents/api_token', {
+        method: 'post',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: data  // For some reason, this call only works with a formData object in the body.
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getAgentApiTokenSuccess(json)
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to generate an API token');
+        ProjectActions.handleErrors(ex)
+    })
+};
 
 ProjectActions.getUser.preEmit = () => {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'current_user', {

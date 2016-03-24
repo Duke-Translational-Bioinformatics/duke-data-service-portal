@@ -73,6 +73,7 @@ class AddProjectModal extends React.Component {
 
     handleTouchTap() {
         this.setState({open: true});
+        setTimeout(() => { document.getElementById('projectNameText').select() }, 300);
     };
 
     handleProjectButton() {

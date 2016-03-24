@@ -63,6 +63,7 @@ class AddFolderModal extends React.Component {
 
     openModal() {
         this.setState({open: true});
+        setTimeout(() => { document.getElementById('folderNameText').select() }, 300);
     };
 
     handleFolderButton() {
