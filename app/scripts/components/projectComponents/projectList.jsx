@@ -25,7 +25,7 @@ class ProjectList extends React.Component {
         let projects = this.props.projects.map((project) => {
             if (!project.is_deleted){
                 return (
-                    <Card key={ project.id } className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
+                    <Card key={ project.id } className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.card}>
                         <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>content_paste</i>
                         <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + "/project/" + project.id} className="external">
                             <CardTitle title={project.name} subtitle={'ID: ' + project.id} titleColor="#424242" style={styles.cardTitle}/>
@@ -58,6 +58,10 @@ ProjectList.contextTypes = {
 };
 
 var styles = {
+    card: {
+        minHeight: 260,
+        padding: 10
+    },
     cardTitle: {
         fontWeight: 200,
         marginBottom: -15

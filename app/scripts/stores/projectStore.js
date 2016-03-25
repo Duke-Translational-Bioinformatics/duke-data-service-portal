@@ -237,7 +237,10 @@ var ProjectStore = Reflux.createStore({
     },
 
     deleteUserKeySuccess () {
-        ProjectActions.getUserKey();
+        this.userKey = {};
+        this.trigger({
+            userKey: this.userKey
+        });
     },
 
     loadProjects() {
