@@ -204,7 +204,8 @@ var styles = {
     },
     keyModal: {
         width: 300,
-        textAlign: 'left'
+        textAlign: 'left',
+        fontFamily: 'monospace'
     },
     list: {
         float: 'right',
