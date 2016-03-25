@@ -22,9 +22,9 @@ class AgentList extends React.Component {
         let userKey = this.props.userKey ? this.props.userKey.key : null;
         let apiToken = this.props.agentApiToken ? this.props.agentApiToken.api_token : null;
         let open = this.props.modal ? this.props.modal : false;
-        let msg = Object.keys(ProjectStore.agentApiToken).length === 0 && JSON.stringify(ProjectStore.agentApiToken) === JSON.stringify({}) ?
-        "You must have a valid user key, please create one by selecting 'USER SECRET KEY' in the drop down" +
-        " menu." : 'This API key will expire in 2 hours.';
+        let msg = Object.keys(ProjectStore.agentApiToken).length === 0 ?
+            <h6 style={styles.apiMsg}>You must have a valid user key, please create one by selecting 'USER SECRET KEY' in the drop down menu.</h6> :
+            <h6 style={styles.apiMsg2}>This API token will expire in 2 hours.</h6>;
 
         let keyActions = [
             <FlatButton
@@ -46,12 +46,12 @@ class AgentList extends React.Component {
             actions={keyActions}
             onRequestClose={() => this.handleClose()}
             open={open}>
-            <h6 style={{textAlign: 'center'}}>{ msg }</h6>
+            { msg }
             <form action="#" id="apiKeyForm" className="keyText">
                 <TextField
                     style={styles.keyModal}
                     defaultValue={apiToken}
-                    floatingLabelText="Api Key"
+                    floatingLabelText="Api Token"
                     id="keyText"
                     type="text"
                     multiLine={true}
@@ -154,6 +154,13 @@ AgentList.contextTypes = {
 };
 
 var styles = {
+    apiMsg: {
+        textAlign: 'center',
+        color: '#F44336'
+    },
+    apiMsg2: {
+        textAlign: 'center'
+    },
     checkBox: {
         width: 16,
         height: 16,

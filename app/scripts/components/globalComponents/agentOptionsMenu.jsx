@@ -129,22 +129,10 @@ class AgentOptionsMenu extends React.Component {
             ];
         }
 
-        let newUserKeyActions = [
-            <FlatButton
-                label="OKAY"
-                secondary={true}
-                onTouchTap={() => this.handleClose()} />,
-            <FlatButton
-                label="COPY KEY TO CLIPBOARD"
-                secondary={true}
-                keyboardFocused={true}
-                onTouchTap={this.handleCopyButton.bind(this)} />
-        ];
-
         let apiToken = this.props.agentApiToken ? this.props.agentApiToken.api_token : null;
-        let msg = Object.keys(ProjectStore.agentApiToken).length === 0 && JSON.stringify(ProjectStore.agentApiToken) === JSON.stringify({}) ?
-        "You must have a valid user key, please create one by selecting 'USER SECRET KEY' in the drop down" +
-        " menu." : 'This API key will expire in 2 hours.';
+        let msg = Object.keys(ProjectStore.agentApiToken).length === 0 ?
+            <h6 style={styles.apiMsg}>You must have a valid user key, please create one by selecting 'USER SECRET KEY' in the drop down menu.</h6> :
+            <h6 style={styles.apiMsg2}>This API token will expire in 2 hours.</h6>;
         let open = this.props.modal ? this.props.modal : false;
         let names = this.props.users && this.props.users.length ? this.props.users : [];
         let agentKey = this.props.agentKey ? this.props.agentKey.key : null;
@@ -498,6 +486,13 @@ class AgentOptionsMenu extends React.Component {
 }
 
 var styles = {
+    apiMsg: {
+        textAlign: 'center',
+        color: '#F44336'
+    },
+    apiMsg2: {
+        textAlign: 'center'
+    },
     addProject: {
         float: 'right',
         position: 'relative',
