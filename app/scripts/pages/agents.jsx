@@ -25,6 +25,7 @@ class Agents extends React.Component {
     }
 
     _loadAgents() {
+        ProjectActions.getUserKey();
         ProjectActions.loadAgents();
     }
 

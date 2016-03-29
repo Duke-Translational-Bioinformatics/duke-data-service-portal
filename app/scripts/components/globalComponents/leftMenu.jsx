@@ -29,10 +29,6 @@ class LeftMenu extends React.Component {
                     <div className="panel panel-left panel-cover">
                         <div className="content-block">
                             { home }
-                            <p><a href="#" className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.handleTouchTap()}>
-                                <i className="material-icons" style={styles.navIcon}>exit_to_app</i>
-                                Logout</a>
-                            </p>
                             <p><a href={urlGen.routes.baseUrl + urlGen.routes.prefix  + "/agents"}
                                   className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
                                 <i className="material-icons" style={styles.navIcon}>build</i>
@@ -43,6 +39,10 @@ class LeftMenu extends React.Component {
                             <p className="mdl-color-text--grey-400"><i className="material-icons" style={styles.navIcon}>help</i>Help</p>
                             <p className="mdl-color-text--grey-400">Governance</p>
                             <p className="mdl-color-text--grey-400">Terms &amp; Conditions</p>
+                            <p><a href="#" className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.handleTouchTap()}>
+                                <i className="material-icons" style={styles.navIcon}>exit_to_app</i>
+                                Logout</a>
+                            </p>
                         </div>
                     </div>
                 </span>
