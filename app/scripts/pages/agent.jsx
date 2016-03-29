@@ -35,7 +35,7 @@ class Agent extends React.Component {
         let kind = 'software_agents';
         ProjectActions.getEntity(id, kind);
         ProjectActions.getAgentKey(id);
-        if(Object.keys(ProjectStore.agentApiToken).length > 0) ProjectActions.getUserKey();
+        ProjectActions.getUserKey();
     }
 
     render() {
