@@ -1,6 +1,7 @@
-FROM node:latest
+FROM node:0.12-onbuild
 
-RUN ["npm", "install", "--global", "gulp"]
+ADD ./ /var/www/app
 WORKDIR /var/www/app
+RUN ["npm", "install", "-g"]
 EXPOSE 1337 35729
-CMD ["gulp"]
+CMD ["./node_modules/.bin/gulp"]
