@@ -6,14 +6,9 @@ import MainActions from '../../actions/mainActions';
 import MainStore from '../../stores/mainStore';
 import ProjectOptionsMenu from './projectOptionsMenu.jsx';
 import UploadModal from '../globalComponents/uploadModal.jsx';
-import cookie from 'react-cookie';
 import urlGen from '../../../util/urlGen.js';
-
-var mui = require('material-ui'),
-    TextField = mui.TextField,
-    IconMenu = mui.IconMenu,
-    Dialog = mui.Dialog;
-
+import FlatButton from 'material-ui/lib/flat-button';
+import Card from 'material-ui/lib/card/card';
 
 class ProjectDetails extends React.Component {
 
@@ -28,11 +23,10 @@ class ProjectDetails extends React.Component {
         let createdBy = this.props.project && this.props.project.audit ? this.props.project.audit.created_by.full_name : null;
         let projectName = this.props.project ? this.props.project.name : null;
         let createdOn = this.props.project && this.props.project.audit ? this.props.project.audit.created_on : null;
-        let error = '';
 
         return (
-            <div
-                className="project-container mdl-color--white mdl-shadow--2dp mdl-color-text--grey-800"
+            <Card
+                className="project-container mdl-color--white mdl-color-text--grey-800"
                 style={styles.container}>
                 <UploadModal {...this.props}/>
 
@@ -58,10 +52,10 @@ class ProjectDetails extends React.Component {
                                  style={styles.span}>Created On:</span> { createdOn } </p>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.detailsButton}>
-                        <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
-                                onClick={this.handleTouchTapDetails.bind(this)}>
-                            {!this.state.showDetails ? 'MORE DETAILS' : 'LESS DETAILS'}
-                        </button>
+                        <FlatButton
+                            label={!this.state.showDetails ? 'MORE DETAILS' : 'LESS DETAILS'}
+                            secondary={true}
+                            onTouchTap={this.handleTouchTapDetails.bind(this)}/>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                         <div style={styles.moreDetails} className={!this.state.showDetails ? 'less' : 'more'}>
@@ -69,8 +63,7 @@ class ProjectDetails extends React.Component {
                         </div>
                     </div>
                 </div>
-                { error }
-            </div>
+            </Card>
         );
     }
 
@@ -206,7 +199,8 @@ var styles = {
     },
     menuIcon: {
         float: 'right',
-        marginTop: 38
+        marginTop: 32,
+        marginRight: -5
     },
     backIcon: {
         fontSize: 24,
@@ -235,11 +229,7 @@ ProjectDetails.contextTypes = {
 };
 
 ProjectDetails.propTypes = {
-    loading: React.PropTypes.bool,
-    details: React.PropTypes.array,
-    error: React.PropTypes.string
+    details: React.PropTypes.array
 };
 
-
 export default ProjectDetails;
-

@@ -9,7 +9,11 @@ class File extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            error: ProjectStore.error,
+            errorModal: ProjectStore.errorModal,
             loading: false,
+            moveModal: ProjectStore.moveModal,
+            moveErrorModal: ProjectStore.moveErrorModal,
             project: ProjectStore.project
         };
     }
@@ -47,6 +51,3 @@ class File extends React.Component {
 }
 
 export default File;
-
-//<FilePreview {...this.props} {...this.state} />///Todo: These components are for further file viewing to be added
-//<FileProvenance {...this.props} {...this.state} />

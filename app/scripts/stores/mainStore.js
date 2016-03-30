@@ -70,14 +70,13 @@ var MainStore = Reflux.createStore({
     },
 
     setApiToken (apiToken) {
+        let expiresAt = new Date(Date.now() + (60 * 60 * 2 * 1000));
         this.appConfig.apiToken = apiToken;
-        cookie.save('apiToken', this.appConfig.apiToken);
+        cookie.save('apiToken', this.appConfig.apiToken, {expires: expiresAt});
         this.trigger({
             appConfig: this.appConfig
         });
     },
-
-    getCurrentUser(){},
 
     getCurrentUserSuccess (json) {
         this.currentUser = json;
@@ -94,8 +93,9 @@ var MainStore = Reflux.createStore({
     },
 
     isLoggedInHandler() {
+        let expiresAt = new Date(Date.now() + (60 * 1000));
         this.appConfig.isLoggedIn = true;
-        cookie.save('isLoggedIn', this.appConfig.isLoggedIn);
+        cookie.save('isLoggedIn', this.appConfig.isLoggedIn, {expires: expiresAt});
         this.modalOpen = MainStore.modalOpen;
         this.trigger({
             appConfig: this.appConfig,
@@ -125,7 +125,7 @@ var MainStore = Reflux.createStore({
     addToast(msg) {
         this.toasts.push({
             msg: msg,
-            ref: 'toast' + Math.floor(Math.random()*10000)
+            ref: 'toast' + Math.floor(Math.random() * 10000)
         });
         this.trigger({
             toasts: this.toasts
@@ -133,7 +133,7 @@ var MainStore = Reflux.createStore({
     },
 
     removeToast(refId) {
-        for(let i=0; i < this.toasts.length; i++){
+        for (let i = 0; i < this.toasts.length; i++) {
             if (this.toasts[i].ref === refId) {
                 this.toasts.splice(i, 1);
                 break;

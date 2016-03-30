@@ -5,11 +5,8 @@ import ProjectStore from '../stores/projectStore';
 import ProjectActions from '../actions/projectActions';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions';
-import cookie from 'react-cookie';
-
-let mui = require('material-ui'),
-    Snackbar = mui.Snackbar,
-    Dialog = mui.Dialog;
+import FlatButton from 'material-ui/lib/flat-button';
+import Dialog from 'material-ui/lib/dialog';
 
 class Home extends React.Component {
 
@@ -22,7 +19,6 @@ class Home extends React.Component {
         };
     }
 
-
     componentDidMount() {
         let id = this.props.params.id;
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
@@ -31,38 +27,35 @@ class Home extends React.Component {
         MainActions.removeLoginCookie();
     }
 
-    componentDidUpdate(prevProps){
-        if(prevProps.usage !== this.props.usage) {
-            this._loadUsage();
-        }
-    }
-
     componentWillUnmount() {
         this.unsubscribe();
     }
 
-    _loadUsage(){
-        ProjectActions.getUsageDetails();
-    }
-
     render() {
         let standardActions = [
-            {text: 'ACCEPT', onTouchTap: this.handleAcceptButton.bind(this)},
-            {text: 'DECLINE', onTouchTap: this.handleDeclineButton.bind(this)}
+            <FlatButton
+                label="Cancel"
+                secondary={true}
+                onTouchTap={this.handleDeclineButton.bind(this)} />,
+            <FlatButton
+                label="AGREE"
+                secondary={true}
+                onTouchTap={this.handleAcceptButton.bind(this)} />
         ];
         let modal = (
             <Dialog
                 style={styles.dialogStyles}
                 title="Terms of Use - Protected Health Information"
                 actions={standardActions}
-                ref="phi"
-                openImmediately={this.state.modalOpen}
+                autoDetectWindowHeight={true}
+                autoScrollBodyContent={true}
+                open={this.state.modalOpen}
                 modal={true}>
                 <div style={{height: '300px'}}>
                     <p style={styles.main}><b>The Health Insurance Portability and Accountability Act of 1996 (HIPAA)
                         established standards
                         for health information that must be kept private and secure, called Protected Health Information
-                        (PHI).</b><br/>The use of PHI within Duke Data Service is prohibited. By clicking “accept”
+                        (PHI).</b><br/>The use of PHI within the Duke Data Service is prohibited in this Alpha release. By clicking “accept”
                         below, you
                         attest that you will not enter PHI. If you are unclear about what constitutes PHI, or are
                         uncertain about the nature of the data you use, click “decline” and contact the Duke University
@@ -81,7 +74,8 @@ class Home extends React.Component {
     }
 
     handleAcceptButton() {
-        this.refs.phi.dismiss(MainActions.closePhiModal());
+        MainActions.closePhiModal();
+        this.setState({modalOpen:false})
     }
 
     handleDeclineButton() {
@@ -91,8 +85,10 @@ class Home extends React.Component {
 
 var styles = {
     dialogStyles: {
+        marginTop: 0,
         textAlign: 'center',
-        fontColor: '#303F9F'
+        fontColor: '#303F9F',
+        zIndex: '9999'
     },
     main: {
         textAlign: 'left'

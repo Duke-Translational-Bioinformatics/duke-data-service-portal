@@ -1,18 +1,18 @@
 import React from 'react';
 import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
+import BaseUtils from '../../../util/baseUtils.js';
 import FlatButton from 'material-ui/lib/flat-button';
+import RaisedButton from 'material-ui/lib/raised-button';
 import Dialog from 'material-ui/lib/dialog';
 import TextField from 'material-ui/lib/text-field';
-import RaisedButton from 'material-ui/lib/raised-button';
 
-class AddProjectModal extends React.Component {
+class AddAgentModal extends React.Component {
 
     constructor() {
         this.state = {
             open: false,
-            floatingErrorText: 'This field is required.',
-            floatingErrorText2: 'This field is required'
+            floatingErrorText: 'This field is required.'
         }
     }
 
@@ -27,43 +27,49 @@ class AddProjectModal extends React.Component {
                 label="Submit"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={this.handleProjectButton.bind(this)} />
+                onTouchTap={this.handleAgentButton.bind(this)} />
         ];
 
         return (
             <div>
                 <RaisedButton
-                    label="Add Project"
+                    label="Add New Agent"
                     labelColor="#235F9C"
-                    style={styles.addProject}
+                    style={styles.addButton}
                     onTouchTap={this.handleTouchTap.bind(this)} />
                 <Dialog
                     style={styles.dialogStyles}
-                    title="Add New Folder"
+                    title="Add New Software Agent"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
                     actions={actions}
                     open={this.state.open}
                     onRequestClose={this.handleClose.bind(this)}>
-                    <form action="#" id="newProjectForm">
+                    <form action="#" id="newAgentForm">
                         <TextField
                             style={styles.textStyles}
-                            hintText="Project Name"
+                            hintText="Software Agent Name"
                             errorText={this.state.floatingErrorText}
-                            floatingLabelText="Project Name"
-                            id="projectNameText"
+                            floatingLabelText="Software Agent Name"
+                            id="agentNameText"
                             type="text"
                             multiLine={true}
                             onChange={this.handleFloatingErrorInputChange.bind(this)}/> <br/>
                         <TextField
                             style={styles.textStyles}
-                            hintText="Project Description"
-                            errorText={this.state.floatingErrorText2}
-                            floatingLabelText="Project Description"
-                            id="projectDescriptionText"
+                            hintText="Agent Description"
+                            floatingLabelText="Software Agent Description"
+                            id="agentDescriptionText"
                             type="text"
                             multiLine={true}
-                            onChange={this.handleFloatingErrorInputChange2.bind(this)}
+                            /> <br/>
+                        <TextField
+                            style={styles.textStyles}
+                            hintText="Agent Repository URL"
+                            floatingLabelText="Software Agent Repository URL"
+                            id="agentRepoText"
+                            type="text"
+                            multiLine={true}
                             />
                     </form>
                 </Dialog>
@@ -73,20 +79,23 @@ class AddProjectModal extends React.Component {
 
     handleTouchTap() {
         this.setState({open: true});
-        setTimeout(() => { document.getElementById('projectNameText').select() }, 300);
     };
 
-    handleProjectButton() {
-        if (this.state.floatingErrorText || this.state.floatingErrorText2) {
+    handleAgentButton() {
+        if (this.state.floatingErrorText) {
             return null
-        } else {
-            let name = document.getElementById('projectNameText').value;
-            let desc = document.getElementById('projectDescriptionText').value;
-            ProjectActions.addProject(name, desc);
+        }
+        else {
+            let name = document.getElementById('agentNameText').value;
+            let desc = document.getElementById('agentDescriptionText').value;
+            let repo = document.getElementById('agentRepoText').value;
+            if (!/^https?:\/\//i.test(repo)) { //TODO: Make this regex more robust//////////////////
+                repo = 'https://' + repo;
+            }
+            ProjectActions.addAgent(name, desc, repo);
             this.setState({
                 open: false,
-                floatingErrorText: 'This field is required.',
-                floatingErrorText2: 'This field is required'
+                floatingErrorText: 'This field is required.'
             });
         }
     };
@@ -97,22 +106,16 @@ class AddProjectModal extends React.Component {
         });
     };
 
-    handleFloatingErrorInputChange2(e) {
-        this.setState({
-            floatingErrorText2: e.target.value ? '' : 'This field is required.'
-        });
-    };
-
     handleClose() {
         this.setState({open: false});
     };
 }
 
 var styles = {
-    addProject: {
+    addButton: {
         float: 'right',
         position: 'relative',
-        margin: '12px -9px 0px 0px'
+        margin: '24px 5px 0px 0px'
     },
     dialogStyles: {
         textAlign: 'center',
@@ -125,8 +128,9 @@ var styles = {
     }
 };
 
-AddProjectModal.contextTypes = {
+AddAgentModal.contextTypes = {
     muiTheme: React.PropTypes.object
 };
 
-export default AddProjectModal;
+export default AddAgentModal;
+

@@ -2,20 +2,34 @@ import React from 'react';
 import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import Tooltip from '../../../util/tooltip.js';
-
-const RaisedButton = require('material-ui/lib/raised-button');
-let mui = require('material-ui'),
-    TextField = mui.TextField,
-    Snackbar = mui.Snackbar,
-    Dialog = mui.Dialog;
+import FlatButton from 'material-ui/lib/flat-button';
+import Dialog from 'material-ui/lib/dialog';
+import TextField from 'material-ui/lib/text-field';
+import RaisedButton from 'material-ui/lib/raised-button';
 
 class UploadModal extends React.Component {
+    constructor() {
+        this.state = {
+            open: false
+        }
+    }
 
     render() {
-
         let standardActions = [
-            {text: 'Upload', onTouchTap: this.handleUploadButton.bind(this)},
-            {text: 'Cancel'}
+            <FlatButton
+                label="Cancel"
+                secondary={true}
+                onTouchTap={this.handleClose.bind(this)} />,
+            <FlatButton
+                label="Submit"
+                secondary={true}
+                onTouchTap={this.handleUploadButton.bind(this)} />
+        ];
+        let warnActions = [
+            <FlatButton
+                label="Okay"
+                secondary={true}
+                onTouchTap={this.handleClose.bind(this)} />,
         ];
 
         Tooltip.bindEvents();
@@ -34,17 +48,19 @@ class UploadModal extends React.Component {
                 <Dialog
                     style={styles.dialogStyles}
                     title='Upload Files'
+                    autoDetectWindowHeight={true}
+                    autoScrollBodyContent={true}
                     actions={standardActions}
-                    ref='fileU'>
+                    onRequestClose={this.handleClose.bind(this)}
+                    open={this.state.open}>
                     <form action='#' id='newFileForm'>
-                        <div className="mdl-textfield mdl-js-textfield mdl-textfield--file">
-                            <input className="mdl-textfield__input" placeholder="File" type="text" id="uploadFile" readOnly/>
-                            <div className="mdl-button mdl-button--primary mdl-button--icon mdl-button--file">
-                                <i className="material-icons">attach_file</i>
-                                <input type='file' id="uploadBtn" id='afile' ref='fileUpload' onChange={this.handleFileName.bind(this)}/>
+                        <div className="mdl-cell mdl-cell--6-col mdl-textfield mdl-textfield--file">
+                            <textarea className="mdl-textfield__input mdl-color-text--grey-800" placeholder="Files" type="text" id="uploadFile" rows="3" readOnly></textarea>
+                            <div className="mdl-button mdl-button--icon mdl-button--file">
+                                <i className="material-icons" style={styles.iconColor}>attach_file</i>
+                                <input type='file' id="uploadBtn" ref='fileUpload' onChange={this.handleFileName.bind(this)} multiple/>
                             </div>
                         </div>
-
                     </form>
                 </Dialog>
             </div>
@@ -52,31 +68,47 @@ class UploadModal extends React.Component {
     }
 
     handleTouchTap() {
-        this.refs.fileU.show();
+        this.setState({open: true});
     }
 
     handleUploadButton() {
         if (document.getElementById("uploadFile").value) {
             let projId = '';
             let parentKind = '';
-            if (!this.props.entityObj) {
-                projId = this.props.params.id;
-                parentKind = 'dds-project';
-            } else {
-                projId = this.props.entityObj ? this.props.entityObj.ancestors[0].id : null;
-                parentKind = this.props.entityObj ? this.props.entityObj.kind : null;
-            }
             let parentId = this.props.params.id;
-            let blob = document.getElementById('afile').files[0];
-            ProjectActions.startUpload(projId, blob, parentId, parentKind);
-            this.refs.fileU.dismiss();
+            let fileList = document.getElementById('uploadBtn').files;
+            for (var i = 0; i < fileList.length; i++) {
+                let blob = fileList[i];
+                if (!this.props.entityObj) {
+                    projId = this.props.params.id;
+                    parentKind = 'dds-project';
+                } else {
+                    projId = this.props.entityObj ? this.props.entityObj.ancestors[0].id : null;
+                    parentKind = this.props.entityObj ? this.props.entityObj.kind : null;
+                }
+                ProjectActions.startUpload(projId, blob, parentId, parentKind);
+                this.setState({open: false});
+            }
         } else {
             return null
         }
     }
 
     handleFileName() {
-        document.getElementById("uploadFile").value = document.getElementById('afile').files[0].name;
+        let fList = [];
+        let fl = document.getElementById('uploadBtn').files;
+        for (var i = 0; i < fl.length; i++) {
+            fList.push(fl[i].name);
+            var fileList = fList.toString().split(',').join(', ');
+        }
+        document.getElementById('uploadFile').value = 'Preparing to upload: ' + fileList;
+    }
+
+
+    handleClose() {
+        this.setState({
+            open: false
+        });
     }
 }
 
@@ -85,6 +117,9 @@ var styles = {
         float: 'right',
         position: 'relative',
         margin: '12px 8px 0px 0px'
+    },
+    iconColor: {
+        color: '#235F9C'
     },
     dialogStyles: {
         zIndex: '9996',
@@ -97,11 +132,20 @@ var styles = {
     },
     floatingButton: {
         position: 'absolute',
-        top: -42,
+        top: -50,
         marginRight: 17,
         right: '2%',
         zIndex: '2',
         color: '#ffffff'
+    },
+    msg: {
+        textAlign: 'center',
+        marginLeft: 30
+    },
+    warning: {
+        fontSize: 48,
+        textAlign: 'center',
+        color: '#FFEB3B'
     }
 };
 
@@ -110,4 +154,3 @@ UploadModal.contextTypes = {
 };
 
 export default UploadModal;
-

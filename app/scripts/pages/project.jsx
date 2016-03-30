@@ -8,10 +8,6 @@ import ProjectChildren from '../components/projectComponents/projectChildren.jsx
 import ProjectDetails from '../components/projectComponents/projectDetails.jsx';
 import Header from '../components/globalComponents/header.jsx';
 
-let mui = require('material-ui'),
-    Snackbar = mui.Snackbar;
-
-
 class Project extends React.Component {
 
     constructor(props) {
@@ -19,11 +15,16 @@ class Project extends React.Component {
         this.props = props;
         this.state = {
             children: ProjectStore.children,
+            currentUser: ProjectStore.currentUser,
+            error: ProjectStore.error,
+            errorModal: ProjectStore.errorModal,
+            filesChecked: ProjectStore.filesChecked,
+            foldersChecked: ProjectStore.foldersChecked,
+            loading: false,
             projects: ProjectStore.projects,
             project: ProjectStore.project,
-            currentUser: ProjectStore.currentUser,
-            loading: false,
-            uploading: false
+            uploads: ProjectStore.uploads,
+            users: ProjectStore.users
         };
     }
 

@@ -9,6 +9,9 @@ app/bundles
 .idea/
 *.iml
 
+# UTIL
+app/util/urlGen.js
+
 # OSX
 .DS_Store
 

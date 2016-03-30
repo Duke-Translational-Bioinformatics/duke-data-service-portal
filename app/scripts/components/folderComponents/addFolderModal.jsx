@@ -2,41 +2,49 @@ import React from 'react';
 import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-
-let mui = require('material-ui'),
-    RaisedButton = mui.RaisedButton,
-    TextField = mui.TextField,
-    Dialog = mui.Dialog,
-    Snackbar = mui.Snackbar;
+import AutoComplete from 'material-ui/lib/auto-complete';
+import FlatButton from 'material-ui/lib/flat-button';
+import RaisedButton from 'material-ui/lib/raised-button';
+import Dialog from 'material-ui/lib/dialog';
+import TextField from 'material-ui/lib/text-field';
 
 class AddFolderModal extends React.Component {
 
     constructor() {
         this.state = {
             floatingErrorText: 'This field is required.',
-            parentObj: ProjectStore.parentObj
+            open: false
         }
     }
 
     render() {
-        let standardActions = [
-            {text: 'Submit', onTouchTap: this.handleFolderButton.bind(this)},
-            {text: 'Cancel'}
+        const actions = [
+            <FlatButton
+                label="Cancel"
+                secondary={true}
+                onTouchTap={this.handleClose.bind(this)}/>,
+            <FlatButton
+                label="Submit"
+                secondary={true}
+                keyboardFocused={true}
+                onTouchTap={this.handleFolderButton.bind(this)}/>
         ];
 
         return (
-            <div style={styles.addFolder}>
-
-                <button className="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored"
-                        style={styles.addFolder}
-                        onTouchTap={this.handleTouchTap.bind(this)}>
-                    ADD FOLDER
-                </button>
+            <div>
+                <RaisedButton
+                    label="Add Folder"
+                    labelStyle={{color: '#235F9C'}}
+                    style={styles.addFolder}
+                    onTouchTap={this.openModal.bind(this)}/>
                 <Dialog
                     style={styles.dialogStyles}
                     title="Add New Folder"
-                    actions={standardActions}
-                    ref="addFolder">
+                    autoDetectWindowHeight={true}
+                    autoScrollBodyContent={true}
+                    actions={actions}
+                    open={this.state.open}
+                    onRequestClose={this.handleClose.bind(this)}>
                     <form action="#" id="newFolderForm">
                         <TextField
                             style={styles.textStyles}
@@ -53,42 +61,44 @@ class AddFolderModal extends React.Component {
         );
     }
 
-    handleTouchTap() {
-        this.refs.addFolder.show();
-    }
+    openModal() {
+        this.setState({open: true});
+        setTimeout(() => { document.getElementById('folderNameText').select() }, 300);
+    };
 
     handleFolderButton() {
-        let kindString = this.props.appRouter.getCurrentPathname();
-        let start_pos = kindString.indexOf('/') + 1;
-        let end_pos = kindString.indexOf('/',start_pos);
-        let kind = kindString.substring(start_pos,end_pos);
         let name = document.getElementById('folderNameText').value;
-
         if (this.state.floatingErrorText) {
             return null
         } else {
-            if(kind === 'folder'){
-                let id = this.props.params.id;
-                let parentKind = 'dds-folder';
-                ProjectActions.addFolder(id, parentKind, name, this.setState({
-                    floatingErrorText: 'This field is required.'
-                }));
-            } else {
+            if (!this.props.entityObj) {
                 let id = this.props.params.id;
                 let parentKind = 'dds-project';
-                ProjectActions.addFolder(id, parentKind, name, this.setState({
+                ProjectActions.addFolder(id, parentKind, name);
+                this.setState({
                     floatingErrorText: 'This field is required.'
-                }));
+                });
+            } else {
+                let id = this.props.params.id;
+                let parentKind = 'dds-folder';
+                ProjectActions.addFolder(id, parentKind, name);
+                this.setState({
+                    floatingErrorText: 'This field is required.'
+                });
             }
-            this.refs.addFolder.dismiss();
+            this.setState({open: false});
         }
-    }
+    };
 
     handleFloatingErrorInputChange(e) {
         this.setState({
             floatingErrorText: e.target.value ? '' : 'This field is required.'
         });
-    }
+    };
+
+    handleClose() {
+        this.setState({open: false});
+    };
 }
 
 let styles = {
@@ -96,7 +106,8 @@ let styles = {
         float: 'right',
         zIndex: '9995',
         position: 'relative',
-        margin: '10px 16px 0px 0px'
+        margin: '20px 10px 0px  18px',
+        textColor: '#235F9C'
     },
     dialogStyles: {
         textAlign: 'center',
@@ -113,9 +124,4 @@ AddFolderModal.contextTypes = {
     muiTheme: React.PropTypes.object
 };
 
-AddFolderModal.propTypes = {
-    addFolderLoading: React.PropTypes.bool,
-};
-
 export default AddFolderModal;
-
