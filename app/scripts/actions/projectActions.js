@@ -19,6 +19,12 @@ var ProjectActions = Reflux.createActions([
     'selectMoveLocation',
     'handleBatch',
     'closeErrorModal',
+    'getFileVersions',
+    'getFileVersionsSuccess',
+    'deleteVersion',
+    'deleteVersionSuccess',
+    'editVersion',
+    'editVersionSuccess',
     'getUser',
     'getUserSuccess',
     'getUserKey',
@@ -94,6 +100,60 @@ var ProjectActions = Reflux.createActions([
     'uploadError',
     'getChunkUrl'
 ]);
+
+ProjectActions.getFileVersions.preEmit = function (id) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + id + '/versions', {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getFileVersionsSuccess(json.results)
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.deleteVersion.preEmit = function (id) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'file_versions/' + id, {
+        method: 'delete',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+    }).then(function () {
+        MainActions.addToast('Version Deleted!');
+        ProjectActions.deleteVersionSuccess()
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to Delete Version!');
+        ProjectActions.handleErrors(ex)
+    });
+};
+
+ProjectActions.editVersion.preEmit = function (id, label) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'file_versions/' + id, {
+        method: 'put',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            "label": label
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('Label Updated!');
+        ProjectActions.editVersionSuccess(id)
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to Update Label');
+        ProjectActions.handleErrors(ex)
+    });
+};
 
 ProjectActions.addAgent.preEmit = function (name, desc, repo) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'software_agents/', {
@@ -700,8 +760,8 @@ ProjectActions.deleteProjectMember.preEmit = (id, userId, userName) => {
         });
 };
 
-ProjectActions.getDownloadUrl.preEmit = function (id) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/' + id + '/url', {
+ProjectActions.getDownloadUrl.preEmit = function (id, kind) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + kind + id + '/url', {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,

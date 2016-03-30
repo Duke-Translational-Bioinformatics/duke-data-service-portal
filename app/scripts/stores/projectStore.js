@@ -20,6 +20,7 @@ var ProjectStore = Reflux.createStore({
         this.errorModal = false;
         this.filesChecked = [];
         this.foldersChecked = [];
+        this.fileVersions = [];
         this.itemsSelected = null;
         this.modal = false;
         this.moveModal = false;
@@ -34,6 +35,46 @@ var ProjectStore = Reflux.createStore({
         this.uploads = {};
         this.users = [];
         this.userKey = {};
+    },
+
+    getFileVersions() {
+        this.trigger({
+            loading: true
+        })
+    },
+
+    getFileVersionsSuccess(results) {
+        this.fileVersions = results;
+        this.trigger({
+            fileVersions: this.fileVersions,
+            loading: false
+        })
+    },
+
+    deleteVersion() {
+        this.trigger({
+            loading: true
+        })
+    },
+
+    deleteVersionSuccess() {
+        this.trigger({
+            loading: false
+        })
+    },
+
+    editVersion() {
+        this.trigger({
+            loading: true
+        })
+    },
+
+    editVersionSuccess(id) {
+        let kind = 'file_versions';
+        ProjectActions.getEntity(id, kind);
+        this.trigger({
+            loading: false
+        })
     },
 
     openModal() {
