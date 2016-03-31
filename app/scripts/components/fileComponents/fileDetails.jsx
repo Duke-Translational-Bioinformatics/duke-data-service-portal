@@ -5,6 +5,7 @@ import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import FileOptionsMenu from './fileOptionsMenu.jsx';
 import FileVersionsList from './fileVersionsList.jsx';
+import VersionUpload from './versionUpload.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import urlGen from '../../../util/urlGen.js';
 import Tooltip from '../../../util/tooltip.js';
@@ -20,8 +21,6 @@ class FileDetails extends React.Component {
             this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
             this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
         }
-        let loading = this.props.loading ?
-            <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
         let id = this.props.params.id;
         let ancestors = this.props.entityObj ? this.props.entityObj.ancestors : null;
         let parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : null;
@@ -91,6 +90,10 @@ class FileDetails extends React.Component {
                     { versionsButton }
                 </div>
                 <FileVersionsList {...this.props}/>
+                <VersionUpload {...this.props}/>
+                <div style={styles.uploadProg}>
+                    { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
+                </div>
                 <div className="mdl-cell mdl-cell--12-col content-block"  style={styles.list}>
                     <div className="list-block">
                         <ul>
@@ -156,7 +159,6 @@ class FileDetails extends React.Component {
         return (
             <div>
                 {file}
-                <Loaders {...this.props}/>
             </div>
         )
     }
@@ -173,6 +175,17 @@ class FileDetails extends React.Component {
 }
 
 var styles = {
+    arrow: {
+        textAlign: 'left',
+        marginTop: -5
+    },
+    backIcon: {
+        fontSize: 24,
+        verticalAlign:-7
+    },
+    back: {
+        verticalAlign:-7
+    },
     btnWrapper: {
         marginTop: 11,
         marginRight: 25,
@@ -188,40 +201,9 @@ var styles = {
         overflow: 'visible',
         padding: '10px 0px 10px 0px'
     },
-    path: {
-        textAlign: 'left',
-        float: 'left',
-        marginLeft: 25,
-        marginTop: 18
-    },
-    list: {
-        paddingTop: 5,
-        clear: 'both'
-    },
-    backIcon: {
-        fontSize: 24,
-        verticalAlign:-7
-    },
-    arrow: {
-        textAlign: 'left',
-        marginTop: -5
-    },
-    back: {
-        verticalAlign:-7
-    },
     detailsTitle: {
         textAlign: 'left',
         float: 'left'
-    },
-    spanTitle: {
-        fontSize: '1.2em'
-    },
-    title: {
-        fontSize: 24,
-        marginLeft: 18
-    },
-    label: {
-        marginLeft: 18
     },
     floatingButton: {
         position: 'absolute',
@@ -230,11 +212,33 @@ var styles = {
         zIndex: '2',
         color: '#ffffff'
     },
+    label: {
+        marginLeft: 18
+    },
+    list: {
+        paddingTop: 5,
+        clear: 'both'
+    },
     menuIcon: {
         float: 'right',
         marginTop: 30,
-        marginBottom: -3,
-        marginRight: 10
+        marginBottom: -3
+    },
+    path: {
+        textAlign: 'left',
+        float: 'left',
+        marginLeft: 25,
+        marginTop: 18
+    },
+    spanTitle: {
+        fontSize: '1.2em'
+    },
+    title: {
+        fontSize: 24,
+        marginLeft: 18
+    },
+    uploadProg: {
+        marginBottom: -35
     }
 };
 

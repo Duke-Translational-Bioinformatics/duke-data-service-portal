@@ -11,6 +11,8 @@ var ProjectActions = Reflux.createActions([
     'openModal',
     'closeModal',
     'openMoveModal',
+    'openVersionModal',
+    'closeVersionModal',
     'moveItemWarning',
     'moveFolder',
     'moveFolderSuccess',
@@ -21,6 +23,8 @@ var ProjectActions = Reflux.createActions([
     'closeErrorModal',
     'getFileVersions',
     'getFileVersionsSuccess',
+    'addFileVersion',
+    'addFileVersionSuccess',
     'deleteVersion',
     'deleteVersionSuccess',
     'editVersion',
@@ -102,7 +106,7 @@ var ProjectActions = Reflux.createActions([
 ]);
 
 ProjectActions.getFileVersions.preEmit = function (id) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + id + '/versions', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/' + id + '/versions', {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -116,6 +120,31 @@ ProjectActions.getFileVersions.preEmit = function (id) {
         ProjectActions.handleErrors(ex)
     })
 };
+
+ProjectActions.addFileVersion.preEmit = function (uploadId, label, fileId) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/' + fileId, {
+        method: 'put',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            'upload': {
+                'id': uploadId
+            },
+            'label': label
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('Created New File Version!');
+        ProjectActions.addFileVersionSuccess(fileId, uploadId)
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to Create New Version');
+        ProjectActions.handleErrors(ex)
+    });
+};
+
 
 ProjectActions.deleteVersion.preEmit = function (id) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'file_versions/' + id, {
@@ -277,13 +306,61 @@ ProjectActions.getAgentApiToken.preEmit = function (agentKey, userKey, data) {
             'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
         },
-        body: data  // For some reason, this call only works with a formData object in the body.
+        body: data  // For some reason, this call only works with a formData object in the body
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
         ProjectActions.getAgentApiTokenSuccess(json)
     }).catch(function (ex) {
         MainActions.addToast('Failed to generate an API token');
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.moveFolder.preEmit = function (id, destination, destinationKind) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'folders/' + id + '/move', {
+        method: 'put',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            "parent": {
+                "kind": destinationKind,
+                "id": destination
+            }
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('Folder moved successfully');
+        ProjectActions.moveFolderSuccess();
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to move folder to new location');
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.moveFile.preEmit = function (id, destination, destinationKind) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/' + id + '/move', {
+        method: 'put',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            "parent": {
+                "kind": destinationKind,
+                "id": destination
+            }
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('File moved successfully');
+        ProjectActions.moveFileSuccess();
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to move file to new location');
         ProjectActions.handleErrors(ex)
     })
 };
@@ -566,30 +643,6 @@ ProjectActions.editFolder.preEmit = function (id, name) {
     });
 };
 
-ProjectActions.moveFolder.preEmit = function (id, destination, destinationKind) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'folders/' + id + '/move', {
-        method: 'put',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-            "parent": {
-                "kind": destinationKind,
-                "id": destination
-            }
-        })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        MainActions.addToast('Folder moved successfully');
-        ProjectActions.moveFolderSuccess();
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to move folder to new location');
-        ProjectActions.handleErrors(ex)
-    })
-};
-
 ProjectActions.deleteFile.preEmit = function (id, parentId, parentKind) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/' + id, {
         method: 'delete',
@@ -626,30 +679,6 @@ ProjectActions.editFile.preEmit = function (id, fileName) {
         MainActions.addToast('Failed to Update File');
         ProjectActions.handleErrors(ex)
     });
-};
-
-ProjectActions.moveFile.preEmit = function (id, destination, destinationKind) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/' + id + '/move', {
-        method: 'put',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-            "parent": {
-                "kind": destinationKind,
-                "id": destination
-            }
-        })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        MainActions.addToast('File moved successfully');
-        ProjectActions.moveFileSuccess();
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to move file to new location');
-        ProjectActions.handleErrors(ex)
-    })
 };
 
 ProjectActions.getEntity.preEmit = (id, kind, requester) => {
@@ -776,7 +805,7 @@ ProjectActions.getDownloadUrl.preEmit = function (id, kind) {
     })
 };
 
-ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKind) {
+ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKind, label, fileId) {
     let chunkNum = 0,
         fileName = blob.name,
         contentType = blob.type,
@@ -792,6 +821,8 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
 
     let details = {
         name: fileName,
+        label: label,
+        fileId: fileId,
         size: SIZE,
         blob: blob,
         parentId: parentId,
@@ -819,9 +850,6 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
     }
     fileReader.onload = function (event, files) {
         // create project upload
-        var arrayBuffer = event.target.result;
-        var wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
-        var md5crc = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
         fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'projects/' + projId + '/uploads', {
             method: 'post',
             headers: {
@@ -832,10 +860,6 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
                 'name': fileName,
                 'content_type': contentType,
                 'size': SIZE,
-                'hash': {
-                    'value': md5crc,
-                    'algorithm': 'MD5'
-                }
             })
         }).then(checkResponse).then(function (response) {
             return response.json()
@@ -921,7 +945,7 @@ function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKi
     xhr.send(chunkBlob);
 };
 
-ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentKind, fileName) {
+ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentKind, fileName, label, fileId) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'uploads/' + uploadId + '/complete', {
         method: 'put',
         headers: {
@@ -931,13 +955,17 @@ ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentK
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        ProjectActions.addFile(uploadId, parentId, parentKind, fileName);
+        if(fileId == null){
+            ProjectActions.addFile(uploadId, parentId, parentKind, fileName, label);
+        } else {
+            ProjectActions.addFileVersion(uploadId, label, fileId);
+        }
     }).catch(function (ex) {
         ProjectActions.uploadError(uploadId, fileName);
     })
 };
 
-ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind, fileName) {
+ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind, fileName, label) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/', {
         method: 'post',
         headers: {
@@ -951,7 +979,8 @@ ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind, fileN
             },
             'upload': {
                 'id': uploadId
-            }
+            },
+            'label': label
         })
     }).then(checkResponse).then(function (response) {
         return response.json()

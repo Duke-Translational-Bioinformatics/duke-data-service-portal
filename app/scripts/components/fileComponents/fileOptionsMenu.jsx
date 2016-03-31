@@ -124,6 +124,8 @@ class FileOptionsMenu extends React.Component {
                               onTouchTap={this.handleTouchTapEdit.bind(this)}/>
                     <MenuItem primaryText="Move File" leftIcon={<i className="material-icons">low_priority</i>}
                               onTouchTap={this.handleTouchTapMove.bind(this)}/>
+                    <MenuItem primaryText="Upload New Version" leftIcon={<i className="material-icons">file_upload</i>}
+                              onTouchTap={this.openVersionModal.bind(this)}/>
                 </IconMenu>
             </div>
         );
@@ -133,7 +135,6 @@ class FileOptionsMenu extends React.Component {
         ProjectActions.openMoveModal(true);
     }
 
-
     handleTouchTapDelete() {
         this.setState({deleteOpen: true})
     }
@@ -142,7 +143,11 @@ class FileOptionsMenu extends React.Component {
         this.setState({editOpen: true})
     }
 
-    getEntity() { // Get current file object to access ancestors. Set parent in store.
+    openVersionModal() {
+        ProjectActions.openVersionModal();
+    }
+
+    getEntity() {// Get current file object to access ancestors. Set parent in store. Keeps background from re-rendering
         let id = this.props.params.id;
         let kind = 'files';
         let requester = 'optionsMenu';// Using this to make sure parent is only set once in store
@@ -203,7 +208,6 @@ class FileOptionsMenu extends React.Component {
         });
     }
 }
-
 var styles = {
     deleteFile: {
         float: 'right',
