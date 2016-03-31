@@ -39,6 +39,7 @@ class File extends React.Component {
 
     _loadFile(id, kind) {
         ProjectActions.getEntity(id, kind);
+        ProjectActions.getFileVersions(id);
     }
 
     render() {

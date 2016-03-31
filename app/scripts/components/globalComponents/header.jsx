@@ -37,7 +37,7 @@ class Header extends React.Component {
                 <p style={styles.userDisplay}>Email: {' ' + email}</p>
                 <Divider />
                 <i className="material-icons mdl-color-text--grey-700" style={styles.userLogoutIcon}>exit_to_app</i>
-                <a href="#" className="mdl-color-text--grey-700 external" style={styles.userLogout} onTouchTap={() => this.handleLogout()}>Logout</a>
+                <a href="#" className="mdl-color-text--grey-700 external" style={styles.userLogout} onTouchTap={() => this.handleLogout()}>Log Out</a>
             </div>
         </Popover>;
 
