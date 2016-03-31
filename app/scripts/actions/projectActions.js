@@ -317,54 +317,6 @@ ProjectActions.getAgentApiToken.preEmit = function (agentKey, userKey, data) {
     })
 };
 
-ProjectActions.moveFolder.preEmit = function (id, destination, destinationKind) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'folders/' + id + '/move', {
-        method: 'put',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-            "parent": {
-                "kind": destinationKind,
-                "id": destination
-            }
-        })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        MainActions.addToast('Folder moved successfully');
-        ProjectActions.moveFolderSuccess();
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to move folder to new location');
-        ProjectActions.handleErrors(ex)
-    })
-};
-
-ProjectActions.moveFile.preEmit = function (id, destination, destinationKind) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/' + id + '/move', {
-        method: 'put',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-            "parent": {
-                "kind": destinationKind,
-                "id": destination
-            }
-        })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        MainActions.addToast('File moved successfully');
-        ProjectActions.moveFileSuccess();
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to move file to new location');
-        ProjectActions.handleErrors(ex)
-    })
-};
-
 ProjectActions.getUser.preEmit = () => {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'current_user', {
         method: 'get',
@@ -643,6 +595,30 @@ ProjectActions.editFolder.preEmit = function (id, name) {
     });
 };
 
+ProjectActions.moveFolder.preEmit = function (id, destination, destinationKind) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'folders/' + id + '/move', {
+        method: 'put',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            "parent": {
+                "kind": destinationKind,
+                "id": destination
+            }
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('Folder moved successfully');
+        ProjectActions.moveFolderSuccess();
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to move folder to new location');
+        ProjectActions.handleErrors(ex)
+    })
+};
+
 ProjectActions.deleteFile.preEmit = function (id, parentId, parentKind) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/' + id, {
         method: 'delete',
@@ -679,6 +655,30 @@ ProjectActions.editFile.preEmit = function (id, fileName) {
         MainActions.addToast('Failed to Update File');
         ProjectActions.handleErrors(ex)
     });
+};
+
+ProjectActions.moveFile.preEmit = function (id, destination, destinationKind) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/' + id + '/move', {
+        method: 'put',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            "parent": {
+                "kind": destinationKind,
+                "id": destination
+            }
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('File moved successfully');
+        ProjectActions.moveFileSuccess();
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to move file to new location');
+        ProjectActions.handleErrors(ex)
+    })
 };
 
 ProjectActions.getEntity.preEmit = (id, kind, requester) => {
