@@ -34,7 +34,7 @@ class Login extends React.Component {
                         <img src="images/dukeDSLogo.png" style={styles.logo}/>
                         <h2 style={{fontWeight: '100'}}>Duke Data Service</h2>
                         <a href={this.createLoginUrl()} className="external">
-                            <RaisedButton label="Login" labelStyle={{fontWeight: '400'}} labelColor={'#f9f9f9'}
+                            <RaisedButton label="Log In" labelStyle={{fontWeight: '400'}} labelColor={'#f9f9f9'}
                                           backgroundColor={'#0680CD'} style={{marginBottom: 10, width: 150}}
                                           onClick={MainActions.isLoggedInHandler}>
                             </RaisedButton>
