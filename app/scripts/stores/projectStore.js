@@ -55,6 +55,7 @@ var ProjectStore = Reflux.createStore({
     addFileVersionSuccess(id, uploadId) {
         let kind = 'files/';
         ProjectActions.getEntity(id, kind);
+        ProjectActions.getFileVersions(id);
         if (this.uploads.hasOwnProperty(uploadId)) {
             delete this.uploads[uploadId];
         }
