@@ -14,9 +14,12 @@ class FileVersionsList extends React.Component {
         let open = this.props.modal ? this.props.modal : false;
         let currentVersion = null;
         if (this.props.entityObj && this.props.entityObj != undefined) {
+            let x = new Date(this.props.entityObj.audit.created_on);
+            let createdOn = x.toString();
             currentVersion = <span>
                             <ListItem primaryText={'Current Version: ' + this.props.entityObj.name}
-                                      secondaryText={this.props.entityObj.label}
+                                      secondaryText={<p><span>{this.props.entityObj.label}</span><br/> Created on: {' ' + createdOn}</p>}
+                                      secondaryTextLines={2}
                                       rightIcon={<ActionInfo />}
                                       style={styles.listItem}
                                       onTouchTap={() => this.handleClose()}/>
@@ -27,9 +30,12 @@ class FileVersionsList extends React.Component {
         if (this.props.fileVersions && this.props.fileVersions != undefined) {
             versions = this.props.fileVersions.map((version) => {
                 if (!version.is_deleted) {
+                    let x = new Date(version.audit.created_on);
+                    let createdOn = x.toString();
                     return <span key={version.id + Math.random()}>
                             <ListItem primaryText={'Version: ' + version.version}
-                                      secondaryText={version.label}
+                                      secondaryText={<p><span>{version.label}</span><br/> Created on: {' ' + createdOn}</p>}
+                                      secondaryTextLines={2}
                                       rightIcon={<ActionInfo />}
                                       style={styles.listItem}
                                       onTouchTap={() => this.goTo(version.id)}/>
