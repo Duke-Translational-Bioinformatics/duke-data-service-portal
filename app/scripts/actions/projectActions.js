@@ -965,7 +965,7 @@ ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentK
     })
 };
 
-ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind, fileName, label) {
+ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind, fileName) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/', {
         method: 'post',
         headers: {
@@ -980,7 +980,7 @@ ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind, fileN
             'upload': {
                 'id': uploadId
             },
-            'label': label
+            'label': 'Initial Version'
         })
     }).then(checkResponse).then(function (response) {
         return response.json()
