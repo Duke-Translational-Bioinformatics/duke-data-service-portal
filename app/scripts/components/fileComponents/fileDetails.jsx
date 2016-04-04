@@ -47,7 +47,7 @@ class FileDetails extends React.Component {
                 if (versions[i] === false) {
                     versionsButton = <RaisedButton
                         label="FILE VERSIONS"
-                        primary={true}
+                        secondary={true}
                         style={styles.button}
                         onTouchTap={() => this.openModal()}
                         />
