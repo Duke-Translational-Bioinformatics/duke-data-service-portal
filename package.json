@@ -50,7 +50,9 @@
     "react-cookie": "^0.3.4",
     "react-dom": "0.14.6",
     "react-router": "^0.13.2",
-    "reflux": "^0.2.7"
+    "reflux": "^0.2.7",
+    "express": "^4.13.4",
+    "ejs": "^2.4.1"
   },
   "jest": {
     "scriptPreprocessor": "<rootDir>/node_modules/babel-jest",
