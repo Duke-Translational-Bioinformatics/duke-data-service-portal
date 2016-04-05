@@ -41,7 +41,7 @@ class LeftMenu extends React.Component {
                             <p className="mdl-color-text--grey-400">Terms &amp; Conditions</p>
                             <p><a href="#" className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.handleTouchTap()}>
                                 <i className="material-icons" style={styles.navIcon}>exit_to_app</i>
-                                Logout</a>
+                                Log Out</a>
                             </p>
                         </div>
                     </div>

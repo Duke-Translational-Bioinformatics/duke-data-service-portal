@@ -11,6 +11,8 @@ var ProjectActions = Reflux.createActions([
     'openModal',
     'closeModal',
     'openMoveModal',
+    'openVersionModal',
+    'closeVersionModal',
     'moveItemWarning',
     'moveFolder',
     'moveFolderSuccess',
@@ -19,6 +21,14 @@ var ProjectActions = Reflux.createActions([
     'selectMoveLocation',
     'handleBatch',
     'closeErrorModal',
+    'getFileVersions',
+    'getFileVersionsSuccess',
+    'addFileVersion',
+    'addFileVersionSuccess',
+    'deleteVersion',
+    'deleteVersionSuccess',
+    'editVersion',
+    'editVersionSuccess',
     'getUser',
     'getUserSuccess',
     'getUserKey',
@@ -94,6 +104,85 @@ var ProjectActions = Reflux.createActions([
     'uploadError',
     'getChunkUrl'
 ]);
+
+ProjectActions.getFileVersions.preEmit = function (id) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/' + id + '/versions', {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getFileVersionsSuccess(json.results)
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.addFileVersion.preEmit = function (uploadId, label, fileId) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/' + fileId, {
+        method: 'put',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            'upload': {
+                'id': uploadId
+            },
+            'label': label
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('Created New File Version!');
+        ProjectActions.addFileVersionSuccess(fileId, uploadId)
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to Create New Version');
+        ProjectActions.handleErrors(ex)
+    });
+};
+
+
+ProjectActions.deleteVersion.preEmit = function (id) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'file_versions/' + id, {
+        method: 'delete',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+    }).then(function () {
+        MainActions.addToast('Version Deleted!');
+        ProjectActions.deleteVersionSuccess()
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to Delete Version!');
+        ProjectActions.handleErrors(ex)
+    });
+};
+
+ProjectActions.editVersion.preEmit = function (id, label) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'file_versions/' + id, {
+        method: 'put',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            "label": label
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('Label Updated!');
+        ProjectActions.editVersionSuccess(id)
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to Update Label');
+        ProjectActions.handleErrors(ex)
+    });
+};
 
 ProjectActions.addAgent.preEmit = function (name, desc, repo) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'software_agents/', {
@@ -217,7 +306,7 @@ ProjectActions.getAgentApiToken.preEmit = function (agentKey, userKey, data) {
             'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
         },
-        body: data  // For some reason, this call only works with a formData object in the body.
+        body: data  // For some reason, this call only works with a formData object in the body
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
@@ -700,8 +789,8 @@ ProjectActions.deleteProjectMember.preEmit = (id, userId, userName) => {
         });
 };
 
-ProjectActions.getDownloadUrl.preEmit = function (id) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/' + id + '/url', {
+ProjectActions.getDownloadUrl.preEmit = function (id, kind) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + kind + id + '/url', {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -716,7 +805,7 @@ ProjectActions.getDownloadUrl.preEmit = function (id) {
     })
 };
 
-ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKind) {
+ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKind, label, fileId) {
     let chunkNum = 0,
         fileName = blob.name,
         contentType = blob.type,
@@ -732,6 +821,8 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
 
     let details = {
         name: fileName,
+        label: label,
+        fileId: fileId,
         size: SIZE,
         blob: blob,
         parentId: parentId,
@@ -759,9 +850,6 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
     }
     fileReader.onload = function (event, files) {
         // create project upload
-        var arrayBuffer = event.target.result;
-        var wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
-        var md5crc = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
         fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'projects/' + projId + '/uploads', {
             method: 'post',
             headers: {
@@ -772,10 +860,6 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
                 'name': fileName,
                 'content_type': contentType,
                 'size': SIZE,
-                'hash': {
-                    'value': md5crc,
-                    'algorithm': 'MD5'
-                }
             })
         }).then(checkResponse).then(function (response) {
             return response.json()
@@ -861,7 +945,7 @@ function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKi
     xhr.send(chunkBlob);
 };
 
-ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentKind, fileName) {
+ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentKind, fileName, label, fileId) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'uploads/' + uploadId + '/complete', {
         method: 'put',
         headers: {
@@ -871,7 +955,11 @@ ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentK
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        ProjectActions.addFile(uploadId, parentId, parentKind, fileName);
+        if(fileId == null){
+            ProjectActions.addFile(uploadId, parentId, parentKind, fileName, label);
+        } else {
+            ProjectActions.addFileVersion(uploadId, label, fileId);
+        }
     }).catch(function (ex) {
         ProjectActions.uploadError(uploadId, fileName);
     })
@@ -891,7 +979,8 @@ ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind, fileN
             },
             'upload': {
                 'id': uploadId
-            }
+            },
+            'label': 'Initial Version'
         })
     }).then(checkResponse).then(function (response) {
         return response.json()

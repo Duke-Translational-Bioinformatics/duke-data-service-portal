@@ -20,6 +20,7 @@ var ProjectStore = Reflux.createStore({
         this.errorModal = false;
         this.filesChecked = [];
         this.foldersChecked = [];
+        this.fileVersions = [];
         this.itemsSelected = null;
         this.modal = false;
         this.moveModal = false;
@@ -34,6 +35,59 @@ var ProjectStore = Reflux.createStore({
         this.uploads = {};
         this.users = [];
         this.userKey = {};
+        this.versionModal = false;
+    },
+
+    getFileVersions() {
+        this.trigger({
+            loading: true
+        })
+    },
+
+    getFileVersionsSuccess(results) {
+        this.fileVersions = results;
+        this.trigger({
+            fileVersions: this.fileVersions,
+            loading: false
+        })
+    },
+
+    addFileVersionSuccess(id, uploadId) {
+        let kind = 'files/';
+        ProjectActions.getEntity(id, kind);
+        ProjectActions.getFileVersions(id);
+        if (this.uploads.hasOwnProperty(uploadId)) {
+            delete this.uploads[uploadId];
+        }
+        this.trigger({
+            uploads: this.uploads
+        })
+    },
+
+    deleteVersion() {
+        this.trigger({
+            loading: true
+        })
+    },
+
+    deleteVersionSuccess() {
+        this.trigger({
+            loading: false
+        })
+    },
+
+    editVersion() {
+        this.trigger({
+            loading: true
+        })
+    },
+
+    editVersionSuccess(id) {
+        let kind = 'file_versions';
+        ProjectActions.getEntity(id, kind);
+        this.trigger({
+            loading: false
+        })
     },
 
     openModal() {
@@ -47,6 +101,20 @@ var ProjectStore = Reflux.createStore({
         this.modal = false;
         this.trigger({
             modal: false
+        })
+    },
+
+    openVersionModal() {
+        this.versionModal = true;
+        this.trigger({
+            versionModal: true
+        })
+    },
+
+    closeVersionModal() {
+        this.versionModal = false;
+        this.trigger({
+            versionModal: false
         })
     },
 
@@ -680,7 +748,7 @@ var ProjectStore = Reflux.createStore({
             }
             if(chunk.chunkUpdates.status !== StatusEnum.STATUS_SUCCESS) allDone = false;
         }
-        if (allDone === true)ProjectActions.allChunksUploaded(uploadId, upload.parentId, upload.parentKind, upload.name);
+        if (allDone === true)ProjectActions.allChunksUploaded(uploadId, upload.parentId, upload.parentKind, upload.name, upload.label, upload.fileId );
     },
 
     uploadError(uploadId, fileName) {
