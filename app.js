@@ -1,5 +1,4 @@
 var express = require('express');
-var exphbs  = require('express-handlebars');
 
 var app = express();
 app.set('port', (process.env.PORT || 5000));
