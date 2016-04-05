@@ -67,4 +67,5 @@ IOS/www/
 
 # Files that might appear on external disk
 .Spotlight-V100
-.Trashessecrets.*.env
+.Trashes
+secrets.*.env
