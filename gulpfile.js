@@ -36,13 +36,20 @@ gulp.task('scripts', function() {
 
 // copy html from app to dist
 gulp.task('html', function() {
-  gulp.src(app + 'index.erb')
-      .pipe(gulp.dest(dist))
-      .pipe($.size({title: 'ERB'}));
-  return gulp.src(app + 'index.html')
+  if (isProduction) {
+    gulp.src(app + 'index.erb')
+        .pipe(gulp.dest(dist))
+        .pipe($.size({title: 'ERB'}));
+    gulp.src(app + 'index.ejs')
+        .pipe(gulp.dest(dist))
+        .pipe($.size({title: 'EJS'}));
+  }
+  else {
+    return gulp.src(app + 'index.html')
       .pipe(gulp.dest(dist))
       .pipe($.size({ title : 'html' }))
       .pipe($.connect.reload());
+  }
 });
 
 // copy libs to dist
