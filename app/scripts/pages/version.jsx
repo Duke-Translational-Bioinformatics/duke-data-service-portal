@@ -1,10 +1,10 @@
 import React from 'react'
 import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
-import FileDetails from '../components/fileComponents/fileDetails.jsx';
+import VersionDetails from '../components/fileComponents/versionDetails.jsx';
 import Header from '../components/globalComponents/header.jsx';
 
-class File extends React.Component {
+class Version extends React.Component {
 
     constructor(props) {
         super(props);
@@ -12,24 +12,22 @@ class File extends React.Component {
             error: ProjectStore.error,
             errorModal: ProjectStore.errorModal,
             loading: false,
+            project: ProjectStore.project,
             moveModal: ProjectStore.moveModal,
-            moveErrorModal: ProjectStore.moveErrorModal,
-            project: ProjectStore.project
+            moveErrorModal: ProjectStore.moveErrorModal
         };
     }
 
     componentDidMount() {
-        let kind = 'files';
         let id = this.props.params.id;
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
-        this._loadFile(id, kind);
+        this._loadVersion(id);
     }
 
     componentDidUpdate(prevProps) {
-        let kind = 'files';
         let id = this.props.params.id;
         if(prevProps.params.id !== this.props.params.id) {
-            this._loadFile(id, kind);
+            this._loadVersion(id);
         }
     }
 
@@ -37,18 +35,18 @@ class File extends React.Component {
         this.unsubscribe();
     }
 
-    _loadFile(id, kind) {
+    _loadVersion(id) {
+        let kind = 'file_versions';
         ProjectActions.getEntity(id, kind);
-        ProjectActions.getFileVersions(id);
     }
 
     render() {
         return (
             <div>
-                <FileDetails {...this.props} {...this.state} />
+                <VersionDetails {...this.props} {...this.state}/>
             </div>
         );
     }
 }
 
-export default File;
+export default Version;
