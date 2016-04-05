@@ -73,5 +73,9 @@
       "<rootDir>/node_modules/object-assign",
       "<rootDir>/test-utils/stubRouterContext.jsx"
     ]
+  },
+  "engines": {
+    "node": "0.12.12",
+    "npm": "2.14.9"
   }
 }
