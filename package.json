@@ -13,7 +13,6 @@
   "main": "index.html",
   "scripts": {
     "start": "gulp",
-    "test": "jest",
     "heroku-postbuild": "gulp build --type production"
   },
   "author": "@dburdick",
