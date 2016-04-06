@@ -10,4 +10,4 @@ deployment:
  development:
    branch: develop
    commands:
-     - echo "this would run a test"
+     - echo "this would deploy to heroku"
