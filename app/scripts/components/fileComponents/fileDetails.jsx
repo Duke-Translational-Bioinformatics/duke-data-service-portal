@@ -94,64 +94,98 @@ class FileDetails extends React.Component {
                 <div style={styles.uploadProg}>
                     { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
                 </div>
-                <div className="mdl-cell mdl-cell--12-col content-block"  style={styles.list}>
+                <div className="mdl-cell mdl-cell--12-col list-block" style={styles.list}>
                     <div className="list-block">
-                        <ul>
-                            <li className="item-divider">Created By</li>
-                            <li className="item-content">
-                                <div className="item-inner">
-                                    <div>{ createdBy }</div>
-                                </div>
-                            </li>
-                            <li className="item-divider">Created On</li>
-                            <li className="item-content">
-                                <div className="item-inner">
-                                    <div>{ createdOn }</div>
-                                </div>
-                            </li>
-                            <li className="item-divider">Size</li>
-                            <li className="item-content">
-                                <div className="item-inner">
-                                    <div>{ BaseUtils.bytesToSize(bytes) }</div>
-                                </div>
-                            </li>
-                            <li className="item-divider">File ID</li>
-                            <li className="item-content">
-                                <div className="item-inner">
-                                    <div>{ id }</div>
-                                </div>
-                            </li>
-                            <li className="item-divider">Hash</li>
-                            <li className="item-content">
-                                <div className="item-inner">
-                                    <div>{ hash }</div>
-                                </div>
-                            </li>
-                            <li className="item-divider">Last Updated By</li>
-                            <li className="item-content">
-                                <div className="item-inner">
-                                    <div>{ lastUpdatedBy === null ? 'N/A' : lastUpdatedBy}</div>
-                                </div>
-                            </li>
-                            <li className="item-divider">Last Updated On</li>
-                            <li className="item-content">
-                                <div className="item-inner">
-                                    <div>{ lastUpdatedOn === null ? 'N/A' : lastUpdatedOn }</div>
-                                </div>
-                            </li>
-                            <li className="item-divider">Storage Location</li>
-                            <li className="item-content">
-                                <div className="item-inner">
-                                    <div>{ storage }</div>
-                                </div>
-                            </li>
-                            <li className="item-divider">File Path</li>
-                            <li className="item-content">
-                                <div className="item-inner">
-                                    <div>{ BaseUtils.getFilePath(ancestors) + name}</div>
-                                </div>
-                            </li>
-                        </ul>
+                        <div className="list-group">
+                            <ul>
+                                <li className="list-group-title">Created By</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ createdBy }</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="list-group">
+                            <ul>
+                                <li className="list-group-title">Created On</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ createdOn }</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="list-group">
+                            <ul>
+                                <li className="list-group-title">Size</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ BaseUtils.bytesToSize(bytes) }</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="list-group">
+                            <ul>
+                                <li className="list-group-title">File ID</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ id }</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="list-group">
+                            <ul>
+                                <li className="list-group-title">Hash</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ hash }</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="list-group">
+                            <ul>
+                                <li className="list-group-title">Last Updated By</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ lastUpdatedBy === null ? 'N/A' : lastUpdatedBy}</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="list-group">
+                            <ul>
+                                <li className="list-group-title">Last Updated On</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ lastUpdatedOn === null ? 'N/A' : lastUpdatedOn }</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="list-group">
+                            <ul>
+                                <li className="list-group-title">Storage Location</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ storage }</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="list-group">
+                            <ul>
+                                <li className="list-group-title">File Path</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ BaseUtils.getFilePath(ancestors) + name}</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>

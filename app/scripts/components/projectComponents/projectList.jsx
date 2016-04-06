@@ -31,7 +31,7 @@ class ProjectList extends React.Component {
                             <CardTitle title={project.name} subtitle={'ID: ' + project.id} titleColor="#424242" style={styles.cardTitle}/>
                         </a>
                         <CardText>
-                            <span className="mdl-color-text--grey-900">Description:</span>{ project.description.length > 300 ? project.description.substring(0,300)+'...' : project.description }
+                            <span className="mdl-color-text--grey-900">Description:</span>{project.description.length > 300 ? ' ' + project.description.substring(0,300)+'...' : ' ' + project.description }
                         </CardText>
                     </Card>
                 );
