@@ -94,7 +94,7 @@ class FileDetails extends React.Component {
                 <div style={styles.uploadProg}>
                     { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
                 </div>
-                <div className="mdl-cell mdl-cell--12-col list-block" style={styles.list}>
+                <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     <div className="list-block">
                         <div className="list-group">
                             <ul>
