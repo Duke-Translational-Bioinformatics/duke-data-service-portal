@@ -5,3 +5,9 @@ machine:
 test:
   override:
     - echo "skipping tests for now"
+
+deployment:
+ development:
+   branch: develop
+   commands:
+     - echo "this would run a test"
