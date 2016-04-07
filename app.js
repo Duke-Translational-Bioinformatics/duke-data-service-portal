@@ -6,7 +6,7 @@ app.use(express.static(__dirname + '/dist'));
 
 app.set('views', __dirname + '/dist');
 app.set('view engine', 'ejs');
-app.get('/', function (req, res) {
+app.get('/*', function (req, res) {
     res.render('index', {env: process.env});
 });
 
