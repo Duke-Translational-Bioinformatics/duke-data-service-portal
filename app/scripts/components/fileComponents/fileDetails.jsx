@@ -72,7 +72,7 @@ class FileDetails extends React.Component {
                     <FileOptionsMenu {...this.props} {...this.state}/>
                 </div>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                    <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + '/' + BaseUtils.getUrlPath(parentKind) + parentId } style={styles.back}
+                    <a href={'/#/' + BaseUtils.getUrlPath(parentKind) + parentId } style={styles.back}
                        className="mdl-color-text--grey-800 external">
                         <i className="material-icons"
                            style={styles.backIcon}>keyboard_backspace</i>Back</a>

@@ -27,7 +27,7 @@ class ProjectList extends React.Component {
                 return (
                     <Card key={ project.id } className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.card}>
                         <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>content_paste</i>
-                        <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + "/project/" + project.id} className="external">
+                        <a href={urlGen.routes.project(project.id)} className="external">
                             <CardTitle title={project.name} subtitle={'ID: ' + project.id} titleColor="#424242" style={styles.cardTitle}/>
                         </a>
                         <CardText>
