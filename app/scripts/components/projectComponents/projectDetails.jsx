@@ -35,7 +35,7 @@ class ProjectDetails extends React.Component {
                         <ProjectOptionsMenu {...this.props} />
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                        <a href={urlGen.routes.baseUrl + urlGen.routes.prefix + '/home'} style={styles.back}
+                        <a href={urlGen.routes.home()} style={styles.back}
                            className="external mdl-color-text--grey-800"><i
                             className="material-icons mdl-color-text--grey-800" style={styles.backIcon}>keyboard_backspace</i>Back</a>
                     </div>

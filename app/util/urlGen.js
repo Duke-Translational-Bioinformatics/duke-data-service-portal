@@ -1,13 +1,16 @@
 let UrlGen = {
     routes: {
-        ddsUrl: 'https://dev.dataservice.duke.edu/api/v1/',
+        authServiceUri: DDS_PORTAL_CONFIG.authServiceUri,
         baseUrl: DDS_PORTAL_CONFIG.baseUrl,
         apiPrefix: '/api/v1/',
-        prefix: '/portal/#',
         login: () => '/login',
-        home: (id) => '/',
-        project: (projectId) => '/project' + projectId,
-        folder: (projectId, folderId) => '/project' + projectId + folderId
+        home: () => '/',
+        project: (projectId) => '/#/project/' + projectId,
+        folder: (folderId) => '/#/folder/' + folderId,
+        file: (fileId) => '/#/file/' + fileId,
+        version: (versionId) => '/#/version/' + versionId,
+        agents: () => '/#/agents',
+        agent: (agentId) => '/#/agent/' + agentId
     }
 };
 

@@ -13,7 +13,7 @@ class LeftMenu extends React.Component {
     render() {
         let home = <span>
                     <p>
-                        <a href={urlGen.routes.baseUrl + urlGen.routes.prefix}
+                        <a href={urlGen.routes.home()}
                            className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
                             <i className="material-icons" style={styles.navIcon}>home</i>Home
 
@@ -29,7 +29,7 @@ class LeftMenu extends React.Component {
                     <div className="panel panel-left panel-cover">
                         <div className="content-block">
                             { home }
-                            <p><a href={urlGen.routes.baseUrl + urlGen.routes.prefix  + "/agents"}
+                            <p><a href={urlGen.routes.agents()}
                                   className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
                                 <i className="material-icons" style={styles.navIcon}>build</i>
                                 Software Agents</a>

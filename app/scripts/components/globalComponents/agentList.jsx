@@ -71,7 +71,7 @@ class AgentList extends React.Component {
                 return (
                     <li key={ agent.id } className="hover">
                         <FlatButton label="credentials" primary={true} style={styles.getKeyButton} onTouchTap={() => this.handleTouchTapApiKey(agent.id)}/>
-                        <a href={urlGen.routes.baseUrl + urlGen.routes.prefix  + "/agent/" + agent.id} className="item-content external">
+                        <a href={urlGen.routes.agent(agent.id)} className="item-content external">
                             <div className="item-media">
                                 <i className="material-icons" style={styles.icon}>laptop_mac</i>
                             </div>

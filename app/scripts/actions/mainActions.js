@@ -23,7 +23,7 @@ var MainActions = Reflux.createActions([
 
 MainActions.authenticationServiceValidate.preEmit = (appConfig, accessToken) => {
 
-    fetch(appConfig.authServiceUri + '/api/v1/token_info?access_token=' + accessToken, {
+    fetch(urlGen.routes.authServiceUri + '/api/v1/token_info?access_token=' + accessToken, {
         method: 'get',
         headers: {
             'Accept': 'application/json',
@@ -43,7 +43,7 @@ MainActions.authenticationServiceValidate.preEmit = (appConfig, accessToken) => 
 };
 
 MainActions.getDdsApiToken.preEmit = (appConfig, signedInfo) => {
-    fetch(appConfig.baseUrl + '/api/v1/user/api_token?access_token=' + signedInfo, {
+    fetch(urlGen.routes.baseUrl + '/api/v1/user/api_token?access_token=' + signedInfo, {
         method: 'get',
         headers: {
             'Accept': 'application/json',
@@ -64,7 +64,7 @@ MainActions.getDdsApiToken.preEmit = (appConfig, signedInfo) => {
 };
 
 MainActions.getCurrentUser.preEmit = () => {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'current_user', {
+    fetch(urlGen.routes.baseUrl + '/api/v1/current_user', {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
