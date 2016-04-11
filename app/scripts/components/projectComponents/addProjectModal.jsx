@@ -39,7 +39,7 @@ class AddProjectModal extends React.Component {
                     onTouchTap={this.handleTouchTap.bind(this)} />
                 <Dialog
                     style={styles.dialogStyles}
-                    title="Add New Folder"
+                    title="Add New Project"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
                     actions={actions}
