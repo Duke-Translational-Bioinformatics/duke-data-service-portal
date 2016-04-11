@@ -1031,7 +1031,7 @@ ProjectActions.hashFile.preEmit = function (file, id) {
 // URL.createObjectURL
     window.URL = window.URL || window.webkitURL;
 
-// "Server response", used in all examples
+// "Server response"
     var response =
         "importScripts('https://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js');" +
         "var md5, cryptoType;" +
