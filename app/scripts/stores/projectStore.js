@@ -674,6 +674,7 @@ var ProjectStore = Reflux.createStore({
 
     startUploadSuccess(uploadId, details) {
         this.uploads[uploadId] = details;
+        ProjectActions.hashFile(this.uploads[uploadId], uploadId)
         ProjectActions.updateAndProcessChunks(uploadId, null, null);
         this.trigger({
             uploads: this.uploads
