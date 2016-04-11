@@ -8,6 +8,8 @@ import StatusEnum from '../enum';
 import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.js';
 
 var ProjectActions = Reflux.createActions([
+    'hashFile',
+    'postHash',
     'openModal',
     'closeModal',
     'openMoveModal',
@@ -991,6 +993,101 @@ ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind, fileN
         MainActions.addToast('Failed to upload ' + fileName + '!');
         ProjectActions.handleErrors(ex)
     })
+};
+
+// File Hashing
+ProjectActions.hashFile.preEmit = function (file, id) {
+    function series(tasks, done) {
+        if (!tasks || tasks.length === 0) {
+            done();
+        } else {
+            tasks[0](function () {
+                series(tasks.slice(1), done);
+            });
+        }
+    }
+
+    function webWorkerOnMessage(e) {
+        function arrayBufferToWordArray(ab) {
+            var i8a = new Uint8Array(ab);
+            var a = [];
+            for (var i = 0; i < i8a.length; i += 4) {
+                a.push(i8a[i] << 24 | i8a[i + 1] << 16 | i8a[i + 2] << 8 | i8a[i + 3]);
+            }
+            return CryptoJS.lib.WordArray.create(a, i8a.length);
+        }
+
+        if (e.data.type === "create") {
+            md5 = CryptoJS.algo.MD5.create();
+            postMessage({type: "create"});
+        } else if (e.data.type === "update") {
+            md5.update(arrayBufferToWordArray(e.data.chunk));
+            postMessage({type: "update"});
+        } else if (e.data.type === "finish") {
+            postMessage({type: "finish", id: e.data.id, hash: "" + md5.finalize()});
+        }
+    }
+
+// URL.createObjectURL
+    window.URL = window.URL || window.webkitURL;
+
+// "Server response", used in all examples
+    var response =
+        "importScripts('https://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js');" +
+        "var md5, cryptoType;" +
+        "self.onmessage = " + webWorkerOnMessage.toString();
+
+    var blob;
+    try {
+        blob = new Blob([response], {type: 'application/javascript'});
+    } catch (e) { // Backwards-compatibility
+        window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
+        blob = new BlobBuilder();
+        blob.append(response);
+        blob = blob.getBlob();
+    }
+
+    var worker = new Worker(URL.createObjectURL(blob));
+    var chunksize = 5242880;
+    var f = file.blob; // FileList object
+    var i = 0,
+        chunks = Math.ceil(f.size / chunksize),
+        chunkTasks = [],
+        startTime = (new Date()).getTime();
+    worker.onmessage = function (e) {
+        // create callback
+        for (var j = 0; j < chunks; j++) {
+            (function (j, f) {
+                chunkTasks.push(function (next) {
+                    var blob = f.slice(j * chunksize, Math.min((j + 1) * chunksize, f.size));
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        var chunk = e.target.result;
+                        worker.onmessage = function (e) {
+                            // update callback
+                            next();
+                        };
+                        worker.postMessage({type: "update", chunk: chunk});
+                    };
+                    reader.readAsArrayBuffer(blob);
+                });
+            })(j, f);
+        }
+        series(chunkTasks, function () {
+            worker.onmessage = function (e) {
+                // finish callback
+                // TODO: Post hash in store?????
+                ProjectActions.postHash({id: e.data.id, hash: e.data.hash});
+            };
+            worker.postMessage({type: "finish", id: id});
+        });
+    };
+    worker.postMessage({type: "create"});
+};
+
+ProjectActions.postHash.preEmit = function (hashObj){ //Todo: Make proper preemit function w/fetch call !!!!!!!!!!!!
+    //console.log('File ID:' + hashObj.id + ' ' + 'Hash:' + hashObj.hash);
 };
 
 function checkResponse(response) {
