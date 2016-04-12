@@ -22,12 +22,18 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
     <script type="text/javascript">
         //TODO get environment from baseUrl/api/v1/app/status
+        function randomString(length, chars) {
+                var result = '';
+                for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+                return result;
+            }
+        var rString = randomString(32, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
         var DDS_PORTAL_CONFIG = {
             serviceId: '<%= env.SERVICE_ID -%>',
             baseUrl: '<%= env.DDS_API_URL -%>',
             authServiceUri: '<%= env.AUTH_SERVICE_BASE_URI -%>',
             authServiceName: '<%= env.AUTH_SERVICE_NAME -%>',
-            securityState:'12345',
+            securityState: rString,
             environment:'<%= env.DDS_API_ENVIRONMENT -%>'
         };
     </script>
