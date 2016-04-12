@@ -145,6 +145,28 @@ class BatchOps extends React.Component {
     };
 
     handleClose() {
+        let checked = null;
+        // See if checkboxes are selected
+        let checkedBoxes = document.querySelectorAll('input[name=chkboxName]:checked');
+        let filesChecked = [];
+        let foldersChecked = [];
+        // Create arrays of checked boxes
+        let fileInput = document.getElementsByClassName('fileChkBoxes');
+        let folderInput = document.getElementsByClassName('folderChkBoxes');
+        for (let i = 0; fileInput[i]; ++i) {
+            if (fileInput[i].checked) {
+                filesChecked.push(fileInput[i].value);
+            }
+        }
+        for (let i = 0; folderInput[i]; ++i) {
+            if (folderInput[i].checked) {
+                foldersChecked.push(folderInput[i].value);
+            }
+        }
+        // Process files/folders
+        ProjectActions.handleBatch(filesChecked, foldersChecked);
+        // If nothing is selected, change state and hide options
+        if (!checkedBoxes.length) ProjectActions.showBatchOptions();
         this.setState({
             deleteOpen: false,
             downloadOpen: false
