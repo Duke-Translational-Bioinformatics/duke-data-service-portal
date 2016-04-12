@@ -47,8 +47,6 @@ var styles = {
         marginLeft: 31,
         fontSize: 13
     }
-}
-
-
+};
 
 export default Loaders;
