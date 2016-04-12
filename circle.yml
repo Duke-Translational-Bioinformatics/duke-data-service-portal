@@ -7,7 +7,7 @@ test:
     - echo "skipping tests for now"
 
 deployment:
- development:
+  development:
    branch: develop
    commands:
     - heroku maintenance:on --app 'portal-dukeds-dev'
@@ -15,3 +15,17 @@ deployment:
     - git push git@heroku.com:portal-dukeds-dev.git $CIRCLE_SHA1:refs/heads/master:
         timeout: 54000
     - heroku maintenance:off --app 'portal-dukeds-dev'
+  ua_test:
+   branch: ua_test
+   commands:
+    - heroku maintenance:on --app 'portal-dukeds-uatest'
+    - "[[ ! -s \"$(git rev-parse --git-dir)/shallow\" ]] || git fetch --unshallow"
+    - git push git@heroku.com:portal-dukeds-uatest.git $CIRCLE_SHA1:refs/heads/master:
+        timeout: 54000
+    - heroku maintenance:off --app 'portal-dukeds-uatest'
+  production:
+   branch: production
+   commands:
+    - "[[ ! -s \"$(git rev-parse --git-dir)/shallow\" ]] || git fetch --unshallow"
+    - git push git@heroku.com:portal-dukeds.git $CIRCLE_SHA1:refs/heads/master:
+          timeout: 54000
