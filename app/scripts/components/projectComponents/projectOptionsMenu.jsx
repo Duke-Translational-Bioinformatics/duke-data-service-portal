@@ -137,7 +137,8 @@ class ProjectOptionsMenu extends React.Component {
                             <MenuItem value={0} primaryText='Project Administrator'/>
                             <MenuItem value={1} primaryText='Project Viewer'/>
                             <MenuItem value={2} primaryText='File Downloader'/>
-                            <MenuItem value={3} primaryText='File Editor'/>
+                            <MenuItem value={3} primaryText='File Uploader'/>
+                            <MenuItem value={4} primaryText='File Editor'/>
                         </SelectField><br/>
                     </form>
                 </Dialog>
@@ -220,6 +221,9 @@ class ProjectOptionsMenu extends React.Component {
                 role = 'file_downloader';
                 break;
             case 3:
+                role = 'file_uploader';
+                break;
+            case 4:
                 role = 'file_editor';
                 break;
         }
