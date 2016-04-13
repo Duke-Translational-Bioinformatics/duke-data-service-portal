@@ -38,7 +38,7 @@ class Home extends React.Component {
                 secondary={true}
                 onTouchTap={this.handleDeclineButton.bind(this)} />,
             <FlatButton
-                label="AGREE"
+                label="ACCEPT"
                 secondary={true}
                 onTouchTap={this.handleAcceptButton.bind(this)} />
         ];

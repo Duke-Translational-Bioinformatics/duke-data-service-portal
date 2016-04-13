@@ -1087,7 +1087,7 @@ ProjectActions.hashFile.preEmit = function (file, id) {
 };
 
 ProjectActions.postHash.preEmit = function (hashObj){ //Todo: Make proper preemit function w/fetch call !!!!!!!!!!!!
-    //console.log('File ID:' + hashObj.id + ' ' + 'Hash:' + hashObj.hash);
+    console.log('File ID:' + hashObj.id + ' ' + 'Hash:' + hashObj.hash);
 };
 
 function checkResponse(response) {
