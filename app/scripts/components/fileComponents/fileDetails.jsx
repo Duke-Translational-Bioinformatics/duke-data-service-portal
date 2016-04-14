@@ -199,8 +199,7 @@ class FileDetails extends React.Component {
 
     handleDownload(){
         let id = this.props.params.id;
-        let kind = 'files/';
-        ProjectActions.getDownloadUrl(id, kind);
+        ProjectActions.getDownloadUrl(id);
     }
 
     openModal() {
