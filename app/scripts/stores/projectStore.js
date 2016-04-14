@@ -29,6 +29,7 @@ var ProjectStore = Reflux.createStore({
         this.parent = {};
         this.projects = [];
         this.project = {};
+        this.projPermissions = {};
         this.projectMembers = [];
         this.showBatchOps = false;
         this.uploadCount = [];
@@ -283,10 +284,23 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    getUserSuccess (json) {
+    getUserSuccess (json, id) {
         this.currentUser = json;
+        ProjectActions.getPermissions(id, json.id);
         this.trigger({
             currentUser: this.currentUser
+        });
+    },
+
+    getPermissionsSuccess (json) {
+        let id = json.auth_role.id;
+        if(id === 'project_viewer') this.projPermissions = 'viewOnly';
+        if(id === 'project_admin' || id === 'system_admin') this.projPermissions = 'prjCrud';
+        if(id === 'file_editor') this.projPermissions = 'flCrud';
+        if(id === 'file_uploader') this.projPermissions = 'flUpload';
+        if(id === 'file_downloader') this.projPermissions = 'flDownload';
+        this.trigger({
+            projPermissions: this.projPermissions
         });
     },
 

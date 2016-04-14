@@ -33,6 +33,8 @@ var ProjectActions = Reflux.createActions([
     'editVersionSuccess',
     'getUser',
     'getUserSuccess',
+    'getPermissions',
+    'getPermissionsSuccess',
     'getUserKey',
     'getUserKeySuccess',
     'createUserKey',
@@ -319,7 +321,7 @@ ProjectActions.getAgentApiToken.preEmit = function (agentKey, userKey, data) {
     })
 };
 
-ProjectActions.getUser.preEmit = () => {
+ProjectActions.getUser.preEmit = (id) => {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'current_user', {
         method: 'get',
         headers: {
@@ -330,7 +332,25 @@ ProjectActions.getUser.preEmit = () => {
         .then(function (response) {
             return response.json()
         }).then(function (json) {
-            ProjectActions.getUserSuccess(json)
+            ProjectActions.getUserSuccess(json, id)
+        })
+        .catch(function (ex) {
+            ProjectActions.handleErrors(ex)
+        });
+};
+
+ProjectActions.getPermissions.preEmit = (id, userId) => {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'projects/' + id + '/permissions/' + userId, {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    })
+        .then(function (response) {
+            return response.json()
+        }).then(function (json) {
+            ProjectActions.getPermissionsSuccess(json)
         })
         .catch(function (ex) {
             ProjectActions.handleErrors(ex)
@@ -791,8 +811,8 @@ ProjectActions.deleteProjectMember.preEmit = (id, userId, userName) => {
         });
 };
 
-ProjectActions.getDownloadUrl.preEmit = function (id, kind) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + kind + id + '/url', {
+ProjectActions.getDownloadUrl.preEmit = function (id) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/' + id + '/url', {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
