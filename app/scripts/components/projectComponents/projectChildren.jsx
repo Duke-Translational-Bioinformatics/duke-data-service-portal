@@ -25,6 +25,25 @@ class ProjectChildren extends React.Component {
 
     render() {
         let children = [];
+        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
+        let download = <div style={styles.fillerDiv}>{/*temporary filler div until add dropdown menu*/}</div>;
+        let chkBx = <div className="item-media"></div>;
+        let type = 'hidden';
+        let newFolderModal = null;
+        if (prjPrm !== null) {
+            download = prjPrm === 'viewOnly' || prjPrm === 'flUpload' ? <div style={styles.fillerDiv}></div> :
+                <a className="mdl-button mdl-js-button mdl-button--icon external" style={styles.dlIcon}
+                   onTouchTap={() => this.handleDownload(children.id)}>
+                    <i className="material-icons">get_app</i>
+                </a>;
+            newFolderModal = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <AddFolderModal {...this.props}/>;
+            if (prjPrm !== 'viewOnly' && prjPrm !== 'flUpload') {
+                type = 'checkbox';
+                chkBx = <div className="item-media">
+                    <i className="icon icon-form-checkbox" style={styles.checkBox}></i>
+                </div>
+            }
+        }
         if (this.props.error && this.props.error.response) {
             this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
             this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
@@ -56,12 +75,9 @@ class ProjectChildren extends React.Component {
                            className="item-content external">
                             <label className="label-checkbox item-content" style={styles.checkboxLabel}
                                    onClick={e => this.change()}>
-                                <input className="folderChkBoxes" type="checkbox" name="chkboxName" value={children.id}
+                                <input className="folderChkBoxes" type={type} name="chkboxName" value={children.id}
                                        id={children.id}/>
-
-                                <div className="item-media">
-                                    <i className="icon icon-form-checkbox" style={styles.checkBox}></i>
-                                </div>
+                                { chkBx }
                             </label>
 
                             <div className="item-media">
@@ -83,29 +99,23 @@ class ProjectChildren extends React.Component {
             } else {
                 return (
                     <li key={ children.id } className="hover">
-                        <a className="mdl-button mdl-js-button mdl-button--icon external" style={styles.dlIcon}
-                           onTouchTap={() => this.handleDownload(children.id)}>
-                            <i className="material-icons">get_app</i>
-                        </a>
+                        { download }
                         <a href={urlGen.routes.file(children.id)}
                            className="item-content external">
                             <label className="label-checkbox item-content" style={styles.checkboxLabel}
                                    onClick={e => this.change()}>
-                                <input className="fileChkBoxes" type="checkbox" name="chkboxName" value={children.id}
+                                <input className="fileChkBoxes" type={type} name="chkboxName" value={children.id}
                                        id={children.id}/>
-
-                                <div className="item-media">
-                                    <i className="icon icon-form-checkbox" style={styles.checkBox}></i>
-                                </div>
+                                { chkBx }
                             </label>
 
-                            <div className="item-media"><i className="material-icons"
-                                                           style={styles.icon}>description</i>
+                            <div className="item-media">
+                                <i className="material-icons" style={styles.icon}>description</i>
                             </div>
                             <div className="item-inner">
                                 <div className="item-title-row">
                                     <div className="item-title mdl-color-text--grey-800"
-                                         style={styles.title}>{children.name.length > 22 ? children.name.substring(0,22)+'...' : children.name}</div>
+                                         style={styles.title}>{children.name.length > 22 ? children.name.substring(0, 22) + '...' : children.name}</div>
                                 </div>
                                 <div className="item-subtitle mdl-color-text--grey-600">ID: {children.id}</div>
                             </div>
@@ -119,7 +129,7 @@ class ProjectChildren extends React.Component {
             <div className="list-container">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
                     <div className="mdl-cell mdl-cell--12-col">
-                        <AddFolderModal {...this.props}/>
+                        { newFolderModal }
                     </div>
                     <div className="mdl-cell mdl-cell--12-col" style={{marginBottom: -20}}>
                         { this.props.showBatchOps ? <BatchOps {...this.props} {...this.state}/> : null }

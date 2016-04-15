@@ -35,6 +35,7 @@ var ProjectActions = Reflux.createActions([
     'getUserSuccess',
     'getPermissions',
     'getPermissionsSuccess',
+    'getVersionPermissions',
     'getUserKey',
     'getUserKeySuccess',
     'createUserKey',
@@ -145,7 +146,8 @@ ProjectActions.addFileVersion.preEmit = function (uploadId, label, fileId) {
         ProjectActions.addFileVersionSuccess(fileId, uploadId)
     }).catch(function (ex) {
         MainActions.addToast('Failed to Create New Version');
-        ProjectActions.handleErrors(ex)
+        ProjectActions.uploadError(uploadId, label);
+        ProjectActions.handleErrors(ex);
     });
 };
 
@@ -352,6 +354,26 @@ ProjectActions.getPermissions.preEmit = (id, userId) => {
         }).then(function (json) {
             ProjectActions.getPermissionsSuccess(json)
         })
+        .catch(function (ex) {
+            ProjectActions.handleErrors(ex)
+        });
+};
+
+// Todo/////////////////////////
+// Used to get permissions for versions because the version object doesn't include the 'project' property like the
+// file and folder object does. Can be removed and version refactored if property is added to version object.
+ProjectActions.getVersionPermissions.preEmit = (id, kind, userId) => {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + kind + '/' + id, {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getPermissions(json.project.id, userId)
+    })
         .catch(function (ex) {
             ProjectActions.handleErrors(ex)
         });
@@ -772,6 +794,7 @@ ProjectActions.getUserId.preEmit = (fullName, id, role) => {
 };
 
 ProjectActions.addProjectMember.preEmit = (id, userId, role, name) => {
+    let newRole = role.replace('_',' ');
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'projects/' + id + '/permissions/' + userId, {
         method: 'put',
         headers: {
@@ -784,7 +807,7 @@ ProjectActions.addProjectMember.preEmit = (id, userId, role, name) => {
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        MainActions.addToast(name + ' ' + 'has been added to this project');
+        MainActions.addToast(name + ' ' + 'has been added as a ' +newRole+ ' to this project');
         ProjectActions.addProjectMemberSuccess(id)
     })
         .catch(function (ex) {
