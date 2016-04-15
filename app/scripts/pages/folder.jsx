@@ -1,7 +1,6 @@
 import React from 'react'
 import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
-import MainStore from '../stores/mainStore';
 import FolderPath from '../components/folderComponents/folderPath.jsx';
 import FolderChildren from '../components/folderComponents/folderChildren.jsx';
 
