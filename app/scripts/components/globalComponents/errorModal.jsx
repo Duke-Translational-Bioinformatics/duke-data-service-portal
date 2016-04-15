@@ -33,7 +33,7 @@ class ErrorModal extends React.Component {
 
     handleClose() {
         ProjectActions.closeErrorModal();
-        this.props.appRouter.transitionTo('/home');
+        //this.props.appRouter.transitionTo('/home');
     };
 }
 

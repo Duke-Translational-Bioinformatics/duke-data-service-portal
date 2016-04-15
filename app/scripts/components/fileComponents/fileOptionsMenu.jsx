@@ -21,6 +21,26 @@ class FileOptionsMenu extends React.Component {
     }
 
     render() {
+        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
+        let menu = null;
+        if (prjPrm !== null) {
+            if(prjPrm === 'flUpload'){
+                menu = <MenuItem primaryText="Upload New Version" leftIcon={<i className="material-icons">file_upload</i>}
+                                 onTouchTap={() => this.openVersionModal()}/>;
+            }
+            if(prjPrm === 'prjCrud' || prjPrm === 'flCrud'){
+                menu = <span>
+                        <MenuItem primaryText="Delete File" leftIcon={<i className="material-icons">delete</i>}
+                                  onTouchTap={() => this.handleTouchTapDelete()}/>
+                        <MenuItem primaryText="Edit File" leftIcon={<i className="material-icons">mode_edit</i>}
+                                  onTouchTap={() => this.handleTouchTapEdit()}/>
+                        <MenuItem primaryText="Move File" leftIcon={<i className="material-icons">low_priority</i>}
+                                  onTouchTap={() => this.handleTouchTapMove()}/>
+                        <MenuItem primaryText="Upload New Version" leftIcon={<i className="material-icons">file_upload</i>}
+                                  onTouchTap={() => this.openVersionModal()}/>
+                </span>
+            }
+        }
         const deleteActions = [
             <FlatButton
                 label="CANCEL"
@@ -118,14 +138,7 @@ class FileOptionsMenu extends React.Component {
                     iconButtonElement={<IconButton iconClassName="material-icons" onTouchTap={this.getEntity.bind(this)}>more_vert</IconButton>}
                     anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                     targetOrigin={{horizontal: 'right', vertical: 'top'}}>
-                    <MenuItem primaryText="Delete File" leftIcon={<i className="material-icons">delete</i>}
-                              onTouchTap={this.handleTouchTapDelete.bind(this)}/>
-                    <MenuItem primaryText="Edit File" leftIcon={<i className="material-icons">mode_edit</i>}
-                              onTouchTap={this.handleTouchTapEdit.bind(this)}/>
-                    <MenuItem primaryText="Move File" leftIcon={<i className="material-icons">low_priority</i>}
-                              onTouchTap={this.handleTouchTapMove.bind(this)}/>
-                    <MenuItem primaryText="Upload New Version" leftIcon={<i className="material-icons">file_upload</i>}
-                              onTouchTap={this.openVersionModal.bind(this)}/>
+                    { menu }
                 </IconMenu>
             </div>
         );
