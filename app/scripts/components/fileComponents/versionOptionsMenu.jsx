@@ -19,6 +19,23 @@ class VersionsOptionsMenu extends React.Component {
     }
 
     render() {
+        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
+        let menu = null;
+        if (prjPrm !== null) {
+            if (prjPrm === 'flUpload') {
+                menu = <MenuItem primaryText="Edit Version Label" leftIcon={<i className="material-icons">mode_edit</i>}
+                                 onTouchTap={this.handleTouchTapEdit.bind(this)}/>;
+            }
+            if (prjPrm === 'prjCrud' || prjPrm === 'flCrud') {
+                menu = <span>
+                        <MenuItem primaryText="Delete Version" leftIcon={<i className="material-icons">delete</i>}
+                                  onTouchTap={this.handleTouchTapDelete.bind(this)}/>
+                        <MenuItem primaryText="Edit Version Label"
+                                  leftIcon={<i className="material-icons">mode_edit</i>}
+                                  onTouchTap={this.handleTouchTapEdit.bind(this)}/>
+                </span>
+            }
+        }
         const deleteActions = [
             <FlatButton
                 label="CANCEL"
@@ -81,14 +98,13 @@ class VersionsOptionsMenu extends React.Component {
                     iconButtonElement={<IconButton iconClassName="material-icons" style={{marginRight: -10}}>more_vert</IconButton>}
                     anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                     targetOrigin={{horizontal: 'right', vertical: 'top'}}>
-                    <MenuItem primaryText="Delete Version" leftIcon={<i className="material-icons">delete</i>}
-                              onTouchTap={this.handleTouchTapDelete.bind(this)}/>
-                    <MenuItem primaryText="Edit Version Label" leftIcon={<i className="material-icons">mode_edit</i>}
-                              onTouchTap={this.handleTouchTapEdit.bind(this)}/>
+                    { menu }
                 </IconMenu>
             </div>
         );
-    };
+    }
+
+;
 
     handleTouchTapDelete() {
         this.setState({deleteOpen: true})
@@ -103,7 +119,7 @@ class VersionsOptionsMenu extends React.Component {
         let parentId = this.props.entityObj ? this.props.entityObj.file.id : null;
         ProjectActions.deleteVersion(id);
         this.setState({deleteOpen: false});
-        setTimeout(()=>this.props.appRouter.transitionTo('/file' +'/'+ parentId), 500)
+        setTimeout(()=>this.props.appRouter.transitionTo('/file' + '/' + parentId), 500)
     }
 
 

@@ -3,6 +3,7 @@ const { object, bool, array, string } = PropTypes;
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import VersionOptionsMenu from './versionOptionsMenu.jsx';
+import ErrorModal from '../../components/globalComponents/errorModal.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import urlGen from '../../../util/urlGen.js';
 import Tooltip from '../../../util/tooltip.js';
@@ -15,6 +16,21 @@ class VersionDetails extends React.Component {
         if (this.props.error && this.props.error.response){
             this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
             this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
+        }
+        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
+        let dlButton = null;
+        let optionsMenu = null;
+        if (prjPrm !== null) {
+            dlButton = prjPrm === 'viewOnly' || prjPrm === 'flUpload' ? null :
+                <button
+                    title="Download File"
+                    rel="tooltip"
+                    className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab mdl-button--colored"
+                    style={styles.floatingButton}
+                    onTouchTap={() => this.handleDownload()}>
+                    <i className="material-icons">get_app</i>
+                </button>;
+            optionsMenu = prjPrm === 'prjCrud' || prjPrm === 'flCrud' || prjPrm === 'flUpload' ? optionsMenu = <VersionOptionsMenu {...this.props} /> : null;
         }
         let loading = this.props.loading ?
             <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
@@ -47,7 +63,7 @@ class VersionDetails extends React.Component {
             <div id="tooltip"></div>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <div style={styles.menuIcon}>
-                    <VersionOptionsMenu {...this.props} {...this.state}/>
+                    { optionsMenu }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
                     <a href={urlGen.routes.file(parentId)} style={styles.back}
@@ -152,7 +168,8 @@ class VersionDetails extends React.Component {
         </Card>;
         return (
             <div>
-                {version}
+                { version }
+                <ErrorModal {...this.props}/>
                 <Loaders {...this.props}/>
             </div>
         )

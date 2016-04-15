@@ -3,6 +3,7 @@ const { object, bool, array, string } = PropTypes;
 import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
+import ErrorModal from '../../components/globalComponents/errorModal.jsx';
 import FileOptionsMenu from './fileOptionsMenu.jsx';
 import FileVersionsList from './fileVersionsList.jsx';
 import VersionUpload from './versionUpload.jsx';
@@ -20,6 +21,21 @@ class FileDetails extends React.Component {
         if (this.props.error && this.props.error.response){
             this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
             this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
+        }
+        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
+        let dlButton = null;
+        let optionsMenu = null;
+        if (prjPrm !== null) {
+            dlButton = prjPrm === 'viewOnly' || prjPrm === 'flUpload' ? null :
+                <button
+                    title="Download File"
+                    rel="tooltip"
+                    className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab mdl-button--colored"
+                    style={styles.floatingButton}
+                    onTouchTap={() => this.handleDownload()}>
+                    <i className="material-icons">get_app</i>
+                </button>;
+            optionsMenu = prjPrm === 'prjCrud' || prjPrm === 'flCrud' || prjPrm === 'flUpload' ? optionsMenu = <FileOptionsMenu {...this.props} /> : null;
         }
         let id = this.props.params.id;
         let ancestors = this.props.entityObj ? this.props.entityObj.ancestors : null;
@@ -58,18 +74,11 @@ class FileDetails extends React.Component {
         Tooltip.bindEvents();
 
         let file = <Card className="project-container mdl-color--white content mdl-color-text--grey-800" style={styles.container}>
-            <button
-                title="Download File"
-                rel="tooltip"
-                className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab mdl-button--colored"
-                style={styles.floatingButton}
-                onTouchTap={this.handleDownload.bind(this)}>
-                <i className="material-icons">get_app</i>
-            </button>
+            { dlButton }
             <div id="tooltip"></div>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <div style={styles.menuIcon}>
-                    <FileOptionsMenu {...this.props} {...this.state}/>
+                    { optionsMenu }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
                     <a href={'/#/' + BaseUtils.getUrlPath(parentKind) + parentId } style={styles.back}
@@ -92,7 +101,7 @@ class FileDetails extends React.Component {
                 <FileVersionsList {...this.props}/>
                 <VersionUpload {...this.props}/>
                 <div style={styles.uploadProg}>
-                    { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
+                    { this.props.uploads ? <Loaders {...this.props}/> : null }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     <div className="list-block">
@@ -192,6 +201,7 @@ class FileDetails extends React.Component {
         </Card>;
         return (
             <div>
+                <ErrorModal {...this.props}/>
                 {file}
             </div>
         )
@@ -199,8 +209,7 @@ class FileDetails extends React.Component {
 
     handleDownload(){
         let id = this.props.params.id;
-        let kind = 'files/';
-        ProjectActions.getDownloadUrl(id, kind);
+        ProjectActions.getDownloadUrl(id);
     }
 
     openModal() {
@@ -281,7 +290,6 @@ FileDetails.contextTypes = {
 };
 
 FileDetails.propTypes = {
-    project: object.isRequired,
     loading: bool,
     details: array,
     error: object
