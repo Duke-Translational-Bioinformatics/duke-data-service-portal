@@ -111,18 +111,6 @@ var styles = {
         marginRight: -20,
         marginTop: 16
     },
-    deleteIcon: {
-        fontSize: 18,
-        color: '#F44336',
-        verticalAlign: -5
-
-    },
-    settingsIcon: {
-        fontSize: 18,
-        color: '#235F9C',
-        verticalAlign: -5,
-        marginLeft: 16
-    },
     summary: {
         float: 'left',
         textAlign: 'left'
@@ -131,9 +119,6 @@ var styles = {
         align: 'center',
         clear: 'both',
         textAlign: 'right'
-    },
-    textStyles: {
-        textAlign: 'left'
     },
     moreDetails: {
         textAlign: 'left'
@@ -153,13 +138,6 @@ var styles = {
     back: {
         verticalAlign: -2
     },
-    floatingButton: {
-        position: 'absolute',
-        top: -20,
-        right: '2%',
-        zIndex: '2',
-        color: '#ffffff'
-    },
     span: {
         color: '#212121'
     }
@@ -170,7 +148,7 @@ ProjectDetails.contextTypes = {
 };
 
 ProjectDetails.propTypes = {
-    details: React.PropTypes.array
+    project: React.PropTypes.object
 };
 
 export default ProjectDetails;
