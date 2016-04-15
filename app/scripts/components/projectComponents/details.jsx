@@ -19,10 +19,11 @@ class Details extends React.Component {
     constructor() {
         this.state = {
             deleteModal: false,
+            errorText: null,
             memberModal: false,
             userId: null,
             userName: null,
-            value: 0
+            value: null
         }
     }
     render() {
@@ -32,7 +33,7 @@ class Details extends React.Component {
                 secondary={true}
                 onTouchTap={() => this.handleClose()}/>,
             <FlatButton
-                label="DELETE"
+                label="REMOVE"
                 secondary={true}
                 keyboardFocused={true}
                 onTouchTap={() => this.handleDeleteButton()}/>
@@ -61,10 +62,10 @@ class Details extends React.Component {
         let members = users.map((users)=> {
             return <li key={users.user.id}>
                 <div style={styles.iconContainer}>
-                    <a href="#" onTouchTap={() => this.handleTouchTap(users.user.id, users.user.full_name)} style={{marginRight: 0}}>
+                    <a href="#" onTouchTap={() => this.handleTouchTapDelete(users.user.id, users.user.full_name)} style={{marginRight: 0}}>
                         {users.user.id != currentUserId && users.user.id != createdById && prjPrm === 'prjCrud' ? <i className="material-icons" style={styles.deleteIcon}>cancel</i> : ''}</a>
-                    <a href="#" onTouchTap={() => this.handleTouchTapMembers(users.user.id, users.user.full_name)}>
-                        {users.user.id != currentUserId && users.user.id != createdById && prjPrm === 'prjCrud' ? <i className="material-icons" style={styles.settingsIcon}>settings</i> : ''}</a>
+                    <a href="#" onTouchTap={() => this.handleTouchTapRoles(users.user.id, users.user.full_name)}>
+                        {users.user.id != currentUserId && prjPrm === 'prjCrud' ? <i className="material-icons" style={styles.settingsIcon}>settings</i> : ''}</a>
                 </div>
                 <div className="item-content">
                     <div className="item-media"><i className="material-icons">face</i></div>
@@ -82,7 +83,7 @@ class Details extends React.Component {
             <div>
                 <Dialog
                     style={styles.dialogStyles}
-                    title="Are you sure you want to this member from the project?"
+                    title={'Remove ' +this.state.userName+ ' from this project?'}
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
                     actions={deleteActions}
@@ -91,15 +92,21 @@ class Details extends React.Component {
                     <i className="material-icons" style={styles.warning}>warning</i>
                 </Dialog>
                 <Dialog
+
                     style={styles.dialogStyles}
-                    title={"Change the project role for " + this.state.userName }
+                    title={"Change the project role for " + this.state.userName + '?' }
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
                     actions={memberActions}
                     onRequestClose={() => this.handleClose()}
                     open={this.state.memberModal}>
                     <form action="#" id="newMemberForm">
-                        <SelectField value={this.state.value} onChange={this.handleSelectValueChange.bind(this, 'value')} style={styles.textStyles}>
+                        <SelectField value={this.state.value}
+                                     onChange={this.handleSelectValueChange.bind(this, 'value')}
+                                     floatingLabelText="Project Role"
+                                     floatingLabelStyle={{color: '#757575'}}
+                                     errorText={this.state.errorText}
+                                     style={styles.textStyles}>
                             <MenuItem value={0} primaryText='Project Administrator'/>
                             <MenuItem value={1} primaryText='Project Viewer'/>
                             <MenuItem value={2} primaryText='File Downloader'/>
@@ -147,7 +154,7 @@ class Details extends React.Component {
         )
     }
 
-    handleTouchTap(userId, userName){
+    handleTouchTapDelete(userId, userName){
         this.setState({
             deleteModal: true,
             userId: userId,
@@ -155,7 +162,7 @@ class Details extends React.Component {
         });
     }
 
-    handleTouchTapMembers(userId, userName) {
+    handleTouchTapRoles(userId, userName) {
         this.setState({
             memberModal: true,
             userId: userId,
@@ -164,12 +171,15 @@ class Details extends React.Component {
     }
 
     handleSelectValueChange (event, index, value) {
-        this.setState({value});
+        this.setState({
+            value,
+            errorText: null
+        });
     }
 
     handleDeleteButton() {
         let id = this.props.params.id;
-        let  name = this.state.userName;
+        let name = this.state.userName;
         let userId = this.state.userId;
         ProjectActions.deleteProjectMember(id, userId, name);
         this.setState({
@@ -179,19 +189,9 @@ class Details extends React.Component {
         });
     }
 
-    handleClose() {
-        this.setState({
-            deleteModal: false,
-            userId: null,
-            userName: null,
-            memberModal: false,
-            value: 0
-        });
-    }
-
-    handleMemberButton() {
+    handleMemberButton(currentUser) {
         let id = this.props.params.id;
-        let  name = this.state.userName;
+        let name = this.state.userName;
         let userId = this.state.userId;
         let role = null;
         switch(this.state.value){
@@ -211,13 +211,29 @@ class Details extends React.Component {
                 role = 'file_editor';
                 break;
         }
-        ProjectActions.addProjectMember(id, userId, role, name);
-        this.setState({
-            memberModal: false,
-            value: 1
-        });
+        if(this.state.value !== null) {
+            ProjectActions.addProjectMember(id, userId, role, name);
+            this.setState({
+                memberModal: false,
+                value: null
+            });
+        } else {
+            this.setState({
+                errorText: 'Select a project role'
+            });
+        }
+    }
 
-    };
+    handleClose() {
+        this.setState({
+            deleteModal: false,
+            errorText: null,
+            userId: null,
+            userName: null,
+            memberModal: false,
+            value: null
+        });
+    }
 }
 
 
@@ -247,7 +263,6 @@ var styles = {
     },
     warning: {
         fontSize: 48,
-        textAlign: 'center',
         color: '#F44336'
     }
 
