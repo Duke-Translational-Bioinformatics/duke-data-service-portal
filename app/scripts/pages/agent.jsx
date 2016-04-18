@@ -66,10 +66,10 @@ class Agent extends React.Component {
                         <i className="material-icons"
                            style={styles.backIcon}>keyboard_backspace</i>Back</a>
                 </div>
-                <div className="mdl-cell mdl-cell--6-col mdl-cell--4-col-tablet mdl-cell--4-col-phone">
+                <div className="mdl-cell mdl-cell--9-col mdl-cell--8-col-tablet mdl-cell--4-col-phone">
                     <p className="mdl-color-text--grey-800" style={styles.title}><i className="material-icons" style={styles.icon}>laptop_mac</i>{name}</p>
                 </div>
-                <div className="mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-color-text--grey-600">
+                <div className="mdl-cell mdl-cell--9-col mdl-cell--8-col-tablet mdl-color-text--grey-600">
                     <p style={styles.subTitle}>{ description }</p>
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
