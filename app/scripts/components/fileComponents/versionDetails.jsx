@@ -71,14 +71,14 @@ class VersionDetails extends React.Component {
                         <i className="material-icons"
                            style={styles.backIcon}>keyboard_backspace</i>Back</a>
                 </div>
-                <div className="mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
+                <div className="mdl-cell mdl-cell--9-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
                     <span className="mdl-color-text--grey-800" style={styles.title}>{ name }</span>
                 </div>
                 <div className="mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.path}>
                     <span style={styles.spanTitle}>{ 'Version: ' + versNumber }</span>
                 </div>
                 {label != null ? <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
-                    <span className="mdl-color-text--grey-600" style={styles.label}>{label}</span>
+                    <span className="mdl-color-text--grey-600">{label}</span>
                 </div> : null}
                 <div className="mdl-cell mdl-cell--12-col content-block"  style={styles.list}>
                     <div className="list-block">
@@ -225,17 +225,14 @@ var styles = {
     },
     detailsTitle: {
         textAlign: 'left',
-        float: 'left'
+        float: 'left',
+        marginLeft: 26
     },
     spanTitle: {
         fontSize: '1.2em'
     },
     title: {
-        fontSize: 24,
-        marginLeft: 18
-    },
-    label: {
-        marginLeft: 18
+        fontSize: 24
     },
     floatingButton: {
         position: 'absolute',
