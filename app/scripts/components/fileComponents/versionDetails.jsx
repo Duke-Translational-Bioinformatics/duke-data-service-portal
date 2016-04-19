@@ -52,14 +52,7 @@ class VersionDetails extends React.Component {
         Tooltip.bindEvents();
 
         let version = <Card className="project-container mdl-color--white content mdl-color-text--grey-800" style={styles.container}>
-            <button
-                title="Download This Version"
-                rel="tooltip"
-                className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab mdl-button--colored"
-                style={styles.floatingButton}
-                onTouchTap={this.handleDownload.bind(this)}>
-                <i className="material-icons">get_app</i>
-            </button>
+            { dlButton }
             <div id="tooltip"></div>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <div style={styles.menuIcon}>
