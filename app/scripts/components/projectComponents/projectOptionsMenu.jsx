@@ -77,7 +77,7 @@ class ProjectOptionsMenu extends React.Component {
                     onRequestClose={this.handleClose.bind(this)}
                     open={this.state.deleteOpen}>
                     <i className="material-icons" style={styles.warning}>warning</i>
-                    <p style={styles.msg}>Deleting this project will also delete any folders or files contained inside of the project. As a failsafe, you must enter the project name exactly in the form below before you can delete this project.</p>
+                    <p style={styles.msg}>Deleting this project will also delete any folders or files contained inside of the project. As a fail-safe, you must enter the project name exactly in the form below before you can delete this project.</p>
                     <TextField
                         style={styles.textStyles}
                         errorText={this.state.floatingErrorText3}
@@ -290,7 +290,6 @@ class ProjectOptionsMenu extends React.Component {
             floatingErrorText2: 'This field is required',
             floatingErrorText3: 'Enter the project name exactly to delete',
             memberOpen: false,
-            selectValue: 'project_admin',
             value: null
         });
     };
