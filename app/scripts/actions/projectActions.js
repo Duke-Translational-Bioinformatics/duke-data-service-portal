@@ -834,8 +834,8 @@ ProjectActions.deleteProjectMember.preEmit = (id, userId, userName) => {
         });
 };
 
-ProjectActions.getDownloadUrl.preEmit = function (id) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/' + id + '/url', {
+ProjectActions.getDownloadUrl.preEmit = function (id, kind) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + kind + id + '/url', {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
