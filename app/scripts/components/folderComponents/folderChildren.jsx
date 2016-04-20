@@ -28,11 +28,6 @@ class FolderChildren extends React.Component {
         let type = 'hidden';
         let newFolderModal = null;
         if (prjPrm !== null) {
-            download = prjPrm === 'viewOnly' || prjPrm === 'flUpload' ? <div style={styles.fillerDiv}></div> :
-                <a className="mdl-button mdl-js-button mdl-button--icon external" style={styles.dlIcon}
-                   onTouchTap={() => this.handleDownload(children.id)}>
-                    <i className="material-icons">get_app</i>
-                </a>;
             newFolderModal = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <AddFolderModal {...this.props}/>;
             if (prjPrm !== 'viewOnly' && prjPrm !== 'flUpload') {
                 type = 'checkbox';
@@ -91,7 +86,11 @@ class FolderChildren extends React.Component {
             } else {
                 return (
                     <li key={ children.id } className="hover">
-                        { download }
+                        { prjPrm === 'viewOnly' || prjPrm === 'flUpload' ? <div style={styles.fillerDiv}></div> :
+                            <a className="mdl-button mdl-js-button mdl-button--icon external" style={styles.dlIcon}
+                               onTouchTap={() => this.handleDownload(children.id)}>
+                                <i className="material-icons">get_app</i>
+                            </a> }
                         <a href={urlGen.routes.file(children.id)}
                            className="item-content external">
                             <label className="label-checkbox item-content"  style={styles.checkboxLabel} onClick={e => this.change()}>
@@ -173,14 +172,13 @@ class FolderChildren extends React.Component {
                 foldersChecked.push(folderInput[i].value);
             }
         }
-
         ProjectActions.handleBatch(filesChecked, foldersChecked);
-
         if (!checkedBoxes.length) ProjectActions.showBatchOptions();
     }
 
     handleDownload(id) {
-        ProjectActions.getDownloadUrl(id);
+        let kind = 'files/';
+        ProjectActions.getDownloadUrl(id, kind);
     }
 
     loadMore() {
