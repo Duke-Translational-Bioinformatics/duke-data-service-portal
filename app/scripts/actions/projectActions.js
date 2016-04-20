@@ -988,7 +988,7 @@ function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKi
 
     xhr.open('PUT', presignedUrl, true);
     xhr.send(chunkBlob);
-};
+}
 
 ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentKind, fileName, label, fileId) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'uploads/' + uploadId + '/complete', {
