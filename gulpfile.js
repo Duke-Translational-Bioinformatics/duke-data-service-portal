@@ -70,7 +70,7 @@ gulp.task('less', function() {
   return gulp.src(app + 'less/main_ext.less')
       .pipe($.less())
       .pipe($.autoprefixer({browsers: autoprefixerBrowsers}))
-      .pipe(isProduction ? $.cleanCSS() : $.util.noop())
+      .pipe(isProduction ? $.minifyCss() : $.util.noop())
       .pipe(gulp.dest(dist + 'css/'))
       .pipe($.size({ title : 'css' }));
 });
