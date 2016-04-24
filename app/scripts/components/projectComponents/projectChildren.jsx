@@ -81,7 +81,7 @@ class ProjectChildren extends React.Component {
                             <div className="item-inner">
                                 <div className="item-title-row">
                                     <div className="item-title mdl-color-text--grey-800"
-                                         style={styles.title}>{ children.name }</div>
+                                         style={styles.title}>{children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}</div>
                                 </div>
                                 <div className="item-subtitle mdl-color-text--grey-600">ID: { children.id }</div>
                                 <div className="item-after" style={styles.check}>
@@ -95,10 +95,10 @@ class ProjectChildren extends React.Component {
                 return (
                     <li key={ children.id } className="hover">
                         { prjPrm === 'viewOnly' || prjPrm === 'flUpload' ? <div style={styles.fillerDiv}></div> :
-                        <a className="mdl-button mdl-js-button mdl-button--icon external" style={styles.dlIcon}
-                           onTouchTap={() => this.handleDownload(children.id)}>
-                            <i className="material-icons">get_app</i>
-                        </a> }
+                            <a className="mdl-button mdl-js-button mdl-button--icon external" style={styles.dlIcon}
+                               onTouchTap={() => this.handleDownload(children.id)}>
+                                <i className="material-icons">get_app</i>
+                            </a> }
                         <a href={urlGen.routes.file(children.id)}
                            className="item-content external">
                             <label className="label-checkbox item-content" style={styles.checkboxLabel}
@@ -107,14 +107,13 @@ class ProjectChildren extends React.Component {
                                        id={children.id}/>
                                 { chkBx }
                             </label>
-
                             <div className="item-media">
                                 <i className="material-icons" style={styles.icon}>description</i>
                             </div>
                             <div className="item-inner">
                                 <div className="item-title-row">
                                     <div className="item-title mdl-color-text--grey-800"
-                                         style={styles.title}>{children.name.length > 22 ? children.name.substring(0, 22) + '...' : children.name}</div>
+                                         style={styles.title}>{children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}</div>
                                 </div>
                                 <div className="item-subtitle mdl-color-text--grey-600">ID: {children.id}</div>
                             </div>

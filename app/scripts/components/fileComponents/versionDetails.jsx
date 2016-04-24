@@ -70,7 +70,7 @@ class VersionDetails extends React.Component {
                 <div className="mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.path}>
                     <span style={styles.spanTitle}>{ 'Version: ' + versNumber }</span>
                 </div>
-                {label != null ? <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
+                { label != null ? <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
                     <span className="mdl-color-text--grey-600">{label}</span>
                 </div> : null}
                 <div className="mdl-cell mdl-cell--12-col content-block"  style={styles.list}>
@@ -225,7 +225,8 @@ var styles = {
         fontSize: '1.2em'
     },
     title: {
-        fontSize: 24
+        fontSize: 24,
+        wordWrap: 'break-word'
     },
     floatingButton: {
         position: 'absolute',

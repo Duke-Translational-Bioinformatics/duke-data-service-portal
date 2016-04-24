@@ -87,13 +87,13 @@ class FileDetails extends React.Component {
                            style={styles.backIcon}>keyboard_backspace</i>Back</a>
                 </div>
                 <div className="mdl-cell mdl-cell--9-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
-                    <span className="mdl-color-text--grey-800" style={styles.title}>{name}</span>
+                    <span className="mdl-color-text--grey-800" style={styles.title}>{ name }</span>
                 </div>
-                {label != null ? <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
-                    <span className="mdl-color-text--grey-600">{label}</span>
+                { label != null ? <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
+                    <span className="mdl-color-text--grey-600">{ label }</span>
                 </div> : null}
                 <div className="mdl-cell mdl-cell--8-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.path}>
-                    <span style={styles.spanTitle}>{BaseUtils.getFilePath(ancestors) + name}</span>
+                    <span style={styles.spanTitle}>{ BaseUtils.getFilePath(ancestors) + name }</span>
                 </div>
                 <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.btnWrapper}>
                     { versionsButton }
@@ -190,7 +190,7 @@ class FileDetails extends React.Component {
                                 <li className="list-group-title">File Path</li>
                                 <li className="item-content">
                                     <div className="item-inner">
-                                        <div>{ BaseUtils.getFilePath(ancestors) + name}</div>
+                                        <div>{BaseUtils.getFilePath(ancestors) + name}</div>
                                     </div>
                                 </li>
                             </ul>
@@ -276,7 +276,8 @@ var styles = {
         fontSize: '1.2em'
     },
     title: {
-        fontSize: 24
+        fontSize: 24,
+        wordWrap: 'break-word'
     },
     uploadProg: {
         marginBottom: -35
