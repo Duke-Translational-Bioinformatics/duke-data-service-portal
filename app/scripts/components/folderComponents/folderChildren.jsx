@@ -76,7 +76,8 @@ class FolderChildren extends React.Component {
                             </div>
                             <div className="item-inner">
                                 <div className="item-title-row">
-                                    <div className="item-title mdl-color-text--grey-800" style={styles.title}>{ children.name }</div>
+                                    <div className="item-title mdl-color-text--grey-800"
+                                         style={styles.title}>{children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}</div>
                                 </div>
                                 <div className="item-subtitle mdl-color-text--grey-600">ID: { children.id }</div>
                             </div>
@@ -103,9 +104,8 @@ class FolderChildren extends React.Component {
                             </div>
                             <div className="item-inner" >
                                 <div className="item-title-row">
-                                    <div className="item-title mdl-color-text--grey-800" style={styles.title}>
-                                        {children.name.length > 22 ? children.name.substring(0,22)+'...' : children.name}
-                                    </div>
+                                    <div className="item-title mdl-color-text--grey-800"
+                                         style={styles.title}>{children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}</div>
                                 </div>
                                 <div className="item-subtitle mdl-color-text--grey-600">ID: {children.id}</div>
                             </div>
