@@ -4,6 +4,7 @@ import MainActions from '../../actions/mainActions';
 import ProjectDetails from './projectDetails.jsx';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
+import BaseUtils from '../../../util/baseUtils.js';
 import BatchOps from '../../components/globalComponents/batchOps.jsx';
 import ErrorModal from '../../components/globalComponents/errorModal.jsx';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
@@ -83,10 +84,8 @@ class ProjectChildren extends React.Component {
                                     <div className="item-title mdl-color-text--grey-800"
                                          style={styles.title}>{children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}</div>
                                 </div>
-                                <div className="item-subtitle mdl-color-text--grey-600">ID: { children.id }</div>
-                                <div className="item-after" style={styles.check}>
-
-                                </div>
+                                <div className="item-subtitle mdl-color-text--grey-600">created by: { children.audit.created_by.full_name }</div>
+                                <div className="item-subtitle mdl-color-text--grey-600">last updated: {children.audit.last_updated_on ? new Date(children.audit.last_updated_on).toString() : 'n/a'}</div>
                             </div>
                         </a>
                     </li>
@@ -115,7 +114,8 @@ class ProjectChildren extends React.Component {
                                     <div className="item-title mdl-color-text--grey-800"
                                          style={styles.title}>{children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}</div>
                                 </div>
-                                <div className="item-subtitle mdl-color-text--grey-600">ID: {children.id}</div>
+                                <div className="item-subtitle mdl-color-text--grey-600">size: {BaseUtils.bytesToSize(children.upload.size)}</div>
+                                <div className="item-subtitle mdl-color-text--grey-600">last updated: {children.audit.last_updated_on ? new Date(children.audit.last_updated_on).toString() : 'n/a'}</div>
                             </div>
                         </a>
                     </li>
@@ -205,8 +205,7 @@ ProjectChildren.contextTypes = {
 var styles = {
     checkBox: {
         width: 16,
-        height: 16,
-        marginBottom: 21
+        height: 16
     },
     checkboxLabel: {
         borderRadius: 35,
@@ -216,7 +215,7 @@ var styles = {
         float: 'right',
         fontSize: 18,
         color: '#EC407A',
-        marginTop: 6,
+        marginTop: 28,
         marginLeft: 15,
         padding: '08px 08px 08px 08px',
         zIndex: 100
@@ -230,7 +229,7 @@ var styles = {
     },
     icon: {
         fontSize: 36,
-        marginTop: 4
+        marginTop: 20
 
     },
     list: {
