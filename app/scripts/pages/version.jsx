@@ -45,7 +45,7 @@ class Version extends React.Component {
             let kind = 'files';
             let fileId = this.state.entityObj && this.state.entityObj.file ? this.state.entityObj.file.id : null;
             let userId = this.props.currentUser && this.props.currentUser.id ? this.props.currentUser.id : null;
-            if (Object.keys(this.state.projPermissions).length === 0 && JSON.stringify(this.state.projPermissions) === JSON.stringify({})) ProjectActions.getVersionPermissions(fileId, kind, userId);
+            if (this.state.projPermissions === null) ProjectActions.getVersionPermissions(fileId, kind, userId);
         }
         return (
             <div>
