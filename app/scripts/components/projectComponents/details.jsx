@@ -26,6 +26,7 @@ class Details extends React.Component {
             value: null
         }
     }
+
     render() {
         const deleteActions = [
             <FlatButton
@@ -54,8 +55,10 @@ class Details extends React.Component {
         let currentUserId = this.props.currentUser ? this.props.currentUser.id : null;
         let description = this.props.project ? this.props.project.description : null;
         let projectId =  this.props.project ? this.props.project.id : null;
-        let lastUpdatedOn = this.props.project && this.props.project.audit ? this.props.project.audit.last_updated_on : null;
         let lastUpdatedBy = this.props.project && this.props.project.audit ? this.props.project.audit.last_updated_by : null;
+        let lstUpdtOn = this.props.project && this.props.project.audit ? this.props.project.audit.last_updated_on : null;
+        let x = new Date(lstUpdtOn);
+        let lastUpdatedOn = x.toString();
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
         let users = this.props.projectMembers ? this.props.projectMembers : null;
 
