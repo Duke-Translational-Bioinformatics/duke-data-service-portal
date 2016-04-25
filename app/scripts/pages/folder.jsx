@@ -17,8 +17,8 @@ class Folder extends React.Component {
             loading: false,
             moveModal: ProjectStore.moveModal,
             moveErrorModal: ProjectStore.moveErrorModal,
-            project: ProjectStore.project,
-            uploads: ProjectStore.uploads
+            uploads: ProjectStore.uploads,
+            projPermissions: ProjectStore.projPermissions
         };
     }
 
@@ -47,6 +47,11 @@ class Folder extends React.Component {
     }
 
     render() {
+        if(this.state.entityObj && this.props.currentUser && this.props.currentUser.id) {
+            let projId = this.state.entityObj && this.state.entityObj.project ? this.state.entityObj.project.id : null;
+            let userId = this.props.currentUser && this.props.currentUser.id ? this.props.currentUser.id : null;
+            if (Object.keys(this.state.projPermissions).length === 0 && JSON.stringify(this.state.projPermissions) === JSON.stringify({})) ProjectActions.getPermissions(projId, userId);
+        }
         return (
             <div>
                 <FolderPath {...this.state} {...this.props} />

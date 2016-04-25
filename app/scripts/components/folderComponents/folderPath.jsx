@@ -22,14 +22,21 @@ class FolderPath extends React.Component {
         let parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : null;
         let parentId = this.props.entityObj ? this.props.entityObj.parent.id : null;
         let name = this.props.entityObj ? this.props.entityObj.name : null;
+        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
+        let uploadMdl = null;
+        let optionsMenu = null;
+        if (prjPrm !== null) {
+            uploadMdl = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <UploadModal {...this.props}/>;
+            optionsMenu = prjPrm === 'prjCrud' || prjPrm === 'flCrud' ? optionsMenu = <FolderOptionsMenu {...this.props} /> : null;
+        }
 
         return (
             <Card className="project-container group mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800"
                  style={styles.container}>
-                <UploadModal {...this.props} />
+                { uploadMdl }
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div style={styles.menuIcon}>
-                        <FolderOptionsMenu {...this.props} />
+                        { optionsMenu }
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
                         <a href={'/#/' + BaseUtils.getUrlPath(parentKind) + parentId }

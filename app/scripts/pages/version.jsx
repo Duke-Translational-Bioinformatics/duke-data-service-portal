@@ -12,9 +12,9 @@ class Version extends React.Component {
             error: ProjectStore.error,
             errorModal: ProjectStore.errorModal,
             loading: false,
-            project: ProjectStore.project,
             moveModal: ProjectStore.moveModal,
-            moveErrorModal: ProjectStore.moveErrorModal
+            moveErrorModal: ProjectStore.moveErrorModal,
+            projPermissions: ProjectStore.projPermissions
         };
     }
 
@@ -41,6 +41,12 @@ class Version extends React.Component {
     }
 
     render() {
+        if(this.state.entityObj && this.props.currentUser && this.props.currentUser.id) {
+            let kind = 'files';
+            let fileId = this.state.entityObj && this.state.entityObj.file ? this.state.entityObj.file.id : null;
+            let userId = this.props.currentUser && this.props.currentUser.id ? this.props.currentUser.id : null;
+            if (Object.keys(this.state.projPermissions).length === 0 && JSON.stringify(this.state.projPermissions) === JSON.stringify({})) ProjectActions.getVersionPermissions(fileId, kind, userId);
+        }
         return (
             <div>
                 <VersionDetails {...this.props} {...this.state}/>

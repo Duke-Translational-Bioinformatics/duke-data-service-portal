@@ -35,6 +35,14 @@ class BatchOps extends React.Component {
         }else{
             dlMsg = "Are you sure you want to download "+this.props.filesChecked.length+" file?"
         }
+        let dltIcon = null;
+        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
+        if (prjPrm !== null) {
+            dltIcon = prjPrm === 'flDownload' ? null :
+                <IconButton onTouchTap={this.openDeleteModal.bind(this)} style={styles.deleteBtn}>
+                    <DeleteIcon color={'#EC407A'}/>
+                </IconButton>;
+        }
 
         const deleteActions = [
             <FlatButton
@@ -73,9 +81,7 @@ class BatchOps extends React.Component {
             <Card style={styles.card}>
                 <h6 style={styles.numSelected}>{this.props.itemsSelected}  selected</h6>
                 <div style={styles.iconBtn} title="Delete selected items">
-                    <IconButton onTouchTap={this.openDeleteModal.bind(this)} style={styles.deleteBtn}>
-                        <DeleteIcon color={'#EC407A'}/>
-                    </IconButton>
+                    { dltIcon }
                 </div>
                 <div style={styles.iconBtn} title="Download files">
                     <IconButton onTouchTap={this.openDownloadModal.bind(this)} style={styles.downloadBtn}>
@@ -123,10 +129,11 @@ class BatchOps extends React.Component {
     }
 
     handleDownload() {
+        let kind = 'files/';
         let files = this.props.filesChecked ? this.props.filesChecked : null;
         let folders = this.props.foldersChecked ? this.props.foldersChecked : null;
         for (let i = 0; i < files.length; i++) {
-            ProjectActions.getDownloadUrl(files[i]);
+            ProjectActions.getDownloadUrl(files[i], kind);
             document.getElementById(files[i]).checked = false;
         }
         this.setState({downloadOpen: false});
@@ -181,7 +188,8 @@ let styles = {
         marginTop: 28,
         padding: '0 auto',
         backgroundColor:'#ECEFF1',
-        minHeight: 36
+        minHeight: 36,
+        maxWidth: '98.5%'
     },
     dialogStyles: {
         textAlign: 'center',

@@ -29,6 +29,7 @@ var ProjectStore = Reflux.createStore({
         this.parent = {};
         this.projects = [];
         this.project = {};
+        this.projPermissions = {};
         this.projectMembers = [];
         this.showBatchOps = false;
         this.uploadCount = [];
@@ -283,10 +284,23 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    getUserSuccess (json) {
+    getUserSuccess (json, id) {
         this.currentUser = json;
+        ProjectActions.getPermissions(id, json.id);
         this.trigger({
             currentUser: this.currentUser
+        });
+    },
+
+    getPermissionsSuccess (json) {
+        let id = json.auth_role.id;
+        if(id === 'project_viewer') this.projPermissions = 'viewOnly';
+        if(id === 'project_admin' || id === 'system_admin') this.projPermissions = 'prjCrud';
+        if(id === 'file_editor') this.projPermissions = 'flCrud';
+        if(id === 'file_uploader') this.projPermissions = 'flUpload';
+        if(id === 'file_downloader') this.projPermissions = 'flDownload';
+        this.trigger({
+            projPermissions: this.projPermissions
         });
     },
 
@@ -674,8 +688,16 @@ var ProjectStore = Reflux.createStore({
 
     startUploadSuccess(uploadId, details) {
         this.uploads[uploadId] = details;
-        ProjectActions.hashFile(this.uploads[uploadId], uploadId)
+        ProjectActions.hashFile(this.uploads[uploadId], uploadId);
         ProjectActions.updateAndProcessChunks(uploadId, null, null);
+        window.onbeforeunload = function (e) {// If uploading files and user navigates away from page, send them warning
+            let preventLeave = true;
+            if(preventLeave){
+                return "If you refresh the page or close your browser, files being uploaded will be lost and you" +
+                    " will have to start again. Are" +
+                    " you sure you want to do this?";
+            }
+        };
         this.trigger({
             uploads: this.uploads
         })
@@ -737,19 +759,15 @@ var ProjectStore = Reflux.createStore({
             let chunk = chunks[i];
             if (chunk.chunkUpdates.status === StatusEnum.STATUS_WAITING_FOR_UPLOAD || chunk.chunkUpdates.status === StatusEnum.STATUS_RETRY) {
                 chunk.chunkUpdates.status = StatusEnum.STATUS_UPLOADING;
-                // If processing chunks and user navigates away from page, send them a warning
-                window.onbeforeunload = function (e) {
-                    return "If you refresh the page or close your browser, files being uploaded will be lost and you" +
-                        " will have to start again. Are" +
-                        " you sure you want to do this?";
-                };
-
                 ProjectActions.getChunkUrl(uploadId, upload.blob.slice(chunk.start, chunk.end), chunk.number, upload.size, upload.parentId, upload.parentKind, upload.name, chunk.chunkUpdates);
                 return;
             }
             if(chunk.chunkUpdates.status !== StatusEnum.STATUS_SUCCESS) allDone = false;
         }
         if (allDone === true)ProjectActions.allChunksUploaded(uploadId, upload.parentId, upload.parentKind, upload.name, upload.label, upload.fileId );
+        window.onbeforeunload = function (e) { // If done, set to false so no warning is sent.
+            let preventLeave = false;
+        };
     },
 
     uploadError(uploadId, fileName) {

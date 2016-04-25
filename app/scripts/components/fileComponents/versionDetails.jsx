@@ -3,6 +3,7 @@ const { object, bool, array, string } = PropTypes;
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import VersionOptionsMenu from './versionOptionsMenu.jsx';
+import ErrorModal from '../../components/globalComponents/errorModal.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import urlGen from '../../../util/urlGen.js';
 import Tooltip from '../../../util/tooltip.js';
@@ -15,6 +16,21 @@ class VersionDetails extends React.Component {
         if (this.props.error && this.props.error.response){
             this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
             this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
+        }
+        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
+        let dlButton = null;
+        let optionsMenu = null;
+        if (prjPrm !== null) {
+            dlButton = prjPrm === 'viewOnly' || prjPrm === 'flUpload' ? null :
+                <button
+                    title="Download File"
+                    rel="tooltip"
+                    className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab mdl-button--colored"
+                    style={styles.floatingButton}
+                    onTouchTap={() => this.handleDownload()}>
+                    <i className="material-icons">get_app</i>
+                </button>;
+            optionsMenu = prjPrm === 'prjCrud' || prjPrm === 'flCrud' || prjPrm === 'flUpload' ? optionsMenu = <VersionOptionsMenu {...this.props} /> : null;
         }
         let loading = this.props.loading ?
             <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
@@ -36,18 +52,11 @@ class VersionDetails extends React.Component {
         Tooltip.bindEvents();
 
         let version = <Card className="project-container mdl-color--white content mdl-color-text--grey-800" style={styles.container}>
-            <button
-                title="Download This Version"
-                rel="tooltip"
-                className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab mdl-button--colored"
-                style={styles.floatingButton}
-                onTouchTap={this.handleDownload.bind(this)}>
-                <i className="material-icons">get_app</i>
-            </button>
+            { dlButton }
             <div id="tooltip"></div>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <div style={styles.menuIcon}>
-                    <VersionOptionsMenu {...this.props} {...this.state}/>
+                    { optionsMenu }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
                     <a href={urlGen.routes.file(parentId)} style={styles.back}
@@ -55,14 +64,14 @@ class VersionDetails extends React.Component {
                         <i className="material-icons"
                            style={styles.backIcon}>keyboard_backspace</i>Back</a>
                 </div>
-                <div className="mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
+                <div className="mdl-cell mdl-cell--9-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
                     <span className="mdl-color-text--grey-800" style={styles.title}>{ name }</span>
                 </div>
                 <div className="mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.path}>
                     <span style={styles.spanTitle}>{ 'Version: ' + versNumber }</span>
                 </div>
-                {label != null ? <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
-                    <span className="mdl-color-text--grey-600" style={styles.label}>{label}</span>
+                { label != null ? <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
+                    <span className="mdl-color-text--grey-600">{label}</span>
                 </div> : null}
                 <div className="mdl-cell mdl-cell--12-col content-block"  style={styles.list}>
                     <div className="list-block">
@@ -152,7 +161,8 @@ class VersionDetails extends React.Component {
         </Card>;
         return (
             <div>
-                {version}
+                { version }
+                <ErrorModal {...this.props}/>
                 <Loaders {...this.props}/>
             </div>
         )
@@ -208,17 +218,15 @@ var styles = {
     },
     detailsTitle: {
         textAlign: 'left',
-        float: 'left'
+        float: 'left',
+        marginLeft: 26
     },
     spanTitle: {
         fontSize: '1.2em'
     },
     title: {
         fontSize: 24,
-        marginLeft: 18
-    },
-    label: {
-        marginLeft: 18
+        wordWrap: 'break-word'
     },
     floatingButton: {
         position: 'absolute',

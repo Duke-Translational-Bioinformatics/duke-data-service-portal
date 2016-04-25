@@ -3,6 +3,7 @@ const { object, bool, array, string } = PropTypes;
 import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
+import ErrorModal from '../../components/globalComponents/errorModal.jsx';
 import FileOptionsMenu from './fileOptionsMenu.jsx';
 import FileVersionsList from './fileVersionsList.jsx';
 import VersionUpload from './versionUpload.jsx';
@@ -20,6 +21,21 @@ class FileDetails extends React.Component {
         if (this.props.error && this.props.error.response){
             this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
             this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
+        }
+        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
+        let dlButton = null;
+        let optionsMenu = null;
+        if (prjPrm !== null) {
+            dlButton = prjPrm === 'viewOnly' || prjPrm === 'flUpload' ? null :
+                <button
+                    title="Download File"
+                    rel="tooltip"
+                    className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab mdl-button--colored"
+                    style={styles.floatingButton}
+                    onTouchTap={() => this.handleDownload()}>
+                    <i className="material-icons">get_app</i>
+                </button>;
+            optionsMenu = prjPrm === 'prjCrud' || prjPrm === 'flCrud' || prjPrm === 'flUpload' ? optionsMenu = <FileOptionsMenu {...this.props} /> : null;
         }
         let id = this.props.params.id;
         let ancestors = this.props.entityObj ? this.props.entityObj.ancestors : null;
@@ -58,18 +74,11 @@ class FileDetails extends React.Component {
         Tooltip.bindEvents();
 
         let file = <Card className="project-container mdl-color--white content mdl-color-text--grey-800" style={styles.container}>
-            <button
-                title="Download File"
-                rel="tooltip"
-                className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab mdl-button--colored"
-                style={styles.floatingButton}
-                onTouchTap={this.handleDownload.bind(this)}>
-                <i className="material-icons">get_app</i>
-            </button>
+            { dlButton }
             <div id="tooltip"></div>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <div style={styles.menuIcon}>
-                    <FileOptionsMenu {...this.props} {...this.state}/>
+                    { optionsMenu }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
                     <a href={'/#/' + BaseUtils.getUrlPath(parentKind) + parentId } style={styles.back}
@@ -77,14 +86,14 @@ class FileDetails extends React.Component {
                         <i className="material-icons"
                            style={styles.backIcon}>keyboard_backspace</i>Back</a>
                 </div>
-                <div className="mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
-                    <span className="mdl-color-text--grey-800" style={styles.title}>{name}</span>
+                <div className="mdl-cell mdl-cell--9-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
+                    <span className="mdl-color-text--grey-800" style={styles.title}>{ name }</span>
                 </div>
-                {label != null ? <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
-                    <span className="mdl-color-text--grey-600" style={styles.label}>{label}</span>
+                { label != null ? <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
+                    <span className="mdl-color-text--grey-600">{ label }</span>
                 </div> : null}
                 <div className="mdl-cell mdl-cell--8-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.path}>
-                    <span style={styles.spanTitle}>{BaseUtils.getFilePath(ancestors) + name}</span>
+                    <span style={styles.spanTitle}>{ BaseUtils.getFilePath(ancestors) + name }</span>
                 </div>
                 <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.btnWrapper}>
                     { versionsButton }
@@ -92,7 +101,7 @@ class FileDetails extends React.Component {
                 <FileVersionsList {...this.props}/>
                 <VersionUpload {...this.props}/>
                 <div style={styles.uploadProg}>
-                    { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
+                    { this.props.uploads ? <Loaders {...this.props}/> : null }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     <div className="list-block">
@@ -181,7 +190,7 @@ class FileDetails extends React.Component {
                                 <li className="list-group-title">File Path</li>
                                 <li className="item-content">
                                     <div className="item-inner">
-                                        <div>{ BaseUtils.getFilePath(ancestors) + name}</div>
+                                        <div>{BaseUtils.getFilePath(ancestors) + name}</div>
                                     </div>
                                 </li>
                             </ul>
@@ -192,6 +201,7 @@ class FileDetails extends React.Component {
         </Card>;
         return (
             <div>
+                <ErrorModal {...this.props}/>
                 {file}
             </div>
         )
@@ -237,7 +247,8 @@ var styles = {
     },
     detailsTitle: {
         textAlign: 'left',
-        float: 'left'
+        float: 'left',
+        marginLeft: 26
     },
     floatingButton: {
         position: 'absolute',
@@ -245,9 +256,6 @@ var styles = {
         right: '2%',
         zIndex: '2',
         color: '#ffffff'
-    },
-    label: {
-        marginLeft: 18
     },
     list: {
         paddingTop: 5,
@@ -269,7 +277,7 @@ var styles = {
     },
     title: {
         fontSize: 24,
-        marginLeft: 18
+        wordWrap: 'break-word'
     },
     uploadProg: {
         marginBottom: -35
@@ -281,7 +289,6 @@ FileDetails.contextTypes = {
 };
 
 FileDetails.propTypes = {
-    project: object.isRequired,
     loading: bool,
     details: array,
     error: object

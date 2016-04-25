@@ -16,53 +16,55 @@ class ProjectOptionsMenu extends React.Component {
         this.state = {
             deleteOpen: false,
             editOpen: false,
+            errorText: null,
             floatingErrorText: 'This field is required',
             floatingErrorText2: 'This field is required',
             floatingErrorText3: 'Enter the project name exactly to delete',
             memberOpen: false,
             users: ProjectStore.users,
-            value: 0
+            value: null
         }
     }
 
     render() {
+        let currentUser = this.props.currentUser ? this.props.currentUser.full_name : null;
+        let names = this.props.users && this.props.users.length ? this.props.users : [];
+        let prName = this.props.project ? this.props.project.name : null;
+        let desc = this.props.project ? this.props.project.description : null;
+
         let deleteActions = [
             <FlatButton
                 label="CANCEL"
                 secondary={true}
-                onTouchTap={this.handleClose.bind(this)} />,
+                onTouchTap={() => this.handleClose()} />,
             <FlatButton
                 label="DELETE"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={this.handleDeleteButton.bind(this)} />
+                onTouchTap={() => this.handleDeleteButton()} />
         ];
         let editActions = [
             <FlatButton
                 label="CANCEL"
                 secondary={true}
-                onTouchTap={this.handleClose.bind(this)} />,
+                onTouchTap={() => this.handleClose()} />,
             <FlatButton
                 label="UPDATE"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={this.handleUpdateButton.bind(this)} />
+                onTouchTap={() => this.handleUpdateButton()} />
         ];
         let memberActions = [
             <FlatButton
                 label="CANCEL"
                 secondary={true}
-                onTouchTap={this.handleClose.bind(this)} />,
+                onTouchTap={() => this.handleClose()} />,
             <FlatButton
                 label="ADD"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={this.handleMemberButton.bind(this)} />
+                onTouchTap={() => this.handleMemberButton(currentUser)} />
         ];
-
-        let names = this.props.users && this.props.users.length ? this.props.users : [];
-        let prName = this.props.project ? this.props.project.name : null;
-        let desc = this.props.project ? this.props.project.description : null;
 
         return (
             <div>
@@ -75,7 +77,7 @@ class ProjectOptionsMenu extends React.Component {
                     onRequestClose={this.handleClose.bind(this)}
                     open={this.state.deleteOpen}>
                     <i className="material-icons" style={styles.warning}>warning</i>
-                    <p style={styles.msg}>Deleting this project will also delete any folders or files contained inside of the project. As a failsafe, you must enter the project name exactly in the form below before you can delete this project.</p>
+                    <p style={styles.msg}>Deleting this project will also delete any folders or files contained inside of the project. As a fail-safe, you must enter the project name exactly in the form below before you can delete this project.</p>
                     <TextField
                         style={styles.textStyles}
                         errorText={this.state.floatingErrorText3}
@@ -133,11 +135,18 @@ class ProjectOptionsMenu extends React.Component {
                             dataSource={names}
                             errorText={this.state.floatingErrorText}
                             onUpdateInput={this.handleUpdateInput.bind(this)}/><br/>
-                        <SelectField value={this.state.value} onChange={this.handleSelectValueChange.bind(this, 'value')} style={styles.textStyles}>
+                        <SelectField value={this.state.value}
+                                     onChange={this.handleSelectValueChange.bind(this, 'value')}
+                                     floatingLabelText="Project Role"
+                                     floatingLabelStyle={{color: '#757575'}}
+                                     errorText={this.state.errorText}
+                                     errorStyle={styles.textStyles}
+                                     style={styles.textStyles}>
                             <MenuItem value={0} primaryText='Project Administrator'/>
                             <MenuItem value={1} primaryText='Project Viewer'/>
                             <MenuItem value={2} primaryText='File Downloader'/>
-                            <MenuItem value={3} primaryText='File Editor'/>
+                            <MenuItem value={3} primaryText='File Uploader'/>
+                            <MenuItem value={4} primaryText='File Editor'/>
                         </SelectField><br/>
                     </form>
                 </Dialog>
@@ -195,7 +204,10 @@ class ProjectOptionsMenu extends React.Component {
     };
 
     handleSelectValueChange (event, index, value) {
-        this.setState({value});
+        this.setState({
+            value,
+            errorText: null
+        });
     };
 
     handleUpdateInput (text) {
@@ -206,7 +218,7 @@ class ProjectOptionsMenu extends React.Component {
     };
 
 
-    handleMemberButton() {
+    handleMemberButton(currentUser) {
         let  fullName = document.getElementById("fullName").value;
         let role = null;
         switch(this.state.value){
@@ -220,19 +232,32 @@ class ProjectOptionsMenu extends React.Component {
                 role = 'file_downloader';
                 break;
             case 3:
+                role = 'file_uploader';
+                break;
+            case 4:
                 role = 'file_editor';
                 break;
         }
         let id = this.props.params.id;
-        if (this.state.floatingErrorText != '') {
+        if (this.state.floatingErrorText != '' || this.state.value === null) {
+            this.setState({
+                errorText: 'Select a project role'
+            });
             return null
-        } else {
+        }
+        if(currentUser === fullName){
+            this.setState({
+                floatingErrorText: "You can't add yourself or change your role"
+            });
+            return null
+        }
+        else {
             ProjectActions.getUserId(fullName, id, role);
             this.setState({
                 memberOpen: false,
                 floatingErrorText: 'This field is required.',
                 floatingErrorText2: 'This field is required.',
-                value: 1
+                value: null
             });
         }
     };
@@ -260,11 +285,12 @@ class ProjectOptionsMenu extends React.Component {
         this.setState({
             deleteOpen: false,
             editOpen: false,
-            memberOpen: false,
-            selectValue: 'project_admin',
+            errorText: null,
             floatingErrorText: 'This field is required.',
             floatingErrorText2: 'This field is required',
-            floatingErrorText3: 'Enter the project name exactly to delete'
+            floatingErrorText3: 'Enter the project name exactly to delete',
+            memberOpen: false,
+            value: null
         });
     };
 }
