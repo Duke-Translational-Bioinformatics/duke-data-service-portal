@@ -140,7 +140,7 @@ class VersionDetails extends React.Component {
                                 <li className="list-group-title">Last Updated On</li>
                                 <li className="item-content">
                                     <div className="item-inner">
-                                        <div>{ lastUpdatedOn === null ? 'N/A' : lastUpdatedOn }</div>
+                                        <div>{ lastUpdatedOn === null ? 'N/A' : new Date(lastUpdatedOn).toString() }</div>
                                     </div>
                                 </li>
                             </ul>
