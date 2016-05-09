@@ -50,6 +50,7 @@ class LeftMenu extends React.Component {
     }
 
     handleTouchTap() {
+        this.props.appRouter.transitionTo('/login');
         MainStore.handleLogout()
     }
 
