@@ -1,5 +1,5 @@
 import React from 'react';
-import { RouteHandler} from 'react-router';
+import { RouteHandler } from 'react-router';
 import MainStore from '../../stores/mainStore';
 import MainActions from '../../actions/mainActions';
 import urlGen from '../../../util/urlGen.js';
