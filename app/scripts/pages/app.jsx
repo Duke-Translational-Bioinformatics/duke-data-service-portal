@@ -61,12 +61,21 @@ class App extends React.Component {
         let toasts = null;
         if (this.state.toasts) {
             toasts = this.state.toasts.map(obj => {
-                return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} autoHideDuration={3000} onRequestClose={this.handleRequestClose.bind(this)}
+                return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} autoHideDuration={3000}
+                                 onRequestClose={this.handleRequestClose.bind(this)}
                                  open={true} style={styles.toast}/>
             });
         }
         let content = <RouteHandler {...this.props} {...this.state}/>;
         if (!this.state.appConfig.apiToken && !this.state.appConfig.isLoggedIn && this.props.routerPath !== '/login') {
+            if (location.hash != '' && location.hash != '#/login') {
+                let redUrl = location.href;
+                if (typeof(Storage) !== 'undefined') {
+                    localStorage.setItem('redirectTo', redUrl);
+                } else {
+                    this.props.appRouter.transitionTo('/login')
+                }
+            }
             this.props.appRouter.transitionTo('/login')
         }
         let search = '';
@@ -89,10 +98,11 @@ class App extends React.Component {
             <span>
                 <div className="statusbar-overlay"></div>
                 <div className="panel-overlay"></div>
-                {!this.state.appConfig.apiToken ? '' : <LeftMenu/>}
+                {!this.state.appConfig.apiToken ? '' : <LeftMenu {...this.props}/>}
                 <div className="views">
                     <div className="view view-main">
                         <Header {...this.props} {...this.state}/>
+
                         <div className="pages navbar-through toolbar-through">
                             <div data-page="index" className="page">
                                 {!this.state.appConfig.apiToken ? '' : search}
@@ -122,9 +132,11 @@ class App extends React.Component {
 
     }
 
-    handleRequestClose () {
+    handleRequestClose() {
 
-    };
+    }
+
+;
 }
 
 var styles = {
