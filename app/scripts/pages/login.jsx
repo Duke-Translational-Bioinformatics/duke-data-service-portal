@@ -61,7 +61,6 @@ class Login extends React.Component {
         } else {
             if (localStorage.getItem('redirectTo') !== null) {
                 let redUrl = localStorage.getItem('redirectTo');
-                //localStorage.removeItem('redirectTo');
                 document.location.replace(redUrl);
             } else {
                 this.props.appRouter.transitionTo('/home');
