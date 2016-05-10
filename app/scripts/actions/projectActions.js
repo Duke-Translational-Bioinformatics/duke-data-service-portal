@@ -35,7 +35,6 @@ var ProjectActions = Reflux.createActions([
     'getUserSuccess',
     'getPermissions',
     'getPermissionsSuccess',
-    'getVersionPermissions',
     'getUserKey',
     'getUserKeySuccess',
     'createUserKey',
@@ -354,26 +353,6 @@ ProjectActions.getPermissions.preEmit = (id, userId) => {
         }).then(function (json) {
             ProjectActions.getPermissionsSuccess(json)
         })
-        .catch(function (ex) {
-            ProjectActions.handleErrors(ex)
-        });
-};
-
-// Todo/////////////////////////
-// Used to get permissions for versions because the version object doesn't include the 'project' property like the
-// file and folder object does. Can be removed and version refactored if property is added to version object.
-ProjectActions.getVersionPermissions.preEmit = (id, kind, userId) => {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + kind + '/' + id, {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.getPermissions(json.project.id, userId)
-    })
         .catch(function (ex) {
             ProjectActions.handleErrors(ex)
         });

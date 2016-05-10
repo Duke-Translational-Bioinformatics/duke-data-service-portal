@@ -56,7 +56,7 @@ class FileDetails extends React.Component {
         let currentVersion = this.props.entityObj && this.props.entityObj.current_version.version ? this.props.entityObj.current_version.version : null;
         let versionsButton = null;
         let versions = null;
-        if(this.props.fileVersions && this.props.fileVersions != undefined) {
+        if(this.props.fileVersions && this.props.fileVersions != undefined && this.props.fileVersions.length > 1) {
             versions = this.props.fileVersions.map((version) => {
                 return version.is_deleted;
             });
