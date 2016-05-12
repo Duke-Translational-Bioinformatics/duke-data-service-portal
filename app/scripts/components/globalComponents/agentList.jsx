@@ -53,7 +53,7 @@ class AgentList extends React.Component {
                 <TextField
                     style={styles.keyModal}
                     defaultValue={JSON.stringify(obj, null, 4)}
-                    floatingLabelText="Api Token"
+                    floatingLabelText="Agent Credentials"
                     id="keyText"
                     type="text"
                     multiLine={true}
@@ -154,13 +154,13 @@ class AgentList extends React.Component {
     copyApiKey() {
         document.getElementById('keyText').select();
         let clipText = document.execCommand('copy');
-        MainActions.addToast('API token copied to clipboard!');
+        MainActions.addToast('Credentials copied to clipboard!');
         ProjectActions.closeModal();
     };
 
     handleClose() {
         ProjectActions.closeModal();
-        ProjectActions.clearApiToken();
+        ProjectActions.clearApiToken(); // Use this to make sure old api token doesn't show
     };
 }
 
