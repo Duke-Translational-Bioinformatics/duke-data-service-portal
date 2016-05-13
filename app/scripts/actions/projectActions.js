@@ -1055,7 +1055,7 @@ ProjectActions.hashFile.preEmit = function (file, id) {
 
 // "Server response"
     var response =
-        "importScripts('https://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js');" +
+        "importScripts('https://raw.githubusercontent.com/CryptoStore/crypto-js/3.1.2/build/rollups/md5.js');" +
         "var md5, cryptoType;" +
         "self.onmessage = " + webWorkerOnMessage.toString();
 
@@ -1108,9 +1108,9 @@ ProjectActions.hashFile.preEmit = function (file, id) {
     worker.postMessage({type: "create"});
 };
 
-ProjectActions.postHash.preEmit = function (hashObj){ //Todo: Make proper preemit function w/fetch call !!!!!!!!!!!!
-    //console.log('File ID:' + hashObj.id + ' ' + 'Hash:' + hashObj.hash);
-};
+//ProjectActions.postHash.preEmit = function (hashObj){ //Todo: Make proper preemit function w/fetch call !!!!!!!!!!!!
+//    //console.log('File ID:' + hashObj.id + ' ' + 'Hash:' + hashObj.hash);
+//};
 
 function checkResponse(response) {
     return checkStatus(response, MainActions);
