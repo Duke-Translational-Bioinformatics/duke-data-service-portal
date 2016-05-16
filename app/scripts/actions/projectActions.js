@@ -1055,7 +1055,7 @@ ProjectActions.hashFile.preEmit = function (file, id) {
 
 // "Server response"
     var response =
-        "importScripts('https://raw.githubusercontent.com/CryptoStore/crypto-js/3.1.2/build/rollups/md5.js');" +
+        "importScripts('https://raw.githubusercontent.com/Duke-Translational-Bioinformatics/duke-data-service-portal/develop/app/lib/md5.js');" +
         "var md5, cryptoType;" +
         "self.onmessage = " + webWorkerOnMessage.toString();
 
