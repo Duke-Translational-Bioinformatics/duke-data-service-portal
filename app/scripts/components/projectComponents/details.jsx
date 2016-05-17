@@ -51,14 +51,18 @@ class Details extends React.Component {
                 onTouchTap={() => this.handleMemberButton()} />
         ];
 
+        function lastUpdated(){
+            let lstUpdtOn = this.props.project && this.props.project.audit ? this.props.project.audit.last_updated_on : null;
+            let x = new Date(lstUpdtOn);
+            let lastUpdatedOn = x.toString();
+        }
+
+
         let createdById = this.props.project && this.props.project.audit ? this.props.project.audit.created_by.id : null;
         let currentUserId = this.props.currentUser ? this.props.currentUser.id : null;
         let description = this.props.project ? this.props.project.description : null;
         let projectId =  this.props.project ? this.props.project.id : null;
         let lastUpdatedBy = this.props.project && this.props.project.audit ? this.props.project.audit.last_updated_by : null;
-        let lstUpdtOn = this.props.project && this.props.project.audit ? this.props.project.audit.last_updated_on : null;
-        let x = new Date(lstUpdtOn);
-        let lastUpdatedOn = x.toString();
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
         let users = this.props.projectMembers ? this.props.projectMembers : null;
 
@@ -135,7 +139,7 @@ class Details extends React.Component {
                         <li className="item-divider">Last Updated On</li>
                         <li className="item-content">
                             <div className="item-inner">
-                                <div className="item-title">{ lastUpdatedOn }</div>
+                                <div className="item-title">{ lastUpdated() }</div>
                             </div>
                         </li>
                         <li className="item-divider">Description</li>
