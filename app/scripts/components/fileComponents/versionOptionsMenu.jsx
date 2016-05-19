@@ -65,7 +65,7 @@ class VersionsOptionsMenu extends React.Component {
             <div>
                 <Dialog
                     style={styles.dialogStyles}
-                    title="Are you sure you want to delete this file?"
+                    title="Are you sure you want to delete this file version?"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
                     actions={deleteActions}
@@ -103,8 +103,6 @@ class VersionsOptionsMenu extends React.Component {
             </div>
         );
     }
-
-;
 
     handleTouchTapDelete() {
         this.setState({deleteOpen: true})

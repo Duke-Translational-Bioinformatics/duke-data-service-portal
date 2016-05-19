@@ -88,6 +88,8 @@ class FileOptionsMenu extends React.Component {
                     onRequestClose={this.handleClose.bind(this)}
                     open={this.state.deleteOpen}>
                     <i className="material-icons" style={styles.warning}>warning</i>
+                    <p style={{textAlign: 'left'}}>You will lose access to any versions associated with this file. If you want to delete just one version of this file,
+                        please navigate to the version you want to delete by clicking on the file versions button.</p>
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
