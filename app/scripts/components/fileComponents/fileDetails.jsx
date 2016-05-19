@@ -56,18 +56,23 @@ class FileDetails extends React.Component {
         let currentVersion = this.props.entityObj && this.props.entityObj.current_version.version ? this.props.entityObj.current_version.version : null;
         let versionsButton = null;
         let versions = null;
+        let versionCount = [];
+
         if(this.props.fileVersions && this.props.fileVersions != undefined && this.props.fileVersions.length > 1) {
             versions = this.props.fileVersions.map((version) => {
                 return version.is_deleted;
             });
             for (let i = 0; i < versions.length; i++) {
                 if (versions[i] === false) {
-                    versionsButton = <RaisedButton
-                        label="FILE VERSIONS"
-                        secondary={true}
-                        style={styles.button}
-                        onTouchTap={() => this.openModal()}
-                        />
+                    versionCount.push(versions[i]);
+                    if (versionCount.length > 1) {
+                        versionsButton = <RaisedButton
+                            label="FILE VERSIONS"
+                            secondary={true}
+                            style={styles.button}
+                            onTouchTap={() => this.openModal()}
+                            />
+                    }
                 }
             }
         }

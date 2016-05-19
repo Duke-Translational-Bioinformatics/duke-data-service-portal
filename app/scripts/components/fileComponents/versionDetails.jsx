@@ -173,10 +173,6 @@ class VersionDetails extends React.Component {
         let kind = 'file_versions/';
         ProjectActions.getDownloadUrl(id, kind);
     }
-
-    openModal() {
-        ProjectActions.openModal()
-    }
 }
 
 var styles = {
