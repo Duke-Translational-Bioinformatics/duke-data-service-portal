@@ -151,11 +151,40 @@ class AgentList extends React.Component {
         }, 800);
     }
 
+    handleCopyButton() {
+        let copyTextArea = document.querySelector('#keyText');
+        copyTextArea.select();
+        var successful = document.execCommand('copy');
+        var msg = successful ? 'successful' : 'unsuccessful';
+        if(msg === 'successful') {
+            MainActions.addToast('Key copied to clipboard!');
+            this.setState({
+                apiKeyOpen: false,
+                newApiKeyOpen: false,
+                userKeyOpen: false,
+                newUserKeyOpen: false
+            });
+        }
+        if(msg === 'unsuccessful'){
+            MainActions.addToast('Failed copying key to clipboard!');
+            alert("Automatic copying to clipboard is not supported by Safari browsers: Manually copy the key by" +
+                " using CMD+C,");
+        }
+    };
+
     copyApiKey() {
         document.getElementById('keyText').select();
-        let clipText = document.execCommand('copy');
-        MainActions.addToast('Credentials copied to clipboard!');
-        ProjectActions.closeModal();
+        var successful = document.execCommand('copy');
+        var msg = successful ? 'successful' : 'unsuccessful';
+        if(msg === 'successful') {
+            MainActions.addToast('Credentials copied to clipboard!');
+            ProjectActions.closeModal();
+        }
+        if(msg === 'unsuccessful'){
+            MainActions.addToast('Failed copying credentials to clipboard!');
+            alert("Automatic copying to clipboard is not supported by Safari browsers: Manually copy the key by" +
+                " using CMD+C,");
+        }
     };
 
     handleClose() {
