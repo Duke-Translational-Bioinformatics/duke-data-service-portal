@@ -1003,8 +1003,7 @@ ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind, fileN
             },
             'upload': {
                 'id': uploadId
-            },
-            'label': 'Initial Version'
+            }
         })
     }).then(checkResponse).then(function (response) {
         return response.json()
