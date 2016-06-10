@@ -32,7 +32,7 @@ class FileOptionsMenu extends React.Component {
                 menu = <span>
                         <MenuItem primaryText="Delete File" leftIcon={<i className="material-icons">delete</i>}
                                   onTouchTap={() => this.handleTouchTapDelete()}/>
-                        <MenuItem primaryText="Edit File" leftIcon={<i className="material-icons">mode_edit</i>}
+                        <MenuItem primaryText="Edit File Name" leftIcon={<i className="material-icons">mode_edit</i>}
                                   onTouchTap={() => this.handleTouchTapEdit()}/>
                         <MenuItem primaryText="Move File" leftIcon={<i className="material-icons">low_priority</i>}
                                   onTouchTap={() => this.handleTouchTapMove()}/>
@@ -93,7 +93,7 @@ class FileOptionsMenu extends React.Component {
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
-                    title="Update File Name"
+                    title="Edit File Name"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
                     actions={editActions}

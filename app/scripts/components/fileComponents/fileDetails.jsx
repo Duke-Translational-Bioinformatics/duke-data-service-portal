@@ -126,10 +126,30 @@ class FileDetails extends React.Component {
                         </div>
                         <div className="list-group">
                             <ul>
-                                <li className="list-group-title">Created On</li>
+                                <li className="list-group-title">Original File Created On</li>
                                 <li className="item-content">
                                     <div className="item-inner">
                                         <div>{ createdOn }</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="list-group">
+                            <ul>
+                                <li className="list-group-title">Last Updated By</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ lastUpdatedBy === null ? 'N/A' : lastUpdatedBy}</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="list-group">
+                            <ul>
+                                <li className="list-group-title">Last Updated On</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ lastUpdatedOn === null ? 'N/A' : new Date(lastUpdatedOn).toString() }</div>
                                     </div>
                                 </li>
                             </ul>
@@ -160,26 +180,6 @@ class FileDetails extends React.Component {
                                 <li className="item-content">
                                     <div className="item-inner">
                                         <div>{ hash }</div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                        <div className="list-group">
-                            <ul>
-                                <li className="list-group-title">Last Updated By</li>
-                                <li className="item-content">
-                                    <div className="item-inner">
-                                        <div>{ lastUpdatedBy === null ? 'N/A' : lastUpdatedBy}</div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                        <div className="list-group">
-                            <ul>
-                                <li className="list-group-title">Last Updated On</li>
-                                <li className="item-content">
-                                    <div className="item-inner">
-                                        <div>{ lastUpdatedOn === null ? 'N/A' : new Date(lastUpdatedOn).toString() }</div>
                                     </div>
                                 </li>
                             </ul>
