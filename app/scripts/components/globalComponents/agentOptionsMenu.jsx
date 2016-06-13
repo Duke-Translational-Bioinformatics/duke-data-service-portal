@@ -174,6 +174,8 @@ class AgentOptionsMenu extends React.Component {
                     <form action="#" id="newAgentForm">
                         <TextField
                             style={styles.textStyles}
+                            autoFocus={true}
+                            onFocus={this.handleFloatingErrorInputChange.bind(this)}
                             hintText="Software Agent Name"
                             defaultValue={agName}
                             errorText={this.state.floatingErrorText}
