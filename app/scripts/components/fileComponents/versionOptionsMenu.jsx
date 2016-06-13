@@ -84,6 +84,8 @@ class VersionsOptionsMenu extends React.Component {
                     <form action="#" id="editVersionForm">
                         <TextField
                             style={styles.textStyles}
+                            autoFocus={true}
+                            onFocus={this.handleFloatingErrorInputChange.bind(this)}
                             hintText="Version Label"
                             defaultValue={labelText}
                             errorText={this.state.floatingErrorText}
