@@ -8,6 +8,19 @@ import StatusEnum from '../enum';
 import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.js';
 
 var ProjectActions = Reflux.createActions([
+    'addProvActivity',
+    'addProvActivitySuccess',
+    'editProvActivity',
+    'editProvActivitySuccess',
+    'deleteProvActivity',
+    'deleteProvActivitySuccess',
+    'toggleProvView',
+    'toggleProvEditor',
+    'toggleAddEdgeMode',
+    'showProvControlBtns',
+    'selectNodesAndEdges',
+    'getProvenance',
+    'getProvenanceSuccess',
     'hashFile',
     'postHash',
     'openModal',
@@ -108,6 +121,144 @@ var ProjectActions = Reflux.createActions([
     'uploadError',
     'getChunkUrl'
 ]);
+
+ProjectActions.addProvActivity.preEmit = function (name, desc) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'activities/', {
+        method: 'post',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            "name": name,
+            "description": desc
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('New Activity Added');
+        ProjectActions.addProvActivitySuccess();
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to add new actvity');
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.editProvActivity.preEmit = function (id, name, desc, prevName) {
+
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'activities/'+ id, {
+        method: 'put',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            "name": name,
+            "description": desc
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast(prevName + ' Activity edited');
+        ProjectActions.editProvActivitySuccess();//TODO: Toggle prov buttons after success//////////////////
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to edit ' + prevName);
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.deleteProvActivity.preEmit = function (node, id) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'activities/' + node.id, {
+        method: 'delete',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+    }).then(function (json) {
+        MainActions.addToast(node.label + ' Deleted');
+        ProjectActions.getProvenance(id)
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to delete activity');
+        ProjectActions.handleErrors(ex)
+    });
+};
+
+ProjectActions.getProvenance.preEmit = function (id) {//Todo: Replace with proper call!!!!!!!!!!!!!!!!
+    let prov = {
+            "nodes": [
+                {
+                    "id": "a1ff02a4-b7e9-999d-87x1-66f4c881jka1",
+                    "labels": ["Activity"],
+                    "properties": {
+                        "kind": "dds-activity",
+                        "id": "a1ff02a4-b7e9-999d-87x1-66f4c881jka1",
+                        "name": "RF PI3-Kinase",
+                        "is_deleted": false,
+                        "audit": { }
+                    }
+                },
+                {
+                    "id": "89ef1e77-1a0b-40a8-aaca-260d13987f2b",
+                    "labels": ["File Version"],
+                    "properties": {
+                        "kind": "dds-file-version",
+                        "id": "89ef1e77-1a0b-40a8-aaca-260d13987f2b",
+                        "file": {
+                            "id": "777be35a-98e0-4c2e-9a17-7bc009f9b111",
+                            "name": "RSEM_Normalized_PI3K_RNASeq_Matrix.Rdata"
+                        },
+                        "version": 1,
+                        "label": "Initial raw data from device",
+                        "is_deleted": false,
+                        "audit": { }
+                    }
+                },
+                {
+                    "id": "1b80a313-97cf-482d-8d17-9b911bf815b3",
+                    "labels": ["File Version"],
+                    "properties": {
+                        "kind": "dds-file-version",
+                        "id": "1b80a313-97cf-482d-8d17-9b911bf815b3",
+                        "file": {
+                            "id": "777be35a-98e0-4c2e-9a17-7bc009f9b111",
+                            "name": "RSEM_Normalized_PI3K_RNASeq_Matrix.Rdata"
+                        },
+                        "version": 2,
+                        "label": "Alignment performed on raw data",
+                        "is_deleted": false,
+                        "audit": { }
+                    }
+                }
+            ],
+            "relationships": [
+                {
+                    "id": "ac242faf-fba0-4293-a949-0b82ae7ba810",
+                    "type": "used",
+                    "start_node": "a1ff02a4-b7e9-999d-87x1-66f4c881jka1",
+                    "end_node": "89ef1e77-1a0b-40a8-aaca-260d13987f2b",
+                    "properties": {
+                        "kind": "dds-relation-used",
+                        "id": "ac242faf-fba0-4293-a949-0b82ae7ba810",
+                        "audit": { }
+                    }
+                },
+                {
+                    "id": "372f25e1-01b0-4b8d-9524-e26dd573cc95",
+                    "type": "wasGeneratedBy",
+                    "start_node": "1b80a313-97cf-482d-8d17-9b911bf815b3",
+                    "end_node": "a1ff02a4-b7e9-999d-87x1-66f4c881jka1",
+                    "properties": {
+                        "kind": "dds-relation-was-generated-by",
+                        "id": "372f25e1-01b0-4b8d-9524-e26dd573cc95",
+                        "audit": { }
+                    }
+                }
+            ]
+        };
+
+    ProjectActions.getProvenanceSuccess(prov)
+};
 
 ProjectActions.getFileVersions.preEmit = function (id) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/' + id + '/versions', {

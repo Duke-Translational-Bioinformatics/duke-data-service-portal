@@ -2,19 +2,27 @@ import React from 'react'
 import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
 import FileDetails from '../components/fileComponents/fileDetails.jsx';
-import Header from '../components/globalComponents/header.jsx';
+import Provenance from '../components/globalComponents/provenance.jsx';
 
 class File extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            addEdgeMode: ProjectStore.addEdgeMode,
             error: ProjectStore.error,
             errorModal: ProjectStore.errorModal,
             loading: false,
             moveModal: ProjectStore.moveModal,
             moveErrorModal: ProjectStore.moveErrorModal,
-            projPermissions: ProjectStore.projPermissions
+            projPermissions: ProjectStore.projPermissions,
+            provEdges: ProjectStore.provEdges,
+            provNodes: ProjectStore.provNodes,
+            toggleProv: ProjectStore.toggleProv,
+            toggleProvEdit: ProjectStore.toggleProvEdit,
+            selectedEdges: ProjectStore.selectedEdges,
+            selectedNode: ProjectStore.selectedNode,
+            showProvCtrlBtns: ProjectStore.showProvCtrlBtns
         };
     }
 
@@ -40,6 +48,7 @@ class File extends React.Component {
     _loadFile(id, kind) {
         ProjectActions.getEntity(id, kind);
         ProjectActions.getFileVersions(id);
+        ProjectActions.getProvenance(id);
     }
 
     render() {
@@ -50,6 +59,7 @@ class File extends React.Component {
         }
         return (
             <div>
+                <Provenance {...this.props} {...this.state}/>
                 <FileDetails {...this.props} {...this.state} />
             </div>
         );

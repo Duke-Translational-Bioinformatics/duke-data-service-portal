@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import ReactDOM from 'react-dom';
 const { object, bool, array, string } = PropTypes;
 import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
@@ -16,6 +17,85 @@ import Card from 'material-ui/lib/card/card';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 class FileDetails extends React.Component {
+    componentDidMount() {
+        this.renderProvGraph();
+    }
+    renderProvGraph() {
+        // create an array with nodes
+        let test = '<div style={styles.div1}>test</div>';
+        var nodes = new vis.DataSet([
+            {id: 1, label: 'original file', title: test},
+            {id: 2, label: 'activity2', shape: 'box', color:'#FFFF00'},
+            {id: 3, label: 'new version'},
+            {id: 4, label: 'version 2'},
+            {id: 5, label: 'version 3'},
+            {id: 6, label: 'activity4', shape: 'box', color:'#FFFF00'},
+            {id: 7, label: 'version 4'},
+            {id: 8, label: 'activity1', shape: 'box', color:'#FFFF00'},
+            {id: 9, label: 'new version'},
+            {id: 10, label: 'activity3', shape: 'box', color:'#FFFF00'},
+        ]);
+
+        // create an array with edges
+        var edges = new vis.DataSet([
+            {from: 1, to: 8, arrows:'from'},
+            {from: 8, to: 9, arrows:'from'},
+            {from: 1, to: 2, arrows:'from'},
+            {from: 2, to: 5, arrows:'from'},
+            {from: 5, to: 6, arrows:'from'},
+            {from: 6, to: 7, arrows:'from'},
+            {from: 8, to: 7, arrows:'from'},
+            {from: 1, to: 10, arrows:'from'},
+            {from: 10, to: 3, arrows:'from'},
+            {from: 10, to: 4, arrows:'from'},
+        ]);
+
+        // create a network
+        var data = {
+            nodes: nodes,
+            edges: edges
+        };
+        var options = {
+            autoResize: true,
+            height: '100%',
+            width: '100%',
+            interaction:{
+                hover:true,
+                selectable: true,
+                navigationButtons: true,
+                tooltipDelay:200,
+                multiselect: true
+            },
+            layout: {
+                randomSeed: 1,
+                improvedLayout:true,
+                hierarchical: {
+                    enabled:true,
+                    levelSeparation: 150,
+                    nodeSpacing: 200,
+                    treeSpacing: 200,
+                    blockShifting: true,
+                    edgeMinimization: true,
+                    parentCentralization: true,
+                    direction: 'DU',        // UD, DU, LR, RL
+                    sortMethod: 'directed'   // hubsize, directed
+                }
+        }};
+
+        let container = ReactDOM.findDOMNode(this.refs.mynetwork);
+        // remove old contents of dom node
+        while (container.firstChild) {
+            container.removeChild(container.firstChild);
+        }
+        let network = new vis.Network(container, data, options);
+        network.on("hoverNode", function (params) {
+            document.getElementById('eventSpan').innerHTML = '<h5>hover event:</h5>' + JSON.stringify(params, null, 4);
+        });
+        network.on("click", function (params) {
+            params.event = "[original event]";
+            document.getElementById('eventSpan').innerHTML = '<h5>click event:</h5>' + JSON.stringify(params, null, 4);
+        });
+    }
 
     render() {
         if (this.props.error && this.props.error.response){
@@ -207,6 +287,10 @@ class FileDetails extends React.Component {
                     </div>
                 </div>
             </div>
+            <h4 style={styles.detailsTitle}>Provenance</h4>
+            <div id="mynetwork" ref="mynetwork" style={{minWidth: 600,height: 600}} className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800"></div>
+            <div id="hoverSpan"></div>
+            <div id="eventSpan"></div>
         </Card>;
         return (
             <div>
@@ -228,6 +312,9 @@ class FileDetails extends React.Component {
 }
 
 var styles = {
+    div1: {
+       height: 100, width: 100
+    },
     arrow: {
         textAlign: 'left',
         marginTop: -5

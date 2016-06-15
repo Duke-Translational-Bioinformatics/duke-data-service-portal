@@ -7,6 +7,7 @@ var ProjectStore = Reflux.createStore({
 
     init() {
         this.listenToMany(ProjectActions);
+        this.addEdgeMode = false;
         this.agents = [];
         this.agentKey = {};
         this.agentApiToken = {};
@@ -31,12 +32,90 @@ var ProjectStore = Reflux.createStore({
         this.project = {};
         this.projPermissions = null;
         this.projectMembers = [];
+        this.provEdges = [];
+        this.provNodes = [];
+        this.selectedNode = {};
+        this.selectedEdges = [];
         this.showBatchOps = false;
+        this.showProvCtrlBtns = false;
+        this.toggleProv = false;
+        this.toggleProvEdit = false;
         this.uploadCount = [];
         this.uploads = {};
         this.users = [];
         this.userKey = {};
         this.versionModal = false;
+    },
+
+    toggleAddEdgeMode() {
+        this.addEdgeMode = !this.addEdgeMode;
+        this.trigger({
+            addEdgeMode: this.addEdgeMode
+        })
+    },
+
+    getProvenanceSuccess(prov) {
+        this.provEdges = prov.relationships.map((edge) => {
+            return {
+                id: edge.id,
+                from: edge.start_node,
+                to: edge.end_node,
+                arrows: 'from'
+            };
+        });
+        this.provNodes = prov.nodes.map((node) => {
+            if(!node.properties.is_deleted) {
+                if (node.properties.kind === 'dds-activity') {
+                    return {
+                        id: node.id,
+                        label: node.properties.name,
+                        kind: node.properties.kind,
+                        shape: 'box',
+                        color: '#FFFF00'
+                    }
+                } else {
+                    return {
+                        id: node.id,
+                        label: node.properties.file.name,
+                        kind: node.properties.kind
+                    }
+                }
+            }
+        });
+        this.trigger({
+            provEdges: this.provEdges,
+            provNodes: this.provNodes
+        })
+    },
+
+    toggleProvView() {
+        this.toggleProv = !this.toggleProv;
+        this.trigger({
+            toggleProv: this.toggleProv
+        })
+    },
+
+    toggleProvEditor() {
+        this.toggleProvEdit = !this.toggleProvEdit;
+        this.trigger({
+            toggleProvEdit: this.toggleProvEdit
+        })
+    },
+
+    showProvControlBtns() {
+        this.showProvCtrlBtns = !this.showProvCtrlBtns;
+        this.trigger({
+            showProvCtrlBtns: this.showProvCtrlBtns,
+        })
+    },
+
+    selectNodesAndEdges(edgeData, nodeData) {
+        this.selectedEdges = edgeData;
+        this.selectedNode = nodeData;
+        this.trigger({
+            selectedNode: this.selectedNode,
+            selectedEdges: this.selectedEdges
+        })
     },
 
     getFileVersions() {
