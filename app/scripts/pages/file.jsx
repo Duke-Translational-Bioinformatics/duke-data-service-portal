@@ -10,6 +10,7 @@ class File extends React.Component {
         super(props);
         this.state = {
             addEdgeMode: ProjectStore.addEdgeMode,
+            dltRelationsBtn: ProjectStore.dltRelationsBtn,
             error: ProjectStore.error,
             errorModal: ProjectStore.errorModal,
             loading: false,
@@ -22,6 +23,7 @@ class File extends React.Component {
             toggleProvEdit: ProjectStore.toggleProvEdit,
             selectedEdges: ProjectStore.selectedEdges,
             selectedNode: ProjectStore.selectedNode,
+            showProvAlert: ProjectStore.showProvAlert,
             showProvCtrlBtns: ProjectStore.showProvCtrlBtns
         };
     }

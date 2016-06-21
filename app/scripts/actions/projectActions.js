@@ -8,16 +8,19 @@ import StatusEnum from '../enum';
 import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.js';
 
 var ProjectActions = Reflux.createActions([
+    'deleteProvRelation',
     'addProvActivity',
     'addProvActivitySuccess',
     'editProvActivity',
     'editProvActivitySuccess',
     'deleteProvActivity',
     'deleteProvActivitySuccess',
+    'hideProvAlert',
     'toggleProvView',
     'toggleProvEditor',
     'toggleAddEdgeMode',
     'showProvControlBtns',
+    'showDeleteRelationsBtn',
     'selectNodesAndEdges',
     'getProvenance',
     'getProvenanceSuccess',
@@ -122,6 +125,23 @@ var ProjectActions = Reflux.createActions([
     'getChunkUrl'
 ]);
 
+ProjectActions.deleteProvRelation.preEmit = function (edge ,id) {//Todo: Figure out how to show graph w/relation missing
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'relations/' + edge.id, {
+        method: 'delete',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+    }).then(function (json) {
+        MainActions.addToast('Relation Deleted');
+        //ProjectActions.getProvenance(id)
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to delete ' +edge.properties.kind+ ' relation');
+        ProjectActions.handleErrors(ex)
+    });
+};
+
 ProjectActions.addProvActivity.preEmit = function (name, desc) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'activities/', {
         method: 'post',
@@ -199,6 +219,17 @@ ProjectActions.getProvenance.preEmit = function (id) {//Todo: Replace with prope
                     }
                 },
                 {
+                    "id": "b1ff02a4-b7e9-999d-87x1-66f4c881jka1",
+                    "labels": ["Activity"],
+                    "properties": {
+                        "kind": "dds-activity",
+                        "id": "a1ff02a4-b7e9-999d-87x1-66f4c881jka1",
+                        "name": "Activity Test",
+                        "is_deleted": false,
+                        "audit": { }
+                    }
+                },
+                {
                     "id": "89ef1e77-1a0b-40a8-aaca-260d13987f2b",
                     "labels": ["File Version"],
                     "properties": {
@@ -251,6 +282,17 @@ ProjectActions.getProvenance.preEmit = function (id) {//Todo: Replace with prope
                     "properties": {
                         "kind": "dds-relation-was-generated-by",
                         "id": "372f25e1-01b0-4b8d-9524-e26dd573cc95",
+                        "audit": { }
+                    }
+                },
+                {
+                    "id": "272f25e1-01b0-4b8d-9524-e26dd573cc95",
+                    "type": "wasGeneratedBy",
+                    "start_node": "1b80a313-97cf-482d-8d17-9b911bf815b3",
+                    "end_node": "b1ff02a4-b7e9-999d-87x1-66f4c881jka1",
+                    "properties": {
+                        "kind": "dds-relation-was-generated-by",
+                        "id": "272f25e1-01b0-4b8d-9524-e26dd573cc95",
                         "audit": { }
                     }
                 }

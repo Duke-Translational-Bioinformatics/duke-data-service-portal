@@ -37,7 +37,9 @@ var ProjectStore = Reflux.createStore({
         this.selectedNode = {};
         this.selectedEdges = [];
         this.showBatchOps = false;
+        this.showProvAlert = false;
         this.showProvCtrlBtns = false;
+        this.dltRelationsBtn = false;
         this.toggleProv = false;
         this.toggleProvEdit = false;
         this.uploadCount = [];
@@ -47,8 +49,12 @@ var ProjectStore = Reflux.createStore({
         this.versionModal = false;
     },
 
-    toggleAddEdgeMode() {
-        this.addEdgeMode = !this.addEdgeMode;
+    toggleAddEdgeMode(value) {
+        if(value == null) {
+            this.addEdgeMode = !this.addEdgeMode;
+        } else {
+            this.addEdgeMode = true;
+        }
         this.trigger({
             addEdgeMode: this.addEdgeMode
         })
@@ -60,6 +66,8 @@ var ProjectStore = Reflux.createStore({
                 id: edge.id,
                 from: edge.start_node,
                 to: edge.end_node,
+                type: edge.type,
+                properties: edge.properties,
                 arrows: 'from'
             };
         });
@@ -69,7 +77,8 @@ var ProjectStore = Reflux.createStore({
                     return {
                         id: node.id,
                         label: node.properties.name,
-                        kind: node.properties.kind,
+                        labels: node.labels,
+                        properties: node.properties,
                         shape: 'box',
                         color: '#FFFF00'
                     }
@@ -77,7 +86,8 @@ var ProjectStore = Reflux.createStore({
                     return {
                         id: node.id,
                         label: node.properties.file.name,
-                        kind: node.properties.kind
+                        labels: node.labels,
+                        properties: node.properties
                     }
                 }
             }
@@ -105,7 +115,25 @@ var ProjectStore = Reflux.createStore({
     showProvControlBtns() {
         this.showProvCtrlBtns = !this.showProvCtrlBtns;
         this.trigger({
-            showProvCtrlBtns: this.showProvCtrlBtns,
+            showProvCtrlBtns: this.showProvCtrlBtns
+        })
+    },
+
+    showDeleteRelationsBtn(edges, nodes) {
+        if(edges.length > 0 && this.dltRelationsBtn && nodes !== null) {
+            this.dltRelationsBtn = !this.dltRelationsBtn;
+        } else {
+            if (edges.length > 0 && this.dltRelationsBtn) {
+                this.dltRelationsBtn = true;
+            } else {
+                this.dltRelationsBtn = !this.dltRelationsBtn;
+            }
+            if (this.showProvCtrlBtns && this.dltRelationsBtn) {
+                this.dltRelationsBtn = !this.dltRelationsBtn;
+            }
+        }
+        this.trigger({
+            dltRelationsBtn: this.dltRelationsBtn
         })
     },
 
@@ -115,6 +143,13 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             selectedNode: this.selectedNode,
             selectedEdges: this.selectedEdges
+        })
+    },
+
+    hideProvAlert() {
+        this.showProvAlert = false;
+        this.trigger({
+            showProvAlert: this.showProvAlert
         })
     },
 
@@ -133,6 +168,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     addFileVersionSuccess(id, uploadId) {
+        this.showProvAlert = true;
         let kind = 'files/';
         ProjectActions.getEntity(id, kind);
         ProjectActions.getFileVersions(id);
@@ -140,6 +176,7 @@ var ProjectStore = Reflux.createStore({
             delete this.uploads[uploadId];
         }
         this.trigger({
+            showProvAlert: this.showProvAlert,
             uploads: this.uploads
         })
     },

@@ -12,89 +12,18 @@ import Loaders from '../../components/globalComponents/loaders.jsx';
 import urlGen from '../../../util/urlGen.js';
 import Tooltip from '../../../util/tooltip.js';
 import BaseUtils from '../../../util/baseUtils.js';
-import IconButton from 'material-ui/lib/icon-button';
+import BorderColor from 'material-ui/lib/svg-icons/editor/border-color.js';
 import Card from 'material-ui/lib/card/card';
+import FlatButton from 'material-ui/lib/flat-button';
+import IconButton from 'material-ui/lib/icon-button';
+import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
+import Paper from 'material-ui/lib/paper';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 class FileDetails extends React.Component {
-    componentDidMount() {
-        this.renderProvGraph();
-    }
-    renderProvGraph() {
-        // create an array with nodes
-        let test = '<div style={styles.div1}>test</div>';
-        var nodes = new vis.DataSet([
-            {id: 1, label: 'original file', title: test},
-            {id: 2, label: 'activity2', shape: 'box', color:'#FFFF00'},
-            {id: 3, label: 'new version'},
-            {id: 4, label: 'version 2'},
-            {id: 5, label: 'version 3'},
-            {id: 6, label: 'activity4', shape: 'box', color:'#FFFF00'},
-            {id: 7, label: 'version 4'},
-            {id: 8, label: 'activity1', shape: 'box', color:'#FFFF00'},
-            {id: 9, label: 'new version'},
-            {id: 10, label: 'activity3', shape: 'box', color:'#FFFF00'},
-        ]);
 
-        // create an array with edges
-        var edges = new vis.DataSet([
-            {from: 1, to: 8, arrows:'from'},
-            {from: 8, to: 9, arrows:'from'},
-            {from: 1, to: 2, arrows:'from'},
-            {from: 2, to: 5, arrows:'from'},
-            {from: 5, to: 6, arrows:'from'},
-            {from: 6, to: 7, arrows:'from'},
-            {from: 8, to: 7, arrows:'from'},
-            {from: 1, to: 10, arrows:'from'},
-            {from: 10, to: 3, arrows:'from'},
-            {from: 10, to: 4, arrows:'from'},
-        ]);
-
-        // create a network
-        var data = {
-            nodes: nodes,
-            edges: edges
-        };
-        var options = {
-            autoResize: true,
-            height: '100%',
-            width: '100%',
-            interaction:{
-                hover:true,
-                selectable: true,
-                navigationButtons: true,
-                tooltipDelay:200,
-                multiselect: true
-            },
-            layout: {
-                randomSeed: 1,
-                improvedLayout:true,
-                hierarchical: {
-                    enabled:true,
-                    levelSeparation: 150,
-                    nodeSpacing: 200,
-                    treeSpacing: 200,
-                    blockShifting: true,
-                    edgeMinimization: true,
-                    parentCentralization: true,
-                    direction: 'DU',        // UD, DU, LR, RL
-                    sortMethod: 'directed'   // hubsize, directed
-                }
-        }};
-
-        let container = ReactDOM.findDOMNode(this.refs.mynetwork);
-        // remove old contents of dom node
-        while (container.firstChild) {
-            container.removeChild(container.firstChild);
-        }
-        let network = new vis.Network(container, data, options);
-        network.on("hoverNode", function (params) {
-            document.getElementById('eventSpan').innerHTML = '<h5>hover event:</h5>' + JSON.stringify(params, null, 4);
-        });
-        network.on("click", function (params) {
-            params.event = "[original event]";
-            document.getElementById('eventSpan').innerHTML = '<h5>click event:</h5>' + JSON.stringify(params, null, 4);
-        });
+    constructor(props) {
+        super(props);
     }
 
     render() {
@@ -138,6 +67,20 @@ class FileDetails extends React.Component {
         let versions = null;
         let versionCount = [];
 
+        let provAlert = this.props.showProvAlert ? <Card style={styles.provAlert} zDepth={1}>
+            <div style={styles.provAlert.wrapper}>Would you like to add provenance for this file?</div>
+            <IconButton style={styles.button} onTouchTap={() => this.dismissAlert()}>
+                <NavigationClose color="#E8F5E9"/>
+            </IconButton>
+            <FlatButton
+                label="Yes"
+                labelStyle={styles.provAlert.alertButton.label}
+                style={styles.provAlert.alertButton}
+                hoverColor="#4CAF50"
+                onTouchTap={() => this.openProv()}
+                />
+        </Card> : '';
+
         if(this.props.fileVersions && this.props.fileVersions != undefined && this.props.fileVersions.length > 1) {
             versions = this.props.fileVersions.map((version) => {
                 return version.is_deleted;
@@ -148,6 +91,7 @@ class FileDetails extends React.Component {
                     if (versionCount.length > 1) {
                         versionsButton = <RaisedButton
                             label="FILE VERSIONS"
+                            labelStyle={{fontWeight: 100}}
                             secondary={true}
                             style={styles.button}
                             onTouchTap={() => this.openModal()}
@@ -193,6 +137,7 @@ class FileDetails extends React.Component {
                     { this.props.uploads ? <Loaders {...this.props}/> : null }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
+                    { provAlert }
                     <div className="list-block">
                         <div className="list-group">
                             <ul>
@@ -300,6 +245,10 @@ class FileDetails extends React.Component {
         )
     }
 
+    dismissAlert(){
+        ProjectActions.hideProvAlert();
+    }
+
     handleDownload(){
         let id = this.props.params.id;
         let kind = 'files/';
@@ -309,12 +258,15 @@ class FileDetails extends React.Component {
     openModal() {
         ProjectActions.openModal()
     }
+
+    openProv() {
+        ProjectActions.toggleProvView();
+        ProjectActions.toggleProvEditor();
+        ProjectActions.hideProvAlert();
+    }
 }
 
 var styles = {
-    div1: {
-       height: 100, width: 100
-    },
     arrow: {
         textAlign: 'left',
         marginTop: -5
@@ -361,6 +313,22 @@ var styles = {
         float: 'right',
         marginTop: 30,
         marginBottom: -3
+    },
+    provAlert: {
+        display: 'block',
+        backgroundColor: '#66BB6A',
+        alertButton: {
+            float: 'right', margin: 6,
+            label: {
+                color: '#E8F5E9',
+                fontWeight: 100
+            }
+        },
+        wrapper: {
+            float: 'left',
+            color: '#E8F5E9',
+            margin: '14px 10px 10px 10px'
+        }
     },
     subTitle: {
         textAlign: 'left',

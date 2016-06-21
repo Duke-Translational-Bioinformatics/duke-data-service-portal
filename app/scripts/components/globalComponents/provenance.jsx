@@ -19,49 +19,45 @@ import SelectField from 'material-ui/lib/select-field';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
+import Cancel from 'material-ui/lib/svg-icons/navigation/cancel';
 import LeftNav from 'material-ui/lib/left-nav';
 
 class Provenance extends React.Component {
 
-    constructor() {
+    constructor(props) {
+        super(props);
         this.state = {
             errorText: null,
             floatingErrorText: 'This field is required.',
             openAddAct: false,
-            openDlt: false,
+            openDltAct: false,
+            openDltRel: false,
             openEdit: false,
             openFileSearch: false,
             value: null
-        }
+        };
     }
 
     componentDidMount() {
         setTimeout(()=>{
             let e = this.props.provEdges && this.props.provEdges.length > 0 ? this.props.provEdges : [];
             let n = this.props.provNodes && this.props.provNodes.length > 0 ? this.props.provNodes : [];
-            this.renderProvGraph(e, n);
+            this.renderProvGraph(e,n);
         },100);
     }
 
     componentWillUpdate(nextProps, nextState){
-        let relInstructions = document.createElement("p");
         let e = this.props.provEdges && this.props.provEdges.length > 0 ? this.props.provEdges : [];
         let n = this.props.provNodes && this.props.provNodes.length > 0 ? this.props.provNodes : [];
-        if(nextProps.addEdgeMode){ //Check if addEdge state has changed. If true render graph in add edge mode
-            this.renderProvGraph(e, n);//TODO: Toggle editor buttons if they are showing
+        if(nextProps.addEdgeMode !== this.props.addEdgeMode){
+        //Check if addEdgeMode has changed. If true render graph in add edge mode
+            this.renderProvGraph(e, n);
         }
     }
 
     renderProvGraph(e, n) {
-        let showUpdate = false;
-        let newEdge = null;
         let nodes = new vis.DataSet(n);
         let edges = new vis.DataSet(e);
-
-        //add edges
-        function addNewEdge(newEdge) {
-            edges.add([newEdge]); //Todo: post new relation and make fetch call to update dataset
-        }
 
         // create a network
         let data = {
@@ -100,33 +96,26 @@ class Provenance extends React.Component {
             },
             manipulation: {
                 enabled: false,
-                //addNode: function (data, callback) {
-                //    // filling in the popup DOM elements
-                //    document.getElementById('operation').innerHTML = "Add Node";
-                //    document.getElementById('node-id').value = data.id;
-                //    document.getElementById('node-label').value = data.label;
-                //    document.getElementById('saveButton').onclick = saveData.bind(this, data, callback);
-                //    document.getElementById('cancelButton').onclick = clearPopUp.bind();
-                //    document.getElementById('network-popUp').style.display = 'block';
-                //},
-                //editNode: function (data, callback) {
-                //    // filling in the popup DOM elements
-                //    if (data.properties.kind == "dds-activity") {
-                //        document.getElementById('operation').innerHTML = "Edit Node";
-                //        document.getElementById('node-id').value = data.id;
-                //        document.getElementById('node-label').value = data.label;
-                //        document.getElementById('saveButton').onclick = saveData.bind(this, data, callback);
-                //        document.getElementById('cancelButton').onclick = cancelEdit.bind(this, callback);
-                //        document.getElementById('network-popUp').style.display = 'block';
-                //    }
-                //},
-                addEdge: function (data, callback) {
+                addEdge: (data, callback) => {
                     if (data.from == data.to) {
                         callback(null);
                     } else {
-                        newEdge = {from: data.from, to: data.to, id: Math.random(), kind: "used", arrows: "from"};
-                        addNewEdge(newEdge);
+                        let nodes = ProjectStore.provNodes;
+                        //Todo: Need to access state so I can get value of select and setState of value back to null
+                        //Todo: post new relation and make fetch call to update dataset !!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        nodes.forEach((node) => { //Todo: Insert logic here to enforce rules of relation types//////////
+                            if(data.from === node.id){// Todo: Build 'from' object????
+                                console.log('from: '+node.properties.kind)
+                            }
+                            if(data.to === node.id){// Todo: Build 'to' object????
+                                console.log('to: '+node.properties.kind)
+                            }
+                        });
+                        this.setState({
+                            value: null
+                        });
                         ProjectActions.toggleAddEdgeMode();
+                        if(ProjectStore.showProvCtrlBtns) ProjectActions.showProvControlBtns();
                         callback(data);
                     }
                 }
@@ -136,27 +125,15 @@ class Provenance extends React.Component {
         let container = ReactDOM.findDOMNode(this.refs.graphContainer);
         // remove old contents of dom node
         while (container.firstChild) {
-            container.removeChild(container.firstChild); 
+            container.removeChild(container.firstChild);
         }
 
         let network = new vis.Network(container, data, options);
 
         if (ProjectStore.addEdgeMode) {
-            if(ProjectStore.showProvCtrlBtns) ProjectActions.showProvControlBtns();
-            //Todo: Use event listeners to get location of start and end node??
-            network.once("hoverNode", function (params) {
-                let node = params.node;
-                let nodeList = nodes.get(params);
-                function getNode(nodeList){
-                    return nodeList.id === node;
-                }
-                nodeList.find(getNode);
-                console.log(nodeList.find(getNode));
-                setTimeout(()=> {
-                    network.addEdgeMode();
-                }, 50);
-            });
-            //network.addEdgeMode();
+            if(ProjectStore.showProvCtrlBtns) ProjectActions.showProvControlBtns();//Hide buttons while in add edge mode
+            if(ProjectStore.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn([]);
+            network.addEdgeMode();
         }
 
         network.on("select", function (params) {
@@ -166,20 +143,36 @@ class Provenance extends React.Component {
         });
 
         network.on("click", function (params) {
+            let nodeData = nodes.get(params.nodes[0]);
+            let edgeData = edges.get(params.edges);
             if(params.nodes.length > 0) {
-                let nodeData = nodes.get(params.nodes[0]);
                 //Todo:Send nodes and edge ids to be deleted to store.Enforce that you can only delete activities/relations
-                if (nodeData.kind !== 'dds-file-version' && nodeData.id !== ProjectStore.selectedNode.id) {
-                    ProjectActions.showProvControlBtns();
+                if (nodeData.properties.kind !== 'dds-file-version' && nodeData.id !== ProjectStore.selectedNode.id) {
+                    if(!ProjectStore.showProvCtrlBtns) ProjectActions.showProvControlBtns();
+                    if(ProjectStore.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
                 }
-                if (nodeData.kind !== 'dds-activity' && ProjectStore.showProvCtrlBtns) {
+                if (nodeData.properties.kind !== 'dds-activity' && ProjectStore.showProvCtrlBtns) {
                     network.unselectAll();
                     ProjectActions.showProvControlBtns();
                 }
+                if (nodeData.properties.kind !== 'dds-activity' && ProjectStore.dltRelationsBtn) {
+                    network.unselectAll();
+                    ProjectActions.showDeleteRelationsBtn(edgeData, nodeData);
+                }
             }
-            if(params.nodes.length === 0 && ProjectStore.showProvCtrlBtns) {
+            if (params.nodes.length === 0 && ProjectStore.showProvCtrlBtns) {//If clicked
+            // on canvas only or on an edge while showProvCntrlBtns
                 ProjectActions.showProvControlBtns(data);
                 network.unselectAll();
+                if(edgeData.length > 0) network.selectEdges([edgeData[0].id]);
+            }
+            if (params.edges.length === 0 && ProjectStore.dltRelationsBtn) {//If clicked on canvas only
+                ProjectActions.showDeleteRelationsBtn(edgeData);
+                network.unselectAll();
+            }
+            if (params.edges.length > 0 && params.nodes.length < 1){
+                if(!ProjectStore.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
+                if(ProjectStore.showProvCtrlBtns && ProjectStore.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
             }
         });
     }
@@ -209,7 +202,7 @@ class Provenance extends React.Component {
                 onTouchTap={() => this.editActivity()}
                 />
         ];
-        const dltActions = [
+        const dltActivityActions = [
             <FlatButton
                 label="Cancel"
                 secondary={true}
@@ -218,17 +211,31 @@ class Provenance extends React.Component {
                 label="Delete"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={() => this.deleteSelected(ProjectStore.selectedNode)}
+                onTouchTap={() => this.deleteActivity(ProjectStore.selectedNode)}
                 />
         ];
+        const dltRelationActions = [
+                <FlatButton
+                    label="Cancel"
+                    secondary={true}
+                    onTouchTap={() => this.handleClose()}/>,
+                <FlatButton
+                    label="Delete"
+                    secondary={true}
+                    keyboardFocused={true}
+                    onTouchTap={() => this.deleteRelation(ProjectStore.selectedEdges[0])}//TODO: Fix this here
+                    />
+            ];
 
         let fileName = this.props.entityObj ? this.props.entityObj.name : null;
         let addFile = 'addFile';
         let addAct = 'addAct';
         let dltAct = 'dltAct';
+        let dltRel = 'dltRel';
         let editAct = 'editAct';
         let selectedNode = this.props.selectedNode ? this.props.selectedNode : null;
         let showBtns = this.props.showProvCtrlBtns ? 'block' : 'none';
+        let showDltRltBtn = this.props.dltRelationsBtn ? 'block' : 'none';
         let width = window.innerWidth * .85;
 
         return (
@@ -236,7 +243,7 @@ class Provenance extends React.Component {
                 <LeftNav docked={false} width={width} openRight={true} open={this.props.toggleProv}>
                     <LeftNav width={220} openRight={true} open={this.props.toggleProvEdit}>
                         <div
-                             style={{display: 'flex', justifyContent: 'center', flexFlow: 'row wrap', marginTop: 140}}>
+                            style={{display: 'flex', justifyContent: 'center', flexFlow: 'row wrap', marginTop: 140}}>
                             <NavigationClose style={{position: 'absolute', top: 110, left: 10, zIndex: 9999}}
                                              onTouchTap={() => this.toggleEditor()}/>
                             <RaisedButton
@@ -263,16 +270,25 @@ class Provenance extends React.Component {
                                 style={{zIndex: 9999, margin: 10, width: '80%'}}
                                 onTouchTap={() => this.openModal(addFile)}/>
                             <RaisedButton
-                                label="Edit Selected"
+                                label="Edit Activity"
                                 labelStyle={{color: '#235F9C'}}
                                 style={{zIndex: 9999, margin: 10, width: '80%', display: showBtns}}
                                 onTouchTap={() => this.openModal(editAct)}/>
                             <RaisedButton
-                                label="Delete Selected"
+                                label="Delete Activity"
                                 labelStyle={{color: '#F44336'}}
                                 style={{zIndex: 9999, margin: 10, width: '80%', display: showBtns}}
                                 onTouchTap={() => this.openModal(dltAct)}/>
-                            {this.props.addEdgeMode ? <div style={{margin: 10}}>Click on a node and drag to another node to create a new relation</div> : ''}
+                            <RaisedButton
+                                label="Delete Relation"
+                                labelStyle={{color: '#F44336'}}
+                                style={{zIndex: 9999, margin: 10, width: '80%', display: showDltRltBtn}}
+                                onTouchTap={() => this.openModal(dltRel)}/>
+                            {this.props.addEdgeMode ?
+                                <div style={{margin: 20}}>
+                                    Click on a node and drag to another node to create a new relation. <br/>
+                                    <span style={{color:'#757575'}}>Exit Add Relation Mode</span> <Cancel style={styles.cancelBtn} color={'#757575'} onTouchTap={() => this.toggleEdgeMode()}/>
+                                </div> : ''}
                         </div>
                         <Dialog
                             style={styles.dialogStyles}
@@ -306,8 +322,18 @@ class Provenance extends React.Component {
                             title="Are you sure you want to delete this activity?"
                             autoDetectWindowHeight={true}
                             autoScrollBodyContent={true}
-                            actions={dltActions}
-                            open={this.state.openDlt}
+                            actions={dltActivityActions}
+                            open={this.state.openDltAct}
+                            onRequestClose={() => this.handleClose()}>
+                            <i className="material-icons" style={styles.warning}>warning</i>
+                        </Dialog>
+                        <Dialog
+                            style={styles.dialogStyles}
+                            title="Are you sure you want to delete this relation?"
+                            autoDetectWindowHeight={true}
+                            autoScrollBodyContent={true}
+                            actions={dltRelationActions}
+                            open={this.state.openDltRel}
                             onRequestClose={() => this.handleClose()}>
                             <i className="material-icons" style={styles.warning}>warning</i>
                         </Dialog>
@@ -402,22 +428,33 @@ class Provenance extends React.Component {
         if(id === 'addFile') this.setState({openFileSearch: true});
         if(id === 'addAct') this.setState({openAddAct: true});
         if(id === 'editAct') this.setState({openEdit: true});
-        if(id === 'dltAct') this.setState({openDlt: true});
+        if(id === 'dltAct') this.setState({openDltAct: true});
+        if(id === 'dltRel') this.setState({openDltRel: true});
     }
 
-    deleteSelected(node) {
+    deleteActivity(node) {
         //Todo: delete nodes and or edges here
         let id = this.props.params.id;
         ProjectActions.deleteProvActivity(node, id);
         this.setState({
-            openDlt: false
+            openDltAct: false
+        });
+    }
+
+    deleteRelation(edge) {
+        //Todo: delete nodes and or edges here
+        let id = this.props.params.id;
+        ProjectActions.deleteProvRelation(edge, id);
+        this.setState({
+            openDltAct: false
         });
     }
 
     handleClose() {
         this.setState({
             openAddAct: false,
-            openDlt: false,
+            openDltAct: false,
+            openDltRel: false,
             openEdit: false,
             openFileSearch: false
         });
@@ -431,10 +468,17 @@ class Provenance extends React.Component {
 
     handleSelectValueChange(event, index, value) {
         if(window.innerWidth < 480) this.toggleEditor();
-        ProjectActions.toggleAddEdgeMode();
+        ProjectActions.toggleAddEdgeMode(value); //TODO: Store relation type in store for access when creating relation
         this.setState({
             value: value,
             errorText: null
+        });
+    }
+
+    toggleEdgeMode() {
+        ProjectActions.toggleAddEdgeMode();
+        this.setState({
+            value: null
         });
     }
 
@@ -449,6 +493,9 @@ class Provenance extends React.Component {
 }
 
 var styles = {
+    cancelBtn: {
+        fontSize: 18
+    },
     deleteFile: {
         float: 'right',
         position: 'relative',
