@@ -11,53 +11,73 @@ import IconMenu from 'material-ui/lib/menus/icon-menu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 import IconButton from 'material-ui/lib/icon-button';
 
-import Divider from 'material-ui/lib/divider';
-import Tabs from 'material-ui/lib/tabs/tabs';
-import Tab from 'material-ui/lib/tabs/tab';
-import Slider from 'material-ui/lib/slider';
 import SelectField from 'material-ui/lib/select-field';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
+import Fullscreen from 'material-ui/lib/svg-icons/navigation/fullscreen';
+import FullscreenExit from 'material-ui/lib/svg-icons/navigation/fullscreen-exit';
+import BorderColor from 'material-ui/lib/svg-icons/editor/border-color';
 import Cancel from 'material-ui/lib/svg-icons/navigation/cancel';
 import LeftNav from 'material-ui/lib/left-nav';
 
 class Provenance extends React.Component {
+    /**
+     * Creates a provenance graph using the Vis.js library
+     * Vis docs @ visjs.org/docs/network/
+     */
 
     constructor(props) {
         super(props);
         this.state = {
             errorText: null,
             floatingErrorText: 'This field is required.',
+            from: null,
+            height: window.innerHeight,
             openAddAct: false,
+            openConfirmRel: false,
             openDltAct: false,
             openDltRel: false,
             openEdit: false,
             openFileSearch: false,
-            value: null
+            openRelWarn: false,
+            relMsg: null,
+            to: null,
+            value: null,
+            width: window.innerWidth < 580 ? window.innerWidth : window.innerWidth * .85
         };
+        this.handleResize = this.handleResize.bind(this);
     }
 
     componentDidMount() {
+        // Listen for resize changes when rotating device
+        window.addEventListener('resize', this.handleResize);
         setTimeout(()=>{
-            let e = this.props.provEdges && this.props.provEdges.length > 0 ? this.props.provEdges : [];
-            let n = this.props.provNodes && this.props.provNodes.length > 0 ? this.props.provNodes : [];
-            this.renderProvGraph(e,n);
+            let edges = this.props.provEdges && this.props.provEdges.length > 0 ? this.props.provEdges : [];
+            let nodes = this.props.provNodes && this.props.provNodes.length > 0 ? this.props.provNodes : [];
+            this.renderProvGraph(edges,nodes);
         },100);
     }
 
     componentWillUpdate(nextProps, nextState){
-        let e = this.props.provEdges && this.props.provEdges.length > 0 ? this.props.provEdges : [];
-        let n = this.props.provNodes && this.props.provNodes.length > 0 ? this.props.provNodes : [];
+        let edges = this.props.provEdges && this.props.provEdges.length > 0 ? this.props.provEdges : [];
+        let nodes = this.props.provNodes && this.props.provNodes.length > 0 ? this.props.provNodes : [];
         if(nextProps.addEdgeMode !== this.props.addEdgeMode){
-        //Check if addEdgeMode has changed. If true render graph in add edge mode
-            this.renderProvGraph(e, n);
+        //Check if addEdgeMode has changed. If true render graph in add edge mode or with newly added edge
+            this.renderProvGraph(edges, nodes);
         }
     }
 
-    renderProvGraph(e, n) {
-        let nodes = new vis.DataSet(n);
-        let edges = new vis.DataSet(e);
+    handleResize(e) {
+        this.setState({
+            height: window.innerHeight,
+            width: window.innerWidth < 580 ? window.innerWidth : window.innerWidth * .85
+        })
+    }
+
+    renderProvGraph(edge, node) {
+        let nodes = new vis.DataSet(node);
+        let edges = new vis.DataSet(edge);
 
         // create a network
         let data = {
@@ -69,24 +89,48 @@ class Provenance extends React.Component {
             autoResize: true,
             height: '100%',
             width: '100%',
+            edges: {
+                color: {
+                    color:'#1976D2',
+                    highlight:'#1565C0',
+                    hover: '#1565C0',
+                    opacity:1
+                }
+            },
             nodes: {
                 shape: 'dot',
-                size: 16
+                size: 14,
+                borderWidth: 1,
+                borderWidthSelected: 3,
+                font: {
+                    color: '#343434',
+                    size: 10,
+                    face: 'roboto'
+                },
+                color: {
+                    border: '#1565C0',
+                    background: '#64B5F6',
+                    highlight: {
+                        border: '#1565C0',
+                        background: '#2196F3'
+                    },
+                    hover: {
+                        border: '#1565C0',
+                        background: '#2196F3'
+                    }
+                }
             },
             interaction: {
                 hover: true,
                 selectable: true,
-                tooltipDelay: 200,
-                multiselect: true
+                tooltipDelay: 200
             },
             layout: {
-                randomSeed: 1,
-                improvedLayout: true,
                 hierarchical: {
                     enabled: true,
                     levelSeparation: 150,
-                    nodeSpacing: 200,
-                    treeSpacing: 200,
+                    nodeSpacing: 100,
+                    treeSpacing: 100,
                     blockShifting: true,
                     edgeMinimization: true,
                     parentCentralization: true,
@@ -97,26 +141,83 @@ class Provenance extends React.Component {
             manipulation: {
                 enabled: false,
                 addEdge: (data, callback) => {
+                    let from = null;
+                    let to = null;
+                    let node1 = null;
+                    let node2 = null;
+                    let nodes = ProjectStore.provNodes;
+                    let relationKind = null;
                     if (data.from == data.to) {
                         callback(null);
                     } else {
-                        let nodes = ProjectStore.provNodes;
-                        //Todo: Need to access state so I can get value of select and setState of value back to null
-                        //Todo: post new relation and make fetch call to update dataset !!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        nodes.forEach((node) => { //Todo: Insert logic here to enforce rules of relation types//////////
-                            if(data.from === node.id){// Todo: Build 'from' object????
-                                console.log('from: '+node.properties.kind)
+                        switch(this.state.value){
+                            case 0:
+                                relationKind = 'used';
+                                break;
+                            case 1:
+                                relationKind = 'was_generated_by';
+                                break;
+                            case 2:
+                                relationKind = 'was_derived_from';
+                                break;
+                        }
+                        let getFromAndToNodes = () => {
+                            nodes.forEach((node) => { //Todo: Insert logic here to enforce rules of relation types//////////
+                                if (data.from === node.id) {
+                                    node1 = node;
+                                }
+                                if (data.to === node.id) {
+                                    node2 = node;
+                                }
+                            });
+                            if(relationKind !== 'was_derived_from') {
+                                if (node1.properties.kind === 'dds-file-version' && node2.properties.kind === 'dds-file-version') {
+                                    this.setState({
+                                        openRelWarn: true,
+                                        relMsg: <h5>Only<u><i>Was Derived From</i></u> relations can go
+                                            <u><i>from</i></u> files <u><i>to</i></u> files.
+                                        </h5>
+                                    });
+                                }
+                                if (node1.properties.kind === 'dds-activity' && node2.properties.kind === 'dds-activity') {
+                                    this.setState({
+                                        openRelWarn: true,
+                                        relMsg: <h5>An <u><i>activity</i></u> can not have a relation to another <u><i>activity</i></u>
+                                        </h5>
+                                    });
+                                }
+                                if (node1.properties.kind !== node2.properties.kind) {
+                                    if (relationKind === 'used') {
+                                        from = node1.properties.kind === 'dds-activity' ? node1 : node2;
+                                        to = node1.properties.kind === 'dds-activity' ? node2 : node1;
+                                    }
+                                    if (relationKind === 'was_generated_by') {
+                                        from = node1.properties.kind === 'dds-activity' ? node2 : node1;
+                                        to = node1.properties.kind === 'dds-activity' ? node1 : node2;
+                                    }
+                                    this.addRelation(relationKind, from, to);
+                                }
+                            } else {
+                                if (node1.properties.kind !== 'dds-file-version' || node2.properties.kind !== 'dds-file-version') {
+                                    // Send error modal to user explaining rules of was_derived_from relation
+                                    this.setState({
+                                        openRelWarn: true,
+                                        relMsg: <h5><u><i>Was Derived From</i></u> relations can only be created <u><i>from </i></u>
+                                            files <u><i>to</i></u> files.
+                                        </h5>
+                                    });
+                                } else {
+                                    from = node1;
+                                    to = node2;
+                                    this.confirmDerivedFromRel(from, to);
+                                }
                             }
-                            if(data.to === node.id){// Todo: Build 'to' object????
-                                console.log('to: '+node.properties.kind)
-                            }
-                        });
-                        this.setState({
-                            value: null
-                        });
+                        };
+                        getFromAndToNodes();
                         ProjectActions.toggleAddEdgeMode();
                         if(ProjectStore.showProvCtrlBtns) ProjectActions.showProvControlBtns();
-                        callback(data);
+                        this.setState({value: null});
+                        callback(null); // Disable default behavior and update dataset in the store instead
                     }
                 }
             }
@@ -136,17 +237,19 @@ class Provenance extends React.Component {
             network.addEdgeMode();
         }
 
-        network.on("select", function (params) {
+        network.on("select", (params) => {
             let nodeData = nodes.get(params.nodes[0]);
             let edgeData = edges.get(params.edges);
             ProjectActions.selectNodesAndEdges(edgeData, nodeData);
         });
 
-        network.on("click", function (params) {
+        network.on("click", (params) => {
             let nodeData = nodes.get(params.nodes[0]);
             let edgeData = edges.get(params.edges);
             if(params.nodes.length > 0) {
-                //Todo:Send nodes and edge ids to be deleted to store.Enforce that you can only delete activities/relations
+                if (nodeData.properties.kind !== 'dds-activity') {
+                    network.unselectAll();
+                }
                 if (nodeData.properties.kind !== 'dds-file-version' && nodeData.id !== ProjectStore.selectedNode.id) {
                     if(!ProjectStore.showProvCtrlBtns) ProjectActions.showProvControlBtns();
                     if(ProjectStore.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
@@ -225,7 +328,29 @@ class Provenance extends React.Component {
                     keyboardFocused={true}
                     onTouchTap={() => this.deleteRelation(ProjectStore.selectedEdges[0])}//TODO: Fix this here
                     />
-            ];
+        ];
+        const relationWarningActions = [
+                <FlatButton
+                    label="Okay"
+                    secondary={true}
+                    onTouchTap={() => this.handleClose()}/>
+        ];
+        const derivedRelActions = [
+            <FlatButton
+                label="Cancel"
+                secondary={true}
+                onTouchTap={() => this.handleClose()}/>,
+            <FlatButton
+                label="Switch"
+                secondary={true}
+                onTouchTap={() => this.switchRelationFromTo()}/>,
+            <FlatButton
+                label="Yes"
+                secondary={true}
+                keyboardFocused={true}
+                onTouchTap={() => this.addRelation('was_derived_from', this.state.from, this.state.to )}
+                />
+        ];
 
         let fileName = this.props.entityObj ? this.props.entityObj.name : null;
         let addFile = 'addFile';
@@ -236,22 +361,27 @@ class Provenance extends React.Component {
         let selectedNode = this.props.selectedNode ? this.props.selectedNode : null;
         let showBtns = this.props.showProvCtrlBtns ? 'block' : 'none';
         let showDltRltBtn = this.props.dltRelationsBtn ? 'block' : 'none';
-        let width = window.innerWidth * .85;
 
         return (
             <div>
-                <LeftNav docked={false} width={width} openRight={true} open={this.props.toggleProv}>
+                <LeftNav docked={false} width={this.state.width} openRight={true} open={this.props.toggleProv}>
                     <LeftNav width={220} openRight={true} open={this.props.toggleProvEdit}>
-                        <div
-                            style={{display: 'flex', justifyContent: 'center', flexFlow: 'row wrap', marginTop: 140}}>
-                            <NavigationClose style={{position: 'absolute', top: 110, left: 10, zIndex: 9999}}
-                                             onTouchTap={() => this.toggleEditor()}/>
-                            <RaisedButton
+                        <div style={styles.provEditor}>
+                            <IconButton style={styles.provEditor.toggleProvBtn}
+                                        onTouchTap={() => this.toggleEditor()}>
+                                <NavigationClose />
+                            </IconButton>
+                                <RaisedButton
                                 id="addAct"
                                 label="Add Activity"
-                                labelStyle={{color: '#235F9C'}}
-                                style={{zIndex: 9999, margin: 10, width: '80%'}}
+                                labelStyle={styles.provEditor.btn.label}
+                                style={styles.provEditor.btn}
                                 onTouchTap={() => this.openModal(addAct)}/>
+                            <RaisedButton
+                                label="Add File"
+                                labelStyle={styles.provEditor.btn.label}
+                                style={styles.provEditor.btn}
+                                onTouchTap={() => this.openModal(addFile)}/>
                             <SelectField value={this.state.value}
                                          id="selectRelation"
                                          onChange={this.handleSelectValueChange.bind(this, 'value')}
@@ -265,13 +395,8 @@ class Provenance extends React.Component {
                                 <MenuItem value={2} primaryText='was derived from'/>
                             </SelectField><br/>
                             <RaisedButton
-                                label="Add File"
-                                labelStyle={{color: '#235F9C'}}
-                                style={{zIndex: 9999, margin: 10, width: '80%'}}
-                                onTouchTap={() => this.openModal(addFile)}/>
-                            <RaisedButton
                                 label="Edit Activity"
-                                labelStyle={{color: '#235F9C'}}
+                                labelStyle={styles.provEditor.btn.label}
                                 style={{zIndex: 9999, margin: 10, width: '80%', display: showBtns}}
                                 onTouchTap={() => this.openModal(editAct)}/>
                             <RaisedButton
@@ -285,13 +410,14 @@ class Provenance extends React.Component {
                                 style={{zIndex: 9999, margin: 10, width: '80%', display: showDltRltBtn}}
                                 onTouchTap={() => this.openModal(dltRel)}/>
                             {this.props.addEdgeMode ?
-                                <div style={{margin: 20}}>
+                                <div style={styles.provEditor.addEdgeInstruction}>
                                     Click on a node and drag to another node to create a new relation. <br/>
-                                    <span style={{color:'#757575'}}>Exit Add Relation Mode</span> <Cancel style={styles.cancelBtn} color={'#757575'} onTouchTap={() => this.toggleEdgeMode()}/>
+                                    <span style={styles.provEditor.addEdgeInstruction.text}>Exit Add Relation Mode</span> <Cancel style={styles.cancelBtn} color={'#757575'} onTouchTap={() => this.toggleEdgeMode()}/>
                                 </div> : ''}
                         </div>
                         <Dialog
                             style={styles.dialogStyles}
+                            contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
                             title="Add Activity"
                             autoDetectWindowHeight={true}
                             autoScrollBodyContent={true}
@@ -319,6 +445,7 @@ class Provenance extends React.Component {
                         </Dialog>
                         <Dialog
                             style={styles.dialogStyles}
+                            contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
                             title="Are you sure you want to delete this activity?"
                             autoDetectWindowHeight={true}
                             autoScrollBodyContent={true}
@@ -329,6 +456,7 @@ class Provenance extends React.Component {
                         </Dialog>
                         <Dialog
                             style={styles.dialogStyles}
+                            contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
                             title="Are you sure you want to delete this relation?"
                             autoDetectWindowHeight={true}
                             autoScrollBodyContent={true}
@@ -339,6 +467,32 @@ class Provenance extends React.Component {
                         </Dialog>
                         <Dialog
                             style={styles.dialogStyles}
+                            contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
+                            title="Can't create relation"
+                            autoDetectWindowHeight={true}
+                            autoScrollBodyContent={true}
+                            actions={relationWarningActions}
+                            open={this.state.openRelWarn}
+                            onRequestClose={() => this.handleClose()}>
+                            <i className="material-icons" style={styles.warning}>warning</i>
+                            {this.state.relMsg}
+                        </Dialog>
+                        <Dialog
+                            style={styles.dialogStyles}
+                            contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
+                            title="Please confirm this 'was derived from' relation"
+                            autoDetectWindowHeight={true}
+                            autoScrollBodyContent={true}
+                            actions={derivedRelActions}
+                            open={this.state.openConfirmRel}
+                            onRequestClose={() => this.handleClose()}>
+                            <i className="material-icons" style={styles.help}>help</i>
+                            <h6>Are you sure that the file <b>{this.state.to && this.state.to !== null ? this.state.to.label+' ' : ''}</b>
+                            was derived from the file <b>{this.state.from && this.state.from !== null ? this.state.from.label+' ' : ''}</b>?</h6>
+                        </Dialog>
+                        <Dialog
+                            style={styles.dialogStyles}
+                            contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
                             title="Edit Activity"
                             autoDetectWindowHeight={true}
                             autoScrollBodyContent={true}
@@ -370,6 +524,7 @@ class Provenance extends React.Component {
                         </Dialog>
                         <Dialog
                             style={styles.dialogStyles}
+                            contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
                             title="Add File to Graph"
                             autoDetectWindowHeight={true}
                             autoScrollBodyContent={true}
@@ -378,14 +533,32 @@ class Provenance extends React.Component {
                             onRequestClose={() => this.handleClose()}>
                         </Dialog>
                     </LeftNav>
-                    <i className="material-icons" style={{position: 'absolute', top: 110, right: 10, zIndex: 200}}
-                       onTouchTap={() => this.toggleEditor()}>border_color</i>
-                    <NavigationClose style={{position: 'absolute', top: 110, left: 10, zIndex: 9999}}
-                                     onTouchTap={() => this.toggleProv()}/>
-                    <h4 style={styles.detailsTitle}>Provenance</h4>
+                    <IconButton tooltip="Edit Graph"
+                                style={styles.provEditor.toggleEditor}
+                                onTouchTap={() => this.toggleEditor()}>
+                        <BorderColor color="#424242" />
+                    </IconButton>
+                    <IconButton style={styles.provEditor.toggleProvBtn}
+                                onTouchTap={() => this.toggleProv()}>
+                        <NavigationClose />
+                    </IconButton>
+                    <IconButton tooltip={this.state.width === window.innerWidth ? "Exit Fullscreen" : "Fullscreen Mode"}
+                                tooltipPosition="bottom-right"
+                                style={styles.provEditor.toggleFullscreenBtn}
+                                onTouchTap={() => this.toggleFullscreen()}>
+                        {this.state.width === window.innerWidth ? <FullscreenExit /> : <Fullscreen />}
+                    </IconButton>
+                    <h5 className="mdl-color-text--grey-800"
+                        style={styles.provEditor.title}>
+                        Provenance
+                    </h5>
                     <div>
                         <div id="graphContainer" ref="graphContainer"
-                             style={{marginTop: 50,maxWidth: width* .75,height: window.innerHeight, float: 'left'}}
+                             style={{
+                             marginTop: 50,
+                             maxWidth: this.state.width,
+                             height: this.state.height,
+                             float: 'left'}}
                              className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                         </div>
                     </div>
@@ -406,6 +579,21 @@ class Provenance extends React.Component {
                 floatingErrorText: 'This field is required.'
             });
         }
+    }
+
+    addRelation(kind, from, to) {
+        ProjectActions.buildRelationBody(kind, from, to);
+        this.setState({
+            openConfirmRel: false
+        });
+    }
+
+    confirmDerivedFromRel(from, to) {
+        this.setState({
+            from: from,
+            to: to,
+            openConfirmRel: true
+        });
     }
 
     editActivity() {
@@ -436,54 +624,62 @@ class Provenance extends React.Component {
         //Todo: delete nodes and or edges here
         let id = this.props.params.id;
         ProjectActions.deleteProvActivity(node, id);
-        this.setState({
-            openDltAct: false
-        });
+        this.setState({openDltAct: false});
     }
 
     deleteRelation(edge) {
         //Todo: delete nodes and or edges here
         let id = this.props.params.id;
         ProjectActions.deleteProvRelation(edge, id);
-        this.setState({
-            openDltAct: false
-        });
+        this.setState({openDltAct: false});
     }
 
     handleClose() {
         this.setState({
             openAddAct: false,
+            openConfirmRel: false,
             openDltAct: false,
             openDltRel: false,
             openEdit: false,
-            openFileSearch: false
+            openFileSearch: false,
+            openRelWarn: false
         });
     }
 
     handleFloatingError(e) {
-        this.setState({
-            floatingErrorText: e.target.value ? '' : 'This field is required.'
-        });
+        this.setState({floatingErrorText: e.target.value ? '' : 'This field is required.'});
     }
 
     handleSelectValueChange(event, index, value) {
         if(window.innerWidth < 480) this.toggleEditor();
-        ProjectActions.toggleAddEdgeMode(value); //TODO: Store relation type in store for access when creating relation
+        ProjectActions.toggleAddEdgeMode(value);
         this.setState({
             value: value,
             errorText: null
         });
     }
 
-    toggleEdgeMode() {
-        ProjectActions.toggleAddEdgeMode();
+    switchRelationFromTo(){
         this.setState({
-            value: null
+            from: this.state.to,
+            to: this.state.from,
+            openConfirmRel: true
         });
     }
 
+    toggleEdgeMode() {
+        ProjectActions.toggleAddEdgeMode();
+        this.setState({value: null});
+    }
+
+    toggleFullscreen() {
+        let width = this.state.width !== window.innerWidth ? window.innerWidth
+            : window.innerWidth * .85;
+        this.setState({width: width});
+    }
+
+
     toggleProv() {
-        //this.renderProvGraph(); //Re-render graph after toggle
         ProjectActions.toggleProvView();
     }
 
@@ -505,6 +701,53 @@ var styles = {
         textAlign: 'center',
         fontColor: '#303F9F',
         zIndex: '9999'
+    },
+    help: {
+        fontSize: 48,
+        textAlign: 'center',
+        color: '#235F9C'
+    },
+    provEditor:{
+        display: 'flex',
+        justifyContent: 'center',
+        flexFlow: 'row wrap',
+        marginTop: 140,
+        addEdgeInstruction: {
+            margin: 20,
+            text: {
+                color:'#757575'
+            }
+        },
+        btn: {
+            zIndex: 9999,
+            margin: 10,
+            width: '80%',
+            label: {
+                color: '#235F9C'
+            }
+        },
+        toggleFullscreenBtn: {
+            position: 'absolute',
+            top: 130,
+            left: 2,
+            zIndex: 9999
+        },
+        toggleProvBtn: {
+            position: 'absolute',
+            top: 98,
+            left: 2,
+            zIndex: 9999
+        },
+        title: {
+            margin: '112px 0px 0px 48px',
+            fontWeight: 100
+        },
+        toggleEditor: {
+            position: 'absolute',
+            top: 100,
+            right: 10,
+            zIndex: 200
+        }
     },
     selectStyles: {
         marginTop: -20,

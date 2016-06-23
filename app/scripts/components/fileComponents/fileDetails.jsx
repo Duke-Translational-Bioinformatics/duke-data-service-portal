@@ -232,10 +232,6 @@ class FileDetails extends React.Component {
                     </div>
                 </div>
             </div>
-            <h4 style={styles.detailsTitle}>Provenance</h4>
-            <div id="mynetwork" ref="mynetwork" style={{minWidth: 600,height: 600}} className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800"></div>
-            <div id="hoverSpan"></div>
-            <div id="eventSpan"></div>
         </Card>;
         return (
             <div>
@@ -312,7 +308,8 @@ var styles = {
     menuIcon: {
         float: 'right',
         marginTop: 30,
-        marginBottom: -3
+        marginBottom: -3,
+        marginRight: 2
     },
     provAlert: {
         display: 'block',

@@ -49,6 +49,49 @@ var ProjectStore = Reflux.createStore({
         this.versionModal = false;
     },
 
+    buildRelationBody(kind, from, to) {
+        let body = {};
+        if(kind === 'used'){
+            body = {
+                'activity': {
+                    'id': from.id
+                },
+                'entity': {
+                    'kind': 'dds-file-version',
+                    'id': to.id
+                }
+            };
+        }
+        if(kind === 'was_generated_by'){
+            body = {
+                'entity': {
+                    'kind': 'dds-file-version',
+                    'id': from.id
+                },
+                'activity': {
+                    'id': to.id
+                }
+            };
+        }
+        if(kind === 'was_derived_from'){
+            body = {
+                'generated_entity': {
+                    'kind': 'dds-file-version',
+                    'id': to.id
+                },
+                'used_entity': {
+                    'kind': 'dds-file-version',
+                    'id': from.id
+                }
+            };
+        }
+        ProjectActions.addProvRelation(kind, body)
+    },
+
+    addProvRelationSuccess(json) { //Todo: update dataset/rerender graph with new relation
+        console.log(json)
+    },
+
     toggleAddEdgeMode(value) {
         if(value == null) {
             this.addEdgeMode = !this.addEdgeMode;
@@ -80,7 +123,7 @@ var ProjectStore = Reflux.createStore({
                         labels: node.labels,
                         properties: node.properties,
                         shape: 'box',
-                        color: '#FFFF00'
+                        color: '#1DE9B6'
                     }
                 } else {
                     return {
