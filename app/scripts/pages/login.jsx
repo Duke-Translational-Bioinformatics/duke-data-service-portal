@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router';
-import Header from '../components/globalComponents/header.jsx';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions.js';
 import RaisedButton from 'material-ui/lib/raised-button';
