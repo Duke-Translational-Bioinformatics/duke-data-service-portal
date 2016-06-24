@@ -7,6 +7,10 @@ var ProjectStore = Reflux.createStore({
 
     init() {
         this.listenToMany(ProjectActions);
+        this.provEditorModal = {open: false, id: null};
+        this.relFrom = null;
+        this.relTo = null;
+        this.relMsg = null;
         this.addEdgeMode = false;
         this.agents = [];
         this.agentKey = {};
@@ -48,6 +52,94 @@ var ProjectStore = Reflux.createStore({
         this.userKey = {};
         this.versionModal = false;
     },
+
+    openProvEditorModal(id) {
+        this.trigger({
+            provEditorModal: {open: true, id: id}
+        });
+    },
+
+    closeProvEditorModal(id) {
+        this.trigger({
+            provEditorModal: {open: false, id: id}
+        });
+    },
+
+    switchRelationFromTo(from, to){
+        this.trigger({
+            relFrom: to,
+            relTo: from,
+            openConfirmRel: true
+        });
+    },
+
+    startAddRelation(kind, from, to) {
+        ProjectActions.buildRelationBody(kind, from, to);
+        this.trigger({
+            provEditorModal: {open: false, id: 'confirmRel'}
+        });
+    },
+
+    confirmDerivedFromRel(from, to) {
+        this.trigger({
+            relFrom: from,
+            relTo: to,
+            provEditorModal: {open: true, id: 'confirmRel'}
+        });
+    },
+
+    getFromAndToNodes(data, relationKind, nodes) {
+        let from = null;
+        let to = null;
+        let node1 = null;
+        let node2 = null;
+        nodes.forEach((node) => { //Todo: Insert logic here to enforce rules of relation types//////////
+            if (data.from === node.id) {
+                node1 = node;
+            }
+            if (data.to === node.id) {
+                node2 = node;
+            }
+        });
+        if(relationKind !== 'was_derived_from') {
+            if (node1.properties.kind === 'dds-file-version' && node2.properties.kind === 'dds-file-version') {
+                this.trigger({
+                    provEditorModal: {open: true, id: 'relWarning'},
+                    relMsg: 'wasDerivedFrom'
+                });
+            }
+            if (node1.properties.kind === 'dds-activity' && node2.properties.kind === 'dds-activity') {
+                this.trigger({
+                    provEditorModal: {open: true, id: 'relWarning'},
+                    relMsg: 'actToActMsg'
+                });
+            }
+            if (node1.properties.kind !== node2.properties.kind) {
+                if (relationKind === 'used') {
+                    from = node1.properties.kind === 'dds-activity' ? node1 : node2;
+                    to = node1.properties.kind === 'dds-activity' ? node2 : node1;
+                }
+                if (relationKind === 'was_generated_by') {
+                    from = node1.properties.kind === 'dds-activity' ? node2 : node1;
+                    to = node1.properties.kind === 'dds-activity' ? node1 : node2;
+                }
+                ProjectActions.startAddRelation(relationKind, from, to);
+            }
+        } else {
+            if (node1.properties.kind !== 'dds-file-version' || node2.properties.kind !== 'dds-file-version') {
+                // Send error modal to user explaining rules of was_derived_from relation
+                this.trigger({
+                    provEditorModal: {open: true, id: 'relWarning'},
+                    relMsg: 'notFileToFile'
+                });
+            } else {
+                from = node1;
+                to = node2;
+                ProjectStore.confirmDerivedFromRel(from, to);
+            }
+        }
+    },
+
 
     buildRelationBody(kind, from, to) {
         let body = {};

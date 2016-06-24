@@ -32,17 +32,7 @@ class Provenance extends React.Component {
         this.state = {
             errorText: null,
             floatingErrorText: 'This field is required.',
-            from: null,
             height: window.innerHeight,
-            openAddAct: false,
-            openConfirmRel: false,
-            openDltAct: false,
-            openDltRel: false,
-            openEdit: false,
-            openFileSearch: false,
-            openRelWarn: false,
-            relMsg: null,
-            to: null,
             value: null,
             width: window.innerWidth < 580 ? window.innerWidth : window.innerWidth * .85
         };
@@ -141,10 +131,10 @@ class Provenance extends React.Component {
             manipulation: {
                 enabled: false,
                 addEdge: (data, callback) => {
-                    let from = null;
-                    let to = null;
-                    let node1 = null;
-                    let node2 = null;
+                    //let from = null;
+                    //let to = null;
+                    //let node1 = null;
+                    //let node2 = null;
                     let nodes = ProjectStore.provNodes;
                     let relationKind = null;
                     if (data.from == data.to) {
@@ -161,59 +151,7 @@ class Provenance extends React.Component {
                                 relationKind = 'was_derived_from';
                                 break;
                         }
-                        let getFromAndToNodes = () => {
-                            nodes.forEach((node) => { //Todo: Insert logic here to enforce rules of relation types//////////
-                                if (data.from === node.id) {
-                                    node1 = node;
-                                }
-                                if (data.to === node.id) {
-                                    node2 = node;
-                                }
-                            });
-                            if(relationKind !== 'was_derived_from') {
-                                if (node1.properties.kind === 'dds-file-version' && node2.properties.kind === 'dds-file-version') {
-                                    this.setState({
-                                        openRelWarn: true,
-                                        relMsg: <h5>Only<u><i>Was Derived From</i></u> relations can go
-                                            <u><i>from</i></u> files <u><i>to</i></u> files.
-                                        </h5>
-                                    });
-                                }
-                                if (node1.properties.kind === 'dds-activity' && node2.properties.kind === 'dds-activity') {
-                                    this.setState({
-                                        openRelWarn: true,
-                                        relMsg: <h5>An <u><i>activity</i></u> can not have a relation to another <u><i>activity</i></u>
-                                        </h5>
-                                    });
-                                }
-                                if (node1.properties.kind !== node2.properties.kind) {
-                                    if (relationKind === 'used') {
-                                        from = node1.properties.kind === 'dds-activity' ? node1 : node2;
-                                        to = node1.properties.kind === 'dds-activity' ? node2 : node1;
-                                    }
-                                    if (relationKind === 'was_generated_by') {
-                                        from = node1.properties.kind === 'dds-activity' ? node2 : node1;
-                                        to = node1.properties.kind === 'dds-activity' ? node1 : node2;
-                                    }
-                                    this.addRelation(relationKind, from, to);
-                                }
-                            } else {
-                                if (node1.properties.kind !== 'dds-file-version' || node2.properties.kind !== 'dds-file-version') {
-                                    // Send error modal to user explaining rules of was_derived_from relation
-                                    this.setState({
-                                        openRelWarn: true,
-                                        relMsg: <h5><u><i>Was Derived From</i></u> relations can only be created <u><i>from </i></u>
-                                            files <u><i>to</i></u> files.
-                                        </h5>
-                                    });
-                                } else {
-                                    from = node1;
-                                    to = node2;
-                                    this.confirmDerivedFromRel(from, to);
-                                }
-                            }
-                        };
-                        getFromAndToNodes();
+                        ProjectActions.getFromAndToNodes(data, relationKind, nodes);
                         ProjectActions.toggleAddEdgeMode();
                         if(ProjectStore.showProvCtrlBtns) ProjectActions.showProvControlBtns();
                         this.setState({value: null});
@@ -246,6 +184,7 @@ class Provenance extends React.Component {
         network.on("click", (params) => {
             let nodeData = nodes.get(params.nodes[0]);
             let edgeData = edges.get(params.edges);
+            ProjectActions.manageProvEditorControls(params, nodeData, edgeData);
             if(params.nodes.length > 0) {
                 if (nodeData.properties.kind !== 'dds-activity') {
                     network.unselectAll();
@@ -285,7 +224,7 @@ class Provenance extends React.Component {
             <FlatButton
                 label="Cancel"
                 secondary={true}
-                onTouchTap={() => this.handleClose()}/>,
+                onTouchTap={() => this.handleClose('addAct')}/>,
             <FlatButton
                 label="Submit"
                 secondary={true}
@@ -297,7 +236,7 @@ class Provenance extends React.Component {
             <FlatButton
                 label="Cancel"
                 secondary={true}
-                onTouchTap={() => this.handleClose()}/>,
+                onTouchTap={() => this.handleClose('editAct')}/>,
             <FlatButton
                 label="Submit"
                 secondary={true}
@@ -309,7 +248,7 @@ class Provenance extends React.Component {
             <FlatButton
                 label="Cancel"
                 secondary={true}
-                onTouchTap={() => this.handleClose()}/>,
+                onTouchTap={() => this.handleClose('dltAct')}/>,
             <FlatButton
                 label="Delete"
                 secondary={true}
@@ -321,7 +260,7 @@ class Provenance extends React.Component {
                 <FlatButton
                     label="Cancel"
                     secondary={true}
-                    onTouchTap={() => this.handleClose()}/>,
+                    onTouchTap={() => this.handleClose('delRel')}/>,
                 <FlatButton
                     label="Delete"
                     secondary={true}
@@ -333,31 +272,41 @@ class Provenance extends React.Component {
                 <FlatButton
                     label="Okay"
                     secondary={true}
-                    onTouchTap={() => this.handleClose()}/>
+                    onTouchTap={() => this.handleClose('relWarning')}/>
         ];
         const derivedRelActions = [
             <FlatButton
                 label="Cancel"
                 secondary={true}
-                onTouchTap={() => this.handleClose()}/>,
+                onTouchTap={() => this.handleClose('confirmRel')}/>,
             <FlatButton
                 label="Switch"
                 secondary={true}
-                onTouchTap={() => this.switchRelationFromTo()}/>,
+                onTouchTap={() => this.switchRelations(this.props.relFrom, this.props.relTo)}/>,
             <FlatButton
                 label="Yes"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={() => this.addRelation('was_derived_from', this.state.from, this.state.to )}
+                onTouchTap={() => this.addDerivedFromRelation('was_derived_from', this.props.relFrom, this.props.relTo)}
                 />
         ];
 
         let fileName = this.props.entityObj ? this.props.entityObj.name : null;
-        let addFile = 'addFile';
-        let addAct = 'addAct';
-        let dltAct = 'dltAct';
-        let dltRel = 'dltRel';
-        let editAct = 'editAct';
+        let addFile = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'addFile' ? this.props.provEditorModal.open : false;
+        let addAct = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'addAct' ? this.props.provEditorModal.open : false;
+        let dltAct = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'dltAct' ? this.props.provEditorModal.open : false;
+        let dltRel = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'dltRel' ? this.props.provEditorModal.open : false;
+        let editAct = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'editAct' ? this.props.provEditorModal.open : false;
+        let openRelWarn = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'relWarning' ? this.props.provEditorModal.open : false;
+        let openConfirmRel = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'confirmRel' ? this.props.provEditorModal.open : false;
+        let drvFrmMsg = this.props.relMsg && this.props.relMsg === 'wasDerivedFrom' ?
+            <h5>Only<u><i>Was Derived From</i></u> relations can go
+            <u><i> from </i></u> files <u><i>to</i></u> files.</h5> : '';
+        let actToActMsg = this.props.relMsg && this.props.relMsg === 'actToActMsg' ?
+            <h5>An <u><i>activity</i></u> can not have a relation to another <u><i>activity</i></u></h5> : '';
+        let notFileToFile = this.props.relMsg && this.props.relMsg === 'notFileToFile' ?
+            <h5><u><i>Was Derived From</i></u> relations can only be created <u><i>from </i></u>
+            files <u><i>to</i></u> files.</h5> : '';
         let selectedNode = this.props.selectedNode ? this.props.selectedNode : null;
         let showBtns = this.props.showProvCtrlBtns ? 'block' : 'none';
         let showDltRltBtn = this.props.dltRelationsBtn ? 'block' : 'none';
@@ -376,12 +325,12 @@ class Provenance extends React.Component {
                                 label="Add Activity"
                                 labelStyle={styles.provEditor.btn.label}
                                 style={styles.provEditor.btn}
-                                onTouchTap={() => this.openModal(addAct)}/>
+                                onTouchTap={() => this.openModal('addAct')}/>
                             <RaisedButton
                                 label="Add File"
                                 labelStyle={styles.provEditor.btn.label}
                                 style={styles.provEditor.btn}
-                                onTouchTap={() => this.openModal(addFile)}/>
+                                onTouchTap={() => this.openModal('addFile')}/>
                             <SelectField value={this.state.value}
                                          id="selectRelation"
                                          onChange={this.handleSelectValueChange.bind(this, 'value')}
@@ -398,17 +347,17 @@ class Provenance extends React.Component {
                                 label="Edit Activity"
                                 labelStyle={styles.provEditor.btn.label}
                                 style={{zIndex: 9999, margin: 10, width: '80%', display: showBtns}}
-                                onTouchTap={() => this.openModal(editAct)}/>
+                                onTouchTap={() => this.openModal('editAct')}/>
                             <RaisedButton
                                 label="Delete Activity"
                                 labelStyle={{color: '#F44336'}}
                                 style={{zIndex: 9999, margin: 10, width: '80%', display: showBtns}}
-                                onTouchTap={() => this.openModal(dltAct)}/>
+                                onTouchTap={() => this.openModal('dltAct')}/>
                             <RaisedButton
                                 label="Delete Relation"
                                 labelStyle={{color: '#F44336'}}
                                 style={{zIndex: 9999, margin: 10, width: '80%', display: showDltRltBtn}}
-                                onTouchTap={() => this.openModal(dltRel)}/>
+                                onTouchTap={() => this.openModal('dltRel')}/>
                             {this.props.addEdgeMode ?
                                 <div style={styles.provEditor.addEdgeInstruction}>
                                     Click on a node and drag to another node to create a new relation. <br/>
@@ -422,8 +371,8 @@ class Provenance extends React.Component {
                             autoDetectWindowHeight={true}
                             autoScrollBodyContent={true}
                             actions={addActions}
-                            open={this.state.openAddAct}
-                            onRequestClose={() => this.handleClose()}>
+                            open={addAct}
+                            onRequestClose={() => this.handleClose('addAct')}>
                             <form action="#" id="newActivityForm">
                                 <TextField
                                     style={styles.textStyles}
@@ -450,8 +399,8 @@ class Provenance extends React.Component {
                             autoDetectWindowHeight={true}
                             autoScrollBodyContent={true}
                             actions={dltActivityActions}
-                            open={this.state.openDltAct}
-                            onRequestClose={() => this.handleClose()}>
+                            open={dltAct}
+                            onRequestClose={() => this.handleClose('dltAct')}>
                             <i className="material-icons" style={styles.warning}>warning</i>
                         </Dialog>
                         <Dialog
@@ -461,8 +410,8 @@ class Provenance extends React.Component {
                             autoDetectWindowHeight={true}
                             autoScrollBodyContent={true}
                             actions={dltRelationActions}
-                            open={this.state.openDltRel}
-                            onRequestClose={() => this.handleClose()}>
+                            open={dltRel}
+                            onRequestClose={() => this.handleClose('dltRel')}>
                             <i className="material-icons" style={styles.warning}>warning</i>
                         </Dialog>
                         <Dialog
@@ -472,10 +421,12 @@ class Provenance extends React.Component {
                             autoDetectWindowHeight={true}
                             autoScrollBodyContent={true}
                             actions={relationWarningActions}
-                            open={this.state.openRelWarn}
-                            onRequestClose={() => this.handleClose()}>
+                            open={openRelWarn}
+                            onRequestClose={() => this.handleClose('relWarning')}>
                             <i className="material-icons" style={styles.warning}>warning</i>
-                            {this.state.relMsg}
+                            {drvFrmMsg}
+                            {actToActMsg}
+                            {notFileToFile}
                         </Dialog>
                         <Dialog
                             style={styles.dialogStyles}
@@ -484,11 +435,11 @@ class Provenance extends React.Component {
                             autoDetectWindowHeight={true}
                             autoScrollBodyContent={true}
                             actions={derivedRelActions}
-                            open={this.state.openConfirmRel}
-                            onRequestClose={() => this.handleClose()}>
+                            open={openConfirmRel}
+                            onRequestClose={() => this.handleClose('confirmRel')}>
                             <i className="material-icons" style={styles.help}>help</i>
-                            <h6>Are you sure that the file <b>{this.state.to && this.state.to !== null ? this.state.to.label+' ' : ''}</b>
-                            was derived from the file <b>{this.state.from && this.state.from !== null ? this.state.from.label+' ' : ''}</b>?</h6>
+                            <h6>Are you sure that the file <b>{this.props.relFrom && this.props.relFrom !== null ? this.props.relFrom.label+' ' : ''}</b>
+                            was derived from the file <b>{this.props.relTo && this.props.relTo !== null ? this.props.relTo.label+' ' : ''}</b>?</h6>
                         </Dialog>
                         <Dialog
                             style={styles.dialogStyles}
@@ -497,8 +448,8 @@ class Provenance extends React.Component {
                             autoDetectWindowHeight={true}
                             autoScrollBodyContent={true}
                             actions={editActions}
-                            open={this.state.openEdit}
-                            onRequestClose={() => this.handleClose()}>
+                            open={editAct}
+                            onRequestClose={() => this.handleClose('editAct')}>
                             <form action="#" id="newActivityForm">
                                 <TextField
                                     autoFocus={true}
@@ -529,8 +480,9 @@ class Provenance extends React.Component {
                             autoDetectWindowHeight={true}
                             autoScrollBodyContent={true}
                             actions={addActions}
-                            open={this.state.openFileSearch}
-                            onRequestClose={() => this.handleClose()}>
+                            open={addFile}
+                            onRequestClose={() => this.handleClose('addFile')}>
+                            <h5>Need proper global search to build file picker (e.g. Elastisearch)</h5>
                         </Dialog>
                     </LeftNav>
                     <IconButton tooltip="Edit Graph"
@@ -567,6 +519,10 @@ class Provenance extends React.Component {
         );
     }
 
+    addDerivedFromRelation(kind, from, to) {
+        ProjectActions.startAddRelation(kind, from, to);
+    }
+
     addNewActivity() {
         if (this.state.floatingErrorText) {
             return null
@@ -574,26 +530,11 @@ class Provenance extends React.Component {
             let name = document.getElementById('activityNameText').value;
             let desc = document.getElementById('activityDescText').value;
             ProjectActions.addProvActivity(name, desc);
+            ProjectActions.closeProvEditorModal('addAct');
             this.setState({
-                openAddAct: false,
                 floatingErrorText: 'This field is required.'
             });
         }
-    }
-
-    addRelation(kind, from, to) {
-        ProjectActions.buildRelationBody(kind, from, to);
-        this.setState({
-            openConfirmRel: false
-        });
-    }
-
-    confirmDerivedFromRel(from, to) {
-        this.setState({
-            from: from,
-            to: to,
-            openConfirmRel: true
-        });
     }
 
     editActivity() {
@@ -605,45 +546,33 @@ class Provenance extends React.Component {
             let name = document.getElementById('activityNameText').value;
             let desc = document.getElementById('activityDescText').value;
             ProjectActions.editProvActivity(id, name, desc, actName);
+            ProjectActions.closeProvEditorModal('editAct');
             this.setState({
-                openEdit: false,
                 floatingErrorText: 'This field is required.'
             });
         }
     }
 
     openModal(id) {
-        if(id === 'addFile') this.setState({openFileSearch: true});
-        if(id === 'addAct') this.setState({openAddAct: true});
-        if(id === 'editAct') this.setState({openEdit: true});
-        if(id === 'dltAct') this.setState({openDltAct: true});
-        if(id === 'dltRel') this.setState({openDltRel: true});
+        ProjectActions.openProvEditorModal(id);
     }
 
     deleteActivity(node) {
         //Todo: delete nodes and or edges here
         let id = this.props.params.id;
         ProjectActions.deleteProvActivity(node, id);
-        this.setState({openDltAct: false});
+        ProjectActions.closeProvEditorModal('dltAct');
     }
 
     deleteRelation(edge) {
         //Todo: delete nodes and or edges here
         let id = this.props.params.id;
         ProjectActions.deleteProvRelation(edge, id);
-        this.setState({openDltAct: false});
+        ProjectActions.closeProvEditorModal('dltRel');
     }
 
-    handleClose() {
-        this.setState({
-            openAddAct: false,
-            openConfirmRel: false,
-            openDltAct: false,
-            openDltRel: false,
-            openEdit: false,
-            openFileSearch: false,
-            openRelWarn: false
-        });
+    handleClose(id) {
+        ProjectActions.closeProvEditorModal(id);
     }
 
     handleFloatingError(e) {
@@ -651,7 +580,7 @@ class Provenance extends React.Component {
     }
 
     handleSelectValueChange(event, index, value) {
-        if(window.innerWidth < 480) this.toggleEditor();
+        if(window.innerWidth < 580) this.toggleEditor();
         ProjectActions.toggleAddEdgeMode(value);
         this.setState({
             value: value,
@@ -659,12 +588,8 @@ class Provenance extends React.Component {
         });
     }
 
-    switchRelationFromTo(){
-        this.setState({
-            from: this.state.to,
-            to: this.state.from,
-            openConfirmRel: true
-        });
+    switchRelations(from, to){
+        ProjectActions.switchRelationFromTo(from, to);
     }
 
     toggleEdgeMode() {
