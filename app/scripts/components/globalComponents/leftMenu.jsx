@@ -58,3 +58,12 @@ class LeftMenu extends React.Component {
         new Framework7().closePanel();
     }
 }
+
+var styles = {
+    navIcon: {
+        paddingRight: 5,
+        verticalAlign: -6
+    }
+};
+
+export default LeftMenu;
