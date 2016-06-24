@@ -58,7 +58,12 @@ class Login extends React.Component {
                 MainActions.authenticationServiceValidate(this.state.appConfig, accessToken);
             }
         } else {
-            this.props.appRouter.transitionTo('/home');
+            if (localStorage.getItem('redirectTo') !== null) {
+                let redUrl = localStorage.getItem('redirectTo');
+                document.location.replace(redUrl);
+            } else {
+                this.props.appRouter.transitionTo('/home');
+            }
         }
         return (
             <div>

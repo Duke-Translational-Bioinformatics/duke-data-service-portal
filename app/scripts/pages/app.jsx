@@ -54,6 +54,9 @@ class App extends React.Component {
             if (this.props.routerPath !== '/login' && !this.state.currentUser) {
                 MainActions.getCurrentUser();
             }
+            if (localStorage.getItem('redirectTo') !== null) {
+                setTimeout(() => { localStorage.removeItem('redirectTo'); }, 10000);
+            }
         }
         let str = this.props.appRouter.getCurrentPathname();
         let fileRoute = str.substring(str.lastIndexOf("/") - 6, str.lastIndexOf("/"));
@@ -61,12 +64,21 @@ class App extends React.Component {
         let toasts = null;
         if (this.state.toasts) {
             toasts = this.state.toasts.map(obj => {
-                return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} autoHideDuration={3000} onRequestClose={this.handleRequestClose.bind(this)}
+                return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} autoHideDuration={3000}
+                                 onRequestClose={this.handleRequestClose.bind(this)}
                                  open={true} style={styles.toast}/>
             });
         }
         let content = <RouteHandler {...this.props} {...this.state}/>;
         if (!this.state.appConfig.apiToken && !this.state.appConfig.isLoggedIn && this.props.routerPath !== '/login') {
+            if (location.hash != '' && location.hash != '#/login') {
+                let redUrl = location.href;
+                if (typeof(Storage) !== 'undefined') {
+                    localStorage.setItem('redirectTo', redUrl);
+                } else {
+                    this.props.appRouter.transitionTo('/login')
+                }
+            }
             this.props.appRouter.transitionTo('/login')
         }
         let search = '';
@@ -89,7 +101,7 @@ class App extends React.Component {
             <span>
                 <div className="statusbar-overlay"></div>
                 <div className="panel-overlay"></div>
-                {!this.state.appConfig.apiToken ? '' : <LeftMenu/>}
+                {!this.state.appConfig.apiToken ? '' : <LeftMenu {...this.props}/>}
                 <div className="views">
                     <div className="view view-main">
                         <Header {...this.props} {...this.state}/>
@@ -122,9 +134,9 @@ class App extends React.Component {
 
     }
 
-    handleRequestClose () {
+    handleRequestClose() {
 
-    };
+    }
 }
 
 var styles = {
