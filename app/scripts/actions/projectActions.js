@@ -35,7 +35,6 @@ var ProjectActions = Reflux.createActions([
     'getUserSuccess',
     'getPermissions',
     'getPermissionsSuccess',
-    'getVersionPermissions',
     'getUserKey',
     'getUserKeySuccess',
     'createUserKey',
@@ -354,26 +353,6 @@ ProjectActions.getPermissions.preEmit = (id, userId) => {
         }).then(function (json) {
             ProjectActions.getPermissionsSuccess(json)
         })
-        .catch(function (ex) {
-            ProjectActions.handleErrors(ex)
-        });
-};
-
-// Todo/////////////////////////
-// Used to get permissions for versions because the version object doesn't include the 'project' property like the
-// file and folder object does. Can be removed and version refactored if property is added to version object.
-ProjectActions.getVersionPermissions.preEmit = (id, kind, userId) => {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + kind + '/' + id, {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.getPermissions(json.project.id, userId)
-    })
         .catch(function (ex) {
             ProjectActions.handleErrors(ex)
         });
@@ -1024,8 +1003,7 @@ ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind, fileN
             },
             'upload': {
                 'id': uploadId
-            },
-            'label': 'Initial Version'
+            }
         })
     }).then(checkResponse).then(function (response) {
         return response.json()
@@ -1076,7 +1054,7 @@ ProjectActions.hashFile.preEmit = function (file, id) {
 
 // "Server response"
     var response =
-        "importScripts('https://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js');" +
+        "importScripts('https://raw.githubusercontent.com/Duke-Translational-Bioinformatics/duke-data-service-portal/develop/app/lib/md5.js');" +
         "var md5, cryptoType;" +
         "self.onmessage = " + webWorkerOnMessage.toString();
 
@@ -1129,9 +1107,9 @@ ProjectActions.hashFile.preEmit = function (file, id) {
     worker.postMessage({type: "create"});
 };
 
-ProjectActions.postHash.preEmit = function (hashObj){ //Todo: Make proper preemit function w/fetch call !!!!!!!!!!!!
-    //console.log('File ID:' + hashObj.id + ' ' + 'Hash:' + hashObj.hash);
-};
+//ProjectActions.postHash.preEmit = function (hashObj){ //Todo: Make proper preemit function w/fetch call !!!!!!!!!!!!
+//    //console.log('File ID:' + hashObj.id + ' ' + 'Hash:' + hashObj.hash);
+//};
 
 function checkResponse(response) {
     return checkStatus(response, MainActions);

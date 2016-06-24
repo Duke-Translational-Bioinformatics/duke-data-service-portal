@@ -98,6 +98,8 @@ class ProjectOptionsMenu extends React.Component {
                     <form action="#" id="newProjectForm">
                         <TextField
                             style={styles.textStyles}
+                            autoFocus={true}
+                            onFocus={this.handleFloatingErrorInputChange.bind(this)}
                             hintText="Project Name"
                             defaultValue={prName}
                             errorText={this.state.floatingErrorText}
@@ -108,6 +110,8 @@ class ProjectOptionsMenu extends React.Component {
                             onChange={this.handleFloatingErrorInputChange.bind(this)}/> <br/>
                         <TextField
                             style={styles.textStyles}
+                            autoFocus={true}
+                            onFocus={this.handleFloatingErrorInputChange2.bind(this)}
                             hintText="Project Description"
                             defaultValue={desc}
                             errorText={this.state.floatingErrorText2}
