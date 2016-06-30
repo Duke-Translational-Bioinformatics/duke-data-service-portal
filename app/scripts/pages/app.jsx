@@ -53,6 +53,9 @@ class App extends React.Component {
         if (this.state.appConfig.apiToken) {
             if (this.props.routerPath !== '/login' && !this.state.currentUser) {
                 MainActions.getCurrentUser();
+            } // Redirect to proper page on log in e.g. navigating to link or after session timeout.
+            if (localStorage.getItem('redirectTo') !== null) {
+                setTimeout(() => { localStorage.removeItem('redirectTo'); }, 10000);
             }
             if (localStorage.getItem('redirectTo') !== null) {
                 setTimeout(() => { localStorage.removeItem('redirectTo'); }, 10000);
@@ -71,6 +74,7 @@ class App extends React.Component {
         }
         let content = <RouteHandler {...this.props} {...this.state}/>;
         if (!this.state.appConfig.apiToken && !this.state.appConfig.isLoggedIn && this.props.routerPath !== '/login') {
+            // Redirect to proper page on log in e.g. navigating to link or after session timeout.
             if (location.hash != '' && location.hash != '#/login') {
                 let redUrl = location.href;
                 if (typeof(Storage) !== 'undefined') {
@@ -131,7 +135,6 @@ class App extends React.Component {
                 setTimeout(() => MainActions.removeToast(obj.ref), 2500);
             });
         }
-
     }
 
     handleRequestClose() {

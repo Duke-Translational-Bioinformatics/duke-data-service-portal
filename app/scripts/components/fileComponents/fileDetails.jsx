@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import ReactDOM from 'react-dom';
 const { object, bool, array, string } = PropTypes;
 import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
@@ -11,11 +12,19 @@ import Loaders from '../../components/globalComponents/loaders.jsx';
 import urlGen from '../../../util/urlGen.js';
 import Tooltip from '../../../util/tooltip.js';
 import BaseUtils from '../../../util/baseUtils.js';
-import IconButton from 'material-ui/lib/icon-button';
+import BorderColor from 'material-ui/lib/svg-icons/editor/border-color.js';
 import Card from 'material-ui/lib/card/card';
+import FlatButton from 'material-ui/lib/flat-button';
+import IconButton from 'material-ui/lib/icon-button';
+import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
+import Paper from 'material-ui/lib/paper';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 class FileDetails extends React.Component {
+
+    constructor(props) {
+        super(props);
+    }
 
     render() {
         if (this.props.error && this.props.error.response){
@@ -42,7 +51,7 @@ class FileDetails extends React.Component {
         let parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : null;
         let parentId = this.props.entityObj ? this.props.entityObj.parent.id : null;
         let name = this.props.entityObj ? this.props.entityObj.name : null;
-        let label = this.props.entityObj && this.props.entityObj.label ? this.props.entityObj.label : null;
+        let label = this.props.entityObj && this.props.entityObj.current_version.label ? this.props.entityObj.current_version.label : null;
         let projectName = this.props.entityObj && this.props.entityObj.ancestors ? this.props.entityObj.ancestors[0].name : null;
         let crdOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.created_on : null;
         let x = new Date(crdOn);
@@ -50,23 +59,44 @@ class FileDetails extends React.Component {
         let createdBy = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.created_by.full_name : null;
         let lastUpdatedOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.last_updated_on : null;
         let lastUpdatedBy = this.props.entityObj && this.props.entityObj.audit.last_updated_by ? this.props.entityObj.audit.last_updated_by.full_name : null;
-        let storage =  this.props.entityObj && this.props.entityObj.upload ? this.props.entityObj.upload.storage_provider.description : null;
-        let bytes = this.props.entityObj && this.props.entityObj.upload ? this.props.entityObj.upload.size : null;
-        let hash = this.props.entityObj && this.props.entityObj.upload.hash ? this.props.entityObj.upload.hash.algorithm +': '+ this.props.entityObj.upload.hash.value : null;
+        let storage =  this.props.entityObj && this.props.entityObj.current_version.upload ? this.props.entityObj.current_version.upload.storage_provider.description : null;
+        let bytes = this.props.entityObj && this.props.entityObj.current_version.upload ? this.props.entityObj.current_version.upload.size : null;
+        let hash = this.props.entityObj && this.props.entityObj.current_version.upload.hash ? this.props.entityObj.current_version.upload.hash.algorithm +': '+ this.props.entityObj.current_version.upload.hash.value : null;
+        let currentVersion = this.props.entityObj && this.props.entityObj.current_version.version ? this.props.entityObj.current_version.version : null;
         let versionsButton = null;
         let versions = null;
-        if(this.props.fileVersions && this.props.fileVersions != undefined) {
+        let versionCount = [];
+
+        let provAlert = this.props.showProvAlert ? <Card style={styles.provAlert} zDepth={1}>
+            <div style={styles.provAlert.wrapper}>Would you like to add provenance for this file?</div>
+            <IconButton style={styles.button} onTouchTap={() => this.dismissAlert()}>
+                <NavigationClose color="#E8F5E9"/>
+            </IconButton>
+            <FlatButton
+                label="Yes"
+                labelStyle={styles.provAlert.alertButton.label}
+                style={styles.provAlert.alertButton}
+                hoverColor="#4CAF50"
+                onTouchTap={() => this.openProv()}
+                />
+        </Card> : '';
+
+        if(this.props.fileVersions && this.props.fileVersions != undefined && this.props.fileVersions.length > 1) {
             versions = this.props.fileVersions.map((version) => {
                 return version.is_deleted;
             });
             for (let i = 0; i < versions.length; i++) {
                 if (versions[i] === false) {
-                    versionsButton = <RaisedButton
-                        label="FILE VERSIONS"
-                        secondary={true}
-                        style={styles.button}
-                        onTouchTap={() => this.openModal()}
-                        />
+                    versionCount.push(versions[i]);
+                    if (versionCount.length > 1) {
+                        versionsButton = <RaisedButton
+                            label="FILE VERSIONS"
+                            labelStyle={{fontWeight: 100}}
+                            secondary={true}
+                            style={styles.button}
+                            onTouchTap={() => this.openModal()}
+                            />
+                    }
                 }
             }
         }
@@ -89,10 +119,13 @@ class FileDetails extends React.Component {
                 <div className="mdl-cell mdl-cell--9-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
                     <span className="mdl-color-text--grey-800" style={styles.title}>{ name }</span>
                 </div>
-                { label != null ? <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
-                    <span className="mdl-color-text--grey-600">{ label }</span>
-                </div> : null}
-                <div className="mdl-cell mdl-cell--8-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.path}>
+                { label != null ? <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.subTitle}>
+                    <span className="mdl-color-text--grey-600" style={styles.spanTitle}>{ label }</span>
+                </div> : null }
+                <div className="mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.subTitle}>
+                    <span style={styles.spanTitle}>{ 'Version: ' + currentVersion }</span>
+                </div>
+                <div className="mdl-cell mdl-cell--8-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.subTitle}>
                     <span style={styles.spanTitle}>{ BaseUtils.getFilePath(ancestors) + name }</span>
                 </div>
                 <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.btnWrapper}>
@@ -104,6 +137,7 @@ class FileDetails extends React.Component {
                     { this.props.uploads ? <Loaders {...this.props}/> : null }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
+                    { provAlert }
                     <div className="list-block">
                         <div className="list-group">
                             <ul>
@@ -117,10 +151,30 @@ class FileDetails extends React.Component {
                         </div>
                         <div className="list-group">
                             <ul>
-                                <li className="list-group-title">Created On</li>
+                                <li className="list-group-title">Original File Created On</li>
                                 <li className="item-content">
                                     <div className="item-inner">
                                         <div>{ createdOn }</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="list-group">
+                            <ul>
+                                <li className="list-group-title">Last Updated By</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ lastUpdatedBy === null ? 'N/A' : lastUpdatedBy}</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="list-group">
+                            <ul>
+                                <li className="list-group-title">Last Updated On</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ lastUpdatedOn === null ? 'N/A' : new Date(lastUpdatedOn).toString() }</div>
                                     </div>
                                 </li>
                             </ul>
@@ -157,26 +211,6 @@ class FileDetails extends React.Component {
                         </div>
                         <div className="list-group">
                             <ul>
-                                <li className="list-group-title">Last Updated By</li>
-                                <li className="item-content">
-                                    <div className="item-inner">
-                                        <div>{ lastUpdatedBy === null ? 'N/A' : lastUpdatedBy}</div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                        <div className="list-group">
-                            <ul>
-                                <li className="list-group-title">Last Updated On</li>
-                                <li className="item-content">
-                                    <div className="item-inner">
-                                        <div>{ lastUpdatedOn === null ? 'N/A' : new Date(lastUpdatedOn).toString() }</div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                        <div className="list-group">
-                            <ul>
                                 <li className="list-group-title">Storage Location</li>
                                 <li className="item-content">
                                     <div className="item-inner">
@@ -207,6 +241,10 @@ class FileDetails extends React.Component {
         )
     }
 
+    dismissAlert(){
+        ProjectActions.hideProvAlert();
+    }
+
     handleDownload(){
         let id = this.props.params.id;
         let kind = 'files/';
@@ -215,6 +253,12 @@ class FileDetails extends React.Component {
 
     openModal() {
         ProjectActions.openModal()
+    }
+
+    openProv() {
+        ProjectActions.toggleProvView();
+        ProjectActions.toggleProvEditor();
+        ProjectActions.hideProvAlert();
     }
 }
 
@@ -248,7 +292,7 @@ var styles = {
     detailsTitle: {
         textAlign: 'left',
         float: 'left',
-        marginLeft: 26
+        marginLeft: 25
     },
     floatingButton: {
         position: 'absolute',
@@ -264,9 +308,26 @@ var styles = {
     menuIcon: {
         float: 'right',
         marginTop: 30,
-        marginBottom: -3
+        marginBottom: -3,
+        marginRight: 2
     },
-    path: {
+    provAlert: {
+        display: 'block',
+        backgroundColor: '#66BB6A',
+        alertButton: {
+            float: 'right', margin: 6,
+            label: {
+                color: '#E8F5E9',
+                fontWeight: 100
+            }
+        },
+        wrapper: {
+            float: 'left',
+            color: '#E8F5E9',
+            margin: '14px 10px 10px 10px'
+        }
+    },
+    subTitle: {
         textAlign: 'left',
         float: 'left',
         marginLeft: 25,

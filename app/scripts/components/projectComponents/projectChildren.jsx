@@ -114,8 +114,8 @@ class ProjectChildren extends React.Component {
                                     <div className="item-title mdl-color-text--grey-800"
                                          style={styles.title}>{children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}</div>
                                 </div>
-                                <div className="item-subtitle mdl-color-text--grey-600">size: {BaseUtils.bytesToSize(children.upload.size)}</div>
-                                <div className="item-subtitle mdl-color-text--grey-600">last updated: {children.audit.last_updated_on ? new Date(children.audit.last_updated_on).toString() : 'n/a'}</div>
+                                <div className="item-subtitle mdl-color-text--grey-600">version: {children.current_version.version}</div>
+                                <div className="item-subtitle mdl-color-text--grey-600">size: {BaseUtils.bytesToSize(children.current_version.upload.size)}</div>
                             </div>
                         </a>
                     </li>
