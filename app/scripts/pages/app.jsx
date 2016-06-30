@@ -57,6 +57,9 @@ class App extends React.Component {
             if (localStorage.getItem('redirectTo') !== null) {
                 setTimeout(() => { localStorage.removeItem('redirectTo'); }, 10000);
             }
+            if (localStorage.getItem('redirectTo') !== null) {
+                setTimeout(() => { localStorage.removeItem('redirectTo'); }, 10000);
+            }
         }
         let str = this.props.appRouter.getCurrentPathname();
         let fileRoute = str.substring(str.lastIndexOf("/") - 6, str.lastIndexOf("/"));
