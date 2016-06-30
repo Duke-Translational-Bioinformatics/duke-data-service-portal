@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import MoveItemModal from '../globalComponents/moveItemModal.jsx';
@@ -9,6 +10,15 @@ import FlatButton from 'material-ui/lib/flat-button';
 import IconMenu from 'material-ui/lib/menus/icon-menu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 import IconButton from 'material-ui/lib/icon-button';
+
+import Divider from 'material-ui/lib/divider';
+import Tabs from 'material-ui/lib/tabs/tabs';
+import Tab from 'material-ui/lib/tabs/tab';
+import Slider from 'material-ui/lib/slider';
+import SelectField from 'material-ui/lib/select-field';
+
+import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
+import LeftNav from 'material-ui/lib/left-nav';
 
 class FileOptionsMenu extends React.Component {
 
@@ -38,6 +48,8 @@ class FileOptionsMenu extends React.Component {
                                   onTouchTap={() => this.handleTouchTapMove()}/>
                         <MenuItem primaryText="Upload New Version" leftIcon={<i className="material-icons">file_upload</i>}
                                   onTouchTap={() => this.openVersionModal()}/>
+                        <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
+                                  onTouchTap={() => this.openProv()}/>
                 </span>
             }
         }
@@ -103,7 +115,7 @@ class FileOptionsMenu extends React.Component {
                         <TextField
                             style={styles.textStyles}
                             autoFocus={true}
-                            onFocus={this.handleFloatingErrorInputChange.bind(this)}
+                            onFocus={this.handleFloatingError.bind(this)}
                             hintText="File Name"
                             defaultValue={fileName}
                             errorText={this.state.floatingErrorText}
@@ -111,7 +123,7 @@ class FileOptionsMenu extends React.Component {
                             id="fileNameText"
                             type="text"
                             multiLine={true}
-                            onChange={this.handleFloatingErrorInputChange.bind(this)}/> <br/>
+                            onChange={this.handleFloatingError.bind(this)}/> <br/>
                     </form>
                 </Dialog>
                 <Dialog
@@ -134,7 +146,6 @@ class FileOptionsMenu extends React.Component {
                     open={this.props.moveErrorModal}
                     onRequestClose={() => this.handleCloseMoveWarning()}>
                     <i className="material-icons" style={styles.warning}>warning</i>
-
                     <p style={styles.msg}>The file you're trying to move is already located here. Please pick another
                         location to move to.</p>
                 </Dialog>
@@ -197,7 +208,7 @@ class FileOptionsMenu extends React.Component {
         }
     }
 
-    handleFloatingErrorInputChange(e) {
+    handleFloatingError(e) {
         this.setState({
             floatingErrorText: e.target.value ? '' : 'This field is required.'
         });
@@ -221,6 +232,10 @@ class FileOptionsMenu extends React.Component {
             moveOpen: false,
             floatingErrorText: 'This field is required.'
         });
+    }
+
+    openProv() {
+        ProjectActions.toggleProvView();
     }
 }
 var styles = {
