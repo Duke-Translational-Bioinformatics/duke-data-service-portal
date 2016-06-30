@@ -32,7 +32,7 @@ class FileOptionsMenu extends React.Component {
                 menu = <span>
                         <MenuItem primaryText="Delete File" leftIcon={<i className="material-icons">delete</i>}
                                   onTouchTap={() => this.handleTouchTapDelete()}/>
-                        <MenuItem primaryText="Edit File Name" leftIcon={<i className="material-icons">mode_edit</i>}
+                        <MenuItem primaryText="Edit File" leftIcon={<i className="material-icons">mode_edit</i>}
                                   onTouchTap={() => this.handleTouchTapEdit()}/>
                         <MenuItem primaryText="Move File" leftIcon={<i className="material-icons">low_priority</i>}
                                   onTouchTap={() => this.handleTouchTapMove()}/>
@@ -45,35 +45,35 @@ class FileOptionsMenu extends React.Component {
             <FlatButton
                 label="CANCEL"
                 secondary={true}
-                onTouchTap={() => this.handleClose()}/>,
+                onTouchTap={this.handleClose.bind(this)}/>,
             <FlatButton
                 label="DELETE"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={() => this.handleDeleteButton()}/>
+                onTouchTap={this.handleDeleteButton.bind(this)}/>
         ];
         const editActions = [
             <FlatButton
                 label="CANCEL"
                 secondary={true}
-                onTouchTap={() => this.handleClose()}/>,
+                onTouchTap={this.handleClose.bind(this)}/>,
             <FlatButton
                 label="UPDATE"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={() => this.handleUpdateButton()}/>
+                onTouchTap={this.handleUpdateButton.bind(this)}/>
         ];
         const moveActions = [
             <FlatButton
                 label="Cancel"
                 secondary={true}
-                onTouchTap={() => this.handleCloseMoveModal()}/>
+                onTouchTap={this.handleCloseMoveModal.bind(this)}/>
         ];
         const moveWarnActions = [
             <FlatButton
                 label="Okay"
                 secondary={true}
-                onTouchTap={() => this.handleCloseMoveWarning()}/>
+                onTouchTap={this.handleCloseMoveWarning.bind(this)}/>
         ];
         let fileName = this.props.entityObj ? this.props.entityObj.name : null;
 
@@ -85,25 +85,21 @@ class FileOptionsMenu extends React.Component {
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
                     actions={deleteActions}
-                    onRequestClose={() => this.handleClose()}
+                    onRequestClose={this.handleClose.bind(this)}
                     open={this.state.deleteOpen}>
                     <i className="material-icons" style={styles.warning}>warning</i>
-                    <p style={{textAlign: 'left'}}>You will lose access to any versions associated with this file. If you want to delete just one version of this file,
-                        please navigate to the version you want to delete by clicking on the file versions button.</p>
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
-                    title="Edit File Name"
+                    title="Update File Name"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
                     actions={editActions}
-                    onRequestClose={() => this.handleClose()}
+                    onRequestClose={this.handleClose.bind(this)}
                     open={this.state.editOpen}>
                     <form action="#" id="editFileForm">
                         <TextField
                             style={styles.textStyles}
-                            autoFocus={true}
-                            onFocus={this.handleFloatingErrorInputChange.bind(this)}
                             hintText="File Name"
                             defaultValue={fileName}
                             errorText={this.state.floatingErrorText}
@@ -122,7 +118,7 @@ class FileOptionsMenu extends React.Component {
                     autoScrollBodyContent={true}
                     actions={moveActions}
                     open={this.props.moveModal}
-                    onRequestClose={() => this.handleCloseMoveModal()}>
+                    onRequestClose={this.handleCloseMoveModal.bind(this)}>
                     <MoveItemModal {...this.props}/>
                 </Dialog>
                 <Dialog
@@ -132,14 +128,14 @@ class FileOptionsMenu extends React.Component {
                     autoScrollBodyContent={true}
                     actions={moveWarnActions}
                     open={this.props.moveErrorModal}
-                    onRequestClose={() => this.handleCloseMoveWarning()}>
+                    onRequestClose={this.handleCloseMoveWarning.bind(this)}>
                     <i className="material-icons" style={styles.warning}>warning</i>
 
                     <p style={styles.msg}>The file you're trying to move is already located here. Please pick another
                         location to move to.</p>
                 </Dialog>
                 <IconMenu
-                    iconButtonElement={<IconButton iconClassName="material-icons" onTouchTap={() => this.getEntity()}>more_vert</IconButton>}
+                    iconButtonElement={<IconButton iconClassName="material-icons" onTouchTap={this.getEntity.bind(this)}>more_vert</IconButton>}
                     anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                     targetOrigin={{horizontal: 'right', vertical: 'top'}}>
                     { menu }
@@ -167,7 +163,7 @@ class FileOptionsMenu extends React.Component {
     getEntity() {// Get current file object to access ancestors. Set parent in store. Keeps background from re-rendering
         let id = this.props.params.id;
         let kind = 'files';
-        let requester = 'optionsMenu';// Using this to make sure parent is only set once in store and where it was set.
+        let requester = 'optionsMenu';// Using this to make sure parent is only set once in store
         ProjectActions.getEntity(id, kind, requester);
     }
 
@@ -176,7 +172,9 @@ class FileOptionsMenu extends React.Component {
         let parentId = this.props.entityObj ? this.props.entityObj.parent.id : null;
         let parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : null;
         let urlPath = '';
-        parentKind === 'dds-project' ? urlPath = '/project/' : urlPath = '/folder/';
+        {
+            parentKind === 'dds-project' ? urlPath = '/project/' : urlPath = '/folder/'
+        }
         ProjectActions.deleteFile(id, parentId, parentKind);
         this.setState({deleteOpen: false});
         setTimeout(()=>this.props.appRouter.transitionTo(urlPath + parentId), 500)

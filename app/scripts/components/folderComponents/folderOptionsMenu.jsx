@@ -85,8 +85,6 @@ class FolderOptionsMenu extends React.Component {
                     <form action="#" id="newFolderForm">
                         <TextField
                             style={styles.textStyles}
-                            autoFocus={true}
-                            onFocus={this.handleFloatingErrorInputChange.bind(this)}
                             hintText="Folder Name"
                             defaultValue={fName}
                             errorText={this.state.floatingErrorText}

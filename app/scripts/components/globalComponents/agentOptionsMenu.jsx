@@ -174,8 +174,6 @@ class AgentOptionsMenu extends React.Component {
                     <form action="#" id="newAgentForm">
                         <TextField
                             style={styles.textStyles}
-                            autoFocus={true}
-                            onFocus={this.handleFloatingErrorInputChange.bind(this)}
                             hintText="Software Agent Name"
                             defaultValue={agName}
                             errorText={this.state.floatingErrorText}
@@ -457,24 +455,16 @@ class AgentOptionsMenu extends React.Component {
     handleCopyButton() {
         let copyTextArea = document.querySelector('#keyText');
         copyTextArea.select();
-        var successful = document.execCommand('copy');
-        var msg = successful ? 'successful' : 'unsuccessful';
-        if(msg === 'successful') {
-            MainActions.addToast('Key copied to clipboard!');
-            this.setState({
-                apiKeyOpen: false,
-                newApiKeyOpen: false,
-                userKeyOpen: false,
-                newUserKeyOpen: false
-            });
-        }
-        if(msg === 'unsuccessful'){
-            MainActions.addToast('Failed copying key to clipboard!');
-            alert("Automatic copying to clipboard is not supported by Safari browsers: Manually copy the key by" +
-                " using CMD+C,");
-        }
+        let clipText = document.execCommand('copy');
+        MainActions.addToast('Key copied to clipboard!');
+        ProjectActions.closeModal();
+        this.setState({
+            apiKeyOpen: false,
+            newApiKeyOpen: false,
+            userKeyOpen: false,
+            newUserKeyOpen: false
+        });
     };
-
 
     handleClose() {
         ProjectActions.closeModal();
@@ -510,8 +500,7 @@ var styles = {
     },
     keyModal: {
         width: 300,
-        textAlign: 'left',
-        fontFamily: 'monospace'
+        textAlign: 'left'
     },
     selectStyle: {
         textAlign: 'left'

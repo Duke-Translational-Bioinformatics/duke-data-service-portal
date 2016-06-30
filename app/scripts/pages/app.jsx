@@ -105,7 +105,6 @@ class App extends React.Component {
                 <div className="views">
                     <div className="view view-main">
                         <Header {...this.props} {...this.state}/>
-
                         <div className="pages navbar-through toolbar-through">
                             <div data-page="index" className="page">
                                 {!this.state.appConfig.apiToken ? '' : search}
@@ -138,8 +137,6 @@ class App extends React.Component {
     handleRequestClose() {
 
     }
-
-;
 }
 
 var styles = {

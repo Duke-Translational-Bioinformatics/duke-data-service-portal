@@ -30,14 +30,14 @@ class LeftMenu extends React.Component {
                             { home }
                             <p>
                                 <a href={urlGen.routes.agents()}
-                                  className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
+                                   className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
                                     <i className="material-icons" style={styles.navIcon}>build</i>Software Agents
                                 </a>
                             </p>
                             {/*<p className="mdl-color-text--grey-400"><i className="material-icons" style={styles.navIcon}>settings</i>Settings</p>
-                            <p className="mdl-color-text--grey-400"><i className="material-icons" style={styles.navIcon}>help</i>Help</p>
-                            <p className="mdl-color-text--grey-400">Governance</p>
-                            <p className="mdl-color-text--grey-400">Terms &amp; Conditions</p>*/} 
+                             <p className="mdl-color-text--grey-400"><i className="material-icons" style={styles.navIcon}>help</i>Help</p>
+                             <p className="mdl-color-text--grey-400">Governance</p>
+                             <p className="mdl-color-text--grey-400">Terms &amp; Conditions</p>*/}
                             <p>
                                 <a href="#" className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.handleTouchTap()}>
                                     <i className="material-icons" style={styles.navIcon}>exit_to_app</i>Log Out

@@ -656,8 +656,8 @@ var ProjectStore = Reflux.createStore({
         var win = window.open(host + url, '_blank');
         if (win) {
             win.focus();
-        } else { // if browser blocks popups use location.href instead
-            window.location.href = host + url;
+        } else {
+            alert('Please allow popups for this site and try downloading again');
         }
         this.trigger({
             loading: false,

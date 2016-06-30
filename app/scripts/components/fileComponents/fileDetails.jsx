@@ -42,7 +42,7 @@ class FileDetails extends React.Component {
         let parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : null;
         let parentId = this.props.entityObj ? this.props.entityObj.parent.id : null;
         let name = this.props.entityObj ? this.props.entityObj.name : null;
-        let label = this.props.entityObj && this.props.entityObj.current_version.label ? this.props.entityObj.current_version.label : null;
+        let label = this.props.entityObj && this.props.entityObj.label ? this.props.entityObj.label : null;
         let projectName = this.props.entityObj && this.props.entityObj.ancestors ? this.props.entityObj.ancestors[0].name : null;
         let crdOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.created_on : null;
         let x = new Date(crdOn);
@@ -50,29 +50,23 @@ class FileDetails extends React.Component {
         let createdBy = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.created_by.full_name : null;
         let lastUpdatedOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.last_updated_on : null;
         let lastUpdatedBy = this.props.entityObj && this.props.entityObj.audit.last_updated_by ? this.props.entityObj.audit.last_updated_by.full_name : null;
-        let storage =  this.props.entityObj && this.props.entityObj.current_version.upload ? this.props.entityObj.current_version.upload.storage_provider.description : null;
-        let bytes = this.props.entityObj && this.props.entityObj.current_version.upload ? this.props.entityObj.current_version.upload.size : null;
-        let hash = this.props.entityObj && this.props.entityObj.current_version.upload.hash ? this.props.entityObj.current_version.upload.hash.algorithm +': '+ this.props.entityObj.current_version.upload.hash.value : null;
-        let currentVersion = this.props.entityObj && this.props.entityObj.current_version.version ? this.props.entityObj.current_version.version : null;
+        let storage =  this.props.entityObj && this.props.entityObj.upload ? this.props.entityObj.upload.storage_provider.description : null;
+        let bytes = this.props.entityObj && this.props.entityObj.upload ? this.props.entityObj.upload.size : null;
+        let hash = this.props.entityObj && this.props.entityObj.upload.hash ? this.props.entityObj.upload.hash.algorithm +': '+ this.props.entityObj.upload.hash.value : null;
         let versionsButton = null;
         let versions = null;
-        let versionCount = [];
-
-        if(this.props.fileVersions && this.props.fileVersions != undefined && this.props.fileVersions.length > 1) {
+        if(this.props.fileVersions && this.props.fileVersions != undefined) {
             versions = this.props.fileVersions.map((version) => {
                 return version.is_deleted;
             });
             for (let i = 0; i < versions.length; i++) {
                 if (versions[i] === false) {
-                    versionCount.push(versions[i]);
-                    if (versionCount.length > 1) {
-                        versionsButton = <RaisedButton
-                            label="FILE VERSIONS"
-                            secondary={true}
-                            style={styles.button}
-                            onTouchTap={() => this.openModal()}
-                            />
-                    }
+                    versionsButton = <RaisedButton
+                        label="FILE VERSIONS"
+                        secondary={true}
+                        style={styles.button}
+                        onTouchTap={() => this.openModal()}
+                        />
                 }
             }
         }
@@ -95,13 +89,10 @@ class FileDetails extends React.Component {
                 <div className="mdl-cell mdl-cell--9-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
                     <span className="mdl-color-text--grey-800" style={styles.title}>{ name }</span>
                 </div>
-                { label != null ? <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.subTitle}>
-                    <span className="mdl-color-text--grey-600" style={styles.spanTitle}>{ label }</span>
-                </div> : null }
-                <div className="mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.subTitle}>
-                    <span style={styles.spanTitle}>{ 'Version: ' + currentVersion }</span>
-                </div>
-                <div className="mdl-cell mdl-cell--8-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.subTitle}>
+                { label != null ? <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
+                    <span className="mdl-color-text--grey-600">{ label }</span>
+                </div> : null}
+                <div className="mdl-cell mdl-cell--8-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.path}>
                     <span style={styles.spanTitle}>{ BaseUtils.getFilePath(ancestors) + name }</span>
                 </div>
                 <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.btnWrapper}>
@@ -126,30 +117,10 @@ class FileDetails extends React.Component {
                         </div>
                         <div className="list-group">
                             <ul>
-                                <li className="list-group-title">Original File Created On</li>
+                                <li className="list-group-title">Created On</li>
                                 <li className="item-content">
                                     <div className="item-inner">
                                         <div>{ createdOn }</div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                        <div className="list-group">
-                            <ul>
-                                <li className="list-group-title">Last Updated By</li>
-                                <li className="item-content">
-                                    <div className="item-inner">
-                                        <div>{ lastUpdatedBy === null ? 'N/A' : lastUpdatedBy}</div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                        <div className="list-group">
-                            <ul>
-                                <li className="list-group-title">Last Updated On</li>
-                                <li className="item-content">
-                                    <div className="item-inner">
-                                        <div>{ lastUpdatedOn === null ? 'N/A' : new Date(lastUpdatedOn).toString() }</div>
                                     </div>
                                 </li>
                             </ul>
@@ -180,6 +151,26 @@ class FileDetails extends React.Component {
                                 <li className="item-content">
                                     <div className="item-inner">
                                         <div>{ hash }</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="list-group">
+                            <ul>
+                                <li className="list-group-title">Last Updated By</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ lastUpdatedBy === null ? 'N/A' : lastUpdatedBy}</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="list-group">
+                            <ul>
+                                <li className="list-group-title">Last Updated On</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ lastUpdatedOn === null ? 'N/A' : new Date(lastUpdatedOn).toString() }</div>
                                     </div>
                                 </li>
                             </ul>
@@ -257,7 +248,7 @@ var styles = {
     detailsTitle: {
         textAlign: 'left',
         float: 'left',
-        marginLeft: 25
+        marginLeft: 26
     },
     floatingButton: {
         position: 'absolute',
@@ -275,7 +266,7 @@ var styles = {
         marginTop: 30,
         marginBottom: -3
     },
-    subTitle: {
+    path: {
         textAlign: 'left',
         float: 'left',
         marginLeft: 25,
