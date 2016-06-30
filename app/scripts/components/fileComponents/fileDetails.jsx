@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import ReactDOM from 'react-dom';
 const { object, bool, array, string } = PropTypes;
 import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
@@ -11,11 +12,19 @@ import Loaders from '../../components/globalComponents/loaders.jsx';
 import urlGen from '../../../util/urlGen.js';
 import Tooltip from '../../../util/tooltip.js';
 import BaseUtils from '../../../util/baseUtils.js';
-import IconButton from 'material-ui/lib/icon-button';
+import BorderColor from 'material-ui/lib/svg-icons/editor/border-color.js';
 import Card from 'material-ui/lib/card/card';
+import FlatButton from 'material-ui/lib/flat-button';
+import IconButton from 'material-ui/lib/icon-button';
+import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
+import Paper from 'material-ui/lib/paper';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 class FileDetails extends React.Component {
+
+    constructor(props) {
+        super(props);
+    }
 
     render() {
         if (this.props.error && this.props.error.response){
@@ -58,6 +67,20 @@ class FileDetails extends React.Component {
         let versions = null;
         let versionCount = [];
 
+        let provAlert = this.props.showProvAlert ? <Card style={styles.provAlert} zDepth={1}>
+            <div style={styles.provAlert.wrapper}>Would you like to add provenance for this file?</div>
+            <IconButton style={styles.button} onTouchTap={() => this.dismissAlert()}>
+                <NavigationClose color="#E8F5E9"/>
+            </IconButton>
+            <FlatButton
+                label="Yes"
+                labelStyle={styles.provAlert.alertButton.label}
+                style={styles.provAlert.alertButton}
+                hoverColor="#4CAF50"
+                onTouchTap={() => this.openProv()}
+                />
+        </Card> : '';
+
         if(this.props.fileVersions && this.props.fileVersions != undefined && this.props.fileVersions.length > 1) {
             versions = this.props.fileVersions.map((version) => {
                 return version.is_deleted;
@@ -68,6 +91,7 @@ class FileDetails extends React.Component {
                     if (versionCount.length > 1) {
                         versionsButton = <RaisedButton
                             label="FILE VERSIONS"
+                            labelStyle={{fontWeight: 100}}
                             secondary={true}
                             style={styles.button}
                             onTouchTap={() => this.openModal()}
@@ -113,6 +137,7 @@ class FileDetails extends React.Component {
                     { this.props.uploads ? <Loaders {...this.props}/> : null }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
+                    { provAlert }
                     <div className="list-block">
                         <div className="list-group">
                             <ul>
@@ -216,6 +241,10 @@ class FileDetails extends React.Component {
         )
     }
 
+    dismissAlert(){
+        ProjectActions.hideProvAlert();
+    }
+
     handleDownload(){
         let id = this.props.params.id;
         let kind = 'files/';
@@ -224,6 +253,12 @@ class FileDetails extends React.Component {
 
     openModal() {
         ProjectActions.openModal()
+    }
+
+    openProv() {
+        ProjectActions.toggleProvView();
+        ProjectActions.toggleProvEditor();
+        ProjectActions.hideProvAlert();
     }
 }
 
@@ -273,7 +308,24 @@ var styles = {
     menuIcon: {
         float: 'right',
         marginTop: 30,
-        marginBottom: -3
+        marginBottom: -3,
+        marginRight: 2
+    },
+    provAlert: {
+        display: 'block',
+        backgroundColor: '#66BB6A',
+        alertButton: {
+            float: 'right', margin: 6,
+            label: {
+                color: '#E8F5E9',
+                fontWeight: 100
+            }
+        },
+        wrapper: {
+            float: 'left',
+            color: '#E8F5E9',
+            margin: '14px 10px 10px 10px'
+        }
     },
     subTitle: {
         textAlign: 'left',

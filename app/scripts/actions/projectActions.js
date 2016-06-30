@@ -8,6 +8,30 @@ import StatusEnum from '../enum';
 import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.js';
 
 var ProjectActions = Reflux.createActions([
+    'openProvEditorModal',
+    'closeProvEditorModal',
+    'switchRelationFromTo',
+    'getFromAndToNodes',
+    'buildRelationBody',
+    'startAddRelation',
+    'addProvRelation',
+    'addProvRelationSuccess',
+    'deleteProvRelation',
+    'addProvActivity',
+    'addProvActivitySuccess',
+    'editProvActivity',
+    'editProvActivitySuccess',
+    'deleteProvActivity',
+    'deleteProvActivitySuccess',
+    'hideProvAlert',
+    'toggleProvView',
+    'toggleProvEditor',
+    'toggleAddEdgeMode',
+    'showProvControlBtns',
+    'showDeleteRelationsBtn',
+    'selectNodesAndEdges',
+    'getProvenance',
+    'getProvenanceSuccess',
     'hashFile',
     'postHash',
     'openModal',
@@ -108,6 +132,241 @@ var ProjectActions = Reflux.createActions([
     'uploadError',
     'getChunkUrl'
 ]);
+
+ProjectActions.addProvRelation.preEmit = function (kind, body) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'relations/'+ kind, {
+        method: 'post',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify(body)
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('New relation Added');
+        ProjectActions.addProvRelationSuccess(json);//Todo: what happens here? Finish this
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to add new relation');
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.deleteProvRelation.preEmit = function (edge ,id) {
+//Todo: Figure out how to show graph w/relation missing. Use data.remove(id);??????????????
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'relations/' + edge.id, {
+        method: 'delete',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+    }).then(function (json) {
+        MainActions.addToast('Relation Deleted');
+        //ProjectActions.getProvenance(id)
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to delete ' +edge.properties.kind+ ' relation');
+        ProjectActions.handleErrors(ex)
+    });
+};
+
+ProjectActions.addProvActivity.preEmit = function (name, desc) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'activities/', {
+        method: 'post',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            "name": name,
+            "description": desc
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('New Activity Added');
+        ProjectActions.addProvActivitySuccess();
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to add new actvity');
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.editProvActivity.preEmit = function (id, name, desc, prevName) {
+
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'activities/'+ id, {
+        method: 'put',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            "name": name,
+            "description": desc
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast(prevName + ' Activity edited');
+        ProjectActions.editProvActivitySuccess();//TODO: Toggle prov buttons after success//////////////////
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to edit ' + prevName);
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.deleteProvActivity.preEmit = function (node, id) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'activities/' + node.id, {
+        method: 'delete',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+    }).then(function (json) {
+        MainActions.addToast(node.label + ' Deleted');
+        ProjectActions.getProvenance(id)
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to delete activity');
+        ProjectActions.handleErrors(ex)
+    });
+};
+
+ProjectActions.getProvenance.preEmit = function (id) {//Todo: Replace with proper call!!!!!!!!!!!!!!!!
+    let prov = {
+            "nodes": [
+                {
+                    "id": "2fba2f6e-d889-4bfa-ac2c-d2a774cc15bd",
+                    "labels": ["Activity"],
+                    "properties": {
+                        "kind": "dds-activity",
+                        "id": "2fba2f6e-d889-4bfa-ac2c-d2a774cc15bd",
+                        "name": "RF PI3-Kinase",
+                        "is_deleted": false,
+                        "audit": { }
+                    }
+                },
+                {
+                    "id": "3bd380e9-31d2-44d2-8134-40360b8a474b",
+                    "labels": ["Activity"],
+                    "properties": {
+                        "kind": "dds-activity",
+                        "id": "3bd380e9-31d2-44d2-8134-40360b8a474b",
+                        "name": "Activity Test",
+                        "is_deleted": false,
+                        "audit": { }
+                    }
+                },
+                {
+                    "id": "f1a917d7-8e0d-4bb6-b515-0f9803fc551a",
+                    "labels": ["File Version"],
+                    "properties": {
+                        "kind": "dds-file-version",
+                        "id": "f1a917d7-8e0d-4bb6-b515-0f9803fc551a",
+                        "file": {
+                            "id": "777be35a-98e0-4c2e-9a17-7bc009f9b111",
+                            "name": "RSEM_Normalized_.Rdata"
+                        },
+                        "version": 1,
+                        "label": "Initial raw data from device",
+                        "is_deleted": false,
+                        "audit": { }
+                    }
+                },
+                {
+                    "id": "951cfb29-70b8-4798-bbf2-c43222de9bf8",
+                    "labels": ["File Version"],
+                    "properties": {
+                        "kind": "dds-file-version",
+                        "id": "951cfb29-70b8-4798-bbf2-c43222de9bf8",
+                        "file": {
+                            "id": "777be35a-98e0-4c2e-9a17-7bc009f9b111",
+                            "name": "RNASeq_Matrix.Rdata"
+                        },
+                        "version": 2,
+                        "label": "Alignment performed on raw data",
+                        "is_deleted": false,
+                        "audit": { }
+                    }
+                },
+                {
+                    "id": "5ba9b213-c570-42bc-be21-5100db1fe92c",
+                    "labels": ["File Version"],
+                    "properties": {
+                        "kind": "dds-file-version",
+                        "id": "5ba9b213-c570-42bc-be21-5100db1fe92c",
+                        "file": {
+                            "id": "777be35a-98e0-4c2e-9a17-7bc009f9b111",
+                            "name": "Random.data"
+                        },
+                        "version": 2,
+                        "label": "Alignment performed on raw data",
+                        "is_deleted": false,
+                        "audit": { }
+                    }
+                }
+            ],
+            "relationships": [
+                {
+                    "id": "ac242faf-fba0-4293-a949-0b82ae7ba810",
+                    "type": "used",
+                    "start_node": "2fba2f6e-d889-4bfa-ac2c-d2a774cc15bd",
+                    "end_node": "f1a917d7-8e0d-4bb6-b515-0f9803fc551a",
+                    "properties": {
+                        "kind": "dds-relation-used",
+                        "id": "ac242faf-fba0-4293-a949-0b82ae7ba810",
+                        "audit": { }
+                    }
+                },
+                {
+                    "id": "4c242faf-fba0-4293-a949-0b82ae7ba810",
+                    "type": "used",
+                    "start_node": "2fba2f6e-d889-4bfa-ac2c-d2a774cc15bd",
+                    "end_node": "5ba9b213-c570-42bc-be21-5100db1fe92c",
+                    "properties": {
+                        "kind": "dds-relation-used",
+                        "id": "4c242faf-fba0-4293-a949-0b82ae7ba810",
+                        "audit": { }
+                    }
+                },
+                {
+                    "id": "372f25e1-01b0-4b8d-9524-e26dd573cc95",
+                    "type": "wasGeneratedBy",
+                    "start_node": "951cfb29-70b8-4798-bbf2-c43222de9bf8",
+                    "end_node": "2fba2f6e-d889-4bfa-ac2c-d2a774cc15bd",
+                    "properties": {
+                        "kind": "dds-relation-was-generated-by",
+                        "id": "372f25e1-01b0-4b8d-9524-e26dd573cc95",
+                        "audit": { }
+                    }
+                },
+                {
+                    "id": "272f25e1-01b0-4b8d-9524-e26dd573cc95",
+                    "type": "wasGeneratedBy",
+                    "start_node": "951cfb29-70b8-4798-bbf2-c43222de9bf8",
+                    "end_node": "3bd380e9-31d2-44d2-8134-40360b8a474b",
+                    "properties": {
+                        "kind": "dds-relation-was-generated-by",
+                        "id": "272f25e1-01b0-4b8d-9524-e26dd573cc95",
+                        "audit": { }
+                    }
+                },
+                {
+                    "id": "572f25e1-01b0-4b8d-9524-e26dd573cc95",
+                    "type": "wasGeneratedBy",
+                    "start_node": "3bd380e9-31d2-44d2-8134-40360b8a474b",
+                    "end_node": "5ba9b213-c570-42bc-be21-5100db1fe92c",
+                    "properties": {
+                        "kind": "dds-relation-was-generated-by",
+                        "id": "572f25e1-01b0-4b8d-9524-e26dd573cc95",
+                        "audit": { }
+                    }
+                }
+            ]
+        };
+
+    ProjectActions.getProvenanceSuccess(prov)
+};
 
 ProjectActions.getFileVersions.preEmit = function (id) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/' + id + '/versions', {

@@ -2,19 +2,33 @@ import React from 'react'
 import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
 import FileDetails from '../components/fileComponents/fileDetails.jsx';
-import Header from '../components/globalComponents/header.jsx';
+import Provenance from '../components/globalComponents/provenance.jsx';
 
 class File extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            addEdgeMode: ProjectStore.addEdgeMode,
+            dltRelationsBtn: ProjectStore.dltRelationsBtn,
             error: ProjectStore.error,
             errorModal: ProjectStore.errorModal,
+            relFrom: ProjectStore.relFrom,
             loading: false,
             moveModal: ProjectStore.moveModal,
             moveErrorModal: ProjectStore.moveErrorModal,
-            projPermissions: ProjectStore.projPermissions
+            projPermissions: ProjectStore.projPermissions,
+            provEdges: ProjectStore.provEdges,
+            provEditorModal: ProjectStore.provEditorModal,
+            provNodes: ProjectStore.provNodes,
+            relMsg: ProjectStore.relMsg,
+            toggleProv: ProjectStore.toggleProv,
+            toggleProvEdit: ProjectStore.toggleProvEdit,
+            relTo: ProjectStore.relTo,
+            selectedEdges: ProjectStore.selectedEdges,
+            selectedNode: ProjectStore.selectedNode,
+            showProvAlert: ProjectStore.showProvAlert,
+            showProvCtrlBtns: ProjectStore.showProvCtrlBtns
         };
     }
 
@@ -40,6 +54,7 @@ class File extends React.Component {
     _loadFile(id, kind) {
         ProjectActions.getEntity(id, kind);
         ProjectActions.getFileVersions(id);
+        ProjectActions.getProvenance(id);
     }
 
     render() {
@@ -50,6 +65,7 @@ class File extends React.Component {
         }
         return (
             <div>
+                <Provenance {...this.props} {...this.state}/>
                 <FileDetails {...this.props} {...this.state} />
             </div>
         );
