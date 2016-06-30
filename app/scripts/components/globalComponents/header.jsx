@@ -81,7 +81,6 @@ class Header extends React.Component {
     }
 
     handleLogout() {
-        this.props.appRouter.transitionTo('/login');
         MainStore.handleLogout()
     }
 }

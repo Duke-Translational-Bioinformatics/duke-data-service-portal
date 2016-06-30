@@ -32,7 +32,6 @@ class Login extends React.Component {
                 <div className="mdl-cell mdl-cell--12-col mdl-shadow--2dp" style={styles.loginWrapper}>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--white">
                         <img src="images/dukeDSLogo.png" style={styles.logo}/>
-
                         <h2 style={{fontWeight: '100'}}>Duke Data Service</h2>
                         <a href={this.createLoginUrl()} className="external">
                             <RaisedButton label="Log In" labelStyle={{fontWeight: '400'}} labelColor={'#f9f9f9'}

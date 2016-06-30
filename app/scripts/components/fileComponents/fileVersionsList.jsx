@@ -12,6 +12,20 @@ class FileVersionsList extends React.Component {
 
     render() {
         let open = this.props.modal ? this.props.modal : false;
+        let currentVersion = null;
+        if (this.props.entityObj && this.props.entityObj != undefined) {
+            let x = new Date(this.props.entityObj.audit.created_on);
+            let createdOn = x.toString();
+            currentVersion = <span>
+                            <ListItem primaryText={'Current Version: ' + this.props.entityObj.name}
+                                      secondaryText={<p><span>{this.props.entityObj.label}</span><br/> Created on: {' ' + createdOn}</p>}
+                                      secondaryTextLines={2}
+                                      rightIcon={<ActionInfo />}
+                                      style={styles.listItem}
+                                      onTouchTap={() => this.handleClose()}/>
+                            <Divider />
+                        </span>
+        }
         let versions = null;
         if (this.props.fileVersions && this.props.fileVersions != undefined) {
             versions = this.props.fileVersions.map((version) => {
@@ -49,6 +63,8 @@ class FileVersionsList extends React.Component {
                     open={open}
                     onRequestClose={this.handleClose.bind(this)}>
                     <List>
+                        <Divider />
+                        { currentVersion }
                         <Divider />
                         { versions }
                     </List>
