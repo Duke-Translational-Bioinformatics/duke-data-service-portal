@@ -7,11 +7,6 @@ var ProjectStore = Reflux.createStore({
 
     init() {
         this.listenToMany(ProjectActions);
-        this.provEditorModal = {open: false, id: null};
-        this.relFrom = null;
-        this.relTo = null;
-        this.relMsg = null;
-        this.addEdgeMode = false;
         this.agents = [];
         this.agentKey = {};
         this.agentApiToken = {};
@@ -36,256 +31,12 @@ var ProjectStore = Reflux.createStore({
         this.project = {};
         this.projPermissions = null;
         this.projectMembers = [];
-        this.provEdges = [];
-        this.provNodes = [];
-        this.selectedNode = {};
-        this.selectedEdges = [];
         this.showBatchOps = false;
-        this.showProvAlert = false;
-        this.showProvCtrlBtns = false;
-        this.dltRelationsBtn = false;
-        this.toggleProv = false;
-        this.toggleProvEdit = false;
         this.uploadCount = [];
         this.uploads = {};
         this.users = [];
         this.userKey = {};
         this.versionModal = false;
-    },
-
-    openProvEditorModal(id) {
-        this.trigger({
-            provEditorModal: {open: true, id: id}
-        });
-    },
-
-    closeProvEditorModal(id) {
-        this.trigger({
-            provEditorModal: {open: false, id: id}
-        });
-    },
-
-    switchRelationFromTo(from, to){
-        this.trigger({
-            relFrom: to,
-            relTo: from,
-            openConfirmRel: true
-        });
-    },
-
-    startAddRelation(kind, from, to) {
-        ProjectActions.buildRelationBody(kind, from, to);
-        this.trigger({
-            provEditorModal: {open: false, id: 'confirmRel'}
-        });
-    },
-
-    confirmDerivedFromRel(from, to) {
-        this.trigger({
-            relFrom: from,
-            relTo: to,
-            provEditorModal: {open: true, id: 'confirmRel'}
-        });
-    },
-
-    getFromAndToNodes(data, relationKind, nodes) {
-        let from = null;
-        let to = null;
-        let node1 = null;
-        let node2 = null;
-        nodes.forEach((node) => { //Todo: Insert logic here to enforce rules of relation types//////////
-            if (data.from === node.id) {
-                node1 = node;
-            }
-            if (data.to === node.id) {
-                node2 = node;
-            }
-        });
-        if(relationKind !== 'was_derived_from') {
-            if (node1.properties.kind === 'dds-file-version' && node2.properties.kind === 'dds-file-version') {
-                this.trigger({
-                    provEditorModal: {open: true, id: 'relWarning'},
-                    relMsg: 'wasDerivedFrom'
-                });
-            }
-            if (node1.properties.kind === 'dds-activity' && node2.properties.kind === 'dds-activity') {
-                this.trigger({
-                    provEditorModal: {open: true, id: 'relWarning'},
-                    relMsg: 'actToActMsg'
-                });
-            }
-            if (node1.properties.kind !== node2.properties.kind) {
-                if (relationKind === 'used') {
-                    from = node1.properties.kind === 'dds-activity' ? node1 : node2;
-                    to = node1.properties.kind === 'dds-activity' ? node2 : node1;
-                }
-                if (relationKind === 'was_generated_by') {
-                    from = node1.properties.kind === 'dds-activity' ? node2 : node1;
-                    to = node1.properties.kind === 'dds-activity' ? node1 : node2;
-                }
-                ProjectActions.startAddRelation(relationKind, from, to);
-            }
-        } else {
-            if (node1.properties.kind !== 'dds-file-version' || node2.properties.kind !== 'dds-file-version') {
-                // Send error modal to user explaining rules of was_derived_from relation
-                this.trigger({
-                    provEditorModal: {open: true, id: 'relWarning'},
-                    relMsg: 'notFileToFile'
-                });
-            } else {
-                from = node1;
-                to = node2;
-                ProjectStore.confirmDerivedFromRel(from, to);
-            }
-        }
-    },
-
-
-    buildRelationBody(kind, from, to) {
-        let body = {};
-        if(kind === 'used'){
-            body = {
-                'activity': {
-                    'id': from.id
-                },
-                'entity': {
-                    'kind': 'dds-file-version',
-                    'id': to.id
-                }
-            };
-        }
-        if(kind === 'was_generated_by'){
-            body = {
-                'entity': {
-                    'kind': 'dds-file-version',
-                    'id': from.id
-                },
-                'activity': {
-                    'id': to.id
-                }
-            };
-        }
-        if(kind === 'was_derived_from'){
-            body = {
-                'generated_entity': {
-                    'kind': 'dds-file-version',
-                    'id': to.id
-                },
-                'used_entity': {
-                    'kind': 'dds-file-version',
-                    'id': from.id
-                }
-            };
-        }
-        ProjectActions.addProvRelation(kind, body)
-    },
-
-    addProvRelationSuccess(json) { //Todo: update dataset/rerender graph with new relation
-        console.log(json)
-    },
-
-    toggleAddEdgeMode(value) {
-        if(value == null) {
-            this.addEdgeMode = !this.addEdgeMode;
-        } else {
-            this.addEdgeMode = true;
-        }
-        this.trigger({
-            addEdgeMode: this.addEdgeMode
-        })
-    },
-
-    getProvenanceSuccess(prov) {
-        this.provEdges = prov.relationships.map((edge) => {
-            return {
-                id: edge.id,
-                from: edge.start_node,
-                to: edge.end_node,
-                type: edge.type,
-                properties: edge.properties,
-                arrows: 'from'
-            };
-        });
-        this.provNodes = prov.nodes.map((node) => {
-            if(!node.properties.is_deleted) {
-                if (node.properties.kind === 'dds-activity') {
-                    return {
-                        id: node.id,
-                        label: node.properties.name,
-                        labels: node.labels,
-                        properties: node.properties,
-                        shape: 'box',
-                        color: '#1DE9B6'
-                    }
-                } else {
-                    return {
-                        id: node.id,
-                        label: node.properties.file.name,
-                        labels: node.labels,
-                        properties: node.properties
-                    }
-                }
-            }
-        });
-        this.trigger({
-            provEdges: this.provEdges,
-            provNodes: this.provNodes
-        })
-    },
-
-    toggleProvView() {
-        this.toggleProv = !this.toggleProv;
-        this.trigger({
-            toggleProv: this.toggleProv
-        })
-    },
-
-    toggleProvEditor() {
-        this.toggleProvEdit = !this.toggleProvEdit;
-        this.trigger({
-            toggleProvEdit: this.toggleProvEdit
-        })
-    },
-
-    showProvControlBtns() {
-        this.showProvCtrlBtns = !this.showProvCtrlBtns;
-        this.trigger({
-            showProvCtrlBtns: this.showProvCtrlBtns
-        })
-    },
-
-    showDeleteRelationsBtn(edges, nodes) {
-        if(edges.length > 0 && this.dltRelationsBtn && nodes !== null) {
-            this.dltRelationsBtn = !this.dltRelationsBtn;
-        } else {
-            if (edges.length > 0 && this.dltRelationsBtn) {
-                this.dltRelationsBtn = true;
-            } else {
-                this.dltRelationsBtn = !this.dltRelationsBtn;
-            }
-            if (this.showProvCtrlBtns && this.dltRelationsBtn) {
-                this.dltRelationsBtn = !this.dltRelationsBtn;
-            }
-        }
-        this.trigger({
-            dltRelationsBtn: this.dltRelationsBtn
-        })
-    },
-
-    selectNodesAndEdges(edgeData, nodeData) {
-        this.selectedEdges = edgeData;
-        this.selectedNode = nodeData;
-        this.trigger({
-            selectedNode: this.selectedNode,
-            selectedEdges: this.selectedEdges
-        })
-    },
-
-    hideProvAlert() {
-        this.showProvAlert = false;
-        this.trigger({
-            showProvAlert: this.showProvAlert
-        })
     },
 
     getFileVersions() {
@@ -303,7 +54,6 @@ var ProjectStore = Reflux.createStore({
     },
 
     addFileVersionSuccess(id, uploadId) {
-        this.showProvAlert = true;
         let kind = 'files/';
         ProjectActions.getEntity(id, kind);
         ProjectActions.getFileVersions(id);
@@ -311,7 +61,6 @@ var ProjectStore = Reflux.createStore({
             delete this.uploads[uploadId];
         }
         this.trigger({
-            showProvAlert: this.showProvAlert,
             uploads: this.uploads
         })
     },
@@ -907,8 +656,8 @@ var ProjectStore = Reflux.createStore({
         var win = window.open(host + url, '_blank');
         if (win) {
             win.focus();
-        } else { // if browser blocks popups use location.href instead
-            window.location.href = host + url;
+        } else {
+            alert('Please allow popups for this site and try downloading again');
         }
         this.trigger({
             loading: false,
