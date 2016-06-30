@@ -67,12 +67,12 @@ class VersionDetails extends React.Component {
                 <div className="mdl-cell mdl-cell--9-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
                     <span className="mdl-color-text--grey-800" style={styles.title}>{ name }</span>
                 </div>
-                <div className="mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.path}>
+                { label != null ? <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.subTitle}>
+                    <span className="mdl-color-text--grey-600" style={styles.spanTitle}>{ label }</span>
+                </div> : null }
+                <div className="mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.subTitle}>
                     <span style={styles.spanTitle}>{ 'Version: ' + versNumber }</span>
                 </div>
-                { label != null ? <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
-                    <span className="mdl-color-text--grey-600">{label}</span>
-                </div> : null}
                 <div className="mdl-cell mdl-cell--12-col content-block"  style={styles.list}>
                     <div className="list-block">
                         <div className="list-group">
@@ -173,13 +173,20 @@ class VersionDetails extends React.Component {
         let kind = 'file_versions/';
         ProjectActions.getDownloadUrl(id, kind);
     }
-
-    openModal() {
-        ProjectActions.openModal()
-    }
 }
 
 var styles = {
+    arrow: {
+        textAlign: 'left',
+        marginTop: -5
+    },
+    back: {
+        verticalAlign:-7
+    },
+    backIcon: {
+        fontSize: 24,
+        verticalAlign:-7
+    },
     btnWrapper: {
         marginTop: 11,
         marginRight: 25,
@@ -195,38 +202,10 @@ var styles = {
         overflow: 'visible',
         padding: '10px 0px 10px 0px'
     },
-    path: {
-        textAlign: 'left',
-        float: 'left',
-        marginLeft: 25,
-        marginTop: 18
-    },
-    list: {
-        paddingTop: 5,
-        clear: 'both'
-    },
-    backIcon: {
-        fontSize: 24,
-        verticalAlign:-7
-    },
-    arrow: {
-        textAlign: 'left',
-        marginTop: -5
-    },
-    back: {
-        verticalAlign:-7
-    },
     detailsTitle: {
         textAlign: 'left',
         float: 'left',
         marginLeft: 26
-    },
-    spanTitle: {
-        fontSize: '1.2em'
-    },
-    title: {
-        fontSize: 24,
-        wordWrap: 'break-word'
     },
     floatingButton: {
         position: 'absolute',
@@ -235,11 +214,28 @@ var styles = {
         zIndex: '2',
         color: '#ffffff'
     },
+    list: {
+        paddingTop: 5,
+        clear: 'both'
+    },
     menuIcon: {
         float: 'right',
         marginTop: 30,
         marginBottom: -3,
         marginRight: 10
+    },
+    spanTitle: {
+        fontSize: '1.2em'
+    },
+    subTitle: {
+        textAlign: 'left',
+        float: 'left',
+        marginLeft: 25,
+        marginTop: 18
+    },
+    title: {
+        fontSize: 24,
+        wordWrap: 'break-word'
     }
 };
 
