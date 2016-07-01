@@ -2,24 +2,19 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-import MoveItemModal from '../globalComponents/moveItemModal.jsx';
-import TextField from 'material-ui/lib/text-field';
-import CircularProgress from 'material-ui/lib/circular-progress';
-import Dialog from 'material-ui/lib/dialog';
-import FlatButton from 'material-ui/lib/flat-button';
-import IconMenu from 'material-ui/lib/menus/icon-menu';
-import MenuItem from 'material-ui/lib/menus/menu-item';
-import IconButton from 'material-ui/lib/icon-button';
-
-import SelectField from 'material-ui/lib/select-field';
-import RaisedButton from 'material-ui/lib/raised-button';
-
-import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
-import Fullscreen from 'material-ui/lib/svg-icons/navigation/fullscreen';
-import FullscreenExit from 'material-ui/lib/svg-icons/navigation/fullscreen-exit';
 import BorderColor from 'material-ui/lib/svg-icons/editor/border-color';
 import Cancel from 'material-ui/lib/svg-icons/navigation/cancel';
+import Dialog from 'material-ui/lib/dialog';
+import FlatButton from 'material-ui/lib/flat-button';
+import Fullscreen from 'material-ui/lib/svg-icons/navigation/fullscreen';
+import FullscreenExit from 'material-ui/lib/svg-icons/navigation/fullscreen-exit';
+import IconButton from 'material-ui/lib/icon-button';
 import LeftNav from 'material-ui/lib/left-nav';
+import MenuItem from 'material-ui/lib/menus/menu-item';
+import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
+import RaisedButton from 'material-ui/lib/raised-button';
+import SelectField from 'material-ui/lib/select-field';
+import TextField from 'material-ui/lib/text-field';
 
 class Provenance extends React.Component {
     /**
@@ -30,11 +25,13 @@ class Provenance extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            delEdge: null,
             errorText: null,
             floatingErrorText: 'This field is required.',
             height: window.innerHeight,
+            network: null,
             value: null,
-            width: window.innerWidth < 580 ? window.innerWidth : window.innerWidth * .85
+            width: window.innerWidth
         };
         this.handleResize = this.handleResize.bind(this);
     }
@@ -42,32 +39,64 @@ class Provenance extends React.Component {
     componentDidMount() {
         // Listen for resize changes when rotating device
         window.addEventListener('resize', this.handleResize);
-        setTimeout(()=>{
+        setTimeout(()=>{// Make sure that provEdges and nodes are set before rendering graph the first time
             let edges = this.props.provEdges && this.props.provEdges.length > 0 ? this.props.provEdges : [];
             let nodes = this.props.provNodes && this.props.provNodes.length > 0 ? this.props.provNodes : [];
             this.renderProvGraph(edges,nodes);
         },100);
     }
 
-    componentWillUpdate(nextProps, nextState){
+    componentWillUpdate(nextProps, nextState) {
         let edges = this.props.provEdges && this.props.provEdges.length > 0 ? this.props.provEdges : [];
         let nodes = this.props.provNodes && this.props.provNodes.length > 0 ? this.props.provNodes : [];
-        if(nextProps.addEdgeMode !== this.props.addEdgeMode){
-        //Check if addEdgeMode has changed. If true render graph in add edge mode or with newly added edge
+        //if(nextProps.addEdgeMode !== this.props.addEdgeMode){
+        ////Check if addEdgeMode has changed. If true render graph in add edge mode or with newly added edge
+        //    if(nextProps.addEdgeMode) this.renderProvGraph(edges, nodes);
+        //}
+        if(nextProps.updatedGraphItem !== this.props.updatedGraphItem && nextProps.updatedGraphItem.length > 0){
             this.renderProvGraph(edges, nodes);
         }
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.handleResize);
     }
 
     handleResize(e) {
         this.setState({
             height: window.innerHeight,
-            width: window.innerWidth < 580 ? window.innerWidth : window.innerWidth * .85
+            width: window.innerWidth
         })
     }
 
     renderProvGraph(edge, node) {
-        let nodes = new vis.DataSet(node);
         let edges = new vis.DataSet(edge);
+        let nodes = new vis.DataSet(node);
+
+        let onAddEdgeMode = (data, callback) => {
+            let nodes = ProjectStore.provNodes;
+            let relationKind = null;
+            if (data.from == data.to) {
+                callback(null);
+            } else {
+                switch(this.state.value){
+                    case 0:
+                        relationKind = 'used';
+                        break;
+                    case 1:
+                        relationKind = 'was_generated_by';
+                        break;
+                    case 2:
+                        relationKind = 'was_derived_from';
+                        break;
+                }
+                ProjectActions.getFromAndToNodes(data, relationKind, nodes);
+                ProjectActions.toggleAddEdgeMode();
+                if(this.props.showProvCtrlBtns) ProjectActions.showProvControlBtns();
+                this.setState({value: null});
+                callback(null); // Disable default behavior and update dataset in the store instead
+            }
+        };
 
         // create a network
         let data = {
@@ -85,6 +114,11 @@ class Provenance extends React.Component {
                     highlight:'#1565C0',
                     hover: '#1565C0',
                     opacity:1
+                },
+                smooth: {
+                    enabled: true,
+                    type: "dynamic",
+                    roundness: 0.5
                 }
             },
             nodes: {
@@ -130,34 +164,7 @@ class Provenance extends React.Component {
             },
             manipulation: {
                 enabled: false,
-                addEdge: (data, callback) => {
-                    //let from = null;
-                    //let to = null;
-                    //let node1 = null;
-                    //let node2 = null;
-                    let nodes = ProjectStore.provNodes;
-                    let relationKind = null;
-                    if (data.from == data.to) {
-                        callback(null);
-                    } else {
-                        switch(this.state.value){
-                            case 0:
-                                relationKind = 'used';
-                                break;
-                            case 1:
-                                relationKind = 'was_generated_by';
-                                break;
-                            case 2:
-                                relationKind = 'was_derived_from';
-                                break;
-                        }
-                        ProjectActions.getFromAndToNodes(data, relationKind, nodes);
-                        ProjectActions.toggleAddEdgeMode();
-                        if(ProjectStore.showProvCtrlBtns) ProjectActions.showProvControlBtns();
-                        this.setState({value: null});
-                        callback(null); // Disable default behavior and update dataset in the store instead
-                    }
-                }
+                addEdge: onAddEdgeMode
             }
         };
 
@@ -167,54 +174,55 @@ class Provenance extends React.Component {
             container.removeChild(container.firstChild);
         }
 
-        let network = new vis.Network(container, data, options);
+        //let network = new vis.Network(container, data, options);
+        this.state.network = new vis.Network(container, data, options);
 
-        if (ProjectStore.addEdgeMode) {
-            if(ProjectStore.showProvCtrlBtns) ProjectActions.showProvControlBtns();//Hide buttons while in add edge mode
-            if(ProjectStore.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn([]);
-            network.addEdgeMode();
-        }
+        //if (ProjectStore.addEdgeMode) {
+        //    if(this.props.showProvCtrlBtns) ProjectActions.showProvControlBtns();//Hide buttons while in add edge mode
+        //    if(this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn([]);
+        //    this.state.network.addEdgeMode();
+        //}
 
-        network.on("select", (params) => {
+        this.state.network.on("select", (params) => {
             let nodeData = nodes.get(params.nodes[0]);
             let edgeData = edges.get(params.edges);
             ProjectActions.selectNodesAndEdges(edgeData, nodeData);
         });
 
-        network.on("click", (params) => {
+        this.state.network.on("click", (params) => {
             let nodeData = nodes.get(params.nodes[0]);
             let edgeData = edges.get(params.edges);
-            ProjectActions.manageProvEditorControls(params, nodeData, edgeData);
+
             if(params.nodes.length > 0) {
                 if (nodeData.properties.kind !== 'dds-activity') {
-                    network.unselectAll();
+                    this.state.network.unselectAll();
                 }
-                if (nodeData.properties.kind !== 'dds-file-version' && nodeData.id !== ProjectStore.selectedNode.id) {
-                    if(!ProjectStore.showProvCtrlBtns) ProjectActions.showProvControlBtns();
-                    if(ProjectStore.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
+                if (nodeData.properties.kind !== 'dds-file-version' && nodeData.id !== this.props.selectedNode.id) {
+                    if(!this.props.showProvCtrlBtns) ProjectActions.showProvControlBtns();
+                    if(this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
                 }
-                if (nodeData.properties.kind !== 'dds-activity' && ProjectStore.showProvCtrlBtns) {
-                    network.unselectAll();
+                if (nodeData.properties.kind !== 'dds-activity' && this.props.showProvCtrlBtns) {
+                    this.state.network.unselectAll();
                     ProjectActions.showProvControlBtns();
                 }
-                if (nodeData.properties.kind !== 'dds-activity' && ProjectStore.dltRelationsBtn) {
-                    network.unselectAll();
+                if (nodeData.properties.kind !== 'dds-activity' && this.props.dltRelationsBtn) {
+                    this.state.network.unselectAll();
                     ProjectActions.showDeleteRelationsBtn(edgeData, nodeData);
                 }
             }
-            if (params.nodes.length === 0 && ProjectStore.showProvCtrlBtns) {//If clicked
-            // on canvas only or on an edge while showProvCntrlBtns
-                ProjectActions.showProvControlBtns(data);
-                network.unselectAll();
-                if(edgeData.length > 0) network.selectEdges([edgeData[0].id]);
+            if (params.nodes.length === 0 && this.props.showProvCtrlBtns) {
+                //If clicked on canvas only or on an edge while showProvCntrlBtns
+                ProjectActions.showProvControlBtns();
+                this.state.network.unselectAll();
+                if(edgeData.length > 0) this.state.network.selectEdges([edgeData[0].id]);
             }
-            if (params.edges.length === 0 && ProjectStore.dltRelationsBtn) {//If clicked on canvas only
+            if (params.edges.length === 0 && this.props.dltRelationsBtn) {//If clicked on canvas only
                 ProjectActions.showDeleteRelationsBtn(edgeData);
-                network.unselectAll();
+                this.state.network.unselectAll();
             }
             if (params.edges.length > 0 && params.nodes.length < 1){
-                if(!ProjectStore.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
-                if(ProjectStore.showProvCtrlBtns && ProjectStore.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
+                if(!this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
+                if(this.props.showProvCtrlBtns && this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
             }
         });
     }
@@ -253,26 +261,26 @@ class Provenance extends React.Component {
                 label="Delete"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={() => this.deleteActivity(ProjectStore.selectedNode)}
+                onTouchTap={() => this.deleteActivity(this.props.selectedNode)}
                 />
         ];
         const dltRelationActions = [
-                <FlatButton
-                    label="Cancel"
-                    secondary={true}
-                    onTouchTap={() => this.handleClose('delRel')}/>,
-                <FlatButton
-                    label="Delete"
-                    secondary={true}
-                    keyboardFocused={true}
-                    onTouchTap={() => this.deleteRelation(ProjectStore.selectedEdges[0])}//TODO: Fix this here
-                    />
+            <FlatButton
+                label="Cancel"
+                secondary={true}
+                onTouchTap={() => this.handleClose('delRel')}/>,
+            <FlatButton
+                label="Delete"
+                secondary={true}
+                keyboardFocused={true}
+                onTouchTap={() => this.deleteRelation(this.props.selectedEdges[0])}//TODO: Fix this here
+                />
         ];
         const relationWarningActions = [
-                <FlatButton
-                    label="Okay"
-                    secondary={true}
-                    onTouchTap={() => this.handleClose('relWarning')}/>
+            <FlatButton
+                label="Okay"
+                secondary={true}
+                onTouchTap={() => this.handleClose('relWarning')}/>
         ];
         const derivedRelActions = [
             <FlatButton
@@ -431,7 +439,7 @@ class Provenance extends React.Component {
                         <Dialog
                             style={styles.dialogStyles}
                             contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
-                            title="Please confirm this 'was derived from' relation"
+                            title="Please confirm that 'was derived from' relation"
                             autoDetectWindowHeight={true}
                             autoScrollBodyContent={true}
                             actions={derivedRelActions}
@@ -494,12 +502,15 @@ class Provenance extends React.Component {
                                 onTouchTap={() => this.toggleProv()}>
                         <NavigationClose />
                     </IconButton>
-                    <IconButton tooltip={this.state.width === window.innerWidth ? "Exit Fullscreen" : "Fullscreen Mode"}
+                    {//Todo: Remove this !!!!!!!!!!!!!
+                    /*<IconButton tooltip={this.state.width === window.innerWidth ? "Exit Fullscreen" :
+                     "Fullscreen" +
+                     " Mode"}
                                 tooltipPosition="bottom-right"
                                 style={styles.provEditor.toggleFullscreenBtn}
                                 onTouchTap={() => this.toggleFullscreen()}>
                         {this.state.width === window.innerWidth ? <FullscreenExit /> : <Fullscreen />}
-                    </IconButton>
+                    </IconButton>*/}
                     <h5 className="mdl-color-text--grey-800"
                         style={styles.provEditor.title}>
                         Provenance
@@ -547,6 +558,7 @@ class Provenance extends React.Component {
             let desc = document.getElementById('activityDescText').value;
             ProjectActions.editProvActivity(id, name, desc, actName);
             ProjectActions.closeProvEditorModal('editAct');
+            ProjectActions.showProvControlBtns();
             this.setState({
                 floatingErrorText: 'This field is required.'
             });
@@ -558,17 +570,19 @@ class Provenance extends React.Component {
     }
 
     deleteActivity(node) {
-        //Todo: delete nodes and or edges here
+        //Todo: delete nodes here
         let id = this.props.params.id;
-        ProjectActions.deleteProvActivity(node, id);
+        ProjectActions.deleteProvItem(node, id);
         ProjectActions.closeProvEditorModal('dltAct');
+        ProjectActions.showProvControlBtns();
     }
 
     deleteRelation(edge) {
-        //Todo: delete nodes and or edges here
+        //Todo: delete edges here
         let id = this.props.params.id;
-        ProjectActions.deleteProvRelation(edge, id);
+        ProjectActions.deleteProvItem(edge, id);
         ProjectActions.closeProvEditorModal('dltRel');
+        ProjectActions.showDeleteRelationsBtn(this.props.selectedEdges, this.props.selectedNode);
     }
 
     handleClose(id) {
@@ -580,8 +594,11 @@ class Provenance extends React.Component {
     }
 
     handleSelectValueChange(event, index, value) {
-        if(window.innerWidth < 580) this.toggleEditor();
+        if(window.innerWidth < 680) this.toggleEditor();
         ProjectActions.toggleAddEdgeMode(value);
+        if(this.props.showProvCtrlBtns) ProjectActions.showProvControlBtns();//Hide buttons while in add edge mode
+        if(this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn([]);
+        this.state.network.manipulation.addEdgeMode();
         this.setState({
             value: value,
             errorText: null
@@ -593,18 +610,20 @@ class Provenance extends React.Component {
     }
 
     toggleEdgeMode() {
+        this.state.network.manipulation.disableEditMode();
         ProjectActions.toggleAddEdgeMode();
         this.setState({value: null});
     }
 
-    toggleFullscreen() {
-        let width = this.state.width !== window.innerWidth ? window.innerWidth
-            : window.innerWidth * .85;
-        this.setState({width: width});
-    }
+    //toggleFullscreen() { //Todo: Remove this once it is decided that we don't need it!!!!!!!!!!!!!!!!!!!!!!!
+    //    let width = this.state.width !== window.innerWidth ? window.innerWidth
+    //        : window.innerWidth * .85;
+    //    this.setState({width: width});
+    //}
 
 
     toggleProv() {
+        if(this.props.toggleProvEdit && this.props.toggleProv) ProjectActions.toggleProvEditor();
         ProjectActions.toggleProvView();
     }
 
@@ -651,20 +670,20 @@ var styles = {
                 color: '#235F9C'
             }
         },
-        toggleFullscreenBtn: {
-            position: 'absolute',
-            top: 130,
-            left: 2,
-            zIndex: 9999
-        },
+        //toggleFullscreenBtn: {
+        //    position: 'absolute',
+        //    top: 130,
+        //    left: 2,
+        //    zIndex: 9999
+        //},
         toggleProvBtn: {
             position: 'absolute',
             top: 98,
-            left: 2,
+            left: 4,
             zIndex: 9999
         },
         title: {
-            margin: '112px 0px 0px 48px',
+            margin: '112px 0px 0px 54px',
             fontWeight: 100
         },
         toggleEditor: {

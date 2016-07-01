@@ -2,15 +2,13 @@ import Reflux from 'reflux';
 import ProjectActions from '../actions/projectActions';
 import MainActions from '../actions/mainActions';
 import StatusEnum from '../enum.js';
+import BaseUtils from '../../util/baseUtils.js';
 
 var ProjectStore = Reflux.createStore({
 
     init() {
         this.listenToMany(ProjectActions);
         this.provEditorModal = {open: false, id: null};
-        this.relFrom = null;
-        this.relTo = null;
-        this.relMsg = null;
         this.addEdgeMode = false;
         this.agents = [];
         this.agentKey = {};
@@ -31,6 +29,7 @@ var ProjectStore = Reflux.createStore({
         this.moveModal = false;
         this.moveToObj = {};
         this.moveErrorModal = false;
+        this.updatedGraphItem = [];
         this.parent = {};
         this.projects = [];
         this.project = {};
@@ -38,6 +37,9 @@ var ProjectStore = Reflux.createStore({
         this.projectMembers = [];
         this.provEdges = [];
         this.provNodes = [];
+        this.relFrom = null;
+        this.relTo = null;
+        this.relMsg = null;
         this.selectedNode = {};
         this.selectedEdges = [];
         this.showBatchOps = false;
@@ -73,13 +75,6 @@ var ProjectStore = Reflux.createStore({
         });
     },
 
-    startAddRelation(kind, from, to) {
-        ProjectActions.buildRelationBody(kind, from, to);
-        this.trigger({
-            provEditorModal: {open: false, id: 'confirmRel'}
-        });
-    },
-
     confirmDerivedFromRel(from, to) {
         this.trigger({
             relFrom: from,
@@ -88,12 +83,19 @@ var ProjectStore = Reflux.createStore({
         });
     },
 
+    startAddRelation(kind, from, to) {
+        ProjectActions.buildRelationBody(kind, from, to);
+        this.trigger({
+            provEditorModal: {open: false, id: 'confirmRel'}
+        });
+    },
+
     getFromAndToNodes(data, relationKind, nodes) {
         let from = null;
         let to = null;
         let node1 = null;
         let node2 = null;
-        nodes.forEach((node) => { //Todo: Insert logic here to enforce rules of relation types//////////
+        nodes.forEach((node) => {
             if (data.from === node.id) {
                 node1 = node;
             }
@@ -101,7 +103,7 @@ var ProjectStore = Reflux.createStore({
                 node2 = node;
             }
         });
-        if(relationKind !== 'was_derived_from') {
+        if (relationKind !== 'was_derived_from') {
             if (node1.properties.kind === 'dds-file-version' && node2.properties.kind === 'dds-file-version') {
                 this.trigger({
                     provEditorModal: {open: true, id: 'relWarning'},
@@ -127,7 +129,7 @@ var ProjectStore = Reflux.createStore({
             }
         } else {
             if (node1.properties.kind !== 'dds-file-version' || node2.properties.kind !== 'dds-file-version') {
-                // Send error modal to user explaining rules of was_derived_from relation
+                // Send error modal to user explaining rules of was_derived_from relations
                 this.trigger({
                     provEditorModal: {open: true, id: 'relWarning'},
                     relMsg: 'notFileToFile'
@@ -140,10 +142,9 @@ var ProjectStore = Reflux.createStore({
         }
     },
 
-
     buildRelationBody(kind, from, to) {
         let body = {};
-        if(kind === 'used'){
+        if (kind === 'used') {
             body = {
                 'activity': {
                     'id': from.id
@@ -154,7 +155,7 @@ var ProjectStore = Reflux.createStore({
                 }
             };
         }
-        if(kind === 'was_generated_by'){
+        if (kind === 'was_generated_by') {
             body = {
                 'entity': {
                     'kind': 'dds-file-version',
@@ -165,7 +166,7 @@ var ProjectStore = Reflux.createStore({
                 }
             };
         }
-        if(kind === 'was_derived_from'){
+        if (kind === 'was_derived_from') {
             body = {
                 'generated_entity': {
                     'kind': 'dds-file-version',
@@ -177,15 +178,97 @@ var ProjectStore = Reflux.createStore({
                 }
             };
         }
-        ProjectActions.addProvRelation(kind, body)
+        ProjectActions.addProvRelation(kind, body);
     },
 
-    addProvRelationSuccess(json) { //Todo: update dataset/rerender graph with new relation
-        console.log(json)
+    addProvRelationSuccess(data) { //Todo: update dataset/rerender graph with new relation
+        let rel = [];
+        rel.push(data);
+        this.updatedGraphItem = rel.map((edge) => {//Update dataset in client
+            return {
+                id: edge.id,//Todo: 'used' and 'generated' relations render wrong on graph unless I flip from/to
+                from: edge.to.id,//Todo like this --> from: edge.to.id,
+                to: edge.from.id,
+                type: edge.kind,
+                arrows: 'from'
+            };
+        });
+        let edges = this.provEdges;
+        edges.push(this.updatedGraphItem[0]);
+        this.trigger({
+            updatedGraphItem: this.updatedGraphItem,
+            provEdges: edges
+        })
+    },
+
+    addProvActivitySuccess(node) {
+        let act = [];
+        act.push(node);
+        this.updatedGraphItem = act.map((node) => {//Update dataset in client
+            return {
+                id: node.id,
+                label: node.name,
+                shape: 'box',
+                color: '#1DE9B6',
+                properties: {
+                    kind: node.kind
+                }
+            };
+        });
+        let nodes = this.provNodes;
+        nodes.push(this.updatedGraphItem[0]);
+        this.trigger({
+            updatedGraphItem: this.updatedGraphItem,
+            provNodes: nodes
+        })
+    },
+
+    editProvActivitySuccess(node) {
+        let act = [];
+        let nodes = this.provNodes;
+        nodes = BaseUtils.removeObjByKey(nodes, {key: 'id', value: node.id});
+        act.push(node);
+        this.updatedGraphItem = act.map((node) => {//Update dataset in client
+            return {
+                id: node.id,
+                label: node.name,
+                shape: 'box',
+                color: '#1DE9B6',
+                properties: {
+                    kind: node.kind
+                }
+            };
+        });
+        nodes.push(this.updatedGraphItem[0]);
+        this.trigger({
+            updatedGraphItem: this.updatedGraphItem,
+            provNodes: nodes,
+            showProvCtrlBtns: false
+        })
+    },
+
+    deleteProvItemSuccess(data) {
+        let item = [];
+        item.push(data);
+        let edges = this.provEdges;
+        let nodes = this.provNodes;
+        if(data.hasOwnProperty('properties')){
+            nodes = BaseUtils.removeObjByKey(nodes, {key: 'id', value: data.id});
+        } else {
+            edges = BaseUtils.removeObjByKey(edges, {key: 'id', value: data.id});
+        }
+        this.trigger({
+            //dltRelationsBtn: false,
+            updatedGraphItem: item,
+            provEdges: edges,
+            provNodes: nodes,
+            showProvCtrlBtns: false
+        })
+
     },
 
     toggleAddEdgeMode(value) {
-        if(value == null) {
+        if (value == null) {
             this.addEdgeMode = !this.addEdgeMode;
         } else {
             this.addEdgeMode = true;
@@ -207,7 +290,7 @@ var ProjectStore = Reflux.createStore({
             };
         });
         this.provNodes = prov.nodes.map((node) => {
-            if(!node.properties.is_deleted) {
+            if (!node.properties.is_deleted) {
                 if (node.properties.kind === 'dds-activity') {
                     return {
                         id: node.id,
@@ -255,7 +338,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     showDeleteRelationsBtn(edges, nodes) {
-        if(edges.length > 0 && this.dltRelationsBtn && nodes !== null) {
+        if (edges.length > 0 && this.dltRelationsBtn && nodes !== null) {
             this.dltRelationsBtn = !this.dltRelationsBtn;
         } else {
             if (edges.length > 0 && this.dltRelationsBtn) {
@@ -482,7 +565,7 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    selectMoveLocation (id,kind){
+    selectMoveLocation (id, kind){
         this.destination = id;
         this.destinationKind = kind;
         this.trigger({
@@ -545,11 +628,11 @@ var ProjectStore = Reflux.createStore({
 
     getPermissionsSuccess (json) {
         let id = json.auth_role.id;
-        if(id === 'project_viewer') this.projPermissions = 'viewOnly';
-        if(id === 'project_admin' || id === 'system_admin') this.projPermissions = 'prjCrud';
-        if(id === 'file_editor') this.projPermissions = 'flCrud';
-        if(id === 'file_uploader') this.projPermissions = 'flUpload';
-        if(id === 'file_downloader') this.projPermissions = 'flDownload';
+        if (id === 'project_viewer') this.projPermissions = 'viewOnly';
+        if (id === 'project_admin' || id === 'system_admin') this.projPermissions = 'prjCrud';
+        if (id === 'file_editor') this.projPermissions = 'flCrud';
+        if (id === 'file_uploader') this.projPermissions = 'flUpload';
+        if (id === 'file_downloader') this.projPermissions = 'flDownload';
         this.trigger({
             projPermissions: this.projPermissions
         });
@@ -808,12 +891,12 @@ var ProjectStore = Reflux.createStore({
     },
 
     getEntitySuccess(json, requester) {
-        if(requester === undefined) this.entityObj = json;
-        if(requester === 'optionsMenu') {
+        if (requester === undefined) this.entityObj = json;
+        if (requester === 'optionsMenu') {
             this.parent = json.parent;
             this.moveToObj = json;
         }
-        if(requester === 'moveItemModal') {
+        if (requester === 'moveItemModal') {
             this.moveToObj = json;
         }
         this.trigger({
@@ -840,7 +923,9 @@ var ProjectStore = Reflux.createStore({
     },
 
     getUserNameSuccess(results) {
-        this.users = results.map(function(users) {return users.full_name});
+        this.users = results.map(function (users) {
+            return users.full_name
+        });
         this.trigger({
             users: this.users
         });
@@ -900,7 +985,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     getDownloadUrlSuccess(json) {
-        if(this.itemsSelected) this.itemsSelected = this.itemsSelected -1;
+        if (this.itemsSelected) this.itemsSelected = this.itemsSelected - 1;
         !this.itemsSelected || !this.itemsSelected.length ? this.showBatchOps = false : this.showBatchOps;
         let host = json.host;
         let url = json.url;
@@ -943,7 +1028,7 @@ var ProjectStore = Reflux.createStore({
         ProjectActions.updateAndProcessChunks(uploadId, null, null);
         window.onbeforeunload = function (e) {// If uploading files and user navigates away from page, send them warning
             let preventLeave = true;
-            if(preventLeave){
+            if (preventLeave) {
                 return "If you refresh the page or close your browser, files being uploaded will be lost and you" +
                     " will have to start again. Are" +
                     " you sure you want to do this?";
@@ -965,16 +1050,16 @@ var ProjectStore = Reflux.createStore({
                 // find chunk to update
                 if (chunks[i].number === chunkNum) {
                     // update progress of chunk in bytes
-                    if(progress) chunks[i].chunkUpdates.progress = progress;
+                    if (progress) chunks[i].chunkUpdates.progress = progress;
                     break;
                 }
             }
         }
         // calculate % uploaded
         let bytesUploaded = 0;
-        if(chunks) {
+        if (chunks) {
             chunks.map(chunk => bytesUploaded += chunk.chunkUpdates.progress);
-            upload.uploadProgress = upload.size > 0 ? (bytesUploaded/upload.size)*100 : 0;
+            upload.uploadProgress = upload.size > 0 ? (bytesUploaded / upload.size) * 100 : 0;
         }
 
         this.trigger({
@@ -993,7 +1078,7 @@ var ProjectStore = Reflux.createStore({
                 // find chunk to update
                 if (chunks[i].number === chunkNum) {
                     //update status
-                    if(chunkUpdates.status !== undefined) chunks[i].chunkUpdates.status = chunkUpdates.status;
+                    if (chunkUpdates.status !== undefined) chunks[i].chunkUpdates.status = chunkUpdates.status;
                     if (chunks[i].chunkUpdates.status === StatusEnum.STATUS_RETRY && chunks[i].retry > StatusEnum.MAX_RETRY) {
                         chunks[i].chunkUpdates.status = StatusEnum.STATUS_FAILED;
                         ProjectStore.uploadError(uploadId, chunks[i].name);
@@ -1013,9 +1098,9 @@ var ProjectStore = Reflux.createStore({
                 ProjectActions.getChunkUrl(uploadId, upload.blob.slice(chunk.start, chunk.end), chunk.number, upload.size, upload.parentId, upload.parentKind, upload.name, chunk.chunkUpdates);
                 return;
             }
-            if(chunk.chunkUpdates.status !== StatusEnum.STATUS_SUCCESS) allDone = false;
+            if (chunk.chunkUpdates.status !== StatusEnum.STATUS_SUCCESS) allDone = false;
         }
-        if (allDone === true)ProjectActions.allChunksUploaded(uploadId, upload.parentId, upload.parentKind, upload.name, upload.label, upload.fileId );
+        if (allDone === true)ProjectActions.allChunksUploaded(uploadId, upload.parentId, upload.parentKind, upload.name, upload.label, upload.fileId);
         window.onbeforeunload = function (e) { // If done, set to false so no warning is sent.
             let preventLeave = false;
         };

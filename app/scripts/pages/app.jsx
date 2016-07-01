@@ -5,6 +5,8 @@ import Footer from '../components/globalComponents/footer.jsx';
 import LeftMenu from '../components/globalComponents/leftMenu.jsx';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions';
+import ProjectStore from '../stores/projectStore';
+import ProjectActions from '../actions/projectActions';
 import cookie from 'react-cookie';
 import Snackbar from 'material-ui/lib/snackbar';
 import ThemeManager from 'material-ui/lib/styles/theme-manager';
@@ -18,10 +20,11 @@ let zIndex = {
 };
 
 class App extends React.Component {
-    constructor() {
+    constructor(props) {
+        super(props);
         this.state = {
             appConfig: MainStore.appConfig
-        }
+        };
     }
 
     getChildContext() {

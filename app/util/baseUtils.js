@@ -24,6 +24,13 @@ let BaseUtils = {
                 urlPath = 'folder/'
             }
             return urlPath;
+        },
+
+        removeObjByKey(array, obj){
+            array.some((item, index) => {
+                return (array[index][obj.key] === obj.value) ? !!(array.splice(index, 1)) : false;
+            });
+            return array;
         }
 };
 

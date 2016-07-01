@@ -28,7 +28,8 @@ class File extends React.Component {
             selectedEdges: ProjectStore.selectedEdges,
             selectedNode: ProjectStore.selectedNode,
             showProvAlert: ProjectStore.showProvAlert,
-            showProvCtrlBtns: ProjectStore.showProvCtrlBtns
+            showProvCtrlBtns: ProjectStore.showProvCtrlBtns,
+            updatedGraphItem: ProjectStore.updatedGraphItem
         };
     }
 
