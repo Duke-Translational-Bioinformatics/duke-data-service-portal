@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import graphOptions from '../../graphConfig';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import BorderColor from 'material-ui/lib/svg-icons/editor/border-color';
@@ -30,6 +31,7 @@ class Provenance extends React.Component {
             floatingErrorText: 'This field is required.',
             height: window.innerHeight,
             network: null,
+            showDetails: false,
             value: null,
             width: window.innerWidth
         };
@@ -47,6 +49,8 @@ class Provenance extends React.Component {
     }
 
     componentWillUpdate(nextProps, nextState) {
+        let scale = this.props.scale;// Todo: Remove this if not using saveZoomState
+        let position = this.props.position;// Todo: Remove this if not using saveZoomState
         let edges = this.props.provEdges && this.props.provEdges.length > 0 ? this.props.provEdges : [];
         let nodes = this.props.provNodes && this.props.provNodes.length > 0 ? this.props.provNodes : [];
         //if(nextProps.addEdgeMode !== this.props.addEdgeMode){
@@ -54,7 +58,7 @@ class Provenance extends React.Component {
         //    if(nextProps.addEdgeMode) this.renderProvGraph(edges, nodes);
         //}
         if(nextProps.updatedGraphItem !== this.props.updatedGraphItem && nextProps.updatedGraphItem.length > 0){
-            this.renderProvGraph(edges, nodes);
+            this.renderProvGraph(edges, nodes, scale, position);// Todo: Remove extra params if not using saveZoomState
         }
     }
 
@@ -69,7 +73,7 @@ class Provenance extends React.Component {
         })
     }
 
-    renderProvGraph(edge, node) {
+    renderProvGraph(edge, node, scale, position) {
         let edges = new vis.DataSet(edge);
         let nodes = new vis.DataSet(node);
 
@@ -90,6 +94,7 @@ class Provenance extends React.Component {
                         relationKind = 'was_derived_from';
                         break;
                 }
+                ProjectActions.saveGraphZoomState(this.state.network.getScale(), this.state.network.getViewPosition());
                 ProjectActions.getFromAndToNodes(data, relationKind, nodes);
                 ProjectActions.toggleAddEdgeMode();
                 if(this.props.showProvCtrlBtns) ProjectActions.showProvControlBtns();
@@ -103,70 +108,8 @@ class Provenance extends React.Component {
             nodes: nodes,
             edges: edges
         };
-
-        let options = {
-            autoResize: true,
-            height: '100%',
-            width: '100%',
-            edges: {
-                color: {
-                    color:'#1976D2',
-                    highlight:'#1565C0',
-                    hover: '#1565C0',
-                    opacity:1
-                },
-                smooth: {
-                    enabled: true,
-                    type: "dynamic",
-                    roundness: 0.5
-                }
-            },
-            nodes: {
-                shape: 'dot',
-                size: 14,
-                borderWidth: 1,
-                borderWidthSelected: 3,
-                font: {
-                    color: '#343434',
-                    size: 10,
-                    face: 'roboto'
-                },
-                color: {
-                    border: '#1565C0',
-                    background: '#64B5F6',
-                    highlight: {
-                        border: '#1565C0',
-                        background: '#2196F3'
-                    },
-                    hover: {
-                        border: '#1565C0',
-                        background: '#2196F3'
-                    }
-                }
-            },
-            interaction: {
-                hover: true,
-                selectable: true,
-                tooltipDelay: 200
-            },
-            layout: {
-                hierarchical: {
-                    enabled: true,
-                    levelSeparation: 150,
-                    nodeSpacing: 100,
-                    treeSpacing: 100,
-                    blockShifting: true,
-                    edgeMinimization: true,
-                    parentCentralization: true,
-                    direction: 'DU',        // UD, DU, LR, RL
-                    sortMethod: 'directed'   // hubsize, directed
-                }
-            },
-            manipulation: {
-                enabled: false,
-                addEdge: onAddEdgeMode
-            }
-        };
+        // import options from graphConfig
+        let options = graphOptions;
 
         let container = ReactDOM.findDOMNode(this.refs.graphContainer);
         // remove old contents of dom node
@@ -174,14 +117,18 @@ class Provenance extends React.Component {
             container.removeChild(container.firstChild);
         }
 
-        //let network = new vis.Network(container, data, options);
         this.state.network = new vis.Network(container, data, options);
-
-        //if (ProjectStore.addEdgeMode) {
-        //    if(this.props.showProvCtrlBtns) ProjectActions.showProvControlBtns();//Hide buttons while in add edge mode
-        //    if(this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn([]);
-        //    this.state.network.addEdgeMode();
-        //}
+        //Add manipulation options to network options so that addEdgeMode is defined
+        this.state.network.setOptions({manipulation: {
+            enabled: false,
+            addEdge: onAddEdgeMode
+        }});
+        if(scale !== null && position !== null) {
+            this.state.network.moveTo({
+                position: position,
+                scale: scale
+            });
+        }
 
         this.state.network.on("select", (params) => {
             let nodeData = nodes.get(params.nodes[0]);
@@ -189,11 +136,24 @@ class Provenance extends React.Component {
             ProjectActions.selectNodesAndEdges(edgeData, nodeData);
         });
 
+        this.state.network.on("doubleClick", (params) => { // Todo: show more nodes on graph on double click event
+            nodes.add({
+                id: 123,
+                label: 'testAddNode',
+                labels: 'test',
+                properties: {},
+                shape: 'box',
+                color: '#1DE9B6',
+                title:'<Card style="margin: 10px"><a href="#">File Name</a><p>date: date</p><p>size: size</p></Card>'
+            })
+        });
+
         this.state.network.on("click", (params) => {
             let nodeData = nodes.get(params.nodes[0]);
             let edgeData = edges.get(params.edges);
 
             if(params.nodes.length > 0) {
+                this.setState({showDetails: true});
                 if (nodeData.properties.kind !== 'dds-activity') {
                     this.state.network.unselectAll();
                 }
@@ -212,18 +172,22 @@ class Provenance extends React.Component {
             }
             if (params.nodes.length === 0 && this.props.showProvCtrlBtns) {
                 //If clicked on canvas only or on an edge while showProvCntrlBtns
+                this.setState({showDetails: false});
                 ProjectActions.showProvControlBtns();
                 this.state.network.unselectAll();
                 if(edgeData.length > 0) this.state.network.selectEdges([edgeData[0].id]);
             }
             if (params.edges.length === 0 && this.props.dltRelationsBtn) {//If clicked on canvas only
+                this.setState({showDetails: false});
                 ProjectActions.showDeleteRelationsBtn(edgeData);
                 this.state.network.unselectAll();
             }
             if (params.edges.length > 0 && params.nodes.length < 1){
+                this.setState({showDetails: false});
                 if(!this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
                 if(this.props.showProvCtrlBtns && this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
             }
+            if(params.edges.length === 0 && params.nodes.length === 0) this.setState({showDetails: false});
         });
     }
 
@@ -309,26 +273,26 @@ class Provenance extends React.Component {
         let openConfirmRel = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'confirmRel' ? this.props.provEditorModal.open : false;
         let drvFrmMsg = this.props.relMsg && this.props.relMsg === 'wasDerivedFrom' ?
             <h5>Only<u><i>Was Derived From</i></u> relations can go
-            <u><i> from </i></u> files <u><i>to</i></u> files.</h5> : '';
+                <u><i> from </i></u> files <u><i>to</i></u> files.</h5> : '';
         let actToActMsg = this.props.relMsg && this.props.relMsg === 'actToActMsg' ?
             <h5>An <u><i>activity</i></u> can not have a relation to another <u><i>activity</i></u></h5> : '';
         let notFileToFile = this.props.relMsg && this.props.relMsg === 'notFileToFile' ?
             <h5><u><i>Was Derived From</i></u> relations can only be created <u><i>from </i></u>
-            files <u><i>to</i></u> files.</h5> : '';
+                files <u><i>to</i></u> files.</h5> : '';
         let selectedNode = this.props.selectedNode ? this.props.selectedNode : null;
         let showBtns = this.props.showProvCtrlBtns ? 'block' : 'none';
         let showDltRltBtn = this.props.dltRelationsBtn ? 'block' : 'none';
 
         return (
             <div>
-                <LeftNav docked={false} width={this.state.width} openRight={true} open={this.props.toggleProv}>
+                <LeftNav disableSwipeToOpen={true} width={this.state.width} openRight={true} open={this.props.toggleProv}>
                     <LeftNav width={220} openRight={true} open={this.props.toggleProvEdit}>
                         <div style={styles.provEditor}>
                             <IconButton style={styles.provEditor.toggleProvBtn}
                                         onTouchTap={() => this.toggleEditor()}>
                                 <NavigationClose />
                             </IconButton>
-                                <RaisedButton
+                            <RaisedButton
                                 id="addAct"
                                 label="Add Activity"
                                 labelStyle={styles.provEditor.btn.label}
@@ -370,6 +334,13 @@ class Provenance extends React.Component {
                                 <div style={styles.provEditor.addEdgeInstruction}>
                                     Click on a node and drag to another node to create a new relation. <br/>
                                     <span style={styles.provEditor.addEdgeInstruction.text}>Exit Add Relation Mode</span> <Cancel style={styles.cancelBtn} color={'#757575'} onTouchTap={() => this.toggleEdgeMode()}/>
+                                </div> : ''}
+                            {this.state.showDetails ?
+                                <div style={styles.provEditor.addEdgeInstruction}>
+                                    <span>{this.props.selectedNode.label}</span><br/>
+                                    <span>{this.props.selectedNode.id}</span><br/>
+                                    <span>{this.props.selectedNode.id}</span><br/>
+                                    <span>{this.props.selectedNode.id}</span><br/>
                                 </div> : ''}
                         </div>
                         <Dialog
@@ -447,7 +418,7 @@ class Provenance extends React.Component {
                             onRequestClose={() => this.handleClose('confirmRel')}>
                             <i className="material-icons" style={styles.help}>help</i>
                             <h6>Are you sure that the file <b>{this.props.relFrom && this.props.relFrom !== null ? this.props.relFrom.label+' ' : ''}</b>
-                            was derived from the file <b>{this.props.relTo && this.props.relTo !== null ? this.props.relTo.label+' ' : ''}</b>?</h6>
+                                was derived from the file <b>{this.props.relTo && this.props.relTo !== null ? this.props.relTo.label+' ' : ''}</b>?</h6>
                         </Dialog>
                         <Dialog
                             style={styles.dialogStyles}
@@ -503,27 +474,26 @@ class Provenance extends React.Component {
                         <NavigationClose />
                     </IconButton>
                     {//Todo: Remove this !!!!!!!!!!!!!
-                    /*<IconButton tooltip={this.state.width === window.innerWidth ? "Exit Fullscreen" :
-                     "Fullscreen" +
-                     " Mode"}
-                                tooltipPosition="bottom-right"
-                                style={styles.provEditor.toggleFullscreenBtn}
-                                onTouchTap={() => this.toggleFullscreen()}>
-                        {this.state.width === window.innerWidth ? <FullscreenExit /> : <Fullscreen />}
-                    </IconButton>*/}
+                        /*<IconButton tooltip={this.state.width === window.innerWidth ? "Exit Fullscreen" :
+                         "Fullscreen" +
+                         " Mode"}
+                         tooltipPosition="bottom-right"
+                         style={styles.provEditor.toggleFullscreenBtn}
+                         onTouchTap={() => this.toggleFullscreen()}>
+                         {this.state.width === window.innerWidth ? <FullscreenExit /> : <Fullscreen />}
+                         </IconButton>*/}
                     <h5 className="mdl-color-text--grey-800"
                         style={styles.provEditor.title}>
                         Provenance
                     </h5>
-                    <div>
-                        <div id="graphContainer" ref="graphContainer"
-                             style={{
+                    <div id="graphContainer" ref="graphContainer"
+                         style={{
+                             position: 'relative',
                              marginTop: 50,
                              maxWidth: this.state.width,
                              height: this.state.height,
                              float: 'left'}}
-                             className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                        </div>
+                         className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     </div>
                 </LeftNav>
             </div>
@@ -540,6 +510,8 @@ class Provenance extends React.Component {
         } else {
             let name = document.getElementById('activityNameText').value;
             let desc = document.getElementById('activityDescText').value;
+            if(this.props.addEdgeMode) this.toggleEdgeMode();
+            ProjectActions.saveGraphZoomState(this.state.network.getScale(), this.state.network.getViewPosition());
             ProjectActions.addProvActivity(name, desc);
             ProjectActions.closeProvEditorModal('addAct');
             this.setState({
@@ -556,6 +528,8 @@ class Provenance extends React.Component {
         } else {
             let name = document.getElementById('activityNameText').value;
             let desc = document.getElementById('activityDescText').value;
+            if(this.props.addEdgeMode) this.toggleEdgeMode();
+            ProjectActions.saveGraphZoomState(this.state.network.getScale(), this.state.network.getViewPosition());
             ProjectActions.editProvActivity(id, name, desc, actName);
             ProjectActions.closeProvEditorModal('editAct');
             ProjectActions.showProvControlBtns();
@@ -565,21 +539,17 @@ class Provenance extends React.Component {
         }
     }
 
-    openModal(id) {
-        ProjectActions.openProvEditorModal(id);
-    }
-
     deleteActivity(node) {
-        //Todo: delete nodes here
         let id = this.props.params.id;
+        ProjectActions.saveGraphZoomState(this.state.network.getScale(), this.state.network.getViewPosition());
         ProjectActions.deleteProvItem(node, id);
         ProjectActions.closeProvEditorModal('dltAct');
         ProjectActions.showProvControlBtns();
     }
 
     deleteRelation(edge) {
-        //Todo: delete edges here
         let id = this.props.params.id;
+        ProjectActions.saveGraphZoomState(this.state.network.getScale(), this.state.network.getViewPosition());
         ProjectActions.deleteProvItem(edge, id);
         ProjectActions.closeProvEditorModal('dltRel');
         ProjectActions.showDeleteRelationsBtn(this.props.selectedEdges, this.props.selectedNode);
@@ -590,7 +560,9 @@ class Provenance extends React.Component {
     }
 
     handleFloatingError(e) {
-        this.setState({floatingErrorText: e.target.value ? '' : 'This field is required.'});
+        if(this.state.floatingErrorText !== '' || !e.target.value) { // Avoid lagging text input due to re-renders
+            this.setState({floatingErrorText: e.target.value ? '' : 'This field is required.'});
+        }
     }
 
     handleSelectValueChange(event, index, value) {
@@ -603,6 +575,10 @@ class Provenance extends React.Component {
             value: value,
             errorText: null
         });
+    }
+
+    openModal(id) {
+        ProjectActions.openProvEditorModal(id);
     }
 
     switchRelations(from, to){

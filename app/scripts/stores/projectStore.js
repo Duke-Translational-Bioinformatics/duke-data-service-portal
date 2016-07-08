@@ -31,6 +31,7 @@ var ProjectStore = Reflux.createStore({
         this.moveErrorModal = false;
         this.updatedGraphItem = [];
         this.parent = {};
+        this.position = null;
         this.projects = [];
         this.project = {};
         this.projPermissions = null;
@@ -40,6 +41,7 @@ var ProjectStore = Reflux.createStore({
         this.relFrom = null;
         this.relTo = null;
         this.relMsg = null;
+        this.scale = null;
         this.selectedNode = {};
         this.selectedEdges = [];
         this.showBatchOps = false;
@@ -53,6 +55,13 @@ var ProjectStore = Reflux.createStore({
         this.users = [];
         this.userKey = {};
         this.versionModal = false;
+    },
+
+    saveGraphZoomState(scale, position) {
+        this.trigger({
+            scale: scale,
+            position: position
+        });
     },
 
     openProvEditorModal(id) {
@@ -298,14 +307,19 @@ var ProjectStore = Reflux.createStore({
                         labels: node.labels,
                         properties: node.properties,
                         shape: 'box',
-                        color: '#1DE9B6'
+                        color: '#1DE9B6',
+                        title:'<div style="margin: 10px; color: #616161"><span>'+node.properties.name+'</span><br/><span>'+node.properties.description+'</span></div>'
                     }
                 } else {
                     return {
                         id: node.id,
                         label: node.properties.file.name,
                         labels: node.labels,
-                        properties: node.properties
+                        properties: node.properties,
+                        title:'<div style="margin: 10px; color: #616161"><span>'
+                        +node.properties.file.name+'</span><br/><span>'
+                        +node.properties.label+'</span><br/><span>File Version: '
+                        +node.properties.version+'</span></div>'
                     }
                 }
             }

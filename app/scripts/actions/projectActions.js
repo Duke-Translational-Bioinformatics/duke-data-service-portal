@@ -31,6 +31,7 @@ var ProjectActions = Reflux.createActions([
     'selectNodesAndEdges',
     'getProvenance',
     'getProvenanceSuccess',
+    'saveGraphZoomState',
     'hashFile',
     'postHash',
     'openModal',
@@ -231,6 +232,7 @@ ProjectActions.getProvenance.preEmit = function (id) {//Todo: Replace with prope
                         "kind": "dds-activity",
                         "id": "2fba2f6e-d889-4bfa-ac2c-d2a774cc15bd",
                         "name": "RF PI3-Kinase",
+                        "description": "heuristic for PI3-Kinase pathway activity",
                         "is_deleted": false,
                         "audit": { }
                     }
@@ -242,6 +244,7 @@ ProjectActions.getProvenance.preEmit = function (id) {//Todo: Replace with prope
                         "kind": "dds-activity",
                         "id": "3bd380e9-31d2-44d2-8134-40360b8a474b",
                         "name": "Activity Test",
+                        "description": "Building a Random Forest as a heuristic for PI3-Kinase pathway activity",
                         "is_deleted": false,
                         "audit": { }
                     }
@@ -253,7 +256,7 @@ ProjectActions.getProvenance.preEmit = function (id) {//Todo: Replace with prope
                         "kind": "dds-file-version",
                         "id": "f1a917d7-8e0d-4bb6-b515-0f9803fc551a",
                         "file": {
-                            "id": "777be35a-98e0-4c2e-9a17-7bc009f9b111",
+                            "id": "998dfdeb-5bcd-481a-9b02-6a05f9c7a9e4",
                             "name": "RSEM_Normalized_.Rdata"
                         },
                         "version": 1,
