@@ -84,7 +84,7 @@ class ProjectChildren extends React.Component {
                                          style={styles.title}>{children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}</div>
                                 </div>
                                 <div className="item-subtitle mdl-color-text--grey-600">Created by { children.audit.created_by.full_name }</div>
-                                <div className="item-subtitle mdl-color-text--grey-600">{children.audit.last_updated_on ? 'Last updated on '+new Date(children.audit.last_updated_on).toString() : <br />}</div>
+                                <div className="item-subtitle mdl-color-text--grey-600">{children.audit.last_updated_on ? 'Last updated on '+new Date(children.audit.last_updated_on).toDateString() + ' by ' + children.audit.last_updated_by.full_name  : <br />}</div>
                             </div>
                         </a>
                     </li>
