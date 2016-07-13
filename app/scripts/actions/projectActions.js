@@ -61,8 +61,6 @@ var ProjectActions = Reflux.createActions([
     'clearApiToken',
     'loadProjects',
     'loadProjectsSuccess',
-    'loadProjectChildren',
-    'loadProjectChildrenSuccess',
     'addProject',
     'addProjectSuccess',
     'deleteProject',
@@ -71,8 +69,6 @@ var ProjectActions = Reflux.createActions([
     'editProjectSuccess',
     'showDetails',
     'showDetailsSuccess',
-    'loadFolderChildren',
-    'loadFolderChildrenSuccess',
     'addFolder',
     'addFolderSuccess',
     'deleteFolder',
@@ -106,8 +102,30 @@ var ProjectActions = Reflux.createActions([
     'updateAndProcessChunks',
     'allChunksUploaded',
     'uploadError',
-    'getChunkUrl'
+    'getChunkUrl',
+    'search',
+    'setSearchText',
+    'getChildren',
+    'getChildrenSuccess'
 ]);
+
+ProjectActions.search.preEmit = function (text, id) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'projects/'+ id +'/children?name_contains='+ text, {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getChildrenSuccess(json.results);
+        ProjectActions.setSearchText(text);
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
+
 
 ProjectActions.getFileVersions.preEmit = function (id) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/' + id + '/versions', {
@@ -443,22 +461,6 @@ ProjectActions.loadProjects.preEmit = function () {
     })
 };
 
-ProjectActions.loadProjectChildren.preEmit = function (id) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'projects/' + id + '/children', {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.loadProjectChildrenSuccess(json.results)
-    }).catch(function (ex) {
-        ProjectActions.handleErrors(ex)
-    })
-};
-
 ProjectActions.showDetails.preEmit = function (id) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'projects/' + id, {
         method: 'get',
@@ -537,8 +539,8 @@ ProjectActions.editProject.preEmit = function (id, name, desc) {
     });
 };
 
-ProjectActions.loadFolderChildren.preEmit = function (id) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'folders/' + id + '/children', {
+ProjectActions.getChildren.preEmit = function (id, path) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + path + id + '/children', {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -547,7 +549,7 @@ ProjectActions.loadFolderChildren.preEmit = function (id) {
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        ProjectActions.loadFolderChildrenSuccess(json.results)
+        ProjectActions.getChildrenSuccess(json.results)
     }).catch(function (ex) {
         ProjectActions.handleErrors(ex)
     })
