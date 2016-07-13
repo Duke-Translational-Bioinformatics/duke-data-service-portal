@@ -27,7 +27,6 @@ class ProjectChildren extends React.Component {
     render() {
         let children = [];
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
-        let download = <div style={styles.fillerDiv}>{/*temporary filler div until add dropdown menu*/}</div>;
         let chkBx = <div className="item-media"></div>;
         let type = 'hidden';
         let newFolderModal = null;
