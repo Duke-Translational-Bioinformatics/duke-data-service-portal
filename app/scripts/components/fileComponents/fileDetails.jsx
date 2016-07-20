@@ -44,7 +44,7 @@ class FileDetails extends React.Component {
                     onTouchTap={() => this.handleDownload()}>
                     <i className="material-icons">get_app</i>
                 </button>;
-            optionsMenu = prjPrm === 'prjCrud' || prjPrm === 'flCrud' || prjPrm === 'flUpload' ? optionsMenu = <FileOptionsMenu {...this.props} /> : null;
+            optionsMenu = <FileOptionsMenu {...this.props} />;
         }
         let id = this.props.params.id;
         let ancestors = this.props.entityObj ? this.props.entityObj.ancestors : null;

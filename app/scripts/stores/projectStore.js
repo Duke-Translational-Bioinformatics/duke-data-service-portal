@@ -308,7 +308,9 @@ var ProjectStore = Reflux.createStore({
                         properties: node.properties,
                         shape: 'box',
                         color: '#1DE9B6',
-                        title:'<div style="margin: 10px; color: #616161"><span>'+node.properties.name+'</span><br/><span>'+node.properties.description+'</span></div>'
+                        title:'<div style="margin: 10px; color: #616161"><span>'
+                        +node.properties.name+'</span><br/><span>'
+                        +node.properties.description+'</span></div>'
                     }
                 } else {
                     return {

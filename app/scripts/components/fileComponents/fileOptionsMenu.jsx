@@ -34,9 +34,17 @@ class FileOptionsMenu extends React.Component {
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
         let menu = null;
         if (prjPrm !== null) {
+            if(prjPrm === 'viewOnly' || prjPrm === 'flDownload'){
+                menu = <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
+                              onTouchTap={() => this.openProv()}/>;
+            }
             if(prjPrm === 'flUpload'){
-                menu = <MenuItem primaryText="Upload New Version" leftIcon={<i className="material-icons">file_upload</i>}
-                                 onTouchTap={() => this.openVersionModal()}/>;
+                menu = <span>
+                    <MenuItem primaryText="Upload New Version" leftIcon={<i className="material-icons">file_upload</i>}
+                              onTouchTap={() => this.openVersionModal()}/>
+                    <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
+                              onTouchTap={() => this.openProv()}/>
+                </span>;
             }
             if(prjPrm === 'prjCrud' || prjPrm === 'flCrud'){
                 menu = <span>
@@ -50,7 +58,7 @@ class FileOptionsMenu extends React.Component {
                                   onTouchTap={() => this.openVersionModal()}/>
                         <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
                                   onTouchTap={() => this.openProv()}/>
-                </span>
+                </span>;
             }
         }
         const deleteActions = [
