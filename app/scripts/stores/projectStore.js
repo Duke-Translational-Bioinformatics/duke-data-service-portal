@@ -113,28 +113,38 @@ var ProjectStore = Reflux.createStore({
             }
         });
         if (relationKind !== 'was_derived_from') {
-            if (node1.properties.kind === 'dds-file-version' && node2.properties.kind === 'dds-file-version') {
+            if(node1.properties.kind === 'dds-activity' ||
+               node2.properties.kind === 'dds-activity' &&
+               node1.properties.audit.created_by.id === ProjectStore.currentUser.id ||
+               node2.properties.audit.created_by.id === ProjectStore.currentUser.id) {
                 this.trigger({
                     provEditorModal: {open: true, id: 'relWarning'},
-                    relMsg: 'wasDerivedFrom'
+                    relMsg: 'permissionError'
                 });
-            }
-            if (node1.properties.kind === 'dds-activity' && node2.properties.kind === 'dds-activity') {
-                this.trigger({
-                    provEditorModal: {open: true, id: 'relWarning'},
-                    relMsg: 'actToActMsg'
-                });
-            }
-            if (node1.properties.kind !== node2.properties.kind) {
-                if (relationKind === 'used') {
-                    from = node1.properties.kind === 'dds-activity' ? node1 : node2;
-                    to = node1.properties.kind === 'dds-activity' ? node2 : node1;
+            } else {
+                if (node1.properties.kind === 'dds-file-version' && node2.properties.kind === 'dds-file-version') {
+                    this.trigger({
+                        provEditorModal: {open: true, id: 'relWarning'},
+                        relMsg: 'wasDerivedFrom'
+                    });
                 }
-                if (relationKind === 'was_generated_by') {
-                    from = node1.properties.kind === 'dds-activity' ? node2 : node1;
-                    to = node1.properties.kind === 'dds-activity' ? node1 : node2;
+                if (node1.properties.kind === 'dds-activity' && node2.properties.kind === 'dds-activity') {
+                    this.trigger({
+                        provEditorModal: {open: true, id: 'relWarning'},
+                        relMsg: 'actToActMsg'
+                    });
                 }
-                ProjectActions.startAddRelation(relationKind, from, to);
+                if (node1.properties.kind !== node2.properties.kind) {
+                    if (relationKind === 'used') {
+                        from = node1.properties.kind === 'dds-activity' ? node1 : node2;
+                        to = node1.properties.kind === 'dds-activity' ? node2 : node1;
+                    }
+                    if (relationKind === 'was_generated_by') {
+                        from = node1.properties.kind === 'dds-activity' ? node2 : node1;
+                        to = node1.properties.kind === 'dds-activity' ? node1 : node2;
+                    }
+                    ProjectActions.startAddRelation(relationKind, from, to);
+                }
             }
         } else {
             if (node1.properties.kind !== 'dds-file-version' || node2.properties.kind !== 'dds-file-version') {

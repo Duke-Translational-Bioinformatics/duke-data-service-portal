@@ -158,6 +158,10 @@ class VersionsOptionsMenu extends React.Component {
             floatingErrorText: 'This field is required.'
         });
     }
+
+    openProv() {
+        ProjectActions.toggleProvView();
+    }
 }
 var styles = {
     deleteFile: {

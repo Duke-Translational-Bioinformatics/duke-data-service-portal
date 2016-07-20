@@ -279,6 +279,8 @@ class Provenance extends React.Component {
         let notFileToFile = this.props.relMsg && this.props.relMsg === 'notFileToFile' ?
             <h5><u><i>Was Derived From</i></u> relations can only be created <u><i>from </i></u>
                 files <u><i>to</i></u> files.</h5> : '';
+        let permissionError = this.props.relMsg && this.props.relMsg === 'permissionError' ?
+            <h5>Your can only create <u><i>used </i></u> relations from activities you are the creator of.</h5> : '';
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
         let menuItems = null;
         if (prjPrm !== null) {
@@ -415,6 +417,7 @@ class Provenance extends React.Component {
                             {drvFrmMsg}
                             {actToActMsg}
                             {notFileToFile}
+                            {permissionError}
                         </Dialog>
                         <Dialog
                             style={styles.dialogStyles}
