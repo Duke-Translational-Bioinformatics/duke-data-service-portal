@@ -27,7 +27,7 @@ class File extends React.Component {
             toggleProvEdit: ProjectStore.toggleProvEdit,
             relTo: ProjectStore.relTo,
             scale: ProjectStore.scale,
-            selectedEdges: ProjectStore.selectedEdges,
+            selectedEdge: ProjectStore.selectedEdge,
             selectedNode: ProjectStore.selectedNode,
             showProvAlert: ProjectStore.showProvAlert,
             showProvCtrlBtns: ProjectStore.showProvCtrlBtns,

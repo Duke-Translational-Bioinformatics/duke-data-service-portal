@@ -234,7 +234,27 @@ ProjectActions.getProvenance.preEmit = function (id) {//Todo: Replace with prope
                         "name": "RF PI3-Kinase",
                         "description": "heuristic for PI3-Kinase pathway activity",
                         "is_deleted": false,
-                        "audit": { }
+                        "audit": {
+                            "created_on": "2015-01-01T12:00:00Z",
+                            "created_by": {
+                                "id": "ce245d81-bae1-452b-8589-24f736ca7735",
+                                "username": "mrgardner01",
+                                "full_name": "Matthew Gardner",
+                                "agent": {
+                                    "id": "9a4c28a2-ec18-40ed-b75c-3bf5b309715f",
+                                    "name": "Hashing computation agent"
+                                }
+                            },
+                            "last_updated_on": "2015-01-01T13:00:00Z",
+                            "last_updated_by": {
+                                "id": "d240ef3d-8d43-441b-be90-78f51a02e47f",
+                                "username": "jturner01",
+                                "full_name": "Jon Turner",
+                                "agent": null
+                            },
+                            "deleted_on": null,
+                            "deleted_by": null
+                        }
                     }
                 },
                 {
@@ -246,7 +266,27 @@ ProjectActions.getProvenance.preEmit = function (id) {//Todo: Replace with prope
                         "name": "Activity Test",
                         "description": "Building a Random Forest as a heuristic for PI3-Kinase pathway activity",
                         "is_deleted": false,
-                        "audit": { }
+                        "audit": {
+                            "created_on": "2015-01-01T12:00:00Z",
+                            "created_by": {
+                                "id": "ce245d81-bae1-452b-8589-24f736ca7735",
+                                "username": "mrgardner01",
+                                "full_name": "Matthew Gardner",
+                                "agent": {
+                                    "id": "9a4c28a2-ec18-40ed-b75c-3bf5b309715f",
+                                    "name": "Hashing computation agent"
+                                }
+                            },
+                            "last_updated_on": "2015-01-01T13:00:00Z",
+                            "last_updated_by": {
+                                "id": "d240ef3d-8d43-441b-be90-78f51a02e47f",
+                                "username": "jturner01",
+                                "full_name": "Jon Turner",
+                                "agent": null
+                            },
+                            "deleted_on": null,
+                            "deleted_by": null
+                        }
                     }
                 },
                 {
@@ -262,7 +302,27 @@ ProjectActions.getProvenance.preEmit = function (id) {//Todo: Replace with prope
                         "version": 1,
                         "label": "Initial raw data from device",
                         "is_deleted": false,
-                        "audit": { }
+                        "audit": {
+                            "created_on": "2015-01-01T12:00:00Z",
+                            "created_by": {
+                                "id": "ce245d81-bae1-452b-8589-24f736ca7735",
+                                "username": "mrgardner01",
+                                "full_name": "Matthew Gardner",
+                                "agent": {
+                                    "id": "9a4c28a2-ec18-40ed-b75c-3bf5b309715f",
+                                    "name": "Hashing computation agent"
+                                }
+                            },
+                            "last_updated_on": "2015-01-01T13:00:00Z",
+                            "last_updated_by": {
+                                "id": "d240ef3d-8d43-441b-be90-78f51a02e47f",
+                                "username": "jturner01",
+                                "full_name": "Jon Turner",
+                                "agent": null
+                            },
+                            "deleted_on": null,
+                            "deleted_by": null
+                        }
                     }
                 },
                 {
@@ -272,13 +332,33 @@ ProjectActions.getProvenance.preEmit = function (id) {//Todo: Replace with prope
                         "kind": "dds-file-version",
                         "id": "951cfb29-70b8-4798-bbf2-c43222de9bf8",
                         "file": {
-                            "id": "777be35a-98e0-4c2e-9a17-7bc009f9b111",
+                            "id": "54cc2a12-36a6-42a6-9c0d-8b0769f0bc2b",
                             "name": "RNASeq_Matrix.Rdata"
                         },
                         "version": 2,
                         "label": "Alignment performed on raw data",
                         "is_deleted": false,
-                        "audit": { }
+                        "audit": {
+                            "created_on": "2015-01-01T12:00:00Z",
+                            "created_by": {
+                                "id": "ce245d81-bae1-452b-8589-24f736ca7735",
+                                "username": "mrgardner01",
+                                "full_name": "Matthew Gardner",
+                                "agent": {
+                                    "id": "9a4c28a2-ec18-40ed-b75c-3bf5b309715f",
+                                    "name": "Hashing computation agent"
+                                }
+                            },
+                            "last_updated_on": "2015-01-01T13:00:00Z",
+                            "last_updated_by": {
+                                "id": "d240ef3d-8d43-441b-be90-78f51a02e47f",
+                                "username": "jturner01",
+                                "full_name": "Jon Turner",
+                                "agent": null
+                            },
+                            "deleted_on": null,
+                            "deleted_by": null
+                        }
                     }
                 },
                 {
@@ -294,7 +374,27 @@ ProjectActions.getProvenance.preEmit = function (id) {//Todo: Replace with prope
                         "version": 2,
                         "label": "Alignment performed on raw data",
                         "is_deleted": false,
-                        "audit": { }
+                        "audit": {
+                            "created_on": "2015-01-01T12:00:00Z",
+                            "created_by": {
+                                "id": "ce245d81-bae1-452b-8589-24f736ca7735",
+                                "username": "mrgardner01",
+                                "full_name": "Matthew Gardner",
+                                "agent": {
+                                    "id": "9a4c28a2-ec18-40ed-b75c-3bf5b309715f",
+                                    "name": "Hashing computation agent"
+                                }
+                            },
+                            "last_updated_on": "2015-01-01T13:00:00Z",
+                            "last_updated_by": {
+                                "id": "d240ef3d-8d43-441b-be90-78f51a02e47f",
+                                "username": "jturner01",
+                                "full_name": "Jon Turner",
+                                "agent": null
+                            },
+                            "deleted_on": null,
+                            "deleted_by": null
+                        }
                     }
                 }
             ],
@@ -307,7 +407,27 @@ ProjectActions.getProvenance.preEmit = function (id) {//Todo: Replace with prope
                     "properties": {
                         "kind": "dds-relation-used",
                         "id": "ac242faf-fba0-4293-a949-0b82ae7ba810",
-                        "audit": { }
+                        "audit": {
+                            "created_on": "2015-01-01T12:00:00Z",
+                            "created_by": {
+                                "id": "ce245d81-bae1-452b-8589-24f736ca7735",
+                                "username": "mrgardner01",
+                                "full_name": "Matthew Gardner",
+                                "agent": {
+                                    "id": "9a4c28a2-ec18-40ed-b75c-3bf5b309715f",
+                                    "name": "Hashing computation agent"
+                                }
+                            },
+                            "last_updated_on": "2015-01-01T13:00:00Z",
+                            "last_updated_by": {
+                                "id": "d240ef3d-8d43-441b-be90-78f51a02e47f",
+                                "username": "jturner01",
+                                "full_name": "Jon Turner",
+                                "agent": null
+                            },
+                            "deleted_on": null,
+                            "deleted_by": null
+                        }
                     }
                 },
                 //{

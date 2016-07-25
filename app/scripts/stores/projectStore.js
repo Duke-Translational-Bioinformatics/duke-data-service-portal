@@ -1,6 +1,7 @@
 import Reflux from 'reflux';
 import ProjectActions from '../actions/projectActions';
 import MainActions from '../actions/mainActions';
+import MainStore from '../stores/mainStore';
 import StatusEnum from '../enum.js';
 import BaseUtils from '../../util/baseUtils.js';
 
@@ -43,7 +44,7 @@ var ProjectStore = Reflux.createStore({
         this.relMsg = null;
         this.scale = null;
         this.selectedNode = {};
-        this.selectedEdges = [];
+        this.selectedEdge = null;
         this.showBatchOps = false;
         this.showProvAlert = false;
         this.showProvCtrlBtns = false;
@@ -113,10 +114,12 @@ var ProjectStore = Reflux.createStore({
             }
         });
         if (relationKind !== 'was_derived_from') {
-            if(node1.properties.kind === 'dds-activity' ||
-               node2.properties.kind === 'dds-activity' &&
-               node1.properties.audit.created_by.id === ProjectStore.currentUser.id ||
-               node2.properties.audit.created_by.id === ProjectStore.currentUser.id) {
+            if (node1.properties.kind === 'dds-activity' && node1.properties.audit.created_by.id !== MainStore.currentUser.id) {
+                this.trigger({
+                    provEditorModal: {open: true, id: 'relWarning'},
+                    relMsg: 'permissionError'
+                });
+            } else if (node2.properties.kind === 'dds-activity' && node2.properties.audit.created_by.id !== MainStore.currentUser.id){
                 this.trigger({
                     provEditorModal: {open: true, id: 'relWarning'},
                     relMsg: 'permissionError'
@@ -209,7 +212,10 @@ var ProjectStore = Reflux.createStore({
                 from: edge.to.id,//Todo like this --> from: edge.to.id,
                 to: edge.from.id,
                 type: edge.kind,
-                arrows: 'from'
+                arrows: 'from',
+                properties: {
+                    audit: edge.audit
+                }
             };
         });
         let edges = this.provEdges;
@@ -230,7 +236,8 @@ var ProjectStore = Reflux.createStore({
                 shape: 'box',
                 color: '#1DE9B6',
                 properties: {
-                    kind: node.kind
+                    kind: node.kind,
+                    audit: node.audit
                 }
             };
         });
@@ -254,7 +261,8 @@ var ProjectStore = Reflux.createStore({
                 shape: 'box',
                 color: '#1DE9B6',
                 properties: {
-                    kind: node.kind
+                    kind: node.kind,
+                    audit: node.audit
                 }
             };
         });
@@ -364,10 +372,10 @@ var ProjectStore = Reflux.createStore({
     },
 
     showDeleteRelationsBtn(edges, nodes) {
-        if (edges.length > 0 && this.dltRelationsBtn && nodes !== null) {
+        if (edges !== null && this.dltRelationsBtn && nodes !== null) {
             this.dltRelationsBtn = !this.dltRelationsBtn;
         } else {
-            if (edges.length > 0 && this.dltRelationsBtn) {
+            if (edges !== null && this.dltRelationsBtn) {
                 this.dltRelationsBtn = true;
             } else {
                 this.dltRelationsBtn = !this.dltRelationsBtn;
@@ -382,11 +390,11 @@ var ProjectStore = Reflux.createStore({
     },
 
     selectNodesAndEdges(edgeData, nodeData) {
-        this.selectedEdges = edgeData;
+        this.selectedEdge = edgeData[0];
         this.selectedNode = nodeData;
         this.trigger({
             selectedNode: this.selectedNode,
-            selectedEdges: this.selectedEdges
+            selectedEdge: this.selectedEdge
         })
     },
 
