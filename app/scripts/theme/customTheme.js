@@ -11,14 +11,14 @@ export default {
         primary1Color: "#235F9C",
         primary2Color: "#003366",
         primary3Color: "#0680CD",
-        accent1Color: "#448AFF",
+        accent1Color: "#235F9C",
         accent2Color: "#ED2B2B",
         accent3Color: "#F58C8C",
         textColor: "#424242",
-        alternateTextColor: Colors.white,
-        canvasColor: Colors.white,
-        borderColor: Colors.grey300,
-        disabledColor: ColorManipulator.fade(Colors.darkBlack, 0.3),
-        pickerHeaderColor: Colors.cyan500
+        alternateTextColor: "#FFF",
+        canvasColor: "#FFF",
+        borderColor: "#E0E0E0",
+        disabledColor: ColorManipulator.fade("#212121", 0.3),
+        pickerHeaderColor: "#00BCD4"
     }
 };
