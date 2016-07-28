@@ -8,7 +8,8 @@ import MainActions from '../actions/mainActions';
 import ProjectActions from '../actions/projectActions';
 import cookie from 'react-cookie';
 import Snackbar from 'material-ui/lib/snackbar';
-import ThemeManager from 'material-ui/lib/styles/theme-manager';
+import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
+
 import MyRawTheme from '../theme/customTheme.js';
 
 let zIndex = {
@@ -28,7 +29,7 @@ class App extends React.Component {
 
     getChildContext() {
         return {
-            muiTheme: ThemeManager.getMuiTheme(MyRawTheme, zIndex)
+            muiTheme: getMuiTheme(MyRawTheme, zIndex)
         };
     }
 
