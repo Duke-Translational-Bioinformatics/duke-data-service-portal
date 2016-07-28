@@ -8,6 +8,7 @@ import FileOptionsMenu from './fileOptionsMenu.jsx';
 import FileVersionsList from './fileVersionsList.jsx';
 import VersionUpload from './versionUpload.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
+import TagCloud from '../../components/globalComponents/tagCloud.jsx';
 import urlGen from '../../../util/urlGen.js';
 import Tooltip from '../../../util/tooltip.js';
 import BaseUtils from '../../../util/baseUtils.js';
@@ -57,6 +58,7 @@ class FileDetails extends React.Component {
         let versionsButton = null;
         let versions = null;
         let versionCount = [];
+        let width = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.width : window.innerWidth;
 
         if(this.props.fileVersions && this.props.fileVersions != undefined && this.props.fileVersions.length > 1) {
             versions = this.props.fileVersions.map((version) => {
@@ -107,6 +109,7 @@ class FileDetails extends React.Component {
                 <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.btnWrapper}>
                     { versionsButton }
                 </div>
+                {width >  50 ? <TagCloud {...this.props}/> : null}
                 <FileVersionsList {...this.props}/>
                 <VersionUpload {...this.props}/>
                 <div style={styles.uploadProg}>
@@ -240,8 +243,7 @@ var styles = {
         verticalAlign:-7
     },
     btnWrapper: {
-        marginTop: 11,
-        marginRight: 25,
+        margin: '11px 25px 20px 8px',
         float: 'right'
     },
     button: {

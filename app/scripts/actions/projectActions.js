@@ -8,6 +8,18 @@ import StatusEnum from '../enum';
 import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.js';
 
 var ProjectActions = Reflux.createActions([
+    'getScreenSize',
+    'toggleTagManager',
+    'addNewTag',
+    'addNewTagSuccess',
+    'getTagAutoCompleteList',
+    'getTagAutoCompleteListSuccess',
+    'getTagLabels',
+    'getTagLabelsSuccess',
+    'getTags',
+    'getTagsSuccess',
+    'deleteTag',
+    'deleteTagSuccess',
     'hashFile',
     'postHash',
     'openModal',
@@ -108,6 +120,97 @@ var ProjectActions = Reflux.createActions([
     'uploadError',
     'getChunkUrl'
 ]);
+
+ProjectActions.addNewTag.preEmit = function (id, kind, label) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/', {
+        method: 'post',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            'object': {
+                'kind': kind,
+                'id': id
+            },
+            'label': label
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('Added '+json.label+' tag');
+        ProjectActions.addNewTagSuccess(id);
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to add new tag');
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.deleteTag.preEmit = function (id, label, fileId) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/' + id, {
+        method: 'delete',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+    }).then(function () {
+        MainActions.addToast(label +' tag deleted!');
+        ProjectActions.deleteTagSuccess(fileId)
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to delete '+ label);
+        ProjectActions.handleErrors(ex)
+    });
+};
+
+ProjectActions.getTagLabels.preEmit = function () {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/labels/?object_kind=dds-file', {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getTagLabelsSuccess(json.results)
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.getTagAutoCompleteList.preEmit = function (text) {
+    let query = text === null ? '' : '&label_contains='+text;
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/labels/?object_kind=dds-file'+ query, {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getTagAutoCompleteListSuccess(json.results)
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.getTags.preEmit = function (id, kind) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/' + kind +'/'+ id, {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getTagsSuccess(json.results)
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
 
 ProjectActions.getFileVersions.preEmit = function (id) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'files/' + id + '/versions', {

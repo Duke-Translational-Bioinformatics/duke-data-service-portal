@@ -26,17 +26,65 @@ var ProjectStore = Reflux.createStore({
         this.moveModal = false;
         this.moveToObj = {};
         this.moveErrorModal = false;
+        this.objectTags = [];
+        this.openTagManager = false;
         this.parent = {};
         this.projects = [];
         this.project = {};
         this.projPermissions = null;
         this.projectMembers = [];
+        this.screenSize = {};
         this.showBatchOps = false;
+        this.tagLabels = [];
         this.uploadCount = [];
         this.uploads = {};
         this.users = [];
         this.userKey = {};
         this.versionModal = false;
+    },
+
+    getScreenSize(height, width) {
+        this.screenSize.height = height;
+        this.screenSize.width = width;
+        this.trigger({
+            screenSize: this.screenSize
+        })
+    },
+
+    toggleTagManager() {
+        this.openTagManager = !this.openTagManager;
+        this.trigger({
+            openTagManager: this.openTagManager
+        })
+    },
+
+    addNewTagSuccess(fileId) {
+        ProjectActions.getTags(fileId, 'dds-file');
+    },
+
+    deleteTagSuccess(fileId) {
+        ProjectActions.getTags(fileId, 'dds-file');
+    },
+
+    getTagAutoCompleteListSuccess(list) {
+        this.tagAutoCompleteList = list.map((item) => {return item.label});
+        this.trigger({
+            tagAutoCompleteList: this.tagAutoCompleteList
+        })
+    },
+
+    getTagLabelsSuccess(labels) {
+        this.tagLabels = labels;
+        this.trigger({
+            tagLabels: this.tagLabels
+        })
+    },
+
+    getTagsSuccess(tags) {
+        this.objectTags = tags;
+        this.trigger({
+            objectTags: this.objectTags
+        })
     },
 
     getFileVersions() {
@@ -427,7 +475,7 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    addFolderSuccess(id, parentKind) { //todo: remove this and check for new children state in folder.jsx & project.jsx
+    addFolderSuccess(id, parentKind) {
         if (parentKind === 'dds-project') {
             ProjectActions.loadProjectChildren(id);
         } else {
@@ -589,7 +637,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     getUserNameSuccess(results) {
-        this.users = results.map(function(users) {return users.full_name});
+        this.users = results.map((users) => {return users.full_name});
         this.trigger({
             users: this.users
         });

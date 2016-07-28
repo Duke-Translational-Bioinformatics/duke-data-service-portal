@@ -5,6 +5,7 @@ import Footer from '../components/globalComponents/footer.jsx';
 import LeftMenu from '../components/globalComponents/leftMenu.jsx';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions';
+import ProjectActions from '../actions/projectActions';
 import cookie from 'react-cookie';
 import Snackbar from 'material-ui/lib/snackbar';
 import ThemeManager from 'material-ui/lib/styles/theme-manager';
@@ -21,7 +22,8 @@ class App extends React.Component {
     constructor() {
         this.state = {
             appConfig: MainStore.appConfig
-        }
+        };
+        this.handleResize = this.handleResize.bind(this);
     }
 
     getChildContext() {
@@ -31,18 +33,24 @@ class App extends React.Component {
     }
 
     componentDidMount() {
+        window.addEventListener('resize', this.handleResize);
         this.unsubscribe = MainStore.listen(state => this.setState(state));
         this.showToasts();
         new Framework7().addView('.view-main', {dynamicNavbar: true});
     }
 
     componentWillUnmount() {
+        window.removeEventListener('resize', this.handleResize);
         this.unsubscribe();
         new Framework7().closePanel();
     }
 
     componentDidUpdate(prevProps, prevState) {
         this.showToasts();
+    }
+
+    handleResize(e) {
+        ProjectActions.getScreenSize(window.innerHeight, window.innerWidth);
     }
 
     createLoginUrl() {
@@ -105,7 +113,6 @@ class App extends React.Component {
                 <div className="views">
                     <div className="view view-main">
                         <Header {...this.props} {...this.state}/>
-
                         <div className="pages navbar-through toolbar-through">
                             <div data-page="index" className="page">
                                 {!this.state.appConfig.apiToken ? '' : search}
