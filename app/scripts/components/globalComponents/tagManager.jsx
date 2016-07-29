@@ -18,6 +18,7 @@ class TagManager extends React.Component {
         super(props);
         this.state = {
             floatingErrorText: 'This field is required.',
+            lastTag: null,
             timeout: null,
             value: null
         };
@@ -104,8 +105,10 @@ class TagManager extends React.Component {
         let id = this.props.params.id;
         ProjectActions.addNewTag(id, 'dds-file', text);
         setTimeout(() => {
-            document.getElementById('tagText').value = '';
-        }, 1700)
+        // Todo: this is temporary. There's a bug in AutoComplete that makes the input repopulate with the old text.
+        // Todo: using timeout doesn't solve the problem reliably. For now using select() until we update to MUI v16
+            document.getElementById("tagText").select();
+        }, 500)
     }
 
     deleteTag(id, label) {
@@ -114,13 +117,6 @@ class TagManager extends React.Component {
     }
 
     handleUpdateInput (text) {
-//        var focused = document.getSelection().focusNode;
-//// if you want the parent element, but don't a text node, do it's like below
-//        if (focused.constructor === Text) {
-//            focused = focused.parentElement;
-//        }
-
-        console.log(focused);
         // Add 500ms lag to autocomplete so that it only makes a call after user is done typing
         let timeout = this.state.timeout;
         let textInput = document.getElementById('tagText');
