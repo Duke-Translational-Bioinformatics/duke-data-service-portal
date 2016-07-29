@@ -8,6 +8,7 @@ import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
 import GetAppIcon from 'material-ui/lib/svg-icons/action/get-app';
 import IconButton from 'material-ui/lib/icon-button';
+import Info from 'material-ui/lib/svg-icons/action/info';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 class BatchOps extends React.Component {
@@ -88,7 +89,6 @@ class BatchOps extends React.Component {
                         <GetAppIcon color={'#EC407A'}/>
                     </IconButton>
                 </div>
-
                 <Dialog
                     style={styles.dialogStyles}
                     title={msg}
@@ -183,6 +183,7 @@ class BatchOps extends React.Component {
 
 let styles = {
     card: {
+        overflow: 'auto',
         marginLeft: 9,
         marginBottom: 0,
         marginTop: 28,
