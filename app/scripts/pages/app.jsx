@@ -30,7 +30,8 @@ class App extends React.Component {
         this.state = {
             appConfig: MainStore.appConfig,
             clear: false,
-            searchInput: 'search'
+            searchInput: 'search',
+            timeout: null
         };
     }
 
@@ -53,24 +54,6 @@ class App extends React.Component {
             document.getElementById('searchForm').addEventListener('submit', (e) => {
                 e.preventDefault();
             }, false);
-            let textInput = document.getElementById('searchInput');
-            let timeout = null;
-            textInput.onkeyup = () => {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => {
-                    let id = this.props.routerPath.split('/').pop();
-                    let path = this.props.routerPath.split('/').splice([1], 1).toString() + 's/';
-                    if (!textInput.value.indexOf(' ') <= 0) {
-                        if (textInput.value === '') {
-                            ProjectActions.setSearchText('');
-                            ProjectActions.getChildren(id, path);
-                        } else {
-                            if (ProjectStore.entityObj !== null) id = ProjectStore.entityObj.ancestors[0].id;
-                            ProjectActions.search(textInput.value, id);
-                        }
-                    }
-                }, 500);
-            };
         }
     }
 
@@ -159,6 +142,7 @@ class App extends React.Component {
                                hintStyle={{color: '#fff', marginLeft: 20}}
                                inputStyle={{color: '#fff'}}
                                underlineFocusStyle={{borderColor: '#fff'}}
+                               onChange={() => this.onSearchChange()}
                                onFocus={() => this.onSearchFocus()}
                                onBlur={() => this.onSearchBlur(route)}
                                style={styles.searchBar}/>
@@ -217,6 +201,27 @@ class App extends React.Component {
             this.setState({searchInput: 'search', clear: false});
             ProjectActions.getChildren(id, path);
         }
+    }
+
+    onSearchChange() {
+        let textInput = document.getElementById('searchInput');
+        let timeout = this.state.timeout;
+        textInput.onkeyup = () => {
+            clearTimeout(timeout);
+            this.state.timeout = setTimeout(() => {
+                let id = this.props.routerPath.split('/').pop();
+                let path = this.props.routerPath.split('/').splice([1], 1).toString() + 's/';
+                if (!textInput.value.indexOf(' ') <= 0) {
+                    if (textInput.value === '') {
+                        ProjectActions.setSearchText('');
+                        ProjectActions.getChildren(id, path);
+                    } else {
+                        if (ProjectStore.entityObj !== null) id = ProjectStore.entityObj.ancestors[0].id;
+                        ProjectActions.search(textInput.value, id);
+                    }
+                }
+            }, 500);
+        };
     }
 
     onSearchFocus() {
