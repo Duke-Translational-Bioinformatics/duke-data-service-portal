@@ -23,6 +23,7 @@ class Project extends React.Component {
             loading: false,
             projects: ProjectStore.projects,
             project: ProjectStore.project,
+            searchText: ProjectStore.searchText,
             uploads: ProjectStore.uploads,
             users: ProjectStore.users
         };
@@ -31,11 +32,19 @@ class Project extends React.Component {
     componentDidMount() {
         let id = this.props.params.id;
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
-        ProjectActions.loadProjectChildren(id);
+        ProjectActions.getChildren(id, 'projects/');
         ProjectActions.showDetails(id);
         ProjectActions.getProjectMembers(id);
         ProjectActions.getUser(id);
     }
+
+    componentDidUpdate(prevProps) {
+        let id = this.props.params.id;
+        if(prevProps.children !== this.props.children) {
+            this.getChildren(id, 'projects/');
+        }
+    }
+
 
     componentWillUnmount() {
         this.unsubscribe();

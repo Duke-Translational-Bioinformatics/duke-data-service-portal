@@ -1,7 +1,7 @@
 import Reflux from 'reflux';
 import ProjectActions from '../actions/projectActions';
 import MainActions from '../actions/mainActions';
-import StatusEnum from '../enum.js';
+import { StatusEnum, Path } from '../enum';
 
 var ProjectStore = Reflux.createStore({
 
@@ -15,7 +15,7 @@ var ProjectStore = Reflux.createStore({
         this.currentUser = {};
         this.destination = null;
         this.destinationKind = null;
-        this.entityObj = {};
+        this.entityObj = null;
         this.error = {};
         this.errorModal = false;
         this.filesChecked = [];
@@ -31,12 +31,26 @@ var ProjectStore = Reflux.createStore({
         this.project = {};
         this.projPermissions = null;
         this.projectMembers = [];
+        this.searchText = '';
         this.showBatchOps = false;
         this.uploadCount = [];
         this.uploads = {};
         this.users = [];
         this.userKey = {};
         this.versionModal = false;
+    },
+
+    setSearchText(text) {
+        if(!text.indexOf(' ') <= 0) this.searchText = text;
+        this.trigger({
+            searchText: this.searchText
+        })
+    },
+
+    search() {
+        this.trigger({
+            loading: true
+        })
     },
 
     getFileVersions() {
@@ -339,20 +353,6 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    loadProjectChildren() {
-        this.trigger({
-            loading: true
-        })
-    },
-
-    loadProjectChildrenSuccess(results) {
-        this.children = results;
-        this.trigger({
-            children: this.children,
-            loading: false
-        })
-    },
-
     showDetails() {
         this.trigger({
             loading: true
@@ -407,13 +407,13 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    loadFolderChildren() {
+    getChildren() {
         this.trigger({
             loading: true
         })
     },
 
-    loadFolderChildrenSuccess(results) {
+    getChildrenSuccess(results) {
         this.children = results;
         this.trigger({
             children: this.children,
@@ -427,11 +427,11 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    addFolderSuccess(id, parentKind) { //todo: remove this and check for new children state in folder.jsx & project.jsx
+    addFolderSuccess(id, parentKind) {
         if (parentKind === 'dds-project') {
-            ProjectActions.loadProjectChildren(id);
+            ProjectActions.getChildren(id, 'projects/');
         } else {
-            ProjectActions.loadFolderChildren(id);
+            ProjectActions.getChildren(id, 'folders/');
         }
         this.trigger({
             loading: false
@@ -446,9 +446,9 @@ var ProjectStore = Reflux.createStore({
 
     deleteFolderSuccess(id, parentKind) {
         if (parentKind === 'dds-project') {
-            ProjectActions.loadProjectChildren(id);
+            ProjectActions.getChildren(id, 'projects/');
         } else {
-            ProjectActions.loadFolderChildren(id);
+            ProjectActions.getChildren(id, 'folders/');
         }
         this.showBatchOps = false;
         this.trigger({
@@ -465,7 +465,7 @@ var ProjectStore = Reflux.createStore({
 
     editFolderSuccess(id) {
         let kind = 'folders/';
-        ProjectActions.loadFolderChildren(id);
+        ProjectActions.getChildren(id, 'folders/');
         ProjectActions.getEntity(id, kind);
         this.trigger({
             loading: false
@@ -492,9 +492,9 @@ var ProjectStore = Reflux.createStore({
 
     addFileSuccess(id, parentKind, uploadId) {
         if (parentKind === 'dds-project') {
-            ProjectActions.loadProjectChildren(id);
+            ProjectActions.getChildren(id, 'projects/');
         } else {
-            ProjectActions.loadFolderChildren(id);
+            ProjectActions.getChildren(id, 'folders/');
         }
         if (this.uploads.hasOwnProperty(uploadId)) {
             delete this.uploads[uploadId];
@@ -513,9 +513,9 @@ var ProjectStore = Reflux.createStore({
 
     deleteFileSuccess(id, parentKind) {
         if (parentKind === 'dds-project') {
-            ProjectActions.loadProjectChildren(id);
+            ProjectActions.getChildren(id, 'projects/');
         } else {
-            ProjectActions.loadFolderChildren(id);
+            ProjectActions.getChildren(id, 'folders/');
         }
         this.showBatchOps = false;
         this.trigger({

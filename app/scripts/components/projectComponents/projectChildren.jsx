@@ -16,6 +16,8 @@ import Card from 'material-ui/lib/card';
 import LinearProgress from 'material-ui/lib/linear-progress';
 import RaisedButton from 'material-ui/lib/raised-button';
 
+import CircularProgress from 'material-ui/lib/circular-progress';
+
 class ProjectChildren extends React.Component {
 
     constructor() {
@@ -132,7 +134,12 @@ class ProjectChildren extends React.Component {
                     <div className="mdl-cell mdl-cell--12-col">
                         { newFolderModal }
                     </div>
+
+                    <div className="mdl-cell mdl-cell--12-col" style={{marginBottom: -20}}>
+                        { this.props.searchText !== '' ? <div className="mdl-cell mdl-cell--4-col mdl-color-text--grey-600" style={styles.searchText}>Showing{" "+this.props.children.length+" "}results for{" '"+this.props.searchText+"'"}</div> : null}
+                    </div>
                     <div className="mdl-cell mdl-cell--12-col" style={batchOpsStyle}>
+
                         { this.props.showBatchOps ? <BatchOps {...this.props} {...this.state}/> : null }
                     </div>
                     <ErrorModal {...this.props}/>
@@ -141,7 +148,7 @@ class ProjectChildren extends React.Component {
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     <div className="list-block list-block-search searchbar-found media-list">
                         <ul>
-                            {projectChildren}
+                            { projectChildren }
                         </ul>
                     </div>
                     {this.props.children.length > 25 && this.props.children.length > children.length && this.state.page < 3 ?
@@ -238,6 +245,10 @@ var styles = {
     list: {
         float: 'right',
         marginTop: -10
+    },
+    searchText: {
+        marginLeft: 8,
+        marginTop: 36
     },
     title: {
         marginRight: 40

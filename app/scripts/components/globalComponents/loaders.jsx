@@ -21,7 +21,7 @@ class Loaders extends React.Component {
             });
         }
        let loading = this.props.loading ?
-            <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader"></div> : '';
+       <LinearProgress mode="indeterminate" color={'#EC407A'} style={styles.uploader}/> : '';
         if (this.props.uploads && Object.keys(this.props.uploads).length != 0) {
             return (
                 <div>
