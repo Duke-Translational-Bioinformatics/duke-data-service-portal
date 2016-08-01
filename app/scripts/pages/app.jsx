@@ -3,6 +3,7 @@ import { RouteHandler, Link } from 'react-router';
 import Header from '../components/globalComponents/header.jsx';
 import Footer from '../components/globalComponents/footer.jsx';
 import LeftMenu from '../components/globalComponents/leftMenu.jsx';
+import Search from '../components/globalComponents/search.jsx';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions';
 import ProjectActions from '../actions/projectActions';
@@ -14,8 +15,6 @@ import MyRawTheme from '../theme/customTheme.js';
 import TextField from 'material-ui/lib/text-field';
 import IconButton from 'material-ui/lib/icon-button';
 import Close from 'material-ui/lib/svg-icons/navigation/close';
-
-import Search from '../components/globalComponents/search.jsx';
 
 let zIndex = {
     zIndex: {
@@ -45,16 +44,6 @@ class App extends React.Component {
         this.unsubscribe = MainStore.listen(state => this.setState(state));
         this.showToasts();
         new Framework7().addView('.view-main', {dynamicNavbar: true});
-        if(window.performance) { // If page refreshed, clear searchText
-            if(performance.navigation.type  == 1 )   {
-                ProjectActions.setSearchText('');
-            }
-        }
-        if(!!document.getElementById("searchForm")) { // Check if 'searchForm is in DOM before adding event listener'
-            document.getElementById('searchForm').addEventListener('submit', (e) => {
-                e.preventDefault();
-            }, false);
-        }
     }
 
     componentWillUnmount() {
@@ -63,16 +52,6 @@ class App extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if(prevProps.routerPath !== this.props.routerPath) {
-            // For some reason, setting state here without timeOut causes an error???
-            setTimeout(()=> {
-                this.setState({searchInput: 'search', clear: false});
-            }, 100);
-            if (!!document.getElementById("searchForm")) { // Check if 'searchForm is in DOM
-                document.getElementById('searchInput').value = '';
-            }
-            ProjectActions.setSearchText('');
-        }
         this.showToasts();
     }
 
