@@ -14,7 +14,8 @@ class Version extends React.Component {
             loading: false,
             moveModal: ProjectStore.moveModal,
             moveErrorModal: ProjectStore.moveErrorModal,
-            projPermissions: ProjectStore.projPermissions
+            projPermissions: ProjectStore.projPermissions,
+            screenSize: ProjectStore.screenSize
         };
     }
 

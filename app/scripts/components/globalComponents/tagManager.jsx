@@ -3,6 +3,7 @@ const { object, bool, array, string } = PropTypes;
 import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
+import AddCircle from 'material-ui/lib/svg-icons/content/add-circle';
 import AutoComplete from 'material-ui/lib/auto-complete';
 import Divider from 'material-ui/lib/divider';
 import IconButton from 'material-ui/lib/icon-button';
@@ -20,32 +21,42 @@ class TagManager extends React.Component {
             floatingErrorText: 'This field is required.',
             lastTag: null,
             timeout: null,
+            tagsToAdd: [],
             value: null
         };
     }
 
+    componentDidUpdate(prevState) {
+    }
+
     render() {
-        let tags = this.props.objectTags.map((tag)=>{
-            return (<div key={tag.id} className="chip">
+        //let tags = this.props.objectTags.length > 0 ? this.props.objectTags.map((tag)=>{
+        //    return (<div key={tag.id} className="chip">
+        //        <span className="chip-text">{tag.label}</span>
+        //        <span className="closebtn" onTouchTap={() => this.deleteTag(tag.id, tag.label)}>&times;</span>
+        //    </div>)
+        //}) : null;
+        let tags = this.state.tagsToAdd.length > 0 ? this.state.tagsToAdd.map((tag)=>{
+            return (<div key={Math.random()} className="chip">
                 <span className="chip-text">{tag.label}</span>
                 <span className="closebtn" onTouchTap={() => this.deleteTag(tag.id, tag.label)}>&times;</span>
             </div>)
-        });
+        }) : null;
         let tagLabels = this.props.tagLabels.map((label)=>{
             return (
-                <li key={label.label+Math.random()} style={styles.tagLabels} onTouchTap={() => this.addTagToCloud(label.label)}>{label.label}
+                <li key={label.label+Math.random()} style={styles.tagLabels} onTouchTap={() => this.addTagFromList(label.label)}>{label.label}
                     <span className="mdl-color-text--grey-600">,</span>
                 </li>
             )
         });
-        let name = this.props.entityObj ? this.props.entityObj.name : null;
+        let name = this.props.entityObj ? this.props.entityObj.name : '';
         let autoCompleteData = this.props.tagAutoCompleteList && this.props.tagAutoCompleteList.length > 0 ? this.props.tagAutoCompleteList : [];
         let height = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.height : window.innerHeight;
         let width = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.width : window.innerWidth;
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <LeftNav disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openRight={true} open={this.props.openTagManager} style={styles.tagManager}>
-                    <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" >
+                    <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" >
                         <IconButton style={styles.toggleBtn}
                                     onTouchTap={() => this.toggleTagManager()}>
                             <NavigationClose />
@@ -69,8 +80,10 @@ class TagManager extends React.Component {
                             dataSource={autoCompleteData}
                             onNewRequest={(value) => this.addTagToCloud(value)}
                             onUpdateInput={this.handleUpdateInput.bind(this)}
-                            underlineStyle={{borderColor: '#0680CD'}}
-                            style={width < 480 ? {width: '100%', marginLeft: 5}: {width: '80%'}}/><br/>
+                            underlineStyle={{borderColor: '#0680CD'}} />
+                        <IconButton onTouchTap={() => this.addTagToCloud()} iconStyle={{width: 24, height: 24}} style={{marginLeft: 0, width: 24, height: 24, padding: 0}}>
+                            <AddCircle color={'#235F9C'} />
+                        </IconButton><br/>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.tagLabelsContainer}>
                         <h6 style={styles.tagLabelsHeading}>Recently used tags <span style={styles.tagLabelsHeading.span}>(click on a tag to add it to {name})</span></h6>
@@ -91,29 +104,48 @@ class TagManager extends React.Component {
                                       labelStyle={{fontWeight: 100}}
                                       style={{margin: '12px 24px 12px 12px', float: 'right'}}
                                       onTouchTap={() => this.toggleTagManager()}/>
-                        <RaisedButton label="Cancel" secondary={true}
-                                      labelStyle={{fontWeight: 100}}
-                                      style={{margin: 12, float: 'right'}}
-                                      onTouchTap={() => this.toggleTagManager()}/>
                     </div>
                 </LeftNav>
             </div>
         )
     }
 
-    addTagToCloud(text) {
+    addTagToCloud() {
         let id = this.props.params.id;
-        ProjectActions.addNewTag(id, 'dds-file', text);
+        if(document.getElementById("tagText").value !== '') {
+            let label = document.getElementById("tagText").value;
+            if(this.props.filesChecked.length < 1){
+                ProjectActions.addNewTag(id, 'dds-file', label);
+                setTimeout(() => {
+                    // Todo: this is temporary. There's a bug in AutoComplete that makes the input repopulate with the old text.
+                    // Todo: using timeout doesn't solve the problem reliably. For now using select() until we update to MUI v16
+                    document.getElementById("tagText").select();
+                }, 500)
+            } else {
+                this.state.tagsToAdd.push({label: label}); // Todo: Do this in store
+            }
+        }
+    }
+
+    addTagFromList(label) {
+        let id = this.props.params.id;
+        ProjectActions.addNewTag(id, 'dds-file', label);
+        this.state.tagsToAdd.push({label: label});
         setTimeout(() => {
-        // Todo: this is temporary. There's a bug in AutoComplete that makes the input repopulate with the old text.
-        // Todo: using timeout doesn't solve the problem reliably. For now using select() until we update to MUI v16
+            // Todo: this is temporary. There's a bug in AutoComplete that makes the input repopulate with the old text.
+            // Todo: using timeout doesn't solve the problem reliably. For now using select() until we update MUI@v0.16
             document.getElementById("tagText").select();
         }, 500)
     }
 
     deleteTag(id, label) {
         let fileId = this.props.params.id;
-        ProjectActions.deleteTag(id, label, fileId);
+        let tags = this.state.tagsToAdd;
+        tags = tags.filter(( obj ) => {
+            return obj.label !== label;
+        });
+        this.setState({tagsToAdd: tags});
+       // ProjectActions.deleteTag(id, label, fileId);
     }
 
     handleUpdateInput (text) {
@@ -141,6 +173,7 @@ var styles = {
     autoCompleteContainer: {
         textAlign: 'center',
         clear: 'both',
+        marginLeft: 15,
         marginBottom: 40
     },
     buttonWrapper: {
@@ -191,7 +224,7 @@ var styles = {
         paddingBottom: 90
     },
     toggleBtn: {
-        marginTop: 20,
+        margin: '92px 0px 5px 0px',
         zIndex: 9999
     }
 };

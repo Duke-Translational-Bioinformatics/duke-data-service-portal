@@ -1178,7 +1178,7 @@ ProjectActions.hashFile.preEmit = function (file, id) {
         chunks = Math.ceil(f.size / chunksize),
         chunkTasks = [],
         startTime = (new Date()).getTime();
-    worker.onmessage = function (e) {
+        worker.onmessage = function (e) {
         // create callback
         for (var j = 0; j < chunks; j++) {
             (function (j, f) {
@@ -1202,6 +1202,7 @@ ProjectActions.hashFile.preEmit = function (file, id) {
             worker.onmessage = function (e) {
                 // finish callback
                 // TODO: Post hash in store?????
+                //console.log({id: e.data.id, hash: e.data.hash})
                 ProjectActions.postHash({id: e.data.id, hash: e.data.hash});
             };
             worker.postMessage({type: "finish", id: id});

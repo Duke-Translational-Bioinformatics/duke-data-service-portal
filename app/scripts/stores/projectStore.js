@@ -812,7 +812,7 @@ var ProjectStore = Reflux.createStore({
             }
             if(chunk.chunkUpdates.status !== StatusEnum.STATUS_SUCCESS) allDone = false;
         }
-        if (allDone === true)ProjectActions.allChunksUploaded(uploadId, upload.parentId, upload.parentKind, upload.name, upload.label, upload.fileId );
+        if (allDone === true) ProjectActions.allChunksUploaded(uploadId, upload.parentId, upload.parentKind, upload.name, upload.label, upload.fileId );
         window.onbeforeunload = function (e) { // If done, set to false so no warning is sent.
             let preventLeave = false;
         };

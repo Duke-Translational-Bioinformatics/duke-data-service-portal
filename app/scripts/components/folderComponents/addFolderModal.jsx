@@ -39,6 +39,7 @@ class AddFolderModal extends React.Component {
                     onTouchTap={this.openModal.bind(this)}/>
                 <Dialog
                     style={styles.dialogStyles}
+                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Add New Folder"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
@@ -104,7 +105,7 @@ class AddFolderModal extends React.Component {
 let styles = {
     addFolder: {
         float: 'right',
-        zIndex: '9995',
+        zIndex: '50',
         position: 'relative',
         margin: '20px 10px 0px  18px',
         textColor: '#235F9C'

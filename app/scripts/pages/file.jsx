@@ -12,6 +12,7 @@ class File extends React.Component {
         this.state = {
             error: ProjectStore.error,
             errorModal: ProjectStore.errorModal,
+            filesChecked: ProjectStore.filesChecked,
             loading: false,
             moveModal: ProjectStore.moveModal,
             moveErrorModal: ProjectStore.moveErrorModal,

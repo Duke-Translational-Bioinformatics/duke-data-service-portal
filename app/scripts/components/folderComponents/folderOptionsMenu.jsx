@@ -63,6 +63,7 @@ class FolderOptionsMenu extends React.Component {
             <div>
                 <Dialog
                     style={styles.dialogStyles}
+                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Are you sure you want to delete this folder?"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
@@ -76,6 +77,7 @@ class FolderOptionsMenu extends React.Component {
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
+                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Update Folder"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
@@ -100,6 +102,7 @@ class FolderOptionsMenu extends React.Component {
                 <Dialog
                     {...this.props}
                     style={styles.dialogStyles}
+                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Select Destination"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
@@ -110,6 +113,7 @@ class FolderOptionsMenu extends React.Component {
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
+                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Cannot Complete Action"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}

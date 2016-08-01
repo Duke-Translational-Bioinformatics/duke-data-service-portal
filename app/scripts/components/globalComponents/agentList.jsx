@@ -42,7 +42,7 @@ class AgentList extends React.Component {
         let modal = <Dialog
             style={styles.dialogStyles}
             title="Agent Credentials"
-            contentStyle={styles.dialogPosition}
+            contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
             autoDetectWindowHeight={true}
             autoScrollBodyContent={true}
             actions={keyActions}

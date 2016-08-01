@@ -39,6 +39,7 @@ class AddProjectModal extends React.Component {
                     onTouchTap={this.handleTouchTap.bind(this)} />
                 <Dialog
                     style={styles.dialogStyles}
+                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Add New Project"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}

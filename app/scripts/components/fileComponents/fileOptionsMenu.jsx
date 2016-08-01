@@ -81,6 +81,7 @@ class FileOptionsMenu extends React.Component {
             <div>
                 <Dialog
                     style={styles.dialogStyles}
+                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Are you sure you want to delete this file?"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
@@ -93,6 +94,7 @@ class FileOptionsMenu extends React.Component {
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
+                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Edit File Name"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
@@ -117,6 +119,7 @@ class FileOptionsMenu extends React.Component {
                 <Dialog
                     {...this.props}
                     style={styles.dialogStyles}
+                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Select Destination"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
@@ -127,6 +130,7 @@ class FileOptionsMenu extends React.Component {
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
+                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Cannot Complete Action"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
@@ -134,7 +138,6 @@ class FileOptionsMenu extends React.Component {
                     open={this.props.moveErrorModal}
                     onRequestClose={() => this.handleCloseMoveWarning()}>
                     <i className="material-icons" style={styles.warning}>warning</i>
-
                     <p style={styles.msg}>The file you're trying to move is already located here. Please pick another
                         location to move to.</p>
                 </Dialog>

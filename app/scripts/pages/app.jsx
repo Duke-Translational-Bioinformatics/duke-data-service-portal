@@ -34,6 +34,7 @@ class App extends React.Component {
     }
 
     componentDidMount() {
+        ProjectActions.getScreenSize(window.innerHeight, window.innerWidth);
         window.addEventListener('resize', this.handleResize);
         this.unsubscribe = MainStore.listen(state => this.setState(state));
         this.showToasts();

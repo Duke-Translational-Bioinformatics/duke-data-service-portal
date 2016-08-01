@@ -7,6 +7,7 @@ import MainActions from '../actions/mainActions';
 import ProjectChildren from '../components/projectComponents/projectChildren.jsx';
 import ProjectDetails from '../components/projectComponents/projectDetails.jsx';
 import Header from '../components/globalComponents/header.jsx';
+import TagManager from '../components/globalComponents/tagManager.jsx'
 
 class Project extends React.Component {
 
@@ -21,8 +22,13 @@ class Project extends React.Component {
             filesChecked: ProjectStore.filesChecked,
             foldersChecked: ProjectStore.foldersChecked,
             loading: false,
+            objectTags: ProjectStore.objectTags,
+            openTagManager: ProjectStore.openTagManager,
             projects: ProjectStore.projects,
             project: ProjectStore.project,
+            screenSize: ProjectStore.screenSize,
+            tagAutoCompleteList: ProjectStore.tagAutoCompleteList,
+            tagLabels: ProjectStore.tagLabels,
             uploads: ProjectStore.uploads,
             users: ProjectStore.users
         };
@@ -35,6 +41,14 @@ class Project extends React.Component {
         ProjectActions.showDetails(id);
         ProjectActions.getProjectMembers(id);
         ProjectActions.getUser(id);
+        ProjectActions.getTagLabels(); // Used to generate a list of tag labels
+    }
+
+    componentDidUpdate(prevProps) {
+        let id = this.props.params.id;
+        if(prevProps.objectTags !== this.props.objectTags) {
+            ProjectActions.getTags(id, 'dds-file');
+        }
     }
 
     componentWillUnmount() {
@@ -46,6 +60,7 @@ class Project extends React.Component {
             <div>
                 <ProjectDetails {...this.props} {...this.state} />
                 <ProjectChildren {...this.props} {...this.state} />
+                 <TagManager {...this.props} {...this.state} />
             </div>
         );
     }
