@@ -160,10 +160,10 @@ let MoveItemModal = React.createClass({
             }
             if (parentKind === 'dds-folder') {
                 this.props.appRouter.transitionTo('/folder/' + parent);
-                ProjectActions.loadFolderChildren(parent);
+                ProjectActions.getChildren(parent, 'folders/');
             } else {
                 this.props.appRouter.transitionTo('/project/' + parent);
-                ProjectActions.loadProjectChildren(parent);
+                ProjectActions.getChildren(parent, 'projects/');
             }
             ProjectActions.openMoveModal(false);
         }
@@ -174,7 +174,7 @@ let MoveItemModal = React.createClass({
         let kind = 'folders';
         ProjectActions.getEntity(id, kind, requester);
         ProjectActions.selectMoveLocation(id, parentKind);
-        ProjectActions.loadFolderChildren(id);
+        ProjectActions.getChildren(id, 'folders/');
         this.setState({
             goBack: true,
             openChildren: true,
@@ -190,9 +190,9 @@ let MoveItemModal = React.createClass({
         ProjectActions.selectMoveLocation(parentId, parentKind);
         if (parentKind === 'dds-folder') {
             ProjectActions.getEntity(parentId, kind, requester);
-            ProjectActions.loadFolderChildren(parentId);
+            ProjectActions.getChildren(parentId, 'folders/');
         } else {
-            ProjectActions.loadProjectChildren(parentId);
+            ProjectActions.getChildren(parentId, 'projects/');
             this.setState({
                 goBack: false,
                 openChildren: false
@@ -201,7 +201,7 @@ let MoveItemModal = React.createClass({
     },
 
     getProjectChildren(id){
-        ProjectActions.loadProjectChildren(id);
+        ProjectActions.getChildren(id, 'projects/');
         this.setState({
             openChildren: false,
             projectChildren: true

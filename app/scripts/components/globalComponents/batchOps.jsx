@@ -192,7 +192,7 @@ class BatchOps extends React.Component {
 
 let styles = {
     card: {
-        overflow: 'hidden',
+        overflow: 'auto',
         marginLeft: 9,
         marginBottom: 0,
         marginTop: 28,
