@@ -10,12 +10,12 @@ import ProjectStore from '../stores/projectStore';
 import cookie from 'react-cookie';
 import Snackbar from 'material-ui/lib/snackbar';
 import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
-
 import MyRawTheme from '../theme/customTheme.js';
 import TextField from 'material-ui/lib/text-field';
-
 import IconButton from 'material-ui/lib/icon-button';
 import Close from 'material-ui/lib/svg-icons/navigation/close';
+
+import Search from '../components/globalComponents/search.jsx';
 
 let zIndex = {
     zIndex: {
@@ -50,7 +50,7 @@ class App extends React.Component {
                 ProjectActions.setSearchText('');
             }
         }
-        if (!!document.getElementById("searchForm")) { // Check if 'searchForm is in DOM before adding event listener'
+        if(!!document.getElementById("searchForm")) { // Check if 'searchForm is in DOM before adding event listener'
             document.getElementById('searchForm').addEventListener('submit', (e) => {
                 e.preventDefault();
             }, false);
@@ -63,7 +63,7 @@ class App extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.routerPath !== this.props.routerPath) {
+        if(prevProps.routerPath !== this.props.routerPath) {
             // For some reason, setting state here without timeOut causes an error???
             setTimeout(()=> {
                 this.setState({searchInput: 'search', clear: false});
@@ -82,14 +82,7 @@ class App extends React.Component {
     }
 
     render() {
-        let route = this.props.routerPath.split('/').splice([1], 1).toString();
-        let cancelSearch = this.state.clear ?
-            <IconButton onTouchTap={() => this.clearSearch(route)} className="searchbar-cancel"
-                        style={styles.cancelSearch}>
-                <Close color={'#fff'}/>
-            </IconButton> : '';
         let content = <RouteHandler {...this.props} {...this.state}/>;
-        let search = '';
         let toasts = null;
         if (this.state.appConfig.apiToken) {
             if (this.props.routerPath !== '/login' && !this.state.currentUser) {
@@ -119,37 +112,6 @@ class App extends React.Component {
             }
             this.props.appRouter.transitionTo('/login')
         }
-        if (route === '' ||
-            route === 'home' ||
-            route === 'file' ||
-            route === 'agent' ||
-            route === 'agents' ||
-            route === 'version') {
-            search = <form className="searchbar" action="#" style={styles.themeColor}>
-                <div className="searchbar-input" style={styles.themeColor}>
-                    <a href="#" className="searchbar-clear"></a>
-                </div>
-                <a href="#" className="searchbar-cancel">Cancel</a>
-            </form>
-        } else {
-            search = <form id="searchForm" data-search-list=".list-block-search"
-                           data-search-in=".item-title" autoComplete="off"
-                           className="searchbar" style={styles.themeColor}>
-                <div className="searchbar-input" style={styles.searchBar.input}>
-                    <TextField id='searchInput'
-                               ref='search'
-                               type={this.state.searchInput}
-                               hintStyle={{color: '#fff', marginLeft: 20}}
-                               inputStyle={{color: '#fff'}}
-                               underlineFocusStyle={{borderColor: '#fff'}}
-                               onChange={() => this.onSearchChange()}
-                               onFocus={() => this.onSearchFocus()}
-                               onBlur={() => this.onSearchBlur(route)}
-                               style={styles.searchBar}/>
-                </div>
-                { cancelSearch }
-            </form>
-        }
         return (
             <span>
                 <div className="statusbar-overlay"></div>
@@ -160,7 +122,7 @@ class App extends React.Component {
                         <Header {...this.props} {...this.state}/>
                         <div className="pages navbar-through toolbar-through">
                             <div data-page="index" className="page">
-                                {!this.state.appConfig.apiToken ? '' : search}
+                                {!this.state.appConfig.apiToken ? '' : <Search {...this.props} {...this.state} />}
                                 <div className="searchbar-overlay"></div>
                                 <div className="page-content">
                                     {content}
@@ -178,54 +140,8 @@ class App extends React.Component {
         );
     }
 
-    clearSearch(route) {
-        let path = route + 's/';
-        let id = this.props.routerPath.split('/').pop();
-        // For some reason, setting state here without timeOut causes an error???
-        setTimeout(()=> {
-            document.getElementById('searchInput').value = '';
-            this.setState({searchInput: 'search', clear: false});
-        }, 100);
-        ProjectActions.getChildren(id, path);
-        ProjectActions.setSearchText('');
-    }
-
     handleRequestClose() {
         // Avoids error when toasts time out
-    }
-
-    onSearchBlur(route) {
-        let path = route + 's/';
-        let id = this.props.routerPath.split('/').pop();
-        if (document.getElementById('searchInput').value === '') {
-            this.setState({searchInput: 'search', clear: false});
-            ProjectActions.getChildren(id, path);
-        }
-    }
-
-    onSearchChange() {
-        let textInput = document.getElementById('searchInput');
-        let timeout = this.state.timeout;
-        textInput.onkeyup = () => {
-            clearTimeout(timeout);
-            this.state.timeout = setTimeout(() => {
-                let id = this.props.routerPath.split('/').pop();
-                let path = this.props.routerPath.split('/').splice([1], 1).toString() + 's/';
-                if (!textInput.value.indexOf(' ') <= 0) {
-                    if (textInput.value === '') {
-                        ProjectActions.setSearchText('');
-                        ProjectActions.getChildren(id, path);
-                    } else {
-                        if (ProjectStore.entityObj !== null) id = ProjectStore.entityObj.ancestors[0].id;
-                        ProjectActions.search(textInput.value, id);
-                    }
-                }
-            }, 500);
-        };
-    }
-
-    onSearchFocus() {
-        this.setState({searchInput: 'text', clear: true});
     }
 
     showToasts() {
