@@ -27,10 +27,7 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            appConfig: MainStore.appConfig,
-            clear: false,
-            searchInput: 'search',
-            timeout: null
+            appConfig: MainStore.appConfig
         };
     }
 
@@ -43,7 +40,14 @@ class App extends React.Component {
     componentDidMount() {
         this.unsubscribe = MainStore.listen(state => this.setState(state));
         this.showToasts();
+        let app = new Framework7();
         new Framework7().addView('.view-main', {dynamicNavbar: true});
+        let device = {
+            android: app.device.android,
+            ipad: app.device.ipad,
+            iphone: app.device.iphone
+        };
+        ProjectActions.getDeviceType(device)
     }
 
     componentWillUnmount() {
