@@ -196,8 +196,9 @@ class FolderOptionsMenu extends React.Component {
     handleCloseMoveModal() {
         let id = this.props.params.id;
         let kind = 'folders';
+        let path = 'folders/';
         ProjectActions.getEntity(id, kind);
-        ProjectActions.loadFolderChildren(id);
+        ProjectActions.getChildren(id, path);
         ProjectActions.openMoveModal(false);
     }
 
