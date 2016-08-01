@@ -1,4 +1,4 @@
-import Colors from 'material-ui/lib/styles/colors';
+import * as Colors from 'material-ui/lib/styles/colors';
 import ColorManipulator from 'material-ui/lib/utils/color-manipulator';
 import Spacing from 'material-ui/lib/styles/spacing';
 import zIndex from 'material-ui/lib/styles/zIndex';
@@ -11,11 +11,11 @@ export default {
         primary1Color: "#235F9C",
         primary2Color: "#003366",
         primary3Color: "#0680CD",
-        accent1Color: "#448AFF",
+        accent1Color: "#235F9C",
         accent2Color: "#ED2B2B",
         accent3Color: "#F58C8C",
         textColor: "#424242",
-        alternateTextColor: Colors.white,
+        alternateTextColor: "#FFF",
         canvasColor: Colors.white,
         borderColor: Colors.grey300,
         disabledColor: ColorManipulator.fade(Colors.darkBlack, 0.3),

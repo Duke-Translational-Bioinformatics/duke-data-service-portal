@@ -27,9 +27,10 @@ class ProjectChildren extends React.Component {
     }
 
     render() {
+        let batchOpsStyle = window.innerWidth < 500 ?
+        {marginBottom: -20, marginTop: -10, paddingRight: 10, float:'left'} : {marginBottom: -20};
         let children = [];
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
-        let download = <div style={styles.fillerDiv}>{/*temporary filler div until add dropdown menu*/}</div>;
         let chkBx = <div className="item-media"></div>;
         let type = 'hidden';
         let newFolderModal = null;
@@ -86,8 +87,9 @@ class ProjectChildren extends React.Component {
                                     <div className="item-title mdl-color-text--grey-800"
                                          style={styles.title}>{children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}</div>
                                 </div>
-                                <div className="item-subtitle mdl-color-text--grey-600">created by: { children.audit.created_by.full_name }</div>
-                                <div className="item-subtitle mdl-color-text--grey-600">last updated: {children.audit.last_updated_on ? new Date(children.audit.last_updated_on).toString() : 'n/a'}</div>
+                                <div className="item-subtitle mdl-color-text--grey-600">Created by { children.audit.created_by.full_name }</div>
+                                <div className="item-subtitle mdl-color-text--grey-600">{children.audit.last_updated_on !== null ? 'Last updated on '+new Date(children.audit.last_updated_on).toDateString() + ' by ': <br />}
+                                    { children.audit.last_updated_by !== null ? children.audit.last_updated_by.full_name : null}</div>
                             </div>
                         </a>
                     </li>
@@ -116,8 +118,9 @@ class ProjectChildren extends React.Component {
                                     <div className="item-title mdl-color-text--grey-800"
                                          style={styles.title}>{children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}</div>
                                 </div>
-                                <div className="item-subtitle mdl-color-text--grey-600">version: {children.current_version.version}</div>
-                                <div className="item-subtitle mdl-color-text--grey-600">size: {BaseUtils.bytesToSize(children.current_version.upload.size)}</div>
+                                <div className="item-subtitle mdl-color-text--grey-600">{BaseUtils.bytesToSize(children.current_version.upload.size)+' - '}version {children.current_version.version}</div>
+                                <div className="item-subtitle mdl-color-text--grey-600">{children.audit.last_updated_on !== null ? 'Last updated on '+new Date(children.audit.last_updated_on).toDateString() + ' by ': <br />}
+                                    { children.audit.last_updated_by !== null ? children.audit.last_updated_by.full_name : null}</div>
                             </div>
                         </a>
                     </li>
@@ -131,8 +134,12 @@ class ProjectChildren extends React.Component {
                     <div className="mdl-cell mdl-cell--12-col">
                         { newFolderModal }
                     </div>
+
                     <div className="mdl-cell mdl-cell--12-col" style={{marginBottom: -20}}>
                         { this.props.searchText !== '' ? <div className="mdl-cell mdl-cell--4-col mdl-color-text--grey-600" style={styles.searchText}>Showing{" "+this.props.children.length+" "}results for{" '"+this.props.searchText+"'"}</div> : null}
+                    </div>
+                    <div className="mdl-cell mdl-cell--12-col" style={batchOpsStyle}>
+
                         { this.props.showBatchOps ? <BatchOps {...this.props} {...this.state}/> : null }
                     </div>
                     <ErrorModal {...this.props}/>

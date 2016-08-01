@@ -24,12 +24,12 @@ class FolderChildren extends React.Component {
 
     render() {
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
-        let download = <div style={styles.fillerDiv}>{/*temporary filler div until add dropdown menu*/}</div>;
         let chkBx = <div className="item-media"></div>;
         let type = 'hidden';
         let newFolderModal = null;
         if (prjPrm !== null) {
-            newFolderModal = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <AddFolderModal {...this.props}/>;
+            newFolderModal = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null :
+                <AddFolderModal {...this.props}/>;
             if (prjPrm !== 'viewOnly' && prjPrm !== 'flUpload') {
                 type = 'checkbox';
                 chkBx = <div className="item-media">
@@ -38,7 +38,7 @@ class FolderChildren extends React.Component {
             }
         }
         let children = [];
-        if (this.props.error && this.props.error.response){
+        if (this.props.error && this.props.error.response) {
             this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
             this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
         }
@@ -67,11 +67,13 @@ class FolderChildren extends React.Component {
                         <div style={styles.fillerDiv}>{/*temporary filler div until add dropdown menu*/}</div>
                         <a href={urlGen.routes.folder(children.id)}
                            className="item-content external">
-                            <label className="label-checkbox item-content" style={styles.checkboxLabel} onClick={e => this.change()}>
+                            <label className="label-checkbox item-content" style={styles.checkboxLabel}
+                                   onClick={e => this.change()}>
                                 <input className="folderChkBoxes" type={type} name="chkboxName"
-                                       value={children.id} />
+                                       value={children.id}/>
                                 { chkBx }
                             </label>
+
                             <div className="item-media">
                                 <i className="material-icons" style={styles.icon}>folder</i>
                             </div>
@@ -80,8 +82,9 @@ class FolderChildren extends React.Component {
                                     <div className="item-title mdl-color-text--grey-800"
                                          style={styles.title}>{children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}</div>
                                 </div>
-                                <div className="item-subtitle mdl-color-text--grey-600">created by: { children.audit.created_by.full_name }</div>
-                                <div className="item-subtitle mdl-color-text--grey-600">last updated: {children.audit.last_updated_on ? new Date(children.audit.last_updated_on).toString() : 'n/a'}</div>
+                                <div className="item-subtitle mdl-color-text--grey-600">Created by { children.audit.created_by.full_name }</div>
+                                <div className="item-subtitle mdl-color-text--grey-600">{children.audit.last_updated_on !== null ? 'Last updated on '+new Date(children.audit.last_updated_on).toDateString() + ' by ': <br />}
+                                    { children.audit.last_updated_by !== null ? children.audit.last_updated_by.full_name : null}</div>
                             </div>
                         </a>
                     </li>
@@ -96,21 +99,24 @@ class FolderChildren extends React.Component {
                             </a> }
                         <a href={urlGen.routes.file(children.id)}
                            className="item-content external">
-                            <label className="label-checkbox item-content"  style={styles.checkboxLabel} onClick={e => this.change()}>
+                            <label className="label-checkbox item-content" style={styles.checkboxLabel}
+                                   onClick={e => this.change()}>
                                 <input className="fileChkBoxes" type={type} name="chkboxName"
                                        value={children.id}/>
                                 { chkBx }
                             </label>
+
                             <div className="item-media"><i className="material-icons"
                                                            style={styles.icon}>description</i>
                             </div>
-                            <div className="item-inner" >
+                            <div className="item-inner">
                                 <div className="item-title-row">
                                     <div className="item-title mdl-color-text--grey-800"
                                          style={styles.title}>{children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}</div>
                                 </div>
-                                <div className="item-subtitle mdl-color-text--grey-600">version: {children.current_version.version}</div>
-                                <div className="item-subtitle mdl-color-text--grey-600">size: {BaseUtils.bytesToSize(children.current_version.upload.size)}</div>
+                                <div className="item-subtitle mdl-color-text--grey-600">{BaseUtils.bytesToSize(children.current_version.upload.size)+' - '}version {children.current_version.version}</div>
+                                <div className="item-subtitle mdl-color-text--grey-600">{children.audit.last_updated_on !== null ? 'Last updated on '+new Date(children.audit.last_updated_on).toDateString() + ' by ': <br />}
+                                    { children.audit.last_updated_by !== null ? children.audit.last_updated_by.full_name : null}</div>
                             </div>
                         </a>
                     </li>
@@ -154,7 +160,7 @@ class FolderChildren extends React.Component {
     change() {
         // clicking on F7 input[checkbox] does not fire onChange in iOS or Android. Instead, set onClick to label
         // and wait for F7 to change the form or checkbox before getting the values. sheesh
-        setTimeout( () => {
+        setTimeout(() => {
             this.handleChange()
         }, 100);
     }
@@ -224,7 +230,7 @@ var styles = {
         marginTop: 20
     },
     list: {
-        float:'right',
+        float: 'right',
         marginTop: -10
     },
     searchText: {

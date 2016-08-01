@@ -9,7 +9,8 @@ import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
 import cookie from 'react-cookie';
 import Snackbar from 'material-ui/lib/snackbar';
-import ThemeManager from 'material-ui/lib/styles/theme-manager';
+import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
+
 import MyRawTheme from '../theme/customTheme.js';
 import TextField from 'material-ui/lib/text-field';
 
@@ -35,7 +36,7 @@ class App extends React.Component {
 
     getChildContext() {
         return {
-            muiTheme: ThemeManager.getMuiTheme(MyRawTheme, zIndex)
+            muiTheme: getMuiTheme(MyRawTheme, zIndex)
         };
     }
 
