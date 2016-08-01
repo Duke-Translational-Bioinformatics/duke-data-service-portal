@@ -83,7 +83,8 @@ class FolderChildren extends React.Component {
                                          style={styles.title}>{children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}</div>
                                 </div>
                                 <div className="item-subtitle mdl-color-text--grey-600">Created by { children.audit.created_by.full_name }</div>
-                                <div className="item-subtitle mdl-color-text--grey-600">{children.audit.last_updated_on !== null ? 'Last updated on '+new Date(children.audit.last_updated_on).toDateString() + ' by ' + children.audit.last_updated_by.full_name  : <br />}</div>
+                                <div className="item-subtitle mdl-color-text--grey-600">{children.audit.last_updated_on !== null ? 'Last updated on '+new Date(children.audit.last_updated_on).toDateString() + ' by ': <br />}
+                                    { children.audit.last_updated_by !== null ? children.audit.last_updated_by.full_name : null}</div>
                             </div>
                         </a>
                     </li>
@@ -114,7 +115,8 @@ class FolderChildren extends React.Component {
                                          style={styles.title}>{children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}</div>
                                 </div>
                                 <div className="item-subtitle mdl-color-text--grey-600">{BaseUtils.bytesToSize(children.current_version.upload.size)+' - '}version {children.current_version.version}</div>
-                                <div className="item-subtitle mdl-color-text--grey-600">Last updated on {children.audit.last_updated_on !== null ? new Date(children.audit.last_updated_on).toDateString() : 'n/a'} by {children.audit.last_updated_by.full_name}</div>
+                                <div className="item-subtitle mdl-color-text--grey-600">{children.audit.last_updated_on !== null ? 'Last updated on '+new Date(children.audit.last_updated_on).toDateString() + ' by ': <br />}
+                                    { children.audit.last_updated_by !== null ? children.audit.last_updated_by.full_name : null}</div>
                             </div>
                         </a>
                     </li>
@@ -129,6 +131,7 @@ class FolderChildren extends React.Component {
                         { newFolderModal }
                     </div>
                     <div className="mdl-cell mdl-cell--12-col" style={{marginBottom: -20}}>
+                        { this.props.searchText !== '' ? <div className="mdl-cell mdl-cell--4-col mdl-color-text--grey-600" style={styles.searchText}>Showing{" "+this.props.children.length+" "}results for{" '"+this.props.searchText+"'"}</div> : null}
                         { this.props.showBatchOps ? <BatchOps {...this.props} {...this.state}/> : null }
                     </div>
                     <ErrorModal {...this.props}/>
@@ -229,6 +232,10 @@ var styles = {
     list: {
         float: 'right',
         marginTop: -10
+    },
+    searchText: {
+        marginLeft: 8,
+        marginTop: 36
     },
     title: {
         marginRight: 40
