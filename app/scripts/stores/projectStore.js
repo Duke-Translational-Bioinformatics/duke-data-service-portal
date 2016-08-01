@@ -15,6 +15,7 @@ var ProjectStore = Reflux.createStore({
         this.currentUser = {};
         this.destination = null;
         this.destinationKind = null;
+        this.device = {};
         this.entityObj = null;
         this.error = {};
         this.errorModal = false;
@@ -38,6 +39,13 @@ var ProjectStore = Reflux.createStore({
         this.users = [];
         this.userKey = {};
         this.versionModal = false;
+    },
+
+    getDeviceType(device) {
+        this.device = device;
+        this.trigger({
+            device: this.device
+        })
     },
 
     setSearchText(text) {

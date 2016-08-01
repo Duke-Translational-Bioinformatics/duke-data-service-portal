@@ -50,7 +50,7 @@ class Search extends React.Component {
     }
 
     render() {
-        let projectName = ProjectStore.project && ProjectStore.project.name ? 'in '+ProjectStore.project.name : '';
+        let projectName = ProjectStore.project && ProjectStore.project.name && window.innerWidth > 580 ? 'in '+ProjectStore.project.name : '';
         let route = this.props.routerPath.split('/').splice([1], 1).toString();
         let cancelSearch = this.state.clear ?
             <IconButton onTouchTap={() => this.clearSearch(route)} className="searchbar-cancel"
