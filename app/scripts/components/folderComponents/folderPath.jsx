@@ -62,11 +62,9 @@ class FolderPath extends React.Component {
 
 var styles = {
     container: {
-        marginTop: 30,
-        position: 'relative',
+        marginTop: 40,
         overflow: 'visible',
-        padding: '10px 0px 10px 0px',
-        minHeight: 160
+        padding: '10px 0px 10px 0px'
     },
     arrow: {
         textAlign: 'left'
