@@ -60,6 +60,9 @@ body
 .hover a:hover
   background: #FCFCFC
 
+input[type=text]::-ms-clear /*To remove the cancel button inside inputs IE10+*/
+  display: none;
+
 //Styles for File Input//
 
 .mdl-button--file {
