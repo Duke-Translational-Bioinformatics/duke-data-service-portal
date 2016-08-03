@@ -137,9 +137,6 @@ class ProjectChildren extends React.Component {
 
                     <div className="mdl-cell mdl-cell--12-col" style={{marginBottom: -20}}>
                         { this.props.searchText !== '' ? <div className="mdl-cell mdl-cell--4-col mdl-color-text--grey-600" style={styles.searchText}>Showing{" "+this.props.children.length+" "}results for{" '"+this.props.searchText+"'"}</div> : null}
-                    </div>
-                    <div className="mdl-cell mdl-cell--12-col" style={batchOpsStyle}>
-
                         { this.props.showBatchOps ? <BatchOps {...this.props} {...this.state}/> : null }
                     </div>
                     <ErrorModal {...this.props}/>
