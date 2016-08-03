@@ -35,6 +35,7 @@ class ProjectChildren extends React.Component {
         }
         if (this.props.error && this.props.error.response) {
             this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
+            this.props.error.response === 401 ? this.props.appRouter.transitionTo('/login') : null;
             this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
         }
         if (this.props.children.length > 20) {
