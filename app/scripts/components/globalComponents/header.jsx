@@ -92,7 +92,7 @@ var styles = {
         maxWidth: '40%',
         minWidth: 58,
         minHeight: 46,
-        marginTop: 12,
+        marginTop: -5,
         marginLeft: 22
     },
     logoDiv: {
