@@ -1,11 +1,9 @@
 import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
-import { Link } from 'react-router';
 import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
 import AgentOptionsMenu from '../components/globalComponents/agentOptionsMenu.jsx';
 import Loaders from '../components/globalComponents/loaders.jsx';
-import BaseUtils from '../../util/baseUtils.js';
 import urlGen from '../../util/urlGen.js';
 import Card from '../../../node_modules/material-ui/lib/card/card';
 

@@ -1,19 +1,11 @@
 import React from 'react'
-import { Link } from 'react-router';
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
 import FolderOptionsMenu from './folderOptionsMenu.jsx';
 import UploadModal from '../globalComponents/uploadModal.jsx';
-import urlGen from '../../../util/urlGen.js';
 import BaseUtils from '../../../util/baseUtils';
 import Card from 'material-ui/lib/card/card';
 
 class FolderPath extends React.Component {
-
-    constructor(props) {
-        super(props);
-    }
-
+    
     render() {
         let id = this.props.params.id;
         let entityObj = this.props.entityObj ? this.props.entityObj : null;
