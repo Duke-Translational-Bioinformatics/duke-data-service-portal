@@ -1,12 +1,8 @@
 import React from 'react';
-import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import FlatButton from 'material-ui/lib/flat-button';
 import Dialog from 'material-ui/lib/dialog';
 import TextField from 'material-ui/lib/text-field';
-import RaisedButton from 'material-ui/lib/raised-button';
-
-import FloatingActionButton from 'material-ui/lib/floating-action-button';
 
 class VersionUpload extends React.Component {
 
