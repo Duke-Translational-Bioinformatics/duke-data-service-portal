@@ -1,13 +1,9 @@
 import React from 'react';
-import { RouteHandler, Link } from 'react-router';
-import MainStore from '../../stores/mainStore';
-import MainActions from '../../actions/mainActions';
+import { RouteHandler } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import Close from 'material-ui/lib/svg-icons/navigation/close';
 import IconButton from 'material-ui/lib/icon-button';
-import TextField from 'material-ui/lib/text-field';
-
 
 class Search extends React.Component {
     constructor(props) {

@@ -2,7 +2,6 @@ import React from 'react'
 import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
 import VersionDetails from '../components/fileComponents/versionDetails.jsx';
-import Header from '../components/globalComponents/header.jsx';
 
 class Version extends React.Component {
 

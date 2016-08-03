@@ -1,5 +1,4 @@
 import React from 'react';
-import ProjectActions from '../../actions/projectActions';
 import BaseUtils from '../../../util/baseUtils.js';
 import Card from 'material-ui/lib/card/card';
 

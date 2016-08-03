@@ -1,5 +1,5 @@
 import React from 'react';
-import { RouteHandler, Link } from 'react-router';
+import { RouteHandler } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import BaseUtils from '../../../util/baseUtils.js';
@@ -7,11 +7,8 @@ import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx
 import BatchOps from '../../components/globalComponents/batchOps.jsx';
 import ErrorModal from '../../components/globalComponents/errorModal.jsx';
 import FolderOptionsMenu from '../folderComponents/folderOptionsMenu.jsx';
-import Header from '../../components/globalComponents/header.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import urlGen from '../../../util/urlGen.js';
-import Badge from 'material-ui/lib/badge';
-import LinearProgress from 'material-ui/lib/linear-progress';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 class FolderChildren extends React.Component {
@@ -40,6 +37,7 @@ class FolderChildren extends React.Component {
         let children = [];
         if (this.props.error && this.props.error.response) {
             this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
+            this.props.error.response === 401 ? this.props.appRouter.transitionTo('/login') : null;
             this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
         }
         if (this.props.children.length > 20) {
@@ -130,7 +128,7 @@ class FolderChildren extends React.Component {
                     <div className="mdl-cell mdl-cell--12-col">
                         { newFolderModal }
                     </div>
-                    <div className="mdl-cell mdl-cell--12-col" style={{marginBottom: -20}}>
+                    <div className="mdl-cell mdl-cell--12-col" style={styles.batchOpsWrapper}>
                         { this.props.searchText !== '' ? <div className="mdl-cell mdl-cell--4-col mdl-color-text--grey-600" style={styles.searchText}>Showing{" "+this.props.children.length+" "}results for{" '"+this.props.searchText+"'"}</div> : null}
                         { this.props.showBatchOps ? <BatchOps {...this.props} {...this.state}/> : null }
                     </div>
@@ -201,6 +199,9 @@ FolderChildren.contextTypes = {
 };
 
 var styles = {
+    batchOpsWrapper: {
+        marginBottom: -20
+    },
     checkBox: {
         width: 16,
         height: 16
