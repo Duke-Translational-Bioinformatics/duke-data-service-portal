@@ -87,8 +87,7 @@ class ProjectDetails extends React.Component {
 
 var styles = {
     container: {
-        marginTop: 30,
-        //position: 'relative',
+        marginTop: 40,
         overflow: 'visible',
         padding: '10px 0px 10px 0px'
     },

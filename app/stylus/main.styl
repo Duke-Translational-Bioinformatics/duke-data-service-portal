@@ -60,6 +60,9 @@ body
 .hover a:hover
   background: #FCFCFC
 
+input[type=text]::-ms-clear /*To remove the cancel button inside inputs IE10+*/
+  display: none;
+
 //Styles for File Input//
 
 .mdl-button--file {
@@ -153,3 +156,58 @@ body
   left: auto;
   margin: 0;
 }
+
+// Search input
+.search {
+  opacity: 0.9;
+  float: right
+  min-width: 150px;
+  width: 40%;
+  box-sizing: border-box;
+  border: 1px solid #235F9C;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #f7f7f7;
+  background-color: #f5f5f5;
+  padding: 10px 10px 10px 10px;
+  -webkit-transition: width 0.6s ease-in-out;
+  transition: width 0.6s ease-in-out;
+}
+
+.search:focus {
+  opacity: 1;
+  width: 64%;
+  outline: none;
+  background-color: #90CAF9;
+  -webkit-transition: width 0.6s ease-in-out;
+  transition: width 0.6s ease-in-out;
+}
+
+.search::-webkit-input-placeholder {
+  color: #616161;
+}
+
+.search:focus::-webkit-input-placeholder {
+  color: #f7f7f7;
+}
+
+.search::-moz-placeholder {  /* Firefox 19+ */
+  color: #616161;
+}
+
+.search:focus::-moz-placeholder {  /* Firefox 19+ */
+  color: #f7f7f7;
+}
+
+.search:-ms-input-placeholder {
+  color: #616161;
+}
+
+.search:focus:-ms-input-placeholder {
+  color: #f7f7f7;
+}
+
+@media (max-width: 400px)
+  .search {
+    padding: 6px 10px 6px 10px;
+  }
