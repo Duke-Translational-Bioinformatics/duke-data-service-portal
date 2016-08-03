@@ -153,9 +153,6 @@ var styles = {
             alignItems: 'center',
             justifyContent: 'center'
         },
-        inputStyle: {
-            cursor: 'pointer'
-        },
         underlineStyle: {
             borderColor: '#fff'
         }
