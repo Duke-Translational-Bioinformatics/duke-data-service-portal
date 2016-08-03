@@ -1,9 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-import MainActions from '../../actions/mainActions';
-import MainStore from '../../stores/mainStore';
 import ProjectOptionsMenu from './projectOptionsMenu.jsx';
 import Details from './details.jsx';
 import UploadModal from '../globalComponents/uploadModal.jsx';

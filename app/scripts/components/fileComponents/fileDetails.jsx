@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
-import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import ErrorModal from '../../components/globalComponents/errorModal.jsx';
@@ -8,10 +7,8 @@ import FileOptionsMenu from './fileOptionsMenu.jsx';
 import FileVersionsList from './fileVersionsList.jsx';
 import VersionUpload from './versionUpload.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
-import urlGen from '../../../util/urlGen.js';
 import Tooltip from '../../../util/tooltip.js';
 import BaseUtils from '../../../util/baseUtils.js';
-import IconButton from 'material-ui/lib/icon-button';
 import Card from 'material-ui/lib/card/card';
 import RaisedButton from 'material-ui/lib/raised-button';
 
