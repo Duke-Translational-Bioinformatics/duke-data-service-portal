@@ -61,7 +61,7 @@ class ProjectChildren extends React.Component {
                 return (
                     <li key={ children.id } className="hover">
                         <div style={styles.fillerDiv}>{/*temporary filler div until add dropdown menu*/}</div>
-                        <a href={urlGen.routes.folder(children.id+1)}
+                        <a href={urlGen.routes.folder(children.id)}
                            className="item-content external">
                             <label className="label-checkbox item-content" style={styles.checkboxLabel}
                                    onClick={e => this.change()}>
