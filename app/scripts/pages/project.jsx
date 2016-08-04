@@ -27,6 +27,7 @@ class Project extends React.Component {
     }
 
     componentDidMount() {
+        if(this.state.searchText !== '') ProjectActions.setSearchText('');
         let id = this.props.params.id;
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
         ProjectActions.getChildren(id, 'projects/');
