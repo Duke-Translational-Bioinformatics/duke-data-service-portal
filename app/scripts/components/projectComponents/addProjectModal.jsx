@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import FlatButton from 'material-ui/lib/flat-button';
 import Dialog from 'material-ui/lib/dialog';

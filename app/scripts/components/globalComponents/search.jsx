@@ -1,20 +1,16 @@
 import React from 'react';
-import { RouteHandler, Link } from 'react-router';
-import MainStore from '../../stores/mainStore';
-import MainActions from '../../actions/mainActions';
+import { RouteHandler } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import Close from 'material-ui/lib/svg-icons/navigation/close';
 import IconButton from 'material-ui/lib/icon-button';
-import TextField from 'material-ui/lib/text-field';
-
 
 class Search extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             clear: false,
-            searchInput: 'search',
+            inputStyle: {cursor: 'pointer'},
             timeout: null
         };
     }
@@ -32,15 +28,11 @@ class Search extends React.Component {
         }
     }
 
-    componentWillUnmount() {
-        this.unsubscribe();
-    }
-
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.routerPath !== this.props.routerPath) {
             // For some reason, setting state here without timeOut causes an error???
             setTimeout(()=> {
-                this.setState({searchInput: 'search', clear: false});
+                this.setState({clear: false});
             }, 100);
             if (!!document.getElementById("searchForm")) { // Check if 'searchForm is in DOM
                 document.getElementById('searchInput').value = '';
@@ -50,11 +42,10 @@ class Search extends React.Component {
     }
 
     render() {
-        let projectName = ProjectStore.project && ProjectStore.project.name && window.innerWidth > 580 ? 'in '+ProjectStore.project.name : '';
+        let projectName = ProjectStore.project && ProjectStore.project.name && window.innerWidth > 580 ? 'in '+ProjectStore.project.name+'...' : '...';
         let route = this.props.routerPath.split('/').splice([1], 1).toString();
         let cancelSearch = this.state.clear ?
-            <IconButton onTouchTap={() => this.clearSearch(route)} className="searchbar-cancel"
-                        style={styles.cancelSearch}>
+            <IconButton onTouchTap={() => this.clearSearch(route)} className="searchbar-cancel">
                 <Close color={'#fff'}/>
             </IconButton> : '';
         let search = '';
@@ -73,21 +64,16 @@ class Search extends React.Component {
         } else {
             search = <form id="searchForm" data-search-list=".list-block-search"
                            data-search-in=".item-title" autoComplete="off"
-                           className="searchbar" style={styles.themeColor}>
-                <div className="searchbar-input" style={styles.searchBar.input}>
-                    <TextField id='searchInput'
-                               ref='search'
-                               type={this.state.searchInput}
-                               hintText={"Search "+ projectName}
-                               hintStyle={styles.searchBar.hintStyle}
-                               inputStyle={styles.searchBar.inputStyle}
-                               underlineFocusStyle={styles.searchBar.underlineStyle}
-                               onChange={() => this.onSearchChange()}
-                               onFocus={() => this.onSearchFocus()}
-                               onBlur={() => this.onSearchBlur(route)}
-                               style={styles.searchBar}/>
+                           className="searchbar" style={{padding: 30, backgroundColor: '#235F9C'}}>
+                <div className="searchbar-input mdl-cell mdl-cell--12-col" style={styles.searchBar.inputWrapper}>
+                    <input id='searchInput' className="search" style={this.state.inputStyle}
+                           type="text" name="search" placeholder={"Search "+ projectName}
+                           onChange={() => this.onSearchChange()}
+                           onFocus={() => this.onSearchFocus()}
+                           onBlur={() => this.onSearchBlur(route)}
+                        />
+                    { cancelSearch }
                 </div>
-                { cancelSearch }
             </form>
         }
         return ( search )
@@ -99,7 +85,7 @@ class Search extends React.Component {
         // For some reason, setting state here without timeOut causes an error???
         setTimeout(()=> {
             document.getElementById('searchInput').value = '';
-            this.setState({searchInput: 'search', clear: false});
+            this.setState({clear: false, inputStyle: {cursor: 'pointer'}});
         }, 100);
         ProjectActions.getChildren(id, path);
         ProjectActions.setSearchText('');
@@ -109,8 +95,10 @@ class Search extends React.Component {
         let path = route + 's/';
         let id = this.props.routerPath.split('/').pop();
         if (document.getElementById('searchInput').value === '') {
-            this.setState({searchInput: 'search', clear: false});
+            this.setState({clear: false});
             ProjectActions.getChildren(id, path);
+        } else {
+            this.setState({inputStyle: {cursor: 'pointer', color: '#616161'}});
         }
     }
 
@@ -136,16 +124,11 @@ class Search extends React.Component {
     }
 
     onSearchFocus() {
-        this.setState({searchInput: 'text', clear: true});
+        this.setState({clear: true});
     }
 }
 
 var styles = {
-    cancelSearch: {
-        top: 10,
-        right: '23%',
-        padding: 10
-    },
     searchBar: {
         width: '50vw',
         margin: '0 auto',
@@ -155,11 +138,12 @@ var styles = {
             color: '#eeeeee',
             marginLeft: 25
         },
-        input: {
-            marginBottom: 10
-        },
-        inputStyle: {
-            color: '#eeeeee'
+        inputWrapper: {
+            marginBottom: 3,
+            padding: -15,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
         },
         underlineStyle: {
             borderColor: '#fff'

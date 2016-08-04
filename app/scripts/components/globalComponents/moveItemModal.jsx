@@ -1,7 +1,6 @@
 import React from 'react';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-import FlatButton from 'material-ui/lib/flat-button';
 import List from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
 import Folder from 'material-ui/lib/svg-icons/file/folder';

@@ -24,6 +24,7 @@ class Folder extends React.Component {
     }
 
     componentDidMount() {
+        if(this.state.searchText !== '') ProjectActions.setSearchText('');
         let kind = 'folders';
         let path = 'folders/';
         let id = this.props.params.id;

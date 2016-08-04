@@ -1,5 +1,5 @@
 import React from 'react';
-import { RouteHandler, Link } from 'react-router';
+import { RouteHandler } from 'react-router';
 import Header from '../components/globalComponents/header.jsx';
 import Footer from '../components/globalComponents/footer.jsx';
 import LeftMenu from '../components/globalComponents/leftMenu.jsx';
@@ -8,13 +8,9 @@ import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions';
 import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
-import cookie from 'react-cookie';
 import Snackbar from 'material-ui/lib/snackbar';
 import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
 import MyRawTheme from '../theme/customTheme.js';
-import TextField from 'material-ui/lib/text-field';
-import IconButton from 'material-ui/lib/icon-button';
-import Close from 'material-ui/lib/svg-icons/navigation/close';
 
 let zIndex = {
     zIndex: {

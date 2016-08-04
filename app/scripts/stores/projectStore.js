@@ -98,8 +98,10 @@ var ProjectStore = Reflux.createStore({
 
     setSearchText(text) {
         if(!text.indexOf(' ') <= 0) this.searchText = text;
-        this.trigger({
-            searchText: this.searchText
+            this.trigger({
+            searchText: this.searchText,
+            itemsSelected: null,
+            showBatchOps: false
         })
     },
 

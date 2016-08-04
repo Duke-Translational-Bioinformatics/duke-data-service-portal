@@ -14,6 +14,6 @@ export const Path = Object.freeze({
     FILE_VERSION: 'file_versions/',
     FOLDER : 'folders/',
     PROJECT : 'projects/',
-    UPLOAD: '/uploads'
+    UPLOAD: 'uploads/'
 });
 
