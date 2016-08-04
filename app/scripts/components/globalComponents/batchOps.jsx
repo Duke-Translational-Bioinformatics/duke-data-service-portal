@@ -1,15 +1,12 @@
 import React from 'react';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-import Badge from 'material-ui/lib/badge';
 import Card from 'material-ui/lib/card/card';
 import DeleteIcon from 'material-ui/lib/svg-icons/action/delete';
 import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
 import GetAppIcon from 'material-ui/lib/svg-icons/action/get-app';
 import IconButton from 'material-ui/lib/icon-button';
-import Info from 'material-ui/lib/svg-icons/action/info';
-import RaisedButton from 'material-ui/lib/raised-button';
 
 class BatchOps extends React.Component {
 

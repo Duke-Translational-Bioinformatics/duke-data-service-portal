@@ -877,7 +877,7 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
     }
     fileReader.onload = function (event, files) {
         // create project upload
-        fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT + projId + Path.UPLOAD, {
+        fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT + projId +'/'+ Path.UPLOAD, {
             method: 'post',
             headers: {
                 'Authorization': appConfig.apiToken,

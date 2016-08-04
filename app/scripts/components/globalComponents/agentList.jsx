@@ -1,17 +1,14 @@
 import React from 'react';
-import { RouteHandler, Link } from 'react-router';
+import { RouteHandler } from 'react-router';
 import MainActions from '../../actions/mainActions';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import AddAgentModal from '../../components/globalComponents/addAgentModal.jsx';
-import BatchOps from '../../components/globalComponents/batchOps.jsx';
 import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
 import ErrorModal from '../../components/globalComponents/errorModal.jsx';
-import Header from '../../components/globalComponents/header.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import urlGen from '../../../util/urlGen.js';
-import RaisedButton from 'material-ui/lib/raised-button';
 import TextField from 'material-ui/lib/text-field';
 
 class AgentList extends React.Component {

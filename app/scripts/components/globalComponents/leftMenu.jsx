@@ -6,10 +6,6 @@ import urlGen from '../../../util/urlGen.js';
 
 class LeftMenu extends React.Component {
 
-    constructor(props, context) {
-        super(props);
-    }
-
     render() {
         let home = <span>
                     <p>
