@@ -160,7 +160,7 @@ class FolderChildren extends React.Component {
 
     change() {
         // clicking on F7 input[checkbox] does not fire onChange in iOS or Android. Instead, set onClick to label
-        // and wait for F7 to change the form or checkbox before getting the values. sheesh
+        // and wait for F7 to change the form or checkbox before getting the values
         setTimeout(() => {
             this.handleChange()
         }, 100);
