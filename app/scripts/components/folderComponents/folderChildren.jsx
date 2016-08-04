@@ -23,6 +23,8 @@ class FolderChildren extends React.Component {
     }
 
     render() {
+        if(!this.props.showBatchOps) this.uncheck();
+        let children = [];
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
         let chkBx = <div className="item-media"></div>;
         let type = 'hidden';
@@ -37,7 +39,6 @@ class FolderChildren extends React.Component {
                 </div>
             }
         }
-        let children = [];
         if (this.props.error && this.props.error.response) {
             this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
             this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
@@ -193,6 +194,21 @@ class FolderChildren extends React.Component {
 
     loadMore() {
         this.setState({page: this.state.page + 1});
+    }
+
+    uncheck() {
+        let files = this.props.filesChecked ? this.props.filesChecked : null;
+        let folders = this.props.foldersChecked ? this.props.foldersChecked : null;
+        if(folders !== null) {
+            for (let i = 0; i < folders.length; i++) {
+                if(!!document.getElementById(folders[i])) document.getElementById(folders[i]).checked = false;
+            }
+        }
+        if(files !== null) {
+            for (let i = 0; i < files.length; i++) {
+                if(!!document.getElementById(files[i])) document.getElementById(files[i]).checked = false;
+            }
+        }
     }
 }
 

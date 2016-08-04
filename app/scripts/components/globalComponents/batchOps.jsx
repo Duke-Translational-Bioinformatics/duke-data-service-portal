@@ -25,13 +25,12 @@ class BatchOps extends React.Component {
         let msg = '';
         if(this.props.filesChecked.length > 1 || this.props.foldersChecked.length > 1 || this.props.foldersChecked.length + this.props.filesChecked.length > 1){
             msg = "Are you sure you want to delete these items?";
-        } else {
+        }else{
             msg= "Are you sure you want to delete this item?";
         }
         if(!this.props.filesChecked.length){
             dlMsg = "If you want to download the contents of a folder, please open that folder and select the files to download"
-        }
-        else if(this.props.filesChecked.length > 1){
+        }else if(this.props.filesChecked.length > 1){
             dlMsg = "Are you sure you want to download "+this.props.filesChecked.length+" files?";
         }else{
             dlMsg = "Are you sure you want to download "+this.props.filesChecked.length+" file?"

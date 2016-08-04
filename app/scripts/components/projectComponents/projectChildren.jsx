@@ -27,8 +27,7 @@ class ProjectChildren extends React.Component {
     }
 
     render() {
-        let batchOpsStyle = window.innerWidth < 500 ?
-        {marginBottom: -20, marginTop: -10, paddingRight: 10, float:'left'} : {marginBottom: -20};
+        if(!this.props.showBatchOps) this.uncheck();
         let children = [];
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
         let chkBx = <div className="item-media"></div>;
@@ -78,7 +77,6 @@ class ProjectChildren extends React.Component {
                                        id={children.id}/>
                                 { chkBx }
                             </label>
-
                             <div className="item-media">
                                 <i className="material-icons" style={styles.icon}>folder</i>
                             </div>
@@ -134,7 +132,6 @@ class ProjectChildren extends React.Component {
                     <div className="mdl-cell mdl-cell--12-col">
                         { newFolderModal }
                     </div>
-
                     <div className="mdl-cell mdl-cell--12-col" style={{marginBottom: -20}}>
                         { this.props.searchText !== '' ? <div className="mdl-cell mdl-cell--4-col mdl-color-text--grey-600" style={styles.searchText}>Showing{" "+this.props.children.length+" "}results for{" '"+this.props.searchText+"'"}</div> : null}
                         { this.props.showBatchOps ? <BatchOps {...this.props} {...this.state}/> : null }
@@ -202,6 +199,21 @@ class ProjectChildren extends React.Component {
 
     loadMore() {
         this.setState({page: this.state.page + 1});
+    }
+
+    uncheck() {
+        let files = this.props.filesChecked ? this.props.filesChecked : null;
+        let folders = this.props.foldersChecked ? this.props.foldersChecked : null;
+        if(folders !== null) {
+            for (let i = 0; i < folders.length; i++) {
+                if(!!document.getElementById(folders[i])) document.getElementById(folders[i]).checked = false;
+            }
+        }
+        if(files !== null) {
+            for (let i = 0; i < files.length; i++) {
+                if(!!document.getElementById(files[i])) document.getElementById(files[i]).checked = false;
+            }
+        }
     }
 }
 

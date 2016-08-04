@@ -32,10 +32,6 @@ class Search extends React.Component {
         }
     }
 
-    componentWillUnmount() {
-        this.unsubscribe();
-    }
-
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.routerPath !== this.props.routerPath) {
             // For some reason, setting state here without timeOut causes an error???
