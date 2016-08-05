@@ -637,7 +637,6 @@ class Provenance extends React.Component {
     //    this.setState({width: width});
     //}
 
-
     toggleProv() {
         if(this.props.toggleProvEdit && this.props.toggleProv) ProjectActions.toggleProvEditor();
         ProjectActions.toggleProvView();

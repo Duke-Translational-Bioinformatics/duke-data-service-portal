@@ -2,12 +2,15 @@ import React from 'react'
 import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
 import FileDetails from '../components/fileComponents/fileDetails.jsx';
+import Provenance from '../components/globalComponents/provenance.jsx';
 
 class File extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            addEdgeMode: ProjectStore.addEdgeMode,
+            dltRelationsBtn: ProjectStore.dltRelationsBtn,
             error: ProjectStore.error,
             errorModal: ProjectStore.errorModal,
             loading: false,
@@ -21,6 +24,7 @@ class File extends React.Component {
             relMsg: ProjectStore.relMsg,
             toggleProv: ProjectStore.toggleProv,
             toggleProvEdit: ProjectStore.toggleProvEdit,
+            relFrom: ProjectStore.relFrom,
             relTo: ProjectStore.relTo,
             scale: ProjectStore.scale,
             selectedEdge: ProjectStore.selectedEdge,
@@ -53,6 +57,7 @@ class File extends React.Component {
     _loadFile(id, kind) {
         ProjectActions.getEntity(id, kind);
         ProjectActions.getFileVersions(id);
+        ProjectActions.getProvenance(id);
     }
 
     render() {
@@ -63,6 +68,7 @@ class File extends React.Component {
         }
         return (
             <div>
+                <Provenance {...this.props} {...this.state}/>
                 <FileDetails {...this.props} {...this.state} />
             </div>
         );

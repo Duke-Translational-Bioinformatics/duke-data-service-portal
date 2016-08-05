@@ -25,14 +25,14 @@ class FileOptionsMenu extends React.Component {
         if (prjPrm !== null) {
             if(prjPrm === 'viewOnly' || prjPrm === 'flDownload'){
                 menu = <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
-                              onTouchTap={() => this.openProv()}/>;
+                              onTouchTap={() => this.toggleProv()}/>;
             }
             if(prjPrm === 'flUpload'){
                 menu = <span>
                     <MenuItem primaryText="Upload New Version" leftIcon={<i className="material-icons">file_upload</i>}
                               onTouchTap={() => this.openVersionModal()}/>
                     <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
-                              onTouchTap={() => this.openProv()}/>
+                              onTouchTap={() => this.toggleProv()}/>
                 </span>;
             }
             if(prjPrm === 'prjCrud' || prjPrm === 'flCrud'){
@@ -46,7 +46,7 @@ class FileOptionsMenu extends React.Component {
                         <MenuItem primaryText="Upload New Version" leftIcon={<i className="material-icons">file_upload</i>}
                                   onTouchTap={() => this.openVersionModal()}/>
                         <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
-                                  onTouchTap={() => this.openProv()}/>
+                                  onTouchTap={() => this.toggleProv()}/>
                 </span>;
             }
         }
@@ -230,6 +230,10 @@ class FileOptionsMenu extends React.Component {
             moveOpen: false,
             floatingErrorText: 'This field is required.'
         });
+    }
+
+    toggleProv() {
+        ProjectActions.toggleProvView();
     }
 }
 var styles = {

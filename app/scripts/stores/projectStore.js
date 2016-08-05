@@ -48,6 +48,10 @@ var ProjectStore = Reflux.createStore({
         this.selectedEdge = null;
         this.searchText = '';
         this.showBatchOps = false;
+        this.showProvAlert = false;
+        this.showProvCtrlBtns = false;
+        this.toggleProv = false;
+        this.toggleProvEdit = false;
         this.uploadCount = [];
         this.uploads = {};
         this.users = [];
@@ -302,6 +306,20 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
+    toggleProvView() {
+        this.toggleProv = !this.toggleProv;
+        this.trigger({
+             toggleProv: this.toggleProv
+        })
+    },
+
+    toggleProvEditor() {
+        this.toggleProvEdit = !this.toggleProvEdit;
+        this.trigger({
+            toggleProvEdit: this.toggleProvEdit
+        })
+    },
+
     getProvenanceSuccess(prov) {
         this.provEdges = prov.relationships.map((edge) => {
             return {
@@ -348,10 +366,10 @@ var ProjectStore = Reflux.createStore({
     },
 
     getDeviceType(device) {
-    this.device = device;
-    this.trigger({
-        device: this.device
-    })
+        this.device = device;
+        this.trigger({
+            device: this.device
+        })
     },
 
     setSearchText(text) {
@@ -406,9 +424,7 @@ var ProjectStore = Reflux.createStore({
     hideProvAlert() {
         this.showProvAlert = false;
         this.trigger({
-            showProvAlert: this.showProvAlert,
-            toggleProvEdit: this.toggleProvEdit
-
+            showProvAlert: this.showProvAlert
         })
     },
 
@@ -427,6 +443,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     addFileVersionSuccess(id, uploadId) {
+        this.showProvAlert = true;
         let kind = 'files/';
         ProjectActions.getEntity(id, kind);
         ProjectActions.getFileVersions(id);
@@ -434,6 +451,7 @@ var ProjectStore = Reflux.createStore({
             delete this.uploads[uploadId];
         }
         this.trigger({
+            showProvAlert: this.showProvAlert,
             uploads: this.uploads
         })
     },
@@ -906,12 +924,6 @@ var ProjectStore = Reflux.createStore({
     moveFileSuccess() {
         this.trigger({
             loading: false
-        })
-    },
-
-    getEntity() {
-        this.trigger({
-            loading: true
         })
     },
 

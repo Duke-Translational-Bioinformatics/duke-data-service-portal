@@ -10,7 +10,12 @@ import Loaders from '../../components/globalComponents/loaders.jsx';
 import Tooltip from '../../../util/tooltip.js';
 import BaseUtils from '../../../util/baseUtils.js';
 import Card from 'material-ui/lib/card/card';
+import FlatButton from 'material-ui/lib/flat-button';
+import IconButton from 'material-ui/lib/icon-button';
+import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
 import RaisedButton from 'material-ui/lib/raised-button';
+
+import Paper from 'material-ui/lib/paper';
 
 class FileDetails extends React.Component {
 
@@ -55,6 +60,20 @@ class FileDetails extends React.Component {
         let versions = null;
         let versionCount = [];
 
+        let provAlert = this.props.showProvAlert ? <Paper style={styles.provAlert} zDepth={1}>
+            <div style={styles.provAlert.wrapper}>Would you like to add provenance for this file?</div>
+            <IconButton style={styles.button} onTouchTap={() => this.dismissAlert()}>
+                <NavigationClose color="#E8F5E9"/>
+            </IconButton>
+            <FlatButton
+                label="Yes"
+                labelStyle={styles.provAlert.alertButton.label}
+                style={styles.provAlert.alertButton}
+                hoverColor="#4CAF50"
+                onTouchTap={() => this.openProv()}
+                />
+        </Paper> : '';
+
         if(this.props.fileVersions && this.props.fileVersions != undefined && this.props.fileVersions.length > 1) {
             versions = this.props.fileVersions.map((version) => {
                 return version.is_deleted;
@@ -67,6 +86,7 @@ class FileDetails extends React.Component {
                             label="FILE VERSIONS"
                             secondary={true}
                             style={styles.button}
+                            labelStyle={{fontWeight: 100}}
                             onTouchTap={() => this.openModal()}
                             />
                     }
@@ -110,6 +130,7 @@ class FileDetails extends React.Component {
                     { this.props.uploads ? <Loaders {...this.props}/> : null }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
+                    { provAlert }
                     <div className="list-block">
                         <div className="list-group">
                             <ul>
@@ -213,6 +234,10 @@ class FileDetails extends React.Component {
         )
     }
 
+    dismissAlert(){
+        ProjectActions.hideProvAlert();
+    }
+
     handleDownload(){
         let id = this.props.params.id;
         let kind = 'files/';
@@ -221,6 +246,12 @@ class FileDetails extends React.Component {
 
     openModal() {
         ProjectActions.openModal()
+    }
+
+    openProv() {
+        ProjectActions.toggleProvView();
+        ProjectActions.toggleProvEditor();
+        ProjectActions.hideProvAlert();
     }
 }
 
@@ -271,6 +302,24 @@ var styles = {
         float: 'right',
         marginTop: 30,
         marginBottom: -3
+    },
+    provAlert: {
+        display: 'block',
+        backgroundColor: '#66BB6A',
+        minHeight: 48,
+        alertButton: {
+            float: 'right',
+            margin: 6,
+            label: {
+                color: '#E8F5E9',
+                fontWeight: 100
+            }
+        },
+        wrapper: {
+            float: 'left',
+            color: '#E8F5E9',
+            margin: '14px 10px 10px 10px'
+        }
     },
     subTitle: {
         textAlign: 'left',
