@@ -221,262 +221,27 @@ ProjectActions.editProvActivity.preEmit = function (id, name, desc, prevName) {
     })
 };
 
-ProjectActions.getProvenance.preEmit = function (id) {//Todo: Replace with proper call!!!!!!!!!!!!!!!!
-    let prov = {
-            "nodes": [
-                {
-                    "id": "2fba2f6e-d889-4bfa-ac2c-d2a774cc15bd",
-                    "labels": ["Activity"],
-                    "properties": {
-                        "kind": "dds-activity",
-                        "id": "2fba2f6e-d889-4bfa-ac2c-d2a774cc15bd",
-                        "name": "RF PI3-Kinase",
-                        "description": "heuristic for PI3-Kinase pathway activity",
-                        "is_deleted": false,
-                        "audit": {
-                            "created_on": "2015-01-01T12:00:00Z",
-                            "created_by": {
-                                "id": "ce245d81-bae1-452b-8589-24f736ca7735",
-                                "username": "mrgardner01",
-                                "full_name": "Matthew Gardner",
-                                "agent": {
-                                    "id": "9a4c28a2-ec18-40ed-b75c-3bf5b309715f",
-                                    "name": "Hashing computation agent"
-                                }
-                            },
-                            "last_updated_on": "2015-01-01T13:00:00Z",
-                            "last_updated_by": {
-                                "id": "d240ef3d-8d43-441b-be90-78f51a02e47f",
-                                "username": "jturner01",
-                                "full_name": "Jon Turner",
-                                "agent": null
-                            },
-                            "deleted_on": null,
-                            "deleted_by": null
-                        }
-                    }
-                },
-                {
-                    "id": "3bd380e9-31d2-44d2-8134-40360b8a474b",
-                    "labels": ["Activity"],
-                    "properties": {
-                        "kind": "dds-activity",
-                        "id": "3bd380e9-31d2-44d2-8134-40360b8a474b",
-                        "name": "Activity Test",
-                        "description": "Building a Random Forest as a heuristic for PI3-Kinase pathway activity",
-                        "is_deleted": false,
-                        "audit": {
-                            "created_on": "2015-01-01T12:00:00Z",
-                            "created_by": {
-                                "id": "ce245d81-bae1-452b-8589-24f736ca7735",
-                                "username": "mrgardner01",
-                                "full_name": "Matthew Gardner",
-                                "agent": {
-                                    "id": "9a4c28a2-ec18-40ed-b75c-3bf5b309715f",
-                                    "name": "Hashing computation agent"
-                                }
-                            },
-                            "last_updated_on": "2015-01-01T13:00:00Z",
-                            "last_updated_by": {
-                                "id": "d240ef3d-8d43-441b-be90-78f51a02e47f",
-                                "username": "jturner01",
-                                "full_name": "Jon Turner",
-                                "agent": null
-                            },
-                            "deleted_on": null,
-                            "deleted_by": null
-                        }
-                    }
-                },
-                {
-                    "id": "f1a917d7-8e0d-4bb6-b515-0f9803fc551a",
-                    "labels": ["File Version"],
-                    "properties": {
-                        "kind": "dds-file-version",
-                        "id": "f1a917d7-8e0d-4bb6-b515-0f9803fc551a",
-                        "file": {
-                            "id": "998dfdeb-5bcd-481a-9b02-6a05f9c7a9e4",
-                            "name": "RSEM_Normalized_.Rdata"
-                        },
-                        "version": 1,
-                        "label": "Initial raw data from device",
-                        "is_deleted": false,
-                        "audit": {
-                            "created_on": "2015-01-01T12:00:00Z",
-                            "created_by": {
-                                "id": "ce245d81-bae1-452b-8589-24f736ca7735",
-                                "username": "mrgardner01",
-                                "full_name": "Matthew Gardner",
-                                "agent": {
-                                    "id": "9a4c28a2-ec18-40ed-b75c-3bf5b309715f",
-                                    "name": "Hashing computation agent"
-                                }
-                            },
-                            "last_updated_on": "2015-01-01T13:00:00Z",
-                            "last_updated_by": {
-                                "id": "d240ef3d-8d43-441b-be90-78f51a02e47f",
-                                "username": "jturner01",
-                                "full_name": "Jon Turner",
-                                "agent": null
-                            },
-                            "deleted_on": null,
-                            "deleted_by": null
-                        }
-                    }
-                },
-                {
-                    "id": "951cfb29-70b8-4798-bbf2-c43222de9bf8",
-                    "labels": ["File Version"],
-                    "properties": {
-                        "kind": "dds-file-version",
-                        "id": "951cfb29-70b8-4798-bbf2-c43222de9bf8",
-                        "file": {
-                            "id": "54cc2a12-36a6-42a6-9c0d-8b0769f0bc2b",
-                            "name": "RNASeq_Matrix.Rdata"
-                        },
-                        "version": 2,
-                        "label": "Alignment performed on raw data",
-                        "is_deleted": false,
-                        "audit": {
-                            "created_on": "2015-01-01T12:00:00Z",
-                            "created_by": {
-                                "id": "ce245d81-bae1-452b-8589-24f736ca7735",
-                                "username": "mrgardner01",
-                                "full_name": "Matthew Gardner",
-                                "agent": {
-                                    "id": "9a4c28a2-ec18-40ed-b75c-3bf5b309715f",
-                                    "name": "Hashing computation agent"
-                                }
-                            },
-                            "last_updated_on": "2015-01-01T13:00:00Z",
-                            "last_updated_by": {
-                                "id": "d240ef3d-8d43-441b-be90-78f51a02e47f",
-                                "username": "jturner01",
-                                "full_name": "Jon Turner",
-                                "agent": null
-                            },
-                            "deleted_on": null,
-                            "deleted_by": null
-                        }
-                    }
-                },
-                {
-                    "id": "5ba9b213-c570-42bc-be21-5100db1fe92c",
-                    "labels": ["File Version"],
-                    "properties": {
-                        "kind": "dds-file-version",
-                        "id": "5ba9b213-c570-42bc-be21-5100db1fe92c",
-                        "file": {
-                            "id": "777be35a-98e0-4c2e-9a17-7bc009f9b111",
-                            "name": "Random.data"
-                        },
-                        "version": 2,
-                        "label": "Alignment performed on raw data",
-                        "is_deleted": false,
-                        "audit": {
-                            "created_on": "2015-01-01T12:00:00Z",
-                            "created_by": {
-                                "id": "ce245d81-bae1-452b-8589-24f736ca7735",
-                                "username": "mrgardner01",
-                                "full_name": "Matthew Gardner",
-                                "agent": {
-                                    "id": "9a4c28a2-ec18-40ed-b75c-3bf5b309715f",
-                                    "name": "Hashing computation agent"
-                                }
-                            },
-                            "last_updated_on": "2015-01-01T13:00:00Z",
-                            "last_updated_by": {
-                                "id": "d240ef3d-8d43-441b-be90-78f51a02e47f",
-                                "username": "jturner01",
-                                "full_name": "Jon Turner",
-                                "agent": null
-                            },
-                            "deleted_on": null,
-                            "deleted_by": null
-                        }
-                    }
-                }
-            ],
-            "relationships": [
-                {
-                    "id": "ac242faf-fba0-4293-a949-0b82ae7ba810",
-                    "type": "used",
-                    "start_node": "2fba2f6e-d889-4bfa-ac2c-d2a774cc15bd",
-                    "end_node": "f1a917d7-8e0d-4bb6-b515-0f9803fc551a",
-                    "properties": {
-                        "kind": "dds-relation-used",
-                        "id": "ac242faf-fba0-4293-a949-0b82ae7ba810",
-                        "audit": {
-                            "created_on": "2015-01-01T12:00:00Z",
-                            "created_by": {
-                                "id": "ce245d81-bae1-452b-8589-24f736ca7735",
-                                "username": "mrgardner01",
-                                "full_name": "Matthew Gardner",
-                                "agent": {
-                                    "id": "9a4c28a2-ec18-40ed-b75c-3bf5b309715f",
-                                    "name": "Hashing computation agent"
-                                }
-                            },
-                            "last_updated_on": "2015-01-01T13:00:00Z",
-                            "last_updated_by": {
-                                "id": "d240ef3d-8d43-441b-be90-78f51a02e47f",
-                                "username": "jturner01",
-                                "full_name": "Jon Turner",
-                                "agent": null
-                            },
-                            "deleted_on": null,
-                            "deleted_by": null
-                        }
-                    }
-                },
-                //{
-                //    "id": "4c242faf-fba0-4293-a949-0b82ae7ba810",
-                //    "type": "used",
-                //    "start_node": "2fba2f6e-d889-4bfa-ac2c-d2a774cc15bd",
-                //    "end_node": "5ba9b213-c570-42bc-be21-5100db1fe92c",
-                //    "properties": {
-                //        "kind": "dds-relation-used",
-                //        "id": "4c242faf-fba0-4293-a949-0b82ae7ba810",
-                //        "audit": { }
-                //    }
-                //},
-                //{
-                //    "id": "372f25e1-01b0-4b8d-9524-e26dd573cc95",
-                //    "type": "wasGeneratedBy",
-                //    "start_node": "951cfb29-70b8-4798-bbf2-c43222de9bf8",
-                //    "end_node": "2fba2f6e-d889-4bfa-ac2c-d2a774cc15bd",
-                //    "properties": {
-                //        "kind": "dds-relation-was-generated-by",
-                //        "id": "372f25e1-01b0-4b8d-9524-e26dd573cc95",
-                //        "audit": { }
-                //    }
-                //},
-                //{
-                //    "id": "272f25e1-01b0-4b8d-9524-e26dd573cc95",
-                //    "type": "wasGeneratedBy",
-                //    "start_node": "951cfb29-70b8-4798-bbf2-c43222de9bf8",
-                //    "end_node": "3bd380e9-31d2-44d2-8134-40360b8a474b",
-                //    "properties": {
-                //        "kind": "dds-relation-was-generated-by",
-                //        "id": "272f25e1-01b0-4b8d-9524-e26dd573cc95",
-                //        "audit": { }
-                //    }
-                //},
-                //{
-                //    "id": "572f25e1-01b0-4b8d-9524-e26dd573cc95",
-                //    "type": "wasGeneratedBy",
-                //    "start_node": "3bd380e9-31d2-44d2-8134-40360b8a474b",
-                //    "end_node": "5ba9b213-c570-42bc-be21-5100db1fe92c",
-                //    "properties": {
-                //        "kind": "dds-relation-was-generated-by",
-                //        "id": "572f25e1-01b0-4b8d-9524-e26dd573cc95",
-                //        "audit": { }
-                //    }
-                //}
-            ]
-        };
-
-    ProjectActions.getProvenanceSuccess(prov)
+ProjectActions.getProvenance.preEmit = function (id, kind) {//Todo: Replace with proper call!!!!!!!!!!!!!!!!
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'search/provenance', {
+        method: 'post',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            'start_node': {
+                kind: kind,
+                id: id
+            }
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        console.log(json)
+        //ProjectActions.getProvenanceSuccess(prov);
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
 };
 
 ProjectActions.search.preEmit = function (text, id) {
@@ -691,14 +456,17 @@ ProjectActions.getAgentKey.preEmit = (id) => {
         });
 };
 
-ProjectActions.getAgentApiToken.preEmit = function (agentKey, userKey, data) {
+ProjectActions.getAgentApiToken.preEmit = function (agentKey, userKey) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.AGENT + 'api_token', {
         method: 'post',
         headers: {
             'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
         },
-        body: data  // For some reason, this call only works with a formData object in the body
+        body: JSON.stringify({
+            'agent_key': agentKey,
+            'user_key': userKey
+        })
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {

@@ -131,8 +131,8 @@ class AgentOptionsMenu extends React.Component {
 
         let apiToken = this.props.agentApiToken ? this.props.agentApiToken.api_token : null;
         let msg = Object.keys(ProjectStore.agentApiToken).length === 0 ?
-            <h6 style={styles.apiMsg}>You must have a valid user key, please create one by selecting 'USER SECRET KEY' in the drop down menu.</h6> :
-            <h6 style={styles.apiMsg2}>This API token will expire in 2 hours.</h6>;
+            <span style={styles.apiMsg}>You must have a valid user key, please create one by selecting 'USER SECRET KEY' in the drop down menu.</span> :
+            <span style={styles.apiMsg2}>This API token will expire in 2 hours.</span>;
         let open = this.props.modal ? this.props.modal : false;
         let names = this.props.users && this.props.users.length ? this.props.users : [];
         let agentKey = this.props.agentKey ? this.props.agentKey.key : null;
@@ -352,14 +352,11 @@ class AgentOptionsMenu extends React.Component {
     handleTouchTapApiToken() {
         let agentKey = this.props.agentKey ? this.props.agentKey.key : false;
         let userKey = this.props.userKey && this.props.userKey.key ? this.props.userKey.key : false;
-        let formData = new FormData();
-        formData.append('agent_key', agentKey);
-        formData.append('user_key', userKey);
         if (!userKey || !agentKey){
             ProjectActions.openModal();
         } else {
             setTimeout(() => {
-                ProjectActions.getAgentApiToken(agentKey, userKey, formData);
+                ProjectActions.getAgentApiToken(agentKey, userKey);
             }, 800);
         }
     }

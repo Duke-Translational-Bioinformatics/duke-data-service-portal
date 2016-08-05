@@ -48,6 +48,10 @@ class File extends React.Component {
         if(prevProps.params.id !== this.props.params.id) {
             this._loadFile(id, kind);
         }
+        //if(this.state.entityObj && this.state.entityObj.current_version){
+        //    let versionId = this.state.entityObj.current_version.id;
+        //    ProjectActions.getProvenance(versionId, 'dds-file-version');
+        //}
     }
 
     componentWillUnmount() {
@@ -57,7 +61,11 @@ class File extends React.Component {
     _loadFile(id, kind) {
         ProjectActions.getEntity(id, kind);
         ProjectActions.getFileVersions(id);
-        ProjectActions.getProvenance(id);
+        setTimeout(()=>{
+            let versionId = this.state.entityObj.current_version.id;
+            //ProjectActions.getProvenance(versionId, 'dds-file-version');
+            console.log(versionId)
+        }, 1000)
     }
 
     render() {
