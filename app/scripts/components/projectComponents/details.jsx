@@ -1,14 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-import MainActions from '../../actions/mainActions';
-import MainStore from '../../stores/mainStore';
-import ProjectOptionsMenu from './projectOptionsMenu.jsx';
-import UploadModal from '../globalComponents/uploadModal.jsx';
-import urlGen from '../../../util/urlGen.js';
-import baseUtils from '../../../util/baseUtils.js';
-import Card from 'material-ui/lib/card/card';
 import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
 import MenuItem from 'material-ui/lib/menus/menu-item';

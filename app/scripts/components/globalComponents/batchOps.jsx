@@ -1,14 +1,12 @@
 import React from 'react';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-import Badge from 'material-ui/lib/badge';
 import Card from 'material-ui/lib/card/card';
 import DeleteIcon from 'material-ui/lib/svg-icons/action/delete';
 import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
 import GetAppIcon from 'material-ui/lib/svg-icons/action/get-app';
 import IconButton from 'material-ui/lib/icon-button';
-import RaisedButton from 'material-ui/lib/raised-button';
 
 class BatchOps extends React.Component {
 
@@ -24,13 +22,12 @@ class BatchOps extends React.Component {
         let msg = '';
         if(this.props.filesChecked.length > 1 || this.props.foldersChecked.length > 1 || this.props.foldersChecked.length + this.props.filesChecked.length > 1){
             msg = "Are you sure you want to delete these items?";
-        } else {
+        }else{
             msg= "Are you sure you want to delete this item?";
         }
         if(!this.props.filesChecked.length){
             dlMsg = "If you want to download the contents of a folder, please open that folder and select the files to download"
-        }
-        else if(this.props.filesChecked.length > 1){
+        }else if(this.props.filesChecked.length > 1){
             dlMsg = "Are you sure you want to download "+this.props.filesChecked.length+" files?";
         }else{
             dlMsg = "Are you sure you want to download "+this.props.filesChecked.length+" file?"
@@ -88,7 +85,6 @@ class BatchOps extends React.Component {
                         <GetAppIcon color={'#EC407A'}/>
                     </IconButton>
                 </div>
-
                 <Dialog
                     style={styles.dialogStyles}
                     title={msg}
@@ -183,6 +179,7 @@ class BatchOps extends React.Component {
 
 let styles = {
     card: {
+        overflow: 'auto',
         marginLeft: 9,
         marginBottom: 0,
         marginTop: 28,

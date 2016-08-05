@@ -1,7 +1,5 @@
 import React, { PropTypes } from 'react';
-import ReactDOM from 'react-dom';
 const { object, bool, array, string } = PropTypes;
-import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import ErrorModal from '../../components/globalComponents/errorModal.jsx';
@@ -9,22 +7,12 @@ import FileOptionsMenu from './fileOptionsMenu.jsx';
 import FileVersionsList from './fileVersionsList.jsx';
 import VersionUpload from './versionUpload.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
-import urlGen from '../../../util/urlGen.js';
 import Tooltip from '../../../util/tooltip.js';
 import BaseUtils from '../../../util/baseUtils.js';
-import BorderColor from 'material-ui/lib/svg-icons/editor/border-color.js';
 import Card from 'material-ui/lib/card/card';
-import FlatButton from 'material-ui/lib/flat-button';
-import IconButton from 'material-ui/lib/icon-button';
-import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
-import Paper from 'material-ui/lib/paper';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 class FileDetails extends React.Component {
-
-    constructor(props) {
-        super(props);
-    }
 
     render() {
         if (this.props.error && this.props.error.response){
@@ -67,20 +55,6 @@ class FileDetails extends React.Component {
         let versions = null;
         let versionCount = [];
 
-        let provAlert = this.props.showProvAlert ? <Card style={styles.provAlert} zDepth={1}>
-            <div style={styles.provAlert.wrapper}>Would you like to add provenance for this file?</div>
-            <IconButton style={styles.button} onTouchTap={() => this.dismissAlert()}>
-                <NavigationClose color="#E8F5E9"/>
-            </IconButton>
-            <FlatButton
-                label="Yes"
-                labelStyle={styles.provAlert.alertButton.label}
-                style={styles.provAlert.alertButton}
-                hoverColor="#4CAF50"
-                onTouchTap={() => this.openProv()}
-                />
-        </Card> : '';
-
         if(this.props.fileVersions && this.props.fileVersions != undefined && this.props.fileVersions.length > 1) {
             versions = this.props.fileVersions.map((version) => {
                 return version.is_deleted;
@@ -91,7 +65,6 @@ class FileDetails extends React.Component {
                     if (versionCount.length > 1) {
                         versionsButton = <RaisedButton
                             label="FILE VERSIONS"
-                            labelStyle={{fontWeight: 100}}
                             secondary={true}
                             style={styles.button}
                             onTouchTap={() => this.openModal()}
@@ -137,7 +110,6 @@ class FileDetails extends React.Component {
                     { this.props.uploads ? <Loaders {...this.props}/> : null }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
-                    { provAlert }
                     <div className="list-block">
                         <div className="list-group">
                             <ul>
@@ -151,10 +123,30 @@ class FileDetails extends React.Component {
                         </div>
                         <div className="list-group">
                             <ul>
-                                <li className="list-group-title">Created On</li>
+                                <li className="list-group-title">Original File Created On</li>
                                 <li className="item-content">
                                     <div className="item-inner">
                                         <div>{ createdOn }</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="list-group">
+                            <ul>
+                                <li className="list-group-title">Last Updated By</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ lastUpdatedBy === null ? 'N/A' : lastUpdatedBy}</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="list-group">
+                            <ul>
+                                <li className="list-group-title">Last Updated On</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ lastUpdatedOn === null ? 'N/A' : new Date(lastUpdatedOn).toString() }</div>
                                     </div>
                                 </li>
                             </ul>
@@ -191,26 +183,6 @@ class FileDetails extends React.Component {
                         </div>
                         <div className="list-group">
                             <ul>
-                                <li className="list-group-title">Last Updated By</li>
-                                <li className="item-content">
-                                    <div className="item-inner">
-                                        <div>{ lastUpdatedBy === null ? 'N/A' : lastUpdatedBy}</div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                        <div className="list-group">
-                            <ul>
-                                <li className="list-group-title">Last Updated On</li>
-                                <li className="item-content">
-                                    <div className="item-inner">
-                                        <div>{ lastUpdatedOn === null ? 'N/A' : new Date(lastUpdatedOn).toString() }</div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                        <div className="list-group">
-                            <ul>
                                 <li className="list-group-title">Storage Location</li>
                                 <li className="item-content">
                                     <div className="item-inner">
@@ -241,10 +213,6 @@ class FileDetails extends React.Component {
         )
     }
 
-    dismissAlert(){
-        ProjectActions.hideProvAlert();
-    }
-
     handleDownload(){
         let id = this.props.params.id;
         let kind = 'files/';
@@ -253,12 +221,6 @@ class FileDetails extends React.Component {
 
     openModal() {
         ProjectActions.openModal()
-    }
-
-    openProv() {
-        ProjectActions.toggleProvView();
-        ProjectActions.toggleProvEditor();
-        ProjectActions.hideProvAlert();
     }
 }
 
@@ -308,24 +270,7 @@ var styles = {
     menuIcon: {
         float: 'right',
         marginTop: 30,
-        marginBottom: -3,
-        marginRight: 2
-    },
-    provAlert: {
-        display: 'block',
-        backgroundColor: '#66BB6A',
-        alertButton: {
-            float: 'right', margin: 6,
-            label: {
-                color: '#E8F5E9',
-                fontWeight: 100
-            }
-        },
-        wrapper: {
-            float: 'left',
-            color: '#E8F5E9',
-            margin: '14px 10px 10px 10px'
-        }
+        marginBottom: -3
     },
     subTitle: {
         textAlign: 'left',

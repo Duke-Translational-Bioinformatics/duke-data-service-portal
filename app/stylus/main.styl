@@ -60,6 +60,9 @@ body
 .hover a:hover
   background: #FCFCFC
 
+input[type=text]::-ms-clear /*To remove the cancel button inside inputs IE10+*/
+  display: none;
+
 //Styles for File Input//
 
 .mdl-button--file {
@@ -163,3 +166,50 @@ div.vis-network-tooltip {
   //transition: all 0.3s cubic-bezier(.25,.8,.25,1);
   border  none
 }
+
+// Search input
+.search {
+  opacity: 0.9;
+  float: right
+  min-width: 150px;
+  width: 40%;
+  box-sizing: border-box;
+  border: 1px solid #235F9C;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #616161;
+  background-color: #f5f5f5;
+  padding: 10px 10px 10px 10px;
+  -webkit-transition: width 0.6s ease-in-out;
+  transition: width 0.6s ease-in-out;
+}
+
+.search:focus {
+  opacity: 1;
+  width: 64%;
+  outline: none;
+  background-color: #ECEFF1;
+  -webkit-transition: width 0.6s ease-in-out;
+  transition: width 0.6s ease-in-out;
+}
+
+.search::-webkit-input-placeholder {
+  color: #757575;
+}
+
+.search:focus::-webkit-input-placeholder {
+  color: #BDBDBD;
+}
+
+.search:-ms-input-placeholder {
+  color: #616161;
+}
+
+.search:focus:-ms-input-placeholder {
+  color: #757575;
+}
+
+@media (max-width: 400px)
+  .search {
+    padding: 6px 10px 6px 10px;
+  }

@@ -1,17 +1,14 @@
 import React from 'react';
-import { RouteHandler, Link } from 'react-router';
+import { RouteHandler } from 'react-router';
 import MainActions from '../../actions/mainActions';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import AddAgentModal from '../../components/globalComponents/addAgentModal.jsx';
-import BatchOps from '../../components/globalComponents/batchOps.jsx';
 import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
 import ErrorModal from '../../components/globalComponents/errorModal.jsx';
-import Header from '../../components/globalComponents/header.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import urlGen from '../../../util/urlGen.js';
-import RaisedButton from 'material-ui/lib/raised-button';
 import TextField from 'material-ui/lib/text-field';
 
 class AgentList extends React.Component {
@@ -21,16 +18,11 @@ class AgentList extends React.Component {
         let agentKey = this.props.agentKey ? this.props.agentKey.key : null;
         let userKey = this.props.userKey ? this.props.userKey.key : null;
         let apiToken = this.props.agentApiToken ? this.props.agentApiToken.api_token : null;
-        let creds = {agent_key: agentKey, user_key: userKey, api_token: apiToken};
+        let obj = {agent_key: agentKey, user_key: userKey, api_token: apiToken};
         let open = this.props.modal ? this.props.modal : false;
         let msg = Object.keys(ProjectStore.agentApiToken).length === 0 ?
             <h6 style={styles.apiMsg}>You must have a valid user key, please create one by selecting 'USER SECRET KEY' in the drop down menu.</h6> :
             <h6 style={styles.apiMsg2}>The API token included with these credentials will expire in 2 hours.</h6>;
-
-        let data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(creds));
-        let a = document.createElement('a');
-        a.download    = "data.json";
-        a.href        = "data:"+data;
 
         let keyActions = [
             <FlatButton
@@ -41,13 +33,10 @@ class AgentList extends React.Component {
             <FlatButton
                 label="COPY CREDENTIALS TO CLIPBOARD"
                 secondary={true}
-                linkButton={true}
-                href={a}
                 onTouchTap={this.copyApiKey.bind(this)} />
         ];
 
         let modal = <Dialog
-            id="dialog"
             style={styles.dialogStyles}
             title="Agent Credentials"
             contentStyle={styles.dialogPosition}
@@ -60,7 +49,7 @@ class AgentList extends React.Component {
             <form action="#" id="apiKeyForm" className="keyText">
                 <TextField
                     style={styles.keyModal}
-                    defaultValue={JSON.stringify(creds, null, 4)}
+                    defaultValue={JSON.stringify(obj, null, 4)}
                     floatingLabelText="Agent Credentials"
                     id="keyText"
                     type="text"
@@ -158,6 +147,27 @@ class AgentList extends React.Component {
             }
         }, 800);
     }
+
+    handleCopyButton() {
+        let copyTextArea = document.querySelector('#keyText');
+        copyTextArea.select();
+        var successful = document.execCommand('copy');
+        var msg = successful ? 'successful' : 'unsuccessful';
+        if(msg === 'successful') {
+            MainActions.addToast('Key copied to clipboard!');
+            this.setState({
+                apiKeyOpen: false,
+                newApiKeyOpen: false,
+                userKeyOpen: false,
+                newUserKeyOpen: false
+            });
+        }
+        if(msg === 'unsuccessful'){
+            MainActions.addToast('Failed copying key to clipboard!');
+            alert("Automatic copying to clipboard is not supported by Safari browsers: Manually copy the key by" +
+                " using CMD+C,");
+        }
+    };
 
     copyApiKey() {
         document.getElementById('keyText').select();

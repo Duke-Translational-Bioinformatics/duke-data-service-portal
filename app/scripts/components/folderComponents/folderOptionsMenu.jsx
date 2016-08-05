@@ -2,13 +2,11 @@ import React from 'react';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import MoveItemModal from '../globalComponents/moveItemModal.jsx';
-import CircularProgress from 'material-ui/lib/circular-progress';
 import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
+import IconButton from 'material-ui/lib/icon-button';
 import IconMenu from 'material-ui/lib/menus/icon-menu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
-import IconButton from 'material-ui/lib/icon-button';
-import Popover from 'material-ui/lib/popover/popover';
 import Menu from 'material-ui/lib/menus/menu';
 import TextField from 'material-ui/lib/text-field';
 
@@ -85,6 +83,8 @@ class FolderOptionsMenu extends React.Component {
                     <form action="#" id="newFolderForm">
                         <TextField
                             style={styles.textStyles}
+                            autoFocus={true}
+                            onFocus={this.handleFloatingErrorInputChange.bind(this)}
                             hintText="Folder Name"
                             defaultValue={fName}
                             errorText={this.state.floatingErrorText}
@@ -194,8 +194,9 @@ class FolderOptionsMenu extends React.Component {
     handleCloseMoveModal() {
         let id = this.props.params.id;
         let kind = 'folders';
+        let path = 'folders/';
         ProjectActions.getEntity(id, kind);
-        ProjectActions.loadFolderChildren(id);
+        ProjectActions.getChildren(id, path);
         ProjectActions.openMoveModal(false);
     }
 

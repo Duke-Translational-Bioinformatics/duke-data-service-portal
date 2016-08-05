@@ -1,5 +1,5 @@
 import React from 'react';
-import { RouteHandler, Link } from 'react-router';
+import { RouteHandler } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import BaseUtils from '../../../util/baseUtils.js';
@@ -7,11 +7,8 @@ import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx
 import BatchOps from '../../components/globalComponents/batchOps.jsx';
 import ErrorModal from '../../components/globalComponents/errorModal.jsx';
 import FolderOptionsMenu from '../folderComponents/folderOptionsMenu.jsx';
-import Header from '../../components/globalComponents/header.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import urlGen from '../../../util/urlGen.js';
-import Badge from 'material-ui/lib/badge';
-import LinearProgress from 'material-ui/lib/linear-progress';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 class FolderChildren extends React.Component {
@@ -23,13 +20,15 @@ class FolderChildren extends React.Component {
     }
 
     render() {
+        if(!this.props.showBatchOps) this.uncheck();
+        let children = [];
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
-        let download = <div style={styles.fillerDiv}>{/*temporary filler div until add dropdown menu*/}</div>;
         let chkBx = <div className="item-media"></div>;
         let type = 'hidden';
         let newFolderModal = null;
         if (prjPrm !== null) {
-            newFolderModal = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <AddFolderModal {...this.props}/>;
+            newFolderModal = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null :
+                <AddFolderModal {...this.props}/>;
             if (prjPrm !== 'viewOnly' && prjPrm !== 'flUpload') {
                 type = 'checkbox';
                 chkBx = <div className="item-media">
@@ -37,9 +36,9 @@ class FolderChildren extends React.Component {
                 </div>
             }
         }
-        let children = [];
-        if (this.props.error && this.props.error.response){
+        if (this.props.error && this.props.error.response) {
             this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
+            this.props.error.response === 401 ? this.props.appRouter.transitionTo('/login') : null;
             this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
         }
         if (this.props.children.length > 20) {
@@ -67,11 +66,13 @@ class FolderChildren extends React.Component {
                         <div style={styles.fillerDiv}>{/*temporary filler div until add dropdown menu*/}</div>
                         <a href={urlGen.routes.folder(children.id)}
                            className="item-content external">
-                            <label className="label-checkbox item-content" style={styles.checkboxLabel} onClick={e => this.change()}>
+                            <label className="label-checkbox item-content" style={styles.checkboxLabel}
+                                   onClick={e => this.change()}>
                                 <input className="folderChkBoxes" type={type} name="chkboxName"
-                                       value={children.id} />
+                                       value={children.id}/>
                                 { chkBx }
                             </label>
+
                             <div className="item-media">
                                 <i className="material-icons" style={styles.icon}>folder</i>
                             </div>
@@ -80,8 +81,9 @@ class FolderChildren extends React.Component {
                                     <div className="item-title mdl-color-text--grey-800"
                                          style={styles.title}>{children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}</div>
                                 </div>
-                                <div className="item-subtitle mdl-color-text--grey-600">created by: { children.audit.created_by.full_name }</div>
-                                <div className="item-subtitle mdl-color-text--grey-600">last updated: {children.audit.last_updated_on ? new Date(children.audit.last_updated_on).toString() : 'n/a'}</div>
+                                <div className="item-subtitle mdl-color-text--grey-600">Created by { children.audit.created_by.full_name }</div>
+                                <div className="item-subtitle mdl-color-text--grey-600">{children.audit.last_updated_on !== null ? 'Last updated on '+new Date(children.audit.last_updated_on).toDateString() + ' by ': <br />}
+                                    { children.audit.last_updated_by !== null ? children.audit.last_updated_by.full_name : null}</div>
                             </div>
                         </a>
                     </li>
@@ -96,21 +98,24 @@ class FolderChildren extends React.Component {
                             </a> }
                         <a href={urlGen.routes.file(children.id)}
                            className="item-content external">
-                            <label className="label-checkbox item-content"  style={styles.checkboxLabel} onClick={e => this.change()}>
+                            <label className="label-checkbox item-content" style={styles.checkboxLabel}
+                                   onClick={e => this.change()}>
                                 <input className="fileChkBoxes" type={type} name="chkboxName"
                                        value={children.id}/>
                                 { chkBx }
                             </label>
+
                             <div className="item-media"><i className="material-icons"
                                                            style={styles.icon}>description</i>
                             </div>
-                            <div className="item-inner" >
+                            <div className="item-inner">
                                 <div className="item-title-row">
                                     <div className="item-title mdl-color-text--grey-800"
                                          style={styles.title}>{children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}</div>
                                 </div>
-                                <div className="item-subtitle mdl-color-text--grey-600">version: {children.current_version.version}</div>
-                                <div className="item-subtitle mdl-color-text--grey-600">size: {BaseUtils.bytesToSize(children.current_version.upload.size)}</div>
+                                <div className="item-subtitle mdl-color-text--grey-600">{BaseUtils.bytesToSize(children.current_version.upload.size)+' - '}version {children.current_version.version}</div>
+                                <div className="item-subtitle mdl-color-text--grey-600">{children.audit.last_updated_on !== null ? 'Last updated on '+new Date(children.audit.last_updated_on).toDateString() + ' by ': <br />}
+                                    { children.audit.last_updated_by !== null ? children.audit.last_updated_by.full_name : null}</div>
                             </div>
                         </a>
                     </li>
@@ -124,7 +129,8 @@ class FolderChildren extends React.Component {
                     <div className="mdl-cell mdl-cell--12-col">
                         { newFolderModal }
                     </div>
-                    <div className="mdl-cell mdl-cell--12-col" style={{marginBottom: -20}}>
+                    <div className="mdl-cell mdl-cell--12-col" style={styles.batchOpsWrapper}>
+                        { this.props.searchText !== '' ? <div className="mdl-cell mdl-cell--4-col mdl-color-text--grey-600" style={styles.searchText}>Showing{" "+this.props.children.length+" "}results for{" '"+this.props.searchText+"'"}</div> : null}
                         { this.props.showBatchOps ? <BatchOps {...this.props} {...this.state}/> : null }
                     </div>
                     <ErrorModal {...this.props}/>
@@ -152,8 +158,8 @@ class FolderChildren extends React.Component {
 
     change() {
         // clicking on F7 input[checkbox] does not fire onChange in iOS or Android. Instead, set onClick to label
-        // and wait for F7 to change the form or checkbox before getting the values. sheesh
-        setTimeout( () => {
+        // and wait for F7 to change the form or checkbox before getting the values
+        setTimeout(() => {
             this.handleChange()
         }, 100);
     }
@@ -187,6 +193,21 @@ class FolderChildren extends React.Component {
     loadMore() {
         this.setState({page: this.state.page + 1});
     }
+
+    uncheck() {
+        let files = this.props.filesChecked ? this.props.filesChecked : null;
+        let folders = this.props.foldersChecked ? this.props.foldersChecked : null;
+        if(folders !== null) {
+            for (let i = 0; i < folders.length; i++) {
+                if(!!document.getElementById(folders[i])) document.getElementById(folders[i]).checked = false;
+            }
+        }
+        if(files !== null) {
+            for (let i = 0; i < files.length; i++) {
+                if(!!document.getElementById(files[i])) document.getElementById(files[i]).checked = false;
+            }
+        }
+    }
 }
 
 FolderChildren.contextTypes = {
@@ -194,6 +215,9 @@ FolderChildren.contextTypes = {
 };
 
 var styles = {
+    batchOpsWrapper: {
+        marginBottom: -20
+    },
     checkBox: {
         width: 16,
         height: 16
@@ -223,8 +247,12 @@ var styles = {
         marginTop: 20
     },
     list: {
-        float:'right',
+        float: 'right',
         marginTop: -10
+    },
+    searchText: {
+        marginLeft: 8,
+        marginTop: 36
     },
     title: {
         marginRight: 40

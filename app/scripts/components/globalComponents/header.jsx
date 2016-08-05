@@ -1,5 +1,5 @@
 import React from 'react';
-import { RouteHandler, Link } from 'react-router';
+import { RouteHandler } from 'react-router';
 import ProjectStore from '../../stores/projectStore';
 import MainStore from '../../stores/mainStore';
 import MainActions from '../../actions/mainActions';
@@ -7,7 +7,6 @@ import CurrentUser from './currentUser.jsx';
 import Divider from 'material-ui/lib/divider';
 import Popover from 'material-ui/lib/popover/popover';
 import PopoverAnimationFromTop from 'material-ui/lib/popover/popover-animation-from-top';
-import RaisedButton from 'material-ui/lib/raised-button';
 
 class Header extends React.Component {
 
@@ -92,7 +91,7 @@ var styles = {
         maxWidth: '40%',
         minWidth: 58,
         minHeight: 46,
-        marginTop: 12,
+        marginTop: -5,
         marginLeft: 22
     },
     logoDiv: {

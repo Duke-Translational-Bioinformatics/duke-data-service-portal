@@ -2,8 +2,8 @@ import Reflux from 'reflux';
 import ProjectActions from '../actions/projectActions';
 import MainActions from '../actions/mainActions';
 import MainStore from '../stores/mainStore';
-import StatusEnum from '../enum.js';
 import BaseUtils from '../../util/baseUtils.js';
+import { StatusEnum, Path } from '../enum';
 
 var ProjectStore = Reflux.createStore({
 
@@ -19,7 +19,8 @@ var ProjectStore = Reflux.createStore({
         this.currentUser = {};
         this.destination = null;
         this.destinationKind = null;
-        this.entityObj = {};
+        this.device = {};
+        this.entityObj = null;
         this.error = {};
         this.errorModal = false;
         this.filesChecked = [];
@@ -45,12 +46,8 @@ var ProjectStore = Reflux.createStore({
         this.scale = null;
         this.selectedNode = {};
         this.selectedEdge = null;
+        this.searchText = '';
         this.showBatchOps = false;
-        this.showProvAlert = false;
-        this.showProvCtrlBtns = false;
-        this.dltRelationsBtn = false;
-        this.toggleProv = false;
-        this.toggleProvEdit = false;
         this.uploadCount = [];
         this.uploads = {};
         this.users = [];
@@ -350,17 +347,25 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    toggleProvView() {
-        this.toggleProv = !this.toggleProv;
-        this.trigger({
-            toggleProv: this.toggleProv
+    getDeviceType(device) {
+    this.device = device;
+    this.trigger({
+        device: this.device
+    })
+    },
+
+    setSearchText(text) {
+        if(!text.indexOf(' ') <= 0) this.searchText = text;
+            this.trigger({
+            searchText: this.searchText,
+            itemsSelected: null,
+            showBatchOps: false
         })
     },
 
-    toggleProvEditor() {
-        this.toggleProvEdit = !this.toggleProvEdit;
+    search() {
         this.trigger({
-            toggleProvEdit: this.toggleProvEdit
+             loading: true
         })
     },
 
@@ -401,7 +406,9 @@ var ProjectStore = Reflux.createStore({
     hideProvAlert() {
         this.showProvAlert = false;
         this.trigger({
-            showProvAlert: this.showProvAlert
+            showProvAlert: this.showProvAlert,
+            toggleProvEdit: this.toggleProvEdit
+
         })
     },
 
@@ -420,7 +427,6 @@ var ProjectStore = Reflux.createStore({
     },
 
     addFileVersionSuccess(id, uploadId) {
-        this.showProvAlert = true;
         let kind = 'files/';
         ProjectActions.getEntity(id, kind);
         ProjectActions.getFileVersions(id);
@@ -428,7 +434,6 @@ var ProjectStore = Reflux.createStore({
             delete this.uploads[uploadId];
         }
         this.trigger({
-            showProvAlert: this.showProvAlert,
             uploads: this.uploads
         })
     },
@@ -707,20 +712,6 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    loadProjectChildren() {
-        this.trigger({
-            loading: true
-        })
-    },
-
-    loadProjectChildrenSuccess(results) {
-        this.children = results;
-        this.trigger({
-            children: this.children,
-            loading: false
-        })
-    },
-
     showDetails() {
         this.trigger({
             loading: true
@@ -775,13 +766,13 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    loadFolderChildren() {
+    getChildren() {
         this.trigger({
             loading: true
         })
     },
 
-    loadFolderChildrenSuccess(results) {
+    getChildrenSuccess(results) {
         this.children = results;
         this.trigger({
             children: this.children,
@@ -795,11 +786,11 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    addFolderSuccess(id, parentKind) { //todo: remove this and check for new children state in folder.jsx & project.jsx
+    addFolderSuccess(id, parentKind) {
         if (parentKind === 'dds-project') {
-            ProjectActions.loadProjectChildren(id);
+            ProjectActions.getChildren(id, 'projects/');
         } else {
-            ProjectActions.loadFolderChildren(id);
+            ProjectActions.getChildren(id, 'folders/');
         }
         this.trigger({
             loading: false
@@ -814,9 +805,9 @@ var ProjectStore = Reflux.createStore({
 
     deleteFolderSuccess(id, parentKind) {
         if (parentKind === 'dds-project') {
-            ProjectActions.loadProjectChildren(id);
+            ProjectActions.getChildren(id, 'projects/');
         } else {
-            ProjectActions.loadFolderChildren(id);
+            ProjectActions.getChildren(id, 'folders/');
         }
         this.showBatchOps = false;
         this.trigger({
@@ -833,7 +824,7 @@ var ProjectStore = Reflux.createStore({
 
     editFolderSuccess(id) {
         let kind = 'folders/';
-        ProjectActions.loadFolderChildren(id);
+        ProjectActions.getChildren(id, 'folders/');
         ProjectActions.getEntity(id, kind);
         this.trigger({
             loading: false
@@ -860,9 +851,9 @@ var ProjectStore = Reflux.createStore({
 
     addFileSuccess(id, parentKind, uploadId) {
         if (parentKind === 'dds-project') {
-            ProjectActions.loadProjectChildren(id);
+            ProjectActions.getChildren(id, 'projects/');
         } else {
-            ProjectActions.loadFolderChildren(id);
+            ProjectActions.getChildren(id, 'folders/');
         }
         if (this.uploads.hasOwnProperty(uploadId)) {
             delete this.uploads[uploadId];
@@ -881,9 +872,9 @@ var ProjectStore = Reflux.createStore({
 
     deleteFileSuccess(id, parentKind) {
         if (parentKind === 'dds-project') {
-            ProjectActions.loadProjectChildren(id);
+            ProjectActions.getChildren(id, 'projects/');
         } else {
-            ProjectActions.loadFolderChildren(id);
+            ProjectActions.getChildren(id, 'folders/');
         }
         this.showBatchOps = false;
         this.trigger({

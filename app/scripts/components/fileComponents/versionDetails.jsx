@@ -222,7 +222,7 @@ var styles = {
         float: 'right',
         marginTop: 30,
         marginBottom: -3,
-        marginRight: 12
+        marginRight: 10
     },
     spanTitle: {
         fontSize: '1.2em'
