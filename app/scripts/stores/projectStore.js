@@ -29,6 +29,7 @@ var ProjectStore = Reflux.createStore({
         this.moveErrorModal = false;
         this.objectTags = [];
         this.openTagManager = false;
+        this.openUploadManager = false;
         this.parent = {};
         this.projects = [];
         this.project = {};
@@ -50,6 +51,13 @@ var ProjectStore = Reflux.createStore({
         this.screenSize.width = width;
         this.trigger({
             screenSize: this.screenSize
+        })
+    },
+
+    toggleUploadManager() {
+        this.openUploadManager = !this.openUploadManager;
+        this.trigger({
+            openUploadManager: this.openUploadManager
         })
     },
 
@@ -548,11 +556,12 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    addFileSuccess(id, parentKind, uploadId) {
+    addFileSuccess(parentId, parentKind, uploadId, fileId) {
+        if(this.uploads[uploadId].tags.length) console.log(this.uploads[uploadId].tags)//Todo: create tags here
         if (parentKind === 'dds-project') {
-            ProjectActions.getChildren(id, 'projects/');
+            ProjectActions.getChildren(parentId, 'projects/');
         } else {
-            ProjectActions.getChildren(id, 'folders/');
+            ProjectActions.getChildren(parentId, 'folders/');
         }
         if (this.uploads.hasOwnProperty(uploadId)) {
             delete this.uploads[uploadId];

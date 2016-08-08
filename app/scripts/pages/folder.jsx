@@ -17,6 +17,7 @@ class Folder extends React.Component {
             loading: false,
             moveModal: ProjectStore.moveModal,
             moveErrorModal: ProjectStore.moveErrorModal,
+            openUploadManager: ProjectStore.openUploadManager,
             uploads: ProjectStore.uploads,
             projPermissions: ProjectStore.projPermissions,
             screenSize: ProjectStore.screenSize

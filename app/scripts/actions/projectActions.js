@@ -9,6 +9,7 @@ import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.j
 
 var ProjectActions = Reflux.createActions([
     'getScreenSize',
+    'toggleUploadManager',
     'toggleTagManager',
     'addNewTag',
     'addNewTagSuccess',
@@ -935,7 +936,7 @@ ProjectActions.getDownloadUrl.preEmit = function (id, kind) {
     })
 };
 
-ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKind, label, fileId) {
+ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKind, label, fileId, tags) {
     let chunkNum = 0,
         fileName = blob.name,
         contentType = blob.type,
@@ -952,6 +953,7 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
     let details = {
         name: fileName,
         label: label,
+        tags: tags,
         fileId: fileId,
         size: SIZE,
         blob: blob,
@@ -1115,7 +1117,7 @@ ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind, fileN
         return response.json()
     }).then(function (json) {
         MainActions.addToast(fileName + ' uploaded successfully');
-        ProjectActions.addFileSuccess(parentId, parentKind, uploadId)
+        ProjectActions.addFileSuccess(parentId, parentKind, uploadId, json.id)
     }).catch(function (ex) {
         MainActions.addToast('Failed to upload ' + fileName + '!');
         ProjectActions.handleErrors(ex)
