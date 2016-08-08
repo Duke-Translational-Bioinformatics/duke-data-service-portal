@@ -26,12 +26,6 @@ class UploadManager extends React.Component {
     }
 
     render() {
-        //let tags = this.props.objectTags.length > 0 ? this.props.objectTags.map((tag)=>{
-        //    return (<div key={tag.id} className="chip">
-        //        <span className="chip-text">{tag.label}</span>
-        //        <span className="closebtn" onTouchTap={() => this.deleteTag(tag.id, tag.label)}>&times;</span>
-        //    </div>)
-        //}) : null;
         let tags = this.state.tagsToAdd.length > 0 ? this.state.tagsToAdd.map((tag)=>{
             return (<div key={Math.random()} className="chip">
                 <span className="chip-text">{tag.label}</span>
@@ -86,21 +80,21 @@ class UploadManager extends React.Component {
                                         <Info color={'#BDBDBD'}/>
                                     </IconButton>
                                 </h6>
-                            <AutoComplete
-                                fullWidth={true}
-                                id="tagText"
-                                floatingLabelText="Type a Tag Label Here"
-                                filter={AutoComplete.fuzzyFilter}
-                                dataSource={autoCompleteData}
-                                errorText={this.state.floatingErrorText}
-                                onNewRequest={(value) => this.addTagToCloud(value)}
-                                onUpdateInput={this.handleUpdateInput.bind(this)}
-                                underlineStyle={{borderColor: '#0680CD', maxWidth: 'calc(100% - 42px)'}} />
+                                <AutoComplete
+                                    fullWidth={true}
+                                    id="tagText"
+                                    floatingLabelText="Type a Tag Label Here"
+                                    filter={AutoComplete.fuzzyFilter}
+                                    dataSource={autoCompleteData}
+                                    errorText={this.state.floatingErrorText}
+                                    onNewRequest={(value) => this.addTagToCloud(value)}
+                                    onUpdateInput={this.handleUpdateInput.bind(this)}
+                                    underlineStyle={{borderColor: '#0680CD', maxWidth: 'calc(100% - 42px)'}} />
                             </div>
                             <div className="mdl-cell mdl-cell--1-col mdl-color-text--grey-600">
-                            <IconButton onTouchTap={() => this.addTagToCloud(document.getElementById('tagText').value)} iconStyle={{width: 24, height: 24}} style={{margin: '100px 0px 0px 44px', width: 24, height: 24, padding: 0}}>
-                                <AddCircle color={'#235F9C'} />
-                            </IconButton><br/>
+                                <IconButton onTouchTap={() => this.addTagToCloud(document.getElementById('tagText').value)} iconStyle={{width: 24, height: 24}} style={{margin: '100px 0px 0px 44px', width: 24, height: 24, padding: 0}}>
+                                    <AddCircle color={'#235F9C'} />
+                                </IconButton><br/>
                             </div>
                         </div>
                         <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.chipWrapper}>
