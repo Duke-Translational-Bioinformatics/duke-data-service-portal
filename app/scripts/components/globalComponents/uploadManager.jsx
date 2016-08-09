@@ -98,15 +98,15 @@ class UploadManager extends React.Component {
                             </div>
                         </div>
                         <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.chipWrapper}>
-                            <h6 style={styles.chipHeader}>Tags To Add</h6>
-                            <div className="chip-container" style={styles.chipContainer}>
+                            <h6 className="mdl-cell mdl-cell--9-col" style={styles.chipHeader}>Tags To Add</h6>
+                            <div className="chip-container mdl-cell mdl-cell--9-col" style={styles.chipContainer}>
                                 { tags }
                             </div>
                         </div>
-                        <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.buttonWrapper}>
+                        <div className="mdl-cell mdl-cell--9-col mdl-color-text--grey-400" style={styles.buttonWrapper}>
                             <RaisedButton label="Upload Files" secondary={true}
                                           labelStyle={{fontWeight: 100}}
-                                          style={{margin: '12px 24px 12px 12px', float: 'right'}}
+                                          style={{margin: '10px 0px 20px 0px', float: 'right'}}
                                           onTouchTap={() => this.handleUploadButton()}/>
                         </div>
                     </LeftNav>
@@ -117,14 +117,14 @@ class UploadManager extends React.Component {
 
     addTagToCloud(label) {
         let id = this.props.params.id;
-        if(label) {
+        if(label && !label.indexOf(' ') <= 0) {
             if (this.state.tagsToAdd.some(function (el) { return el.label === label; })) {
                 this.setState({floatingErrorText: 'This tag is already in the list'});
                 setTimeout(()=>{
                     this.setState({floatingErrorText: ''});
                 }, 2000)
             }else{
-                this.state.tagsToAdd.push({label: label}); // Todo: Do this in store
+                this.state.tagsToAdd.push({label: label.trim()}); // Todo: Do this in store
                 this.setState({tagsToAdd: this.state.tagsToAdd})
             }
         }
@@ -135,17 +135,6 @@ class UploadManager extends React.Component {
         }, 500)
     }
 
-    //addTagFromList(label) {
-    //    let id = this.props.params.id;
-    //    ProjectActions.addNewTag(id, 'dds-file', label);
-    //    this.state.tagsToAdd.push({label: label});
-    //    setTimeout(() => {
-    //        // Todo: this is temporary. There's a bug in AutoComplete that makes the input repopulate with the old text.
-    //        // Todo: using timeout doesn't solve the problem reliably. For now using select() until we update MUI@v0.16
-    //        document.getElementById("tagText").select();
-    //    }, 500)
-    //}
-
     deleteTag(id, label) {
         let fileId = this.props.params.id;
         let tags = this.state.tagsToAdd;
@@ -153,7 +142,6 @@ class UploadManager extends React.Component {
             return obj.label !== label;
         });
         this.setState({tagsToAdd: tags});
-        // ProjectActions.deleteTag(id, label, fileId);
     }
 
     handleUploadButton() {
@@ -168,13 +156,13 @@ class UploadManager extends React.Component {
                 if (!this.props.entityObj) {
                     projId = this.props.params.id;
                     parentKind = 'dds-project';
-                } else {
+                }else{
                     projId = this.props.entityObj ? this.props.entityObj.ancestors[0].id : null;
                     parentKind = this.props.entityObj ? this.props.entityObj.kind : null;
                 }
                 ProjectActions.startUpload(projId, blob, parentId, parentKind, null, null, tags);
             }
-        } else {
+        }else{
             return null
         }
         ProjectActions.toggleUploadManager();
@@ -202,7 +190,7 @@ class UploadManager extends React.Component {
                     if (!textInput.value.indexOf(' ') <= 0) {
                         ProjectActions.getTagAutoCompleteList(textInput.value);
                     }
-                }, 500),
+                }, 500)
             })
         };
     };
@@ -213,8 +201,8 @@ class UploadManager extends React.Component {
         setTimeout(() => {
             // Todo: this is temporary. There's a bug in AutoComplete that makes the input repopulate with the old text.
             // Todo: using timeout doesn't solve the problem reliably. For now using select() until we update MUI@v0.16
-            document.getElementById("tagText").select();
-        }, 500)
+            if(document.getElementById("tagText").value !== '') document.getElementById("tagText").select();
+        }, 500);
         this.setState({tagsToAdd: []});
     }
 }
@@ -222,9 +210,8 @@ class UploadManager extends React.Component {
 var styles = {
     autoCompleteContainer: {
         textAlign: 'center',
-        //clear: 'both',
         marginLeft: 15,
-        marginBottom: 40,
+        marginBottom: 34,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
@@ -232,8 +219,7 @@ var styles = {
     fileInputContainer: {
         textAlign: 'center',
         clear: 'both',
-        marginLeft: 15,
-        marginBottom: 40
+        marginLeft: 15
     },
     buttonWrapper: {
         textAlign: 'left',
@@ -244,11 +230,12 @@ var styles = {
         clear: 'both'
     },
     chipContainer: {
-        marginTop: 22
+        float: 'right',
+        marginTop: 0
     },
     chipHeader: {
-        margin: '10px  0px 10px 16px',
-        paddingTop: 20
+        float: 'right',
+        padding: 10
     },
     fileUpload: {
         float: 'right',

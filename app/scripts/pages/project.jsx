@@ -21,6 +21,7 @@ class Project extends React.Component {
             loading: false,
             objectTags: ProjectStore.objectTags,
             openTagManager: ProjectStore.openTagManager,
+            openUploadManager: ProjectStore.openUploadManager,
             projects: ProjectStore.projects,
             project: ProjectStore.project,
             screenSize: ProjectStore.screenSize,
