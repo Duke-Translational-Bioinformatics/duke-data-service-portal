@@ -58,6 +58,9 @@ class Header extends React.Component {
                             <a className="external" onTouchTap={this.handleTouchTap.bind(this)} style={{cursor: 'pointer', color: '#FFFFFF'}}>
                                 <CurrentUser {...this.props} />
                             </a>
+                            <a className="external" href="https://medium.com/@dukedataservice"
+                               target="_blank" rel="noopener noreferrer"
+                               style={styles.blogLink}>Duke DS Blog</a>
                             { popover }
                         </div>
                     </div>
@@ -86,6 +89,13 @@ class Header extends React.Component {
 }
 
 var styles = {
+    blogLink: {
+        color: '#fff',
+        fontSize: '.6em',
+        position: 'absolute',
+        top: 42,
+        right: 13
+    },
     logo: {
         width: '40%',
         maxWidth: '40%',
