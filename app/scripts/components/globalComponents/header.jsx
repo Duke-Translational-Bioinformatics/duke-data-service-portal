@@ -55,9 +55,12 @@ class Header extends React.Component {
                                 <img src="images/dukeDSVertical.png" style={styles.logo}/>}
                         </div>
                         <div className="right">
-                            <a className="external" onTouchTap={this.handleTouchTap.bind(this)} style={{cursor: 'pointer', color: '#FFFFFF'}}>
+                            <a className="external" onTouchTap={this.handleTouchTap.bind(this)} style={styles.userOptions}>
                                 <CurrentUser {...this.props} />
                             </a>
+                            <a className="external" href="https://medium.com/@dukedataservice"
+                               target="_blank" rel="noopener noreferrer"
+                               style={styles.blogLink}>Duke DS Blog</a>
                             { popover }
                         </div>
                     </div>
@@ -86,6 +89,13 @@ class Header extends React.Component {
 }
 
 var styles = {
+    blogLink: {
+        color: '#fff',
+        fontSize: '.6em',
+        position: 'absolute',
+        top: 42,
+        right: 13
+    },
     logo: {
         width: '40%',
         maxWidth: '40%',
@@ -125,6 +135,10 @@ var styles = {
         margin: '14px 10px 16px 10px',
         fontSize: '1.2em',
         fontWeight: 100
+    },
+    userOptions: {
+        cursor: 'pointer',
+        color: '#FFF'
     }
 };
 
