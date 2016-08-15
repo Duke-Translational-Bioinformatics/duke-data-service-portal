@@ -792,14 +792,13 @@ var ProjectStore = Reflux.createStore({
     },
 
     checkForHash(uploadId, parentId, parentKind, name, label, fileId) {
-        let hash = null;
-        hash = this.fileHashes.find((fileHash)=>{
+        let hash = this.fileHashes.find((fileHash)=>{
             return fileHash.id === uploadId;
         });
-        if(hash !== null) {
-            ProjectActions.allChunksUploaded(uploadId, parentId, parentKind, name, label, fileId, hash.hash);
-        }else{
+        if(!hash) {
             ProjectActions.updateAndProcessChunks(uploadId, null, null);
+        }else{
+            ProjectActions.allChunksUploaded(uploadId, parentId, parentKind, name, label, fileId, hash.hash);
         }
     },
 
