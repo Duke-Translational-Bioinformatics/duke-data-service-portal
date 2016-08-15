@@ -13,6 +13,7 @@ var ProjectActions = Reflux.createActions([
     'toggleTagManager',
     'addNewTag',
     'addNewTagSuccess',
+    'addMultipleTags',
     'getTagAutoCompleteList',
     'getTagAutoCompleteListSuccess',
     'getTagLabels',
@@ -123,7 +124,7 @@ var ProjectActions = Reflux.createActions([
     'getChildrenSuccess'
 ]);
 
-ProjectActions.addNewTag.preEmit = function (id, kind, label) {
+ProjectActions.addNewTag.preEmit = function (id, kind, tag) { //Todo: change body once api changes
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/', {
         method: 'post',
         headers: {
@@ -135,7 +136,28 @@ ProjectActions.addNewTag.preEmit = function (id, kind, label) {
                 'kind': kind,
                 'id': id
             },
-            'label': label
+            'label': tag
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('Added '+json.label+' tag');
+        ProjectActions.addNewTagSuccess(id);
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to add new tag');
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.addMultipleTags.preEmit = function (id, kind, tags) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/' + kind + '/' + id + '/append', {
+        method: 'post',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            'label': tags
         })
     }).then(checkResponse).then(function (response) {
         return response.json()

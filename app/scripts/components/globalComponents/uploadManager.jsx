@@ -69,8 +69,8 @@ class UploadManager extends React.Component {
                                 </div>
                             </form><br/>
                         </div>
-                        <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.autoCompleteContainer}>
-                            <div className="mdl-cell mdl-cell--6-col mdl-color-text--grey-600" style={{paddingRight: 0, marginRight: -102}}>
+                        <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.wrapper}>
+                            <div className="mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" >
                                 <h6 className="mdl-color-text--grey-600" style={styles.heading}>Add Tags For These Files
                                     <span className="mdl-color-text--grey-400" style={{marginLeft: 5, fontSize: '.8em'}}>(optional)</span>
                                     <IconButton tooltip={<span>Tag your files with relevant keywords<br/> that can help with search and organization of content</span>}
@@ -80,34 +80,37 @@ class UploadManager extends React.Component {
                                         <Info color={'#BDBDBD'}/>
                                     </IconButton>
                                 </h6>
+                            </div>
+                            <div className="mdl-cell mdl-cell--6-col mdl-color-text--grey-600" style={styles.autoCompleteContainer}>
                                 <AutoComplete
                                     fullWidth={true}
                                     id="tagText"
+                                    style={{maxWidth: 'calc(100% - 5px)'}}
                                     floatingLabelText="Type a Tag Label Here"
                                     filter={AutoComplete.fuzzyFilter}
                                     dataSource={autoCompleteData}
                                     errorText={this.state.floatingErrorText}
                                     onNewRequest={(value) => this.addTagToCloud(value)}
                                     onUpdateInput={this.handleUpdateInput.bind(this)}
-                                    underlineStyle={{borderColor: '#0680CD', maxWidth: 'calc(100% - 42px)'}} />
-                            </div>
-                            <div className="mdl-cell mdl-cell--1-col mdl-color-text--grey-600">
-                                <IconButton onTouchTap={() => this.addTagToCloud(document.getElementById('tagText').value)} iconStyle={{width: 24, height: 24}} style={{margin: '100px 0px 0px 44px', width: 24, height: 24, padding: 0}}>
-                                    <AddCircle color={'#235F9C'} />
+                                    underlineStyle={{borderColor: '#0680CD', maxWidth: 'calc(100% - 42px)'}}/>
+                                <IconButton onTouchTap={() => this.addTagToCloud(document.getElementById("tagText").value)}
+                                            iconStyle={{width: 24, height: 24}}
+                                            style={{margin: '-30px 20px 0px 0px', float: 'right', width: 24, height: 24, padding: 0}}>
+                                    <AddCircle color={'#235F9C'}/>
                                 </IconButton><br/>
                             </div>
-                        </div>
-                        <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.chipWrapper}>
-                            <h6 className="mdl-cell mdl-cell--9-col" style={styles.chipHeader}>Tags To Add</h6>
-                            <div className="chip-container mdl-cell mdl-cell--9-col" style={styles.chipContainer}>
-                                { tags }
+                            <div className="mdl-cell mdl-cell--6-col mdl-color-text--grey-400" style={styles.chipWrapper}>
+                                {this.state.tagsToAdd.length ? <h6 style={styles.chipHeader}>Tags To Add</h6> : null}
+                                <div className="chip-container" style={styles.chipContainer}>
+                                    { tags }
+                                </div>
                             </div>
-                        </div>
-                        <div className="mdl-cell mdl-cell--9-col mdl-color-text--grey-400" style={styles.buttonWrapper}>
-                            <RaisedButton label="Upload Files" secondary={true}
-                                          labelStyle={{fontWeight: 100}}
-                                          style={{margin: '10px 0px 20px 0px', float: 'right'}}
-                                          onTouchTap={() => this.handleUploadButton()}/>
+                            <div className="mdl-cell mdl-cell--6-col mdl-color-text--grey-400" style={styles.buttonWrapper}>
+                                <RaisedButton label="Upload Files" secondary={true}
+                                              labelStyle={{fontWeight: 100}}
+                                              style={{margin: '10px 0px 20px 0px', float: 'right'}}
+                                              onTouchTap={() => this.handleUploadButton()}/>
+                            </div>
                         </div>
                     </LeftNav>
                 </div>
@@ -116,9 +119,8 @@ class UploadManager extends React.Component {
     }
 
     addTagToCloud(label) {
-        let id = this.props.params.id;
         if(label && !label.indexOf(' ') <= 0) {
-            if (this.state.tagsToAdd.some(function (el) { return el.label === label; })) {
+            if (this.state.tagsToAdd.some((el) => { return el.label === label; })) {
                 this.setState({floatingErrorText: 'This tag is already in the list'});
                 setTimeout(()=>{
                     this.setState({floatingErrorText: ''});
@@ -132,7 +134,7 @@ class UploadManager extends React.Component {
             // Todo: this is temporary. There's a bug in AutoComplete that makes the input repopulate with the old text.
             // Todo: using timeout doesn't solve the problem reliably. For now using select() until we update MUI@v0.16
             document.getElementById("tagText").select();
-        }, 500)
+        }, 500);
     }
 
     deleteTag(id, label) {
@@ -161,6 +163,7 @@ class UploadManager extends React.Component {
                     parentKind = this.props.entityObj ? this.props.entityObj.kind : null;
                 }
                 ProjectActions.startUpload(projId, blob, parentId, parentKind, null, null, tags);
+                //ProjectActions.addMultipleTags(tags);
             }
         }else{
             return null
@@ -210,32 +213,23 @@ class UploadManager extends React.Component {
 var styles = {
     autoCompleteContainer: {
         textAlign: 'center',
-        marginLeft: 15,
-        marginBottom: 34,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
+        marginLeft: 15
     },
     fileInputContainer: {
         textAlign: 'center',
-        clear: 'both',
         marginLeft: 15
     },
     buttonWrapper: {
-        textAlign: 'left',
-        clear: 'both'
+        textAlign: 'left'
     },
     chipWrapper: {
-        textAlign: 'left',
-        clear: 'both'
+        textAlign: 'left'
     },
     chipContainer: {
-        float: 'right',
         marginTop: 0
     },
     chipHeader: {
-        float: 'right',
-        padding: 10
+        marginLeft: 5
     },
     fileUpload: {
         float: 'right',
@@ -252,7 +246,8 @@ var styles = {
         color: '#ffffff'
     },
     heading: {
-        textAlign: 'left'
+        textAlign: 'left',
+        marginLeft: 5
     },
     iconColor: {
         color: '#ffffff'
@@ -263,27 +258,11 @@ var styles = {
     mainHeading: {
         textAlign: 'center'
     },
-    tagLabels: {
-        margin: 3,
-        cursor: 'pointer',
-        color: '#0680CD',
-        float: 'left'
-    },
-    tagLabelsContainer: {
-        textAlign: 'left',
-        clear: 'both',
-        marginBottom: 40
-    },
     tagLabelsHeading: {
-        margin: '10px 0px 10px 16px',
+        margin: '0px 0px 0px 16px',
         span: {
             fontSize: '.7em'
         }
-    },
-    tagLabelList: {
-        listStyleType: 'none',
-        padding: '5px 5px 25px 5px',
-        marginTop: 0
     },
     tagManager: {
         marginTop: 80,
@@ -292,6 +271,13 @@ var styles = {
     toggleBtn: {
         margin: '25px 0px 15px 0px',
         zIndex: 9999
+    },
+    wrapper:{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'column',
+        paddingLeft: 5
     }
 };
 

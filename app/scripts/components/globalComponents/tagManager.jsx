@@ -18,15 +18,18 @@ class TagManager extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            floatingErrorText: 'This field is required.',
+            floatingErrorText: '',
             lastTag: null,
             timeout: null,
-            tagsToAdd: [],
+            tagsToAdd: [], 
             value: null
         };
     }
 
-    componentDidUpdate(prevState) {
+    componentDidUpdate(prevProps) {
+        if (prevProps.routerPath !== this.props.routerPath) {
+            console.log('new page')
+        }
     }
 
     render() {
@@ -44,7 +47,7 @@ class TagManager extends React.Component {
         }) : null;
         let tagLabels = this.props.tagLabels.map((label)=>{
             return (
-                <li key={label.label+Math.random()} style={styles.tagLabels} onTouchTap={() => this.addTagFromList(label.label)}>{label.label}
+                <li key={label.label+Math.random()} style={styles.tagLabels} onTouchTap={() => this.addTagToCloud(label.label)}>{label.label}
                     <span className="mdl-color-text--grey-600">,</span>
                 </li>
             )
@@ -56,86 +59,91 @@ class TagManager extends React.Component {
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <LeftNav disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openRight={true} open={this.props.openTagManager} style={styles.tagManager}>
-                    <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" >
+                    <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" style={{marginTop: 95}}>
                         <IconButton style={styles.toggleBtn}
                                     onTouchTap={() => this.toggleTagManager()}>
                             <NavigationClose />
                         </IconButton>
                     </div>
-                    <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" >
-                        <h5 className="mdl-color-text--grey-600" style={styles.heading}>Add Tags to {name}
-                            <IconButton tooltip={<span>Tag your files with relevant keywords<br/> that can help with search and organization of content</span>}
-                                        tooltipPosition="bottom-center"
-                                        iconStyle={{ height: 20, width: 20}}
-                                        style={styles.infoIcon}>
-                                <Info color={'#BDBDBD'}/>
-                            </IconButton>
-                        </h5>
-                    </div>
-                    <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.autoCompleteContainer}>
-                        <AutoComplete
-                            id="tagText"
-                            floatingLabelText="Type a Tag Label Here"
-                            filter={AutoComplete.fuzzyFilter}
-                            dataSource={autoCompleteData}
-                            onNewRequest={(value) => this.addTagToCloud(value)}
-                            onUpdateInput={this.handleUpdateInput.bind(this)}
-                            underlineStyle={{borderColor: '#0680CD'}} />
-                        <IconButton onTouchTap={() => this.addTagToCloud()} iconStyle={{width: 24, height: 24}} style={{marginLeft: 0, width: 24, height: 24, padding: 0}}>
-                            <AddCircle color={'#235F9C'} />
-                        </IconButton><br/>
-                    </div>
-                    <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.tagLabelsContainer}>
-                        <h6 style={styles.tagLabelsHeading}>Recently used tags <span style={styles.tagLabelsHeading.span}>(click on a tag to add it to {name})</span></h6>
-                        <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400">
-                            <ul style={styles.tagLabelList}>
-                            { tagLabels }
-                            </ul>
+                    <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.wrapper}>
+                        <div className="mdl-cell mdl-cell--8-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" >
+                            <h5 className="mdl-color-text--grey-600" style={styles.heading}>Add Tags to {name}
+                                <IconButton tooltip={<span>Tag your files with relevant keywords<br/> that can help with search and organization of content</span>}
+                                            tooltipPosition="bottom-center"
+                                            iconStyle={{height: 20, width: 20}}
+                                            style={styles.infoIcon}>
+                                    <Info color={'#BDBDBD'}/>
+                                </IconButton>
+                            </h5>
                         </div>
-                    </div>
-                    <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.chipWrapper}>
-                    <h6 style={styles.chipHeader}>Current Tags</h6>
-                        <div className="chip-container" style={styles.chipContainer}>
-                            { tags }
+                        <div className="mdl-cell mdl-cell--8-col mdl-color-text--grey-600" style={styles.autoCompleteContainer}>
+                            <AutoComplete
+                                fullWidth={true}
+                                id="tagText"
+                                style={{maxWidth: 'calc(100% - 5px)'}}
+                                floatingLabelText="Type a Tag Label Here"
+                                filter={AutoComplete.fuzzyFilter}
+                                dataSource={autoCompleteData}
+                                errorText={this.state.floatingErrorText}
+                                onNewRequest={(value) => this.addTagToCloud(value)}
+                                onUpdateInput={this.handleUpdateInput.bind(this)}
+                                underlineStyle={{borderColor: '#0680CD', maxWidth: 'calc(100% - 42px)'}}/>
+                            <IconButton onTouchTap={() => this.addTagToCloud(document.getElementById("tagText").value)}
+                                        iconStyle={{width: 24, height: 24}}
+                                        style={{margin: '-30px 20px 0px 0px', float: 'right', width: 24, height: 24, padding: 0}}>
+                                <AddCircle color={'#235F9C'}/>
+                            </IconButton><br/>
                         </div>
-                    </div>
-                    <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.buttonWrapper}>
-                        <RaisedButton label="Okay" secondary={true}
-                                      labelStyle={{fontWeight: 100}}
-                                      style={{margin: '12px 24px 12px 12px', float: 'right'}}
-                                      onTouchTap={() => this.toggleTagManager()}/>
+                        <div className="mdl-cell mdl-cell--8-col mdl-color-text--grey-400" style={styles.tagLabelsContainer}>
+                            <h6 style={styles.tagLabelsHeading}>Recently used tags <span style={styles.tagLabelsHeading.span}>(click on a tag to add it to {name})</span></h6>
+                            <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400">
+                                <ul style={styles.tagLabelList}>
+                                    { tagLabels }
+                                </ul>
+                            </div>
+                        </div>
+                        <div className="mdl-cell mdl-cell--8-col mdl-color-text--grey-400" style={styles.chipWrapper}>
+                            {this.state.tagsToAdd.length ? <h6 style={styles.chipHeader}>Tags To Add</h6> : null}
+                            <div className="chip-container" style={styles.chipContainer}>
+                                { tags }
+                            </div>
+                        </div>
+                        <div className="mdl-cell mdl-cell--8-col mdl-color-text--grey-400" style={styles.buttonWrapper}>
+                            <RaisedButton label="Add Tags" secondary={true}
+                                          labelStyle={{fontWeight: 100}}
+                                          style={{margin: '12px 24px 12px 12px', float: 'right'}}
+                                          onTouchTap={() => this.toggleTagManager()}/>
+                        </div>
                     </div>
                 </LeftNav>
             </div>
         )
     }
 
-    addTagToCloud() {
+    addTagToCloud(label) {
         let id = this.props.params.id;
-        if(document.getElementById("tagText").value !== '') {
-            let label = document.getElementById("tagText").value;
-            if(this.props.filesChecked.length < 1){
-                ProjectActions.addNewTag(id, 'dds-file', label);
+        if(label && !label.indexOf(' ') <= 0) {
+            if (this.state.tagsToAdd.some((el) => { return el.label === label.trim(); })) {
+                this.setState({floatingErrorText: label + ' tag is already in the list'});
+                setTimeout(()=>{
+                    this.setState({floatingErrorText: ''});
+                    document.getElementById("tagText").select();
+                }, 2000)
+            }else{
+                if(this.props.filesChecked.length < 1) {
+                    this.state.tagsToAdd.push({label: label.trim()}); // Todo: Do this in store
+                    ProjectActions.addNewTag(id, 'dds-file', label);
+                }else{
+                    this.state.tagsToAdd.push({label: label.trim()}); // Todo: Do this in store
+                }
                 setTimeout(() => {
                     // Todo: this is temporary. There's a bug in AutoComplete that makes the input repopulate with the old text.
                     // Todo: using timeout doesn't solve the problem reliably. For now using select() until we update to MUI v16
                     document.getElementById("tagText").select();
-                }, 500)
-            } else {
-                this.state.tagsToAdd.push({label: label}); // Todo: Do this in store
+                }, 500);
+                this.setState({tagsToAdd: this.state.tagsToAdd})
             }
         }
-    }
-
-    addTagFromList(label) {
-        let id = this.props.params.id;
-        ProjectActions.addNewTag(id, 'dds-file', label);
-        this.state.tagsToAdd.push({label: label});
-        setTimeout(() => {
-            // Todo: this is temporary. There's a bug in AutoComplete that makes the input repopulate with the old text.
-            // Todo: using timeout doesn't solve the problem reliably. For now using select() until we update MUI@v0.16
-            document.getElementById("tagText").select();
-        }, 500)
     }
 
     deleteTag(id, label) {
@@ -145,7 +153,7 @@ class TagManager extends React.Component {
             return obj.label !== label;
         });
         this.setState({tagsToAdd: tags});
-       // ProjectActions.deleteTag(id, label, fileId);
+        // ProjectActions.deleteTag(id, label, fileId);
     }
 
     handleUpdateInput (text) {
@@ -166,29 +174,30 @@ class TagManager extends React.Component {
 
     toggleTagManager() {
         ProjectActions.toggleTagManager();
+        setTimeout(() => {
+            // Todo: this is temporary. There's a bug in AutoComplete that makes the input repopulate with the old text.
+            // Todo: using timeout doesn't solve the problem reliably. For now using select() until we update MUI@v0.16
+            if(document.getElementById("tagText").value !== '') document.getElementById("tagText").select();
+        }, 500);
+        this.setState({tagsToAdd: []});
     }
 }
 
 var styles = {
     autoCompleteContainer: {
-        textAlign: 'center',
-        clear: 'both',
-        marginLeft: 15,
-        marginBottom: 40
+        maxWidth: 'calc(100% - 42px)'
     },
     buttonWrapper: {
-        textAlign: 'left',
-        clear: 'both'
+        textAlign: 'left'
     },
     chipWrapper: {
-        textAlign: 'left',
-        clear: 'both'
+        textAlign: 'left'
     },
     chipContainer: {
         marginTop: 22
     },
     chipHeader: {
-        margin: '10px  0px 10px 16px',
+        margin: '10px 0px 10px 0px',
         paddingTop: 20
     },
     heading: {
@@ -204,28 +213,33 @@ var styles = {
         float: 'left'
     },
     tagLabelsContainer: {
-        textAlign: 'left',
-        clear: 'both',
-        marginBottom: 40
+        textAlign: 'left'
     },
     tagLabelsHeading: {
-        margin: '10px 0px 10px 16px',
+        margin: '10px 0px 10px 0px',
         span: {
             fontSize: '.7em'
         }
     },
     tagLabelList: {
         listStyleType: 'none',
-        padding: '5px 5px 25px 5px',
-        marginTop: 0
+        padding: '5px 0px 5px 0px',
+        margin: '0px 0px 0px -10px'
     },
     tagManager: {
         marginTop: 80,
         paddingBottom: 90
     },
     toggleBtn: {
-        margin: '92px 0px 5px 0px',
+        margin: '25px 0px 15px 0px',
         zIndex: 9999
+    },
+    wrapper:{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'column',
+        paddingLeft: 5
     }
 };
 
