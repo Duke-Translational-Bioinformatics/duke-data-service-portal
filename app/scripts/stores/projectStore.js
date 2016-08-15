@@ -20,6 +20,7 @@ var ProjectStore = Reflux.createStore({
         this.error = {};
         this.errorModal = false;
         this.filesChecked = [];
+        this.fileHashes = [];
         this.foldersChecked = [];
         this.fileVersions = [];
         this.itemsSelected = null;
@@ -774,7 +775,7 @@ var ProjectStore = Reflux.createStore({
             }
             if(chunk.chunkUpdates.status !== StatusEnum.STATUS_SUCCESS) allDone = false;
         }
-        if (allDone === true)ProjectActions.allChunksUploaded(uploadId, upload.parentId, upload.parentKind, upload.name, upload.label, upload.fileId );
+        if (allDone === true)ProjectActions.checkForHash(uploadId, upload.parentId, upload.parentKind, upload.name, upload.label, upload.fileId);
         window.onbeforeunload = function (e) { // If done, set to false so no warning is sent.
             let preventLeave = false;
         };
@@ -787,6 +788,25 @@ var ProjectStore = Reflux.createStore({
         }
         this.trigger({
             uploads: this.uploads
+        })
+    },
+
+    checkForHash(uploadId, parentId, parentKind, name, label, fileId) {
+        let hash = null;
+        hash = this.fileHashes.find((fileHash)=>{
+            return fileHash.id === uploadId;
+        });
+        if(hash !== null) {
+            ProjectActions.allChunksUploaded(uploadId, parentId, parentKind, name, label, fileId, hash.hash);
+        }else{
+            ProjectActions.updateAndProcessChunks(uploadId, null, null);
+        }
+    },
+
+    postHash(hash) {
+        let fileHashes = this.fileHashes.push(hash);
+        this.trigger({
+            fileHashes: fileHashes
         })
     }
 });

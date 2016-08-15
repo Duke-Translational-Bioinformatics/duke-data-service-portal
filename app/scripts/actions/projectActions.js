@@ -11,6 +11,7 @@ var ProjectActions = Reflux.createActions([
     'getDeviceType',
     'hashFile',
     'postHash',
+    'checkForHash',
     'openModal',
     'closeModal',
     'openMoveModal',
@@ -972,13 +973,19 @@ function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKi
     xhr.send(chunkBlob);
 }
 
-ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentKind, fileName, label, fileId) {
+ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentKind, fileName, label, fileId, hash) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.UPLOAD + uploadId + '/complete', {
         method: 'put',
         headers: {
             'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
-        }
+        },
+        body: JSON.stringify({
+            'hash': {
+                'value': hash,
+                'algorithm': 'md5'
+            }
+        })
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
@@ -1033,9 +1040,9 @@ ProjectActions.hashFile.preEmit = function (file, id) {
 
     function webWorkerOnMessage(e) {
         function arrayBufferToWordArray(ab) {
-            var i8a = new Uint8Array(ab);
-            var a = [];
-            for (var i = 0; i < i8a.length; i += 4) {
+            let i8a = new Uint8Array(ab);
+            let a = [];
+            for (let i = 0; i < i8a.length; i += 4) {
                 a.push(i8a[i] << 24 | i8a[i + 1] << 16 | i8a[i + 2] << 8 | i8a[i + 3]);
             }
             return CryptoJS.lib.WordArray.create(a, i8a.length);
@@ -1056,13 +1063,16 @@ ProjectActions.hashFile.preEmit = function (file, id) {
     window.URL = window.URL || window.webkitURL;
 
 // "Server response"
-    var response =
-        "importScripts('https://raw.githubusercontent.com/Duke-Translational-Bioinformatics/duke-data-service-portal/develop/app/lib/md5.js');" +
-        "var md5, cryptoType;" +
+    let assetPath = DDS_PORTAL_CONFIG.assetPath + '/lib/md5.js';
+
+    let response =
+        "importScripts("+"'"+assetPath+"'"+");" +
+        "let md5, cryptoType;" +
         "self.onmessage = " + webWorkerOnMessage.toString();
 
-    var blob;
+    let blob;
     try {
+        console.log(DDS_PORTAL_CONFIG.assetPath);
         blob = new Blob([response], {type: 'application/javascript'});
     } catch (e) { // Backwards-compatibility
         window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
@@ -1071,23 +1081,23 @@ ProjectActions.hashFile.preEmit = function (file, id) {
         blob = blob.getBlob();
     }
 
-    var worker = new Worker(URL.createObjectURL(blob));
-    var chunksize = 5242880;
-    var f = file.blob; // FileList object
-    var i = 0,
+    let worker = new Worker(URL.createObjectURL(blob));
+    let chunksize = 5242880;
+    let f = file.blob; // FileList object
+    let i = 0,
         chunks = Math.ceil(f.size / chunksize),
         chunkTasks = [],
         startTime = (new Date()).getTime();
     worker.onmessage = function (e) {
         // create callback
-        for (var j = 0; j < chunks; j++) {
+        for (let j = 0; j < chunks; j++) {
             (function (j, f) {
                 chunkTasks.push(function (next) {
-                    var blob = f.slice(j * chunksize, Math.min((j + 1) * chunksize, f.size));
-                    var reader = new FileReader();
+                    let blob = f.slice(j * chunksize, Math.min((j + 1) * chunksize, f.size));
+                    let reader = new FileReader();
 
                     reader.onload = function (e) {
-                        var chunk = e.target.result;
+                        let chunk = e.target.result;
                         worker.onmessage = function (e) {
                             // update callback
                             next();
