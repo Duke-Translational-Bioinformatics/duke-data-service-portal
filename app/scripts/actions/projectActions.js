@@ -1063,8 +1063,7 @@ ProjectActions.hashFile.preEmit = function (file, id) {
     window.URL = window.URL || window.webkitURL;
 
 // "Server response"
-    let assetPath = DDS_PORTAL_CONFIG.assetPath + '/lib/md5.js';
-
+    let assetPath = location.protocol + '//' + location.host + '/lib/md5.js';
     let response =
         "importScripts("+"'"+assetPath+"'"+");" +
         "let md5, cryptoType;" +
@@ -1072,7 +1071,6 @@ ProjectActions.hashFile.preEmit = function (file, id) {
 
     let blob;
     try {
-        console.log(DDS_PORTAL_CONFIG.assetPath);
         blob = new Blob([response], {type: 'application/javascript'});
     } catch (e) { // Backwards-compatibility
         window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
