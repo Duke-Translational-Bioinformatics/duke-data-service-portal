@@ -1109,7 +1109,6 @@ ProjectActions.hashFile.preEmit = function (file, id) {
         series(chunkTasks, function () {
             worker.onmessage = function (e) {
                 // finish callback
-                // TODO: Post hash in store?????
                 ProjectActions.postHash({id: e.data.id, hash: e.data.hash});
             };
             worker.postMessage({type: "finish", id: id});
@@ -1117,10 +1116,6 @@ ProjectActions.hashFile.preEmit = function (file, id) {
     };
     worker.postMessage({type: "create"});
 };
-
-//ProjectActions.postHash.preEmit = function (hashObj){ //Todo: Make proper preemit function w/fetch call !!!!!!!!!!!!
-//    //console.log('File ID:' + hashObj.id + ' ' + 'Hash:' + hashObj.hash);
-//};
 
 function checkResponse(response) {
     return checkStatus(response, MainActions);
