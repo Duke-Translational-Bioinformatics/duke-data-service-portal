@@ -1017,7 +1017,7 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
             body: JSON.stringify({
                 'name': fileName,
                 'content_type': contentType,
-                'size': SIZE,
+                'size': SIZE
             })
         }).then(checkResponse).then(function (response) {
             return response.json()

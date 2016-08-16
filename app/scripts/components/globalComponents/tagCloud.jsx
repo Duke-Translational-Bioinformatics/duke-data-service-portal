@@ -21,9 +21,12 @@ class TagCloud extends React.Component {
                            </IconButton>
         }
         let tags = this.props.objectTags.map((tag)=>{
-            return (<div key={tag.id} className="chip">
+            return (<div key={tag.id} id={tag.id} className="chip">
                 <span className="chip-text">{tag.label}</span>
-                <span className="closebtn" onTouchTap={() => this.deleteTag(tag.id, tag.label)}>&times;</span>
+                <span className="closebtn"
+                      onTouchTap={() => this.deleteTag(tag.id, tag.label)}>
+                    &times;
+                </span>
             </div>)
         });
         return (
@@ -36,6 +39,7 @@ class TagCloud extends React.Component {
 
     deleteTag(id, label) {
         let fileId = this.props.params.id;
+        document.getElementById(id).style.display = 'none';
         ProjectActions.deleteTag(id, label, fileId);
     }
 

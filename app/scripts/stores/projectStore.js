@@ -73,7 +73,7 @@ var ProjectStore = Reflux.createStore({
         ProjectActions.getTags(fileId, 'dds-file');
     },
 
-    appendTagsSuccess() {
+    appendTagsSuccess(fileId) {
         ProjectActions.getTags(fileId, 'dds-file');
         this.showBatchOps = false;
         this.trigger({
@@ -575,13 +575,17 @@ var ProjectStore = Reflux.createStore({
     },
 
     addFileSuccess(parentId, parentKind, uploadId, fileId) {
-        if(this.uploads[uploadId].tags.length) console.log(this.uploads[uploadId].tags)//Todo: create tags here
-        if (parentKind === 'dds-project') {
-            ProjectActions.getChildren(parentId, 'projects/');
-        } else {
-            ProjectActions.getChildren(parentId, 'folders/');
+        if (this.uploads[uploadId].tags.length) {
+            ProjectActions.appendTags(fileId, 'dds-file', this.uploads[uploadId].tags);
         }
-        if (this.uploads.hasOwnProperty(uploadId)) {
+        if(Object.keys(this.uploads).length === 1) {
+            if (parentKind === 'dds-project') {
+                ProjectActions.getChildren(parentId, 'projects/');
+            } else {
+                ProjectActions.getChildren(parentId, 'folders/');
+            }
+        }
+        if(this.uploads.hasOwnProperty(uploadId)) {
             delete this.uploads[uploadId];
         }
         this.trigger({
@@ -765,7 +769,7 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    startUpload(projId, blob, parentId, parentKind) {
+    startUpload() {
         this.trigger({
             uploading: true
         })
