@@ -43,7 +43,7 @@ class BatchOps extends React.Component {
                 </IconButton>;
         }
         if (prjPrm !== null) {
-            tagIcon = prjPrm === 'flDownload' ? null :
+            tagIcon = prjPrm === 'flDownload' || !this.props.filesChecked.length ? null :
                 <IconButton onTouchTap={() => this.openTagManager()} style={styles.tagBtn}>
                     <LocalOffer color={'#EC407A'}/>
                 </IconButton>;
