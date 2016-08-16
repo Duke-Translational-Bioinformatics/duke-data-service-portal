@@ -3,7 +3,7 @@ import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import ProjectOptionsMenu from './projectOptionsMenu.jsx';
 import Details from './details.jsx';
-import UploadModal from '../globalComponents/uploadModal.jsx';
+import UploadManager from '../globalComponents/uploadManager.jsx';
 import urlGen from '../../../util/urlGen.js';
 import baseUtils from '../../../util/baseUtils.js';
 import FlatButton from 'material-ui/lib/flat-button';
@@ -28,7 +28,7 @@ class ProjectDetails extends React.Component {
         let uploadMdl = null;
         let optionsMenu = null;
         if (prjPrm !== null) {
-            uploadMdl = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <UploadModal {...this.props}/>;
+            uploadMdl = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <UploadManager {...this.props}/>;
             optionsMenu = prjPrm === 'prjCrud' ? <ProjectOptionsMenu {...this.props} /> : null;
         }
         return (
