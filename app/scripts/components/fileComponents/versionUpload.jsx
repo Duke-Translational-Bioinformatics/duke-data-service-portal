@@ -24,6 +24,7 @@ class VersionUpload extends React.Component {
             <div style={styles.fileUpload}>
                 <Dialog
                     style={styles.dialogStyles}
+                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title='Upload New Version'
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}

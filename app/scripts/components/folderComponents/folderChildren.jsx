@@ -69,7 +69,7 @@ class FolderChildren extends React.Component {
                             <label className="label-checkbox item-content" style={styles.checkboxLabel}
                                    onClick={e => this.change()}>
                                 <input className="folderChkBoxes" type={type} name="chkboxName"
-                                       value={children.id}/>
+                                       value={children.id} id={children.id}/>
                                 { chkBx }
                             </label>
 
@@ -101,7 +101,7 @@ class FolderChildren extends React.Component {
                             <label className="label-checkbox item-content" style={styles.checkboxLabel}
                                    onClick={e => this.change()}>
                                 <input className="fileChkBoxes" type={type} name="chkboxName"
-                                       value={children.id}/>
+                                       value={children.id} id={children.id}/>
                                 { chkBx }
                             </label>
 
