@@ -55,7 +55,7 @@ class Header extends React.Component {
                                 <img src="images/dukeDSVertical.png" style={styles.logo}/>}
                         </div>
                         <div className="right">
-                            <a className="external" onTouchTap={this.handleTouchTap.bind(this)} style={{cursor: 'pointer', color: '#FFFFFF'}}>
+                            <a className="external" onTouchTap={this.handleTouchTap.bind(this)} style={styles.userOptions}>
                                 <CurrentUser {...this.props} />
                             </a>
                             <a className="external" href="https://medium.com/@dukedataservice"
@@ -135,6 +135,10 @@ var styles = {
         margin: '14px 10px 16px 10px',
         fontSize: '1.2em',
         fontWeight: 100
+    },
+    userOptions: {
+        cursor: 'pointer',
+        color: '#FFF'
     }
 };
 
