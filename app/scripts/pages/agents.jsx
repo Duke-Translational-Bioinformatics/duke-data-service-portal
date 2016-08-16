@@ -11,7 +11,8 @@ class Agents extends React.Component {
             agents: ProjectStore.agents,
             loading: false,
             errorModal: ProjectStore.errorModal,
-            error: ProjectStore.error
+            error: ProjectStore.error,
+            screenSize: ProjectStore.screenSize
         };
     }
 

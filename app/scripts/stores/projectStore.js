@@ -28,18 +28,82 @@ var ProjectStore = Reflux.createStore({
         this.moveModal = false;
         this.moveToObj = {};
         this.moveErrorModal = false;
+        this.objectTags = [];
+        this.openTagManager = false;
+        this.openUploadManager = false;
         this.parent = {};
         this.projects = [];
         this.project = {};
         this.projPermissions = null;
         this.projectMembers = [];
+        this.screenSize = {};
         this.searchText = '';
         this.showBatchOps = false;
+        this.tagLabels = [];
         this.uploadCount = [];
         this.uploads = {};
         this.users = [];
         this.userKey = {};
         this.versionModal = false;
+    },
+
+    getScreenSize(height, width) {
+        this.screenSize.height = height;
+        this.screenSize.width = width;
+        this.trigger({
+            screenSize: this.screenSize
+        })
+    },
+
+    toggleUploadManager() {
+        this.openUploadManager = !this.openUploadManager;
+        this.trigger({
+            openUploadManager: this.openUploadManager
+        })
+    },
+
+    toggleTagManager() {
+        this.openTagManager = !this.openTagManager;
+        this.trigger({
+            openTagManager: this.openTagManager
+        })
+    },
+
+    addNewTagSuccess(fileId) {
+        ProjectActions.getTags(fileId, 'dds-file');
+    },
+
+    appendTagsSuccess(fileId) {
+        ProjectActions.getTags(fileId, 'dds-file');
+        this.showBatchOps = false;
+        this.trigger({
+            showBatchOps: this.showBatchOps
+        })
+    },
+
+    deleteTagSuccess(fileId) {
+        ProjectActions.getTags(fileId, 'dds-file');
+    },
+
+    getTagAutoCompleteListSuccess(list) {
+        this.tagAutoCompleteList = list.map((item) => {return item.label});
+        this.trigger({
+            tagAutoCompleteList: this.tagAutoCompleteList
+        })
+    },
+
+    getTagLabelsSuccess(labels) {
+        this.tagLabels = labels;
+        this.trigger({
+            tagLabels: this.tagLabels
+        })
+    },
+
+    getTagsSuccess(tags) {
+        this.objectTags = tags;
+        this.trigger({
+            objectTags: this.objectTags
+        })
     },
 
     getDeviceType(device) {
@@ -292,6 +356,15 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
+    clearSelectedItems() {
+        this.filesChecked = [];
+        this.foldersChecked = [];
+        this.trigger({
+            filesChecked: this.filesChecked,
+            foldersChecked: this.foldersChecked
+        })
+    },
+
     closeErrorModal(){
         this.errorModal = false;
         this.trigger({
@@ -501,13 +574,18 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    addFileSuccess(id, parentKind, uploadId) {
-        if (parentKind === 'dds-project') {
-            ProjectActions.getChildren(id, 'projects/');
-        } else {
-            ProjectActions.getChildren(id, 'folders/');
+    addFileSuccess(parentId, parentKind, uploadId, fileId) {
+        if (this.uploads[uploadId].tags.length) {
+            ProjectActions.appendTags(fileId, 'dds-file', this.uploads[uploadId].tags);
         }
-        if (this.uploads.hasOwnProperty(uploadId)) {
+        if(Object.keys(this.uploads).length === 1) {
+            if (parentKind === 'dds-project') {
+                ProjectActions.getChildren(parentId, 'projects/');
+            } else {
+                ProjectActions.getChildren(parentId, 'folders/');
+            }
+        }
+        if(this.uploads.hasOwnProperty(uploadId)) {
             delete this.uploads[uploadId];
         }
         this.trigger({
@@ -600,7 +678,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     getUserNameSuccess(results) {
-        this.users = results.map(function(users) {return users.full_name});
+        this.users = results.map((users) => {return users.full_name});
         this.trigger({
             users: this.users
         });
@@ -691,7 +769,7 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    startUpload(projId, blob, parentId, parentKind) {
+    startUpload() {
         this.trigger({
             uploading: true
         })
