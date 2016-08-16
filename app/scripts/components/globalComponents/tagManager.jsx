@@ -33,12 +33,6 @@ class TagManager extends React.Component {
     }
 
     render() {
-        //let tags = this.props.objectTags.length > 0 ? this.props.objectTags.map((tag)=>{
-        //    return (<div key={tag.id} className="chip">
-        //        <span className="chip-text">{tag.label}</span>
-        //        <span className="closebtn" onTouchTap={() => this.deleteTag(tag.id, tag.label)}>&times;</span>
-        //    </div>)
-        //}) : null;
         let tags = this.state.tagsToAdd.length > 0 ? this.state.tagsToAdd.map((tag)=>{
             return (<div key={Math.random()} className="chip">
                 <span className="chip-text">{tag.label}</span>
@@ -52,9 +46,9 @@ class TagManager extends React.Component {
                 </li>
             )
         });
-        let name = this.props.entityObj ? this.props.entityObj.name : '';
         let autoCompleteData = this.props.tagAutoCompleteList && this.props.tagAutoCompleteList.length > 0 ? this.props.tagAutoCompleteList : [];
         let height = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.height : window.innerHeight;
+        let name = this.props.entityObj && this.props.filesChecked < 1 ? this.props.entityObj.name : 'Selected Files';
         let width = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.width : window.innerWidth;
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
@@ -87,10 +81,10 @@ class TagManager extends React.Component {
                                 errorText={this.state.floatingErrorText}
                                 onNewRequest={(value) => this.addTagToCloud(value)}
                                 onUpdateInput={this.handleUpdateInput.bind(this)}
-                                underlineStyle={{borderColor: '#0680CD', maxWidth: 'calc(100% - 42px)'}}/>
+                                underlineStyle={styles.autoCompleteUnderline}/>
                             <IconButton onTouchTap={() => this.addTagToCloud(document.getElementById("tagText").value)}
                                         iconStyle={{width: 24, height: 24}}
-                                        style={{margin: '-30px 20px 0px 0px', float: 'right', width: 24, height: 24, padding: 0}}>
+                                        style={styles.addTagIconBtn}>
                                 <AddCircle color={'#235F9C'}/>
                             </IconButton><br/>
                         </div>
@@ -103,16 +97,20 @@ class TagManager extends React.Component {
                             </div>
                         </div>
                         <div className="mdl-cell mdl-cell--8-col mdl-color-text--grey-400" style={styles.chipWrapper}>
-                            {this.state.tagsToAdd.length ? <h6 style={styles.chipHeader}>Tags To Add</h6> : null}
+                            {this.state.tagsToAdd.length ? <h6 style={styles.chipHeader}>New Tags To Add</h6> : null}
                             <div className="chip-container" style={styles.chipContainer}>
                                 { tags }
                             </div>
                         </div>
                         <div className="mdl-cell mdl-cell--8-col mdl-color-text--grey-400" style={styles.buttonWrapper}>
-                            <RaisedButton label="Add Tags" secondary={true}
+                            <RaisedButton label={'Cancel'} secondary={true}
                                           labelStyle={{fontWeight: 100}}
                                           style={{margin: '12px 24px 12px 12px', float: 'right'}}
                                           onTouchTap={() => this.toggleTagManager()}/>
+                            <RaisedButton label={'Apply'} secondary={true}
+                                          labelStyle={{fontWeight: 100}}
+                                          style={{margin: '12px 12px 12px 12px', float: 'right'}}
+                                          onTouchTap={() => this.addTagsToFiles()}/>
                         </div>
                     </div>
                 </LeftNav>
@@ -129,13 +127,8 @@ class TagManager extends React.Component {
                     this.setState({floatingErrorText: ''});
                     document.getElementById("tagText").select();
                 }, 2000)
-            }else{
-                if(this.props.filesChecked.length < 1) {
-                    this.state.tagsToAdd.push({label: label.trim()}); // Todo: Do this in store
-                    ProjectActions.addNewTag(id, 'dds-file', label);
-                }else{
-                    this.state.tagsToAdd.push({label: label.trim()}); // Todo: Do this in store
-                }
+            } else {
+                this.state.tagsToAdd.push({label: label.trim()}); // Todo: Do this in store
                 setTimeout(() => {
                     // Todo: this is temporary. There's a bug in AutoComplete that makes the input repopulate with the old text.
                     // Todo: using timeout doesn't solve the problem reliably. For now using select() until we update to MUI v16
@@ -146,6 +139,20 @@ class TagManager extends React.Component {
         }
     }
 
+    addTagsToFiles() {
+        let files = this.props.filesChecked;
+        let id = this.props.params.id;
+        let tags = this.state.tagsToAdd;
+        if(this.props.filesChecked.length > 0) {
+            for (let i = 0; i < files.length; i++) {
+                ProjectActions.appendTags(files[i], 'dds-file', tags);
+            }
+        } else {
+            ProjectActions.appendTags(id, 'dds-file', tags);
+        }
+        this.toggleTagManager();
+    }
+
     deleteTag(id, label) {
         let fileId = this.props.params.id;
         let tags = this.state.tagsToAdd;
@@ -153,7 +160,6 @@ class TagManager extends React.Component {
             return obj.label !== label;
         });
         this.setState({tagsToAdd: tags});
-        // ProjectActions.deleteTag(id, label, fileId);
     }
 
     handleUpdateInput (text) {
@@ -170,7 +176,7 @@ class TagManager extends React.Component {
                 }, 500)
             })
         };
-    };
+    }
 
     toggleTagManager() {
         ProjectActions.toggleTagManager();
@@ -184,7 +190,18 @@ class TagManager extends React.Component {
 }
 
 var styles = {
+    addTagIconBtn: {
+        margin: '-30px 20px 0px 0px',
+        float: 'right',
+        width: 24,
+        height: 24,
+        padding: 0
+    },
     autoCompleteContainer: {
+        maxWidth: 'calc(100% - 42px)'
+    },
+    autoCompleteUnderline: {
+        borderColor: '#0680CD',
         maxWidth: 'calc(100% - 42px)'
     },
     buttonWrapper: {

@@ -84,7 +84,7 @@ class UploadManager extends React.Component {
                             <div className="mdl-cell mdl-cell--6-col mdl-color-text--grey-600" style={styles.autoCompleteContainer}>
                                 <AutoComplete
                                     fullWidth={true}
-                                    id="tagText"
+                                    id="tagInputText"
                                     style={{maxWidth: 'calc(100% - 5px)'}}
                                     floatingLabelText="Type a Tag Label Here"
                                     filter={AutoComplete.fuzzyFilter}
@@ -93,7 +93,7 @@ class UploadManager extends React.Component {
                                     onNewRequest={(value) => this.addTagToCloud(value)}
                                     onUpdateInput={this.handleUpdateInput.bind(this)}
                                     underlineStyle={{borderColor: '#0680CD', maxWidth: 'calc(100% - 42px)'}}/>
-                                <IconButton onTouchTap={() => this.addTagToCloud(document.getElementById("tagText").value)}
+                                <IconButton onTouchTap={() => this.addTagToCloud(document.getElementById("tagInputText").value)}
                                             iconStyle={{width: 24, height: 24}}
                                             style={{margin: '-30px 20px 0px 0px', float: 'right', width: 24, height: 24, padding: 0}}>
                                     <AddCircle color={'#235F9C'}/>
@@ -133,7 +133,7 @@ class UploadManager extends React.Component {
         setTimeout(() => {
             // Todo: this is temporary. There's a bug in AutoComplete that makes the input repopulate with the old text.
             // Todo: using timeout doesn't solve the problem reliably. For now using select() until we update MUI@v0.16
-            document.getElementById("tagText").select();
+            document.getElementById("tagInputText").select();
         }, 500);
     }
 
@@ -163,7 +163,6 @@ class UploadManager extends React.Component {
                     parentKind = this.props.entityObj ? this.props.entityObj.kind : null;
                 }
                 ProjectActions.startUpload(projId, blob, parentId, parentKind, null, null, tags);
-                //ProjectActions.addMultipleTags(tags);
             }
         }else{
             return null
@@ -185,7 +184,7 @@ class UploadManager extends React.Component {
     handleUpdateInput (text) {
         // Add 500ms lag to autocomplete so that it only makes a call after user is done typing
         let timeout = this.state.timeout;
-        let textInput = document.getElementById('tagText');
+        let textInput = document.getElementById('tagInputText');
         textInput.onkeyup = () => {
             clearTimeout(this.state.timeout);
             this.setState({
@@ -204,7 +203,7 @@ class UploadManager extends React.Component {
         setTimeout(() => {
             // Todo: this is temporary. There's a bug in AutoComplete that makes the input repopulate with the old text.
             // Todo: using timeout doesn't solve the problem reliably. For now using select() until we update MUI@v0.16
-            if(document.getElementById("tagText").value !== '') document.getElementById("tagText").select();
+            if(document.getElementById("tagInputText").value !== '') document.getElementById("tagInputText").select();
         }, 500);
         this.setState({tagsToAdd: []});
     }

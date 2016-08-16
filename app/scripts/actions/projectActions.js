@@ -8,12 +8,14 @@ import { StatusEnum, Path } from '../enum';
 import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.js';
 
 var ProjectActions = Reflux.createActions([
+    'clearSelectedItems',
     'getScreenSize',
     'toggleUploadManager',
     'toggleTagManager',
     'addNewTag',
     'addNewTagSuccess',
-    'addMultipleTags',
+    'appendTags',
+    'appendTagsSuccess',
     'getTagAutoCompleteList',
     'getTagAutoCompleteListSuccess',
     'getTagLabels',
@@ -125,7 +127,7 @@ var ProjectActions = Reflux.createActions([
     'getChildrenSuccess'
 ]);
 
-ProjectActions.addNewTag.preEmit = function (id, kind, tag) { //Todo: change body once api changes
+ProjectActions.addNewTag.preEmit = function (id, kind, tag) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/', {
         method: 'post',
         headers: {
@@ -150,7 +152,8 @@ ProjectActions.addNewTag.preEmit = function (id, kind, tag) { //Todo: change bod
     })
 };
 
-ProjectActions.addMultipleTags.preEmit = function (id, kind, tags) {
+ProjectActions.appendTags.preEmit = function (id, kind, tags) {
+    let msg = tags.map((tag)=>{return tag.label});
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/' + kind + '/' + id + '/append', {
         method: 'post',
         headers: {
@@ -158,15 +161,15 @@ ProjectActions.addMultipleTags.preEmit = function (id, kind, tags) {
             'Accept': 'application/json'
         },
         body: JSON.stringify({
-            'label': tags
+            tags
         })
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        MainActions.addToast('Added '+json.label+' tag');
-        ProjectActions.addNewTagSuccess(id);
+        MainActions.addToast('Added '+msg+' as tags to all selected files.');
+        ProjectActions.appendTagsSuccess(id);
     }).catch(function (ex) {
-        MainActions.addToast('Failed to add new tag');
+        MainActions.addToast('Failed to add tags');
         ProjectActions.handleErrors(ex)
     })
 };

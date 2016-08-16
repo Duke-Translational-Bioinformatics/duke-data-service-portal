@@ -51,6 +51,7 @@ class File extends React.Component {
         ProjectActions.getFileVersions(id);
         ProjectActions.getTags(id, 'dds-file');
         ProjectActions.getTagLabels(); // Used to generate a list of tag labels
+        ProjectActions.clearSelectedItems(); // Clear checked files and folders from list
     }
 
     render() {

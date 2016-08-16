@@ -34,11 +34,18 @@ class BatchOps extends React.Component {
             dlMsg = "Are you sure you want to download "+this.props.filesChecked.length+" file?"
         }
         let dltIcon = null;
+        let tagIcon = null;
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
         if (prjPrm !== null) {
             dltIcon = prjPrm === 'flDownload' ? null :
                 <IconButton onTouchTap={this.openDeleteModal.bind(this)} style={styles.deleteBtn}>
                     <DeleteIcon color={'#EC407A'}/>
+                </IconButton>;
+        }
+        if (prjPrm !== null) {
+            tagIcon = prjPrm === 'flDownload' ? null :
+                <IconButton onTouchTap={() => this.openTagManager()} style={styles.tagBtn}>
+                    <LocalOffer color={'#EC407A'}/>
                 </IconButton>;
         }
 
@@ -82,9 +89,7 @@ class BatchOps extends React.Component {
                     { dltIcon }
                 </div>
                 <div style={styles.iconBtn} title="Tag files">
-                    <IconButton onTouchTap={() => this.openTagManager()} style={styles.tagBtn}>
-                        <LocalOffer color={'#EC407A'}/>
-                    </IconButton>
+                    { tagIcon }
                 </div>
                 <div style={styles.iconBtn} title="Download files">
                     <IconButton onTouchTap={() => this.openDownloadModal()} style={styles.downloadBtn}>

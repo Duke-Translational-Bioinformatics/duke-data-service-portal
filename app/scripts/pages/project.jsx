@@ -42,6 +42,7 @@ class Project extends React.Component {
         ProjectActions.getProjectMembers(id);
         ProjectActions.getUser(id);
         ProjectActions.getTagLabels(); // Used to generate a list of tag labels
+        ProjectActions.clearSelectedItems(); // Clear checked files and folders from list
     }
 
     componentDidUpdate(prevProps) {
@@ -58,7 +59,6 @@ class Project extends React.Component {
         }
     }
 
-
     componentWillUnmount() {
         this.unsubscribe();
     }
@@ -68,7 +68,7 @@ class Project extends React.Component {
             <div>
                 <ProjectDetails {...this.props} {...this.state} />
                 <ProjectChildren {...this.props} {...this.state} />
-                 <TagManager {...this.props} {...this.state} />
+                <TagManager {...this.props} {...this.state} />
             </div>
         );
     }

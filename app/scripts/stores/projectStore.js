@@ -73,6 +73,14 @@ var ProjectStore = Reflux.createStore({
         ProjectActions.getTags(fileId, 'dds-file');
     },
 
+    appendTagsSuccess() {
+        ProjectActions.getTags(fileId, 'dds-file');
+        this.showBatchOps = false;
+        this.trigger({
+            showBatchOps: this.showBatchOps
+        })
+    },
+
     deleteTagSuccess(fileId) {
         ProjectActions.getTags(fileId, 'dds-file');
     },
@@ -345,6 +353,15 @@ var ProjectStore = Reflux.createStore({
             foldersChecked: this.foldersChecked,
             itemsSelected: this.itemsSelected,
             showBatchOps: this.showBatchOps
+        })
+    },
+
+    clearSelectedItems() {
+        this.filesChecked = [];
+        this.foldersChecked = [];
+        this.trigger({
+            filesChecked: this.filesChecked,
+            foldersChecked: this.foldersChecked
         })
     },
 

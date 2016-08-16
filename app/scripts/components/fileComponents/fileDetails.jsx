@@ -106,7 +106,7 @@ class FileDetails extends React.Component {
                 <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.btnWrapper}>
                     { versionsButton }
                 </div>
-                {width >  50 ? <TagCloud {...this.props}/> : null}
+                {width >  300 ? <TagCloud {...this.props}/> : null}
                 <FileVersionsList {...this.props}/>
                 <VersionUpload {...this.props}/>
                 <div style={styles.uploadProg}>
