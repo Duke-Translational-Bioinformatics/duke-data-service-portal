@@ -870,7 +870,30 @@ var ProjectStore = Reflux.createStore({
     },
 
     checkForHash(uploadId, parentId, parentKind, name, label, fileId) {
-        let hash = this.fileHashes.find((fileHash)=>{
+        if (!Array.prototype.find) { // Polyfill for Internet Explorer Array.find()
+            Array.prototype.find = function(predicate) {
+                'use strict';
+                if (this == null) {
+                    throw new TypeError('Array.prototype.find called on null or undefined');
+                }
+                if (typeof predicate !== 'function') {
+                    throw new TypeError('predicate must be a function');
+                }
+                var list = Object(this);
+                var length = list.length >>> 0;
+                var thisArg = arguments[1];
+                var value;
+
+                for (var i = 0; i < length; i++) {
+                    value = list[i];
+                    if (predicate.call(thisArg, value, i, list)) {
+                        return value;
+                    }
+                }
+                return undefined;
+            };
+        }
+        let hash = this.fileHashes.find((fileHash)=>{ // array.find() method not supported in IE
             return fileHash.id === uploadId;
         });
         if(!hash) {
