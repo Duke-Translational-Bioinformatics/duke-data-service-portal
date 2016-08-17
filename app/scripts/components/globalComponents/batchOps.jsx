@@ -210,7 +210,7 @@ let styles = {
     },
     deleteBtn: {
         marginLeft: 10,
-        marginRight: 5,
+        marginRight: 7,
         padding: '5px 10px 01px 5px',
         height: 32,
         width: 32

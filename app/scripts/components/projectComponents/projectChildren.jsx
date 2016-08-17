@@ -122,9 +122,9 @@ class ProjectChildren extends React.Component {
         return (
             <div className="list-container">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
-                    <div className="mdl-cell mdl-cell--12-col">
+                    {!this.props.showBatchOps ? <div className="mdl-cell mdl-cell--12-col">
                         { newFolderModal }
-                    </div>
+                    </div> : null}
                     <div className="mdl-cell mdl-cell--12-col" style={styles.batchOpsWrapper}>
                         { this.props.searchText !== '' ? <div className="mdl-cell mdl-cell--4-col mdl-color-text--grey-600" style={styles.searchText}>Showing{" "+this.props.children.length+" "}results for{" '"+this.props.searchText+"'"}</div> : null}
                         { this.props.showBatchOps ? <BatchOps {...this.props} {...this.state}/> : null }
