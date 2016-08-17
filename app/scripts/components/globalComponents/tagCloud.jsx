@@ -54,7 +54,7 @@ var styles = {
         height: 24,
         width: 24,
         padding: 0,
-        margin: '9px 5px 5px 9px'
+        margin: '5px 5px 5px 9px'
     }
 };
 
