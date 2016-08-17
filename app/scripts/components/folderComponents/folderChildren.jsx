@@ -216,7 +216,7 @@ FolderChildren.contextTypes = {
 
 var styles = {
     batchOpsWrapper: {
-        marginBottom: -20
+        marginBottom: 0
     },
     checkBox: {
         width: 16,
