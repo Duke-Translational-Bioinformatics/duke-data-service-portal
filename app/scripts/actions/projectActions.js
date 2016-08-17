@@ -79,6 +79,7 @@ var ProjectActions = Reflux.createActions([
     'clearApiToken',
     'loadProjects',
     'loadProjectsSuccess',
+    'deleteItemSuccess',
     'addProject',
     'addProjectSuccess',
     'deleteProject',
@@ -90,13 +91,11 @@ var ProjectActions = Reflux.createActions([
     'addFolder',
     'addFolderSuccess',
     'deleteFolder',
-    'deleteFolderSuccess',
     'editFolder',
     'editFolderSuccess',
     'addFile',
     'addFileSuccess',
     'deleteFile',
-    'deleteFileSuccess',
     'editFile',
     'editFileSuccess',
     'getEntity',
@@ -114,6 +113,8 @@ var ProjectActions = Reflux.createActions([
     'getDownloadUrl',
     'getDownloadUrlSuccess',
     'showBatchOptions',
+    'setBatchItems',
+    'batchDeleteItems',
     'startUpload',
     'startUploadSuccess',
     'updateChunkProgress',
@@ -722,7 +723,7 @@ ProjectActions.deleteFolder.preEmit = function (id, parentId, parentKind) {
     }).then(checkResponse).then(function (response) {
     }).then(function () {
         MainActions.addToast('Folder(s) Deleted!');
-        ProjectActions.deleteFolderSuccess(parentId, parentKind)
+        ProjectActions.deleteItemSuccess(parentId, parentKind)
     }).catch(function (ex) {
         MainActions.addToast('Folder Deleted Failed!');
         ProjectActions.handleErrors(ex)
@@ -785,7 +786,7 @@ ProjectActions.deleteFile.preEmit = function (id, parentId, parentKind) {
     }).then(checkResponse).then(function (response) {
     }).then(function () {
         MainActions.addToast('File(s) Deleted!');
-        ProjectActions.deleteFileSuccess(parentId, parentKind)
+        ProjectActions.deleteItemSuccess(parentId, parentKind)
     }).catch(function (ex) {
         MainActions.addToast('Failed to Delete File!');
         ProjectActions.handleErrors(ex)

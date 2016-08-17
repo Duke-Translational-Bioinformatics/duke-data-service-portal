@@ -38,7 +38,7 @@ class BatchOps extends React.Component {
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
         if (prjPrm !== null) {
             dltIcon = prjPrm === 'flDownload' ? null :
-                <IconButton onTouchTap={this.openDeleteModal.bind(this)} style={styles.deleteBtn}>
+                <IconButton onTouchTap={() => this.openDeleteModal()} style={styles.deleteBtn}>
                     <DeleteIcon color={'#EC407A'}/>
                 </IconButton>;
         }
@@ -53,12 +53,12 @@ class BatchOps extends React.Component {
             <FlatButton
                 label="Cancel"
                 secondary={true}
-                onTouchTap={this.handleClose.bind(this)}/>,
+                onTouchTap={() => this.handleClose()}/>,
             <FlatButton
                 label="Delete"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={this.handleDelete.bind(this)}/>
+                onTouchTap={() => this.handleDelete()}/>
         ];
         let downloadActions = [];
         if(!this.props.filesChecked.length){
@@ -66,19 +66,19 @@ class BatchOps extends React.Component {
                 <FlatButton
                     label="Cancel"
                     secondary={true}
-                    onTouchTap={this.handleClose.bind(this)}/>
+                    onTouchTap={() => this.handleClose()}/>
             ]
         } else {
             downloadActions = [
                 <FlatButton
                     label="Cancel"
                     secondary={true}
-                    onTouchTap={this.handleClose.bind(this)}/>,
+                    onTouchTap={() => this.handleClose()}/>,
                 <FlatButton
                     label="Download"
                     secondary={true}
                     keyboardFocused={true}
-                    onTouchTap={this.handleDownload.bind(this)}/>
+                    onTouchTap={() => this.handleDownload()}/>
             ];
         }
 
@@ -103,7 +103,7 @@ class BatchOps extends React.Component {
                     autoScrollBodyContent={true}
                     actions={deleteActions}
                     open={this.state.deleteOpen}
-                    onRequestClose={this.handleClose.bind(this)}>
+                    onRequestClose={() => this.handleClose()}>
                     <i className="material-icons" style={styles.warning}>warning</i>
                 </Dialog>
                 <Dialog
@@ -113,7 +113,7 @@ class BatchOps extends React.Component {
                     autoScrollBodyContent={true}
                     actions={downloadActions}
                     open={this.state.downloadOpen}
-                    onRequestClose={this.handleClose.bind(this)}>
+                    onRequestClose={() => this.handleClose()}>
                     <i className="material-icons" style={styles.warning}>warning</i>
                     <p style={styles.textStyles}>If you want to download the contents of a folder, please open that folder and select the files to download.</p>
                 </Dialog>
@@ -122,16 +122,9 @@ class BatchOps extends React.Component {
     }
 
     handleDelete(){
-        let files = this.props.filesChecked ? this.props.filesChecked : null;
-        let folders = this.props.foldersChecked ? this.props.foldersChecked : null;
         let parentId = this.props.entityObj && this.props.entityObj.id ? this.props.entityObj.id : this.props.project.id;
         let parentKind = this.props.entityObj && this.props.entityObj.kind === 'dds-folder' ? this.props.entityObj.kind : 'dds-project';
-        for (let i = 0; i < files.length; i++) {
-            ProjectActions.deleteFile(files[i], parentId, parentKind);
-        }
-        for (let i = 0; i < folders.length; i++) {
-            ProjectActions.deleteFolder(folders[i], parentId, parentKind);
-        }
+        ProjectActions.batchDeleteItems(parentId, parentKind);
         this.setState({deleteOpen: false});
     }
 
@@ -147,6 +140,17 @@ class BatchOps extends React.Component {
     }
 
     openDeleteModal() {
+        let batchDeleteFiles = [];
+        let batchDeleteFolders = [];
+        let files = this.props.filesChecked ? this.props.filesChecked : null;
+        let folders = this.props.foldersChecked ? this.props.foldersChecked : null;
+        for (let i = 0; i < files.length; i++) {
+            batchDeleteFiles.push(files[i]);
+        }
+        for (let i = 0; i < folders.length; i++) {
+            batchDeleteFolders.push(folders[i]);
+        }
+        ProjectActions.setBatchItems(batchDeleteFiles, batchDeleteFolders);
         this.setState({deleteOpen: true});
     }
 
@@ -210,7 +214,7 @@ let styles = {
     },
     deleteBtn: {
         marginLeft: 10,
-        marginRight: 5,
+        marginRight: 7,
         padding: '5px 10px 01px 5px',
         height: 32,
         width: 32

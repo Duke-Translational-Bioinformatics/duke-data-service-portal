@@ -11,6 +11,8 @@ var ProjectStore = Reflux.createStore({
         this.agentKey = {};
         this.agentApiToken = {};
         this.audit = {};
+        this.batchFiles = [];
+        this.batchFolders = [];
         this.children = [];
         this.currentUser = {};
         this.destination = null;
@@ -343,6 +345,26 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
+    setBatchItems(batchDeleteFiles, batchDeleteFolders) {
+        this.batchFiles = batchDeleteFiles;
+        this.batchFolders = batchDeleteFolders;
+        this.trigger({
+            batchFiles: this.batchFiles,
+            batchFolders: this.batchFolders
+        })
+    },
+
+    batchDeleteItems(parentId, parentKind) {
+        let files = this.batchFiles;
+        let folders = this.batchFolders;
+        for (let i = 0; i < files.length; i++) {
+            ProjectActions.deleteFile(files[i], parentId, parentKind);
+        }
+        for (let i = 0; i < folders.length; i++) {
+            ProjectActions.deleteFolder(folders[i], parentId, parentKind);
+        }
+    },
+
     handleBatch (files, folders) {
         this.filesChecked = files;
         this.foldersChecked = folders;
@@ -451,6 +473,27 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
+    deleteItemSuccess(id, parentKind) {
+        this.batchFolders.splice(0, 1);
+        this.batchFiles.splice(0, 1);
+        if(this.batchFolders.length || this.batchFiles.length) {
+            return
+        } else {
+            if (parentKind === 'dds-project') {
+                ProjectActions.getChildren(id, 'projects/');
+            } else {
+                ProjectActions.getChildren(id, 'folders/');
+            }
+        }
+        this.showBatchOps = false;
+        this.trigger({
+            batchFiles: this.batchFiles,
+            batchFolders: this.batchFolders,
+            loading: false,
+            showBatchOps: this.showBatchOps
+        })
+    },
+
     addProject() {
         this.trigger({
             loading: true
@@ -528,19 +571,6 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    deleteFolderSuccess(id, parentKind) {
-        if (parentKind === 'dds-project') {
-            ProjectActions.getChildren(id, 'projects/');
-        } else {
-            ProjectActions.getChildren(id, 'folders/');
-        }
-        this.showBatchOps = false;
-        this.trigger({
-            loading: false,
-            showBatchOps: this.showBatchOps
-        })
-    },
-
     editFolder() {
         this.trigger({
             loading: true
@@ -597,19 +627,6 @@ var ProjectStore = Reflux.createStore({
     deleteFile() {
         this.trigger({
             loading: true
-        })
-    },
-
-    deleteFileSuccess(id, parentKind) {
-        if (parentKind === 'dds-project') {
-            ProjectActions.getChildren(id, 'projects/');
-        } else {
-            ProjectActions.getChildren(id, 'folders/');
-        }
-        this.showBatchOps = false;
-        this.trigger({
-            loading: false,
-            showBatchOps: this.showBatchOps
         })
     },
 
