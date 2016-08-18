@@ -25,6 +25,7 @@ class App extends React.Component {
         this.state = {
             appConfig: MainStore.appConfig
         };
+        this.handleResize = this.handleResize.bind(this);
     }
 
     getChildContext() {
@@ -34,6 +35,8 @@ class App extends React.Component {
     }
 
     componentDidMount() {
+        ProjectActions.getScreenSize(window.innerHeight, window.innerWidth);
+        window.addEventListener('resize', this.handleResize);
         this.unsubscribe = MainStore.listen(state => this.setState(state));
         this.showToasts();
         let app = new Framework7();
@@ -47,12 +50,17 @@ class App extends React.Component {
     }
 
     componentWillUnmount() {
+        window.removeEventListener('resize', this.handleResize);
         this.unsubscribe();
         new Framework7().closePanel();
     }
 
     componentDidUpdate(prevProps, prevState) {
         this.showToasts();
+    }
+
+    handleResize(e) {
+        ProjectActions.getScreenSize(window.innerHeight, window.innerWidth);
     }
 
     createLoginUrl() {

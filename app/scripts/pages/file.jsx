@@ -3,6 +3,7 @@ import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
 import FileDetails from '../components/fileComponents/fileDetails.jsx';
 import Provenance from '../components/globalComponents/provenance.jsx';
+import TagManager from '../components/globalComponents/tagManager.jsx'
 
 class File extends React.Component {
 
@@ -13,9 +14,12 @@ class File extends React.Component {
             dltRelationsBtn: ProjectStore.dltRelationsBtn,
             error: ProjectStore.error,
             errorModal: ProjectStore.errorModal,
+            filesChecked: ProjectStore.filesChecked,
             loading: false,
             moveModal: ProjectStore.moveModal,
             moveErrorModal: ProjectStore.moveErrorModal,
+            objectTags: ProjectStore.objectTags,
+            openTagManager: ProjectStore.openTagManager,
             position: ProjectStore.position,
             projPermissions: ProjectStore.projPermissions,
             provEdges: ProjectStore.provEdges,
@@ -27,10 +31,13 @@ class File extends React.Component {
             relFrom: ProjectStore.relFrom,
             relTo: ProjectStore.relTo,
             scale: ProjectStore.scale,
+            screenSize: ProjectStore.screenSize,
             selectedEdge: ProjectStore.selectedEdge,
             selectedNode: ProjectStore.selectedNode,
             showProvAlert: ProjectStore.showProvAlert,
             showProvCtrlBtns: ProjectStore.showProvCtrlBtns,
+            tagAutoCompleteList: ProjectStore.tagAutoCompleteList,
+            tagLabels: ProjectStore.tagLabels,
             updatedGraphItem: ProjectStore.updatedGraphItem
         };
     }
@@ -52,6 +59,9 @@ class File extends React.Component {
         //    let versionId = this.state.entityObj.current_version.id;
         //    ProjectActions.getProvenance(versionId, 'dds-file-version');
         //}
+        if(prevProps.objectTags !== this.props.objectTags) {
+            ProjectActions.getTags(id, 'dds-file');
+        }
     }
 
     componentWillUnmount() {
@@ -66,6 +76,9 @@ class File extends React.Component {
             //ProjectActions.getProvenance(versionId, 'dds-file-version');
             console.log(versionId)
         }, 1000)
+        ProjectActions.getTags(id, 'dds-file');
+        ProjectActions.getTagLabels(); // Used to generate a list of tag labels
+        ProjectActions.clearSelectedItems(); // Clear checked files and folders from list
     }
 
     render() {
@@ -78,6 +91,7 @@ class File extends React.Component {
             <div>
                 <Provenance {...this.props} {...this.state}/>
                 <FileDetails {...this.props} {...this.state} />
+                <TagManager {...this.props} {...this.state} />
             </div>
         );
     }

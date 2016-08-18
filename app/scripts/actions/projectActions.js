@@ -32,9 +32,26 @@ var ProjectActions = Reflux.createActions([
     'getProvenance',
     'getProvenanceSuccess',
     'saveGraphZoomState',
+    'clearSelectedItems',
+    'getScreenSize',
+    'toggleUploadManager',
+    'toggleTagManager',
+    'addNewTag',
+    'addNewTagSuccess',
+    'appendTags',
+    'appendTagsSuccess',
+    'getTagAutoCompleteList',
+    'getTagAutoCompleteListSuccess',
+    'getTagLabels',
+    'getTagLabelsSuccess',
+    'getTags',
+    'getTagsSuccess',
+    'deleteTag',
+    'deleteTagSuccess',
     'getDeviceType',
     'hashFile',
     'postHash',
+    'checkForHash',
     'openModal',
     'closeModal',
     'openMoveModal',
@@ -86,6 +103,7 @@ var ProjectActions = Reflux.createActions([
     'clearApiToken',
     'loadProjects',
     'loadProjectsSuccess',
+    'deleteItemSuccess',
     'addProject',
     'addProjectSuccess',
     'deleteProject',
@@ -97,13 +115,11 @@ var ProjectActions = Reflux.createActions([
     'addFolder',
     'addFolderSuccess',
     'deleteFolder',
-    'deleteFolderSuccess',
     'editFolder',
     'editFolderSuccess',
     'addFile',
     'addFileSuccess',
     'deleteFile',
-    'deleteFileSuccess',
     'editFile',
     'editFileSuccess',
     'getEntity',
@@ -121,6 +137,8 @@ var ProjectActions = Reflux.createActions([
     'getDownloadUrl',
     'getDownloadUrlSuccess',
     'showBatchOptions',
+    'setBatchItems',
+    'batchDeleteItems',
     'startUpload',
     'startUploadSuccess',
     'updateChunkProgress',
@@ -196,6 +214,31 @@ ProjectActions.addProvActivity.preEmit = function (name, desc) {
     })
 };
 
+ProjectActions.addNewTag.preEmit = function (id, kind, tag) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/', {
+        method: 'post',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            'object': {
+                'kind': kind,
+                'id': id
+            },
+            'label': tag
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('Added '+json.label+' tag');
+        ProjectActions.addNewTagSuccess(id);
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to add new tag');
+        ProjectActions.handleErrors(ex)
+    })
+};
+
 ProjectActions.editProvActivity.preEmit = function (id, name, desc, prevName) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'activities/'+ id, {
         method: 'put',
@@ -217,6 +260,28 @@ ProjectActions.editProvActivity.preEmit = function (id, name, desc, prevName) {
         }
         ProjectActions.editProvActivitySuccess(json);//TODO: Toggle prov buttons after success//////////////////
     }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.appendTags.preEmit = function (id, kind, tags) {
+    let msg = tags.map((tag)=>{return tag.label});
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/' + kind + '/' + id + '/append', {
+        method: 'post',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            tags
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('Added '+msg+' as tags to all selected files.');
+        ProjectActions.appendTagsSuccess(id);
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to add tags');
         ProjectActions.handleErrors(ex)
     })
 };
@@ -244,6 +309,23 @@ ProjectActions.getProvenance.preEmit = function (id, kind) {//Todo: Replace with
     })
 };
 
+ProjectActions.deleteTag.preEmit = function (id, label, fileId) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/' + id, {
+        method: 'delete',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+    }).then(function () {
+        MainActions.addToast(label +' tag deleted!');
+        ProjectActions.deleteTagSuccess(fileId)
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to delete '+ label);
+        ProjectActions.handleErrors(ex)
+    });
+};
+
 ProjectActions.search.preEmit = function (text, id) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT+ id +'/children?name_contains='+ text, {
         method: 'get',
@@ -256,6 +338,56 @@ ProjectActions.search.preEmit = function (text, id) {
     }).then(function (json) {
         ProjectActions.getChildrenSuccess(json.results);
         ProjectActions.setSearchText(text);
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.getTagLabels.preEmit = function () {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/labels/?object_kind=dds-file', {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getTagLabelsSuccess(json.results)
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+
+ProjectActions.getTagAutoCompleteList.preEmit = function (text) {
+    let query = text === null ? '' : '&label_contains='+text;
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/labels/?object_kind=dds-file'+ query, {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getTagAutoCompleteListSuccess(json.results)
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.getTags.preEmit = function (id, kind) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/' + kind +'/'+ id, {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getTagsSuccess(json.results)
     }).catch(function (ex) {
         ProjectActions.handleErrors(ex)
     })
@@ -728,7 +860,7 @@ ProjectActions.deleteFolder.preEmit = function (id, parentId, parentKind) {
     }).then(checkResponse).then(function (response) {
     }).then(function () {
         MainActions.addToast('Folder(s) Deleted!');
-        ProjectActions.deleteFolderSuccess(parentId, parentKind)
+        ProjectActions.deleteItemSuccess(parentId, parentKind)
     }).catch(function (ex) {
         MainActions.addToast('Folder Deleted Failed!');
         ProjectActions.handleErrors(ex)
@@ -791,7 +923,7 @@ ProjectActions.deleteFile.preEmit = function (id, parentId, parentKind) {
     }).then(checkResponse).then(function (response) {
     }).then(function () {
         MainActions.addToast('File(s) Deleted!');
-        ProjectActions.deleteFileSuccess(parentId, parentKind)
+        ProjectActions.deleteItemSuccess(parentId, parentKind)
     }).catch(function (ex) {
         MainActions.addToast('Failed to Delete File!');
         ProjectActions.handleErrors(ex)
@@ -968,7 +1100,7 @@ ProjectActions.getDownloadUrl.preEmit = function (id, kind) {
     })
 };
 
-ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKind, label, fileId) {
+ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKind, label, fileId, tags) {
     let chunkNum = 0,
         fileName = blob.name,
         contentType = blob.type,
@@ -985,6 +1117,7 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
     let details = {
         name: fileName,
         label: label,
+        tags: tags,
         fileId: fileId,
         size: SIZE,
         blob: blob,
@@ -1022,7 +1155,7 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
             body: JSON.stringify({
                 'name': fileName,
                 'content_type': contentType,
-                'size': SIZE,
+                'size': SIZE
             })
         }).then(checkResponse).then(function (response) {
             return response.json()
@@ -1108,13 +1241,19 @@ function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKi
     xhr.send(chunkBlob);
 }
 
-ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentKind, fileName, label, fileId) {
+ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentKind, fileName, label, fileId, hash) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.UPLOAD + uploadId + '/complete', {
         method: 'put',
         headers: {
             'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
-        }
+        },
+        body: JSON.stringify({
+            'hash': {
+                'value': hash,
+                'algorithm': 'md5'
+            }
+        })
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
@@ -1148,7 +1287,7 @@ ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind, fileN
         return response.json()
     }).then(function (json) {
         MainActions.addToast(fileName + ' uploaded successfully');
-        ProjectActions.addFileSuccess(parentId, parentKind, uploadId)
+        ProjectActions.addFileSuccess(parentId, parentKind, uploadId, json.id)
     }).catch(function (ex) {
         MainActions.addToast('Failed to upload ' + fileName + '!');
         ProjectActions.handleErrors(ex)
@@ -1169,9 +1308,9 @@ ProjectActions.hashFile.preEmit = function (file, id) {
 
     function webWorkerOnMessage(e) {
         function arrayBufferToWordArray(ab) {
-            var i8a = new Uint8Array(ab);
-            var a = [];
-            for (var i = 0; i < i8a.length; i += 4) {
+            let i8a = new Uint8Array(ab);
+            let a = [];
+            for (let i = 0; i < i8a.length; i += 4) {
                 a.push(i8a[i] << 24 | i8a[i + 1] << 16 | i8a[i + 2] << 8 | i8a[i + 3]);
             }
             return CryptoJS.lib.WordArray.create(a, i8a.length);
@@ -1192,12 +1331,13 @@ ProjectActions.hashFile.preEmit = function (file, id) {
     window.URL = window.URL || window.webkitURL;
 
 // "Server response"
-    var response =
-        "importScripts('https://raw.githubusercontent.com/Duke-Translational-Bioinformatics/duke-data-service-portal/develop/app/lib/md5.js');" +
-        "var md5, cryptoType;" +
+    let assetPath = location.protocol + '//' + location.host + '/lib/md5.js';
+    let response =
+        "importScripts("+"'"+assetPath+"'"+");" +
+        "let md5, cryptoType;" +
         "self.onmessage = " + webWorkerOnMessage.toString();
 
-    var blob;
+    let blob;
     try {
         blob = new Blob([response], {type: 'application/javascript'});
     } catch (e) { // Backwards-compatibility
@@ -1207,23 +1347,23 @@ ProjectActions.hashFile.preEmit = function (file, id) {
         blob = blob.getBlob();
     }
 
-    var worker = new Worker(URL.createObjectURL(blob));
-    var chunksize = 5242880;
-    var f = file.blob; // FileList object
-    var i = 0,
+    let worker = new Worker(URL.createObjectURL(blob));
+    let chunksize = 5242880;
+    let f = file.blob; // FileList object
+    let i = 0,
         chunks = Math.ceil(f.size / chunksize),
         chunkTasks = [],
         startTime = (new Date()).getTime();
-    worker.onmessage = function (e) {
+        worker.onmessage = function (e) {
         // create callback
-        for (var j = 0; j < chunks; j++) {
+        for (let j = 0; j < chunks; j++) {
             (function (j, f) {
                 chunkTasks.push(function (next) {
-                    var blob = f.slice(j * chunksize, Math.min((j + 1) * chunksize, f.size));
-                    var reader = new FileReader();
+                    let blob = f.slice(j * chunksize, Math.min((j + 1) * chunksize, f.size));
+                    let reader = new FileReader();
 
                     reader.onload = function (e) {
-                        var chunk = e.target.result;
+                        let chunk = e.target.result;
                         worker.onmessage = function (e) {
                             // update callback
                             next();
@@ -1237,7 +1377,6 @@ ProjectActions.hashFile.preEmit = function (file, id) {
         series(chunkTasks, function () {
             worker.onmessage = function (e) {
                 // finish callback
-                // TODO: Post hash in store?????
                 ProjectActions.postHash({id: e.data.id, hash: e.data.hash});
             };
             worker.postMessage({type: "finish", id: id});
@@ -1245,10 +1384,6 @@ ProjectActions.hashFile.preEmit = function (file, id) {
     };
     worker.postMessage({type: "create"});
 };
-
-//ProjectActions.postHash.preEmit = function (hashObj){ //Todo: Make proper preemit function w/fetch call !!!!!!!!!!!!
-//    //console.log('File ID:' + hashObj.id + ' ' + 'Hash:' + hashObj.hash);
-//};
 
 function checkResponse(response) {
     return checkStatus(response, MainActions);

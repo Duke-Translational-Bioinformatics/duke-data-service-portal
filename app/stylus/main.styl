@@ -64,7 +64,6 @@ input[type=text]::-ms-clear /*To remove the cancel button inside inputs IE10+*/
   display: none;
 
 //Styles for File Input//
-
 .mdl-button--file {
   input {
     cursor: pointer;
@@ -81,7 +80,7 @@ input[type=text]::-ms-clear /*To remove the cancel button inside inputs IE10+*/
 .mdl-textfield--file {
   .mdl-textfield__input {
     box-sizing: border-box;
-    width: calc(100% - 32px);
+    width: calc(100% - 42px);
   }
   .mdl-button--file {
     right: 0;
@@ -91,9 +90,9 @@ input[type=text]::-ms-clear /*To remove the cancel button inside inputs IE10+*/
 //Styles for progress bar//
 
 .loader {
-  width: 80%
-  marginTop: 10px
-  margin: 0 auto
+  width: 80%;
+  marginTop: 10px;
+  margin: 0 auto;
 }
 
 //Tooltip Styles
@@ -162,9 +161,52 @@ div.vis-network-tooltip {
   background: #fff !important;
   border-radius: 2px;
   margin: 1rem !important;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   //transition: all 0.3s cubic-bezier(.25,.8,.25,1);
-  border  none
+  border none;
+}
+
+//chips styles
+.chip-container {
+  //padding-right: 18%;
+  padding-left: 6px;
+  display: flex;
+  -webkit-flex-wrap: wrap; /* Safari */
+  flex-wrap:         wrap;
+  -webkit-align-content: space-around; /* Safari */
+  align-content:         space-around;
+}
+
+.chip {
+  margin: 2px
+  padding: 0 25px;
+  min-height: 24px;
+  font-family: 'roboto';
+  line-height: 10px;
+  border-radius: 25px;
+  background-color: #66BB6A;
+}
+
+.closebtn {
+  padding-left: 0;
+  margin: 10px -15px 10px 0;
+  color: #AEEA00;
+  font-weight: 800;
+  float: right;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.closebtn:hover {
+  color: $white;
+}
+
+.chip-text {
+  margin: 10px 10px 10px 0;
+  color: $white;
+  font-weight: 100;
+  float: left;
+  font-size: 12px;
 }
 
 // Search input

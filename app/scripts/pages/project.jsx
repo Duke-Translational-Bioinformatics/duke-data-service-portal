@@ -4,6 +4,7 @@ import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
 import ProjectChildren from '../components/projectComponents/projectChildren.jsx';
 import ProjectDetails from '../components/projectComponents/projectDetails.jsx';
+import TagManager from '../components/globalComponents/tagManager.jsx'
 
 class Project extends React.Component {
 
@@ -18,8 +19,14 @@ class Project extends React.Component {
             filesChecked: ProjectStore.filesChecked,
             foldersChecked: ProjectStore.foldersChecked,
             loading: false,
+            objectTags: ProjectStore.objectTags,
+            openTagManager: ProjectStore.openTagManager,
+            openUploadManager: ProjectStore.openUploadManager,
             projects: ProjectStore.projects,
             project: ProjectStore.project,
+            screenSize: ProjectStore.screenSize,
+            tagAutoCompleteList: ProjectStore.tagAutoCompleteList,
+            tagLabels: ProjectStore.tagLabels,
             searchText: ProjectStore.searchText,
             uploads: ProjectStore.uploads,
             users: ProjectStore.users
@@ -34,6 +41,15 @@ class Project extends React.Component {
         ProjectActions.showDetails(id);
         ProjectActions.getProjectMembers(id);
         ProjectActions.getUser(id);
+        ProjectActions.getTagLabels(); // Used to generate a list of tag labels
+        ProjectActions.clearSelectedItems(); // Clear checked files and folders from list
+    }
+
+    componentDidUpdate(prevProps) {
+        let id = this.props.params.id;
+        if(prevProps.objectTags !== this.props.objectTags) {
+            ProjectActions.getTags(id, 'dds-file');
+        }
     }
 
     componentDidUpdate(prevProps) {
@@ -42,7 +58,6 @@ class Project extends React.Component {
             this.getChildren(id, 'projects/');
         }
     }
-
 
     componentWillUnmount() {
         this.unsubscribe();
@@ -53,6 +68,7 @@ class Project extends React.Component {
             <div>
                 <ProjectDetails {...this.props} {...this.state} />
                 <ProjectChildren {...this.props} {...this.state} />
+                <TagManager {...this.props} {...this.state} />
             </div>
         );
     }

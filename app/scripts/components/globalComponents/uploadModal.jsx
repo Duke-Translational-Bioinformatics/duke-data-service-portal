@@ -22,12 +22,6 @@ class UploadModal extends React.Component {
                 secondary={true}
                 onTouchTap={this.handleUploadButton.bind(this)} />
         ];
-        let warnActions = [
-            <FlatButton
-                label="Okay"
-                secondary={true}
-                onTouchTap={this.handleClose.bind(this)} />,
-        ];
 
         Tooltip.bindEvents();
 
@@ -123,10 +117,6 @@ var styles = {
         textAlign: 'center',
         fontColor: '#303F9F'
     },
-    textStyles: {
-        textAlign: 'left',
-        fontColor: '#303F9F'
-    },
     floatingButton: {
         position: 'absolute',
         top: -50,
@@ -134,15 +124,6 @@ var styles = {
         right: '2%',
         zIndex: '2',
         color: '#ffffff'
-    },
-    msg: {
-        textAlign: 'center',
-        marginLeft: 30
-    },
-    warning: {
-        fontSize: 48,
-        textAlign: 'center',
-        color: '#FFEB3B'
     }
 };
 

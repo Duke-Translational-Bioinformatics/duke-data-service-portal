@@ -41,6 +41,7 @@ class FileVersionsList extends React.Component {
             <div>
                 <Dialog
                     style={styles.dialogStyles}
+                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="File Versions"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}

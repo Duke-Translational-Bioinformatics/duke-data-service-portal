@@ -69,7 +69,7 @@ class FolderChildren extends React.Component {
                             <label className="label-checkbox item-content" style={styles.checkboxLabel}
                                    onClick={e => this.change()}>
                                 <input className="folderChkBoxes" type={type} name="chkboxName"
-                                       value={children.id}/>
+                                       value={children.id} id={children.id}/>
                                 { chkBx }
                             </label>
 
@@ -101,7 +101,7 @@ class FolderChildren extends React.Component {
                             <label className="label-checkbox item-content" style={styles.checkboxLabel}
                                    onClick={e => this.change()}>
                                 <input className="fileChkBoxes" type={type} name="chkboxName"
-                                       value={children.id}/>
+                                       value={children.id} id={children.id}/>
                                 { chkBx }
                             </label>
 
@@ -126,9 +126,9 @@ class FolderChildren extends React.Component {
         return (
             <div className="list-container">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
-                    <div className="mdl-cell mdl-cell--12-col">
+                    {!this.props.showBatchOps ? <div className="mdl-cell mdl-cell--12-col">
                         { newFolderModal }
-                    </div>
+                    </div> : null}
                     <div className="mdl-cell mdl-cell--12-col" style={styles.batchOpsWrapper}>
                         { this.props.searchText !== '' ? <div className="mdl-cell mdl-cell--4-col mdl-color-text--grey-600" style={styles.searchText}>Showing{" "+this.props.children.length+" "}results for{" '"+this.props.searchText+"'"}</div> : null}
                         { this.props.showBatchOps ? <BatchOps {...this.props} {...this.state}/> : null }
@@ -216,7 +216,7 @@ FolderChildren.contextTypes = {
 
 var styles = {
     batchOpsWrapper: {
-        marginBottom: -20
+        marginBottom: 0
     },
     checkBox: {
         width: 16,

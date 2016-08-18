@@ -27,6 +27,7 @@ class Version extends React.Component {
             toggleProvEdit: ProjectStore.toggleProvEdit,
             relTo: ProjectStore.relTo,
             scale: ProjectStore.scale,
+            screenSize: ProjectStore.screenSize,
             selectedEdge: ProjectStore.selectedEdge,
             selectedNode: ProjectStore.selectedNode,
             showProvAlert: ProjectStore.showProvAlert,
