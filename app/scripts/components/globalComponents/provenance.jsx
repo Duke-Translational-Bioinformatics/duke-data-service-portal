@@ -6,6 +6,7 @@ import ProjectStore from '../../stores/projectStore';
 import urlGen from '../../../util/urlGen.js';
 import BorderColor from 'material-ui/lib/svg-icons/editor/border-color';
 import Cancel from 'material-ui/lib/svg-icons/navigation/cancel';
+import CircularProgress from 'material-ui/lib/circular-progress';
 import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
 import Fullscreen from 'material-ui/lib/svg-icons/navigation/fullscreen';
@@ -43,11 +44,11 @@ class Provenance extends React.Component {
     componentDidMount() {
         // Listen for resize changes when rotating device
         window.addEventListener('resize', this.handleResize);
-        setTimeout(()=>{// Make sure that provEdges and nodes are set before rendering graph the first time
-            let edges = this.props.provEdges && this.props.provEdges.length > 0 ? this.props.provEdges : [];
-            let nodes = this.props.provNodes && this.props.provNodes.length > 0 ? this.props.provNodes : [];
-            this.renderProvGraph(edges,nodes);
-        },100);
+        //setTimeout(()=>{// Make sure that provEdges and nodes are set before rendering graph the first time
+        //    let edges = this.props.provEdges && this.props.provEdges.length > 0 ? this.props.provEdges : [];
+        //    let nodes = this.props.provNodes && this.props.provNodes.length > 0 ? this.props.provNodes : [];
+        //    this.renderProvGraph(edges,nodes);
+        //},8000);
     }
 
     componentWillUpdate(nextProps, nextState) {
@@ -55,12 +56,22 @@ class Provenance extends React.Component {
         let position = this.props.position;// Todo: Remove this if not using saveZoomState
         let edges = this.props.provEdges && this.props.provEdges.length > 0 ? this.props.provEdges : [];
         let nodes = this.props.provNodes && this.props.provNodes.length > 0 ? this.props.provNodes : [];
-        //if(nextProps.addEdgeMode !== this.props.addEdgeMode){
+        //if(nextProps.provEdges !== this.props.provEdges || nextProps.provNodes !== this.props.provNodes){
         ////Check if addEdgeMode has changed. If true render graph in add edge mode or with newly added edge
-        //    if(nextProps.addEdgeMode) this.renderProvGraph(edges, nodes);
+        //    this.renderProvGraph(edges, nodes);
         //}
         if(nextProps.updatedGraphItem !== this.props.updatedGraphItem && nextProps.updatedGraphItem.length > 0){
             this.renderProvGraph(edges, nodes, scale, position);// Todo: Remove extra params if not using saveZoomState
+        }
+    }
+
+    componentDidUpdate(nextProps, nextState) {
+        let edges = this.props.provEdges && this.props.provEdges.length > 0 ? this.props.provEdges : [];
+        let nodes = this.props.provNodes && this.props.provNodes.length > 0 ? this.props.provNodes : [];
+        if(nextProps.provEdges !== this.props.provEdges || nextProps.provNodes !== this.props.provNodes){
+            //Check if addEdgeMode has changed. If true render graph in add edge mode or with newly added edge
+            this.renderProvGraph(edges, nodes);
+            ProjectActions.toggleGraphLoading();
         }
     }
 
@@ -99,6 +110,7 @@ class Provenance extends React.Component {
                 ProjectActions.saveGraphZoomState(this.state.network.getScale(), this.state.network.getViewPosition());
                 ProjectActions.getFromAndToNodes(data, relationKind, nodes);
                 ProjectActions.toggleAddEdgeMode();
+                if(this.state.showDetails) this.setState({showDetails: false});
                 if(this.props.showProvCtrlBtns) ProjectActions.showProvControlBtns();
                 this.setState({value: null});
                 callback(null); // Disable default behavior and update dataset in the store instead
@@ -125,12 +137,17 @@ class Provenance extends React.Component {
             enabled: false,
             addEdge: onAddEdgeMode
         }});
+
         if(scale !== null && position !== null) {
             this.state.network.moveTo({
                 position: position,
                 scale: scale
             });
         }
+
+        this.state.network.once("animationFinished", () => {
+            console.log('stabile')
+        });
 
         this.state.network.on("select", (params) => {
             let nodeData = nodes.get(params.nodes[0]);
@@ -158,22 +175,26 @@ class Provenance extends React.Component {
 
             if(params.nodes.length > 0) {
                 this.setState({showDetails: true});
-                if (nodeData.properties.kind !== 'dds-activity') {
+                if(nodeData.properties.kind !== 'dds-activity') {
                     this.state.network.unselectAll();
                 }
                 if(nodeData.properties.audit.created_by.id !== this.props.currentUser.id && this.props.showProvCtrlBtns) {
                     ProjectActions.showProvControlBtns();
                 }
                 if(nodeData.properties.audit.created_by.id === this.props.currentUser.id) {
-                    if (nodeData.properties.kind !== 'dds-file-version' && nodeData.id !== this.props.selectedNode.id) {
-                        if (!this.props.showProvCtrlBtns) ProjectActions.showProvControlBtns();
-                        if (this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
+                    if(nodeData.properties.kind !== 'dds-file-version' && nodeData.id !== this.props.selectedNode.id) {
+                        if(!this.props.showProvCtrlBtns && nodeData.properties.hasOwnProperty('kind')) ProjectActions.showProvControlBtns();
+                        if(this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
                     }
-                    if (nodeData.properties.kind !== 'dds-activity' && this.props.showProvCtrlBtns) {
+                    if(nodeData.properties.kind === 'dds-file-version' && this.props.showProvCtrlBtns) {
                         this.state.network.unselectAll();
                         ProjectActions.showProvControlBtns();
                     }
-                    if (nodeData.properties.kind !== 'dds-activity' && this.props.dltRelationsBtn) {
+                    if(!nodeData.properties.hasOwnProperty('kind')) {
+                        this.state.network.unselectAll();
+                        if(this.props.showProvCtrlBtns) ProjectActions.showProvControlBtns();
+                    }
+                    if(nodeData.properties.kind !== 'dds-activity' && this.props.dltRelationsBtn) {
                         this.state.network.unselectAll();
                         ProjectActions.showDeleteRelationsBtn(edgeData, nodeData);
                     }
@@ -189,22 +210,27 @@ class Provenance extends React.Component {
                 this.state.network.unselectAll();
                 if(edgeData.length > 0) this.state.network.selectEdges([edgeData[0].id]);
             }
-            if (params.edges.length === 0 && this.props.dltRelationsBtn) {//If clicked on canvas only
+            if (params.edges.length === 0 && this.props.dltRelationsBtn) {//If clicked on
+            // canvas only
                 this.setState({showDetails: false});
                 ProjectActions.showDeleteRelationsBtn(edgeData);
                 this.state.network.unselectAll();
             }
-            if(edgeData.length > 0 && edgeData[0].properties.audit.created_by.id !== this.props.currentUser.id && this.props.dltRelationsBtn) {
-                this.setState({showDetails: false});
-                ProjectActions.showDeleteRelationsBtn(edgeData);
-            }
-            if(edgeData.length > 0 && edgeData[0].properties.audit.created_by.id === this.props.currentUser.id) {
-                if (params.edges.length > 0 && params.nodes.length < 1) {
-                    this.setState({showDetails: false});
-                    if (!this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
-                    if (this.props.showProvCtrlBtns && this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
+            if(edgeData.length > 0) {
+                if (edgeData[0].type !== 'WasAssociatedWith' || edgeData[0].type !== 'WasAttributedTo') {
+                    if (edgeData.length > 0 && edgeData[0].properties.audit.created_by.id !== this.props.currentUser.id && this.props.dltRelationsBtn) {
+                        this.setState({showDetails: false});
+                        ProjectActions.showDeleteRelationsBtn(edgeData);
+                    }
+                    if (edgeData.length > 0 && edgeData[0].properties.audit.created_by.id === this.props.currentUser.id) {
+                        if (params.edges.length > 0 && params.nodes.length < 1) {
+                            this.setState({showDetails: false});
+                            if (!this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
+                            if (this.props.showProvCtrlBtns && this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
+                        }
+                        if (params.edges.length === 0 && params.nodes.length === 0) this.setState({showDetails: false});
+                    }
                 }
-                if (params.edges.length === 0 && params.nodes.length === 0) this.setState({showDetails: false});
             }
         });
     }
@@ -292,6 +318,8 @@ class Provenance extends React.Component {
         let drvFrmMsg = this.props.relMsg && this.props.relMsg === 'wasDerivedFrom' ?
             <h5>Only<u><i>Was Derived From</i></u> relations can go
                 <u><i> from </i></u> files <u><i>to</i></u> files.</h5> : '';
+        let invalidRelMsg = this.props.relMsg && this.props.relMsg === 'invalidRelMsg' ?
+            <h5>A relation can not be created between these entity types.</h5> : '';
         let actToActMsg = this.props.relMsg && this.props.relMsg === 'actToActMsg' ?
             <h5>An <u><i>activity</i></u> can not have a relation to another <u><i>activity</i></u></h5> : '';
         let notFileToFile = this.props.relMsg && this.props.relMsg === 'notFileToFile' ?
@@ -446,6 +474,7 @@ class Provenance extends React.Component {
                             {actToActMsg}
                             {notFileToFile}
                             {permissionError}
+                            {invalidRelMsg}
                         </Dialog>
                         <Dialog
                             style={styles.dialogStyles}
@@ -526,14 +555,17 @@ class Provenance extends React.Component {
                         style={styles.provEditor.title}>
                         Provenance
                     </h5>
+                    {this.props.graphLoading ? <div className="mdl-cell mdl-cell--12-col" style={styles.loadingContainer}>
+                        <CircularProgress size={1.5} style={{marginTop: 20}}/>
+                    </div> : null}
                     <div id="graphContainer" ref="graphContainer"
+                         className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800"
                          style={{
                              position: 'relative',
                              marginTop: 50,
                              maxWidth: this.state.width,
                              height: this.state.height,
-                             float: 'left'}}
-                         className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
+                             float: 'left'}}>
                     </div>
                 </LeftNav>
             </div>
@@ -606,12 +638,15 @@ class Provenance extends React.Component {
     }
 
     handleSelectValueChange(event, index, value) {
-        if(window.innerWidth < 680) this.toggleEditor();
+        if(window.innerWidth < 680) {
+            setTimeout(()=>{this.toggleEditor()}, 2000);
+        }
         ProjectActions.toggleAddEdgeMode(value);
         if(this.props.showProvCtrlBtns) ProjectActions.showProvControlBtns();//Hide buttons while in add edge mode
         if(this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn([]);
         this.state.network.manipulation.addEdgeMode();
         this.setState({
+            showDetails: false,
             value: value,
             errorText: null
         });
@@ -667,6 +702,11 @@ var styles = {
         fontSize: 48,
         textAlign: 'center',
         color: '#235F9C'
+    },
+    loadingContainer: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     provEditor:{
         display: 'flex',

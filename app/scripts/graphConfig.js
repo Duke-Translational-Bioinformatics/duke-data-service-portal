@@ -9,6 +9,7 @@ let graphOptions = {
             hover: '#1565C0',
             opacity:1
         },
+        width: 0.15,
         smooth: {
             enabled: false,
             type: "dynamic",

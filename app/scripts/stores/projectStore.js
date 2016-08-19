@@ -22,6 +22,7 @@ var ProjectStore = Reflux.createStore({
         this.destination = null;
         this.destinationKind = null;
         this.device = {};
+        this.dltRelationsBtn = false;
         this.entityObj = null;
         this.error = {};
         this.errorModal = false;
@@ -29,6 +30,7 @@ var ProjectStore = Reflux.createStore({
         this.fileHashes = [];
         this.foldersChecked = [];
         this.fileVersions = [];
+        this.graphLoading = false,
         this.itemsSelected = null;
         this.modal = false;
         this.moveModal = false;
@@ -124,6 +126,12 @@ var ProjectStore = Reflux.createStore({
                 node2 = node;
             }
         });
+        if (!node1.properties.hasOwnProperty('kind') || !node2.properties.hasOwnProperty('kind')) {
+            this.trigger({
+                provEditorModal: {open: true, id: 'relWarning'},
+                relMsg: 'invalidRelMsg'
+            });
+        }
         if (relationKind !== 'was_derived_from') {
             if (node1.properties.kind === 'dds-activity' && node1.properties.audit.created_by.id !== MainStore.currentUser.id) {
                 this.trigger({
@@ -157,7 +165,9 @@ var ProjectStore = Reflux.createStore({
                         from = node1.properties.kind === 'dds-activity' ? node2 : node1;
                         to = node1.properties.kind === 'dds-activity' ? node1 : node2;
                     }
-                    ProjectActions.startAddRelation(relationKind, from, to);
+                    if (node1.properties.hasOwnProperty('kind') && node2.properties.hasOwnProperty('kind')){
+                        ProjectActions.startAddRelation(relationKind, from, to);
+                    }
                 }
             }
         } else {
@@ -249,7 +259,10 @@ var ProjectStore = Reflux.createStore({
                 properties: {
                     kind: node.kind,
                     audit: node.audit
-                }
+                },
+                title:'<div style="margin: 10px; color: #616161"><span>'
+                +node.name+'</span><br/><span>'
+                +node.description+'</span></div>'
             };
         });
         let nodes = this.provNodes;
@@ -274,7 +287,10 @@ var ProjectStore = Reflux.createStore({
                 properties: {
                     kind: node.kind,
                     audit: node.audit
-                }
+                },
+                title:'<div style="margin: 10px; color: #616161"><span>'
+                +node.name+'</span><br/><span>'
+                +node.description+'</span></div>'
             };
         });
         nodes.push(this.updatedGraphItem[0]);
@@ -290,10 +306,10 @@ var ProjectStore = Reflux.createStore({
         item.push(data);
         let edges = this.provEdges;
         let nodes = this.provNodes;
-        if(data.hasOwnProperty('properties')){
-            nodes = BaseUtils.removeObjByKey(nodes, {key: 'id', value: data.id});
-        } else {
+        if(data.hasOwnProperty('from')){
             edges = BaseUtils.removeObjByKey(edges, {key: 'id', value: data.id});
+        } else {
+            nodes = BaseUtils.removeObjByKey(nodes, {key: 'id', value: data.id});
         }
         this.trigger({
             //dltRelationsBtn: false,
@@ -330,42 +346,79 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
+    toggleGraphLoading() {
+        this.trigger({
+            graphLoading: false
+        })
+    },
+
+    getProvenance() {
+        this.trigger({
+            graphLoading: true
+        })
+    },
+
     getProvenanceSuccess(prov) {
-        this.provEdges = prov.relationships.map((edge) => {
-            return {
-                id: edge.id,
-                from: edge.start_node,
-                to: edge.end_node,
-                type: edge.type,
-                properties: edge.properties,
-                arrows: 'from'
-            };
+        let edges = prov.relationships.filter((edge) => {
+            if (edge.properties.audit.deleted_by === null) {
+                return edge;
+            }
         });
-        this.provNodes = prov.nodes.map((node) => {
+        let nodes = prov.nodes.filter((node) => {
             if (!node.properties.is_deleted) {
-                if (node.properties.kind === 'dds-activity') {
-                    return {
-                        id: node.id,
-                        label: node.properties.name,
-                        labels: node.labels,
-                        properties: node.properties,
-                        shape: 'box',
-                        color: '#1DE9B6',
-                        title:'<div style="margin: 10px; color: #616161"><span>'
-                        +node.properties.name+'</span><br/><span>'
-                        +node.properties.description+'</span></div>'
-                    }
-                } else {
-                    return {
-                        id: node.id,
-                        label: node.properties.file.name,
-                        labels: node.labels,
-                        properties: node.properties,
-                        title:'<div style="margin: 10px; color: #616161"><span>'
-                        +node.properties.file.name+'</span><br/><span>'
-                        +node.properties.label+'</span><br/><span>File Version: '
-                        +node.properties.version+'</span></div>'
-                    }
+                return node;
+            }
+        });
+        this.provEdges = edges.map((edge) => {
+            if (edge.properties.audit.deleted_by === null) {
+                return {
+                    id: edge.id,
+                    from: edge.end_node,
+                    to: edge.start_node,
+                    type: edge.type,
+                    properties: edge.properties,
+                    arrows: 'from',
+                    title:'<div style="color: #616161"><span>'
+                    +edge.type+'</span></div>'
+                };
+            }
+        });
+        this.provNodes = nodes.map((node) => {
+            if (node.properties.kind === 'dds-activity') {
+                return {
+                    id: node.id,
+                    label: node.properties.name,
+                    labels: node.labels.toString(),
+                    properties: node.properties,
+                    shape: 'box',
+                    color: '#1DE9B6',
+                    title: '<div style="margin: 10px; color: #616161"><span>'
+                    + node.properties.name + '</span><br/><span>'
+                    + node.properties.description + '</span></div>'
+                }
+            }
+            if(node.properties.kind === 'dds-file-version') {
+                return {
+                    id: node.id,
+                    label: node.properties.file.name,
+                    labels: node.labels.toString(),
+                    properties: node.properties,
+                    title: '<div style="margin: 10px; color: #616161"><span>'
+                    + node.properties.file.name + '</span><br/><span>'
+                    + node.properties.label + '</span><br/><span>File Version: '
+                    + node.properties.version + '</span></div>'
+                }
+            }
+            if(!node.properties.hasOwnProperty('kind')) {
+                return {
+                    id: node.id,
+                    label: node.properties.full_name,
+                    labels: node.labels.toString(),
+                    properties: node.properties,
+                    shape: 'diamond',
+                    color: '#64DD17',
+                    title: '<div style="margin: 10px; color: #616161"><span>'
+                    + node.properties.full_name + '</span><br/><span></div>'
                 }
             }
         });

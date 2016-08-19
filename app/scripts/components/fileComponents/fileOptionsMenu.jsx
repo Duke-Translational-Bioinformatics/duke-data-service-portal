@@ -178,7 +178,8 @@ class FileOptionsMenu extends React.Component {
         ProjectActions.openVersionModal();
     }
 
-    getEntity() {// Get current file object to access ancestors. Set parent in store. Keeps background from re-rendering
+    getEntity() {// Get current file object to access ancestors. Set parent in store. Keeps background from
+    // re-rendering when moving an item between folders
         let id = this.props.params.id;
         let kind = 'files';
         let requester = 'optionsMenu';// Using this to make sure parent is only set once in store and where it was set.
@@ -238,6 +239,8 @@ class FileOptionsMenu extends React.Component {
 
 
     toggleProv() {
+        let versionId = this.props.entityObj.current_version.id;
+        ProjectActions.getProvenance(versionId, 'dds-file-version');
         ProjectActions.toggleProvView();
     }
 

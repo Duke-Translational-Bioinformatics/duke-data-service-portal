@@ -23,6 +23,7 @@ var ProjectActions = Reflux.createActions([
     'editProvActivity',
     'editProvActivitySuccess',
     'hideProvAlert',
+    'toggleGraphLoading',
     'toggleProvView',
     'toggleProvEditor',
     'toggleAddEdgeMode',
@@ -173,7 +174,7 @@ ProjectActions.addProvRelation.preEmit = function (kind, body) {
 };
 
 ProjectActions.deleteProvItem.preEmit = function (data ,id) {
-    let kind = data.hasOwnProperty('properties') ? 'activities/' : 'relations/';
+    let kind = data.hasOwnProperty('from') ? 'relations/' : 'activities/';
     let msg = kind === 'activities/' ? data.label : data.type;
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + kind + data.id, {
         method: 'delete',
@@ -214,31 +215,6 @@ ProjectActions.addProvActivity.preEmit = function (name, desc) {
     })
 };
 
-ProjectActions.addNewTag.preEmit = function (id, kind, tag) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/', {
-        method: 'post',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-            'object': {
-                'kind': kind,
-                'id': id
-            },
-            'label': tag
-        })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        MainActions.addToast('Added '+json.label+' tag');
-        ProjectActions.addNewTagSuccess(id);
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to add new tag');
-        ProjectActions.handleErrors(ex)
-    })
-};
-
 ProjectActions.editProvActivity.preEmit = function (id, name, desc, prevName) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'activities/'+ id, {
         method: 'put',
@@ -260,6 +236,71 @@ ProjectActions.editProvActivity.preEmit = function (id, name, desc, prevName) {
         }
         ProjectActions.editProvActivitySuccess(json);//TODO: Toggle prov buttons after success//////////////////
     }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.getProvenance.preEmit = function (id, kind) {//Todo: Replace with proper call!!!!!!!!!!!!!!!!
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'search/provenance?max_hops=1', {
+        method: 'post',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            'start_node': {
+                kind: kind,
+                id: id
+            }
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        console.log(json)
+        ProjectActions.getProvenanceSuccess(json.graph);
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.search.preEmit = function (text, id) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT+ id +'/children?name_contains='+ text, {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getChildrenSuccess(json.results);
+        ProjectActions.setSearchText(text);
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.addNewTag.preEmit = function (id, kind, tag) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/', {
+        method: 'post',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            'object': {
+                'kind': kind,
+                'id': id
+            },
+            'label': tag
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('Added '+json.label+' tag');
+        ProjectActions.addNewTagSuccess(id);
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to add new tag');
         ProjectActions.handleErrors(ex)
     })
 };
@@ -286,29 +327,6 @@ ProjectActions.appendTags.preEmit = function (id, kind, tags) {
     })
 };
 
-ProjectActions.getProvenance.preEmit = function (id, kind) {//Todo: Replace with proper call!!!!!!!!!!!!!!!!
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'search/provenance', {
-        method: 'post',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-            'start_node': {
-                kind: kind,
-                id: id
-            }
-        })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        console.log(json)
-        //ProjectActions.getProvenanceSuccess(prov);
-    }).catch(function (ex) {
-        ProjectActions.handleErrors(ex)
-    })
-};
-
 ProjectActions.deleteTag.preEmit = function (id, label, fileId) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/' + id, {
         method: 'delete',
@@ -324,23 +342,6 @@ ProjectActions.deleteTag.preEmit = function (id, label, fileId) {
         MainActions.addToast('Failed to delete '+ label);
         ProjectActions.handleErrors(ex)
     });
-};
-
-ProjectActions.search.preEmit = function (text, id) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT+ id +'/children?name_contains='+ text, {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.getChildrenSuccess(json.results);
-        ProjectActions.setSearchText(text);
-    }).catch(function (ex) {
-        ProjectActions.handleErrors(ex)
-    })
 };
 
 ProjectActions.getTagLabels.preEmit = function () {
