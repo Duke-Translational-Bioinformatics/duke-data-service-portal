@@ -20,14 +20,6 @@ import Paper from 'material-ui/lib/paper';
 
 class FileDetails extends React.Component {
 
-    componentDidMount() {
-        if(this.props.entityObj && this.props.entityObj.current_version){
-            let versionId = this.props.entityObj.current_version.id;
-
-            console.log(versionId)
-        }
-    }
-
     render() {
         if (this.props.error && this.props.error.response){
             this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
@@ -260,6 +252,8 @@ class FileDetails extends React.Component {
     }
 
     openProv() {
+        let versionId = this.props.entityObj.current_version.id;
+        ProjectActions.getProvenance(versionId, 'dds-file-version');
         ProjectActions.toggleProvView();
         ProjectActions.toggleProvEditor();
         ProjectActions.hideProvAlert();

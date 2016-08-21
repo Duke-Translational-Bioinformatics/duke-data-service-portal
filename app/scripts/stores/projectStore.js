@@ -4,6 +4,8 @@ import MainActions from '../actions/mainActions';
 import MainStore from '../stores/mainStore';
 import BaseUtils from '../../util/baseUtils.js';
 import { StatusEnum, Path } from '../enum';
+import {graphOptions, graphColors} from '../graphConfig';
+
 
 var ProjectStore = Reflux.createStore({
 
@@ -233,6 +235,7 @@ var ProjectStore = Reflux.createStore({
                 from: edge.to.id,//Todo like this --> from: edge.to.id,
                 to: edge.from.id,
                 type: edge.kind,
+                color: graphColors.edges,
                 arrows: 'from',
                 properties: {
                     audit: edge.audit
@@ -255,11 +258,8 @@ var ProjectStore = Reflux.createStore({
                 id: node.id,
                 label: node.name,
                 shape: 'box',
-                color: '#1DE9B6',
-                properties: {
-                    kind: node.kind,
-                    audit: node.audit
-                },
+                color: graphColors.activity,
+                properties: node,
                 title:'<div style="margin: 10px; color: #616161"><span>'
                 +node.name+'</span><br/><span>'
                 +node.description+'</span></div>'
@@ -283,11 +283,8 @@ var ProjectStore = Reflux.createStore({
                 id: node.id,
                 label: node.name,
                 shape: 'box',
-                color: '#1DE9B6',
-                properties: {
-                    kind: node.kind,
-                    audit: node.audit
-                },
+                color: graphColors.activity,
+                properties: node,
                 title:'<div style="margin: 10px; color: #616161"><span>'
                 +node.name+'</span><br/><span>'
                 +node.description+'</span></div>'
@@ -377,6 +374,7 @@ var ProjectStore = Reflux.createStore({
                     to: edge.start_node,
                     type: edge.type,
                     properties: edge.properties,
+                    color: graphColors.edges,
                     arrows: 'from',
                     title:'<div style="color: #616161"><span>'
                     +edge.type+'</span></div>'
@@ -391,7 +389,7 @@ var ProjectStore = Reflux.createStore({
                     labels: node.labels.toString(),
                     properties: node.properties,
                     shape: 'box',
-                    color: '#1DE9B6',
+                    color: graphColors.activity,
                     title: '<div style="margin: 10px; color: #616161"><span>'
                     + node.properties.name + '</span><br/><span>'
                     + node.properties.description + '</span></div>'
@@ -400,9 +398,10 @@ var ProjectStore = Reflux.createStore({
             if(node.properties.kind === 'dds-file-version') {
                 return {
                     id: node.id,
-                    label: node.properties.file.name,
+                    label: node.properties.file.name + '\nVersion: ' + node.properties.version,
                     labels: node.labels.toString(),
                     properties: node.properties,
+                    color: graphColors.fileVersion,
                     title: '<div style="margin: 10px; color: #616161"><span>'
                     + node.properties.file.name + '</span><br/><span>'
                     + node.properties.label + '</span><br/><span>File Version: '
@@ -416,7 +415,7 @@ var ProjectStore = Reflux.createStore({
                     labels: node.labels.toString(),
                     properties: node.properties,
                     shape: 'diamond',
-                    color: '#64DD17',
+                    color: graphColors.user,
                     title: '<div style="margin: 10px; color: #616161"><span>'
                     + node.properties.full_name + '</span><br/><span></div>'
                 }

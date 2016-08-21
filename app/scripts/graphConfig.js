@@ -1,20 +1,16 @@
-let graphOptions = {
+export const graphOptions = {
     autoResize: true,
     height: '100%',
     width: '100%',
     edges: {
-        color: {
-            color:'#1976D2',
-            highlight:'#1565C0',
-            hover: '#1565C0',
-            opacity:1
-        },
         width: 0.15,
         smooth: {
             enabled: false,
             type: "dynamic",
             roundness: 0.5
-        }
+        },
+        hoverWidth: .75,
+        selectionWidth: .75
     },
     nodes: {
         shape: 'dot',
@@ -25,18 +21,6 @@ let graphOptions = {
             color: '#343434',
             size: 10,
             face: 'roboto'
-        },
-        color: {
-            border: '#1565C0',
-            background: '#64B5F6',
-            highlight: {
-                border: '#1565C0',
-                background: '#2196F3'
-            },
-            hover: {
-                border: '#1565C0',
-                background: '#2196F3'
-            }
         }
     },
     interaction: {
@@ -62,4 +46,47 @@ let graphOptions = {
     }
 };
 
-export default graphOptions;
+export const graphColors = {
+    activity : {
+        border: '#1DE9B6',
+        background: '#1DE9B6',
+        highlight: {
+            border: '#1DE9B6',
+            background: '#64FFDA'
+        },
+        hover: {
+            border: '#64FFDA',
+            background: '#64FFDA'
+        }
+    },
+    fileVersion: {
+        border: '#64B5F6',
+        background: '#64B5F6',
+        highlight: {
+            border: '#64B5F6',
+            background: '#2196F3'
+        },
+        hover: {
+            border: '#2196F3',
+            background: '#2196F3'
+        }
+    },
+    user: {
+        border: '#64DD17',
+        background: '#64DD17',
+        highlight: {
+            border: '#64DD17',
+            background: '#B2FF59'
+        },
+        hover: {
+            border: '#76FF03',
+            background: '#76FF03'
+        }
+    },
+    edges: {
+        color:'#1976D2',
+        highlight:'#1565C0',
+        hover: '#1565C0',
+        opacity:1
+    }
+};

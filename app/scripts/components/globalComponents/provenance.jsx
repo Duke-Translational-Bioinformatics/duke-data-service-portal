@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import graphOptions from '../../graphConfig';
+import {graphOptions, graphColors} from '../../graphConfig';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import urlGen from '../../../util/urlGen.js';
@@ -8,6 +8,7 @@ import BorderColor from 'material-ui/lib/svg-icons/editor/border-color';
 import Cancel from 'material-ui/lib/svg-icons/navigation/cancel';
 import CircularProgress from 'material-ui/lib/circular-progress';
 import Dialog from 'material-ui/lib/dialog';
+import Divider from 'material-ui/lib/divider';
 import FlatButton from 'material-ui/lib/flat-button';
 import Fullscreen from 'material-ui/lib/svg-icons/navigation/fullscreen';
 import FullscreenExit from 'material-ui/lib/svg-icons/navigation/fullscreen-exit';
@@ -44,11 +45,6 @@ class Provenance extends React.Component {
     componentDidMount() {
         // Listen for resize changes when rotating device
         window.addEventListener('resize', this.handleResize);
-        //setTimeout(()=>{// Make sure that provEdges and nodes are set before rendering graph the first time
-        //    let edges = this.props.provEdges && this.props.provEdges.length > 0 ? this.props.provEdges : [];
-        //    let nodes = this.props.provNodes && this.props.provNodes.length > 0 ? this.props.provNodes : [];
-        //    this.renderProvGraph(edges,nodes);
-        //},8000);
     }
 
     componentWillUpdate(nextProps, nextState) {
@@ -176,7 +172,7 @@ class Provenance extends React.Component {
             if(params.nodes.length > 0) {
                 this.setState({showDetails: true});
                 if(nodeData.properties.kind !== 'dds-activity') {
-                    this.state.network.unselectAll();
+                    //this.state.network.unselectAll();
                 }
                 if(nodeData.properties.audit.created_by.id !== this.props.currentUser.id && this.props.showProvCtrlBtns) {
                     ProjectActions.showProvControlBtns();
@@ -306,6 +302,41 @@ class Provenance extends React.Component {
                 onTouchTap={() => this.addDerivedFromRelation('was_derived_from', this.props.relFrom, this.props.relTo)}
                 />
         ];
+        let fileDetails = this.state.node !== null ? <div className="mdl-cell mdl-cell--12-col" style={styles.provEditor.details}>
+            <h6 style={styles.listHeader}><a href={urlGen.routes.file(this.state.node.properties.file.id)} className="external mdl-color-text--grey-600">{this.state.node.label}</a></h6>
+            <div className="list-block" style={styles.listBlock}>
+                <div className="list-group">
+                    <ul>
+                        <li className="list-group-title" style={styles.listGroupTitle}>Created By</li>
+                        <li className="item-content" style={styles.listItem}>
+                            <div className="item-inner">
+                                <div>{this.state.node.properties.audit.created_by.full_name}</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div className="list-group">
+                    <ul>
+                        <li className="list-group-title" style={styles.listGroupTitle}>Created On</li>
+                        <li className="item-content" style={styles.listItem}>
+                            <div className="item-inner">
+                                <div>{this.state.node.properties.audit.created_on}</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div className="list-group">
+                    <ul>
+                        <li className="list-group-title" style={styles.listGroupTitle}>Last Updated On</li>
+                        <li className="item-content" style={styles.listItem}>
+                            <div className="item-inner">
+                                <div>{this.state.node.properties.audit.last_updated_on}</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div> : null;
 
         let fileName = this.props.entityObj ? this.props.entityObj.name : null;
         let addFile = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'addFile' ? this.props.provEditorModal.open : false;
@@ -338,8 +369,9 @@ class Provenance extends React.Component {
                              floatingLabelStyle={{color: '#757575'}}
                              errorText={this.state.errorText}
                              errorStyle={styles.textStyles}
+                             labelStyle={{paddingRight: 0}}
                              style={styles.selectStyles}>
-                <MenuItem value={0} primaryText='used'/>
+                <MenuItem style={styles.menuItemStyle} value={0} primaryText='used'/>
             </SelectField>:
                 <SelectField value={this.state.value}
                              id="selectRelation"
@@ -348,10 +380,11 @@ class Provenance extends React.Component {
                              floatingLabelStyle={{color: '#757575'}}
                              errorText={this.state.errorText}
                              errorStyle={styles.textStyles}
+                             labelStyle={{paddingRight: 0}}
                              style={styles.selectStyles}>
-                    <MenuItem value={0} primaryText='used'/>
-                    <MenuItem value={1} primaryText='was generated by'/>
-                    <MenuItem value={2} primaryText='was derived from'/>
+                    <MenuItem style={styles.menuItemStyle} value={0} primaryText='used'/>
+                    <MenuItem style={styles.menuItemStyle} value={1} primaryText='was generated by'/>
+                    <MenuItem style={styles.menuItemStyle} value={2} primaryText='was derived from'/>
                 </SelectField>;
         }
         let showBtns = this.props.showProvCtrlBtns ? 'block' : 'none';
@@ -362,7 +395,7 @@ class Provenance extends React.Component {
                 <LeftNav disableSwipeToOpen={true} width={this.state.width} openRight={true} open={this.props.toggleProv}>
                     <LeftNav width={220} openRight={true} open={this.props.toggleProvEdit}>
                         <div style={styles.provEditor}>
-                            <IconButton style={styles.provEditor.toggleProvBtn}
+                            <IconButton style={styles.provEditor.closeEditorBtn}
                                         onTouchTap={() => this.toggleEditor()}>
                                 <NavigationClose />
                             </IconButton>
@@ -401,14 +434,7 @@ class Provenance extends React.Component {
                                     Click on a node and drag to another node to create a new relation. <br/>
                                     <span style={styles.provEditor.addEdgeInstruction.text}>Cancel</span> <Cancel style={styles.cancelBtn} color={'#F44336'} onTouchTap={() => this.toggleEdgeMode()}/>
                                 </div> : null}
-                            {this.state.showDetails ?
-                                <div className="mdl-cell mdl-cell--12-col" style={styles.provEditor.details}>
-                                    <p>Details</p>
-                                    <span>{this.state.node.label}</span><br/>
-                                    <span>{'Created by: ' +this.state.node.properties.audit.created_by.full_name}</span><br/>
-                                    <span>{'Created on: ' +this.state.node.properties.audit.created_on}</span><br/>
-                                    <span>{this.state.node.id}</span><br/>
-                                </div> : null}
+                            {this.state.showDetails ? fileDetails : null}
                         </div>
                         <Dialog
                             style={styles.dialogStyles}
@@ -703,23 +729,42 @@ var styles = {
         textAlign: 'center',
         color: '#235F9C'
     },
+    listBlock: {
+        margin: 0
+    },
+    listGroupTitle: {
+        padding: '0px 5px 0px 5px',
+        height: 24,
+        lineHeight: '175%'
+    },
+    listHeader: {
+        margin: '20px 0px 5px 0px'
+    },
+    listItem: {
+        padding: '0px 5px 0px 5px'
+    },
     loadingContainer: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
+    },
+    menuItemStyle: {
+        width: 170
     },
     provEditor:{
         display: 'flex',
         justifyContent: 'center',
         flexFlow: 'row wrap',
         marginTop: 140,
-        padding: 10,
+        padding: 5,
         details: {
-            margin: 15,
+            width: '100%',
+            margin: 0,
             color:'#757575'
         },
         addEdgeInstruction: {
             margin: 15,
+            paddingLeft: 4,
             text: {
                 color:'#757575'
             }
@@ -741,7 +786,13 @@ var styles = {
         toggleProvBtn: {
             position: 'absolute',
             top: 98,
-            left: 4,
+            left: 10,
+            zIndex: 9999
+        },
+        closeEditorBtn: {
+            position: 'absolute',
+            top: 98,
+            left: 2,
             zIndex: 9999
         },
         title: {
@@ -756,8 +807,7 @@ var styles = {
         }
     },
     selectStyles: {
-        marginTop: -20,
-        marginLeft: 10,
+        margin: '-20px 20px 0px 20px',
         maxWidth: '90%',
         minWidth: 160,
         textAlign: 'left',
