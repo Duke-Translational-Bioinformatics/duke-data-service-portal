@@ -17,7 +17,7 @@ class TagCloud extends React.Component {
                                        style={styles.addTagButton}
                                        tooltipStyles={{marginTop: -20}}
                                        onTouchTap={() => this.openTagManager()}>
-                                <LocalOffer color={'#235F9C'} />
+                                <LocalOffer color={'#EC407A'} />
                            </IconButton>
         }
         let tags = this.props.objectTags.map((tag)=>{
@@ -54,7 +54,7 @@ var styles = {
         height: 24,
         width: 24,
         padding: 0,
-        margin: 5
+        margin: '5px 5px 5px 9px'
     }
 };
 
