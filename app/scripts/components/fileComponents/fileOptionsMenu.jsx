@@ -33,6 +33,8 @@ class FileOptionsMenu extends React.Component {
                                   onTouchTap={() => this.handleTouchTapDelete()}/>
                         <MenuItem primaryText="Edit File Name" leftIcon={<i className="material-icons">mode_edit</i>}
                                   onTouchTap={() => this.handleTouchTapEdit()}/>
+                        <MenuItem primaryText="Add Tags" leftIcon={<i className="material-icons">local_offer</i>}
+                                  onTouchTap={() => this.openTagManager()}/>
                         <MenuItem primaryText="Move File" leftIcon={<i className="material-icons">low_priority</i>}
                                   onTouchTap={() => this.handleTouchTapMove()}/>
                         <MenuItem primaryText="Upload New Version" leftIcon={<i className="material-icons">file_upload</i>}
@@ -184,7 +186,6 @@ class FileOptionsMenu extends React.Component {
         setTimeout(()=>this.props.appRouter.transitionTo(urlPath + parentId), 500)
     }
 
-
     handleUpdateButton() {
         let id = this.props.params.id;
         let fileName = document.getElementById("fileNameText").value;
@@ -223,6 +224,10 @@ class FileOptionsMenu extends React.Component {
             moveOpen: false,
             floatingErrorText: 'This field is required.'
         });
+    }
+
+    openTagManager() {
+        ProjectActions.toggleTagManager();
     }
 }
 var styles = {
