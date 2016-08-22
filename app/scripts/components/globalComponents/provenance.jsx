@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import {graphOptions, graphColors} from '../../graphConfig';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-import urlGen from '../../../util/urlGen.js';
+import AutoComplete from 'material-ui/lib/auto-complete';
 import BorderColor from 'material-ui/lib/svg-icons/editor/border-color';
 import Cancel from 'material-ui/lib/svg-icons/navigation/cancel';
 import CircularProgress from 'material-ui/lib/circular-progress';
@@ -19,6 +19,7 @@ import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
 import RaisedButton from 'material-ui/lib/raised-button';
 import SelectField from 'material-ui/lib/select-field';
 import TextField from 'material-ui/lib/text-field';
+import urlGen from '../../../util/urlGen.js';
 
 class Provenance extends React.Component {
     /**
@@ -141,10 +142,6 @@ class Provenance extends React.Component {
             });
         }
 
-        this.state.network.once("animationFinished", () => {
-            console.log('stabile')
-        });
-
         this.state.network.on("select", (params) => {
             let nodeData = nodes.get(params.nodes[0]);
             let edgeData = edges.get(params.edges);
@@ -153,17 +150,20 @@ class Provenance extends React.Component {
             ProjectActions.selectNodesAndEdges(edgeData, nodeData);
         });
 
-        this.state.network.on("doubleClick", (params) => { // Todo: show more nodes on graph on double click event
-            nodes.add({
-                id: 123,
-                label: 'testAddNode',
-                labels: 'test',
-                properties: {},
-                shape: 'box',
-                color: '#1DE9B6',
-                title:'<Card style="margin: 10px"><a href="#">File Name</a><p>date: date</p><p>size: size</p></Card>'
-            })
-        });
+        //this.state.network.on("doubleClick", (params) => { // Todo: show more nodes on graph on double click event
+        //    nodes.add({
+        //        id: "4c63996f-e837-48d7-b2bb-dbf2d86929e9",
+        //        label: 'testAddNode',
+        //        labels: 'test',
+        //        properties: {
+        //            is_deleted: false,
+        //            kind: "dds-file-version"
+        //        },
+        //        shape: 'box',
+        //        color: '#1DE9B6',
+        //        title:'<Card style="margin: 10px"><a href="#">File Name</a><p>date: date</p><p>size: size</p></Card>'
+        //    })
+        //});
 
         this.state.network.on("click", (params) => {
             let nodeData = nodes.get(params.nodes[0]);
@@ -337,8 +337,8 @@ class Provenance extends React.Component {
                 </div>
             </div>
         </div> : null;
-
         let fileName = this.props.entityObj ? this.props.entityObj.name : null;
+        let fileVersion = this.props.entityObj ? this.props.entityObj.current_version.version : null;
         let addFile = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'addFile' ? this.props.provEditorModal.open : false;
         let addAct = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'addAct' ? this.props.provEditorModal.open : false;
         let dltAct = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'dltAct' ? this.props.provEditorModal.open : false;
@@ -441,7 +441,6 @@ class Provenance extends React.Component {
                             contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
                             title="Add Activity"
                             autoDetectWindowHeight={true}
-                            autoScrollBodyContent={true}
                             actions={addActions}
                             open={addAct}
                             onRequestClose={() => this.handleClose('addAct')}>
@@ -579,7 +578,7 @@ class Provenance extends React.Component {
                          </IconButton>*/}
                     <h5 className="mdl-color-text--grey-800"
                         style={styles.provEditor.title}>
-                        Provenance
+                        {fileName }<span style={{display: 'block'}}>{'Version '+ fileVersion}</span>
                     </h5>
                     {this.props.graphLoading ? <div className="mdl-cell mdl-cell--12-col" style={styles.loadingContainer}>
                         <CircularProgress size={1.5} style={{marginTop: 20}}/>
@@ -797,7 +796,8 @@ var styles = {
         },
         title: {
             margin: '112px 0px 0px 54px',
-            fontWeight: 100
+            fontWeight: 100,
+            textAlign: 'center'
         },
         toggleEditor: {
             position: 'absolute',

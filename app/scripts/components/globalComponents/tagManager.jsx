@@ -26,12 +26,6 @@ class TagManager extends React.Component {
         };
     }
 
-    componentDidUpdate(prevProps) {
-        if (prevProps.routerPath !== this.props.routerPath) {
-            console.log('new page')
-        }
-    }
-
     render() {
         let tags = this.state.tagsToAdd.length > 0 ? this.state.tagsToAdd.map((tag)=>{
             return (<div key={Math.random()} className="chip">

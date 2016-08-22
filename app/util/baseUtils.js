@@ -31,6 +31,14 @@ let BaseUtils = {
                 return (array[index][obj.key] === obj.value) ? !!(array.splice(index, 1)) : false;
             });
             return array;
+        },
+
+        setDialogWidth() {
+            let width = '100%';
+            if(window.innerWidth > 500){
+                width = '';
+            }
+            return width;
         }
 };
 

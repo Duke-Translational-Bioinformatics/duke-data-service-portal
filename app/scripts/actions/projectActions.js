@@ -264,7 +264,7 @@ ProjectActions.getProvenance.preEmit = function (id, kind) {//Todo: Replace with
 };
 
 ProjectActions.search.preEmit = function (text, id) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT+ id +'/children?name_contains='+ text, {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT+ id +'/children?name_contains='+text, {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,

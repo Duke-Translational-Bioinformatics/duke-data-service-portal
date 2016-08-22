@@ -370,14 +370,14 @@ var ProjectStore = Reflux.createStore({
             if (edge.properties.audit.deleted_by === null) {
                 return {
                     id: edge.id,
-                    from: edge.end_node,
-                    to: edge.start_node,
+                    to: edge.end_node,
+                    from: edge.start_node,
                     type: edge.type,
                     properties: edge.properties,
                     color: graphColors.edges,
-                    arrows: 'from',
-                    title:'<div style="color: #616161"><span>'
-                    +edge.type+'</span></div>'
+                    arrows: 'to',
+                    title: '<div style="color: #616161"><span>'
+                    + edge.type + '</span></div>'
                 };
             }
         });
@@ -403,9 +403,9 @@ var ProjectStore = Reflux.createStore({
                     properties: node.properties,
                     color: graphColors.fileVersion,
                     title: '<div style="margin: 10px; color: #616161"><span>'
-                    + node.properties.file.name + '</span><br/><span>'
-                    + node.properties.label + '</span><br/><span>File Version: '
-                    + node.properties.version + '</span></div>'
+                    + node.properties.file.name + '</span><br/><span>Version: '
+                    + node.properties.version + '</span><br/><span>'
+                    + node.properties.label + '</span></div>'
                 }
             }
             if(!node.properties.hasOwnProperty('kind')) {
@@ -505,6 +505,13 @@ var ProjectStore = Reflux.createStore({
     search() {
         this.trigger({
              loading: true
+        })
+    },
+
+    searchProvNodesSuccess(results) {
+        console.log(results)
+        this.trigger({
+
         })
     },
 
