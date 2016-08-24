@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import {graphOptions, graphColors} from '../../graphConfig';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
+import ProvenanceDetails from '../globalComponents/provenanceDetails.jsx';
+import FileVersionsList from '../fileComponents/fileVersionsList.jsx';
 import AutoComplete from 'material-ui/lib/auto-complete';
 import BorderColor from 'material-ui/lib/svg-icons/editor/border-color';
 import Cancel from 'material-ui/lib/svg-icons/navigation/cancel';
@@ -53,23 +55,23 @@ class Provenance extends React.Component {
         let position = this.props.position;// Todo: Remove this if not using saveZoomState
         let edges = this.props.provEdges && this.props.provEdges.length > 0 ? this.props.provEdges : [];
         let nodes = this.props.provNodes && this.props.provNodes.length > 0 ? this.props.provNodes : [];
-        //if(nextProps.provEdges !== this.props.provEdges || nextProps.provNodes !== this.props.provNodes){
-        ////Check if addEdgeMode has changed. If true render graph in add edge mode or with newly added edge
-        //    this.renderProvGraph(edges, nodes);
-        //}
         if(nextProps.updatedGraphItem !== this.props.updatedGraphItem && nextProps.updatedGraphItem.length > 0){
             this.renderProvGraph(edges, nodes, scale, position);// Todo: Remove extra params if not using saveZoomState
         }
     }
 
-    componentDidUpdate(nextProps, nextState) {
+    componentDidUpdate(prevProps, prevState) {
         let edges = this.props.provEdges && this.props.provEdges.length > 0 ? this.props.provEdges : [];
         let nodes = this.props.provNodes && this.props.provNodes.length > 0 ? this.props.provNodes : [];
-        if(nextProps.provEdges !== this.props.provEdges || nextProps.provNodes !== this.props.provNodes){
+        if(prevProps.provEdges !== this.props.provEdges || prevProps.provNodes !== this.props.provNodes){
             //Check if addEdgeMode has changed. If true render graph in add edge mode or with newly added edge
             this.renderProvGraph(edges, nodes);
             ProjectActions.toggleGraphLoading();
         }
+        //if(prevProps.params.id !== this.props.params.id){
+        //    this.renderProvGraph(edges, nodes);
+        //    ProjectActions.toggleGraphLoading();
+        //}
     }
 
     componentWillUnmount() {
@@ -113,7 +115,6 @@ class Provenance extends React.Component {
                 callback(null); // Disable default behavior and update dataset in the store instead
             }
         };
-
         // create a network
         let data = {
             nodes: nodes,
@@ -121,27 +122,23 @@ class Provenance extends React.Component {
         };
         // import options from graphConfig
         let options = graphOptions;
-
         let container = ReactDOM.findDOMNode(this.refs.graphContainer);
         // remove old contents of dom node
         while (container.firstChild) {
             container.removeChild(container.firstChild);
         }
-
         this.state.network = new vis.Network(container, data, options);
         //Add manipulation options to network options so that addEdgeMode is defined
         this.state.network.setOptions({manipulation: {
             enabled: false,
             addEdge: onAddEdgeMode
         }});
-
         if(scale !== null && position !== null) {
             this.state.network.moveTo({
                 position: position,
                 scale: scale
             });
         }
-
         this.state.network.on("select", (params) => {
             let nodeData = nodes.get(params.nodes[0]);
             let edgeData = edges.get(params.edges);
@@ -149,7 +146,6 @@ class Provenance extends React.Component {
             if(params.nodes.length === 0) this.setState({showDetails: false});
             ProjectActions.selectNodesAndEdges(edgeData, nodeData);
         });
-
         //this.state.network.on("doubleClick", (params) => { // Todo: show more nodes on graph on double click event
         //    nodes.add({
         //        id: "4c63996f-e837-48d7-b2bb-dbf2d86929e9",
@@ -164,16 +160,12 @@ class Provenance extends React.Component {
         //        title:'<Card style="margin: 10px"><a href="#">File Name</a><p>date: date</p><p>size: size</p></Card>'
         //    })
         //});
-
         this.state.network.on("click", (params) => {
             let nodeData = nodes.get(params.nodes[0]);
             let edgeData = edges.get(params.edges);
 
             if(params.nodes.length > 0) {
                 this.setState({showDetails: true});
-                if(nodeData.properties.kind !== 'dds-activity') {
-                    //this.state.network.unselectAll();
-                }
                 if(nodeData.properties.audit.created_by.id !== this.props.currentUser.id && this.props.showProvCtrlBtns) {
                     ProjectActions.showProvControlBtns();
                 }
@@ -206,8 +198,8 @@ class Provenance extends React.Component {
                 this.state.network.unselectAll();
                 if(edgeData.length > 0) this.state.network.selectEdges([edgeData[0].id]);
             }
-            if (params.edges.length === 0 && this.props.dltRelationsBtn) {//If clicked on
-            // canvas only
+            if (params.edges.length === 0 && this.props.dltRelationsBtn) {
+                //If clicked on canvas only
                 this.setState({showDetails: false});
                 ProjectActions.showDeleteRelationsBtn(edgeData);
                 this.state.network.unselectAll();
@@ -302,43 +294,10 @@ class Provenance extends React.Component {
                 onTouchTap={() => this.addDerivedFromRelation('was_derived_from', this.props.relFrom, this.props.relTo)}
                 />
         ];
-        let fileDetails = this.state.node !== null ? <div className="mdl-cell mdl-cell--12-col" style={styles.provEditor.details}>
-            <h6 style={styles.listHeader}><a href={urlGen.routes.file(this.state.node.properties.file.id)} className="external mdl-color-text--grey-600">{this.state.node.label}</a></h6>
-            <div className="list-block" style={styles.listBlock}>
-                <div className="list-group">
-                    <ul>
-                        <li className="list-group-title" style={styles.listGroupTitle}>Created By</li>
-                        <li className="item-content" style={styles.listItem}>
-                            <div className="item-inner">
-                                <div>{this.state.node.properties.audit.created_by.full_name}</div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-                <div className="list-group">
-                    <ul>
-                        <li className="list-group-title" style={styles.listGroupTitle}>Created On</li>
-                        <li className="item-content" style={styles.listItem}>
-                            <div className="item-inner">
-                                <div>{this.state.node.properties.audit.created_on}</div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-                <div className="list-group">
-                    <ul>
-                        <li className="list-group-title" style={styles.listGroupTitle}>Last Updated On</li>
-                        <li className="item-content" style={styles.listItem}>
-                            <div className="item-inner">
-                                <div>{this.state.node.properties.audit.last_updated_on}</div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div> : null;
-        let fileName = this.props.entityObj ? this.props.entityObj.name : null;
-        let fileVersion = this.props.entityObj ? this.props.entityObj.current_version.version : null;
+        let fileName = this.props.entityObj && this.props.entityObj.name ? this.props.entityObj.name : null;
+        if(fileName === null) fileName = this.props.entityObj ? this.props.entityObj.file.name : null;
+        let fileVersion = this.props.entityObj && this.props.entityObj.current_version ? this.props.entityObj.current_version.version : null;
+        if(fileVersion === null) fileVersion = this.props.entityObj ? this.props.entityObj.version : null;
         let addFile = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'addFile' ? this.props.provEditorModal.open : false;
         let addAct = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'addAct' ? this.props.provEditorModal.open : false;
         let dltAct = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'dltAct' ? this.props.provEditorModal.open : false;
@@ -389,6 +348,27 @@ class Provenance extends React.Component {
         }
         let showBtns = this.props.showProvCtrlBtns ? 'block' : 'none';
         let showDltRltBtn = this.props.dltRelationsBtn ? 'block' : 'none';
+        let versions = null;
+        let versionsButton = null;
+        let versionCount = [];
+        if(this.props.fileVersions && this.props.fileVersions != undefined && this.props.fileVersions.length > 1) {
+            versions = this.props.fileVersions.map((version) => {
+                return version.is_deleted;
+            });
+            for (let i = 0; i < versions.length; i++) {
+                if (versions[i] === false) {
+                    versionCount.push(versions[i]);
+                    if (versionCount.length > 1) {
+                        versionsButton = <RaisedButton
+                            label="CHANGE VERSION"
+                            labelStyle={styles.provEditor.btn.label}
+                            style={styles.provEditor.btn}
+                            onTouchTap={() => this.openVersionsModal()}
+                            />
+                    }
+                }
+            }
+        }
 
         return (
             <div>
@@ -399,6 +379,8 @@ class Provenance extends React.Component {
                                         onTouchTap={() => this.toggleEditor()}>
                                 <NavigationClose />
                             </IconButton>
+                            {versionsButton}
+                            <FileVersionsList {...this.props}/>
                             <RaisedButton
                                 id="addAct"
                                 label="Add Activity"
@@ -434,7 +416,7 @@ class Provenance extends React.Component {
                                     Click on a node and drag to another node to create a new relation. <br/>
                                     <span style={styles.provEditor.addEdgeInstruction.text}>Cancel</span> <Cancel style={styles.cancelBtn} color={'#F44336'} onTouchTap={() => this.toggleEdgeMode()}/>
                                 </div> : null}
-                            {this.state.showDetails ? fileDetails : null}
+                            {this.state.showDetails ? <ProvenanceDetails {...this.state} {...this.props}/> : null}
                         </div>
                         <Dialog
                             style={styles.dialogStyles}
@@ -528,7 +510,7 @@ class Provenance extends React.Component {
                                     autoFocus={true}
                                     onFocus={this.handleFloatingError.bind(this)}
                                     style={styles.textStyles}
-                                    defaultValue={this.props.selectedNode.label}
+                                    defaultValue={this.props.selectedNode.properties ? this.props.selectedNode.properties.name : this.props.selectedNode.label}
                                     hintText="Activity Name"
                                     errorText={this.state.floatingErrorText}
                                     floatingLabelText="Activity Name"
@@ -539,6 +521,7 @@ class Provenance extends React.Component {
                                 <TextField
                                     disabled={false}
                                     style={styles.textStyles}
+                                    defaultValue={this.props.selectedNode.properties ? this.props.selectedNode.properties.description : null}
                                     hintText="Activity Description"
                                     floatingLabelText="Activity Description"
                                     id="activityDescText"
@@ -576,10 +559,11 @@ class Provenance extends React.Component {
                          onTouchTap={() => this.toggleFullscreen()}>
                          {this.state.width === window.innerWidth ? <FullscreenExit /> : <Fullscreen />}
                          </IconButton>*/}
-                    <h5 className="mdl-color-text--grey-800"
+                    <h6 className="mdl-color-text--grey-800"
                         style={styles.provEditor.title}>
-                        {fileName }<span style={{display: 'block'}}>{'Version '+ fileVersion}</span>
-                    </h5>
+                        <span style={styles.provEditor.title.span1}>{fileName}</span>
+                        <span style={styles.provEditor.title.span2}>{'Version '+ fileVersion}</span>
+                    </h6>
                     {this.props.graphLoading ? <div className="mdl-cell mdl-cell--12-col" style={styles.loadingContainer}>
                         <CircularProgress size={1.5} style={{marginTop: 20}}/>
                     </div> : null}
@@ -679,6 +663,10 @@ class Provenance extends React.Component {
 
     openModal(id) {
         ProjectActions.openProvEditorModal(id);
+    }
+
+    openVersionsModal() {
+        ProjectActions.openModal()
     }
 
     switchRelations(from, to){
@@ -797,7 +785,14 @@ var styles = {
         title: {
             margin: '112px 0px 0px 54px',
             fontWeight: 100,
-            textAlign: 'center'
+            textAlign: 'center',
+            span1: {
+                marginRight: 50
+            },
+            span2: {
+                display: 'block',
+                marginRight: 50
+            }
         },
         toggleEditor: {
             position: 'absolute',

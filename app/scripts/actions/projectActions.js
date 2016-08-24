@@ -240,7 +240,7 @@ ProjectActions.editProvActivity.preEmit = function (id, name, desc, prevName) {
     })
 };
 
-ProjectActions.getProvenance.preEmit = function (id, kind) {//Todo: Replace with proper call!!!!!!!!!!!!!!!!
+ProjectActions.getProvenance.preEmit = function (id, kind, prevNodes, prevEdges) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'search/provenance?max_hops=1', {
         method: 'post',
         headers: {
@@ -256,8 +256,7 @@ ProjectActions.getProvenance.preEmit = function (id, kind) {//Todo: Replace with
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        console.log(json)
-        ProjectActions.getProvenanceSuccess(json.graph);
+        ProjectActions.getProvenanceSuccess(json.graph, prevNodes, prevEdges);
     }).catch(function (ex) {
         ProjectActions.handleErrors(ex)
     })

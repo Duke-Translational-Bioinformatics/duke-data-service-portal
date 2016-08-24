@@ -232,11 +232,11 @@ var ProjectStore = Reflux.createStore({
         this.updatedGraphItem = rel.map((edge) => {//Update dataset in client
             return {
                 id: edge.id,//Todo: 'used' and 'generated' relations render wrong on graph unless I flip from/to
-                from: edge.to.id,//Todo like this --> from: edge.to.id,
-                to: edge.from.id,
+                from: edge.from.id,//Todo like this --> from: edge.to.id,
+                to: edge.to.id,
                 type: edge.kind,
                 color: graphColors.edges,
-                arrows: 'from',
+                arrows: 'to',
                 properties: {
                     audit: edge.audit
                 }
@@ -260,9 +260,10 @@ var ProjectStore = Reflux.createStore({
                 shape: 'box',
                 color: graphColors.activity,
                 properties: node,
-                title:'<div style="margin: 10px; color: #616161"><span>'
-                +node.name+'</span><br/><span>'
-                +node.description+'</span></div>'
+                title: '<div style="margin: 10px; color: #616161"><span>'
+                +'Name: '+node.name + '</span><br/>' +
+                '<span>'+'Created By: '+node.audit.created_by.full_name+'</span><br/>' +
+                '<span>'+'Started On: '+node.started_on+'</span></div>'
             };
         });
         let nodes = this.provNodes;
@@ -285,9 +286,10 @@ var ProjectStore = Reflux.createStore({
                 shape: 'box',
                 color: graphColors.activity,
                 properties: node,
-                title:'<div style="margin: 10px; color: #616161"><span>'
-                +node.name+'</span><br/><span>'
-                +node.description+'</span></div>'
+                title: '<div style="margin: 10px; color: #616161"><span>'
+                +'Name: '+node.name + '</span><br/>' +
+                '<span>'+'Created By: '+node.audit.created_by.full_name+'</span><br/>' +
+                '<span>'+'Started On: '+node.started_on+'</span></div>'
             };
         });
         nodes.push(this.updatedGraphItem[0]);
@@ -355,14 +357,14 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    getProvenanceSuccess(prov) {
+    getProvenanceSuccess(prov, prevNodes, prevEdges) {
         let edges = prov.relationships.filter((edge) => {
             if (edge.properties.audit.deleted_by === null) {
                 return edge;
             }
         });
         let nodes = prov.nodes.filter((node) => {
-            if (!node.properties.is_deleted) {
+            if (!node.properties.is_deleted && node.properties.hasOwnProperty('kind')) {
                 return node;
             }
         });
@@ -385,14 +387,15 @@ var ProjectStore = Reflux.createStore({
             if (node.properties.kind === 'dds-activity') {
                 return {
                     id: node.id,
-                    label: node.properties.name,
+                    label: 'Activity: \n'+node.properties.name,
                     labels: node.labels.toString(),
                     properties: node.properties,
                     shape: 'box',
                     color: graphColors.activity,
                     title: '<div style="margin: 10px; color: #616161"><span>'
-                    + node.properties.name + '</span><br/><span>'
-                    + node.properties.description + '</span></div>'
+                    +'Name: '+node.properties.name + '</span><br/>' +
+                    '<span>'+'Created By: '+node.properties.audit.created_by.full_name+'</span><br/>' +
+                    '<span>'+'Started On: '+node.properties.started_on+'</span></div>'
                 }
             }
             if(node.properties.kind === 'dds-file-version') {
@@ -408,19 +411,28 @@ var ProjectStore = Reflux.createStore({
                     + node.properties.label + '</span></div>'
                 }
             }
-            if(!node.properties.hasOwnProperty('kind')) {
-                return {
-                    id: node.id,
-                    label: node.properties.full_name,
-                    labels: node.labels.toString(),
-                    properties: node.properties,
-                    shape: 'diamond',
-                    color: graphColors.user,
-                    title: '<div style="margin: 10px; color: #616161"><span>'
-                    + node.properties.full_name + '</span><br/><span></div>'
-                }
-            }
+            //if(!node.properties.hasOwnProperty('kind')) { //Todo: use this only if want to show actor entity
+            //    return {
+            //        id: node.id,
+            //        label: node.properties.full_name,
+            //        labels: node.labels.toString(),
+            //        properties: node.properties,
+            //        shape: 'diamond',
+            //        color: graphColors.user,
+            //        title: '<div style="margin: 10px; color: #616161"><span>'
+            //        + node.properties.full_name + '</span><br/><span></div>'
+            //    }
+            //}
         });
+        //if(prevNodes || prevEdges) {
+        //    for(let i=0; i<prevNodes.length; i++) {
+        //        this.provNodes.push(prevNodes[i]);
+        //    }
+        //    for(let i=0; i<prevEdges.length; i++) {
+        //        this.provEdges.push(prevEdges[i]);
+        //    }
+        //    this.provNodes = this.provNodes.filter((node, index, self) => self.findIndex((t) => {return t.id === node.id}) === index)
+        //}
         this.trigger({
             provEdges: this.provEdges,
             provNodes: this.provNodes
@@ -505,13 +517,6 @@ var ProjectStore = Reflux.createStore({
     search() {
         this.trigger({
              loading: true
-        })
-    },
-
-    searchProvNodesSuccess(results) {
-        console.log(results)
-        this.trigger({
-
         })
     },
 

@@ -13,6 +13,7 @@ class Version extends React.Component {
             dltRelationsBtn: ProjectStore.dltRelationsBtn,
             error: ProjectStore.error,
             errorModal: ProjectStore.errorModal,
+            fileVersions: ProjectStore.fileVersions,
             relFrom: ProjectStore.relFrom,
             loading: false,
             moveModal: ProjectStore.moveModal,
@@ -56,7 +57,7 @@ class Version extends React.Component {
     _loadVersion(id) {
         let kind = 'file_versions';
         ProjectActions.getEntity(id, kind);
-        ProjectActions.getProvenance(id);
+        ProjectActions.getProvenance(id, 'dds-file-version');
     }
 
     render() {

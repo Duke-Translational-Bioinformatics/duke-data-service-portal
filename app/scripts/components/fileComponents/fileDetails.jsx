@@ -40,7 +40,7 @@ class FileDetails extends React.Component {
                 </button>;
             optionsMenu = <FileOptionsMenu {...this.props} />;
         }
-        let id = this.props.params.id;
+        let id = this.props.entityObj && this.props.entityObj.current_version.id ? this.props.entityObj.current_version.id : null;
         let ancestors = this.props.entityObj ? this.props.entityObj.ancestors : null;
         let parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : null;
         let parentId = this.props.entityObj ? this.props.entityObj.parent.id : null;
@@ -253,7 +253,10 @@ class FileDetails extends React.Component {
 
     openProv() {
         let versionId = this.props.entityObj.current_version.id;
-        ProjectActions.getProvenance(versionId, 'dds-file-version');
+        let prevNodes = this.props.provNodes;
+        let prevEdges = this.props.provEdges;
+        //ProjectActions.setPreviousGraph(prevNodes, prevEdges);
+        ProjectActions.getProvenance(versionId, 'dds-file-version', prevNodes, prevEdges);
         ProjectActions.toggleProvView();
         ProjectActions.toggleProvEditor();
         ProjectActions.hideProvAlert();

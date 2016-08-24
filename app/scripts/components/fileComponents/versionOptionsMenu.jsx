@@ -164,6 +164,8 @@ class VersionsOptionsMenu extends React.Component {
     }
 
     openProv() {
+        let fileId = this.props.entityObj && this.props.entityObj.file ? this.props.entityObj.file.id : null;
+        ProjectActions.getFileVersions(fileId);
         ProjectActions.toggleProvView();
     }
 }
