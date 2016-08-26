@@ -61,10 +61,10 @@ class UploadManager extends React.Component {
                         <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.fileInputContainer}>
                                 <div className="mdl-cell mdl-cell--6-col mdl-textfield mdl-textfield--file">
                                     <textarea className="mdl-textfield__input mdl-color-text--grey-800" type="text" id="uploadFile" rows="3" readOnly></textarea>
-                                    <button className="mdl-button--file mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-button--colored">
+                                    <div className="mdl-button--file mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-button--colored">
                                         <i className="material-icons" style={styles.iconColor}>attach_file</i>
                                         <input type='file' id="uploadBtn" ref='fileUpload' onChange={this.handleFileName.bind(this)} multiple />
-                                    </button>
+                                    </div>
                                 </div>
                             <br/>
                         </div>
