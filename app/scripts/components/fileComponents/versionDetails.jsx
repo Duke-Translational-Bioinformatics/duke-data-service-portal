@@ -47,7 +47,7 @@ class VersionDetails extends React.Component {
         let lastUpdatedBy = this.props.entityObj && this.props.entityObj.audit.last_updated_by ? this.props.entityObj.audit.last_updated_by.full_name : null;
         let storage =  this.props.entityObj && this.props.entityObj.upload ? this.props.entityObj.upload.storage_provider.description : null;
         let bytes = this.props.entityObj && this.props.entityObj.upload ? this.props.entityObj.upload.size : null;
-        let hash = this.props.entityObj && this.props.entityObj.upload.hash ? this.props.entityObj.upload.hash.algorithm +': '+ this.props.entityObj.upload.hash.value : null;
+        let hash = this.props.entityObj && this.props.entityObj.upload.hashes.length ? this.props.entityObj.upload.hashes[0].algorithm +': '+ this.props.entityObj.upload.hashes[0].value : null;
         let versNumber = this.props.entityObj ? this.props.entityObj.version : null;
         Tooltip.bindEvents();
 
