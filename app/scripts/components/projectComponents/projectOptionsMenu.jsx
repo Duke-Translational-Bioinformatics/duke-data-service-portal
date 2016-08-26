@@ -135,7 +135,7 @@ class ProjectOptionsMenu extends React.Component {
                         <AutoComplete
                             id="fullName"
                             floatingLabelText="Name"
-                            filter={AutoComplete.fuzzyFilter}
+                            filter={AutoComplete.caseInsensitiveFilter}
                             dataSource={names}
                             errorText={this.state.floatingErrorText}
                             onUpdateInput={this.handleUpdateInput.bind(this)}/><br/>
@@ -215,12 +215,23 @@ class ProjectOptionsMenu extends React.Component {
     };
 
     handleUpdateInput (text) {
-        ProjectActions.getUserName(text);
-        this.setState({
-            floatingErrorText: document.getElementById("fullName").value ? '' : 'This field is required'
-        });
-    };
-
+        // Add 500ms lag to autocomplete so that it only makes a call after user is done typing
+        let timeout = this.state.timeout;
+        let textInput = document.getElementById('fullName');
+        textInput.onkeyup = () => {
+            clearTimeout(this.state.timeout);
+            this.setState({
+                timeout: setTimeout(() => {
+                    if (!textInput.value.indexOf(' ') <= 0) {
+                        ProjectActions.getUserName(text);
+                        this.setState({
+                            floatingErrorText: document.getElementById('fullName').value ? '' : 'This field is required'
+                        });
+                    }
+                }, 500)
+            })
+        };
+    }
 
     handleMemberButton(currentUser) {
         let  fullName = document.getElementById("fullName").value;
