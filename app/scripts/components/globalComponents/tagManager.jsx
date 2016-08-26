@@ -22,7 +22,7 @@ class TagManager extends React.Component {
             lastTag: null,
             timeout: null,
             tagsToAdd: [], 
-            value: null
+            //value: null
         };
     }
 

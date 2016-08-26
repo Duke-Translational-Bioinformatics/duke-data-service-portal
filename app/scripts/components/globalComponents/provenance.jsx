@@ -32,6 +32,7 @@ class Provenance extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            addFileNode: null,
             delEdge: null,
             errorText: null,
             floatingErrorText: 'This field is required.',
@@ -39,6 +40,7 @@ class Provenance extends React.Component {
             network: null,
             node: null,
             showDetails: false,
+            timeout: null,
             value: null,
             width: window.innerWidth
         };
@@ -68,10 +70,6 @@ class Provenance extends React.Component {
             this.renderProvGraph(edges, nodes);
             ProjectActions.toggleGraphLoading();
         }
-        //if(prevProps.params.id !== this.props.params.id){
-        //    this.renderProvGraph(edges, nodes);
-        //    ProjectActions.toggleGraphLoading();
-        //}
     }
 
     componentWillUnmount() {
@@ -166,37 +164,44 @@ class Provenance extends React.Component {
 
             if(params.nodes.length > 0) {
                 this.setState({showDetails: true});
-                if(nodeData.properties.audit.created_by.id !== this.props.currentUser.id && this.props.showProvCtrlBtns) {
+                if (nodeData.properties.kind !== 'dds-activity' && this.props.showProvCtrlBtns) {
                     ProjectActions.showProvControlBtns();
-                }
-                if(nodeData.properties.audit.created_by.id === this.props.currentUser.id) {
-                    if(nodeData.properties.kind !== 'dds-file-version' && nodeData.id !== this.props.selectedNode.id) {
-                        if(!this.props.showProvCtrlBtns && nodeData.properties.hasOwnProperty('kind')) ProjectActions.showProvControlBtns();
-                        if(this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
-                    }
-                    if(nodeData.properties.kind === 'dds-file-version' && this.props.showProvCtrlBtns) {
-                        this.state.network.unselectAll();
+                } else {
+                    if (nodeData.properties.audit.created_by.id !== this.props.currentUser.id && this.props.showProvCtrlBtns) {
                         ProjectActions.showProvControlBtns();
                     }
-                    if(!nodeData.properties.hasOwnProperty('kind')) {
-                        this.state.network.unselectAll();
-                        if(this.props.showProvCtrlBtns) ProjectActions.showProvControlBtns();
-                    }
-                    if(nodeData.properties.kind !== 'dds-activity' && this.props.dltRelationsBtn) {
-                        this.state.network.unselectAll();
-                        ProjectActions.showDeleteRelationsBtn(edgeData, nodeData);
+                    if (nodeData.properties.audit.created_by.id === this.props.currentUser.id) {
+                        // If not creator then don't allow edit/delete activity
+                        if (nodeData.properties.kind !== 'dds-file-version' && nodeData.id !== this.props.selectedNode.id) {
+                            if (!this.props.showProvCtrlBtns && nodeData.properties.kind === 'dds-activity') ProjectActions.showProvControlBtns();
+                            if (this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
+                        }
+                        if (nodeData.properties.kind !== 'dds-activity' && this.props.showProvCtrlBtns) {
+                            this.state.network.unselectAll();
+                            ProjectActions.showProvControlBtns();
+                        }
+                        //if(!nodeData.properties.hasOwnProperty('kind')) { //Only need this if actor/agent nodes are used
+                        //    this.state.network.unselectAll();
+                        //    if(this.props.showProvCtrlBtns) ProjectActions.showProvControlBtns();
+                        //}
+                        if (nodeData.properties.kind !== 'dds-activity' && this.props.dltRelationsBtn) {
+                            this.state.network.unselectAll();
+                            ProjectActions.showDeleteRelationsBtn(edgeData, nodeData);
+                        }
                     }
                 }
             }
-            if (params.nodes.length === 0 && params.edges.length === 0 && this.state.showDetails) {
-                this.setState({showDetails: false});
-            }
-            if (params.nodes.length === 0 && this.props.showProvCtrlBtns) {
-                //If clicked on canvas only or on an edge while showProvCntrlBtns
-                this.setState({showDetails: false});
-                ProjectActions.showProvControlBtns();
-                this.state.network.unselectAll();
-                if(edgeData.length > 0) this.state.network.selectEdges([edgeData[0].id]);
+            if(params.nodes.length === 0) {
+                if (params.nodes.length === 0 && params.edges.length === 0 && this.state.showDetails) {
+                    this.setState({showDetails: false});
+                }
+                if (params.nodes.length === 0 && this.props.showProvCtrlBtns) {
+                    //If clicked on canvas only or on an edge while showProvCntrlBtns
+                    this.setState({showDetails: false});
+                    ProjectActions.showProvControlBtns();
+                    this.state.network.unselectAll();
+                    if (edgeData.length > 0) this.state.network.selectEdges([edgeData[0].id]);
+                }
             }
             if (params.edges.length === 0 && this.props.dltRelationsBtn) {
                 //If clicked on canvas only
@@ -224,7 +229,7 @@ class Provenance extends React.Component {
     }
 
     render() {
-        const addActions = [
+        const addActivityActions = [
             <FlatButton
                 label="Cancel"
                 secondary={true}
@@ -234,6 +239,18 @@ class Provenance extends React.Component {
                 secondary={true}
                 keyboardFocused={true}
                 onTouchTap={() => this.addNewActivity()}
+                />
+        ];
+        const addFileNodeActions = [
+            <FlatButton
+                label="Cancel"
+                secondary={true}
+                onTouchTap={() => this.handleClose('addFile')}/>,
+            <FlatButton
+                label="Submit"
+                secondary={true}
+                keyboardFocused={true}
+                onTouchTap={() => this.addFileToGraph()}
                 />
         ];
         const editActions = [
@@ -294,6 +311,11 @@ class Provenance extends React.Component {
                 onTouchTap={() => this.addDerivedFromRelation('was_derived_from', this.props.relFrom, this.props.relTo)}
                 />
         ];
+        let autoCompleteData = this.props.searchFilesList.map((file)=>{
+            if(file.kind === 'dds-file'){
+                return {text: file.name, value: file.name, id: file.id, node: file}
+            }
+        });
         let fileName = this.props.entityObj && this.props.entityObj.name ? this.props.entityObj.name : null;
         if(fileName === null) fileName = this.props.entityObj ? this.props.entityObj.file.name : null;
         let fileVersion = this.props.entityObj && this.props.entityObj.current_version ? this.props.entityObj.current_version.version : null;
@@ -330,8 +352,8 @@ class Provenance extends React.Component {
                              errorStyle={styles.textStyles}
                              labelStyle={{paddingRight: 0}}
                              style={styles.selectStyles}>
-                <MenuItem style={styles.menuItemStyle} value={0} primaryText='used'/>
-            </SelectField>:
+                    <MenuItem style={styles.menuItemStyle} value={0} primaryText='used'/>
+                </SelectField>:
                 <SelectField value={this.state.value}
                              id="selectRelation"
                              onChange={this.handleSelectValueChange.bind(this, 'value')}
@@ -346,6 +368,13 @@ class Provenance extends React.Component {
                     <MenuItem style={styles.menuItemStyle} value={2} primaryText='was derived from'/>
                 </SelectField>;
         }
+        let provFileVersions = this.props.provFileVersions.map((node)=>{
+            return <li key={node.id}
+                       id={node.id}
+                       onTouchTap={() => this.useFileVersion(node.id, node.file.name, node.version, node)}>
+                       Version: {node.version}
+            </li>
+        });
         let showBtns = this.props.showProvCtrlBtns ? 'block' : 'none';
         let showDltRltBtn = this.props.dltRelationsBtn ? 'block' : 'none';
         let versions = null;
@@ -394,7 +423,7 @@ class Provenance extends React.Component {
                                 onTouchTap={() => this.openModal('addFile')}/>
                             {/*relationTypeSelect is a select element that shows the proper menuItems based on the
                              users project permissions. For some reason the select fails if using only dynamic menu
-                              items*/}
+                             items*/}
                             { relationTypeSelect }<br/>
                             <RaisedButton
                                 label="Edit Activity"
@@ -423,7 +452,7 @@ class Provenance extends React.Component {
                             contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
                             title="Add Activity"
                             autoDetectWindowHeight={true}
-                            actions={addActions}
+                            actions={addActivityActions}
                             open={addAct}
                             onRequestClose={() => this.handleClose('addAct')}>
                             <form action="#" id="newActivityForm">
@@ -535,10 +564,25 @@ class Provenance extends React.Component {
                             title="Add File to Graph"
                             autoDetectWindowHeight={true}
                             autoScrollBodyContent={true}
-                            actions={addActions}
+                            actions={addFileNodeActions}
                             open={addFile}
                             onRequestClose={() => this.handleClose('addFile')}>
-                            <h5>Add files to the graph. File must already exist in Duke Data Service.</h5>
+                            <h6 style={{marginTop:0}}>Add files to the graph. File must already exist in Duke Data Service.</h6>
+                            <AutoComplete
+                                id="searchText"
+                                style={{maxWidth: 'calc(100% - 5px)'}}
+                                menuStyle={{maxHeight: 200}}
+                                floatingLabelText="Type a File Name Here"
+                                dataSource={autoCompleteData}
+                                filter={AutoComplete.noFilter}
+                                openOnFocus={true}
+                                errorText={this.state.floatingErrorText}
+                                onNewRequest={(value) => this.chooseFileVersion(value)}
+                                onUpdateInput={this.handleUpdateInput.bind(this)}
+                                underlineStyle={styles.autoCompleteUnderline}/>
+                                <ul>
+                                {this.props.provFileVersions.length ? provFileVersions : null}
+                                </ul>
                         </Dialog>
                     </LeftNav>
                     <IconButton tooltip="Edit Graph"
@@ -585,6 +629,11 @@ class Provenance extends React.Component {
         ProjectActions.startAddRelation(kind, from, to);
     }
 
+    addFileToGraph() {
+        let node = this.state.addFileNode;
+        ProjectActions.addFileToGraph(node);
+    }
+
     addNewActivity() {
         if (this.state.floatingErrorText) {
             return null
@@ -599,6 +648,12 @@ class Provenance extends React.Component {
                 floatingErrorText: 'This field is required.'
             });
         }
+    }
+
+    chooseFileVersion(value) {
+        let fileId = value.id;
+        this.state.addFileNode = value.node;
+        ProjectActions.getFileVersions(fileId, true);
     }
 
     editActivity() {
@@ -661,6 +716,23 @@ class Provenance extends React.Component {
         });
     }
 
+    handleUpdateInput (text) {
+        // Add 500ms lag to autocomplete so that it only makes a call after user is done typing
+        let id = this.props.entityObj.file ? this.props.entityObj.file.project.id : this.props.entityObj.project.id;
+        let timeout = this.state.timeout;
+        let textInput = document.getElementById('searchText');
+        textInput.onkeyup = () => {
+            clearTimeout(this.state.timeout);
+            this.setState({
+                timeout: setTimeout(() => {
+                    if (!textInput.value.indexOf(' ') <= 0) {
+                        ProjectActions.searchFiles(textInput.value, id);
+                    }
+                }, 500)
+            })
+        };
+    }
+
     openModal(id) {
         ProjectActions.openProvEditorModal(id);
     }
@@ -692,6 +764,11 @@ class Provenance extends React.Component {
 
     toggleEditor() {
         ProjectActions.toggleProvEditor();
+    }
+
+    useFileVersion(id, name, version, node) {
+        document.getElementById('searchText').value = name +'- Version: '+ version;
+        this.state.addFileNode = node;
     }
 }
 

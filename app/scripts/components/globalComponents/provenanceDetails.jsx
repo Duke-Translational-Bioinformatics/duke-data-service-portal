@@ -16,15 +16,22 @@ class ProvenanceDetails extends React.Component {
         let activityName = this.props.node.properties && this.props.node.properties.kind === 'dds-activity' ? this.props.node.properties.name : null;
         let activityDescription = this.props.node.properties && this.props.node.properties.kind === 'dds-activity' ? this.props.node.properties.description : null;
         let fileName = this.props.node.properties && this.props.node.properties.file ? this.props.node.properties.file.name : null;
-        let fileId = this.props.node.properties && this.props.node.properties.file ? this.props.node.properties.file.id : null;
+        if (fileName === null && this.props.node.properties.current_version) fileName = this.props.node.properties.name;
+        let fileId = this.props.node.properties && this.props.node.properties.file ? this.props.node.properties.file.id : this.props.node.properties.id;
         let projectName = this.props.entityObj && this.props.entityObj.ancestors ? this.props.entityObj.ancestors[0].name : null;
         let crdOn = this.props.node.properties && this.props.node.properties.audit ? this.props.node.properties.audit.created_on : null;
         let createdOn = createdOnDate(crdOn);
         let createdBy = this.props.node.properties && this.props.node.properties.audit ? this.props.node.properties.audit.created_by.full_name : null;
         let lastUpdatedOn = this.props.node.properties && this.props.node.properties.audit ? this.props.node.properties.audit.last_updated_on : null;
         let lastUpdatedBy = this.props.node.properties && this.props.node.properties.audit.last_updated_by ? this.props.node.properties.audit.last_updated_by.full_name : null;
-        let storage =  this.props.node.properties && this.props.node.properties.upload ? this.props.node.properties.upload.storage_provider.description : null;
+        let storage =  null;
+        if(this.props.node.properties.kind !== 'dds-activity'){
+            storage = this.props.node.properties && this.props.node.properties.upload ?
+                this.props.node.properties.upload.storage_provider.description :
+                this.props.node.properties.current_version.upload.storage_provider.description;
+        }
         let bytes =  this.props.node.properties && this.props.node.properties.upload ? this.props.node.properties.upload.size : null;
+        if (bytes === null && this.props.node.properties.kind !== 'dds-activity') bytes = this.props.node.properties.current_version.upload.size;
         let details = <div className="mdl-cell mdl-cell--12-col" style={styles.details}>
             <h6 style={styles.listHeader}>
                 {fileName !== null ? <a href={urlGen.routes.file(fileId)}
@@ -84,7 +91,7 @@ class ProvenanceDetails extends React.Component {
                         </li>
                     </ul>
                 </div> : null}
-                {activityDescription !== '' ? <div className="list-group">
+                {activityDescription !== null ? <div className="list-group">
                     <ul style={{position: 'static'}}>
                         <li className="list-group-title" style={styles.listGroupTitle}>Description</li>
                         <li className="item-content" style={styles.listItem}>

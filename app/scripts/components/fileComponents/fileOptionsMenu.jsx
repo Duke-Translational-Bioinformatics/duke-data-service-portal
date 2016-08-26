@@ -153,7 +153,7 @@ class FileOptionsMenu extends React.Component {
                         location to move to.</p>
                 </Dialog>
                 <IconMenu
-                    iconButtonElement={<IconButton iconClassName="material-icons" onTouchTap={() => this.getEntity()}>more_vert</IconButton>}
+                    iconButtonElement={<IconButton iconClassName="material-icons">more_vert</IconButton>}
                     anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                     targetOrigin={{horizontal: 'right', vertical: 'top'}}>
                     { menu }
@@ -163,6 +163,12 @@ class FileOptionsMenu extends React.Component {
     };
 
     handleTouchTapMove() {
+        // Get current file object to access ancestors. Set parent in store. Keeps background from
+        // re-rendering when moving an item between folders
+        let id = this.props.params.id;
+        let kind = 'files';
+        let requester = 'optionsMenu';// Using this to make sure parent is only set once in store and where it was set.
+        ProjectActions.getEntity(id, kind, requester);
         ProjectActions.openMoveModal(true);
     }
 
@@ -176,14 +182,6 @@ class FileOptionsMenu extends React.Component {
 
     openVersionModal() {
         ProjectActions.openVersionModal();
-    }
-
-    getEntity() {// Get current file object to access ancestors. Set parent in store. Keeps background from
-    // re-rendering when moving an item between folders
-        let id = this.props.params.id;
-        let kind = 'files';
-        let requester = 'optionsMenu';// Using this to make sure parent is only set once in store and where it was set.
-        ProjectActions.getEntity(id, kind, requester);
     }
 
     handleDeleteButton() {

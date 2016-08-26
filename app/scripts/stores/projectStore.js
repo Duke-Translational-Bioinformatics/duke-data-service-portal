@@ -47,12 +47,14 @@ var ProjectStore = Reflux.createStore({
         this.project = {};
         this.projPermissions = null;
         this.projectMembers = [];
+        this.provFileVersions = [];
         this.provEdges = [];
         this.provNodes = [];
         this.relFrom = null;
         this.relTo = null;
         this.relMsg = null;
         this.scale = null;
+        this.searchFilesList = [];
         this.selectedNode = {};
         this.selectedEdge = null;
         this.searchText = '';
@@ -60,7 +62,6 @@ var ProjectStore = Reflux.createStore({
         this.showProvAlert = false;
         this.showProvCtrlBtns = false;
         this.screenSize = {};
-        this.searchText = '';
         this.showBatchOps = false;
         this.tagLabels = [];
         this.toggleProv = false;
@@ -248,6 +249,45 @@ var ProjectStore = Reflux.createStore({
             updatedGraphItem: this.updatedGraphItem,
             provEdges: edges
         })
+    },
+
+    addFileToGraph(node) {
+        let n = [];
+        n.push(node);
+        this.updatedGraphItem = n.map((node) => {//Update dataset in client
+            if(node.current_version) {
+                return {
+                    id: node.current_version.id,
+                    label: node.name + '\nVersion: ' + node.current_version.version,
+                    labels: node.current_version.label,
+                    properties: node,
+                    color: graphColors.fileVersion,
+                    title: '<div style="margin: 10px; color: #616161"><span>'
+                    + node.name + '</span><br/><span>Version: '
+                    + node.current_version.version + '</span><br/><span>'
+                    + node.current_version.label + '</span></div>'
+                };
+            }else{
+                return {
+                    id: node.id,
+                    label: node.file.name + '\nVersion: ' + node.version,
+                    labels: 'FileVersion',
+                    properties: node,
+                    color: graphColors.fileVersion,
+                    title: '<div style="margin: 10px; color: #616161"><span>'
+                    + node.name + '</span><br/><span>Version: '
+                    + node.version + '</span><br/><span>'
+                    + 'FileVersion' + '</span></div>'
+                };
+            }
+        });
+        let nodes = this.provNodes;
+        nodes.push(this.updatedGraphItem[0]);
+        this.trigger({
+            updatedGraphItem: this.updatedGraphItem,
+            provNodes: nodes
+        })
+
     },
 
     addProvActivitySuccess(node) {
@@ -520,6 +560,15 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
+    searchFilesSuccess(results) {
+        this.searchFilesList = results.filter((file)=>{
+            if(file.kind === 'dds-file') return file.name;
+        });
+        this.trigger({
+            searchFilesList: this.searchFilesList
+        })
+    },
+
     showProvControlBtns() {
         this.showProvCtrlBtns = !this.showProvCtrlBtns;
         this.trigger({
@@ -561,16 +610,23 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    getFileVersions() {
-        this.trigger({
-            loading: true
-        })
+    getFileVersions(id, prov) {
+        if(!prov) {
+            this.trigger({
+                loading: true
+            })
+        }
     },
 
-    getFileVersionsSuccess(results) {
-        this.fileVersions = results;
+    getFileVersionsSuccess(results, prov) {
+        if(prov) {
+            this.provFileVersions = results
+        } else {
+            this.fileVersions = results;
+        }
         this.trigger({
             fileVersions: this.fileVersions,
+            provFileVersions: this.provFileVersions,
             loading: false
         })
     },

@@ -14,7 +14,7 @@ import MyRawTheme from '../theme/customTheme.js';
 
 let zIndex = {
     zIndex: {
-        popover: 5001,
+        popover: 9999,
         layer: 5000
     }
 };

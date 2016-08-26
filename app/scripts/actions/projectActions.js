@@ -8,6 +8,8 @@ import { StatusEnum, Path } from '../enum';
 import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.js';
 
 var ProjectActions = Reflux.createActions([
+    'searchFiles',
+    'searchFilesSuccess',
     'deleteProvItem',
     'deleteProvItemSuccess',
     'openProvEditorModal',
@@ -16,6 +18,7 @@ var ProjectActions = Reflux.createActions([
     'getFromAndToNodes',
     'buildRelationBody',
     'startAddRelation',
+    'addFileToGraph',
     'addProvRelation',
     'addProvRelationSuccess',
     'addProvActivity',
@@ -185,7 +188,6 @@ ProjectActions.deleteProvItem.preEmit = function (data ,id) {
     }).then(checkResponse).then(function (response) {
     }).then(function (json) {
         MainActions.addToast(msg +' deleted');
-        //ProjectActions.deleteProvRelationSuccess(edge);
         ProjectActions.deleteProvItemSuccess(data);
     }).catch(function (ex) {
         MainActions.addToast('Failed to delete ' + msg);
@@ -274,6 +276,22 @@ ProjectActions.search.preEmit = function (text, id) {
     }).then(function (json) {
         ProjectActions.getChildrenSuccess(json.results);
         ProjectActions.setSearchText(text);
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.searchFiles.preEmit = function (text, id) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT+ id +'/children?name_contains='+text, {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.searchFilesSuccess(json.results);
     }).catch(function (ex) {
         ProjectActions.handleErrors(ex)
     })
@@ -393,7 +411,7 @@ ProjectActions.getTags.preEmit = function (id, kind) {
     })
 };
 
-ProjectActions.getFileVersions.preEmit = function (id) {
+ProjectActions.getFileVersions.preEmit = function (id, prov) { // prov = boolean used for file selection in prov editor
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.FILE + id + '/versions', {
         method: 'get',
         headers: {
@@ -403,7 +421,7 @@ ProjectActions.getFileVersions.preEmit = function (id) {
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        ProjectActions.getFileVersionsSuccess(json.results)
+        ProjectActions.getFileVersionsSuccess(json.results, prov)
     }).catch(function (ex) {
         ProjectActions.handleErrors(ex)
     })
