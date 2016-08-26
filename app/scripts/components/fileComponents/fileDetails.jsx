@@ -50,7 +50,7 @@ class FileDetails extends React.Component {
         let lastUpdatedBy = this.props.entityObj && this.props.entityObj.audit.last_updated_by ? this.props.entityObj.audit.last_updated_by.full_name : null;
         let storage =  this.props.entityObj && this.props.entityObj.current_version.upload ? this.props.entityObj.current_version.upload.storage_provider.description : null;
         let bytes = this.props.entityObj && this.props.entityObj.current_version.upload ? this.props.entityObj.current_version.upload.size : null;
-        let hash = this.props.entityObj && this.props.entityObj.current_version.upload.hash ? this.props.entityObj.current_version.upload.hash.algorithm +': '+ this.props.entityObj.current_version.upload.hash.value : null;
+        let hash = this.props.entityObj && this.props.entityObj.current_version.upload.hashes.length ? this.props.entityObj.current_version.upload.hashes[0].algorithm +': '+ this.props.entityObj.current_version.upload.hashes[0].value : null;
         let currentVersion = this.props.entityObj && this.props.entityObj.current_version.version ? this.props.entityObj.current_version.version : null;
         let versionsButton = null;
         let versions = null;
