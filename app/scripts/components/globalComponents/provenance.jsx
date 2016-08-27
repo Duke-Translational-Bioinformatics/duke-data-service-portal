@@ -5,6 +5,7 @@ import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import ProvenanceDetails from '../globalComponents/provenanceDetails.jsx';
 import FileVersionsList from '../fileComponents/fileVersionsList.jsx';
+import BaseUtils from '../../../util/baseUtils.js';
 import AutoComplete from 'material-ui/lib/auto-complete';
 import BorderColor from 'material-ui/lib/svg-icons/editor/border-color';
 import Cancel from 'material-ui/lib/svg-icons/navigation/cancel';
@@ -295,6 +296,12 @@ class Provenance extends React.Component {
                 secondary={true}
                 onTouchTap={() => this.handleClose('relWarning')}/>
         ];
+        const nodeWarningActions = [
+            <FlatButton
+                label="Okay"
+                secondary={true}
+                onTouchTap={() => this.handleClose('nodeWarning')}/>
+        ];
         const derivedRelActions = [
             <FlatButton
                 label="Cancel"
@@ -325,6 +332,7 @@ class Provenance extends React.Component {
         let dltAct = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'dltAct' ? this.props.provEditorModal.open : false;
         let dltRel = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'dltRel' ? this.props.provEditorModal.open : false;
         let editAct = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'editAct' ? this.props.provEditorModal.open : false;
+        let nodeWarning = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'nodeWarning' ? this.props.provEditorModal.open : false;
         let openRelWarn = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'relWarning' ? this.props.provEditorModal.open : false;
         let openConfirmRel = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'confirmRel' ? this.props.provEditorModal.open : false;
         let drvFrmMsg = this.props.relMsg && this.props.relMsg === 'wasDerivedFrom' ?
@@ -488,6 +496,17 @@ class Provenance extends React.Component {
                         <Dialog
                             style={styles.dialogStyles}
                             contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
+                            title="This file is already on the graph"
+                            autoDetectWindowHeight={true}
+                            autoScrollBodyContent={true}
+                            actions={nodeWarningActions}
+                            open={nodeWarning}
+                            onRequestClose={() => this.handleClose('nodeWarning')}>
+                            <i className="material-icons" style={styles.warning}>warning</i>
+                        </Dialog>
+                        <Dialog
+                            style={styles.dialogStyles}
+                            contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
                             title="Are you sure you want to delete this relation?"
                             autoDetectWindowHeight={true}
                             autoScrollBodyContent={true}
@@ -570,19 +589,24 @@ class Provenance extends React.Component {
                             <h6 style={{marginTop:0}}>Add files to the graph. File must already exist in Duke Data Service.</h6>
                             <AutoComplete
                                 id="searchText"
-                                style={{maxWidth: 'calc(100% - 5px)'}}
+                                fullWidth={true}
+                                style={{maxWidth: 'calc(100% - 13px)'}}
                                 menuStyle={{maxHeight: 200}}
                                 floatingLabelText="Type a File Name Here"
                                 dataSource={autoCompleteData}
-                                filter={AutoComplete.noFilter}
+                                filter={AutoComplete.caseInsensitiveFilter}
                                 openOnFocus={true}
-                                errorText={this.state.floatingErrorText}
                                 onNewRequest={(value) => this.chooseFileVersion(value)}
                                 onUpdateInput={this.handleUpdateInput.bind(this)}
                                 underlineStyle={styles.autoCompleteUnderline}/>
-                                <ul>
-                                {this.props.provFileVersions.length ? provFileVersions : null}
+                            {this.props.autoCompleteLoading ? <CircularProgress size={1} style={styles.autoCompleteProgress}/> : null}
+                            {this.props.provFileVersions.length > 1 ?
+                                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.versionListWrapper}>
+                                <h7>Would you like to use a different version of this file?</h7>
+                                 <ul id='fileVersionUl'>
+                                    {provFileVersions}
                                 </ul>
+                                </div> : null}
                         </Dialog>
                     </LeftNav>
                     <IconButton tooltip="Edit Graph"
@@ -631,7 +655,14 @@ class Provenance extends React.Component {
 
     addFileToGraph() {
         let node = this.state.addFileNode;
-        ProjectActions.addFileToGraph(node);
+        let graphNodes = this.props.provNodes;
+        if(!BaseUtils.objectPropInArray(graphNodes, 'id', node.id)) {
+            ProjectActions.addFileToGraph(node);
+            ProjectActions.closeProvEditorModal('addFile');
+            ProjectActions.clearProvFileVersions();
+        } else {
+            ProjectActions.openProvEditorModal('nodeWarning');
+        }
     }
 
     addNewActivity() {
@@ -693,6 +724,7 @@ class Provenance extends React.Component {
 
     handleClose(id) {
         ProjectActions.closeProvEditorModal(id);
+        ProjectActions.clearProvFileVersions();
     }
 
     handleFloatingError(e) {
@@ -773,6 +805,11 @@ class Provenance extends React.Component {
 }
 
 var styles = {
+    autoCompleteProgress: {
+        position: 'absolute',
+        top: '38%',
+        left: '45%'
+    },
     cancelBtn: {
         height: 18,
         width: 18,
@@ -888,6 +925,9 @@ var styles = {
     textStyles: {
         textAlign: 'left',
         fontColor: '#303F9F'
+    },
+    versionListWrapper: {
+        textAlign: 'left'
     },
     warning: {
         fontSize: 48,

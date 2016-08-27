@@ -218,7 +218,7 @@ div.vis-network-tooltip {
   min-width: 150px;
   width: 40%;
   box-sizing: border-box;
-  border: 1px solid #235F9C;
+  border: 1px solid $blue;
   border-radius: 8px;
   font-size: 12px;
   color: #616161;
@@ -251,6 +251,21 @@ div.vis-network-tooltip {
 
 .search:focus:-ms-input-placeholder {
   color: #757575;
+}
+
+// Styles for list of file versions in the `add file` provenance modal
+#fileVersionUl {
+  padding-left: 0;
+  -webkit-column-width: 60px;
+  -webkit-column-count: 6;
+  -moz-column-count: 6;
+  column-count: 6;
+}
+#fileVersionUl li {
+  color: $blue;
+  cursor: pointer;
+  display: inline-block;
+  padding-bottom: 15px;
 }
 
 @media (max-width: 400px)

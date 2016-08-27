@@ -16,6 +16,7 @@ var ProjectStore = Reflux.createStore({
         this.agents = [];
         this.agentKey = {};
         this.agentApiToken = {};
+        this.autoCompleteLoading = false;
         this.audit = {};
         this.batchFiles = [];
         this.batchFolders = [];
@@ -174,7 +175,7 @@ var ProjectStore = Reflux.createStore({
                 }
             }
         } else {
-            if (node1.properties.kind !== 'dds-file-version' || node2.properties.kind !== 'dds-file-version') {
+            if (node1.properties.kind === 'dds-activity' || node2.properties.kind === 'dds-activity') {
                 // Send error modal to user explaining rules of was_derived_from relations
                 this.trigger({
                     provEditorModal: {open: true, id: 'relWarning'},
@@ -232,15 +233,17 @@ var ProjectStore = Reflux.createStore({
         rel.push(data);
         this.updatedGraphItem = rel.map((edge) => {//Update dataset in client
             return {
-                id: edge.id,//Todo: 'used' and 'generated' relations render wrong on graph unless I flip from/to
-                from: edge.from.id,//Todo like this --> from: edge.to.id,
+                id: edge.id,
+                from: edge.from.id,
                 to: edge.to.id,
                 type: edge.kind,
                 color: graphColors.edges,
                 arrows: 'to',
                 properties: {
                     audit: edge.audit
-                }
+                },
+                title: '<div style="color: #616161"><span>'
+                + edge.type + '</span></div>'
             };
         });
         let edges = this.provEdges;
@@ -399,7 +402,7 @@ var ProjectStore = Reflux.createStore({
 
     getProvenanceSuccess(prov, prevNodes, prevEdges) {
         let edges = prov.relationships.filter((edge) => {
-            if (edge.properties.audit.deleted_by === null) {
+            if (edge.properties.audit.deleted_by === null && edge.type !== 'WasAttributedTo') {
                 return edge;
             }
         });
@@ -560,12 +563,19 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
+    searchFiles() {
+        this.trigger({
+            autoCompleteLoading: true
+        })
+    },
+
     searchFilesSuccess(results) {
         this.searchFilesList = results.filter((file)=>{
             if(file.kind === 'dds-file') return file.name;
         });
         this.trigger({
-            searchFilesList: this.searchFilesList
+            searchFilesList: this.searchFilesList,
+            autoCompleteLoading: false
         })
     },
 
@@ -629,6 +639,14 @@ var ProjectStore = Reflux.createStore({
             provFileVersions: this.provFileVersions,
             loading: false
         })
+    },
+
+    clearProvFileVersions() {
+        if(this.provFileVersions.length) {
+            this.trigger({
+                provFileVersions: []
+            })
+        }
     },
 
     addFileVersionSuccess(id, uploadId) {

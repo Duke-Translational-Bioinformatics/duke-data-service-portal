@@ -11,6 +11,7 @@ class File extends React.Component {
         super(props);
         this.state = {
             addEdgeMode: ProjectStore.addEdgeMode,
+            autoCompleteLoading: ProjectStore.autoCompleteLoading,
             dltRelationsBtn: ProjectStore.dltRelationsBtn,
             error: ProjectStore.error,
             errorModal: ProjectStore.errorModal,
