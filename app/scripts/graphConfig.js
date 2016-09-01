@@ -9,8 +9,8 @@ export const graphOptions = {
             type: "dynamic",
             roundness: 0.5
         },
-        hoverWidth: .75,
-        selectionWidth: .75
+        hoverWidth: .95,
+        selectionWidth: .95
     },
     nodes: {
         shape: 'dot',
@@ -48,15 +48,15 @@ export const graphOptions = {
 
 export const graphColors = {
     activity : {
-        border: '#1DE9B6',
-        background: '#1DE9B6',
+        border: '#64DD17',
+        background: '#64DD17',
         highlight: {
-            border: '#1DE9B6',
-            background: '#64FFDA'
+            border: '#64DD17',
+            background: '#B2FF59'
         },
         hover: {
-            border: '#64FFDA',
-            background: '#64FFDA'
+            border: '#B2FF59',
+            background: '#B2FF59'
         }
     },
     fileVersion: {

@@ -220,7 +220,7 @@ var styles = {
     tagLabels: {
         margin: 3,
         cursor: 'pointer',
-        color: '#0680CD',
+        color: '#235F9C',
         float: 'left'
     },
     tagLabelsContainer: {

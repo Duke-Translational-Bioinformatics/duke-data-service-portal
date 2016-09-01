@@ -33,7 +33,7 @@ var ProjectStore = Reflux.createStore({
         this.fileHashes = [];
         this.foldersChecked = [];
         this.fileVersions = [];
-        this.graphLoading = false,
+        this.graphLoading = false;
         this.itemsSelected = null;
         this.modal = false;
         this.moveModal = false;
@@ -54,6 +54,7 @@ var ProjectStore = Reflux.createStore({
         this.relFrom = null;
         this.relTo = null;
         this.relMsg = null;
+        this.removeFileFromProvBtn = false;
         this.scale = null;
         this.searchFilesList = [];
         this.selectedNode = {};
@@ -217,11 +218,11 @@ var ProjectStore = Reflux.createStore({
             body = {
                 'generated_entity': {
                     'kind': 'dds-file-version',
-                    'id': to.id
+                    'id': from.id
                 },
                 'used_entity': {
                     'kind': 'dds-file-version',
-                    'id': from.id
+                    'id': to.id
                 }
             };
         }
@@ -243,7 +244,7 @@ var ProjectStore = Reflux.createStore({
                     audit: edge.audit
                 },
                 title: '<div style="color: #616161"><span>'
-                + edge.type + '</span></div>'
+                + edge.kind + '</span></div>'
             };
         });
         let edges = this.provEdges;
@@ -299,7 +300,7 @@ var ProjectStore = Reflux.createStore({
         this.updatedGraphItem = act.map((node) => {//Update dataset in client
             return {
                 id: node.id,
-                label: node.name,
+                label: 'Activity: \n'+node.name,
                 shape: 'box',
                 color: graphColors.activity,
                 properties: node,
@@ -325,7 +326,7 @@ var ProjectStore = Reflux.createStore({
         this.updatedGraphItem = act.map((node) => {//Update dataset in client
             return {
                 id: node.id,
-                label: node.name,
+                label: 'Activity: \n'+node.name,
                 shape: 'box',
                 color: graphColors.activity,
                 properties: node,
@@ -402,7 +403,7 @@ var ProjectStore = Reflux.createStore({
 
     getProvenanceSuccess(prov, prevNodes, prevEdges) {
         let edges = prov.relationships.filter((edge) => {
-            if (edge.properties.audit.deleted_by === null && edge.type !== 'WasAttributedTo') {
+            if (edge.properties.audit.deleted_on === null && edge.type !== 'WasAttributedTo') {
                 return edge;
             }
         });
@@ -579,9 +580,30 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
+    clearSearchFilesData() {
+        this.trigger({
+            searchFilesList: []
+        })
+    },
+
+    showRemoveFileFromProvBtn() { //To remove unused files from graph (not currently in use)
+        this.removeFileFromProvBtn = !this.removeFileFromProvBtn;
+        if(this.showProvCtrlBtns) this.showProvCtrlBtns = !this.showProvCtrlBtns;
+        if(this.dltRelationsBtn) this.dltRelationsBtn = !this.dltRelationsBtn;
+        this.trigger({
+            dltRelationsBtn: this.dltRelationsBtn,
+            removeFileFromProvBtn: this.removeFileFromProvBtn,
+            showProvCtrlBtns: this.showProvCtrlBtns
+        })
+    },
+
     showProvControlBtns() {
         this.showProvCtrlBtns = !this.showProvCtrlBtns;
+        if(this.removeFileFromProvBtn) this.removeFileFromProvBtn = !this.removeFileFromProvBtn;
+        if(this.dltRelationsBtn) this.dltRelationsBtn = !this.dltRelationsBtn;
         this.trigger({
+            dltRelationsBtn: this.dltRelationsBtn,
+            removeFileFromProvBtn: this.removeFileFromProvBtn,
             showProvCtrlBtns: this.showProvCtrlBtns
         })
     },

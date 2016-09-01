@@ -24,6 +24,8 @@ import SelectField from 'material-ui/lib/select-field';
 import TextField from 'material-ui/lib/text-field';
 import urlGen from '../../../util/urlGen.js';
 
+import DropDownMenu from 'material-ui/lib/DropDownMenu';
+
 class Provenance extends React.Component {
     /**
      * Creates a provenance graph using the Vis.js library
@@ -40,6 +42,8 @@ class Provenance extends React.Component {
             height: window.innerHeight,
             network: null,
             node: null,
+            projectId: 0,
+            projectSelectValue: null,
             showDetails: false,
             timeout: null,
             value: null,
@@ -51,6 +55,7 @@ class Provenance extends React.Component {
     componentDidMount() {
         // Listen for resize changes when rotating device
         window.addEventListener('resize', this.handleResize);
+        ProjectActions.loadProjects();
     }
 
     componentWillUpdate(nextProps, nextState) {
@@ -164,9 +169,9 @@ class Provenance extends React.Component {
             let edgeData = edges.get(params.edges);
 
             if(params.nodes.length > 0) {
-                this.setState({showDetails: true});
-                if (nodeData.properties.kind !== 'dds-activity' && this.props.showProvCtrlBtns) {
-                    ProjectActions.showProvControlBtns();
+                this.state.showDetails = true;
+                if (nodeData.properties.kind !== 'dds-activity') {
+                    if(!this.props.removeFileFromProvBtn) ProjectActions.showRemoveFileFromProvBtn();
                 } else {
                     if (nodeData.properties.audit.created_by.id !== this.props.currentUser.id && this.props.showProvCtrlBtns) {
                         ProjectActions.showProvControlBtns();
@@ -175,7 +180,6 @@ class Provenance extends React.Component {
                         // If not creator then don't allow edit/delete activity
                         if (nodeData.properties.kind !== 'dds-file-version' && nodeData.id !== this.props.selectedNode.id) {
                             if (!this.props.showProvCtrlBtns && nodeData.properties.kind === 'dds-activity') ProjectActions.showProvControlBtns();
-                            if (this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
                         }
                         if (nodeData.properties.kind !== 'dds-activity' && this.props.showProvCtrlBtns) {
                             this.state.network.unselectAll();
@@ -193,36 +197,32 @@ class Provenance extends React.Component {
                 }
             }
             if(params.nodes.length === 0) {
-                if (params.nodes.length === 0 && params.edges.length === 0 && this.state.showDetails) {
-                    this.setState({showDetails: false});
-                }
-                if (params.nodes.length === 0 && this.props.showProvCtrlBtns) {
-                    //If clicked on canvas only or on an edge while showProvCntrlBtns
-                    this.setState({showDetails: false});
-                    ProjectActions.showProvControlBtns();
-                    this.state.network.unselectAll();
-                    if (edgeData.length > 0) this.state.network.selectEdges([edgeData[0].id]);
-                }
+                this.state.showDetails = false;
+                this.state.network.unselectAll();
+                if (edgeData.length > 0) this.state.network.selectEdges([edgeData[0].id]);
+                if(this.props.removeFileFromProvBtn) ProjectActions.showRemoveFileFromProvBtn();
+                if(this.props.showProvCtrlBtns) ProjectActions.showProvControlBtns();
             }
             if (params.edges.length === 0 && this.props.dltRelationsBtn) {
                 //If clicked on canvas only
-                this.setState({showDetails: false});
+                this.state.showDetails = false;
                 ProjectActions.showDeleteRelationsBtn(edgeData);
                 this.state.network.unselectAll();
             }
             if(edgeData.length > 0) {
                 if (edgeData[0].type !== 'WasAssociatedWith' || edgeData[0].type !== 'WasAttributedTo') {
                     if (edgeData.length > 0 && edgeData[0].properties.audit.created_by.id !== this.props.currentUser.id && this.props.dltRelationsBtn) {
-                        this.setState({showDetails: false});
+                        this.state.showDetails = false;
                         ProjectActions.showDeleteRelationsBtn(edgeData);
                     }
                     if (edgeData.length > 0 && edgeData[0].properties.audit.created_by.id === this.props.currentUser.id) {
                         if (params.edges.length > 0 && params.nodes.length < 1) {
-                            this.setState({showDetails: false});
+                            this.state.showDetails = false;
                             if (!this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
                             if (this.props.showProvCtrlBtns && this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
                         }
-                        if (params.edges.length === 0 && params.nodes.length === 0) this.setState({showDetails: false});
+                        if (params.edges.length === 0 && params.nodes.length === 0) this.state.showDetails = false;
+
                     }
                 }
             }
@@ -230,6 +230,103 @@ class Provenance extends React.Component {
     }
 
     render() {
+        let autoCompleteData = this.props.searchFilesList.map((file)=>{
+            if(file.kind === 'dds-file'){
+                return {text: file.name, value: file.name, id: file.id, node: file}
+            }
+        });
+        let fileName = this.props.entityObj && this.props.entityObj.name ? this.props.entityObj.name : null;
+        if(fileName === null) fileName = this.props.entityObj ? this.props.entityObj.file.name : null;
+        let fileVersion = this.props.entityObj && this.props.entityObj.current_version ? this.props.entityObj.current_version.version : null;
+        if(fileVersion === null) fileVersion = this.props.entityObj ? this.props.entityObj.version : null;
+        let addFile = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'addFile' ? this.props.provEditorModal.open : false;
+        let addAct = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'addAct' ? this.props.provEditorModal.open : false;
+        let dltAct = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'dltAct' ? this.props.provEditorModal.open : false;
+        let dltRel = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'dltRel' ? this.props.provEditorModal.open : false;
+        let editAct = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'editAct' ? this.props.provEditorModal.open : false;
+        let nodeWarning = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'nodeWarning' ? this.props.provEditorModal.open : false;
+        let openRelWarn = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'relWarning' ? this.props.provEditorModal.open : false;
+        let openConfirmRel = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'confirmRel' ? this.props.provEditorModal.open : false;
+        let drvFrmMsg = this.props.relMsg && this.props.relMsg === 'wasDerivedFrom' ?
+            <h5>Only<u><i>Was Derived From</i></u> relations can go
+                <u><i> from </i></u> files <u><i>to</i></u> files.</h5> : '';
+        let invalidRelMsg = this.props.relMsg && this.props.relMsg === 'invalidRelMsg' ?
+            <h5>A relation can not be created between these entity types.</h5> : '';
+        let actToActMsg = this.props.relMsg && this.props.relMsg === 'actToActMsg' ?
+            <h5>An <u><i>activity</i></u> can not have a relation to another <u><i>activity</i></u></h5> : '';
+        let notFileToFile = this.props.relMsg && this.props.relMsg === 'notFileToFile' ?
+            <h5><u><i>Was Derived From</i></u> relations can only be created <u><i>from </i></u>
+                files <u><i>to</i></u> files.</h5> : '';
+        let permissionError = this.props.relMsg && this.props.relMsg === 'permissionError' ?
+            <h5>Your can only create <u><i>used </i></u> relations from activities you are the creator of.</h5> : '';
+        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
+        let relationTypeSelect = null;
+        if (prjPrm !== null) {
+            relationTypeSelect = prjPrm === 'viewOnly' ?
+                <SelectField value={this.state.value}
+                             id="selectRelation"
+                             onChange={this.handleSelectValueChange.bind(this, 'value')}
+                             floatingLabelText="Add Relation"
+                             floatingLabelStyle={{color: '#757575'}}
+                             errorText={this.state.errorText}
+                             errorStyle={styles.textStyles}
+                             labelStyle={{paddingRight: 0}}
+                             style={styles.selectStyles}>
+                    <MenuItem style={styles.menuItemStyle} value={0} primaryText='used'/>
+                </SelectField>:
+                <SelectField value={this.state.value}
+                             id="selectRelation"
+                             onChange={this.handleSelectValueChange.bind(this, 'value')}
+                             floatingLabelText="Add Relation"
+                             floatingLabelStyle={{color: '#757575'}}
+                             errorText={this.state.errorText}
+                             errorStyle={styles.textStyles}
+                             labelStyle={{paddingRight: 0}}
+                             style={styles.selectStyles}>
+                    <MenuItem style={styles.menuItemStyle} value={0} primaryText='used'/>
+                    <MenuItem style={styles.menuItemStyle} value={1} primaryText='was generated by'/>
+                    <MenuItem style={styles.menuItemStyle} value={2} primaryText='was derived from'/>
+                </SelectField>;
+        }
+        let projects = this.props.projects && this.props.projects.length ? this.props.projects.map((project)=>{
+            if(!project.is_deleted) {
+                return <MenuItem key={project.id}
+                                 value={project.id}
+                                 primaryText={project.name}
+                                 onTouchTap={() => this.handleProjectSelect(project.id, project.name)}/>
+            }
+        }) : null;
+        let provFileVersions = this.props.provFileVersions.map((node)=>{
+            return <li key={node.id}
+                       id={node.id}
+                       onTouchTap={() => this.useFileVersion(node.id, node.file.name, node.version, node)}>
+                       Version: {node.version}
+            </li>
+        });
+        let rmFileBtn = this.props.removeFileFromProvBtn ? 'block' : 'none';
+        let showBtns = this.props.showProvCtrlBtns ? 'block' : 'none';
+        let showDltRltBtn = this.props.dltRelationsBtn ? 'block' : 'none';
+        let versions = null;
+        let versionsButton = null;
+        let versionCount = [];
+        if(this.props.fileVersions && this.props.fileVersions != undefined && this.props.fileVersions.length > 1) {
+            versions = this.props.fileVersions.map((version) => {
+                return version.is_deleted;
+            });
+            for (let i = 0; i < versions.length; i++) {
+                if (versions[i] === false) {
+                    versionCount.push(versions[i]);
+                    if (versionCount.length > 1) {
+                        versionsButton = <RaisedButton
+                            label="CHANGE VERSION"
+                            labelStyle={styles.provEditor.btn.label}
+                            style={styles.provEditor.btn}
+                            onTouchTap={() => this.openVersionsModal()}
+                            />
+                    }
+                }
+            }
+        }
         const addActivityActions = [
             <FlatButton
                 label="Cancel"
@@ -318,94 +415,6 @@ class Provenance extends React.Component {
                 onTouchTap={() => this.addDerivedFromRelation('was_derived_from', this.props.relFrom, this.props.relTo)}
                 />
         ];
-        let autoCompleteData = this.props.searchFilesList.map((file)=>{
-            if(file.kind === 'dds-file'){
-                return {text: file.name, value: file.name, id: file.id, node: file}
-            }
-        });
-        let fileName = this.props.entityObj && this.props.entityObj.name ? this.props.entityObj.name : null;
-        if(fileName === null) fileName = this.props.entityObj ? this.props.entityObj.file.name : null;
-        let fileVersion = this.props.entityObj && this.props.entityObj.current_version ? this.props.entityObj.current_version.version : null;
-        if(fileVersion === null) fileVersion = this.props.entityObj ? this.props.entityObj.version : null;
-        let addFile = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'addFile' ? this.props.provEditorModal.open : false;
-        let addAct = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'addAct' ? this.props.provEditorModal.open : false;
-        let dltAct = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'dltAct' ? this.props.provEditorModal.open : false;
-        let dltRel = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'dltRel' ? this.props.provEditorModal.open : false;
-        let editAct = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'editAct' ? this.props.provEditorModal.open : false;
-        let nodeWarning = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'nodeWarning' ? this.props.provEditorModal.open : false;
-        let openRelWarn = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'relWarning' ? this.props.provEditorModal.open : false;
-        let openConfirmRel = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'confirmRel' ? this.props.provEditorModal.open : false;
-        let drvFrmMsg = this.props.relMsg && this.props.relMsg === 'wasDerivedFrom' ?
-            <h5>Only<u><i>Was Derived From</i></u> relations can go
-                <u><i> from </i></u> files <u><i>to</i></u> files.</h5> : '';
-        let invalidRelMsg = this.props.relMsg && this.props.relMsg === 'invalidRelMsg' ?
-            <h5>A relation can not be created between these entity types.</h5> : '';
-        let actToActMsg = this.props.relMsg && this.props.relMsg === 'actToActMsg' ?
-            <h5>An <u><i>activity</i></u> can not have a relation to another <u><i>activity</i></u></h5> : '';
-        let notFileToFile = this.props.relMsg && this.props.relMsg === 'notFileToFile' ?
-            <h5><u><i>Was Derived From</i></u> relations can only be created <u><i>from </i></u>
-                files <u><i>to</i></u> files.</h5> : '';
-        let permissionError = this.props.relMsg && this.props.relMsg === 'permissionError' ?
-            <h5>Your can only create <u><i>used </i></u> relations from activities you are the creator of.</h5> : '';
-        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
-        let relationTypeSelect = null;
-        if (prjPrm !== null) {
-            relationTypeSelect = prjPrm === 'viewOnly' ?
-                <SelectField value={this.state.value}
-                             id="selectRelation"
-                             onChange={this.handleSelectValueChange.bind(this, 'value')}
-                             floatingLabelText="Add Relation"
-                             floatingLabelStyle={{color: '#757575'}}
-                             errorText={this.state.errorText}
-                             errorStyle={styles.textStyles}
-                             labelStyle={{paddingRight: 0}}
-                             style={styles.selectStyles}>
-                    <MenuItem style={styles.menuItemStyle} value={0} primaryText='used'/>
-                </SelectField>:
-                <SelectField value={this.state.value}
-                             id="selectRelation"
-                             onChange={this.handleSelectValueChange.bind(this, 'value')}
-                             floatingLabelText="Add Relation"
-                             floatingLabelStyle={{color: '#757575'}}
-                             errorText={this.state.errorText}
-                             errorStyle={styles.textStyles}
-                             labelStyle={{paddingRight: 0}}
-                             style={styles.selectStyles}>
-                    <MenuItem style={styles.menuItemStyle} value={0} primaryText='used'/>
-                    <MenuItem style={styles.menuItemStyle} value={1} primaryText='was generated by'/>
-                    <MenuItem style={styles.menuItemStyle} value={2} primaryText='was derived from'/>
-                </SelectField>;
-        }
-        let provFileVersions = this.props.provFileVersions.map((node)=>{
-            return <li key={node.id}
-                       id={node.id}
-                       onTouchTap={() => this.useFileVersion(node.id, node.file.name, node.version, node)}>
-                       Version: {node.version}
-            </li>
-        });
-        let showBtns = this.props.showProvCtrlBtns ? 'block' : 'none';
-        let showDltRltBtn = this.props.dltRelationsBtn ? 'block' : 'none';
-        let versions = null;
-        let versionsButton = null;
-        let versionCount = [];
-        if(this.props.fileVersions && this.props.fileVersions != undefined && this.props.fileVersions.length > 1) {
-            versions = this.props.fileVersions.map((version) => {
-                return version.is_deleted;
-            });
-            for (let i = 0; i < versions.length; i++) {
-                if (versions[i] === false) {
-                    versionCount.push(versions[i]);
-                    if (versionCount.length > 1) {
-                        versionsButton = <RaisedButton
-                            label="CHANGE VERSION"
-                            labelStyle={styles.provEditor.btn.label}
-                            style={styles.provEditor.btn}
-                            onTouchTap={() => this.openVersionsModal()}
-                            />
-                    }
-                }
-            }
-        }
 
         return (
             <div>
@@ -433,6 +442,11 @@ class Provenance extends React.Component {
                              users project permissions. For some reason the select fails if using only dynamic menu
                              items*/}
                             { relationTypeSelect }<br/>
+                            {/*<RaisedButton
+                                label="Remove File"
+                                labelStyle={styles.provEditor.btn.label}
+                                style={{zIndex: 9999, margin: 10, width: '80%', display: rmFileBtn}}
+                                onTouchTap={() => this.openModal('editAct')}/>*/}
                             <RaisedButton
                                 label="Edit Activity"
                                 labelStyle={styles.provEditor.btn.label}
@@ -586,13 +600,24 @@ class Provenance extends React.Component {
                             actions={addFileNodeActions}
                             open={addFile}
                             onRequestClose={() => this.handleClose('addFile')}>
-                            <h6 style={{marginTop:0}}>Add files to the graph. File must already exist in Duke Data Service.</h6>
+                            <h6 style={{marginTop:0, paddingBottom: 20}}>Add files to the graph. File must already exist in Duke Data Service.</h6>
+                            <SelectField id="selectProject"
+                                         value={this.state.projectSelectValue}
+                                         onChange={(e, index, value) => this.handleProjectSelect(e, index, value)}
+                                         maxHeight={300}
+                                         autoWidth={true}
+                                         fullWidth={true}
+                                         floatingLabelText="Select a Project"
+                                         floatingLabelStyle={{color: '#BDBDBD', fontWeight: 100}}
+                                         style={styles.projectSelect}>
+                                {projects}
+                            </SelectField>
                             <AutoComplete
                                 id="searchText"
                                 fullWidth={true}
-                                style={{maxWidth: 'calc(100% - 13px)'}}
+                                style={styles.filePicker}
                                 menuStyle={{maxHeight: 200}}
-                                floatingLabelText="Type a File Name Here"
+                                floatingLabelText="Type a File Name"
                                 dataSource={autoCompleteData}
                                 filter={AutoComplete.caseInsensitiveFilter}
                                 openOnFocus={true}
@@ -618,15 +643,6 @@ class Provenance extends React.Component {
                                 onTouchTap={() => this.toggleProv()}>
                         <NavigationClose />
                     </IconButton>
-                    {//Todo: Remove this !!!!!!!!!!!!!
-                        /*<IconButton tooltip={this.state.width === window.innerWidth ? "Exit Fullscreen" :
-                         "Fullscreen" +
-                         " Mode"}
-                         tooltipPosition="bottom-right"
-                         style={styles.provEditor.toggleFullscreenBtn}
-                         onTouchTap={() => this.toggleFullscreen()}>
-                         {this.state.width === window.innerWidth ? <FullscreenExit /> : <Fullscreen />}
-                         </IconButton>*/}
                     <h6 className="mdl-color-text--grey-800"
                         style={styles.provEditor.title}>
                         <span style={styles.provEditor.title.span1}>{fileName}</span>
@@ -656,12 +672,18 @@ class Provenance extends React.Component {
     addFileToGraph() {
         let node = this.state.addFileNode;
         let graphNodes = this.props.provNodes;
-        if(!BaseUtils.objectPropInArray(graphNodes, 'id', node.id)) {
-            ProjectActions.addFileToGraph(node);
-            ProjectActions.closeProvEditorModal('addFile');
-            ProjectActions.clearProvFileVersions();
-        } else {
-            ProjectActions.openProvEditorModal('nodeWarning');
+        if(this.state.addFileNode !== null) {
+            let id = node.current_version ? node.current_version.id : node.id;
+            if (!BaseUtils.objectPropInArray(graphNodes, 'id', id)) {
+                ProjectActions.addFileToGraph(node);
+                ProjectActions.closeProvEditorModal('addFile');
+                ProjectActions.clearProvFileVersions();
+                this.state.addFileNode = null;
+            } else {
+                ProjectActions.openProvEditorModal('nodeWarning');
+            }
+            this.state.projectSelectValue = null;
+            ProjectActions.clearSearchFilesData();
         }
     }
 
@@ -725,6 +747,7 @@ class Provenance extends React.Component {
     handleClose(id) {
         ProjectActions.closeProvEditorModal(id);
         ProjectActions.clearProvFileVersions();
+        if(id === 'addFile') this.state.projectSelectValue = null;
     }
 
     handleFloatingError(e) {
@@ -733,7 +756,15 @@ class Provenance extends React.Component {
         }
     }
 
-    handleSelectValueChange(event, index, value) {
+    handleProjectSelect(e, index, value) {
+        ProjectActions.clearSearchFilesData(); //If project is changed, clear files from autocomplete list
+        this.setState({
+            projectId: value,
+            projectSelectValue: value
+        });
+    }
+
+    handleSelectValueChange(index, event, value) {
         if(window.innerWidth < 680) {
             setTimeout(()=>{this.toggleEditor()}, 2000);
         }
@@ -750,7 +781,7 @@ class Provenance extends React.Component {
 
     handleUpdateInput (text) {
         // Add 500ms lag to autocomplete so that it only makes a call after user is done typing
-        let id = this.props.entityObj.file ? this.props.entityObj.file.project.id : this.props.entityObj.project.id;
+        let id = this.state.projectId !== 0 ? this.state.projectId : this.props.entityObj.file ? this.props.entityObj.file.project.id : this.props.entityObj.project.id;
         let timeout = this.state.timeout;
         let textInput = document.getElementById('searchText');
         textInput.onkeyup = () => {
@@ -773,6 +804,10 @@ class Provenance extends React.Component {
         ProjectActions.openModal()
     }
 
+    selectProject(id) {
+        this.state.projectId = id;
+    }
+
     switchRelations(from, to){
         ProjectActions.switchRelationFromTo(from, to);
     }
@@ -782,12 +817,6 @@ class Provenance extends React.Component {
         ProjectActions.toggleAddEdgeMode();
         this.setState({value: null});
     }
-
-    //toggleFullscreen() { //Todo: Remove this once it is decided that we don't need it!!!!!!!!!!!!!!!!!!!!!!!
-    //    let width = this.state.width !== window.innerWidth ? window.innerWidth
-    //        : window.innerWidth * .85;
-    //    this.setState({width: width});
-    //}
 
     toggleProv() {
         if(this.props.toggleProvEdit && this.props.toggleProv) ProjectActions.toggleProvEditor();
@@ -807,7 +836,7 @@ class Provenance extends React.Component {
 var styles = {
     autoCompleteProgress: {
         position: 'absolute',
-        top: '38%',
+        top: '28%',
         left: '45%'
     },
     cancelBtn: {
@@ -823,7 +852,10 @@ var styles = {
     dialogStyles: {
         textAlign: 'center',
         fontColor: '#303F9F',
-        zIndex: '9999'
+        zIndex: '5000'
+    },
+    filePicker: {
+        maxWidth: 'calc(100% - 45px)'
     },
     help: {
         fontSize: 48,
@@ -852,6 +884,10 @@ var styles = {
     menuItemStyle: {
         width: 170
     },
+    projectSelect: {
+        maxWidth: 'calc(100% - 45px)',
+        textAlign: 'left'
+    },
     provEditor:{
         display: 'flex',
         justifyContent: 'center',
@@ -878,12 +914,6 @@ var styles = {
                 color: '#235F9C'
             }
         },
-        //toggleFullscreenBtn: {
-        //    position: 'absolute',
-        //    top: 130,
-        //    left: 2,
-        //    zIndex: 9999
-        //},
         toggleProvBtn: {
             position: 'absolute',
             top: 98,

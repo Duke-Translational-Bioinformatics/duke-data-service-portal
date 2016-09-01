@@ -9,6 +9,7 @@ import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.j
 
 var ProjectActions = Reflux.createActions([
     'clearProvFileVersions',
+    'clearSearchFilesData',
     'searchFiles',
     'searchFilesSuccess',
     'deleteProvItem',
@@ -31,6 +32,7 @@ var ProjectActions = Reflux.createActions([
     'toggleProvView',
     'toggleProvEditor',
     'toggleAddEdgeMode',
+    'showRemoveFileFromProvBtn',
     'showProvControlBtns',
     'showDeleteRelationsBtn',
     'selectNodesAndEdges',
@@ -237,7 +239,7 @@ ProjectActions.editProvActivity.preEmit = function (id, name, desc, prevName) {
         } else {
             MainActions.addToast(prevName + ' was edited');
         }
-        ProjectActions.editProvActivitySuccess(json);//TODO: Toggle prov buttons after success//////////////////
+        ProjectActions.editProvActivitySuccess(json);
     }).catch(function (ex) {
         ProjectActions.handleErrors(ex)
     })
@@ -259,6 +261,7 @@ ProjectActions.getProvenance.preEmit = function (id, kind, prevNodes, prevEdges)
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
+        console.log(json.graph)
         ProjectActions.getProvenanceSuccess(json.graph, prevNodes, prevEdges);
     }).catch(function (ex) {
         ProjectActions.handleErrors(ex)
