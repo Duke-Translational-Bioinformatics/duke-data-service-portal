@@ -23,8 +23,7 @@ import RaisedButton from 'material-ui/lib/raised-button';
 import SelectField from 'material-ui/lib/select-field';
 import TextField from 'material-ui/lib/text-field';
 import urlGen from '../../../util/urlGen.js';
-
-import DropDownMenu from 'material-ui/lib/DropDownMenu';
+import ProvenanceFilePicker from '../globalComponents/provenanceFilePicker.jsx';
 
 class Provenance extends React.Component {
     /**
@@ -43,7 +42,6 @@ class Provenance extends React.Component {
             network: null,
             node: null,
             projectId: 0,
-            projectSelectValue: null,
             showDetails: false,
             timeout: null,
             value: null,
@@ -230,11 +228,6 @@ class Provenance extends React.Component {
     }
 
     render() {
-        let autoCompleteData = this.props.searchFilesList.map((file)=>{
-            if(file.kind === 'dds-file'){
-                return {text: file.name, value: file.name, id: file.id, node: file}
-            }
-        });
         let fileName = this.props.entityObj && this.props.entityObj.name ? this.props.entityObj.name : null;
         if(fileName === null) fileName = this.props.entityObj ? this.props.entityObj.file.name : null;
         let fileVersion = this.props.entityObj && this.props.entityObj.current_version ? this.props.entityObj.current_version.version : null;
@@ -288,21 +281,6 @@ class Provenance extends React.Component {
                     <MenuItem style={styles.menuItemStyle} value={2} primaryText='was derived from'/>
                 </SelectField>;
         }
-        let projects = this.props.projects && this.props.projects.length ? this.props.projects.map((project)=>{
-            if(!project.is_deleted) {
-                return <MenuItem key={project.id}
-                                 value={project.id}
-                                 primaryText={project.name}
-                                 onTouchTap={() => this.handleProjectSelect(project.id, project.name)}/>
-            }
-        }) : null;
-        let provFileVersions = this.props.provFileVersions.map((node)=>{
-            return <li key={node.id}
-                       id={node.id}
-                       onTouchTap={() => this.useFileVersion(node.id, node.file.name, node.version, node)}>
-                       Version: {node.version}
-            </li>
-        });
         let rmFileBtn = this.props.removeFileFromProvBtn ? 'block' : 'none';
         let showBtns = this.props.showProvCtrlBtns ? 'block' : 'none';
         let showDltRltBtn = this.props.dltRelationsBtn ? 'block' : 'none';
@@ -337,18 +315,6 @@ class Provenance extends React.Component {
                 secondary={true}
                 keyboardFocused={true}
                 onTouchTap={() => this.addNewActivity()}
-                />
-        ];
-        const addFileNodeActions = [
-            <FlatButton
-                label="Cancel"
-                secondary={true}
-                onTouchTap={() => this.handleClose('addFile')}/>,
-            <FlatButton
-                label="Submit"
-                secondary={true}
-                keyboardFocused={true}
-                onTouchTap={() => this.addFileToGraph()}
                 />
         ];
         const editActions = [
@@ -433,14 +399,7 @@ class Provenance extends React.Component {
                                 labelStyle={styles.provEditor.btn.label}
                                 style={styles.provEditor.btn}
                                 onTouchTap={() => this.openModal('addAct')}/>
-                            <RaisedButton
-                                label="Add File"
-                                labelStyle={styles.provEditor.btn.label}
-                                style={styles.provEditor.btn}
-                                onTouchTap={() => this.openModal('addFile')}/>
-                            {/*relationTypeSelect is a select element that shows the proper menuItems based on the
-                             users project permissions. For some reason the select fails if using only dynamic menu
-                             items*/}
+                            <ProvenanceFilePicker {...this.props} {...this.state}/>
                             { relationTypeSelect }<br/>
                             {/*<RaisedButton
                                 label="Remove File"
@@ -591,48 +550,6 @@ class Provenance extends React.Component {
                                     multiLine={true}/>
                             </form>
                         </Dialog>
-                        <Dialog
-                            style={styles.dialogStyles}
-                            contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
-                            title="Add File to Graph"
-                            autoDetectWindowHeight={true}
-                            autoScrollBodyContent={true}
-                            actions={addFileNodeActions}
-                            open={addFile}
-                            onRequestClose={() => this.handleClose('addFile')}>
-                            <h6 style={{marginTop:0, paddingBottom: 20}}>Add files to the graph. File must already exist in Duke Data Service.</h6>
-                            <SelectField id="selectProject"
-                                         value={this.state.projectSelectValue}
-                                         onChange={(e, index, value) => this.handleProjectSelect(e, index, value)}
-                                         maxHeight={300}
-                                         autoWidth={true}
-                                         fullWidth={true}
-                                         floatingLabelText="Select a Project"
-                                         floatingLabelStyle={{color: '#BDBDBD', fontWeight: 100}}
-                                         style={styles.projectSelect}>
-                                {projects}
-                            </SelectField>
-                            <AutoComplete
-                                id="searchText"
-                                fullWidth={true}
-                                style={styles.filePicker}
-                                menuStyle={{maxHeight: 200}}
-                                floatingLabelText="Type a File Name"
-                                dataSource={autoCompleteData}
-                                filter={AutoComplete.caseInsensitiveFilter}
-                                openOnFocus={true}
-                                onNewRequest={(value) => this.chooseFileVersion(value)}
-                                onUpdateInput={this.handleUpdateInput.bind(this)}
-                                underlineStyle={styles.autoCompleteUnderline}/>
-                            {this.props.autoCompleteLoading ? <CircularProgress size={1} style={styles.autoCompleteProgress}/> : null}
-                            {this.props.provFileVersions.length > 1 ?
-                                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.versionListWrapper}>
-                                <h7>Would you like to use a different version of this file?</h7>
-                                 <ul id='fileVersionUl'>
-                                    {provFileVersions}
-                                </ul>
-                                </div> : null}
-                        </Dialog>
                     </LeftNav>
                     <IconButton tooltip="Edit Graph"
                                 style={styles.provEditor.toggleEditor}
@@ -669,24 +586,6 @@ class Provenance extends React.Component {
         ProjectActions.startAddRelation(kind, from, to);
     }
 
-    addFileToGraph() {
-        let node = this.state.addFileNode;
-        let graphNodes = this.props.provNodes;
-        if(this.state.addFileNode !== null) {
-            let id = node.current_version ? node.current_version.id : node.id;
-            if (!BaseUtils.objectPropInArray(graphNodes, 'id', id)) {
-                ProjectActions.addFileToGraph(node);
-                ProjectActions.closeProvEditorModal('addFile');
-                ProjectActions.clearProvFileVersions();
-                this.state.addFileNode = null;
-            } else {
-                ProjectActions.openProvEditorModal('nodeWarning');
-            }
-            this.state.projectSelectValue = null;
-            ProjectActions.clearSearchFilesData();
-        }
-    }
-
     addNewActivity() {
         if (this.state.floatingErrorText) {
             return null
@@ -701,12 +600,6 @@ class Provenance extends React.Component {
                 floatingErrorText: 'This field is required.'
             });
         }
-    }
-
-    chooseFileVersion(value) {
-        let fileId = value.id;
-        this.state.addFileNode = value.node;
-        ProjectActions.getFileVersions(fileId, true);
     }
 
     editActivity() {
@@ -746,22 +639,12 @@ class Provenance extends React.Component {
 
     handleClose(id) {
         ProjectActions.closeProvEditorModal(id);
-        ProjectActions.clearProvFileVersions();
-        if(id === 'addFile') this.state.projectSelectValue = null;
     }
 
     handleFloatingError(e) {
         if(this.state.floatingErrorText !== '' || !e.target.value) { // Avoid lagging text input due to re-renders
             this.setState({floatingErrorText: e.target.value ? '' : 'This field is required.'});
         }
-    }
-
-    handleProjectSelect(e, index, value) {
-        ProjectActions.clearSearchFilesData(); //If project is changed, clear files from autocomplete list
-        this.setState({
-            projectId: value,
-            projectSelectValue: value
-        });
     }
 
     handleSelectValueChange(index, event, value) {
@@ -779,33 +662,12 @@ class Provenance extends React.Component {
         });
     }
 
-    handleUpdateInput (text) {
-        // Add 500ms lag to autocomplete so that it only makes a call after user is done typing
-        let id = this.state.projectId !== 0 ? this.state.projectId : this.props.entityObj.file ? this.props.entityObj.file.project.id : this.props.entityObj.project.id;
-        let timeout = this.state.timeout;
-        let textInput = document.getElementById('searchText');
-        textInput.onkeyup = () => {
-            clearTimeout(this.state.timeout);
-            this.setState({
-                timeout: setTimeout(() => {
-                    if (!textInput.value.indexOf(' ') <= 0) {
-                        ProjectActions.searchFiles(textInput.value, id);
-                    }
-                }, 500)
-            })
-        };
-    }
-
     openModal(id) {
         ProjectActions.openProvEditorModal(id);
     }
 
     openVersionsModal() {
         ProjectActions.openModal()
-    }
-
-    selectProject(id) {
-        this.state.projectId = id;
     }
 
     switchRelations(from, to){
@@ -834,11 +696,6 @@ class Provenance extends React.Component {
 }
 
 var styles = {
-    autoCompleteProgress: {
-        position: 'absolute',
-        top: '28%',
-        left: '45%'
-    },
     cancelBtn: {
         height: 18,
         width: 18,
@@ -853,9 +710,6 @@ var styles = {
         textAlign: 'center',
         fontColor: '#303F9F',
         zIndex: '5000'
-    },
-    filePicker: {
-        maxWidth: 'calc(100% - 45px)'
     },
     help: {
         fontSize: 48,
@@ -883,10 +737,6 @@ var styles = {
     },
     menuItemStyle: {
         width: 170
-    },
-    projectSelect: {
-        maxWidth: 'calc(100% - 45px)',
-        textAlign: 'left'
     },
     provEditor:{
         display: 'flex',
@@ -955,9 +805,6 @@ var styles = {
     textStyles: {
         textAlign: 'left',
         fontColor: '#303F9F'
-    },
-    versionListWrapper: {
-        textAlign: 'left'
     },
     warning: {
         fontSize: 48,
