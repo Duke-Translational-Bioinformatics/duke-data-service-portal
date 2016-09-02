@@ -54,7 +54,8 @@
     "react-dom": "0.14.6",
     "react-router": "^0.13.2",
     "react-tap-event-plugin": "^0.2.2",
-    "reflux": "^0.2.7"
+    "reflux": "^0.2.7",
+    "vis": "^4.16.1"
   },
   "jest": {
     "scriptPreprocessor": "<rootDir>/node_modules/babel-jest",
