@@ -22,7 +22,8 @@ class ProvenanceFilePicker extends React.Component {
             projectId: 0,
             projectSelectValue: null,
             timeout: null,
-            value: null
+            value: null,
+            width: window.innerWidth
         };
     }
 

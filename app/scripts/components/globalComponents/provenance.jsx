@@ -4,7 +4,9 @@ import vis from 'vis';
 import {graphOptions, graphColors} from '../../graphConfig';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
+import ProvenanceActivityManager from '../globalComponents/provenanceActivityManager.jsx';
 import ProvenanceDetails from '../globalComponents/provenanceDetails.jsx';
+import ProvenanceFilePicker from '../globalComponents/provenanceFilePicker.jsx';
 import FileVersionsList from '../fileComponents/fileVersionsList.jsx';
 import BaseUtils from '../../../util/baseUtils.js';
 import AutoComplete from 'material-ui/lib/auto-complete';
@@ -24,7 +26,6 @@ import RaisedButton from 'material-ui/lib/raised-button';
 import SelectField from 'material-ui/lib/select-field';
 import TextField from 'material-ui/lib/text-field';
 import urlGen from '../../../util/urlGen.js';
-import ProvenanceFilePicker from '../globalComponents/provenanceFilePicker.jsx';
 
 class Provenance extends React.Component {
     /**
@@ -283,7 +284,6 @@ class Provenance extends React.Component {
                 </SelectField>;
         }
         let rmFileBtn = this.props.removeFileFromProvBtn ? 'block' : 'none';
-        let showBtns = this.props.showProvCtrlBtns ? 'block' : 'none';
         let showDltRltBtn = this.props.dltRelationsBtn ? 'block' : 'none';
         let versions = null;
         let versionsButton = null;
@@ -306,42 +306,6 @@ class Provenance extends React.Component {
                 }
             }
         }
-        const addActivityActions = [
-            <FlatButton
-                label="Cancel"
-                secondary={true}
-                onTouchTap={() => this.handleClose('addAct')}/>,
-            <FlatButton
-                label="Submit"
-                secondary={true}
-                keyboardFocused={true}
-                onTouchTap={() => this.addNewActivity()}
-                />
-        ];
-        const editActions = [
-            <FlatButton
-                label="Cancel"
-                secondary={true}
-                onTouchTap={() => this.handleClose('editAct')}/>,
-            <FlatButton
-                label="Submit"
-                secondary={true}
-                keyboardFocused={true}
-                onTouchTap={() => this.editActivity()}
-                />
-        ];
-        const dltActivityActions = [
-            <FlatButton
-                label="Cancel"
-                secondary={true}
-                onTouchTap={() => this.handleClose('dltAct')}/>,
-            <FlatButton
-                label="Delete"
-                secondary={true}
-                keyboardFocused={true}
-                onTouchTap={() => this.deleteActivity(this.props.selectedNode)}
-                />
-        ];
         const dltRelationActions = [
             <FlatButton
                 label="Cancel"
@@ -394,29 +358,9 @@ class Provenance extends React.Component {
                             </IconButton>
                             {versionsButton}
                             <FileVersionsList {...this.props}/>
-                            <RaisedButton
-                                id="addAct"
-                                label="Add Activity"
-                                labelStyle={styles.provEditor.btn.label}
-                                style={styles.provEditor.btn}
-                                onTouchTap={() => this.openModal('addAct')}/>
                             <ProvenanceFilePicker {...this.props} {...this.state}/>
+                            <ProvenanceActivityManager {...this.props} {...this.state}/>
                             { relationTypeSelect }<br/>
-                            {/*<RaisedButton
-                                label="Remove File"
-                                labelStyle={styles.provEditor.btn.label}
-                                style={{zIndex: 9999, margin: 10, width: '80%', display: rmFileBtn}}
-                                onTouchTap={() => this.openModal('editAct')}/>*/}
-                            <RaisedButton
-                                label="Edit Activity"
-                                labelStyle={styles.provEditor.btn.label}
-                                style={{zIndex: 9999, margin: 10, width: '80%', display: showBtns}}
-                                onTouchTap={() => this.openModal('editAct')}/>
-                            <RaisedButton
-                                label="Delete Activity"
-                                labelStyle={{color: '#F44336'}}
-                                style={{zIndex: 9999, margin: 10, width: '80%', display: showBtns}}
-                                onTouchTap={() => this.openModal('dltAct')}/>
                             <RaisedButton
                                 label="Delete Relation"
                                 labelStyle={{color: '#F44336'}}
@@ -429,44 +373,6 @@ class Provenance extends React.Component {
                                 </div> : null}
                             {this.state.showDetails ? <ProvenanceDetails {...this.state} {...this.props}/> : null}
                         </div>
-                        <Dialog
-                            style={styles.dialogStyles}
-                            contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
-                            title="Add Activity"
-                            autoDetectWindowHeight={true}
-                            actions={addActivityActions}
-                            open={addAct}
-                            onRequestClose={() => this.handleClose('addAct')}>
-                            <form action="#" id="newActivityForm">
-                                <TextField
-                                    style={styles.textStyles}
-                                    hintText="Activity Name"
-                                    errorText={this.state.floatingErrorText}
-                                    floatingLabelText="Activity Name"
-                                    id="activityNameText"
-                                    type="text"
-                                    multiLine={true}
-                                    onChange={this.handleFloatingError.bind(this)}/> <br/>
-                                <TextField
-                                    style={styles.textStyles}
-                                    hintText="Activity Description"
-                                    floatingLabelText="Activity Description"
-                                    id="activityDescText"
-                                    type="text"
-                                    multiLine={true}/>
-                            </form>
-                        </Dialog>
-                        <Dialog
-                            style={styles.dialogStyles}
-                            contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
-                            title="Are you sure you want to delete this activity?"
-                            autoDetectWindowHeight={true}
-                            autoScrollBodyContent={true}
-                            actions={dltActivityActions}
-                            open={dltAct}
-                            onRequestClose={() => this.handleClose('dltAct')}>
-                            <i className="material-icons" style={styles.warning}>warning</i>
-                        </Dialog>
                         <Dialog
                             style={styles.dialogStyles}
                             contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
@@ -518,39 +424,6 @@ class Provenance extends React.Component {
                             <h6>Are you sure that the file <b>{this.props.relFrom && this.props.relFrom !== null ? this.props.relFrom.label+' ' : ''}</b>
                                 was derived from the file <b>{this.props.relTo && this.props.relTo !== null ? this.props.relTo.label+' ' : ''}</b>?</h6>
                         </Dialog>
-                        <Dialog
-                            style={styles.dialogStyles}
-                            contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
-                            title="Edit Activity"
-                            autoDetectWindowHeight={true}
-                            autoScrollBodyContent={true}
-                            actions={editActions}
-                            open={editAct}
-                            onRequestClose={() => this.handleClose('editAct')}>
-                            <form action="#" id="newActivityForm">
-                                <TextField
-                                    autoFocus={true}
-                                    onFocus={this.handleFloatingError.bind(this)}
-                                    style={styles.textStyles}
-                                    defaultValue={this.props.selectedNode.properties ? this.props.selectedNode.properties.name : this.props.selectedNode.label}
-                                    hintText="Activity Name"
-                                    errorText={this.state.floatingErrorText}
-                                    floatingLabelText="Activity Name"
-                                    id="activityNameText"
-                                    type="text"
-                                    multiLine={true}
-                                    onChange={this.handleFloatingError.bind(this)}/> <br/>
-                                <TextField
-                                    disabled={false}
-                                    style={styles.textStyles}
-                                    defaultValue={this.props.selectedNode.properties ? this.props.selectedNode.properties.description : null}
-                                    hintText="Activity Description"
-                                    floatingLabelText="Activity Description"
-                                    id="activityDescText"
-                                    type="text"
-                                    multiLine={true}/>
-                            </form>
-                        </Dialog>
                     </LeftNav>
                     <IconButton tooltip="Edit Graph"
                                 style={styles.provEditor.toggleEditor}
@@ -585,49 +458,6 @@ class Provenance extends React.Component {
 
     addDerivedFromRelation(kind, from, to) {
         ProjectActions.startAddRelation(kind, from, to);
-    }
-
-    addNewActivity() {
-        if (this.state.floatingErrorText) {
-            return null
-        } else {
-            let name = document.getElementById('activityNameText').value;
-            let desc = document.getElementById('activityDescText').value;
-            if(this.props.addEdgeMode) this.toggleEdgeMode();
-            ProjectActions.saveGraphZoomState(this.state.network.getScale(), this.state.network.getViewPosition());
-            ProjectActions.addProvActivity(name, desc);
-            ProjectActions.closeProvEditorModal('addAct');
-            this.setState({
-                floatingErrorText: 'This field is required.'
-            });
-        }
-    }
-
-    editActivity() {
-        let id = this.props.selectedNode.id;
-        let actName = this.props.selectedNode.label;
-        if (this.state.floatingErrorText) {
-            return null
-        } else {
-            let name = document.getElementById('activityNameText').value;
-            let desc = document.getElementById('activityDescText').value;
-            if(this.props.addEdgeMode) this.toggleEdgeMode();
-            ProjectActions.saveGraphZoomState(this.state.network.getScale(), this.state.network.getViewPosition());
-            ProjectActions.editProvActivity(id, name, desc, actName);
-            ProjectActions.closeProvEditorModal('editAct');
-            ProjectActions.showProvControlBtns();
-            this.setState({
-                floatingErrorText: 'This field is required.'
-            });
-        }
-    }
-
-    deleteActivity(node) {
-        let id = this.props.params.id;
-        ProjectActions.saveGraphZoomState(this.state.network.getScale(), this.state.network.getViewPosition());
-        ProjectActions.deleteProvItem(node, id);
-        ProjectActions.closeProvEditorModal('dltAct');
-        ProjectActions.showProvControlBtns();
     }
 
     deleteRelation(edge) {
