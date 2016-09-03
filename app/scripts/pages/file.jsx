@@ -40,6 +40,7 @@ class File extends React.Component {
             selectedNode: ProjectStore.selectedNode,
             showProvAlert: ProjectStore.showProvAlert,
             showProvCtrlBtns: ProjectStore.showProvCtrlBtns,
+            showProvDetails: ProjectStore.showProvDetails,
             tagAutoCompleteList: ProjectStore.tagAutoCompleteList,
             tagLabels: ProjectStore.tagLabels,
             updatedGraphItem: ProjectStore.updatedGraphItem

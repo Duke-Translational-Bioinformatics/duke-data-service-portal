@@ -22,8 +22,7 @@ class ProvenanceFilePicker extends React.Component {
             projectId: 0,
             projectSelectValue: null,
             timeout: null,
-            value: null,
-            width: window.innerWidth
+            value: null
         };
     }
 
@@ -76,7 +75,7 @@ class ProvenanceFilePicker extends React.Component {
                     onTouchTap={() => this.openModal('addFile')}/>
                 <Dialog
                     style={styles.dialogStyles}
-                    contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
+                    contentStyle={this.props.width < 680 ? {width: '100%'} : {}}
                     title="Add File to Graph"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
@@ -111,7 +110,7 @@ class ProvenanceFilePicker extends React.Component {
                     <AutoComplete
                         id="searchText"
                         fullWidth={true}
-                        style={styles.filePicker}
+                        style={styles.autoComplete}
                         menuStyle={{maxHeight: 200}}
                         errorText={this.state.floatingErrorText}
                         floatingLabelText="Type a File Name"
@@ -119,8 +118,7 @@ class ProvenanceFilePicker extends React.Component {
                         filter={AutoComplete.caseInsensitiveFilter}
                         openOnFocus={true}
                         onNewRequest={(value) => this.chooseFileVersion(value)}
-                        onUpdateInput={this.handleUpdateInput.bind(this)}
-                        underlineStyle={styles.autoCompleteUnderline}/>
+                        onUpdateInput={this.handleUpdateInput.bind(this)}/>
                     {this.props.autoCompleteLoading ? <CircularProgress size={1} style={styles.autoCompleteProgress}/> : null}
                     {this.props.provFileVersions.length > 1 ?
                         <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.versionListWrapper}>
@@ -215,6 +213,9 @@ class ProvenanceFilePicker extends React.Component {
 }
 
 var styles = {
+    autoComplete: {
+        maxWidth: 'calc(100% - 45px)'
+    },
     autoCompleteProgress: {
         position: 'absolute',
         top: '28%',
@@ -233,9 +234,6 @@ var styles = {
         textAlign: 'center',
         fontColor: '#303F9F',
         zIndex: '5000'
-    },
-    filePicker: {
-        maxWidth: 'calc(100% - 45px)'
     },
     projectSelect: {
         maxWidth: 'calc(100% - 45px)',

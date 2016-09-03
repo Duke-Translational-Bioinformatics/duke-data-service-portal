@@ -16,17 +16,21 @@ class ProvenanceActivityManager extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            activityNode: null,
+            addNew: true,
             errorText: null,
             floatingErrorText: 'This field is required.',
             network: null,
             node: null,
             timeout: null,
-            value: null,
-            width: window.innerWidth
+            value: null
         };
     }
 
     render() {
+        let autoCompleteData = this.props.activities && this.props.activities.length ? this.props.activities.map((activity)=>{
+            return {text: activity.name, value: activity.name, id: activity.id, node: activity}
+        }) : [];
         let addAct = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'addAct' ? this.props.provEditorModal.open : false;
         let dltAct = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'dltAct' ? this.props.provEditorModal.open : false;
         let editAct = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'editAct' ? this.props.provEditorModal.open : false;
@@ -88,13 +92,32 @@ class ProvenanceActivityManager extends React.Component {
                     onTouchTap={() => this.openModal('dltAct')}/>
                 <Dialog
                     style={styles.dialogStyles}
-                    contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
-                    title="Add Activity"
+                    contentStyle={this.props.width < 680 ? {width: '100%'} : {}}
+                    title={this.state.addNew ? "Add a New Activity" : "Add an Existing Activity"}
                     autoDetectWindowHeight={true}
                     actions={addActivityActions}
                     open={addAct}
                     onRequestClose={() => this.handleClose('addAct')}>
-                    <form action="#" id="newActivityForm">
+                    <div style={styles.provEditor}>
+                        <Toggle
+                            label={this.state.addNew ? "Use an existing activity" : "Add a new activity"}
+                            thumbStyle={{backgroundColor: '#E1F5FE'}}
+                            style={{maxWidth: 260, textAlign: 'left'}}
+                            onToggle={() => this.toggleActivityForm()}/>
+                    </div>
+                    {this.state.addNew ? null : <AutoComplete
+                        id="searchText"
+                        fullWidth={true}
+                        style={{display: this.state.addNew ? 'none' : 'block', paddingBottom: 31, paddingTop: 32}}
+                        menuStyle={{maxHeight: 200}}
+                        errorText={this.state.floatingErrorText}
+                        floatingLabelText="Type an Activity Name"
+                        dataSource={autoCompleteData}
+                        filter={AutoComplete.caseInsensitiveFilter}
+                        openOnFocus={true}
+                        onNewRequest={(value) => this.chooseActivity(value)}
+                        underlineStyle={styles.autoCompleteUnderline}/>}
+                    {this.state.addNew ? <form action="#" id="newActivityForm">
                         <TextField
                             style={styles.textStyles}
                             hintText="Activity Name"
@@ -111,11 +134,11 @@ class ProvenanceActivityManager extends React.Component {
                             id="activityDescText"
                             type="text"
                             multiLine={true}/>
-                    </form>
+                    </form> : null}
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
-                    contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
+                    contentStyle={this.props.width < 680 ? {width: '100%'} : {}}
                     title="Are you sure you want to delete this activity?"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
@@ -126,7 +149,7 @@ class ProvenanceActivityManager extends React.Component {
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
-                    contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
+                    contentStyle={this.props.width < 680 ? {width: '100%'} : {}}
                     title="Edit Activity"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
@@ -162,19 +185,37 @@ class ProvenanceActivityManager extends React.Component {
     }
 
     addNewActivity() {
-        if (this.state.floatingErrorText) {
-            return null
-        } else {
-            let name = document.getElementById('activityNameText').value;
-            let desc = document.getElementById('activityDescText').value;
-            if(this.props.addEdgeMode) this.toggleEdgeMode();
-            //ProjectActions.saveGraphZoomState(this.state.network.getScale(), this.state.network.getViewPosition());
-            ProjectActions.addProvActivity(name, desc);
+        if(this.state.activityNode) {
+            let node = this.state.activityNode;
+            ProjectActions.addProvActivitySuccess(node);
             ProjectActions.closeProvEditorModal('addAct');
             this.setState({
-                floatingErrorText: 'This field is required.'
+                addNew: true,
+                activityNode: null
             });
+        } else {
+            if (this.state.floatingErrorText) {
+                return null
+            } else {
+                let name = document.getElementById('activityNameText').value;
+                let desc = document.getElementById('activityDescText').value;
+                if (this.props.addEdgeMode) this.toggleEdgeMode();
+                //ProjectActions.saveGraphZoomState(this.state.network.getScale(), this.state.network.getViewPosition());
+                ProjectActions.addProvActivity(name, desc);
+                ProjectActions.closeProvEditorModal('addAct');
+                this.setState({
+                    addNew: true,
+                    floatingErrorText: 'This field is required.'
+                });
+            }
         }
+    }
+
+    chooseActivity(value) {
+        this.setState({
+            activityNode: value.node,
+            floatingErrorText: ''
+        });
     }
 
     editActivity() {
@@ -202,9 +243,11 @@ class ProvenanceActivityManager extends React.Component {
         ProjectActions.deleteProvItem(node, id);
         ProjectActions.closeProvEditorModal('dltAct');
         ProjectActions.showProvControlBtns();
+        ProjectActions.toggleProvNodeDetails();
     }
 
     handleClose(id) {
+        this.setState({addNew: true, activityNode: null});
         ProjectActions.closeProvEditorModal(id);
     }
 
@@ -217,9 +260,18 @@ class ProvenanceActivityManager extends React.Component {
     openModal(id) {
         ProjectActions.openProvEditorModal(id);
     }
+
+    toggleActivityForm() {
+        this.setState({addNew: !this.state.addNew});
+    }
 }
 
 var styles = {
+    provEditor:{
+        display: 'flex',
+        justifyContent: 'center',
+        flexFlow: 'row wrap'
+    },
     dialogStyles: {
         textAlign: 'center',
         fontColor: '#303F9F',

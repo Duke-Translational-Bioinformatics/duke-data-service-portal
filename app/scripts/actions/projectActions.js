@@ -27,10 +27,13 @@ var ProjectActions = Reflux.createActions([
     'addProvActivitySuccess',
     'editProvActivity',
     'editProvActivitySuccess',
+    'getActivities',
+    'getActivitiesSuccess',
     'hideProvAlert',
     'toggleGraphLoading',
     'toggleProvView',
     'toggleProvEditor',
+    'toggleProvNodeDetails',
     'toggleAddEdgeMode',
     'showRemoveFileFromProvBtn',
     'showProvControlBtns',
@@ -245,6 +248,22 @@ ProjectActions.editProvActivity.preEmit = function (id, name, desc, prevName) {
     })
 };
 
+ProjectActions.getActivities.preEmit = function () {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'activities/', {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getActivitiesSuccess(json.results)
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
+
 ProjectActions.getProvenance.preEmit = function (id, kind, prevNodes, prevEdges) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'search/provenance?max_hops=1', {
         method: 'post',
@@ -261,7 +280,6 @@ ProjectActions.getProvenance.preEmit = function (id, kind, prevNodes, prevEdges)
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        console.log(json.graph)
         ProjectActions.getProvenanceSuccess(json.graph, prevNodes, prevEdges);
     }).catch(function (ex) {
         ProjectActions.handleErrors(ex)
@@ -302,17 +320,13 @@ ProjectActions.searchFiles.preEmit = function (text, id) {
 };
 
 ProjectActions.addNewTag.preEmit = function (id, kind, tag) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/'+kind+'/'+id, {
         method: 'post',
         headers: {
             'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
         },
         body: JSON.stringify({
-            'object': {
-                'kind': kind,
-                'id': id
-            },
             'label': tag
         })
     }).then(checkResponse).then(function (response) {

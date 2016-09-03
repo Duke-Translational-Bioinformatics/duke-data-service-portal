@@ -11,7 +11,7 @@ var ProjectStore = Reflux.createStore({
 
     init() {
         this.listenToMany(ProjectActions);
-        this.provEditorModal = {open: false, id: null};
+        this.activities = [];
         this.addEdgeMode = false;
         this.agents = [];
         this.agentKey = {};
@@ -48,6 +48,7 @@ var ProjectStore = Reflux.createStore({
         this.project = {};
         this.projPermissions = null;
         this.projectMembers = [];
+        this.provEditorModal = {open: false, id: null};
         this.provFileVersions = [];
         this.provEdges = [];
         this.provNodes = [];
@@ -63,6 +64,7 @@ var ProjectStore = Reflux.createStore({
         this.showBatchOps = false;
         this.showProvAlert = false;
         this.showProvCtrlBtns = false;
+        this.showProvDetails = false;
         this.screenSize = {};
         this.showBatchOps = false;
         this.tagLabels = [];
@@ -344,6 +346,13 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
+    getActivitiesSuccess(activities) {
+        this.activities = activities;
+        this.trigger({
+            activities: this.activities
+        })
+    },
+
     deleteProvItemSuccess(data) {
         let item = [];
         item.push(data);
@@ -353,9 +362,9 @@ var ProjectStore = Reflux.createStore({
             edges = BaseUtils.removeObjByKey(edges, {key: 'id', value: data.id});
         } else {
             nodes = BaseUtils.removeObjByKey(nodes, {key: 'id', value: data.id});
+            ProjectActions.getActivities();
         }
         this.trigger({
-            //dltRelationsBtn: false,
             updatedGraphItem: item,
             provEdges: edges,
             provNodes: nodes,
@@ -386,6 +395,13 @@ var ProjectStore = Reflux.createStore({
         this.toggleProvEdit = !this.toggleProvEdit;
         this.trigger({
             toggleProvEdit: this.toggleProvEdit
+        })
+    },
+
+    toggleProvNodeDetails() {
+        this.showProvDetails = !this.showProvDetails;
+        this.trigger({
+            showProvDetails: this.showProvDetails
         })
     },
 

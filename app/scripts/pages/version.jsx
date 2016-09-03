@@ -36,6 +36,7 @@ class Version extends React.Component {
             selectedNode: ProjectStore.selectedNode,
             showProvAlert: ProjectStore.showProvAlert,
             showProvCtrlBtns: ProjectStore.showProvCtrlBtns,
+            showProvDetails: ProjectStore.showProvDetails,
             updatedGraphItem: ProjectStore.updatedGraphItem
         };
     }
