@@ -40,7 +40,6 @@ class UploadModal extends React.Component {
                     style={styles.dialogStyles}
                     title='Upload Files'
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={standardActions}
                     onRequestClose={this.handleClose.bind(this)}
                     open={this.state.open}>

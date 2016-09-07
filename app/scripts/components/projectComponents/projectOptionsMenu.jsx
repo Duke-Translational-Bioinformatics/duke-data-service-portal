@@ -71,8 +71,7 @@ class ProjectOptionsMenu extends React.Component {
                 <Dialog
                     style={styles.dialogStyles}
                     title="Are you sure you want to delete this project?"
-
-                    autoScrollBodyContent={true}
+                    autoDetectWindowHeight={true}
                     actions={deleteActions}
                     onRequestClose={this.handleClose.bind(this)}
                     open={this.state.deleteOpen}>
@@ -91,7 +90,6 @@ class ProjectOptionsMenu extends React.Component {
                     style={styles.dialogStyles}
                     title="Update Project"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={editActions}
                     onRequestClose={this.handleClose.bind(this)}
                     open={this.state.editOpen}>
@@ -127,7 +125,6 @@ class ProjectOptionsMenu extends React.Component {
                     style={styles.dialogStyles}
                     title="Add a Member"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={memberActions}
                     onRequestClose={this.handleClose.bind(this)}
                     open={this.state.memberOpen}>

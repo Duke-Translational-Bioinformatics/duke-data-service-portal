@@ -75,7 +75,8 @@ var styles = {
     folderIcon: {
         fontSize: 36,
         verticalAlign: -7,
-        marginRight: 10
+        marginRight: 10,
+        marginLeft: -2
     },
     backIcon: {
         fontSize: 24,

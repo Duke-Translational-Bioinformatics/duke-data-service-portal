@@ -30,7 +30,7 @@ class VersionDetails extends React.Component {
                     onTouchTap={() => this.handleDownload()}>
                     <i className="material-icons">get_app</i>
                 </button>;
-            optionsMenu = prjPrm === 'prjCrud' || prjPrm === 'flCrud' || prjPrm === 'flUpload' ? optionsMenu = <VersionOptionsMenu {...this.props} /> : null;
+            optionsMenu = <VersionOptionsMenu {...this.props}/>;
         }
         let loading = this.props.loading ?
             <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';

@@ -23,9 +23,17 @@ class FileOptionsMenu extends React.Component {
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
         let menu = null;
         if (prjPrm !== null) {
+            if(prjPrm === 'viewOnly' || prjPrm === 'flDownload'){
+                menu = <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
+                              onTouchTap={() => this.toggleProv()}/>;
+            }
             if(prjPrm === 'flUpload'){
-                menu = <MenuItem primaryText="Upload New Version" leftIcon={<i className="material-icons">file_upload</i>}
-                                 onTouchTap={() => this.openVersionModal()}/>;
+                menu = <span>
+                    <MenuItem primaryText="Upload New Version" leftIcon={<i className="material-icons">file_upload</i>}
+                              onTouchTap={() => this.openVersionModal()}/>
+                    <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
+                              onTouchTap={() => this.toggleProv()}/>
+                </span>;
             }
             if(prjPrm === 'prjCrud' || prjPrm === 'flCrud'){
                 menu = <span>
@@ -39,7 +47,9 @@ class FileOptionsMenu extends React.Component {
                                   onTouchTap={() => this.handleTouchTapMove()}/>
                         <MenuItem primaryText="Upload New Version" leftIcon={<i className="material-icons">file_upload</i>}
                                   onTouchTap={() => this.openVersionModal()}/>
-                </span>
+                        <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
+                                  onTouchTap={() => this.toggleProv()}/>
+                </span>;
             }
         }
         const deleteActions = [
@@ -85,7 +95,6 @@ class FileOptionsMenu extends React.Component {
                     contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Are you sure you want to delete this file?"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={deleteActions}
                     onRequestClose={() => this.handleClose()}
                     open={this.state.deleteOpen}>
@@ -98,7 +107,6 @@ class FileOptionsMenu extends React.Component {
                     contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Edit File Name"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={editActions}
                     onRequestClose={() => this.handleClose()}
                     open={this.state.editOpen}>
@@ -123,7 +131,6 @@ class FileOptionsMenu extends React.Component {
                     contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Select Destination"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={moveActions}
                     open={this.props.moveModal}
                     onRequestClose={() => this.handleCloseMoveModal()}>
@@ -134,7 +141,6 @@ class FileOptionsMenu extends React.Component {
                     contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Cannot Complete Action"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={moveWarnActions}
                     open={this.props.moveErrorModal}
                     onRequestClose={() => this.handleCloseMoveWarning()}>
@@ -143,7 +149,7 @@ class FileOptionsMenu extends React.Component {
                         location to move to.</p>
                 </Dialog>
                 <IconMenu
-                    iconButtonElement={<IconButton iconClassName="material-icons" onTouchTap={() => this.getEntity()}>more_vert</IconButton>}
+                    iconButtonElement={<IconButton iconClassName="material-icons">more_vert</IconButton>}
                     anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                     targetOrigin={{horizontal: 'right', vertical: 'top'}}>
                     { menu }
@@ -153,6 +159,12 @@ class FileOptionsMenu extends React.Component {
     };
 
     handleTouchTapMove() {
+        // Get current file object to access ancestors. Set parent in store. Keeps background from
+        // re-rendering when moving an item between folders
+        let id = this.props.params.id;
+        let kind = 'files';
+        let requester = 'optionsMenu';// Using this to make sure parent is only set once in store and where it was set.
+        ProjectActions.getEntity(id, kind, requester);
         ProjectActions.openMoveModal(true);
     }
 
@@ -166,13 +178,6 @@ class FileOptionsMenu extends React.Component {
 
     openVersionModal() {
         ProjectActions.openVersionModal();
-    }
-
-    getEntity() {// Get current file object to access ancestors. Set parent in store. Keeps background from re-rendering
-        let id = this.props.params.id;
-        let kind = 'files';
-        let requester = 'optionsMenu';// Using this to make sure parent is only set once in store and where it was set.
-        ProjectActions.getEntity(id, kind, requester);
     }
 
     handleDeleteButton() {
@@ -224,6 +229,13 @@ class FileOptionsMenu extends React.Component {
             moveOpen: false,
             floatingErrorText: 'This field is required.'
         });
+    }
+
+
+    toggleProv() {
+        let versionId = this.props.entityObj.current_version.id;
+        ProjectActions.getProvenance(versionId, 'dds-file-version');
+        ProjectActions.toggleProvView();
     }
 
     openTagManager() {

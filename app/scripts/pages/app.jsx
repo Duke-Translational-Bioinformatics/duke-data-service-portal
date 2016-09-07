@@ -14,7 +14,7 @@ import MyRawTheme from '../theme/customTheme.js';
 
 let zIndex = {
     zIndex: {
-        popover: 5001,
+        popover: 9999,
         layer: 5000
     }
 };
@@ -141,11 +141,6 @@ class App extends React.Component {
 }
 
 var styles = {
-    cancelSearch: {
-        top: 10,
-        right: '23%',
-        padding: 10
-    },
     loginWrapper: {
         width: '90vw',
         height: 'auto',
@@ -153,18 +148,6 @@ var styles = {
         margin: '0 auto',
         marginTop: 50,
         padding: 10
-    },
-    searchBar: {
-        width: '50vw',
-        margin: '0 auto',
-        fontSize: '.9em',
-        display: 'block',
-        input: {
-            marginBottom: 10
-        }
-    },
-    themeColor: {
-        backgroundColor: '#235F9C'
     },
     toast: {
         position: 'absolute',
