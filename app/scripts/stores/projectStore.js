@@ -471,28 +471,18 @@ var ProjectStore = Reflux.createStore({
                     + node.properties.label + '</span></div>'
                 }
             }
-            //if(!node.properties.hasOwnProperty('kind')) { //Todo: use this only if want to show actor entity
-            //    return {
-            //        id: node.id,
-            //        label: node.properties.full_name,
-            //        labels: node.labels.toString(),
-            //        properties: node.properties,
-            //        shape: 'diamond',
-            //        color: graphColors.user,
-            //        title: '<div style="margin: 10px; color: #616161"><span>'
-            //        + node.properties.full_name + '</span><br/><span></div>'
-            //    }
-            //}
         });
-        if(prevGraph !== null) {
-            console.log(prevGraph)
-            //for(let i=0; i<prevNodes.length; i++) {
-            //    this.provNodes.push(prevNodes[i]);
-            //}
-            //for(let i=0; i<prevEdges.length; i++) {
-            //    this.provEdges.push(prevEdges[i]);
-            //}
-            //this.provNodes = this.provNodes.filter((node, index, self) => self.findIndex((t) => {return t.id === node.id}) === index)
+        if(prevGraph !== null && typeof prevGraph === 'object') {
+            let prevNodes = prevGraph.nodes;
+            let prevEdges = prevGraph.edges;
+            for(let i=0; i<prevNodes.length; i++) {
+                this.provNodes.push(prevNodes[i]);
+            }
+            for(let i=0; i<prevEdges.length; i++) {
+                this.provEdges.push(prevEdges[i]);
+            }
+            this.provNodes = this.provNodes.filter((node, index, self) => self.findIndex((t) => {return t.id === node.id}) === index);
+            this.provEdges = this.provEdges.filter((edge, index, self) => self.findIndex((t) => {return t.id === edge.id}) === index);
         }
         this.trigger({
             provEdges: this.provEdges,

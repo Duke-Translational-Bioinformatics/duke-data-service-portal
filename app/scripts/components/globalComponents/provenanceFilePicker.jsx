@@ -78,7 +78,6 @@ class ProvenanceFilePicker extends React.Component {
                     contentStyle={this.props.width < 680 ? {width: '100%'} : {}}
                     title="Add File to Graph"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={addFileNodeActions}
                     open={addFile}
                     onRequestClose={() => this.handleClose('addFile')}>

@@ -149,7 +149,7 @@ class AgentOptionsMenu extends React.Component {
                     style={styles.dialogStyles}
                     contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Are you sure you want to delete this software agent?"
-                    autoScrollBodyContent={true}
+                    autoDetectWindowHeight={true}
                     actions={deleteActions}
                     onRequestClose={() => this.handleClose()}
                     open={this.state.deleteOpen}>
@@ -169,7 +169,6 @@ class AgentOptionsMenu extends React.Component {
                     contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Update Software Agent Details"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={editActions}
                     onRequestClose={() => this.handleClose()}
                     open={this.state.editOpen}>
@@ -211,7 +210,6 @@ class AgentOptionsMenu extends React.Component {
                     contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Agent Secret Key"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={keyActions}
                     onRequestClose={() => this.handleClose()}
                     open={this.state.apiKeyOpen}>
@@ -233,7 +231,6 @@ class AgentOptionsMenu extends React.Component {
                     contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Your New Agent Secret Key"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={newKeyActions}
                     onRequestClose={() => this.handleClose()}
                     open={this.state.newApiKeyOpen}>
@@ -254,7 +251,6 @@ class AgentOptionsMenu extends React.Component {
                     contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="User Secret Key"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={userKeyActions}
                     onRequestClose={() => this.handleClose()}
                     open={this.state.userKeyOpen}>
@@ -277,7 +273,6 @@ class AgentOptionsMenu extends React.Component {
                     contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Your New User Key"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={newKeyActions}
                     onRequestClose={() => this.handleClose()}
                     open={this.state.newUserKeyOpen}>
@@ -298,7 +293,6 @@ class AgentOptionsMenu extends React.Component {
                     contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Your API Token"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={newKeyActions}
                     onRequestClose={() => this.handleClose()}
                     open={open}>
@@ -318,7 +312,6 @@ class AgentOptionsMenu extends React.Component {
                     style={styles.dialogStyles}
                     contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Are you sure you want to delete this user key?"
-                    autoScrollBodyContent={true}
                     actions={deleteKeyActions}
                     modal={true}
                     open={this.state.deleteKeyWarn}>

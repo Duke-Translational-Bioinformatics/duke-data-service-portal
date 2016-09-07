@@ -8,7 +8,7 @@ import AutoComplete from 'material-ui/lib/auto-complete';
 import Divider from 'material-ui/lib/divider';
 import IconButton from 'material-ui/lib/icon-button';
 import LeftNav from 'material-ui/lib/left-nav';
-import Info from 'material-ui/lib/svg-icons/action/info';
+import Help from 'material-ui/lib/svg-icons/action/help';
 import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
 import RaisedButton from 'material-ui/lib/raised-button';
 import Tooltip from '../../../util/tooltip.js';
@@ -60,7 +60,7 @@ class TagManager extends React.Component {
                                             tooltipPosition="bottom-center"
                                             iconStyle={{height: 20, width: 20}}
                                             style={styles.infoIcon}>
-                                    <Info color={'#BDBDBD'}/>
+                                    <Help color={'#BDBDBD'}/>
                                 </IconButton>
                             </h5>
                         </div>

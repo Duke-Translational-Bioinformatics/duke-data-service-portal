@@ -78,7 +78,6 @@ class VersionsOptionsMenu extends React.Component {
                     contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Are you sure you want to delete this file version?"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={deleteActions}
                     onRequestClose={this.handleClose.bind(this)}
                     open={this.state.deleteOpen}>
@@ -89,7 +88,6 @@ class VersionsOptionsMenu extends React.Component {
                     contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Update Version Label"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={editActions}
                     onRequestClose={this.handleClose.bind(this)}
                     open={this.state.editOpen}>

@@ -27,6 +27,9 @@ import SelectField from 'material-ui/lib/select-field';
 import TextField from 'material-ui/lib/text-field';
 import urlGen from '../../../util/urlGen.js';
 
+import Help from 'material-ui/lib/svg-icons/action/help';
+
+
 class Provenance extends React.Component {
     /**
      * Creates a provenance graph using the Vis.js library
@@ -158,7 +161,6 @@ class Provenance extends React.Component {
             ProjectActions.selectNodesAndEdges(edgeData, nodeData);
         });
         this.state.network.on("doubleClick", (params) => { // Todo: show more nodes on graph on double click event
-           console.log(params)
             hideButtonsOnDblClk();
             let prevGraph = {nodes: this.props.provNodes, edges: this.props.provEdges};
             let id = params.nodes[0];
@@ -168,7 +170,6 @@ class Provenance extends React.Component {
         this.state.network.on("click", (params) => {
             let nodeData = nodes.get(params.nodes[0]);
             let edgeData = edges.get(params.edges);
-
             if(params.nodes.length > 0) {
                 if(!this.props.showProvDetails) ProjectActions.toggleProvNodeDetails();
                 if(nodeData.properties.kind !== 'dds-activity') {
@@ -183,10 +184,6 @@ class Provenance extends React.Component {
                             this.state.network.unselectAll();
                             ProjectActions.showProvControlBtns();
                         }
-                        //if(!nodeData.properties.hasOwnProperty('kind')) { //Only need this if actor/agent nodes are used
-                        //    this.state.network.unselectAll();
-                        //    if(this.props.showProvCtrlBtns) ProjectActions.showProvControlBtns();
-                        //}
                         if(nodeData.properties.kind !== 'dds-activity' && this.props.dltRelationsBtn) {
                             this.state.network.unselectAll();
                             ProjectActions.showDeleteRelationsBtn(edgeData, nodeData);
@@ -205,20 +202,18 @@ class Provenance extends React.Component {
                 ProjectActions.showDeleteRelationsBtn(edgeData);
                 this.state.network.unselectAll();
             }
+            if(params.edges.length === 0 && params.nodes.length === 0 && this.props.showProvDetails) ProjectActions.toggleProvNodeDetails();
             if(edgeData.length > 0 && params.nodes.length < 1) {
                 if(this.props.showProvDetails) ProjectActions.toggleProvNodeDetails();
                 if(edgeData[0].type !== 'WasAssociatedWith' || edgeData[0].type !== 'WasAttributedTo') {
                     if(edgeData.length > 0 && edgeData[0].properties.audit.created_by.id !== this.props.currentUser.id && this.props.dltRelationsBtn) {
-                        //if(this.props.showProvDetails) ProjectActions.toggleProvNodeDetails();
                         ProjectActions.showDeleteRelationsBtn(edgeData);
                     }
                     if(edgeData.length > 0 && edgeData[0].properties.audit.created_by.id === this.props.currentUser.id) {
                         if(params.edges.length > 0 && params.nodes.length < 1) {
-                            //if(this.props.showProvDetails) ProjectActions.toggleProvNodeDetails();
                             if(!this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
                             if(this.props.showProvCtrlBtns && this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
                         }
-                        //if(params.edges.length === 0 && params.nodes.length === 0 && this.props.showProvDetails) ProjectActions.toggleProvNodeDetails();
                     }
                 }
             }
@@ -365,16 +360,24 @@ class Provenance extends React.Component {
                             {this.props.addEdgeMode ?
                                 <div style={styles.provEditor.addEdgeInstruction}>
                                     Click on a node and drag to another node to create a new relation. <br/>
-                                    <span style={styles.provEditor.addEdgeInstruction.text}>Cancel</span> <Cancel style={styles.cancelBtn} color={'#F44336'} onTouchTap={() => this.toggleEdgeMode()}/>
+                                    <span style={styles.provEditor.addEdgeInstruction.text}>Cancel</span>
+                                    <Cancel style={styles.cancelBtn} color={'#F44336'} onTouchTap={() => this.toggleEdgeMode()}/>
                                 </div> : null}
+                            <span style={{width: 170, fontSize: 16, color: '#757575'}}>Expand Graph
+                                <IconButton tooltip={<span>Double click on a node<br/>to expand and<br/>explore the graph</span>}
+                                            tooltipPosition="bottom-center"
+                                            iconStyle={{height: 20, width: 20}}
+                                            style={styles.infoIcon}>
+                                    <Help color={'#BDBDBD'}/>
+                                </IconButton>
+                            </span><br/>
                             {this.props.showProvDetails ? <ProvenanceDetails {...this.state} {...this.props}/> : null}
                         </div>
                         <Dialog
                             style={styles.dialogStyles}
                             contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
-                            title="This file is already on the graph"
+                            title="This entity is already on the graph, please choose a different one."
                             autoDetectWindowHeight={true}
-                            autoScrollBodyContent={true}
                             actions={nodeWarningActions}
                             open={nodeWarning}
                             onRequestClose={() => this.handleClose('nodeWarning')}>
@@ -385,7 +388,6 @@ class Provenance extends React.Component {
                             contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
                             title="Are you sure you want to delete this relation?"
                             autoDetectWindowHeight={true}
-                            autoScrollBodyContent={true}
                             actions={dltRelationActions}
                             open={dltRel}
                             onRequestClose={() => this.handleClose('dltRel')}>
@@ -396,7 +398,6 @@ class Provenance extends React.Component {
                             contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
                             title="Can't create relation"
                             autoDetectWindowHeight={true}
-                            autoScrollBodyContent={true}
                             actions={relationWarningActions}
                             open={openRelWarn}
                             onRequestClose={() => this.handleClose('relWarning')}>
@@ -412,11 +413,10 @@ class Provenance extends React.Component {
                             contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
                             title="Please confirm that 'was derived from' relation"
                             autoDetectWindowHeight={true}
-                            autoScrollBodyContent={true}
                             actions={derivedRelActions}
                             open={openConfirmRel}
                             onRequestClose={() => this.handleClose('confirmRel')}>
-                            <i className="material-icons" style={styles.help}>help</i>
+                            <i className="material-icons" style={styles.derivedRelationDialogIcon}>help</i>
                             <h6>Are you sure that the file <b>{this.props.relFrom && this.props.relFrom !== null ? this.props.relFrom.label+' ' : ''}</b>
                                 was derived from the file <b>{this.props.relTo && this.props.relTo !== null ? this.props.relTo.label+' ' : ''}</b>?</h6>
                         </Dialog>
@@ -544,13 +544,18 @@ var styles = {
     },
     graphLoader: {
         position: 'absolute',
+        margin: '0 auto',
         top: 200,
-        left: '47%'
+        left: 0,
+        right: 0
     },
-    help: {
+    derivedRelationDialogIcon: {
         fontSize: 48,
         textAlign: 'center',
         color: '#235F9C'
+    },
+    infoIcon: {
+        verticalAlign: 8
     },
     listBlock: {
         margin: 0
@@ -565,11 +570,6 @@ var styles = {
     },
     listItem: {
         padding: '0px 5px 0px 5px'
-    },
-    loadingContainer: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
     },
     menuItemStyle: {
         width: 170
@@ -588,6 +588,7 @@ var styles = {
         addEdgeInstruction: {
             margin: 15,
             paddingLeft: 4,
+            color: '#757575',
             text: {
                 color:'#757575'
             }

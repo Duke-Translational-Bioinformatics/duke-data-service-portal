@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import AutoComplete from 'material-ui/lib/auto-complete';
+import BaseUtils from '../../../util/baseUtils.js';
 import CircularProgress from 'material-ui/lib/circular-progress';
 import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
@@ -145,7 +146,6 @@ class ProvenanceActivityManager extends React.Component {
                     contentStyle={this.props.width < 680 ? {width: '100%'} : {}}
                     title="Are you sure you want to delete this activity?"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={dltActivityActions}
                     open={dltAct}
                     onRequestClose={() => this.handleClose('dltAct')}>
@@ -156,7 +156,6 @@ class ProvenanceActivityManager extends React.Component {
                     contentStyle={this.props.width < 680 ? {width: '100%'} : {}}
                     title="Edit Activity"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={editActions}
                     open={editAct}
                     onRequestClose={() => this.handleClose('editAct')}>
@@ -189,14 +188,20 @@ class ProvenanceActivityManager extends React.Component {
     }
 
     addNewActivity() {
+        let graphNodes = this.props.provNodes;
         if(this.state.activityNode) {
             let node = this.state.activityNode;
-            ProjectActions.addProvActivitySuccess(node);
-            ProjectActions.closeProvEditorModal('addAct');
-            this.setState({
-                addNew: true,
-                activityNode: null
-            });
+            let id = node.id;
+            if (!BaseUtils.objectPropInArray(graphNodes, 'id', id)) {
+                ProjectActions.addProvActivitySuccess(node);
+                ProjectActions.closeProvEditorModal('addAct');
+                this.setState({
+                    addNew: true,
+                    activityNode: null
+                });
+            } else {
+                ProjectActions.openProvEditorModal('nodeWarning');
+            }
         } else {
             if (this.state.floatingErrorText) {
                 return null
