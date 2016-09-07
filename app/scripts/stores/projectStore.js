@@ -281,7 +281,7 @@ var ProjectStore = Reflux.createStore({
                     properties: node,
                     color: graphColors.fileVersion,
                     title: '<div style="margin: 10px; color: #616161"><span>'
-                    + node.name + '</span><br/><span>Version: '
+                    + node.file.name + '</span><br/><span>Version: '
                     + node.version + '</span><br/><span>'
                     + 'FileVersion' + '</span></div>'
                 };
@@ -417,7 +417,7 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    getProvenanceSuccess(prov, prevNodes, prevEdges) {
+    getProvenanceSuccess(prov, prevGraph) {
         let edges = prov.relationships.filter((edge) => {
             if (edge.properties.audit.deleted_on === null && edge.type !== 'WasAttributedTo') {
                 return edge;
@@ -484,18 +484,22 @@ var ProjectStore = Reflux.createStore({
             //    }
             //}
         });
-        //if(prevNodes || prevEdges) {
-        //    for(let i=0; i<prevNodes.length; i++) {
-        //        this.provNodes.push(prevNodes[i]);
-        //    }
-        //    for(let i=0; i<prevEdges.length; i++) {
-        //        this.provEdges.push(prevEdges[i]);
-        //    }
-        //    this.provNodes = this.provNodes.filter((node, index, self) => self.findIndex((t) => {return t.id === node.id}) === index)
-        //}
+        if(prevGraph !== null) {
+            console.log(prevGraph)
+            //for(let i=0; i<prevNodes.length; i++) {
+            //    this.provNodes.push(prevNodes[i]);
+            //}
+            //for(let i=0; i<prevEdges.length; i++) {
+            //    this.provEdges.push(prevEdges[i]);
+            //}
+            //this.provNodes = this.provNodes.filter((node, index, self) => self.findIndex((t) => {return t.id === node.id}) === index)
+        }
         this.trigger({
             provEdges: this.provEdges,
-            provNodes: this.provNodes
+            provNodes: this.provNodes,
+            showProvCtrlBtns: false,
+            showProvDetails: false,
+            dltRelationsBtn: false
         })
     },
 

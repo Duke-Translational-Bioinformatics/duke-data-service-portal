@@ -253,10 +253,7 @@ class FileDetails extends React.Component {
 
     openProv() {
         let versionId = this.props.entityObj.current_version.id;
-        let prevNodes = this.props.provNodes;
-        let prevEdges = this.props.provEdges;
-        //ProjectActions.setPreviousGraph(prevNodes, prevEdges);
-        ProjectActions.getProvenance(versionId, 'dds-file-version', prevNodes, prevEdges);
+        ProjectActions.getProvenance(versionId, 'dds-file-version');
         ProjectActions.toggleProvView();
         ProjectActions.toggleProvEditor();
         ProjectActions.hideProvAlert();
@@ -312,6 +309,7 @@ var styles = {
     },
     provAlert: {
         display: 'block',
+        overflow: 'auto',
         backgroundColor: '#66BB6A',
         minHeight: 48,
         alertButton: {

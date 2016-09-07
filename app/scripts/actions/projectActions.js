@@ -8,6 +8,7 @@ import { StatusEnum, Path } from '../enum';
 import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.js';
 
 var ProjectActions = Reflux.createActions([
+    'expandProvenanceGraph',
     'clearProvFileVersions',
     'clearSearchFilesData',
     'searchFiles',
@@ -264,7 +265,7 @@ ProjectActions.getActivities.preEmit = function () {
     })
 };
 
-ProjectActions.getProvenance.preEmit = function (id, kind, prevNodes, prevEdges) {
+ProjectActions.getProvenance.preEmit = function (id, kind, prevGraph) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'search/provenance?max_hops=1', {
         method: 'post',
         headers: {
@@ -280,7 +281,7 @@ ProjectActions.getProvenance.preEmit = function (id, kind, prevNodes, prevEdges)
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        ProjectActions.getProvenanceSuccess(json.graph, prevNodes, prevEdges);
+        ProjectActions.getProvenanceSuccess(json.graph, prevGraph);
     }).catch(function (ex) {
         ProjectActions.handleErrors(ex)
     })

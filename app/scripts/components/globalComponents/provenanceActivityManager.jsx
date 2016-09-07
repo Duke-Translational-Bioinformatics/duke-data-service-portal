@@ -80,6 +80,8 @@ class ProvenanceActivityManager extends React.Component {
                     labelStyle={styles.btn.label}
                     style={styles.btn}
                     onTouchTap={() => this.openModal('addAct')}/>
+                {!this.props.doubleClicked ?
+                    <span>
                 <RaisedButton
                     label="Edit Activity"
                     labelStyle={styles.btn.label}
@@ -90,6 +92,8 @@ class ProvenanceActivityManager extends React.Component {
                     labelStyle={{color: '#F44336'}}
                     style={{zIndex: 9999, margin: '20px 0px 10px 0px', minWidth: 168, width: '100%', display: showBtns}}
                     onTouchTap={() => this.openModal('dltAct')}/>
+                </span>
+                    : null}
                 <Dialog
                     style={styles.dialogStyles}
                     contentStyle={this.props.width < 680 ? {width: '100%'} : {}}
