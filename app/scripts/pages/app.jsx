@@ -23,7 +23,8 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            appConfig: MainStore.appConfig
+            appConfig: MainStore.appConfig,
+            windowWidth: window.innerWidth
         };
         this.handleResize = this.handleResize.bind(this);
     }
@@ -60,6 +61,7 @@ class App extends React.Component {
     }
 
     handleResize(e) {
+        this.setState({windowWidth: window.innerWidth});
         ProjectActions.getScreenSize(window.innerHeight, window.innerWidth);
     }
 
@@ -109,7 +111,7 @@ class App extends React.Component {
                         <Header {...this.props} {...this.state}/>
                         <div className="pages navbar-through toolbar-through">
                             <div data-page="index" className="page">
-                                {!this.state.appConfig.apiToken ? '' : <Search {...this.props} {...this.state} />}
+                                {this.state.windowWidth < 680 ? !this.state.appConfig.apiToken ? '' : <Search {...this.props} {...this.state} /> : null}
                                 <div className="searchbar-overlay"></div>
                                 <div className="page-content">
                                     {content}
