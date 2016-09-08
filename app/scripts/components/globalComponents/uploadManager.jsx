@@ -245,7 +245,7 @@ var styles = {
     },
     heading: {
         textAlign: 'left',
-        marginLeft: 5
+        margin: '0px 0px -26px 5px '
     },
     iconColor: {
         color: '#ffffff'
