@@ -297,6 +297,7 @@ class Provenance extends React.Component {
                 }
             }
         }
+        let width = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.width : window.innerWidth;
         const dltRelationActions = [
             <FlatButton
                 label="Cancel"
@@ -306,7 +307,7 @@ class Provenance extends React.Component {
                 label="Delete"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={() => this.deleteRelation(this.props.selectedEdge)}//TODO: Fix this here
+                onTouchTap={() => this.deleteRelation(this.props.selectedEdge)}
                 />
         ];
         const relationWarningActions = [
@@ -340,10 +341,13 @@ class Provenance extends React.Component {
 
         return (
             <div>
-                <LeftNav disableSwipeToOpen={true} width={this.state.width} openRight={true} open={this.props.toggleProv}>
+                <LeftNav disableSwipeToOpen={true} width={width} openRight={true} open={this.props.toggleProv}>
                     <LeftNav width={220} openRight={true} open={this.props.toggleProvEdit}>
                         <div style={styles.provEditor}>
-                            <IconButton style={styles.provEditor.closeEditorBtn}
+                            <IconButton style={{position: 'absolute',
+                                                top: width > 680 ? 88 : 98,
+                                                left: 2,
+                                                zIndex: 9999}}
                                         onTouchTap={() => this.toggleEditor()}>
                                 <NavigationClose />
                             </IconButton>
@@ -375,7 +379,7 @@ class Provenance extends React.Component {
                         </div>
                         <Dialog
                             style={styles.dialogStyles}
-                            contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
+                            contentStyle={width < 680 ? {width: '100%'} : {}}
                             title="This entity is already on the graph, please choose a different one."
                             autoDetectWindowHeight={true}
                             actions={nodeWarningActions}
@@ -385,7 +389,7 @@ class Provenance extends React.Component {
                         </Dialog>
                         <Dialog
                             style={styles.dialogStyles}
-                            contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
+                            contentStyle={width < 680 ? {width: '100%'} : {}}
                             title="Are you sure you want to delete this relation?"
                             autoDetectWindowHeight={true}
                             actions={dltRelationActions}
@@ -395,7 +399,7 @@ class Provenance extends React.Component {
                         </Dialog>
                         <Dialog
                             style={styles.dialogStyles}
-                            contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
+                            contentStyle={width < 680 ? {width: '100%'} : {}}
                             title="Can't create relation"
                             autoDetectWindowHeight={true}
                             actions={relationWarningActions}
@@ -410,7 +414,7 @@ class Provenance extends React.Component {
                         </Dialog>
                         <Dialog
                             style={styles.dialogStyles}
-                            contentStyle={this.state.width < 680 ? {width: '100%'} : {}}
+                            contentStyle={width < 680 ? {width: '100%'} : {}}
                             title="Please confirm that 'was derived from' relation"
                             autoDetectWindowHeight={true}
                             actions={derivedRelActions}
@@ -422,11 +426,17 @@ class Provenance extends React.Component {
                         </Dialog>
                     </LeftNav>
                     <IconButton tooltip="Edit Graph"
-                                style={styles.provEditor.toggleEditor}
+                                style={{position: 'absolute',
+                                        top: width > 680 ? 90 : 100,
+                                        right: 10,
+                                        zIndex: 200}}
                                 onTouchTap={() => this.toggleEditor()}>
                         <BorderColor color="#424242" />
                     </IconButton>
-                    <IconButton style={styles.provEditor.toggleProvBtn}
+                    <IconButton style={{position: 'absolute',
+                                        top: width > 680 ? 88 : 98,
+                                        left: 10,
+                                        zIndex: 9999}}
                                 onTouchTap={() => this.toggleProv()}>
                         <NavigationClose />
                     </IconButton>
@@ -440,12 +450,11 @@ class Provenance extends React.Component {
                     : null}
                     <div id="graphContainer" ref="graphContainer"
                          className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800"
-                         style={{
-                             position: 'relative',
-                             marginTop: 50,
-                             maxWidth: this.state.width,
-                             height: this.state.height,
-                             float: 'left'}}>
+                         style={{position: 'relative',
+                                 marginTop: 50,
+                                 maxWidth: width,
+                                 height: this.state.height,
+                                 float: 'left'}}>
                     </div>
                 </LeftNav>
             </div>
@@ -601,18 +610,6 @@ var styles = {
                 color: '#235F9C'
             }
         },
-        toggleProvBtn: {
-            position: 'absolute',
-            top: 98,
-            left: 10,
-            zIndex: 9999
-        },
-        closeEditorBtn: {
-            position: 'absolute',
-            top: 98,
-            left: 2,
-            zIndex: 9999
-        },
         title: {
             margin: '112px 0px 0px 54px',
             fontWeight: 100,
@@ -624,12 +621,6 @@ var styles = {
                 display: 'block',
                 marginRight: 50
             }
-        },
-        toggleEditor: {
-            position: 'absolute',
-            top: 100,
-            right: 10,
-            zIndex: 200
         }
     },
     selectStyles: {

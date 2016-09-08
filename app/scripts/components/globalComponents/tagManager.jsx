@@ -21,8 +21,7 @@ class TagManager extends React.Component {
             floatingErrorText: '',
             lastTag: null,
             timeout: null,
-            tagsToAdd: [], 
-            //value: null
+            tagsToAdd: []
         };
     }
 
@@ -46,8 +45,9 @@ class TagManager extends React.Component {
         let width = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.width : window.innerWidth;
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                <LeftNav disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openRight={true} open={this.props.openTagManager} style={styles.tagManager}>
-                    <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" style={{marginTop: 95}}>
+                <LeftNav disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openRight={true} open={this.props.openTagManager}>
+                    <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800"
+                         style={{marginTop: width > 680 ? 65 : 85}}>
                         <IconButton style={styles.toggleBtn}
                                     onTouchTap={() => this.toggleTagManager()}>
                             <NavigationClose />
@@ -236,10 +236,6 @@ var styles = {
         listStyleType: 'none',
         padding: '5px 0px 5px 0px',
         margin: '0px 0px 0px -10px'
-    },
-    tagManager: {
-        marginTop: 80,
-        paddingBottom: 90
     },
     toggleBtn: {
         margin: '25px 0px 15px 0px',

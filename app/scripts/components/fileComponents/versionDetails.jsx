@@ -51,7 +51,9 @@ class VersionDetails extends React.Component {
         let versNumber = this.props.entityObj ? this.props.entityObj.version : null;
         Tooltip.bindEvents();
 
-        let version = <Card className="project-container mdl-color--white content mdl-color-text--grey-800" style={styles.container}>
+        let version = <Card className="project-container mdl-color--white content mdl-color-text--grey-800"
+                            style={{marginTop: this.props.windowWidth > 680 ? 115 : 30, marginBottom: 30,
+                                 overflow: 'visible', padding: '10px 0px 10px 0px'}}>
             { dlButton }
             <div id="tooltip"></div>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
@@ -194,13 +196,6 @@ var styles = {
     },
     button: {
         float: 'right'
-    },
-    container: {
-        marginTop: 30,
-        marginBottom: 30,
-        position: 'relative',
-        overflow: 'visible',
-        padding: '10px 0px 10px 0px'
     },
     detailsTitle: {
         textAlign: 'left',

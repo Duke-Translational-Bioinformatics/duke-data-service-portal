@@ -26,7 +26,8 @@ class FolderPath extends React.Component {
 
         return (
             <Card className="project-container group mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800"
-                 style={styles.container}>
+                  style={{marginTop: this.props.windowWidth > 680 ? 115 : 40,
+                        overflow: 'visible', padding: '10px 0px 10px 0px'}}>
                 { uploadMdl }
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div style={styles.menuIcon}>
@@ -55,11 +56,6 @@ class FolderPath extends React.Component {
 }
 
 var styles = {
-    container: {
-        marginTop: 40,
-        overflow: 'visible',
-        padding: '10px 0px 10px 0px'
-    },
     arrow: {
         textAlign: 'left'
     },
