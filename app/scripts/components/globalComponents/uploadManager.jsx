@@ -48,8 +48,9 @@ class UploadManager extends React.Component {
                     <i className='material-icons'>file_upload</i>
                 </button>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                    <LeftNav disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openRight={true} open={this.props.openUploadManager} style={styles.tagManager}>
-                        <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" style={{marginTop: 95}} >
+                    <LeftNav disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openRight={true} open={this.props.openUploadManager}>
+                        <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800"
+                             style={{marginTop: width > 680 ? 65 : 85}}>
                             <IconButton style={styles.toggleBtn}
                                         onTouchTap={() => this.toggleUploadManager()}>
                                 <NavigationClose />
@@ -261,10 +262,6 @@ var styles = {
         span: {
             fontSize: '.7em'
         }
-    },
-    tagManager: {
-        marginTop: 80,
-        paddingBottom: 90
     },
     toggleBtn: {
         margin: '25px 0px 15px 0px',
