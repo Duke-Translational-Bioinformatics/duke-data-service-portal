@@ -21,6 +21,7 @@ class TagManager extends React.Component {
             floatingErrorText: '',
             lastTag: null,
             timeout: null,
+            searchText: '',
             tagsToAdd: []
         };
     }
@@ -66,6 +67,7 @@ class TagManager extends React.Component {
                         </div>
                         <div className="mdl-cell mdl-cell--8-col mdl-color-text--grey-600" style={styles.autoCompleteContainer}>
                             <AutoComplete
+                                ref={`autocomplete`}
                                 fullWidth={true}
                                 id="tagText"
                                 style={{maxWidth: 'calc(100% - 5px)'}}
@@ -114,19 +116,21 @@ class TagManager extends React.Component {
 
     addTagToCloud(label) {
         let id = this.props.params.id;
+        let clearText = ()=> {
+            this.refs[`autocomplete`].setState({searchText:''});
+            this.refs[`autocomplete`].focus();
+        };
         if(label && !label.indexOf(' ') <= 0) {
             if (this.state.tagsToAdd.some((el) => { return el.label === label.trim(); })) {
                 this.setState({floatingErrorText: label + ' tag is already in the list'});
                 setTimeout(()=>{
                     this.setState({floatingErrorText: ''});
-                    document.getElementById("tagText").select();
+                    clearText();
                 }, 2000)
             } else {
-                this.state.tagsToAdd.push({label: label.trim()}); // Todo: Do this in store
-                setTimeout(() => {
-                    // Todo: this is temporary. There's a bug in AutoComplete that makes the input repopulate with the old text.
-                    // Todo: using timeout doesn't solve the problem reliably. For now using select() until we update to MUI v16
-                    document.getElementById("tagText").select();
+                this.state.tagsToAdd.push({label: label.trim()});
+                setTimeout(()=>{
+                    clearText();
                 }, 500);
                 this.setState({tagsToAdd: this.state.tagsToAdd})
             }
@@ -175,9 +179,7 @@ class TagManager extends React.Component {
     toggleTagManager() {
         ProjectActions.toggleTagManager();
         setTimeout(() => {
-            // Todo: this is temporary. There's a bug in AutoComplete that makes the input repopulate with the old text.
-            // Todo: using timeout doesn't solve the problem reliably. For now using select() until we update MUI@v0.16
-            if(document.getElementById("tagText").value !== '') document.getElementById("tagText").select();
+            if(document.getElementById("tagText").value !== '') this.refs[`autocomplete`].setState({searchText:''});
         }, 500);
         this.setState({tagsToAdd: []});
     }

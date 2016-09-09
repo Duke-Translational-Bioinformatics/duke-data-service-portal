@@ -19,6 +19,7 @@ class UploadManager extends React.Component {
         super(props);
         this.state = {
             floatingErrorText: '',
+            searchText: '',
             timeout: null,
             tagsToAdd: [],
             value: null
@@ -70,11 +71,11 @@ class UploadManager extends React.Component {
                             <br/>
                         </div>
                         <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.wrapper}>
-                            <div className="mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" >
+                            <div className="mdl-cell mdl-cell--6-col mdl-cell--6-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" >
                                 <h6 className="mdl-color-text--grey-600" style={styles.heading}>Add Tags For These Files
-                                    <span className="mdl-color-text--grey-400" style={{marginLeft: 5, fontSize: '.8em'}}>(optional)</span>
+                                    <span className="mdl-color-text--grey-400" style={styles.heading.span}>(optional)</span>
                                     <IconButton tooltip={<span>Tag your files with relevant keywords<br/> that can help with search and organization of content</span>}
-                                                tooltipPosition="bottom-center"
+                                                tooltipPosition="top-center"
                                                 iconStyle={{height: 20, width: 20}}
                                                 style={styles.infoIcon}>
                                         <Info color={'#BDBDBD'}/>
@@ -85,6 +86,7 @@ class UploadManager extends React.Component {
                                 <AutoComplete
                                     fullWidth={true}
                                     id="tagInputText"
+                                    ref={`autocomplete`}
                                     style={{maxWidth: 'calc(100% - 5px)'}}
                                     floatingLabelText="Type a Tag Label Here"
                                     filter={AutoComplete.fuzzyFilter}
@@ -95,7 +97,7 @@ class UploadManager extends React.Component {
                                     underlineStyle={{borderColor: '#0680CD', maxWidth: 'calc(100% - 42px)'}}/>
                                 <IconButton onTouchTap={() => this.addTagToCloud(document.getElementById("tagInputText").value)}
                                             iconStyle={{width: 24, height: 24}}
-                                            style={{margin: '-30px 20px 0px 0px', float: 'right', width: 24, height: 24, padding: 0}}>
+                                            style={styles.addTagIcon}>
                                     <AddCircle color={'#235F9C'}/>
                                 </IconButton><br/>
                             </div>
@@ -108,7 +110,7 @@ class UploadManager extends React.Component {
                             <div className="mdl-cell mdl-cell--6-col mdl-color-text--grey-400" style={styles.buttonWrapper}>
                                 <RaisedButton label="Upload Files" secondary={true}
                                               labelStyle={{fontWeight: 100}}
-                                              style={{margin: '10px 0px 20px 0px', float: 'right'}}
+                                              style={styles.uploadFilesBtn}
                                               onTouchTap={() => this.handleUploadButton()}/>
                             </div>
                         </div>
@@ -119,11 +121,16 @@ class UploadManager extends React.Component {
     }
 
     addTagToCloud(label) {
+        let clearText = ()=> {
+            this.refs[`autocomplete`].setState({searchText:''});
+            this.refs[`autocomplete`].focus();
+        };
         if(label && !label.indexOf(' ') <= 0) {
             if (this.state.tagsToAdd.some((el) => { return el.label === label; })) {
-                this.setState({floatingErrorText: 'This tag is already in the list'});
+                this.setState({floatingErrorText:label + 'This tag is already in the list'});
                 setTimeout(()=>{
                     this.setState({floatingErrorText: ''});
+                    clearText();
                 }, 2000)
             }else{
                 this.state.tagsToAdd.push({label: label.trim()}); // Todo: Do this in store
@@ -131,9 +138,7 @@ class UploadManager extends React.Component {
             }
         }
         setTimeout(() => {
-            // Todo: this is temporary. There's a bug in AutoComplete that makes the input repopulate with the old text.
-            // Todo: using timeout doesn't solve the problem reliably. For now using select() until we update MUI@v0.16
-            document.getElementById("tagInputText").select();
+            clearText();
         }, 500);
     }
 
@@ -201,15 +206,20 @@ class UploadManager extends React.Component {
         ProjectActions.toggleUploadManager();
         document.getElementById('uploadFile').value = '';
         setTimeout(() => {
-            // Todo: this is temporary. There's a bug in AutoComplete that makes the input repopulate with the old text.
-            // Todo: using timeout doesn't solve the problem reliably. For now using select() until we update MUI@v0.16
-            if(document.getElementById("tagInputText").value !== '') document.getElementById("tagInputText").select();
+            if(document.getElementById("tagInputText").value !== '') this.refs[`autocomplete`].setState({searchText:''});
         }, 500);
         this.setState({tagsToAdd: []});
     }
 }
 
 var styles = {
+    addTagIcon: {
+        margin: '-30px 20px 0px 0px',
+        float: 'right',
+        width: 24,
+        height: 24,
+        padding: 0
+    },
     autoCompleteContainer: {
         textAlign: 'center',
         marginLeft: 15
@@ -246,7 +256,11 @@ var styles = {
     },
     heading: {
         textAlign: 'left',
-        margin: '0px 0px -26px 5px '
+        margin: '0px 0px -26px 5px ',
+        span: {
+            marginLeft: 5,
+            fontSize: '.8em'
+        }
     },
     iconColor: {
         color: '#ffffff'
@@ -266,6 +280,10 @@ var styles = {
     toggleBtn: {
         margin: '25px 0px 15px 0px',
         zIndex: 9999
+    },
+    uploadFilesBtn: {
+        margin: '10px 0px 20px 0px',
+        float: 'right'
     },
     wrapper:{
         display: 'flex',
