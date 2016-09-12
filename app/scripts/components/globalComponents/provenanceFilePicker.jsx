@@ -93,19 +93,6 @@ class ProvenanceFilePicker extends React.Component {
                                  style={styles.projectSelect}>
                         {projects}
                     </SelectField>
-                    {/*<AutoComplete
-                        id="projectList"
-                        fullWidth={true}
-                        style={styles.filePicker}
-                        menuStyle={{maxHeight: 200}}
-                        floatingLabelText="Select a Project"
-                        hintText="Type a Project Name"
-                        dataSource={projectData}
-                        filter={AutoComplete.caseInsensitiveFilter}
-                        openOnFocus={true}
-                        onNewRequest={(value) => this.selectProject(value)}
-                        onUpdateInput={this.handleUpdateInput.bind(this, true)}
-                        underlineStyle={styles.autoCompleteUnderline}/>*/}
                     <AutoComplete
                         id="searchText"
                         fullWidth={true}
@@ -139,13 +126,13 @@ class ProvenanceFilePicker extends React.Component {
             if (!BaseUtils.objectPropInArray(graphNodes, 'id', id)) {
                 ProjectActions.addFileToGraph(node);
                 ProjectActions.closeProvEditorModal('addFile');
-                ProjectActions.clearProvFileVersions();
                 this.state.addFileNode = null;
             } else {
                 ProjectActions.openProvEditorModal('nodeWarning');
             }
             this.state.projectSelectValue = null;
             ProjectActions.clearSearchFilesData();
+            ProjectActions.clearProvFileVersions();
         }
         this.setState({floatingErrorText:'This field is required'});
         setTimeout(()=>{
