@@ -38,6 +38,8 @@ class ProvenanceFilePicker extends React.Component {
         let fileVersion = this.props.entityObj && this.props.entityObj.current_version ? this.props.entityObj.current_version.version : null;
         if(fileVersion === null) fileVersion = this.props.entityObj ? this.props.entityObj.version : null;
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
+        let project = this.props.entityObj && this.props.entityObj.current_version ? this.props.entityObj.project.id : null;
+        if(project === null) project = this.props.entityObj && this.props.entityObj.file ? this.props.entityObj.file.project.id : null;
         let projects = this.props.projects && this.props.projects.length ? this.props.projects.map((project)=>{
             if(!project.is_deleted) {
                 return <MenuItem key={project.id}
@@ -83,7 +85,7 @@ class ProvenanceFilePicker extends React.Component {
                     onRequestClose={() => this.handleClose('addFile')}>
                     <h6 style={{marginTop:0, paddingBottom: 20}}>Add files to the graph. File must already exist in Duke Data Service.</h6>
                     <SelectField id="selectProject"
-                                 value={this.state.projectSelectValue}
+                                 value={this.state.projectSelectValue === null ? project : this.state.projectSelectValue}
                                  onChange={(e, index, value) => this.handleProjectSelect(e, index, value)}
                                  maxHeight={300}
                                  autoWidth={true}
