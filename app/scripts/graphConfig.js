@@ -3,7 +3,7 @@ export const graphOptions = {
     height: '100%',
     width: '100%',
     edges: {
-        width: 0.15,
+        width: 0.65,
         smooth: {
             enabled: false,
             type: "dynamic",
@@ -84,9 +84,17 @@ export const graphColors = {
         }
     },
     edges: {
-        color:'#1976D2',
-        highlight:'#1565C0',
-        hover: '#1565C0',
-        opacity:1
+        generated: {
+            color: '#1976D2',
+            highlight: '#1565C0',
+            hover: '#1565C0',
+            opacity: 1
+        },
+        used: {
+            color: '#64DD17',
+            highlight: '#64DD17',
+            hover: '#64DD17',
+            opacity: 1
+        }
     }
 };

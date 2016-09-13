@@ -235,12 +235,13 @@ var ProjectStore = Reflux.createStore({
         let rel = [];
         rel.push(data);
         this.updatedGraphItem = rel.map((edge) => {//Update dataset in client
+            let color = edge.kind === 'dds-used_prov_relation' ? graphColors.edges.used : graphColors.edges.generated;
             return {
                 id: edge.id,
                 from: edge.from.id,
                 to: edge.to.id,
                 type: edge.kind,
-                color: graphColors.edges,
+                color: color,
                 arrows: 'to',
                 properties: {
                     audit: edge.audit
@@ -430,13 +431,14 @@ var ProjectStore = Reflux.createStore({
         });
         this.provEdges = edges.map((edge) => {
             if (edge.properties.audit.deleted_by === null) {
+                let color = edge.type === 'Used' ? graphColors.edges.used : graphColors.edges.generated;
                 return {
                     id: edge.id,
                     to: edge.end_node,
                     from: edge.start_node,
                     type: edge.type,
                     properties: edge.properties,
-                    color: graphColors.edges,
+                    color: color,
                     arrows: 'to',
                     title: '<div style="color: #616161"><span>'
                     + edge.type + '</span></div>'
