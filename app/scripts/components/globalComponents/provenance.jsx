@@ -356,12 +356,13 @@ class Provenance extends React.Component {
                             <FileVersionsList {...this.props}/>
                             <ProvenanceFilePicker {...this.props} {...this.state}/>
                             <ProvenanceActivityManager {...this.props} {...this.state}/>
-                            { relationTypeSelect }<br/>
                             <RaisedButton
                                 label="Delete Relation"
-                                labelStyle={{color: '#F44336', fontWeight: 400}}
+                                labelStyle={{fontWeight: 200}}
+                                primary={true}
                                 style={{zIndex: 9999, margin: 10, width: '80%', display: showDltRltBtn}}
                                 onTouchTap={() => this.openModal('dltRel')}/>
+                            { relationTypeSelect }<br/>
                             {this.props.addEdgeMode ?
                                 <div style={styles.provEditor.addEdgeInstruction}>
                                     Click on a node and drag to another node to create a new relation. <br/>

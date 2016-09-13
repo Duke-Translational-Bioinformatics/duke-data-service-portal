@@ -12,6 +12,8 @@ import SelectField from 'material-ui/lib/select-field';
 import TextField from 'material-ui/lib/text-field';
 import Toggle from 'material-ui/lib/toggle';
 
+import Checkbox from 'material-ui/lib/checkbox';
+
 class ProvenanceActivityManager extends React.Component {
 
     constructor(props) {
@@ -92,7 +94,8 @@ class ProvenanceActivityManager extends React.Component {
                     onTouchTap={() => this.openModal('editAct')}/>
                 <RaisedButton
                     label="Delete Activity"
-                    labelStyle={{color: '#F44336', fontWeight: 200}}
+                    primary={true}
+                    labelStyle={styles.btn.label}
                     style={{zIndex: 9999, margin: '20px 0px 10px 0px', minWidth: 168, width: '100%', display: showBtns}}
                     onTouchTap={() => this.openModal('dltAct')}/>
                 </span>
@@ -100,17 +103,17 @@ class ProvenanceActivityManager extends React.Component {
                 <Dialog
                     style={styles.dialogStyles}
                     contentStyle={this.props.width < 680 ? {width: '100%'} : {}}
-                    title={this.state.addNew ? "Add a New Activity" : "Add an Existing Activity"}
+                    title={"Add an Activity to the Graph"}
                     autoDetectWindowHeight={true}
                     actions={addActivityActions}
                     open={addAct}
                     onRequestClose={() => this.handleClose('addAct')}>
                     <div style={styles.provEditor}>
-                        <Toggle
-                            label={this.state.addNew ? "Use an existing activity" : "Add a new activity"}
-                            thumbStyle={{backgroundColor: '#E1F5FE'}}
-                            style={{maxWidth: 260, textAlign: 'left'}}
-                            onToggle={() => this.toggleActivityForm()}/>
+                        <Checkbox
+                            label={"Use an existing activity"}
+                            style={{width: '54%'}}
+                            labelStyle={{textAlign: 'left'}}
+                            onCheck={() => this.toggleActivityForm()}/>
                     </div>
                     {this.state.addNew ? null : <AutoComplete
                         id="searchText"
@@ -273,7 +276,7 @@ class ProvenanceActivityManager extends React.Component {
     }
 
     toggleActivityForm() {
-        this.setState({addNew: !this.state.addNew});
+        this.setState({addNew: !this.state.addNew, floatingErrorText: 'This field is required.'});
     }
 }
 
