@@ -19,7 +19,6 @@ class ProvenanceFilePicker extends React.Component {
             addFileNode: null,
             floatingErrorText: '',
             node: null,
-            projectId: 0,
             projectSelectValue: null,
             timeout: null,
             value: null
@@ -51,7 +50,7 @@ class ProvenanceFilePicker extends React.Component {
         let provFileVersions = this.props.provFileVersions.map((node)=>{
             return <li key={node.id}
                        id={node.id}
-                       onTouchTap={() => this.useFileVersion(node.id, node.file.name, node.version, node)}>
+                       onTouchTap={() => this.useFileVersion(node.file.name, node.version, node)}>
                 Version: {node.version}
             </li>
         });
@@ -163,7 +162,6 @@ class ProvenanceFilePicker extends React.Component {
     handleProjectSelect(e, index, value) {
         ProjectActions.clearSearchFilesData(); //If project is changed, clear files from autocomplete list
         this.setState({
-            projectId: value,
             projectSelectValue: value
         });
     }
@@ -171,7 +169,7 @@ class ProvenanceFilePicker extends React.Component {
     handleUpdateInput (text, isProject) {
         // Add 500ms lag to autocomplete so that it only makes a call after user is done typing
         if(isProject) ProjectActions.clearSearchFilesData(); //Boolean: If project is changed clear files from autocomplete list
-        let id = this.state.projectId !== 0 ? this.state.projectId : this.props.entityObj.file ? this.props.entityObj.file.project.id : this.props.entityObj.project.id;
+        let id = this.state.projectSelectValue !== null ? this.state.projectSelectValue : this.props.entityObj.file ? this.props.entityObj.file.project.id : this.props.entityObj.project.id;
         let timeout = this.state.timeout;
         let textInput = document.getElementById('searchText');
         textInput.onkeyup = () => {
@@ -190,11 +188,7 @@ class ProvenanceFilePicker extends React.Component {
         ProjectActions.openProvEditorModal(id);
     }
 
-    selectProject(id) {
-        this.state.projectId = id.id;
-    }
-
-    useFileVersion(id, name, version, node) {
+    useFileVersion(name, version, node) {
         document.getElementById('searchText').value = name +'- Version: '+ version;
         this.state.addFileNode = node;
     }
