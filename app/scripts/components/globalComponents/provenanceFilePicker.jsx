@@ -71,6 +71,7 @@ class ProvenanceFilePicker extends React.Component {
             <span>
                 <RaisedButton
                     label="Add File"
+                    primary={true}
                     labelStyle={styles.btn.label}
                     style={styles.btn}
                     onTouchTap={() => this.openModal('addFile')}/>
@@ -104,7 +105,7 @@ class ProvenanceFilePicker extends React.Component {
                         dataSource={autoCompleteData}
                         filter={AutoComplete.caseInsensitiveFilter}
                         openOnFocus={true}
-                        onNewRequest={(value) => this.chooseFileVersion(value)}
+                        onNewRequest={(value, e) => this.chooseFileVersion(value, e)}
                         onUpdateInput={this.handleUpdateInput.bind(this)}/>
                     {this.props.autoCompleteLoading ? <CircularProgress size={1} style={styles.autoCompleteProgress}/> : null}
                     {this.props.provFileVersions.length > 1 ?
@@ -141,7 +142,8 @@ class ProvenanceFilePicker extends React.Component {
         }, 3000);
     }
 
-    chooseFileVersion(value) {
+    chooseFileVersion(value, e) {
+        if(e === -1) return false;
         let fileId = value.id;
         this.state.addFileNode = value.node;
         ProjectActions.getFileVersions(fileId, true);
@@ -209,7 +211,7 @@ var styles = {
         minWidth: 168,
         width: '100%',
         label: {
-            color: '#235F9C'
+            fontWeight: 200
         }
     },
     dialogStyles: {

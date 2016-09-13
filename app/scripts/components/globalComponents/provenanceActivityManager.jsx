@@ -78,6 +78,7 @@ class ProvenanceActivityManager extends React.Component {
                 <RaisedButton
                     id="addAct"
                     label="Add Activity"
+                    primary={true}
                     labelStyle={styles.btn.label}
                     style={styles.btn}
                     onTouchTap={() => this.openModal('addAct')}/>
@@ -85,12 +86,13 @@ class ProvenanceActivityManager extends React.Component {
                     <span>
                 <RaisedButton
                     label="Edit Activity"
+                    primary={true}
                     labelStyle={styles.btn.label}
                     style={{zIndex: 9999, margin: '10px 0px 10px 0px', minWidth: 168, width: '100%', display: showBtns}}
                     onTouchTap={() => this.openModal('editAct')}/>
                 <RaisedButton
                     label="Delete Activity"
-                    labelStyle={{color: '#F44336'}}
+                    labelStyle={{color: '#F44336', fontWeight: 200}}
                     style={{zIndex: 9999, margin: '20px 0px 10px 0px', minWidth: 168, width: '100%', display: showBtns}}
                     onTouchTap={() => this.openModal('dltAct')}/>
                 </span>
@@ -256,7 +258,7 @@ class ProvenanceActivityManager extends React.Component {
     }
 
     handleClose(id) {
-        this.setState({addNew: true, activityNode: null});
+        this.setState({addNew: true, activityNode: null, floatingErrorText: 'This field is required.'});
         ProjectActions.closeProvEditorModal(id);
     }
 
@@ -292,7 +294,7 @@ var styles = {
         minWidth: 168,
         width: '100%',
         label: {
-            color: '#235F9C'
+            fontWeight: 200
         }
     },
     textStyles: {

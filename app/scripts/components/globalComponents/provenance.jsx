@@ -289,6 +289,7 @@ class Provenance extends React.Component {
                     if(versionCount.length > 1) {
                         versionsButton = <RaisedButton
                             label="CHANGE VERSION"
+                            primary={true}
                             labelStyle={styles.provEditor.btn.label}
                             style={styles.provEditor.btn}
                             onTouchTap={() => this.openVersionsModal()}
@@ -358,7 +359,7 @@ class Provenance extends React.Component {
                             { relationTypeSelect }<br/>
                             <RaisedButton
                                 label="Delete Relation"
-                                labelStyle={{color: '#F44336'}}
+                                labelStyle={{color: '#F44336', fontWeight: 400}}
                                 style={{zIndex: 9999, margin: 10, width: '80%', display: showDltRltBtn}}
                                 onTouchTap={() => this.openModal('dltRel')}/>
                             {this.props.addEdgeMode ?
@@ -607,7 +608,7 @@ var styles = {
             margin: 10,
             width: '80%',
             label: {
-                color: '#235F9C'
+                fontWeight: 200
             }
         },
         title: {
