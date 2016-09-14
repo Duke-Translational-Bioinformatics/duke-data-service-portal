@@ -34,7 +34,11 @@ class FileDetails extends React.Component {
                     title="Download File"
                     rel="tooltip"
                     className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab mdl-button--colored"
-                    style={styles.floatingButton}
+                    style={{position: 'absolute',
+                            top: this.props.windowWidth > 680 ? 95 : 115,
+                            right: '8.5%',
+                            zIndex: '2',
+                            color: '#ffffff'}}
                     onTouchTap={() => this.handleDownload()}>
                     <i className="material-icons">get_app</i>
                 </button>;
@@ -285,13 +289,6 @@ var styles = {
         textAlign: 'left',
         float: 'left',
         marginLeft: 25
-    },
-    floatingButton: {
-        position: 'absolute',
-        top: -20,
-        right: '2%',
-        zIndex: '2',
-        color: '#ffffff'
     },
     list: {
         paddingTop: 5,
