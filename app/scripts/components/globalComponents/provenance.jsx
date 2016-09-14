@@ -40,7 +40,6 @@ class Provenance extends React.Component {
         super(props);
         this.state = {
             addFileNode: null,
-            delEdge: null,
             doubleClicked: false,
             errorText: null,
             floatingErrorText: 'This field is required.',
@@ -48,7 +47,6 @@ class Provenance extends React.Component {
             network: null,
             node: null,
             projectId: 0,
-            timeout: null,
             value: null,
             width: window.innerWidth
         };
@@ -160,11 +158,11 @@ class Provenance extends React.Component {
             if(params.nodes.length === 0) this.setState({showDetails: false});
             ProjectActions.selectNodesAndEdges(edgeData, nodeData);
         });
-        this.state.network.on("doubleClick", (params) => { // Todo: show more nodes on graph on double click event
+        this.state.network.on("doubleClick", (params) => { // Show more nodes on graph on double click event
             hideButtonsOnDblClk();
             let prevGraph = {nodes: this.props.provNodes, edges: this.props.provEdges};
-            let id = params.nodes[0];
-            let kind = this.state.node.properties.kind;
+            let id = this.state.node.properties.current_version ? this.state.node.properties.current_version.id : this.state.node.properties.id;
+            let kind = this.state.node.properties.kind === 'dds=activity' ? 'dds-activity' : 'dds-file-version';
             if(params.nodes.length > 0) ProjectActions.getProvenance(id, kind, prevGraph);
         });
         this.state.network.on("click", (params) => {
@@ -246,6 +244,22 @@ class Provenance extends React.Component {
         let permissionError = this.props.relMsg && this.props.relMsg === 'permissionError' ?
             <h5>Your can only create <u><i>used </i></u> relations from activities you are the creator of.</h5> : '';
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
+        let relationInstructions = null;
+        switch(this.state.value){
+            case 0:
+                relationInstructions = 'Click on an activity and drag to a file to show that the activity used that' +
+                    ' file.';
+                break;
+            case 1:
+                relationInstructions = 'Click on a file and drag to an activity to show that the activity generated' +
+                    ' that file.';
+                break;
+            case 2:
+                relationInstructions = 'Click on a file and drag to another file to show that the file is a' +
+                    ' derivation of another file. You will then have the option to confirm which file was the' +
+                    ' derivative.';
+                break;
+        }
         let relationTypeSelect = null;
         if(prjPrm !== null) {
             relationTypeSelect = prjPrm === 'viewOnly' ?
@@ -365,7 +379,7 @@ class Provenance extends React.Component {
                             { relationTypeSelect }<br/>
                             {this.props.addEdgeMode ?
                                 <div style={styles.provEditor.addEdgeInstruction}>
-                                    Click on a node and drag to another node to create a new relation. <br/>
+                                    {relationInstructions} <br/>
                                     <span style={styles.provEditor.addEdgeInstruction.text}>Cancel</span>
                                     <Cancel style={styles.cancelBtn} color={'#F44336'} onTouchTap={() => this.toggleEdgeMode()}/>
                                 </div> : null}
@@ -599,7 +613,7 @@ var styles = {
         addEdgeInstruction: {
             margin: 15,
             paddingLeft: 4,
-            color: '#757575',
+            color: '#6e6e6e',
             text: {
                 color:'#757575'
             }

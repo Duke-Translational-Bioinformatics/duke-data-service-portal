@@ -231,7 +231,7 @@ var ProjectStore = Reflux.createStore({
         ProjectActions.addProvRelation(kind, body);
     },
 
-    addProvRelationSuccess(data) { //Todo: update dataset/rerender graph with new relation
+    addProvRelationSuccess(data) { //Update dataset with new relation
         let rel = [];
         rel.push(data);
         this.updatedGraphItem = rel.map((edge) => {//Update dataset in client
