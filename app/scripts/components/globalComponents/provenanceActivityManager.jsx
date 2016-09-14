@@ -12,13 +12,17 @@ import SelectField from 'material-ui/lib/select-field';
 import TextField from 'material-ui/lib/text-field';
 import Toggle from 'material-ui/lib/toggle';
 
+import Checkbox from 'material-ui/lib/checkbox';
+import Tabs from 'material-ui/lib/tabs/tabs';
+import Tab from 'material-ui/lib/tabs/tab';
+import Slider from 'material-ui/lib/slider';
+
 class ProvenanceActivityManager extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
             activityNode: null,
-            addNew: true,
             errorText: null,
             floatingErrorText: 'This field is required.',
             network: null,
@@ -78,6 +82,7 @@ class ProvenanceActivityManager extends React.Component {
                 <RaisedButton
                     id="addAct"
                     label="Add Activity"
+                    primary={true}
                     labelStyle={styles.btn.label}
                     style={styles.btn}
                     onTouchTap={() => this.openModal('addAct')}/>
@@ -85,12 +90,14 @@ class ProvenanceActivityManager extends React.Component {
                     <span>
                 <RaisedButton
                     label="Edit Activity"
+                    primary={true}
                     labelStyle={styles.btn.label}
                     style={{zIndex: 9999, margin: '10px 0px 10px 0px', minWidth: 168, width: '100%', display: showBtns}}
                     onTouchTap={() => this.openModal('editAct')}/>
                 <RaisedButton
                     label="Delete Activity"
-                    labelStyle={{color: '#F44336'}}
+                    primary={true}
+                    labelStyle={styles.btn.label}
                     style={{zIndex: 9999, margin: '20px 0px 10px 0px', minWidth: 168, width: '100%', display: showBtns}}
                     onTouchTap={() => this.openModal('dltAct')}/>
                 </span>
@@ -98,48 +105,50 @@ class ProvenanceActivityManager extends React.Component {
                 <Dialog
                     style={styles.dialogStyles}
                     contentStyle={this.props.width < 680 ? {width: '100%'} : {}}
-                    title={this.state.addNew ? "Add a New Activity" : "Add an Existing Activity"}
                     autoDetectWindowHeight={true}
                     actions={addActivityActions}
                     open={addAct}
                     onRequestClose={() => this.handleClose('addAct')}>
-                    <div style={styles.provEditor}>
-                        <Toggle
-                            label={this.state.addNew ? "Use an existing activity" : "Add a new activity"}
-                            thumbStyle={{backgroundColor: '#E1F5FE'}}
-                            style={{maxWidth: 260, textAlign: 'left'}}
-                            onToggle={() => this.toggleActivityForm()}/>
-                    </div>
-                    {this.state.addNew ? null : <AutoComplete
-                        id="searchText"
-                        fullWidth={true}
-                        style={{display: this.state.addNew ? 'none' : 'block', paddingBottom: 31, paddingTop: 32}}
-                        menuStyle={{maxHeight: 200}}
-                        errorText={this.state.floatingErrorText}
-                        floatingLabelText="Type an Activity Name"
-                        dataSource={autoCompleteData}
-                        filter={AutoComplete.caseInsensitiveFilter}
-                        openOnFocus={true}
-                        onNewRequest={(value) => this.chooseActivity(value)}
-                        underlineStyle={styles.autoCompleteUnderline}/>}
-                    {this.state.addNew ? <form action="#" id="newActivityForm">
-                        <TextField
-                            style={styles.textStyles}
-                            hintText="Activity Name"
-                            errorText={this.state.floatingErrorText}
-                            floatingLabelText="Activity Name"
-                            id="activityNameText"
-                            type="text"
-                            multiLine={true}
-                            onChange={this.handleFloatingError.bind(this)}/> <br/>
-                        <TextField
-                            style={styles.textStyles}
-                            hintText="Activity Description"
-                            floatingLabelText="Activity Description"
-                            id="activityDescText"
-                            type="text"
-                            multiLine={true}/>
-                    </form> : null}
+                        <Tabs onChange={() => this.toggleActivityForm()}
+                            inkBarStyle={styles.tabInkBar}>
+                            <Tab label="New Activity" style={styles.tabStyles}>
+                                <h2 style={styles.tabHeadline}>Add a New Activity</h2>
+                                <form action="#" id="newActivityForm">
+                                    <TextField
+                                        style={styles.textStyles}
+                                        fullWidth={true}
+                                        hintText="New Activity Name"
+                                        errorText={this.state.floatingErrorText}
+                                        floatingLabelText="New Activity Name"
+                                        id="activityNameText"
+                                        type="text"
+                                        multiLine={true}
+                                        onChange={this.handleFloatingError.bind(this)}/> <br/>
+                                    <TextField
+                                        style={styles.textStyles}
+                                        fullWidth={true}
+                                        hintText="New Activity Description"
+                                        floatingLabelText="New Activity Description"
+                                        id="activityDescText"
+                                        type="text"
+                                        multiLine={true}/>
+                                </form>
+                            </Tab>
+                            <Tab label="Use Existing Activity" style={styles.tabStyles}>
+                                <h2 style={styles.tabHeadline}>Add an Existing Activity</h2>
+                                <AutoComplete
+                                    id="searchText"
+                                    fullWidth={true}
+                                    menuStyle={{maxHeight: 200}}
+                                    errorText={this.state.floatingErrorText}
+                                    floatingLabelText="Type an Existing Activity Name"
+                                    dataSource={autoCompleteData}
+                                    filter={AutoComplete.caseInsensitiveFilter}
+                                    openOnFocus={true}
+                                    onNewRequest={(value) => this.chooseActivity(value)}
+                                    underlineStyle={styles.autoCompleteUnderline}/>
+                            </Tab>
+                        </Tabs>
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
@@ -196,7 +205,6 @@ class ProvenanceActivityManager extends React.Component {
                 ProjectActions.addProvActivitySuccess(node);
                 ProjectActions.closeProvEditorModal('addAct');
                 this.setState({
-                    addNew: true,
                     activityNode: null
                 });
             } else {
@@ -213,7 +221,6 @@ class ProvenanceActivityManager extends React.Component {
                 ProjectActions.addProvActivity(name, desc);
                 ProjectActions.closeProvEditorModal('addAct');
                 this.setState({
-                    addNew: true,
                     floatingErrorText: 'This field is required.'
                 });
             }
@@ -256,7 +263,7 @@ class ProvenanceActivityManager extends React.Component {
     }
 
     handleClose(id) {
-        this.setState({addNew: true, activityNode: null});
+        this.setState({activityNode: null, floatingErrorText: 'This field is required.'});
         ProjectActions.closeProvEditorModal(id);
     }
 
@@ -271,7 +278,7 @@ class ProvenanceActivityManager extends React.Component {
     }
 
     toggleActivityForm() {
-        this.setState({addNew: !this.state.addNew});
+        this.setState({floatingErrorText: 'This field is required.'});
     }
 }
 
@@ -292,8 +299,22 @@ var styles = {
         minWidth: 168,
         width: '100%',
         label: {
-            color: '#235F9C'
+            fontWeight: 200
         }
+    },
+    tabHeadline: {
+        fontSize: 24,
+        marginBottom: 12,
+        fontWeight: 400,
+        textAlign: 'center'
+    },
+    tabInkBar: {
+        backgroundColor: '#EC407A',
+        paddingTop: 3,
+        marginTop: -3
+    },
+    tabStyles: {
+        fontWeight: 200
     },
     textStyles: {
         textAlign: 'left',

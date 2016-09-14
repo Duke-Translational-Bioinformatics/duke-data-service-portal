@@ -118,6 +118,7 @@ class ProvenanceDetails extends React.Component {
 
 var styles = {
     details: {
+        padding: 20,
         width: '100%',
         margin: 0,
         color:'#757575'
@@ -134,7 +135,8 @@ var styles = {
         margin: '20px 0px 5px 0px'
     },
     listItem: {
-        padding: '0px 5px 0px 5px'
+        padding: '0px 5px 0px 5px',
+        fontSize: 12
     }
 };
 
