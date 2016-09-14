@@ -105,15 +105,14 @@ class ProvenanceActivityManager extends React.Component {
                 <Dialog
                     style={styles.dialogStyles}
                     contentStyle={this.props.width < 680 ? {width: '100%'} : {}}
-                    title={"Add an Activity to the Graph"}
                     autoDetectWindowHeight={true}
                     actions={addActivityActions}
                     open={addAct}
                     onRequestClose={() => this.handleClose('addAct')}>
                         <Tabs onChange={() => this.toggleActivityForm()}
-                            inkBarStyle={{backgroundColor: '#EC407A', paddingTop: 3, marginTop: -3, marginBottom: 20}}
-                            >
+                            inkBarStyle={styles.tabInkBar}>
                             <Tab label="New Activity" style={styles.tabStyles}>
+                                <h2 style={styles.tabHeadline}>Add a New Activity</h2>
                                 <form action="#" id="newActivityForm">
                                     <TextField
                                         style={styles.textStyles}
@@ -136,10 +135,10 @@ class ProvenanceActivityManager extends React.Component {
                                 </form>
                             </Tab>
                             <Tab label="Use Existing Activity" style={styles.tabStyles}>
+                                <h2 style={styles.tabHeadline}>Add an Existing Activity</h2>
                                 <AutoComplete
                                     id="searchText"
                                     fullWidth={true}
-                                    //style={{paddingBottom: 31, paddingTop: 32}}
                                     menuStyle={{maxHeight: 200}}
                                     errorText={this.state.floatingErrorText}
                                     floatingLabelText="Type an Existing Activity Name"
@@ -302,6 +301,17 @@ var styles = {
         label: {
             fontWeight: 200
         }
+    },
+    tabHeadline: {
+        fontSize: 24,
+        marginBottom: 12,
+        fontWeight: 400,
+        textAlign: 'center'
+    },
+    tabInkBar: {
+        backgroundColor: '#EC407A',
+        paddingTop: 3,
+        marginTop: -3
     },
     tabStyles: {
         fontWeight: 200
