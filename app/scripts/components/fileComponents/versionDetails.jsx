@@ -206,8 +206,8 @@ var styles = {
     },
     downloadBtn: {
         position: 'absolute',
-        top: -30,
-        right: '2%',
+        top: -33,
+        right: '1.4%',
         zIndex: '2',
         color: '#ffffff'
     },
