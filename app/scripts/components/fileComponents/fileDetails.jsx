@@ -34,11 +34,7 @@ class FileDetails extends React.Component {
                     title="Download File"
                     rel="tooltip"
                     className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab mdl-button--colored"
-                    style={{position: 'absolute',
-                            top: this.props.windowWidth > 680 ? 95 : 115,
-                            right: '8.5%',
-                            zIndex: '2',
-                            color: '#ffffff'}}
+                    style={styles.downloadBtn}
                     onTouchTap={() => this.handleDownload()}>
                     <i className="material-icons">get_app</i>
                 </button>;
@@ -105,7 +101,9 @@ class FileDetails extends React.Component {
         let file = <Card className="project-container mdl-color--white content mdl-color-text--grey-800"
                          style={{marginTop: this.props.windowWidth > 680 ? 115 : 30, paddingBottom: 30,
                                  overflow: 'visible', padding: '10px 0px 10px 0px'}}>
-            { dlButton }
+            <div className="mdl-cell mdl-cell--12-col" style={{position: 'relative'}}>
+                { dlButton }
+            </div>
             <div id="tooltip"></div>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <div style={styles.menuIcon}>
@@ -289,6 +287,13 @@ var styles = {
         textAlign: 'left',
         float: 'left',
         marginLeft: 25
+    },
+    downloadBtn: {
+        position: 'absolute',
+        top: -30,
+        right: '2%',
+        zIndex: '2',
+        color: '#ffffff'
     },
     list: {
         paddingTop: 5,
