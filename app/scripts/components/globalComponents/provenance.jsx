@@ -162,7 +162,7 @@ class Provenance extends React.Component {
             hideButtonsOnDblClk();
             let prevGraph = {nodes: this.props.provNodes, edges: this.props.provEdges};
             let id = this.state.node.properties.current_version ? this.state.node.properties.current_version.id : this.state.node.properties.id;
-            let kind = this.state.node.properties.kind === 'dds=activity' ? 'dds-activity' : 'dds-file-version';
+            let kind = this.state.node.properties.kind === 'dds-activity' ? 'dds-activity' : 'dds-file-version';
             if(params.nodes.length > 0) ProjectActions.getProvenance(id, kind, prevGraph);
         });
         this.state.network.on("click", (params) => {
