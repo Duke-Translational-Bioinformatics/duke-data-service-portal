@@ -41,7 +41,6 @@ class AddProjectModal extends React.Component {
                     contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Add New Project"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={actions}
                     open={this.state.open}
                     onRequestClose={this.handleClose.bind(this)}>

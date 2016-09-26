@@ -8,7 +8,7 @@ import AutoComplete from 'material-ui/lib/auto-complete';
 import Divider from 'material-ui/lib/divider';
 import IconButton from 'material-ui/lib/icon-button';
 import LeftNav from 'material-ui/lib/left-nav';
-import Info from 'material-ui/lib/svg-icons/action/info';
+import Help from 'material-ui/lib/svg-icons/action/help';
 import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
 import RaisedButton from 'material-ui/lib/raised-button';
 import Tooltip from '../../../util/tooltip.js';
@@ -21,15 +21,9 @@ class TagManager extends React.Component {
             floatingErrorText: '',
             lastTag: null,
             timeout: null,
-            tagsToAdd: [], 
-            value: null
+            searchText: '',
+            tagsToAdd: []
         };
-    }
-
-    componentDidUpdate(prevProps) {
-        if (prevProps.routerPath !== this.props.routerPath) {
-            console.log('new page')
-        }
     }
 
     render() {
@@ -52,8 +46,9 @@ class TagManager extends React.Component {
         let width = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.width : window.innerWidth;
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                <LeftNav disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openRight={true} open={this.props.openTagManager} style={styles.tagManager}>
-                    <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" style={{marginTop: 95}}>
+                <LeftNav disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openRight={true} open={this.props.openTagManager}>
+                    <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800"
+                         style={{marginTop: width > 680 ? 65 : 85}}>
                         <IconButton style={styles.toggleBtn}
                                     onTouchTap={() => this.toggleTagManager()}>
                             <NavigationClose />
@@ -66,12 +61,13 @@ class TagManager extends React.Component {
                                             tooltipPosition="bottom-center"
                                             iconStyle={{height: 20, width: 20}}
                                             style={styles.infoIcon}>
-                                    <Info color={'#BDBDBD'}/>
+                                    <Help color={'#BDBDBD'}/>
                                 </IconButton>
                             </h5>
                         </div>
                         <div className="mdl-cell mdl-cell--8-col mdl-color-text--grey-600" style={styles.autoCompleteContainer}>
                             <AutoComplete
+                                ref={`autocomplete`}
                                 fullWidth={true}
                                 id="tagText"
                                 style={{maxWidth: 'calc(100% - 5px)'}}
@@ -120,19 +116,21 @@ class TagManager extends React.Component {
 
     addTagToCloud(label) {
         let id = this.props.params.id;
+        let clearText = ()=> {
+            this.refs[`autocomplete`].setState({searchText:''});
+            this.refs[`autocomplete`].focus();
+        };
         if(label && !label.indexOf(' ') <= 0) {
             if (this.state.tagsToAdd.some((el) => { return el.label === label.trim(); })) {
                 this.setState({floatingErrorText: label + ' tag is already in the list'});
                 setTimeout(()=>{
                     this.setState({floatingErrorText: ''});
-                    document.getElementById("tagText").select();
+                    clearText();
                 }, 2000)
             } else {
-                this.state.tagsToAdd.push({label: label.trim()}); // Todo: Do this in store
-                setTimeout(() => {
-                    // Todo: this is temporary. There's a bug in AutoComplete that makes the input repopulate with the old text.
-                    // Todo: using timeout doesn't solve the problem reliably. For now using select() until we update to MUI v16
-                    document.getElementById("tagText").select();
+                this.state.tagsToAdd.push({label: label.trim()});
+                setTimeout(()=>{
+                    clearText();
                 }, 500);
                 this.setState({tagsToAdd: this.state.tagsToAdd})
             }
@@ -181,9 +179,7 @@ class TagManager extends React.Component {
     toggleTagManager() {
         ProjectActions.toggleTagManager();
         setTimeout(() => {
-            // Todo: this is temporary. There's a bug in AutoComplete that makes the input repopulate with the old text.
-            // Todo: using timeout doesn't solve the problem reliably. For now using select() until we update MUI@v0.16
-            if(document.getElementById("tagText").value !== '') document.getElementById("tagText").select();
+            if(document.getElementById("tagText").value !== '') this.refs[`autocomplete`].setState({searchText:''});
         }, 500);
         this.setState({tagsToAdd: []});
     }
@@ -226,7 +222,7 @@ var styles = {
     tagLabels: {
         margin: 3,
         cursor: 'pointer',
-        color: '#0680CD',
+        color: '#235F9C',
         float: 'left'
     },
     tagLabelsContainer: {
@@ -242,10 +238,6 @@ var styles = {
         listStyleType: 'none',
         padding: '5px 0px 5px 0px',
         margin: '0px 0px 0px -10px'
-    },
-    tagManager: {
-        marginTop: 80,
-        paddingBottom: 90
     },
     toggleBtn: {
         margin: '25px 0px 15px 0px',

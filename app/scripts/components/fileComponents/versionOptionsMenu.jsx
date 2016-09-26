@@ -22,9 +22,17 @@ class VersionsOptionsMenu extends React.Component {
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
         let menu = null;
         if (prjPrm !== null) {
+            if(prjPrm === 'viewOnly' || prjPrm === 'flDownload'){
+                menu = <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
+                                 onTouchTap={() => this.openProv()}/>;
+            }
             if (prjPrm === 'flUpload') {
-                menu = <MenuItem primaryText="Edit Version Label" leftIcon={<i className="material-icons">mode_edit</i>}
-                                 onTouchTap={this.handleTouchTapEdit.bind(this)}/>;
+                menu = <span>
+                        <MenuItem primaryText="Edit Version Label" leftIcon={<i className="material-icons">mode_edit</i>}
+                                     onTouchTap={this.handleTouchTapEdit.bind(this)}/>
+                        <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
+                                  onTouchTap={() => this.openProv()}/>
+                </span>;
             }
             if (prjPrm === 'prjCrud' || prjPrm === 'flCrud') {
                 menu = <span>
@@ -33,7 +41,9 @@ class VersionsOptionsMenu extends React.Component {
                         <MenuItem primaryText="Edit Version Label"
                                   leftIcon={<i className="material-icons">mode_edit</i>}
                                   onTouchTap={this.handleTouchTapEdit.bind(this)}/>
-                </span>
+                        <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
+                               onTouchTap={() => this.openProv()}/>
+                </span>;
             }
         }
         const deleteActions = [
@@ -68,7 +78,6 @@ class VersionsOptionsMenu extends React.Component {
                     contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Are you sure you want to delete this file version?"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={deleteActions}
                     onRequestClose={this.handleClose.bind(this)}
                     open={this.state.deleteOpen}>
@@ -79,7 +88,6 @@ class VersionsOptionsMenu extends React.Component {
                     contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Update Version Label"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={editActions}
                     onRequestClose={this.handleClose.bind(this)}
                     open={this.state.editOpen}>
@@ -151,6 +159,12 @@ class VersionsOptionsMenu extends React.Component {
             editOpen: false,
             floatingErrorText: 'This field is required.'
         });
+    }
+
+    openProv() {
+        let fileId = this.props.entityObj && this.props.entityObj.file ? this.props.entityObj.file.id : null;
+        ProjectActions.getFileVersions(fileId);
+        ProjectActions.toggleProvView();
     }
 }
 var styles = {

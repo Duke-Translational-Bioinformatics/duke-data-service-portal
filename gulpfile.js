@@ -123,7 +123,7 @@ gulp.task('watch', function() {
   gulp.watch(app + 'scripts/**/*.jsx', ['scripts']);
 });
 
-// remove bundels
+// remove bundles
 gulp.task('clean', function(cb) {
   del([dist], cb);
 });

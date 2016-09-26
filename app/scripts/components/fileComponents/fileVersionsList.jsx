@@ -58,7 +58,8 @@ class FileVersionsList extends React.Component {
     }
 
     goTo(versionId) {
-        this.props.appRouter.transitionTo('/version' + '/' + versionId)
+        this.props.appRouter.transitionTo('/version/' + versionId)
+        ProjectActions.closeModal();
     }
 
     handleClose() {

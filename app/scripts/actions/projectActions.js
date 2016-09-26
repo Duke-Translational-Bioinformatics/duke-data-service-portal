@@ -8,6 +8,41 @@ import { StatusEnum, Path } from '../enum';
 import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.js';
 
 var ProjectActions = Reflux.createActions([
+    'expandProvenanceGraph',
+    'clearProvFileVersions',
+    'clearSearchFilesData',
+    'searchFiles',
+    'searchFilesSuccess',
+    'deleteProvItem',
+    'deleteProvItemSuccess',
+    'openProvEditorModal',
+    'closeProvEditorModal',
+    'switchRelationFromTo',
+    'getFromAndToNodes',
+    'buildRelationBody',
+    'startAddRelation',
+    'addFileToGraph',
+    'addProvRelation',
+    'addProvRelationSuccess',
+    'addProvActivity',
+    'addProvActivitySuccess',
+    'editProvActivity',
+    'editProvActivitySuccess',
+    'getActivities',
+    'getActivitiesSuccess',
+    'hideProvAlert',
+    'toggleGraphLoading',
+    'toggleProvView',
+    'toggleProvEditor',
+    'toggleProvNodeDetails',
+    'toggleAddEdgeMode',
+    'showRemoveFileFromProvBtn',
+    'showProvControlBtns',
+    'showDeleteRelationsBtn',
+    'selectNodesAndEdges',
+    'getProvenance',
+    'getProvenanceSuccess',
+    'saveGraphZoomState',
     'clearSelectedItems',
     'getScreenSize',
     'toggleUploadManager',
@@ -122,24 +157,177 @@ var ProjectActions = Reflux.createActions([
     'allChunksUploaded',
     'uploadError',
     'getChunkUrl',
+    'getWindowSize',
     'search',
     'setSearchText',
     'getChildren',
     'getChildrenSuccess'
 ]);
 
-ProjectActions.addNewTag.preEmit = function (id, kind, tag) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/', {
+ProjectActions.addProvRelation.preEmit = function (kind, body) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'relations/'+ kind, {
+        method: 'post',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify(body)
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('New relation Added');
+        ProjectActions.addProvRelationSuccess(json);//Todo: what happens here? Finish this
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to add new relation');
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.deleteProvItem.preEmit = function (data ,id) {
+    let kind = data.hasOwnProperty('from') ? 'relations/' : 'activities/';
+    let msg = kind === 'activities/' ? data.label : data.type;
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + kind + data.id, {
+        method: 'delete',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+    }).then(function (json) {
+        MainActions.addToast(msg +' deleted');
+        ProjectActions.deleteProvItemSuccess(data);
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to delete ' + msg);
+        ProjectActions.handleErrors(ex)
+    });
+};
+
+ProjectActions.addProvActivity.preEmit = function (name, desc) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'activities/', {
         method: 'post',
         headers: {
             'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
         },
         body: JSON.stringify({
-            'object': {
-                'kind': kind,
-                'id': id
-            },
+            "name": name,
+            "description": desc
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('New Activity Added');
+        ProjectActions.addProvActivitySuccess(json);
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to add new actvity');
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.editProvActivity.preEmit = function (id, name, desc, prevName) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'activities/'+ id, {
+        method: 'put',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            "name": name,
+            "description": desc
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        if(name !== prevName) {
+            MainActions.addToast(prevName + ' name was changed to ' + name);
+        } else {
+            MainActions.addToast(prevName + ' was edited');
+        }
+        ProjectActions.editProvActivitySuccess(json);
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.getActivities.preEmit = function () {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'activities/', {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getActivitiesSuccess(json.results)
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.getProvenance.preEmit = function (id, kind, prevGraph) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'search/provenance?max_hops=1', {
+        method: 'post',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            'start_node': {
+                kind: kind,
+                id: id
+            }
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getProvenanceSuccess(json.graph, prevGraph);
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.search.preEmit = function (text, id) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT+ id +'/children?name_contains='+text, {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getChildrenSuccess(json.results);
+        ProjectActions.setSearchText(text);
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.searchFiles.preEmit = function (text, id) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT+ id +'/children?name_contains='+text, {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.searchFilesSuccess(json.results);
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.addNewTag.preEmit = function (id, kind, tag) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/'+kind+'/'+id, {
+        method: 'post',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
             'label': tag
         })
     }).then(checkResponse).then(function (response) {
@@ -192,23 +380,6 @@ ProjectActions.deleteTag.preEmit = function (id, label, fileId) {
     });
 };
 
-ProjectActions.search.preEmit = function (text, id) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT+ id +'/children?name_contains='+ text, {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.getChildrenSuccess(json.results);
-        ProjectActions.setSearchText(text);
-    }).catch(function (ex) {
-        ProjectActions.handleErrors(ex)
-    })
-};
-
 ProjectActions.getTagLabels.preEmit = function () {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/labels/?object_kind=dds-file', {
         method: 'get',
@@ -259,7 +430,7 @@ ProjectActions.getTags.preEmit = function (id, kind) {
     })
 };
 
-ProjectActions.getFileVersions.preEmit = function (id) {
+ProjectActions.getFileVersions.preEmit = function (id, prov) { // prov = boolean used for file selection in prov editor
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.FILE + id + '/versions', {
         method: 'get',
         headers: {
@@ -269,7 +440,7 @@ ProjectActions.getFileVersions.preEmit = function (id) {
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        ProjectActions.getFileVersionsSuccess(json.results)
+        ProjectActions.getFileVersionsSuccess(json.results, prov)
     }).catch(function (ex) {
         ProjectActions.handleErrors(ex)
     })
@@ -454,14 +625,17 @@ ProjectActions.getAgentKey.preEmit = (id) => {
         });
 };
 
-ProjectActions.getAgentApiToken.preEmit = function (agentKey, userKey, data) {
+ProjectActions.getAgentApiToken.preEmit = function (agentKey, userKey) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.AGENT + 'api_token', {
         method: 'post',
         headers: {
             'Authorization': appConfig.apiToken,
             'Accept': 'application/json'
         },
-        body: data  // For some reason, this call only works with a formData object in the body
+        body: JSON.stringify({
+            'agent_key': agentKey,
+            'user_key': userKey
+        })
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {

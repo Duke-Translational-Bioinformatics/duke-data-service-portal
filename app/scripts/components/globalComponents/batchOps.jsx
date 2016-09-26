@@ -100,7 +100,6 @@ class BatchOps extends React.Component {
                     style={styles.dialogStyles}
                     title={msg}
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={deleteActions}
                     open={this.state.deleteOpen}
                     onRequestClose={() => this.handleClose()}>
@@ -110,7 +109,6 @@ class BatchOps extends React.Component {
                     style={styles.dialogStyles}
                     title={dlMsg}
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={downloadActions}
                     open={this.state.downloadOpen}
                     onRequestClose={() => this.handleClose()}>

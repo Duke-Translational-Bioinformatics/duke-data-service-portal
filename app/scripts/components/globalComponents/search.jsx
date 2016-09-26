@@ -45,7 +45,7 @@ class Search extends React.Component {
         let projectName = ProjectStore.project && ProjectStore.project.name && window.innerWidth > 580 ? 'in '+ProjectStore.project.name+'...' : '...';
         let route = this.props.routerPath.split('/').splice([1], 1).toString();
         let cancelSearch = this.state.clear ?
-            <IconButton onTouchTap={() => this.clearSearch(route)} className="searchbar-cancel">
+            <IconButton style={{marginBottom: this.props.windowWidth > 680 ? 33 : ''}} onTouchTap={() => this.clearSearch(route)} className="searchbar-cancel">
                 <Close color={'#fff'}/>
             </IconButton> : '';
         let search = '';
@@ -139,7 +139,7 @@ var styles = {
             marginLeft: 25
         },
         inputWrapper: {
-            marginBottom: 3,
+            margin: '0px 8px 0px 8px',
             padding: -15,
             display: 'flex',
             alignItems: 'center',
