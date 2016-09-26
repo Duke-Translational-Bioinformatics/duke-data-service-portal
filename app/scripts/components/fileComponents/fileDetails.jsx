@@ -11,7 +11,12 @@ import TagCloud from '../../components/globalComponents/tagCloud.jsx';
 import Tooltip from '../../../util/tooltip.js';
 import BaseUtils from '../../../util/baseUtils.js';
 import Card from 'material-ui/lib/card/card';
+import FlatButton from 'material-ui/lib/flat-button';
+import IconButton from 'material-ui/lib/icon-button';
+import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
 import RaisedButton from 'material-ui/lib/raised-button';
+
+import Paper from 'material-ui/lib/paper';
 
 class FileDetails extends React.Component {
 
@@ -29,13 +34,13 @@ class FileDetails extends React.Component {
                     title="Download File"
                     rel="tooltip"
                     className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab mdl-button--colored"
-                    style={styles.floatingButton}
+                    style={styles.downloadBtn}
                     onTouchTap={() => this.handleDownload()}>
                     <i className="material-icons">get_app</i>
                 </button>;
-            optionsMenu = prjPrm === 'prjCrud' || prjPrm === 'flCrud' || prjPrm === 'flUpload' ? optionsMenu = <FileOptionsMenu {...this.props} /> : null;
+            optionsMenu = <FileOptionsMenu {...this.props} />;
         }
-        let id = this.props.params.id;
+        let id = this.props.entityObj && this.props.entityObj.current_version.id ? this.props.entityObj.current_version.id : null;
         let ancestors = this.props.entityObj ? this.props.entityObj.ancestors : null;
         let parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : null;
         let parentId = this.props.entityObj ? this.props.entityObj.parent.id : null;
@@ -57,6 +62,20 @@ class FileDetails extends React.Component {
         let versionCount = [];
         let width = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.width : window.innerWidth;
 
+        let provAlert = this.props.showProvAlert ? <Paper style={styles.provAlert} zDepth={1}>
+            <div style={styles.provAlert.wrapper}>Would you like to add provenance for this file?</div>
+            <IconButton style={styles.button} onTouchTap={() => this.dismissAlert()}>
+                <NavigationClose color="#E8F5E9"/>
+            </IconButton>
+            <FlatButton
+                label="Yes"
+                labelStyle={styles.provAlert.alertButton.label}
+                style={styles.provAlert.alertButton}
+                hoverColor="#4CAF50"
+                onTouchTap={() => this.openProv()}
+                />
+        </Paper> : '';
+
         if(this.props.fileVersions && this.props.fileVersions != undefined && this.props.fileVersions.length > 1) {
             versions = this.props.fileVersions.map((version) => {
                 return version.is_deleted;
@@ -69,6 +88,7 @@ class FileDetails extends React.Component {
                             label="FILE VERSIONS"
                             secondary={true}
                             style={styles.button}
+                            labelStyle={{fontWeight: 100}}
                             onTouchTap={() => this.openModal()}
                             />
                     }
@@ -78,8 +98,12 @@ class FileDetails extends React.Component {
 
         Tooltip.bindEvents();
 
-        let file = <Card className="project-container mdl-color--white content mdl-color-text--grey-800" style={styles.container}>
-            { dlButton }
+        let file = <Card className="project-container mdl-color--white content mdl-color-text--grey-800"
+                         style={{marginTop: this.props.windowWidth > 680 ? 115 : 30, paddingBottom: 30,
+                                 overflow: 'visible', padding: '10px 0px 10px 0px'}}>
+            <div className="mdl-cell mdl-cell--12-col" style={{position: 'relative'}}>
+                { dlButton }
+            </div>
             <div id="tooltip"></div>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <div style={styles.menuIcon}>
@@ -113,6 +137,7 @@ class FileDetails extends React.Component {
                     { this.props.uploads ? <Loaders {...this.props}/> : null }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
+                    { provAlert }
                     <div className="list-block">
                         <div className="list-group">
                             <ul>
@@ -216,6 +241,10 @@ class FileDetails extends React.Component {
         )
     }
 
+    dismissAlert(){
+        ProjectActions.hideProvAlert();
+    }
+
     handleDownload(){
         let id = this.props.params.id;
         let kind = 'files/';
@@ -224,6 +253,14 @@ class FileDetails extends React.Component {
 
     openModal() {
         ProjectActions.openModal()
+    }
+
+    openProv() {
+        let versionId = this.props.entityObj.current_version.id;
+        ProjectActions.getProvenance(versionId, 'dds-file-version');
+        ProjectActions.toggleProvView();
+        ProjectActions.toggleProvEditor();
+        ProjectActions.hideProvAlert();
     }
 }
 
@@ -246,22 +283,15 @@ var styles = {
     button: {
         float: 'right'
     },
-    container: {
-        marginTop: 30,
-        marginBottom: 30,
-        position: 'relative',
-        overflow: 'visible',
-        padding: '10px 0px 10px 0px'
-    },
     detailsTitle: {
         textAlign: 'left',
         float: 'left',
         marginLeft: 25
     },
-    floatingButton: {
+    downloadBtn: {
         position: 'absolute',
-        top: -20,
-        right: '2%',
+        top: -33,
+        right: '1.4%',
         zIndex: '2',
         color: '#ffffff'
     },
@@ -273,6 +303,25 @@ var styles = {
         float: 'right',
         marginTop: 30,
         marginBottom: -3
+    },
+    provAlert: {
+        display: 'block',
+        overflow: 'auto',
+        backgroundColor: '#66BB6A',
+        minHeight: 48,
+        alertButton: {
+            float: 'right',
+            margin: 6,
+            label: {
+                color: '#E8F5E9',
+                fontWeight: 100
+            }
+        },
+        wrapper: {
+            float: 'left',
+            color: '#E8F5E9',
+            margin: '14px 10px 10px 10px'
+        }
     },
     subTitle: {
         textAlign: 'left',

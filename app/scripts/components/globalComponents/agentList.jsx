@@ -91,7 +91,7 @@ class AgentList extends React.Component {
         });
 
         return (
-            <div className="list-container">
+            <div className="list-container" style={{marginTop: this.props.windowWidth > 680 ? 95 : ''}}>
                 {modal}
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
                     <div style={styles.headerTitle}>

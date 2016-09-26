@@ -2,6 +2,7 @@ import React from 'react'
 import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
 import FileDetails from '../components/fileComponents/fileDetails.jsx';
+import Provenance from '../components/globalComponents/provenance.jsx';
 import TagManager from '../components/globalComponents/tagManager.jsx'
 
 class File extends React.Component {
@@ -9,18 +10,40 @@ class File extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            addEdgeMode: ProjectStore.addEdgeMode,
+            autoCompleteLoading: ProjectStore.autoCompleteLoading,
+            dltRelationsBtn: ProjectStore.dltRelationsBtn,
             error: ProjectStore.error,
             errorModal: ProjectStore.errorModal,
             filesChecked: ProjectStore.filesChecked,
+            graphLoading: ProjectStore.graphLoading,
             loading: false,
             moveModal: ProjectStore.moveModal,
             moveErrorModal: ProjectStore.moveErrorModal,
             objectTags: ProjectStore.objectTags,
             openTagManager: ProjectStore.openTagManager,
+            position: ProjectStore.position,
             projPermissions: ProjectStore.projPermissions,
+            provEdges: ProjectStore.provEdges,
+            provEditorModal: ProjectStore.provEditorModal,
+            provFileVersions: ProjectStore.provFileVersions,
+            provNodes: ProjectStore.provNodes,
+            relMsg: ProjectStore.relMsg,
+            toggleProv: ProjectStore.toggleProv,
+            toggleProvEdit: ProjectStore.toggleProvEdit,
+            relFrom: ProjectStore.relFrom,
+            relTo: ProjectStore.relTo,
+            scale: ProjectStore.scale,
             screenSize: ProjectStore.screenSize,
+            searchFilesList: ProjectStore.searchFilesList,
+            selectedEdge: ProjectStore.selectedEdge,
+            selectedNode: ProjectStore.selectedNode,
+            showProvAlert: ProjectStore.showProvAlert,
+            showProvCtrlBtns: ProjectStore.showProvCtrlBtns,
+            showProvDetails: ProjectStore.showProvDetails,
             tagAutoCompleteList: ProjectStore.tagAutoCompleteList,
-            tagLabels: ProjectStore.tagLabels
+            tagLabels: ProjectStore.tagLabels,
+            updatedGraphItem: ProjectStore.updatedGraphItem
         };
     }
 
@@ -62,6 +85,7 @@ class File extends React.Component {
         }
         return (
             <div>
+                <Provenance {...this.props} {...this.state}/>
                 <FileDetails {...this.props} {...this.state} />
                 <TagManager {...this.props} {...this.state} />
             </div>

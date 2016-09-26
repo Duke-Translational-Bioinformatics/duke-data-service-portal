@@ -21,7 +21,6 @@ class ErrorModal extends React.Component {
                     contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="We're sorry, it looks like you don't have permission to access this feature at this time."
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={actions}
                     open={this.props.errorModal}
                     onRequestClose={this.handleClose.bind(this)}>

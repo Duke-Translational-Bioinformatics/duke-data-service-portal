@@ -2,13 +2,15 @@ import React from 'react';
 import Header from '../components/globalComponents/header.jsx';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions.js';
+import CircularProgress from 'material-ui/lib/circular-progress';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 class Login extends React.Component {
 
     constructor() {
         this.state = {
-            appConfig: MainStore.appConfig
+            appConfig: MainStore.appConfig,
+            loading: false
         }
     }
 
@@ -33,16 +35,16 @@ class Login extends React.Component {
                         <img src="images/dukeDSLogo.png" style={styles.logo}/>
 
                         <h2 style={{fontWeight: '100'}}>Duke Data Service</h2>
-                        <a href={this.createLoginUrl()} className="external">
+                        {!this.state.loading ? <a href={this.createLoginUrl()} className="external">
                             <RaisedButton label="Log In" labelStyle={{fontWeight: '400'}} labelColor={'#f9f9f9'}
                                           backgroundColor={'#0680CD'} style={{marginBottom: 10, width: 150}}
-                                          onClick={MainActions.isLoggedInHandler}>
+                                          onClick={() => this.handleLoginBtn()}>
                             </RaisedButton>
-                        </a>
+                        </a> :  <CircularProgress color="#fff"/>}
                     </div>
                 </div>
             );
-            let splitUrl = window.location.hash.split('&');//Todo //////Need to fix this to be more defensive////////////
+            let splitUrl = window.location.hash.split('&');
             let accessToken = splitUrl[0].split('=')[1];
             if (this.state.error) {
                 content = this.state.error
@@ -72,6 +74,12 @@ class Login extends React.Component {
                 </div>
             </div>
         );
+    }
+    handleLoginBtn() {
+        MainActions.isLoggedInHandler();
+        this.setState({
+            loading: true
+        });
     }
 }
 

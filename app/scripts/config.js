@@ -9,5 +9,4 @@ let appConfig = {
     currentUser: null
 };
 
-
 export default appConfig;

@@ -27,7 +27,6 @@ class VersionUpload extends React.Component {
                     contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title='Upload New Version'
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={standardActions}
                     onRequestClose={this.handleClose.bind(this)}
                     open={open}>

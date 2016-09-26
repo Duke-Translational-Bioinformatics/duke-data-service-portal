@@ -14,7 +14,7 @@ import MyRawTheme from '../theme/customTheme.js';
 
 let zIndex = {
     zIndex: {
-        popover: 5001,
+        popover: 9999,
         layer: 5000
     }
 };
@@ -23,7 +23,8 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            appConfig: MainStore.appConfig
+            appConfig: MainStore.appConfig,
+            windowWidth: window.innerWidth
         };
         this.handleResize = this.handleResize.bind(this);
     }
@@ -60,6 +61,7 @@ class App extends React.Component {
     }
 
     handleResize(e) {
+        this.setState({windowWidth: window.innerWidth});
         ProjectActions.getScreenSize(window.innerHeight, window.innerWidth);
     }
 
@@ -109,7 +111,7 @@ class App extends React.Component {
                         <Header {...this.props} {...this.state}/>
                         <div className="pages navbar-through toolbar-through">
                             <div data-page="index" className="page">
-                                {!this.state.appConfig.apiToken ? '' : <Search {...this.props} {...this.state} />}
+                                {this.state.windowWidth < 680 ? !this.state.appConfig.apiToken ? '' : <Search {...this.props} {...this.state} /> : null}
                                 <div className="searchbar-overlay"></div>
                                 <div className="page-content">
                                     {content}
@@ -141,11 +143,6 @@ class App extends React.Component {
 }
 
 var styles = {
-    cancelSearch: {
-        top: 10,
-        right: '23%',
-        padding: 10
-    },
     loginWrapper: {
         width: '90vw',
         height: 'auto',
@@ -153,18 +150,6 @@ var styles = {
         margin: '0 auto',
         marginTop: 50,
         padding: 10
-    },
-    searchBar: {
-        width: '50vw',
-        margin: '0 auto',
-        fontSize: '.9em',
-        display: 'block',
-        input: {
-            marginBottom: 10
-        }
-    },
-    themeColor: {
-        backgroundColor: '#235F9C'
     },
     toast: {
         position: 'absolute',

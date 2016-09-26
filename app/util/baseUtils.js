@@ -24,6 +24,26 @@ let BaseUtils = {
                 urlPath = 'folder/'
             }
             return urlPath;
+        },
+
+        removeObjByKey(array, obj){
+            array.some((item, index) => {
+                return (array[index][obj.key] === obj.value) ? !!(array.splice(index, 1)) : false;
+            });
+            return array;
+        },
+
+        objectPropInArray(list, prop, val) {
+            if (list.length > 0 ) for (let i in list) {if (list[i][prop] === val) {return true;}}
+            return false;
+        },
+
+        setDialogWidth() {
+            let width = '100%';
+            if(window.innerWidth > 500){
+                width = '';
+            }
+            return width;
         }
 };
 

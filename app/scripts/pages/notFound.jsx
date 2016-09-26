@@ -10,7 +10,7 @@ class NotFound extends React.Component {
                     <h3 style={styles.title}>404</h3>
                     <h4 style={styles.msg}>Oops! It looks like this page couldn't be found or doesn't exist.</h4>
                     <h5 style={styles.msg}>Please check the address or go to the home page and try again.</h5>
-                    <RaisedButton label="Go to the Home Page" labelStyle={{fontWeight: '400'}} labelColor={'#f9f9f9'}
+                    <RaisedButton label="Home Page" labelStyle={{fontWeight: '400'}} labelColor={'#f9f9f9'}
                                   backgroundColor={'#0680CD'} style={{marginBottom: 10}} onClick={() => this.goHome()}>
                     </RaisedButton>
                 </div>

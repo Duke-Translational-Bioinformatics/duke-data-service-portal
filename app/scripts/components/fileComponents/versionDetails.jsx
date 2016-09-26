@@ -24,13 +24,13 @@ class VersionDetails extends React.Component {
             dlButton = prjPrm === 'viewOnly' || prjPrm === 'flUpload' ? null :
                 <button
                     title="Download File"
+                    style={styles.downloadBtn}
                     rel="tooltip"
                     className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab mdl-button--colored"
-                    style={styles.floatingButton}
                     onTouchTap={() => this.handleDownload()}>
                     <i className="material-icons">get_app</i>
                 </button>;
-            optionsMenu = prjPrm === 'prjCrud' || prjPrm === 'flCrud' || prjPrm === 'flUpload' ? optionsMenu = <VersionOptionsMenu {...this.props} /> : null;
+            optionsMenu = <VersionOptionsMenu {...this.props}/>;
         }
         let loading = this.props.loading ?
             <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
@@ -51,8 +51,12 @@ class VersionDetails extends React.Component {
         let versNumber = this.props.entityObj ? this.props.entityObj.version : null;
         Tooltip.bindEvents();
 
-        let version = <Card className="project-container mdl-color--white content mdl-color-text--grey-800" style={styles.container}>
-            { dlButton }
+        let version = <Card className="project-container mdl-color--white content mdl-color-text--grey-800"
+                            style={{marginTop: this.props.windowWidth > 680 ? 115 : 30, marginBottom: 30,
+                                    overflow: 'visible', padding: '10px 0px 10px 0px'}}>
+            <div className="mdl-cell mdl-cell--12-col" style={{position: 'relative'}}>
+                { dlButton }
+            </div>
             <div id="tooltip"></div>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <div style={styles.menuIcon}>
@@ -195,22 +199,15 @@ var styles = {
     button: {
         float: 'right'
     },
-    container: {
-        marginTop: 30,
-        marginBottom: 30,
-        position: 'relative',
-        overflow: 'visible',
-        padding: '10px 0px 10px 0px'
-    },
     detailsTitle: {
         textAlign: 'left',
         float: 'left',
         marginLeft: 26
     },
-    floatingButton: {
+    downloadBtn: {
         position: 'absolute',
-        top: -20,
-        right: '2%',
+        top: -33,
+        right: '1.4%',
         zIndex: '2',
         color: '#ffffff'
     },
