@@ -929,17 +929,9 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    closeErrorModal(){
-        this.errorModal = false;
-        this.trigger({
-            errorModal: this.errorModal
-        });
-    },
-
     handleErrors (error) {
-        this.errorModal = error && error.response.status === 403 ? true : false;
         let err = error && error.message ? {msg: error.message, response: error.response.status} : null;
-        if(error && error.response.status === 404) {
+        if(error && error.response.status !== 404) {
             this.errorModals.push({
                 msg: error.message,
                 response: error.response.status,
@@ -948,7 +940,6 @@ var ProjectStore = Reflux.createStore({
         }
         this.trigger({
             error: err,
-            errorModal: this.errorModal,
             errorModals: this.errorModals,
             loading: false
         })

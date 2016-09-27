@@ -6,7 +6,6 @@ import ProjectStore from '../../stores/projectStore';
 import AddAgentModal from '../../components/globalComponents/addAgentModal.jsx';
 import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
-import ErrorModal from '../../components/globalComponents/errorModal.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import urlGen from '../../../util/urlGen.js';
 import TextField from 'material-ui/lib/text-field';
@@ -101,7 +100,6 @@ class AgentList extends React.Component {
                     <div className="mdl-cell mdl-cell--12-col">
                         <AddAgentModal {...this.props}/>
                     </div>
-                    <ErrorModal {...this.props}/>
                 </div>
                 <div className="mdl-cell mdl-cell--12-col" style={styles.loading}>
                     { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
