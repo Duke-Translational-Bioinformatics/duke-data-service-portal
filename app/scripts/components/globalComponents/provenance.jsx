@@ -58,6 +58,11 @@ class Provenance extends React.Component {
         window.addEventListener('resize', this.handleResize);
         ProjectActions.loadProjects();
         ProjectActions.getActivities();
+        if(this.props.provNodes && this.props.provNodes.length > 0) {
+            let edges = this.props.provEdges && this.props.provEdges.length > 0 ? this.props.provEdges : [];
+            let nodes = this.props.provNodes && this.props.provNodes.length > 0 ? this.props.provNodes : [];
+            this.renderProvGraph(edges, nodes);
+        }
     }
 
     componentWillUpdate(nextProps, nextState) {
@@ -161,9 +166,11 @@ class Provenance extends React.Component {
         this.state.network.on("doubleClick", (params) => { // Show more nodes on graph on double click event
             hideButtonsOnDblClk();
             let prevGraph = {nodes: this.props.provNodes, edges: this.props.provEdges};
-            let id = this.state.node.properties.current_version ? this.state.node.properties.current_version.id : this.state.node.properties.id;
-            let kind = this.state.node.properties.kind === 'dds-activity' ? 'dds-activity' : 'dds-file-version';
-            if(params.nodes.length > 0) ProjectActions.getProvenance(id, kind, prevGraph);
+            if(params.nodes.length > 0) {
+                let id = this.state.node.properties.current_version ? this.state.node.properties.current_version.id : this.state.node.properties.id;
+                let kind = this.state.node.properties.kind === 'dds-activity' ? 'dds-activity' : 'dds-file-version';
+                ProjectActions.getProvenance(id, kind, prevGraph);
+            }
         });
         this.state.network.on("click", (params) => {
             let nodeData = nodes.get(params.nodes[0]);

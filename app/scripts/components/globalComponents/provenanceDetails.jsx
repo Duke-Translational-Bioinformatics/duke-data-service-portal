@@ -132,7 +132,9 @@ var styles = {
         lineHeight: '175%'
     },
     listHeader: {
-        margin: '20px 0px 5px 0px'
+        margin: '20px 0px 5px 0px',
+        maxWidth: 172,
+        wordWrap: 'break-word'
     },
     listItem: {
         padding: '0px 5px 0px 5px',

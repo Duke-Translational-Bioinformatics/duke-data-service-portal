@@ -161,7 +161,8 @@ var ProjectActions = Reflux.createActions([
     'search',
     'setSearchText',
     'getChildren',
-    'getChildrenSuccess'
+    'getChildrenSuccess',
+    'removeErrorModal'
 ]);
 
 ProjectActions.addProvRelation.preEmit = function (kind, body) {
@@ -176,7 +177,7 @@ ProjectActions.addProvRelation.preEmit = function (kind, body) {
         return response.json()
     }).then(function (json) {
         MainActions.addToast('New relation Added');
-        ProjectActions.addProvRelationSuccess(json);//Todo: what happens here? Finish this
+        ProjectActions.addProvRelationSuccess(json);
     }).catch(function (ex) {
         MainActions.addToast('Failed to add new relation');
         ProjectActions.handleErrors(ex)
