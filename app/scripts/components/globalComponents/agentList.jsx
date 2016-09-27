@@ -48,6 +48,7 @@ class AgentList extends React.Component {
             { msg }
             <form action="#" id="apiKeyForm" className="keyText">
                 <TextField
+                    textareaStyle={styles.textArea}
                     style={styles.keyModal}
                     defaultValue={JSON.stringify(obj, null, 4)}
                     floatingLabelText="Agent Credentials"
@@ -261,6 +262,9 @@ var styles = {
     },
     loaders: {
         paddingTop: 40
+    },
+    textArea: {
+        color: '#F44336'
     },
     title: {
         marginRight: 40
