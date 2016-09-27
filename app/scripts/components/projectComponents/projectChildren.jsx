@@ -4,7 +4,6 @@ import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import BaseUtils from '../../../util/baseUtils.js';
 import BatchOps from '../../components/globalComponents/batchOps.jsx';
-import ErrorModal from '../../components/globalComponents/errorModal.jsx';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import urlGen from '../../../util/urlGen.js';
@@ -129,7 +128,6 @@ class ProjectChildren extends React.Component {
                         { this.props.searchText !== '' ? <div className="mdl-cell mdl-cell--4-col mdl-color-text--grey-600" style={styles.searchText}>Showing{" "+this.props.children.length+" "}results for{" '"+this.props.searchText+"'"}</div> : null}
                         { this.props.showBatchOps ? <BatchOps {...this.props} {...this.state}/> : null }
                     </div>
-                    <ErrorModal {...this.props}/>
                 </div>
                 { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>

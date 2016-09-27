@@ -3,7 +3,6 @@ const { object, bool, array, string } = PropTypes;
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import VersionOptionsMenu from './versionOptionsMenu.jsx';
-import ErrorModal from '../../components/globalComponents/errorModal.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import urlGen from '../../../util/urlGen.js';
 import Tooltip from '../../../util/tooltip.js';
@@ -166,7 +165,6 @@ class VersionDetails extends React.Component {
         return (
             <div>
                 { version }
-                <ErrorModal {...this.props}/>
                 <Loaders {...this.props}/>
             </div>
         )
