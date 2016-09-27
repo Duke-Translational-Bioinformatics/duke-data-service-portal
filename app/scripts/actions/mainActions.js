@@ -22,7 +22,6 @@ var MainActions = Reflux.createActions([
 ]);
 
 MainActions.authenticationServiceValidate.preEmit = (appConfig, accessToken) => {
-
     fetch(urlGen.routes.authServiceUri + '/api/v1/token_info?access_token=' + accessToken, {
         method: 'get',
         headers: {

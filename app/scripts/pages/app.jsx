@@ -8,6 +8,9 @@ import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions';
 import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
+import Dialog from 'material-ui/lib/dialog';
+import FlatButton from 'material-ui/lib/flat-button';
+import RaisedButton from 'material-ui/lib/raised-button';
 import Snackbar from 'material-ui/lib/snackbar';
 import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
 import MyRawTheme from '../theme/customTheme.js';
@@ -24,7 +27,9 @@ class App extends React.Component {
         super(props);
         this.state = {
             appConfig: MainStore.appConfig,
-            windowWidth: window.innerWidth
+            windowWidth: window.innerWidth,
+            errorModal: true,
+            errorModals: ProjectStore.errorModals
         };
         this.handleResize = this.handleResize.bind(this);
     }
@@ -73,6 +78,7 @@ class App extends React.Component {
     render() {
         let content = <RouteHandler {...this.props} {...this.state}/>;
         let toasts = null;
+        let dialogs = null;
         if (this.state.appConfig.apiToken) {
             if (this.props.routerPath !== '/login' && !this.state.currentUser) {
                 MainActions.getCurrentUser();
@@ -88,6 +94,29 @@ class App extends React.Component {
                 return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} autoHideDuration={3000}
                                  onRequestClose={this.handleRequestClose.bind(this)}
                                  open={true} style={styles.toast}/>
+            });
+        }
+        if (this.state.errorModals) {
+            dialogs = this.state.errorModals.map(obj => {
+                let actions = <FlatButton
+                    key={obj.ref}
+                    ref={obj.ref}
+                    label="Okay"
+                    secondary={true}
+                    onTouchTap={() => this.handleClose(obj.ref)}
+                    />;
+                return <Dialog key={obj.ref} ref={obj.ref} message={obj.msg}
+                               title="An Error Occurred"
+                               actions={actions}
+                               modal={false}
+                               open={this.state.errorModal}
+                               onRequestClose={this.handleClose.bind(this, obj.ref)}
+                               style={styles.dialogStyles}>
+                    <i className="material-icons" style={styles.warning}>warning</i>
+                    <h3>{obj.response}</h3>
+                    <h4>{obj.msg}</h4>
+                    <h6>Please try again</h6>
+                </Dialog>
             });
         }
         if (!this.state.appConfig.apiToken && !this.state.appConfig.isLoggedIn && this.props.routerPath !== '/login') {
@@ -116,6 +145,7 @@ class App extends React.Component {
                                 <div className="page-content">
                                     {content}
                                     {toasts}
+                                    {dialogs}
                                     <div className="content-block searchbar-not-found">
                                         <div className="content-block-inner">Nothing Found</div>
                                     </div>
@@ -127,6 +157,12 @@ class App extends React.Component {
                 </div>
             </span>
         );
+    }
+
+    handleClose(refId) {
+        ProjectActions.removeErrorModal(refId);
+        this.setState({errorModal: false});
+        setTimeout(() => this.setState({errorModal: true}), 500);
     }
 
     handleRequestClose() {
@@ -143,6 +179,11 @@ class App extends React.Component {
 }
 
 var styles = {
+    dialogStyles: {
+        textAlign: 'center',
+        fontColor: '#303F9F',
+        zIndex: '9999'
+    },
     loginWrapper: {
         width: '90vw',
         height: 'auto',
@@ -155,6 +196,11 @@ var styles = {
         position: 'absolute',
         bottom: 20,
         left: 0
+    },
+    warning: {
+        fontSize: 48,
+        textAlign: 'center',
+        color: '#F44336'
     }
 };
 

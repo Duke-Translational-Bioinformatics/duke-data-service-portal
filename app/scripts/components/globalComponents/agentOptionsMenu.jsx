@@ -217,6 +217,7 @@ class AgentOptionsMenu extends React.Component {
                     <h6 style={styles.msg}>This is your current agent secret key. You can use the current key or create a new key. Changing this key will affect any programs or processes using this key.</h6>
                     <form action="#" id="apiKeyForm">
                         <TextField
+                            textareaStyle={styles.textArea}
                             style={styles.keyModal}
                             defaultValue={agentKey}
                             floatingLabelText="Current Api Key"
@@ -237,6 +238,7 @@ class AgentOptionsMenu extends React.Component {
                     <h6 style={{textAlign: 'center'}}>Here's your new agent secret key. Your old key is no longer valid.</h6>
                     <form action="#" id="apiKeyForm">
                         <TextField
+                            textareaStyle={styles.textArea}
                             style={styles.keyModal}
                             defaultValue={agentKey}
                             floatingLabelText="Current Agent Secret Key"
@@ -258,6 +260,7 @@ class AgentOptionsMenu extends React.Component {
                     <h6 style={styles.msg}>This is your secret key. You can use the current key, create a new key or delete your key. Changing or deleting your user key will make your current key invalid.</h6>
                     <form action="#" id="userKeyForm">
                         <TextField
+                            textareaStyle={styles.textArea}
                             style={styles.keyModal}
                             disabled={this.props.userKey && !this.props.userKey.key ? true : false}
                             defaultValue={userKey}
@@ -279,6 +282,7 @@ class AgentOptionsMenu extends React.Component {
                     <h6 style={{textAlign: 'center'}}>Here's your new user key. Your old key is no longer valid.</h6>
                     <form action="#" id="userKeyForm">
                         <TextField
+                            textareaStyle={styles.textArea}
                             style={styles.keyModal}
                             defaultValue={userKey}
                             floatingLabelText="Current User Key"
@@ -299,6 +303,7 @@ class AgentOptionsMenu extends React.Component {
                     <h6 style={{textAlign: 'center'}}>{ msg }</h6>
                     <form action="#" id="apiTokenForm">
                         <TextField
+                            textareaStyle={styles.textArea}
                             style={styles.keyModal}
                             defaultValue={apiToken}
                             floatingLabelText="API Token"
@@ -522,6 +527,9 @@ var styles = {
     textStyles: {
         textAlign: 'left',
         fontColor: '#303F9F'
+    },
+    textArea: {
+        color: '#F44336'
     },
     msg: {
         textAlign: 'left',
