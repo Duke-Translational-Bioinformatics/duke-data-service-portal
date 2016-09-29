@@ -162,7 +162,8 @@ var ProjectActions = Reflux.createActions([
     'setSearchText',
     'getChildren',
     'getChildrenSuccess',
-    'removeErrorModal'
+    'removeErrorModal',
+    'removeFailedUploads'
 ]);
 
 ProjectActions.addProvRelation.preEmit = function (kind, body) {

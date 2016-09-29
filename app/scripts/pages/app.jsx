@@ -3,6 +3,7 @@ import { RouteHandler } from 'react-router';
 import Header from '../components/globalComponents/header.jsx';
 import Footer from '../components/globalComponents/footer.jsx';
 import LeftMenu from '../components/globalComponents/leftMenu.jsx';
+import RetryUploads from '../components/globalComponents/retryUploads.jsx';
 import Search from '../components/globalComponents/search.jsx';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions';
@@ -12,6 +13,12 @@ import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
 import RaisedButton from 'material-ui/lib/raised-button';
 import Snackbar from 'material-ui/lib/snackbar';
+import Table from 'material-ui/lib/table/table';
+import TableHeaderColumn from 'material-ui/lib/table/table-header-column';
+import TableRow from 'material-ui/lib/table/table-row';
+import TableHeader from 'material-ui/lib/table/table-header';
+import TableRowColumn from 'material-ui/lib/table/table-row-column';
+import TableBody from 'material-ui/lib/table/table-body';
 import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
 import MyRawTheme from '../theme/customTheme.js';
 
@@ -29,7 +36,8 @@ class App extends React.Component {
             appConfig: MainStore.appConfig,
             windowWidth: window.innerWidth,
             errorModal: true,
-            errorModals: ProjectStore.errorModals
+            errorModals: ProjectStore.errorModals,
+            failedUploads: MainStore.failedUploads
         };
         this.handleResize = this.handleResize.bind(this);
     }
@@ -65,6 +73,7 @@ class App extends React.Component {
         this.showToasts();
     }
 
+
     handleResize(e) {
         this.setState({windowWidth: window.innerWidth});
         ProjectActions.getScreenSize(window.innerHeight, window.innerWidth);
@@ -79,6 +88,7 @@ class App extends React.Component {
         let content = <RouteHandler {...this.props} {...this.state}/>;
         let toasts = null;
         let dialogs = null;
+        let x=null;
         if (this.state.appConfig.apiToken) {
             if (this.props.routerPath !== '/login' && !this.state.currentUser) {
                 MainActions.getCurrentUser();
@@ -96,7 +106,7 @@ class App extends React.Component {
                                  open={true} style={styles.toast}/>
             });
         }
-        if (this.state.errorModals) {
+        if (this.state.appConfig.apiToken && this.state.errorModals) {
             dialogs = this.state.errorModals.map(obj => {
                 let actions = <FlatButton
                     key={obj.ref}
@@ -146,6 +156,7 @@ class App extends React.Component {
                                     {content}
                                     {toasts}
                                     {dialogs}
+                                    <RetryUploads {...this.props} {...this.state}/>
                                     <div className="content-block searchbar-not-found">
                                         <div className="content-block-inner">Nothing Found</div>
                                     </div>
