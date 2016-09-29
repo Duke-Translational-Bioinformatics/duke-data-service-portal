@@ -3,6 +3,7 @@ import { RouteHandler } from 'react-router';
 import Header from '../components/globalComponents/header.jsx';
 import Footer from '../components/globalComponents/footer.jsx';
 import LeftMenu from '../components/globalComponents/leftMenu.jsx';
+import RetryUploads from '../components/globalComponents/retryUploads.jsx';
 import Search from '../components/globalComponents/search.jsx';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions';
@@ -20,8 +21,6 @@ import TableRowColumn from 'material-ui/lib/table/table-row-column';
 import TableBody from 'material-ui/lib/table/table-body';
 import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
 import MyRawTheme from '../theme/customTheme.js';
-
-import RetryUploads from '../components/globalComponents/retryUploads.jsx';
 
 let zIndex = {
     zIndex: {
