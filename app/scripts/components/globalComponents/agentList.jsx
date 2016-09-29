@@ -215,12 +215,6 @@ var styles = {
         fontColor: '#303F9F',
         zIndex: '5000'
     },
-    dialogPosition: {
-        position: 'absolute',
-        left: '50%',
-        top: '50%',
-        transform: 'translate(-50%, -50%)'
-    },
     dlIcon: {
         float: 'right',
         fontSize: 18,
