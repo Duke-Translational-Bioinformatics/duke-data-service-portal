@@ -162,7 +162,8 @@ var ProjectActions = Reflux.createActions([
     'setSearchText',
     'getChildren',
     'getChildrenSuccess',
-    'removeErrorModal'
+    'removeErrorModal',
+    'removeFailedUploads'
 ]);
 
 ProjectActions.addProvRelation.preEmit = function (kind, body) {
@@ -1280,7 +1281,7 @@ function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKi
 }
 
 ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentKind, fileName, label, fileId, hash) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.UPLOAD + uploadId + '/complete', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.UPLOAD + uploadId+1 + '/complete', {
         method: 'put',
         headers: {
             'Authorization': appConfig.apiToken,
