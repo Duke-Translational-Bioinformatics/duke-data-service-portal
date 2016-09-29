@@ -28,7 +28,8 @@ var ProjectStore = Reflux.createStore({
         this.dltRelationsBtn = false;
         this.entityObj = null;
         this.error = {};
-        this.errorModal = false;
+        this.errorModals = [];
+        this.failedUploads = [];
         this.filesChecked = [];
         this.fileHashes = [];
         this.foldersChecked = [];
@@ -388,7 +389,7 @@ var ProjectStore = Reflux.createStore({
     toggleProvView() {
         this.toggleProv = !this.toggleProv;
         this.trigger({
-             toggleProv: this.toggleProv
+            toggleProv: this.toggleProv
         })
     },
 
@@ -563,7 +564,7 @@ var ProjectStore = Reflux.createStore({
 
     setSearchText(text) {
         if(!text.indexOf(' ') <= 0) this.searchText = text;
-            this.trigger({
+        this.trigger({
             searchText: this.searchText,
             itemsSelected: null,
             showBatchOps: false
@@ -572,7 +573,7 @@ var ProjectStore = Reflux.createStore({
 
     search() {
         this.trigger({
-             loading: true
+            loading: true
         })
     },
 
@@ -928,20 +929,31 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    closeErrorModal(){
-        this.errorModal = false;
-        this.trigger({
-            errorModal: this.errorModal
-        });
-    },
-
     handleErrors (error) {
-        this.errorModal = error && error.response.status === 403 ? true : false;
         let err = error && error.message ? {msg: error.message, response: error.response.status} : null;
+        if(error && error.response.status !== 404) {
+            this.errorModals.push({
+                msg: error.message,
+                response: error.response.status,
+                ref: 'modal' + Math.floor(Math.random() * 10000)
+            });
+        }
         this.trigger({
             error: err,
-            errorModal: this.errorModal,
+            errorModals: this.errorModals,
             loading: false
+        })
+    },
+
+    removeErrorModal(refId) {
+        for (let i = 0; i < this.errorModals.length; i++) {
+            if (this.errorModals[i].ref === refId) {
+                this.errorModals.splice(i, 1);
+                break;
+            }
+        }
+        this.trigger({
+            errorModals: this.errorModals
         })
     },
 
@@ -1214,7 +1226,6 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-
     getProjectMembers() {
         this.trigger({
             loading: true
@@ -1386,7 +1397,7 @@ var ProjectStore = Reflux.createStore({
                     if (chunkUpdates.status !== undefined) chunks[i].chunkUpdates.status = chunkUpdates.status;
                     if (chunks[i].chunkUpdates.status === StatusEnum.STATUS_RETRY && chunks[i].retry > StatusEnum.MAX_RETRY) {
                         chunks[i].chunkUpdates.status = StatusEnum.STATUS_FAILED;
-                        ProjectStore.uploadError(uploadId, chunks[i].name);
+                        ProjectStore.uploadError(uploadId, chunks[i].number);
                         return;
                     }
                     if (chunks[i].chunkUpdates.status === StatusEnum.STATUS_RETRY) chunks[i].retry++;
@@ -1412,12 +1423,26 @@ var ProjectStore = Reflux.createStore({
     },
 
     uploadError(uploadId, fileName) {
-        MainActions.addToast('Failed to upload ' + fileName + '!  Please try again.');
         if (this.uploads.hasOwnProperty(uploadId)) {
+            this.failedUploads.push({
+                upload: this.uploads[uploadId],
+                fileName: fileName,
+                id: uploadId
+            });
             delete this.uploads[uploadId];
+            MainActions.failedUpload(this.failedUploads);
         }
         this.trigger({
-            uploads: this.uploads
+            uploads: this.uploads,
+            failedUploads: this.failedUploads
+        })
+    },
+
+    removeFailedUploads() {
+        this.failedUploads = [];
+        MainActions.removeFailedUploads(this.failedUploads);
+        this.trigger({
+            failedUploads: this.failedUploads
         })
     },
 

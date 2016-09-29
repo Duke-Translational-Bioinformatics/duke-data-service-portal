@@ -2,7 +2,6 @@ import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-import ErrorModal from '../../components/globalComponents/errorModal.jsx';
 import FileOptionsMenu from './fileOptionsMenu.jsx';
 import FileVersionsList from './fileVersionsList.jsx';
 import VersionUpload from './versionUpload.jsx';
@@ -235,7 +234,6 @@ class FileDetails extends React.Component {
         </Card>;
         return (
             <div>
-                <ErrorModal {...this.props}/>
                 {file}
             </div>
         )

@@ -6,7 +6,6 @@ import ProjectStore from '../../stores/projectStore';
 import AddAgentModal from '../../components/globalComponents/addAgentModal.jsx';
 import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
-import ErrorModal from '../../components/globalComponents/errorModal.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import urlGen from '../../../util/urlGen.js';
 import TextField from 'material-ui/lib/text-field';
@@ -48,6 +47,7 @@ class AgentList extends React.Component {
             { msg }
             <form action="#" id="apiKeyForm" className="keyText">
                 <TextField
+                    textareaStyle={styles.textArea}
                     style={styles.keyModal}
                     defaultValue={JSON.stringify(obj, null, 4)}
                     floatingLabelText="Agent Credentials"
@@ -100,7 +100,6 @@ class AgentList extends React.Component {
                     <div className="mdl-cell mdl-cell--12-col">
                         <AddAgentModal {...this.props}/>
                     </div>
-                    <ErrorModal {...this.props}/>
                 </div>
                 <div className="mdl-cell mdl-cell--12-col" style={styles.loading}>
                     { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
@@ -216,12 +215,6 @@ var styles = {
         fontColor: '#303F9F',
         zIndex: '5000'
     },
-    dialogPosition: {
-        position: 'absolute',
-        left: '50%',
-        top: '50%',
-        transform: 'translate(-50%, -50%)'
-    },
     dlIcon: {
         float: 'right',
         fontSize: 18,
@@ -261,6 +254,9 @@ var styles = {
     },
     loaders: {
         paddingTop: 40
+    },
+    textArea: {
+        color: '#F44336'
     },
     title: {
         marginRight: 40
