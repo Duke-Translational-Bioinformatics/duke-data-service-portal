@@ -52,13 +52,6 @@ class Project extends React.Component {
         }
     }
 
-    componentDidUpdate(prevProps) {
-        let id = this.props.params.id;
-        if(prevProps.children !== this.props.children) {
-            this.getChildren(id, 'projects/');
-        }
-    }
-
     componentWillUnmount() {
         this.unsubscribe();
     }

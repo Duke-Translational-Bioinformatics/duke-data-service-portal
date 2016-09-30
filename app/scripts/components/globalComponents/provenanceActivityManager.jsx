@@ -4,18 +4,16 @@ import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import AutoComplete from 'material-ui/lib/auto-complete';
 import BaseUtils from '../../../util/baseUtils.js';
+import Checkbox from 'material-ui/lib/checkbox';
 import CircularProgress from 'material-ui/lib/circular-progress';
 import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
 import RaisedButton from 'material-ui/lib/raised-button';
 import SelectField from 'material-ui/lib/select-field';
-import TextField from 'material-ui/lib/text-field';
-import Toggle from 'material-ui/lib/toggle';
-
-import Checkbox from 'material-ui/lib/checkbox';
 import Tabs from 'material-ui/lib/tabs/tabs';
 import Tab from 'material-ui/lib/tabs/tab';
-import Slider from 'material-ui/lib/slider';
+import TextField from 'material-ui/lib/text-field';
+import Toggle from 'material-ui/lib/toggle';
 
 class ProvenanceActivityManager extends React.Component {
 
