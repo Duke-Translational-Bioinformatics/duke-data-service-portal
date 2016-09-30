@@ -107,9 +107,8 @@ class ProvenanceActivityManager extends React.Component {
                     actions={addActivityActions}
                     open={addAct}
                     onRequestClose={() => this.handleClose('addAct')}>
-                        <Tabs onChange={() => this.toggleActivityForm()}
-                            inkBarStyle={styles.tabInkBar}>
-                            <Tab label="New Activity" style={styles.tabStyles}>
+                        <Tabs inkBarStyle={styles.tabInkBar}>
+                            <Tab onActive={() => this.toggleActivityForm()} label="New Activity" style={styles.tabStyles}>
                                 <h2 style={styles.tabHeadline}>Add a New Activity</h2>
                                 <form action="#" id="newActivityForm">
                                     <TextField
@@ -132,7 +131,7 @@ class ProvenanceActivityManager extends React.Component {
                                         multiLine={true}/>
                                 </form>
                             </Tab>
-                            <Tab label="Use Existing Activity" style={styles.tabStyles}>
+                            <Tab onActive={() => this.toggleActivityForm()} label="Use Existing Activity" style={styles.tabStyles}>
                                 <h2 style={styles.tabHeadline}>Add an Existing Activity</h2>
                                 <AutoComplete
                                     id="searchText"
@@ -209,7 +208,7 @@ class ProvenanceActivityManager extends React.Component {
                 ProjectActions.openProvEditorModal('nodeWarning');
             }
         } else {
-            if (this.state.floatingErrorText) {
+            if (this.state.floatingErrorText !== '') {
                 return null
             } else {
                 let name = document.getElementById('activityNameText').value;
@@ -277,6 +276,7 @@ class ProvenanceActivityManager extends React.Component {
 
     toggleActivityForm() {
         this.setState({floatingErrorText: 'This field is required.'});
+        document.getElementById('activityNameText').value = '';
     }
 }
 
