@@ -22,15 +22,13 @@ class Header extends React.Component {
         let fullName = this.props.currentUser ? this.props.currentUser.full_name : null;
         let email = this.props.currentUser ? this.props.currentUser.email : null;
         let userName = this.props.currentUser ? this.props.currentUser.username : null;
-
         let popover = <Popover
-            open={this.state.open}
-            anchorEl={this.state.anchorEl}
-            anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-            targetOrigin={{horizontal: 'left', vertical: 'top'}}
-            onRequestClose={this.handleRequestClose.bind(this)}
-            animation={PopoverAnimationFromTop}
-            >
+                        open={this.state.open}
+                        anchorEl={this.state.anchorEl}
+                        anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+                        targetOrigin={{horizontal: 'left', vertical: 'top'}}
+                        onRequestClose={this.handleRequestClose.bind(this)}
+                        animation={PopoverAnimationFromTop}>
             <div style={styles.popover}>
                 <p style={styles.userDisplay}>User Name: {' ' + userName}</p>
                 <Divider />
@@ -117,11 +115,10 @@ var styles = {
         fontSize: 24,
         color: '#fff',
         marginTop: 26,
-        //verticalAlign: -34,
         paddingLeft: 10
     },
     popover: {
-        padding: 10
+        padding: '0px 10px 0px 10px'
     },
     themeColor: {
         backgroundColor: '#235F9C',
