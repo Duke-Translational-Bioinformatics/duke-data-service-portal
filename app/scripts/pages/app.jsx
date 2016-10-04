@@ -60,6 +60,7 @@ class App extends React.Component {
             ipad: app.device.ipad,
             iphone: app.device.iphone
         };
+        if (this.state.appConfig.apiToken) MainActions.getCurrentUser();
         ProjectActions.getDeviceType(device)
     }
 
@@ -70,6 +71,7 @@ class App extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
+        if(prevProps.routerPath === '/login' && this.state.appConfig.apiToken) MainActions.getCurrentUser();
         this.showToasts();
     }
 
@@ -90,9 +92,6 @@ class App extends React.Component {
         let dialogs = null;
         let x=null;
         if (this.state.appConfig.apiToken) {
-            if (this.props.routerPath !== '/login' && !this.state.currentUser) {
-                MainActions.getCurrentUser();
-            }
             if (localStorage.getItem('redirectTo') !== null) {
                 setTimeout(() => {
                     localStorage.removeItem('redirectTo');
