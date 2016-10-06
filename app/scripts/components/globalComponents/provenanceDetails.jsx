@@ -13,11 +13,13 @@ class ProvenanceDetails extends React.Component {
             return createdOn;
         }
         let id = this.props.params.id;
+        let versionId = null;
         let activityName = this.props.node !== null && this.props.node.properties.kind === 'dds-activity' ? this.props.node.properties.name : null;
         let activityDescription = this.props.node !== null && this.props.node.properties.kind === 'dds-activity' ? this.props.node.properties.description : null;
         let fileName = this.props.node !== null && this.props.node.properties.file ? this.props.node.properties.file.name : null;
         if (fileName === null && this.props.node !== null && this.props.node.properties.current_version) fileName = this.props.node.properties.name;
         let fileId = this.props.node !== null && this.props.node.properties.file ? this.props.node.properties.file.id : null;
+        if (fileId === null && this.props.node !== null && this.props.node.properties.current_version) versionId = this.props.node.properties.current_version.id;
         let projectName = this.props.entityObj && this.props.entityObj.ancestors ? this.props.entityObj.ancestors[0].name : null;
         let crdOn = this.props.node !== null && this.props.node.properties.audit ? this.props.node.properties.audit.created_on : null;
         let createdOn = createdOnDate(crdOn);
@@ -30,15 +32,16 @@ class ProvenanceDetails extends React.Component {
                 this.props.node.properties.upload.storage_provider.description :
                 this.props.node.properties.current_version.upload.storage_provider.description;
         }
+        let fileLink = fileName !== null ? <a href={fileId !== null ? urlGen.routes.file(fileId) : urlGen.routes.version(versionId)}
+                                                                                             className="external mdl-color-text--grey-600"
+                                                                                             onTouchTap={() => this.toggleProv()}>
+            {fileName}
+        </a> : null;
         let bytes =  this.props.node !== null && this.props.node.properties.upload ? this.props.node.properties.upload.size : null;
         if (bytes === null && this.props.node !== null && this.props.node.properties.kind !== 'dds-activity') bytes = this.props.node.properties.current_version.upload.size;
         let details = <div className="mdl-cell mdl-cell--12-col" style={styles.details}>
             <h6 style={styles.listHeader}>
-                {fileName !== null ? <a href={urlGen.routes.file(fileId)}
-                                        className="external mdl-color-text--grey-600"
-                                        onTouchTap={() => this.toggleProv()}>
-                    {fileName}
-                </a> : activityName}
+                {fileName !== null ? fileLink : activityName}
             </h6>
             <div className="list-block" style={styles.listBlock}>
                 {fileName !== null ? <div className="list-group">
