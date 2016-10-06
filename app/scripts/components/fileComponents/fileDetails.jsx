@@ -255,7 +255,7 @@ class FileDetails extends React.Component {
 
     openProv() {
         let versionId = this.props.entityObj.current_version.id;
-        ProjectActions.getProvenance(versionId, 'dds-file-version');
+        ProjectActions.getWasGeneratedByNode(versionId);
         ProjectActions.toggleProvView();
         ProjectActions.toggleProvEditor();
         ProjectActions.hideProvAlert();

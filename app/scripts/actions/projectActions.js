@@ -41,6 +41,7 @@ var ProjectActions = Reflux.createActions([
     'showDeleteRelationsBtn',
     'selectNodesAndEdges',
     'getProvenance',
+    'getWasGeneratedByNode',
     'getProvenanceSuccess',
     'saveGraphZoomState',
     'clearSelectedItems',
@@ -279,6 +280,27 @@ ProjectActions.getProvenance.preEmit = function (id, kind, prevGraph) {
                 kind: kind,
                 id: id
             }
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getProvenanceSuccess(json.graph, prevGraph);
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.getWasGeneratedByNode.preEmit = function (id, prevGraph) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'search/provenance/was_generated_by', {
+        method: 'post',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            'file_versions': [{
+                id: id
+            }]
         })
     }).then(checkResponse).then(function (response) {
         return response.json()
