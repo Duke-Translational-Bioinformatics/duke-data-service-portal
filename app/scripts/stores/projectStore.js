@@ -264,6 +264,7 @@ var ProjectStore = Reflux.createStore({
         n.push(node);
         this.updatedGraphItem = n.map((node) => {//Update dataset in client
             if(node.current_version) {
+                node.kind = 'dds-file-version';
                 return {
                     id: node.current_version.id,
                     label: node.name + '\nVersion: ' + node.current_version.version,
@@ -388,8 +389,14 @@ var ProjectStore = Reflux.createStore({
 
     toggleProvView() {
         this.toggleProv = !this.toggleProv;
+        if(this.toggleProv !== true) { //clear old graph on close of provenance view
+            this.provEdges = [];
+            this.provNodes = [];
+        }
         this.trigger({
-            toggleProv: this.toggleProv
+            toggleProv: this.toggleProv,
+            provEdges: this.provEdges,
+            provNodes: this.provNodes
         })
     },
 
@@ -410,6 +417,12 @@ var ProjectStore = Reflux.createStore({
     toggleGraphLoading() {
         this.trigger({
             graphLoading: false
+        })
+    },
+
+    getWasGeneratedByNode() {
+        this.trigger({
+            graphLoading: true
         })
     },
 

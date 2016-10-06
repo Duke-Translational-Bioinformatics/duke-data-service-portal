@@ -61,7 +61,7 @@ class Version extends React.Component {
     _loadVersion(id) {
         let kind = 'file_versions';
         ProjectActions.getEntity(id, kind);
-        ProjectActions.getProvenance(id, 'dds-file-version');
+        ProjectActions.getWasGeneratedByNode(id);
     }
 
     render() {
