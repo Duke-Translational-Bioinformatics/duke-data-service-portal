@@ -234,7 +234,7 @@ class FileOptionsMenu extends React.Component {
 
     toggleProv() {
         let versionId = this.props.entityObj.current_version.id;
-        ProjectActions.getProvenance(versionId, 'dds-file-version');
+        ProjectActions.getWasGeneratedByNode(versionId);
         ProjectActions.toggleProvView();
     }
 
