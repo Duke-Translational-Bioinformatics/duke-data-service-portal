@@ -32,11 +32,16 @@ class ProvenanceDetails extends React.Component {
                 this.props.node.properties.upload.storage_provider.description :
                 this.props.node.properties.current_version.upload.storage_provider.description;
         }
-        let fileLink = fileName !== null ? <a href={fileId !== null ? urlGen.routes.file(fileId) : urlGen.routes.version(versionId)}
-                                                                                             className="external mdl-color-text--grey-600"
-                                                                                             onTouchTap={() => this.toggleProv()}>
-            {fileName}
-        </a> : null;
+        let fileLink = null;
+        if (fileName !== null) {
+            fileLink = <a href={fileId !== null ?
+                urlGen.routes.file(fileId) :
+                urlGen.routes.version(versionId)} className="external mdl-color-text--grey-600"
+                onTouchTap={() => this.toggleProv()}>
+                {fileName}
+            </a>
+        }
+        if (fileId === id || versionId === id) fileLink = <span className="mdl-color-text--grey-600">{fileName}</span>;
         let bytes =  this.props.node !== null && this.props.node.properties.upload ? this.props.node.properties.upload.size : null;
         if (bytes === null && this.props.node !== null && this.props.node.properties.kind !== 'dds-activity') bytes = this.props.node.properties.current_version.upload.size;
         let details = <div className="mdl-cell mdl-cell--12-col" style={styles.details}>
