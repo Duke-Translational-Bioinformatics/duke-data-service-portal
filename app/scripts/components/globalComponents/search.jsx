@@ -50,6 +50,7 @@ class Search extends React.Component {
             </IconButton> : '';
         let search = '';
         if (route === '' ||
+            route === 'privacy' ||
             route === 'home' ||
             route === 'file' ||
             route === 'agent' ||
