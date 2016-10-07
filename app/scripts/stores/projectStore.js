@@ -265,6 +265,7 @@ var ProjectStore = Reflux.createStore({
         this.updatedGraphItem = n.map((node) => {//Update dataset in client
             if(node.current_version) {
                 node.kind = 'dds-file-version';
+                let label = node.current_version.label !== null ? node.current_version.label : "";
                 return {
                     id: node.current_version.id,
                     label: node.name + '\nVersion: ' + node.current_version.version,
@@ -274,7 +275,7 @@ var ProjectStore = Reflux.createStore({
                     title: '<div style="margin: 10px; color: #616161"><span>'
                     + node.name + '</span><br/><span>Version: '
                     + node.current_version.version + '</span><br/><span>'
-                    + node.current_version.label + '</span></div>'
+                    + label + '</span></div>'
                 };
             }else{
                 return {
@@ -475,6 +476,7 @@ var ProjectStore = Reflux.createStore({
                 }
             }
             if(node.properties.kind === 'dds-file-version') {
+                let label = node.properties.label !== null ? node.properties.label : "";
                 return {
                     id: node.id,
                     label: node.properties.file.name + '\nVersion: ' + node.properties.version,
@@ -484,7 +486,7 @@ var ProjectStore = Reflux.createStore({
                     title: '<div style="margin: 10px; color: #616161"><span>'
                     + node.properties.file.name + '</span><br/><span>Version: '
                     + node.properties.version + '</span><br/><span>'
-                    + node.properties.label + '</span></div>'
+                    + label + '</span></div>'
                 }
             }
         });
