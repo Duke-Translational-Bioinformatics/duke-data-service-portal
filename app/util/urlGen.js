@@ -5,6 +5,7 @@ let UrlGen = {
         apiPrefix: '/api/v1/',
         login: () => '/login',
         home: () => '/',
+        publicPrivacy: () => '/#/public_privacy',
         privacy: () => '/#/privacy',
         project: (projectId) => '/#/project/' + projectId,
         folder: (folderId) => '/#/folder/' + folderId,
