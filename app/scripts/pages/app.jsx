@@ -137,7 +137,11 @@ class App extends React.Component {
                     this.props.appRouter.transitionTo('/login')
                 }
             }
-            this.props.appRouter.transitionTo('/login')
+            if(this.props.routerPath === '/public_privacy') {
+                this.props.appRouter.transitionTo('/public_privacy')
+            } else {
+                this.props.appRouter.transitionTo('/login')
+            }
         }
         return (
             <span>
