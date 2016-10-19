@@ -71,6 +71,18 @@ export const graphColors = {
             background: '#2196F3'
         }
     },
+    noPermissions: {
+        border: '#BDBDBD',
+        background: '#BDBDBD',
+        highlight: {
+            border: '#BDBDBD',
+            background: '#BDBDBD'
+        },
+        hover: {
+            border: '#BDBDBD',
+            background: '#BDBDBD'
+        }
+    },
     user: {
         border: '#64DD17',
         background: '#64DD17',
