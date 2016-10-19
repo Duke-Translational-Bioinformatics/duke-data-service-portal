@@ -461,32 +461,44 @@ var ProjectStore = Reflux.createStore({
             }
         });
         this.provNodes = nodes.map((node) => {
-            if (node.properties.kind === 'dds-activity') {
-                return {
-                    id: node.id,
-                    label: 'Activity: \n'+node.properties.name,
-                    labels: node.labels.toString(),
-                    properties: node.properties,
-                    shape: 'box',
-                    color: graphColors.activity,
-                    title: '<div style="margin: 10px; color: #616161"><span>'
-                    +'Name: '+node.properties.name + '</span><br/>' +
-                    '<span>'+'Created By: '+node.properties.audit.created_by.full_name+'</span><br/>' +
-                    '<span>'+'Started On: '+node.properties.started_on+'</span></div>'
+            if(node.properties.hasOwnProperty('audit')) {
+                if (node.properties.kind === 'dds-activity') {
+                    return {
+                        id: node.id,
+                        label: 'Activity: \n' + node.properties.name,
+                        labels: node.labels.toString(),
+                        properties: node.properties,
+                        shape: 'box',
+                        color: graphColors.activity,
+                        title: '<div style="margin: 10px; color: #616161"><span>'
+                        + 'Name: ' + node.properties.name + '</span><br/>' +
+                        '<span>' + 'Created By: ' + node.properties.audit.created_by.full_name + '</span><br/>' +
+                        '<span>' + 'Started On: ' + node.properties.started_on + '</span></div>'
+                    }
                 }
-            }
-            if(node.properties.kind === 'dds-file-version') {
-                let label = node.properties.label !== null ? node.properties.label : "";
+                if (node.properties.kind === 'dds-file-version') {
+                    let label = node.properties.label !== null ? node.properties.label : "";
+                    return {
+                        id: node.id,
+                        label: node.properties.file.name + '\nVersion: ' + node.properties.version,
+                        labels: node.labels.toString(),
+                        properties: node.properties,
+                        color: graphColors.fileVersion,
+                        title: '<div style="margin: 10px; color: #616161"><span>'
+                        + node.properties.file.name + '</span><br/><span>Version: '
+                        + node.properties.version + '</span><br/><span>'
+                        + label + '</span></div>'
+                    }
+                }
+            } else {
                 return {
                     id: node.id,
-                    label: node.properties.file.name + '\nVersion: ' + node.properties.version,
+                    label: node.properties.kind,
                     labels: node.labels.toString(),
                     properties: node.properties,
-                    color: graphColors.fileVersion,
+                    color: graphColors.noPermissions,
                     title: '<div style="margin: 10px; color: #616161"><span>'
-                    + node.properties.file.name + '</span><br/><span>Version: '
-                    + node.properties.version + '</span><br/><span>'
-                    + label + '</span></div>'
+                    + 'You do not have permission to view this file.' + '</span></div>'
                 }
             }
         });
@@ -948,7 +960,8 @@ var ProjectStore = Reflux.createStore({
         let err = error && error.message ? {msg: error.message, response: error.response.status} : null;
         if(error && error.response.status !== 404) {
             this.errorModals.push({
-                msg: error.message,
+                msg: error.response.status === 403 ? error.message + ': You don\'t have permissions to view or change' +
+                ' this resource' : error.message,
                 response: error.response.status,
                 ref: 'modal' + Math.floor(Math.random() * 10000)
             });
@@ -968,6 +981,7 @@ var ProjectStore = Reflux.createStore({
             }
         }
         this.trigger({
+            error: {},
             errorModals: this.errorModals
         })
     },
