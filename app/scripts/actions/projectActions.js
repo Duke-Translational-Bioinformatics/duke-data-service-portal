@@ -290,7 +290,7 @@ ProjectActions.getProvenance.preEmit = function (id, kind, prevGraph) {
     })
 };
 
-ProjectActions.getWasGeneratedByNode.preEmit = function (id, prevGraph) {
+ProjectActions.getWasGeneratedByNode.preEmit = function (id, kind, prevGraph) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'search/provenance/was_generated_by', {
         method: 'post',
         headers: {
