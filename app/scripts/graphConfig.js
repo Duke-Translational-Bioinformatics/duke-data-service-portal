@@ -72,11 +72,11 @@ export const graphColors = {
         }
     },
     noPermissions: {
-        border: '#BDBDBD',
-        background: '#BDBDBD',
+        border: '#CFD8DC',
+        background: '#CFD8DC',
         highlight: {
-            border: '#BDBDBD',
-            background: '#BDBDBD'
+            border: '#CFD8DC',
+            background: '#CFD8DC'
         },
         hover: {
             border: '#BDBDBD',

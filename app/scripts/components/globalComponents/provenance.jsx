@@ -160,7 +160,8 @@ class Provenance extends React.Component {
         this.state.network.on("select", (params) => {
             let nodeData = nodes.get(params.nodes[0]);
             let edgeData = edges.get(params.edges);
-            if(!nodeData.length && nodeData.properties.hasOwnProperty('audit')) { // User has visibility to node
+            if (!Array.isArray(nodeData) && nodeData.properties.hasOwnProperty('audit')) { // User has visibility to
+            // node
                 if (params.nodes.length > 0) this.setState({node: nodeData});
                 if (params.nodes.length === 0) this.setState({showDetails: false});
                 ProjectActions.selectNodesAndEdges(edgeData, nodeData);
@@ -168,7 +169,7 @@ class Provenance extends React.Component {
         });
         this.state.network.on("doubleClick", (params) => { // Show more nodes on graph on double click event
             let nodeData = nodes.get(params.nodes[0]);
-            if(!nodeData.length && nodeData.properties.hasOwnProperty('audit') && nodeData.properties.kind !== 'dds-activity') {
+            if (!Array.isArray(nodeData) && nodeData.properties.hasOwnProperty('audit') && nodeData.properties.kind !== 'dds-activity') {
                 hideButtonsOnDblClk();
                 let prevGraph = {nodes: this.props.provNodes, edges: this.props.provEdges};
                 if (params.nodes.length > 0) {
@@ -181,9 +182,10 @@ class Provenance extends React.Component {
         this.state.network.on("click", (params) => {
             let nodeData = nodes.get(params.nodes[0]);
             let edgeData = edges.get(params.edges);
-            if(!nodeData.length && nodeData.properties.hasOwnProperty('audit')) { // User has visibility to node
+            if (!Array.isArray(nodeData) && nodeData.properties.hasOwnProperty('audit') || edgeData.length === 1) {
                 if (params.nodes.length > 0) {
-                    if (!this.props.showProvDetails) ProjectActions.toggleProvNodeDetails();
+                    if (!this.props.showProvDetails && nodeData.properties.hasOwnProperty('audit')) ProjectActions.toggleProvNodeDetails();
+                    if (this.props.showProvDetails && !nodeData.properties.hasOwnProperty('audit')) ProjectActions.toggleProvNodeDetails();
                     if (nodeData.properties.kind !== 'dds-activity') {
                         if (!this.props.removeFileFromProvBtn) ProjectActions.showRemoveFileFromProvBtn();
                     } else {
