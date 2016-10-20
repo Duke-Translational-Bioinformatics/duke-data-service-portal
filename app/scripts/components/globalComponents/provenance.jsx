@@ -160,12 +160,10 @@ class Provenance extends React.Component {
         this.state.network.on("select", (params) => {
             let nodeData = nodes.get(params.nodes[0]);
             let edgeData = edges.get(params.edges);
-            if (!Array.isArray(nodeData) && nodeData.properties.hasOwnProperty('audit')) { // User has visibility to
-            // node
-                if (params.nodes.length > 0) this.setState({node: nodeData});
-                if (params.nodes.length === 0) this.setState({showDetails: false});
-                ProjectActions.selectNodesAndEdges(edgeData, nodeData);
-            }
+            // User has visibility to node or it's an edge that is selected
+            if (params.nodes.length > 0) this.setState({node: nodeData});
+            if (params.nodes.length === 0) this.setState({showDetails: false});
+            ProjectActions.selectNodesAndEdges(edgeData, nodeData);
         });
         this.state.network.on("doubleClick", (params) => { // Show more nodes on graph on double click event
             let nodeData = nodes.get(params.nodes[0]);
@@ -485,7 +483,7 @@ class Provenance extends React.Component {
                     </h6>
                     {this.props.graphLoading ?
                         <CircularProgress size={1.5} style={styles.graphLoader}/>
-                    : null}
+                        : null}
                     <div id="graphContainer" ref="graphContainer"
                          className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800"
                          style={{position: 'relative',
