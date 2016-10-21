@@ -167,13 +167,14 @@ class Provenance extends React.Component {
         });
         this.state.network.on("doubleClick", (params) => { // Show more nodes on graph on double click event
             let nodeData = nodes.get(params.nodes[0]);
-            if (!Array.isArray(nodeData) && nodeData.properties.hasOwnProperty('audit') && nodeData.properties.kind !== 'dds-activity') {
+            if (!Array.isArray(nodeData) && nodeData.properties.hasOwnProperty('audit')) {
                 hideButtonsOnDblClk();
                 let prevGraph = {nodes: this.props.provNodes, edges: this.props.provEdges};
                 if (params.nodes.length > 0) {
                     let id = this.state.node.properties.current_version ? this.state.node.properties.current_version.id : this.state.node.properties.id;
                     let kind = this.state.node.properties.kind === 'dds-activity' ? 'dds-activity' : 'dds-file-version';
-                    ProjectActions.getWasGeneratedByNode(id, kind, prevGraph);
+                    nodeData.properties.kind === 'dds-activity' ?  ProjectActions.getProvenance(id, kind, prevGraph) :
+                        ProjectActions.getWasGeneratedByNode(id, kind, prevGraph);
                 }
             }
         });
