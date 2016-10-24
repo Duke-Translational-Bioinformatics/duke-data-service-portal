@@ -379,7 +379,7 @@ var ProjectStore = Reflux.createStore({
 
     toggleAddEdgeMode(value) {
         if (value == null) {
-            this.addEdgeMode = !this.addEdgeMode;
+            this.addEdgeMode = false;
         } else {
             this.addEdgeMode = true;
         }
