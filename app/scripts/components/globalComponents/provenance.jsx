@@ -33,6 +33,7 @@ import Help from 'material-ui/lib/svg-icons/action/help';
 class Provenance extends React.Component {
     /**
      * Creates a provenance graph using the Vis.js library
+     * Uses a network graph from Vis.js
      * Vis docs @ visjs.org/docs/network/
      */
 
@@ -159,68 +160,81 @@ class Provenance extends React.Component {
         this.state.network.on("select", (params) => {
             let nodeData = nodes.get(params.nodes[0]);
             let edgeData = edges.get(params.edges);
-            if(params.nodes.length > 0) this.setState({node: nodeData});
-            if(params.nodes.length === 0) this.setState({showDetails: false});
+            // User has visibility to node or it's an edge that is selected
+            if (params.nodes.length > 0) this.setState({node: nodeData});
+            if (params.nodes.length === 0) this.setState({showDetails: false});
             ProjectActions.selectNodesAndEdges(edgeData, nodeData);
         });
         this.state.network.on("doubleClick", (params) => { // Show more nodes on graph on double click event
-            hideButtonsOnDblClk();
-            let prevGraph = {nodes: this.props.provNodes, edges: this.props.provEdges};
-            if(params.nodes.length > 0) {
-                let id = this.state.node.properties.current_version ? this.state.node.properties.current_version.id : this.state.node.properties.id;
-                let kind = this.state.node.properties.kind === 'dds-activity' ? 'dds-activity' : 'dds-file-version';
-                ProjectActions.getProvenance(id, kind, prevGraph);
+            let nodeData = nodes.get(params.nodes[0]);
+            if (!Array.isArray(nodeData) && nodeData.properties.hasOwnProperty('audit')) {
+                hideButtonsOnDblClk();
+                let prevGraph = {nodes: this.props.provNodes, edges: this.props.provEdges};
+                if (params.nodes.length > 0) {
+                    let id = this.state.node.properties.current_version ? this.state.node.properties.current_version.id : this.state.node.properties.id;
+                    let kind = this.state.node.properties.kind === 'dds-activity' ? 'dds-activity' : 'dds-file-version';
+                    nodeData.properties.kind === 'dds-activity' ?  ProjectActions.getProvenance(id, kind, prevGraph) :
+                        ProjectActions.getWasGeneratedByNode(id, kind, prevGraph);
+                }
             }
         });
         this.state.network.on("click", (params) => {
             let nodeData = nodes.get(params.nodes[0]);
             let edgeData = edges.get(params.edges);
-            if(params.nodes.length > 0) {
-                if(!this.props.showProvDetails) ProjectActions.toggleProvNodeDetails();
-                if(nodeData.properties.kind !== 'dds-activity') {
-                    if(!this.props.removeFileFromProvBtn) ProjectActions.showRemoveFileFromProvBtn();
-                } else {
-                    if(nodeData.properties.audit.created_by.id !== this.props.currentUser.id && this.props.showProvCtrlBtns) {
-                        ProjectActions.showProvControlBtns();
-                    }
-                    if(nodeData.properties.audit.created_by.id === this.props.currentUser.id) {// If not creator then don't allow edit/delete activity
-                        if(!this.props.showProvCtrlBtns && nodeData.properties.kind === 'dds-activity') ProjectActions.showProvControlBtns();
-                        if(nodeData.properties.kind !== 'dds-activity' && this.props.showProvCtrlBtns) {
-                            this.state.network.unselectAll();
+            if (!Array.isArray(nodeData) && nodeData.properties.hasOwnProperty('audit') || edgeData.length === 1) {
+                if (params.nodes.length > 0) {
+                    if (!this.props.showProvDetails && nodeData.properties.hasOwnProperty('audit')) ProjectActions.toggleProvNodeDetails();
+                    if (this.props.showProvDetails && !nodeData.properties.hasOwnProperty('audit')) ProjectActions.toggleProvNodeDetails();
+                    if (nodeData.properties.kind !== 'dds-activity') {
+                        if (!this.props.removeFileFromProvBtn) ProjectActions.showRemoveFileFromProvBtn();
+                    } else {
+                        if (nodeData.properties.audit.created_by.id !== this.props.currentUser.id && this.props.showProvCtrlBtns) {
                             ProjectActions.showProvControlBtns();
                         }
-                        if(nodeData.properties.kind !== 'dds-activity' && this.props.dltRelationsBtn) {
-                            this.state.network.unselectAll();
-                            ProjectActions.showDeleteRelationsBtn(edgeData, nodeData);
+                        if (nodeData.properties.audit.created_by.id === this.props.currentUser.id) {// If not creator then don't allow edit/delete activity
+                            if (!this.props.showProvCtrlBtns && nodeData.properties.kind === 'dds-activity') ProjectActions.showProvControlBtns();
+                            if (nodeData.properties.kind !== 'dds-activity' && this.props.showProvCtrlBtns) {
+                                this.state.network.unselectAll();
+                                ProjectActions.showProvControlBtns();
+                            }
+                            if (nodeData.properties.kind !== 'dds-activity' && this.props.dltRelationsBtn) {
+                                this.state.network.unselectAll();
+                                ProjectActions.showDeleteRelationsBtn(edgeData, nodeData);
+                            }
                         }
                     }
                 }
-            }
-            if(params.nodes.length === 0) {
-                this.state.network.unselectAll();
-                if(edgeData.length > 0) this.state.network.selectEdges([edgeData[0].id]);
-                if(this.props.removeFileFromProvBtn) ProjectActions.showRemoveFileFromProvBtn();
-                if(this.props.showProvCtrlBtns) ProjectActions.showProvControlBtns();
-            }
-            if(params.edges.length === 0 && this.props.dltRelationsBtn) {
-                if(this.props.showProvDetails) ProjectActions.toggleProvNodeDetails();
-                ProjectActions.showDeleteRelationsBtn(edgeData);
-                this.state.network.unselectAll();
-            }
-            if(params.edges.length === 0 && params.nodes.length === 0 && this.props.showProvDetails) ProjectActions.toggleProvNodeDetails();
-            if(edgeData.length > 0 && params.nodes.length < 1) {
-                if(this.props.showProvDetails) ProjectActions.toggleProvNodeDetails();
-                if(edgeData[0].type !== 'WasAssociatedWith' || edgeData[0].type !== 'WasAttributedTo') {
-                    if(edgeData.length > 0 && edgeData[0].properties.audit.created_by.id !== this.props.currentUser.id && this.props.dltRelationsBtn) {
-                        ProjectActions.showDeleteRelationsBtn(edgeData);
-                    }
-                    if(edgeData.length > 0 && edgeData[0].properties.audit.created_by.id === this.props.currentUser.id) {
-                        if(params.edges.length > 0 && params.nodes.length < 1) {
-                            if(!this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
-                            if(this.props.showProvCtrlBtns && this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
+                if (params.nodes.length === 0) {
+                    this.state.network.unselectAll();
+                    if (edgeData.length > 0) this.state.network.selectEdges([edgeData[0].id]);
+                    if (this.props.removeFileFromProvBtn) ProjectActions.showRemoveFileFromProvBtn();
+                    if (this.props.showProvCtrlBtns) ProjectActions.showProvControlBtns();
+                }
+                if (params.edges.length === 0 && this.props.dltRelationsBtn) {
+                    if (this.props.showProvDetails) ProjectActions.toggleProvNodeDetails();
+                    ProjectActions.showDeleteRelationsBtn(edgeData);
+                    this.state.network.unselectAll();
+                }
+                if (params.edges.length === 0 && params.nodes.length === 0 && this.props.showProvDetails) ProjectActions.toggleProvNodeDetails();
+                if (edgeData.length > 0 && params.nodes.length < 1) {
+                    if (this.props.showProvDetails) ProjectActions.toggleProvNodeDetails();
+                    if (edgeData[0].type !== 'WasAssociatedWith' || edgeData[0].type !== 'WasAttributedTo') {
+                        if (edgeData.length > 0 && edgeData[0].properties.audit.created_by.id !== this.props.currentUser.id && this.props.dltRelationsBtn) {
+                            ProjectActions.showDeleteRelationsBtn(edgeData);
+                        }
+                        if (edgeData.length > 0 && edgeData[0].properties.audit.created_by.id === this.props.currentUser.id) {
+                            if (params.edges.length > 0 && params.nodes.length < 1) {
+                                if (!this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
+                                if (this.props.showProvCtrlBtns && this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData);
+                            }
                         }
                     }
                 }
+            } else {
+                this.state.network.unselectAll();
+                if (this.props.showProvDetails) ProjectActions.toggleProvNodeDetails();
+                if (this.props.showProvCtrlBtns) ProjectActions.showProvControlBtns();
+                if (this.props.dltRelationsBtn) ProjectActions.showDeleteRelationsBtn(edgeData, nodeData);
             }
         })
     }
@@ -470,7 +484,7 @@ class Provenance extends React.Component {
                     </h6>
                     {this.props.graphLoading ?
                         <CircularProgress size={1.5} style={styles.graphLoader}/>
-                    : null}
+                        : null}
                     <div id="graphContainer" ref="graphContainer"
                          className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800"
                          style={{position: 'relative',
