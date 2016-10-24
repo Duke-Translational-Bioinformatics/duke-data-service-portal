@@ -8,7 +8,7 @@ class ProvenanceDetails extends React.Component {
 
     render() {
         let details = null;
-        if (this.props.node.properties.hasOwnProperty('audit')) {
+        if (this.props.node && this.props.node.properties.hasOwnProperty('audit')) {
             function createdOnDate(created) {
                 let x = new Date(created);
                 let createdOn = x.toString();
