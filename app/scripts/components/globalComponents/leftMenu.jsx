@@ -6,17 +6,12 @@ import urlGen from '../../../util/urlGen.js';
 
 class LeftMenu extends React.Component {
 
-    constructor(props, context) {
-        super(props);
-    }
-
     render() {
         let home = <span>
                     <p>
                         <a href={urlGen.routes.home()}
                            className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
                             <i className="material-icons" style={styles.navIcon}>home</i>Home
-
                         </a>
                     </p>
                </span>;
@@ -29,19 +24,27 @@ class LeftMenu extends React.Component {
                     <div className="panel panel-left panel-cover">
                         <div className="content-block">
                             { home }
-                            <p><a href={urlGen.routes.agents()}
-                                  className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
-                                <i className="material-icons" style={styles.navIcon}>build</i>
-                                Software Agents</a>
+                            <p>
+                                <a className="mdl-color-text--grey-800 item-content external" href="https://medium.com/@dukedataservice"
+                                   target="_blank" rel="noopener noreferrer"><i className="material-icons" style={styles.navIcon}>rate_review</i>
+                                    Duke DS Blog</a>
                             </p>
-                            <p className="mdl-color-text--grey-400"><i className="material-icons"
-                                                                       style={styles.navIcon}>settings</i>Settings</p>
-                            <p className="mdl-color-text--grey-400"><i className="material-icons" style={styles.navIcon}>help</i>Help</p>
-                            <p className="mdl-color-text--grey-400">Governance</p>
-                            <p className="mdl-color-text--grey-400">Terms &amp; Conditions</p>
-                            <p><a href="#" className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.handleTouchTap()}>
-                                <i className="material-icons" style={styles.navIcon}>exit_to_app</i>
-                                Log Out</a>
+                            <p>
+                                <a href={urlGen.routes.agents()}
+                                   className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
+                                    <i className="material-icons" style={styles.navIcon}>build</i>Software Agents
+                                </a>
+                            </p>
+                            <p>
+                                <a href={urlGen.routes.privacy()}
+                                  className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
+                                    <i className="material-icons" style={styles.navIcon}>lock</i>Privacy Policy
+                                </a>
+                            </p>
+                            <p>
+                                <a href="#" className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.handleTouchTap()}>
+                                    <i className="material-icons" style={styles.navIcon}>exit_to_app</i>Log Out
+                                </a>
                             </p>
                         </div>
                     </div>
@@ -50,6 +53,7 @@ class LeftMenu extends React.Component {
     }
 
     handleTouchTap() {
+        this.props.appRouter.transitionTo('/login');
         MainStore.handleLogout()
     }
 

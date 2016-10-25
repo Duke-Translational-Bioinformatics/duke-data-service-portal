@@ -1,8 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-import AutoComplete from 'material-ui/lib/auto-complete';
 import FlatButton from 'material-ui/lib/flat-button';
 import RaisedButton from 'material-ui/lib/raised-button';
 import Dialog from 'material-ui/lib/dialog';
@@ -39,9 +37,9 @@ class AddFolderModal extends React.Component {
                     onTouchTap={this.openModal.bind(this)}/>
                 <Dialog
                     style={styles.dialogStyles}
+                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Add New Folder"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={actions}
                     open={this.state.open}
                     onRequestClose={this.handleClose.bind(this)}>
@@ -104,7 +102,7 @@ class AddFolderModal extends React.Component {
 let styles = {
     addFolder: {
         float: 'right',
-        zIndex: '9995',
+        zIndex: '50',
         position: 'relative',
         margin: '20px 10px 0px  18px',
         textColor: '#235F9C'

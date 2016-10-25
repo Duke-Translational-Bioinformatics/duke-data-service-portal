@@ -71,8 +71,7 @@ class ProjectOptionsMenu extends React.Component {
                 <Dialog
                     style={styles.dialogStyles}
                     title="Are you sure you want to delete this project?"
-
-                    autoScrollBodyContent={true}
+                    autoDetectWindowHeight={true}
                     actions={deleteActions}
                     onRequestClose={this.handleClose.bind(this)}
                     open={this.state.deleteOpen}>
@@ -91,13 +90,14 @@ class ProjectOptionsMenu extends React.Component {
                     style={styles.dialogStyles}
                     title="Update Project"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={editActions}
                     onRequestClose={this.handleClose.bind(this)}
                     open={this.state.editOpen}>
                     <form action="#" id="newProjectForm">
                         <TextField
                             style={styles.textStyles}
+                            autoFocus={true}
+                            onFocus={this.handleFloatingErrorInputChange.bind(this)}
                             hintText="Project Name"
                             defaultValue={prName}
                             errorText={this.state.floatingErrorText}
@@ -108,6 +108,8 @@ class ProjectOptionsMenu extends React.Component {
                             onChange={this.handleFloatingErrorInputChange.bind(this)}/> <br/>
                         <TextField
                             style={styles.textStyles}
+                            autoFocus={true}
+                            onFocus={this.handleFloatingErrorInputChange2.bind(this)}
                             hintText="Project Description"
                             defaultValue={desc}
                             errorText={this.state.floatingErrorText2}
@@ -123,7 +125,6 @@ class ProjectOptionsMenu extends React.Component {
                     style={styles.dialogStyles}
                     title="Add a Member"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={memberActions}
                     onRequestClose={this.handleClose.bind(this)}
                     open={this.state.memberOpen}>
@@ -131,7 +132,7 @@ class ProjectOptionsMenu extends React.Component {
                         <AutoComplete
                             id="fullName"
                             floatingLabelText="Name"
-                            filter={AutoComplete.fuzzyFilter}
+                            filter={AutoComplete.caseInsensitiveFilter}
                             dataSource={names}
                             errorText={this.state.floatingErrorText}
                             onUpdateInput={this.handleUpdateInput.bind(this)}/><br/>
@@ -211,12 +212,23 @@ class ProjectOptionsMenu extends React.Component {
     };
 
     handleUpdateInput (text) {
-        ProjectActions.getUserName(text);
-        this.setState({
-            floatingErrorText: document.getElementById("fullName").value ? '' : 'This field is required'
-        });
-    };
-
+        // Add 500ms lag to autocomplete so that it only makes a call after user is done typing
+        let timeout = this.state.timeout;
+        let textInput = document.getElementById('fullName');
+        textInput.onkeyup = () => {
+            clearTimeout(this.state.timeout);
+            this.setState({
+                timeout: setTimeout(() => {
+                    if (!textInput.value.indexOf(' ') <= 0) {
+                        ProjectActions.getUserName(text);
+                        this.setState({
+                            floatingErrorText: document.getElementById('fullName').value ? '' : 'This field is required'
+                        });
+                    }
+                }, 500)
+            })
+        };
+    }
 
     handleMemberButton(currentUser) {
         let  fullName = document.getElementById("fullName").value;

@@ -1,13 +1,6 @@
 import React from 'react';
-import MainActions from '../../actions/mainActions';
-import MainStore from '../../stores/mainStore';
-import cookie from 'react-cookie';
 
 class CurrentUser extends React.Component {
-
-    constructor(props, context) {
-        super(props);
-    }
 
     render() {
         if (!this.props.appConfig.apiToken) {
@@ -17,7 +10,7 @@ class CurrentUser extends React.Component {
             let currentUser = this.props.currentUser ? this.props.currentUser.full_name : null;
             return (
                 <span>
-                    <span style={styles.currentUser}>{currentUser}</span>
+                    <span style={styles.currentUser}>{currentUser !== null ? currentUser.toUpperCase() : currentUser}</span>
                     <i className="material-icons" style={styles.icon}>account_box</i>
                 </span>
             );

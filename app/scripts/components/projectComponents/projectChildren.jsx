@@ -1,18 +1,12 @@
 import React from 'react';
-import { RouteHandler, Link } from 'react-router';
-import MainActions from '../../actions/mainActions';
-import ProjectDetails from './projectDetails.jsx';
+import { RouteHandler } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
+import BaseUtils from '../../../util/baseUtils.js';
 import BatchOps from '../../components/globalComponents/batchOps.jsx';
-import ErrorModal from '../../components/globalComponents/errorModal.jsx';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
-import FolderOptionsMenu from '../folderComponents/folderOptionsMenu.jsx';
-import Header from '../../components/globalComponents/header.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import urlGen from '../../../util/urlGen.js';
-import Card from 'material-ui/lib/card';
-import LinearProgress from 'material-ui/lib/linear-progress';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 class ProjectChildren extends React.Component {
@@ -24,9 +18,9 @@ class ProjectChildren extends React.Component {
     }
 
     render() {
+        if(!this.props.showBatchOps) this.uncheck();
         let children = [];
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
-        let download = <div style={styles.fillerDiv}>{/*temporary filler div until add dropdown menu*/}</div>;
         let chkBx = <div className="item-media"></div>;
         let type = 'hidden';
         let newFolderModal = null;
@@ -41,6 +35,7 @@ class ProjectChildren extends React.Component {
         }
         if (this.props.error && this.props.error.response) {
             this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
+            this.props.error.response === 401 ? this.props.appRouter.transitionTo('/login') : null;
             this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
         }
         if (this.props.children.length > 20) {
@@ -74,7 +69,6 @@ class ProjectChildren extends React.Component {
                                        id={children.id}/>
                                 { chkBx }
                             </label>
-
                             <div className="item-media">
                                 <i className="material-icons" style={styles.icon}>folder</i>
                             </div>
@@ -83,10 +77,9 @@ class ProjectChildren extends React.Component {
                                     <div className="item-title mdl-color-text--grey-800"
                                          style={styles.title}>{children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}</div>
                                 </div>
-                                <div className="item-subtitle mdl-color-text--grey-600">ID: { children.id }</div>
-                                <div className="item-after" style={styles.check}>
-
-                                </div>
+                                <div className="item-subtitle mdl-color-text--grey-600">Created by { children.audit.created_by.full_name }</div>
+                                <div className="item-subtitle mdl-color-text--grey-600">{children.audit.last_updated_on !== null ? 'Last updated on '+new Date(children.audit.last_updated_on).toDateString() + ' by ': <br />}
+                                    { children.audit.last_updated_by !== null ? children.audit.last_updated_by.full_name : null}</div>
                             </div>
                         </a>
                     </li>
@@ -115,7 +108,9 @@ class ProjectChildren extends React.Component {
                                     <div className="item-title mdl-color-text--grey-800"
                                          style={styles.title}>{children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}</div>
                                 </div>
-                                <div className="item-subtitle mdl-color-text--grey-600">ID: {children.id}</div>
+                                <div className="item-subtitle mdl-color-text--grey-600">{BaseUtils.bytesToSize(children.current_version.upload.size)+' - '}version {children.current_version.version}</div>
+                                <div className="item-subtitle mdl-color-text--grey-600">{children.audit.last_updated_on !== null ? 'Last updated on '+new Date(children.audit.last_updated_on).toDateString() + ' by ': <br />}
+                                    { children.audit.last_updated_by !== null ? children.audit.last_updated_by.full_name : null}</div>
                             </div>
                         </a>
                     </li>
@@ -126,19 +121,19 @@ class ProjectChildren extends React.Component {
         return (
             <div className="list-container">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
-                    <div className="mdl-cell mdl-cell--12-col">
+                    {!this.props.showBatchOps ? <div className="mdl-cell mdl-cell--12-col">
                         { newFolderModal }
-                    </div>
-                    <div className="mdl-cell mdl-cell--12-col" style={{marginBottom: -20}}>
+                    </div> : null}
+                    <div className="mdl-cell mdl-cell--12-col" style={styles.batchOpsWrapper}>
+                        { this.props.searchText !== '' ? <div className="mdl-cell mdl-cell--4-col mdl-color-text--grey-600" style={styles.searchText}>Showing{" "+this.props.children.length+" "}results for{" '"+this.props.searchText+"'"}</div> : null}
                         { this.props.showBatchOps ? <BatchOps {...this.props} {...this.state}/> : null }
                     </div>
-                    <ErrorModal {...this.props}/>
                 </div>
                 { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     <div className="list-block list-block-search searchbar-found media-list">
                         <ul>
-                            {projectChildren}
+                            { projectChildren }
                         </ul>
                     </div>
                     {this.props.children.length > 25 && this.props.children.length > children.length && this.state.page < 3 ?
@@ -196,6 +191,21 @@ class ProjectChildren extends React.Component {
     loadMore() {
         this.setState({page: this.state.page + 1});
     }
+
+    uncheck() {
+        let files = this.props.filesChecked ? this.props.filesChecked : null;
+        let folders = this.props.foldersChecked ? this.props.foldersChecked : null;
+        if(folders !== null) {
+            for (let i = 0; i < folders.length; i++) {
+                if(!!document.getElementById(folders[i])) document.getElementById(folders[i]).checked = false;
+            }
+        }
+        if(files !== null) {
+            for (let i = 0; i < files.length; i++) {
+                if(!!document.getElementById(files[i])) document.getElementById(files[i]).checked = false;
+            }
+        }
+    }
 }
 
 ProjectChildren.contextTypes = {
@@ -203,10 +213,12 @@ ProjectChildren.contextTypes = {
 };
 
 var styles = {
+    batchOpsWrapper: {
+        marginBottom: 0
+    },
     checkBox: {
         width: 16,
-        height: 16,
-        marginBottom: 21
+        height: 16
     },
     checkboxLabel: {
         borderRadius: 35,
@@ -216,7 +228,7 @@ var styles = {
         float: 'right',
         fontSize: 18,
         color: '#EC407A',
-        marginTop: 6,
+        marginTop: 28,
         marginLeft: 15,
         padding: '08px 08px 08px 08px',
         zIndex: 100
@@ -230,12 +242,16 @@ var styles = {
     },
     icon: {
         fontSize: 36,
-        marginTop: 4
+        marginTop: 20
 
     },
     list: {
         float: 'right',
         marginTop: -10
+    },
+    searchText: {
+        marginLeft: 8,
+        marginTop: 36
     },
     title: {
         marginRight: 40

@@ -1,15 +1,17 @@
 import React from 'react';
-import { Link } from 'react-router';
 import Header from '../components/globalComponents/header.jsx';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions.js';
+import CircularProgress from 'material-ui/lib/circular-progress';
 import RaisedButton from 'material-ui/lib/raised-button';
+import urlGen from '../../util/urlGen.js';
 
 class Login extends React.Component {
 
     constructor() {
         this.state = {
-            appConfig: MainStore.appConfig
+            appConfig: MainStore.appConfig,
+            loading: false
         }
     }
 
@@ -32,17 +34,23 @@ class Login extends React.Component {
                 <div className="mdl-cell mdl-cell--12-col mdl-shadow--2dp" style={styles.loginWrapper}>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--white">
                         <img src="images/dukeDSLogo.png" style={styles.logo}/>
+
                         <h2 style={{fontWeight: '100'}}>Duke Data Service</h2>
-                        <a href={this.createLoginUrl()} className="external">
+                        {!this.state.loading ? <a href={this.createLoginUrl()} className="external">
                             <RaisedButton label="Log In" labelStyle={{fontWeight: '400'}} labelColor={'#f9f9f9'}
-                                          backgroundColor={'#0680CD'} style={{marginBottom: 10, width: 150}}
-                                          onClick={MainActions.isLoggedInHandler}>
+                                          backgroundColor={'#0680CD'} style={{marginBottom: 40, width: 150}}
+                                          onClick={() => this.handleLoginBtn()}>
                             </RaisedButton>
-                        </a>
+                        </a> :  <CircularProgress color="#fff"/>}
+                        <div className="mdl-cell mdl-cell--12-col mdl-color-text--white">
+                            <a href={urlGen.routes.publicPrivacy()} className="external mdl-color-text--white" style={{float: 'right', fontSize: 10, margin: -10}}>
+                                <i className="material-icons" style={{fontSize: 16, verticalAlign: -2}}>lock</i>Privacy Policy
+                            </a>
+                        </div>
                     </div>
                 </div>
             );
-            let splitUrl = window.location.hash.split('&');//Todo //////Need to fix this to be more defensive////////////
+            let splitUrl = window.location.hash.split('&');
             let accessToken = splitUrl[0].split('=')[1];
             if (this.state.error) {
                 content = this.state.error
@@ -58,7 +66,12 @@ class Login extends React.Component {
                 MainActions.authenticationServiceValidate(this.state.appConfig, accessToken);
             }
         } else {
-            this.props.appRouter.transitionTo('/home');
+            if (localStorage.getItem('redirectTo') !== null) {
+                let redUrl = localStorage.getItem('redirectTo');
+                document.location.replace(redUrl);
+            } else {
+                this.props.appRouter.transitionTo('/home');
+            }
         }
         return (
             <div>
@@ -67,6 +80,12 @@ class Login extends React.Component {
                 </div>
             </div>
         );
+    }
+    handleLoginBtn() {
+        MainActions.isLoggedInHandler();
+        this.setState({
+            loading: true
+        });
     }
 }
 

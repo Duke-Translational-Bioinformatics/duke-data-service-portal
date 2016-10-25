@@ -1,20 +1,43 @@
 import React from 'react'
 import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
+import Provenance from '../components/globalComponents/provenance.jsx';
 import VersionDetails from '../components/fileComponents/versionDetails.jsx';
-import Header from '../components/globalComponents/header.jsx';
 
 class Version extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            addEdgeMode: ProjectStore.addEdgeMode,
+            autoCompleteLoading: ProjectStore.autoCompleteLoading,
+            dltRelationsBtn: ProjectStore.dltRelationsBtn,
             error: ProjectStore.error,
             errorModal: ProjectStore.errorModal,
+            fileVersions: ProjectStore.fileVersions,
+            relFrom: ProjectStore.relFrom,
             loading: false,
             moveModal: ProjectStore.moveModal,
             moveErrorModal: ProjectStore.moveErrorModal,
-            projPermissions: ProjectStore.projPermissions
+            position: ProjectStore.position,
+            projPermissions: ProjectStore.projPermissions,
+            provEdges: ProjectStore.provEdges,
+            provEditorModal: ProjectStore.provEditorModal,
+            provFileVersions: ProjectStore.provFileVersions,
+            provNodes: ProjectStore.provNodes,
+            relMsg: ProjectStore.relMsg,
+            toggleProv: ProjectStore.toggleProv,
+            toggleProvEdit: ProjectStore.toggleProvEdit,
+            relTo: ProjectStore.relTo,
+            scale: ProjectStore.scale,
+            screenSize: ProjectStore.screenSize,
+            searchFilesList: ProjectStore.searchFilesList,
+            selectedEdge: ProjectStore.selectedEdge,
+            selectedNode: ProjectStore.selectedNode,
+            showProvAlert: ProjectStore.showProvAlert,
+            showProvCtrlBtns: ProjectStore.showProvCtrlBtns,
+            showProvDetails: ProjectStore.showProvDetails,
+            updatedGraphItem: ProjectStore.updatedGraphItem
         };
     }
 
@@ -38,17 +61,18 @@ class Version extends React.Component {
     _loadVersion(id) {
         let kind = 'file_versions';
         ProjectActions.getEntity(id, kind);
+        ProjectActions.getWasGeneratedByNode(id);
     }
 
     render() {
         if(this.state.entityObj && this.props.currentUser && this.props.currentUser.id) {
-            let kind = 'files';
-            let fileId = this.state.entityObj && this.state.entityObj.file ? this.state.entityObj.file.id : null;
+            let projId = this.state.entityObj && this.state.entityObj.file.project ? this.state.entityObj.file.project.id : null;
             let userId = this.props.currentUser && this.props.currentUser.id ? this.props.currentUser.id : null;
-            if (Object.keys(this.state.projPermissions).length === 0 && JSON.stringify(this.state.projPermissions) === JSON.stringify({})) ProjectActions.getVersionPermissions(fileId, kind, userId);
+            if (this.state.projPermissions === null) ProjectActions.getPermissions(projId, userId);
         }
         return (
             <div>
+                <Provenance {...this.props} {...this.state}/>
                 <VersionDetails {...this.props} {...this.state}/>
             </div>
         );

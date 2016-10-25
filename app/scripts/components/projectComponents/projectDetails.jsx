@@ -1,12 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-import MainActions from '../../actions/mainActions';
-import MainStore from '../../stores/mainStore';
 import ProjectOptionsMenu from './projectOptionsMenu.jsx';
 import Details from './details.jsx';
-import UploadModal from '../globalComponents/uploadModal.jsx';
+import UploadManager from '../globalComponents/uploadManager.jsx';
 import urlGen from '../../../util/urlGen.js';
 import baseUtils from '../../../util/baseUtils.js';
 import FlatButton from 'material-ui/lib/flat-button';
@@ -31,13 +28,14 @@ class ProjectDetails extends React.Component {
         let uploadMdl = null;
         let optionsMenu = null;
         if (prjPrm !== null) {
-            uploadMdl = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <UploadModal {...this.props}/>;
+            uploadMdl = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <UploadManager {...this.props}/>;
             optionsMenu = prjPrm === 'prjCrud' ? <ProjectOptionsMenu {...this.props} /> : null;
         }
         return (
             <Card
                 className="project-container mdl-color--white mdl-color-text--grey-800"
-                style={styles.container}>
+                style={{marginTop: this.props.windowWidth > 680 ? 115 : 40,
+                        overflow: 'visible', padding: '10px 0px 10px 0px'}}>
                 { uploadMdl }
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div style={styles.menuIcon}>
@@ -87,8 +85,7 @@ class ProjectDetails extends React.Component {
 
 var styles = {
     container: {
-        marginTop: 30,
-        //position: 'relative',
+        marginTop: 40,
         overflow: 'visible',
         padding: '10px 0px 10px 0px'
     },

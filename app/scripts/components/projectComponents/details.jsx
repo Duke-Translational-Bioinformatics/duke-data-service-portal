@@ -1,14 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-import MainActions from '../../actions/mainActions';
-import MainStore from '../../stores/mainStore';
-import ProjectOptionsMenu from './projectOptionsMenu.jsx';
-import UploadModal from '../globalComponents/uploadModal.jsx';
-import urlGen from '../../../util/urlGen.js';
-import baseUtils from '../../../util/baseUtils.js';
-import Card from 'material-ui/lib/card/card';
 import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
 import MenuItem from 'material-ui/lib/menus/menu-item';
@@ -26,6 +18,7 @@ class Details extends React.Component {
             value: null
         }
     }
+
     render() {
         const deleteActions = [
             <FlatButton
@@ -54,8 +47,10 @@ class Details extends React.Component {
         let currentUserId = this.props.currentUser ? this.props.currentUser.id : null;
         let description = this.props.project ? this.props.project.description : null;
         let projectId =  this.props.project ? this.props.project.id : null;
-        let lastUpdatedOn = this.props.project && this.props.project.audit ? this.props.project.audit.last_updated_on : null;
-        let lastUpdatedBy = this.props.project && this.props.project.audit ? this.props.project.audit.last_updated_by : null;
+        let lastUpdatedBy = this.props.project && this.props.project.audit.last_updated_by !== null ? this.props.project.audit.last_updated_by.full_name : 'n/a';
+        let lstUpdtOn = this.props.project && this.props.project.audit.last_updated_on !== null ? this.props.project.audit.last_updated_on : null;
+        let x = new Date(lstUpdtOn);
+        let lastUpdatedOn = x.toString();
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
         let users = this.props.projectMembers ? this.props.projectMembers : null;
 
@@ -126,7 +121,7 @@ class Details extends React.Component {
                         <li className="item-divider">Last Updated By</li>
                         <li className="item-content">
                             <div className="item-inner">
-                                <div className="item-title">{ lastUpdatedBy.full_name }</div>
+                                <div className="item-title">{ lastUpdatedBy }</div>
                             </div>
                         </li>
                         <li className="item-divider">Last Updated On</li>

@@ -3,7 +3,6 @@ import ProjectActions from '../../actions/projectActions';
 import FlatButton from 'material-ui/lib/flat-button';
 import Dialog from 'material-ui/lib/dialog';
 import Divider from 'material-ui/lib/divider';
-import TextField from 'material-ui/lib/text-field';
 import List from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
 import ActionInfo from 'material-ui/lib/svg-icons/action/info';
@@ -12,20 +11,6 @@ class FileVersionsList extends React.Component {
 
     render() {
         let open = this.props.modal ? this.props.modal : false;
-        let currentVersion = null;
-        if (this.props.entityObj && this.props.entityObj != undefined) {
-            let x = new Date(this.props.entityObj.audit.created_on);
-            let createdOn = x.toString();
-            currentVersion = <span>
-                            <ListItem primaryText={'Current Version: ' + this.props.entityObj.name}
-                                      secondaryText={<p><span>{this.props.entityObj.label}</span><br/> Created on: {' ' + createdOn}</p>}
-                                      secondaryTextLines={2}
-                                      rightIcon={<ActionInfo />}
-                                      style={styles.listItem}
-                                      onTouchTap={() => this.handleClose()}/>
-                            <Divider />
-                        </span>
-        }
         let versions = null;
         if (this.props.fileVersions && this.props.fileVersions != undefined) {
             versions = this.props.fileVersions.map((version) => {
@@ -56,6 +41,7 @@ class FileVersionsList extends React.Component {
             <div>
                 <Dialog
                     style={styles.dialogStyles}
+                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="File Versions"
                     autoDetectWindowHeight={true}
                     autoScrollBodyContent={true}
@@ -63,8 +49,6 @@ class FileVersionsList extends React.Component {
                     open={open}
                     onRequestClose={this.handleClose.bind(this)}>
                     <List>
-                        <Divider />
-                        { currentVersion }
                         <Divider />
                         { versions }
                     </List>
@@ -74,7 +58,8 @@ class FileVersionsList extends React.Component {
     }
 
     goTo(versionId) {
-        this.props.appRouter.transitionTo('/version' + '/' + versionId)
+        this.props.appRouter.transitionTo('/version/' + versionId)
+        ProjectActions.closeModal();
     }
 
     handleClose() {

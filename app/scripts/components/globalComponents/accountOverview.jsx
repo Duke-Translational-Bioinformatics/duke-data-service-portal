@@ -1,5 +1,4 @@
 import React from 'react';
-import ProjectActions from '../../actions/projectActions';
 import BaseUtils from '../../../util/baseUtils.js';
 import Card from 'material-ui/lib/card/card';
 
@@ -11,9 +10,8 @@ class AccountOverview extends React.Component {
         let bytes = this.props.usage ? this.props.usage.storage_bytes : '';
 
         return (
-            <Card
-                className="account-overview content mdl-color-text--grey-800"
-                style={styles.overviewContainer}>
+            <Card className="account-overview content mdl-color-text--grey-800"
+                  style={{marginTop: this.props.windowWidth > 680 ? 117 : 30,padding: 20,textAlign: 'center'}}>
                 <div style={styles.cardSquare}
                      className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
                     <h4>{numProjects + ' Projects'}</h4>
@@ -43,11 +41,6 @@ var styles = {
     icon: {
         fontSize: 52,
         verticalAlign: 'center'
-    },
-    overviewContainer: {
-        marginTop: 30,
-        padding: 20,
-        textAlign: 'center'
     }
 };
 

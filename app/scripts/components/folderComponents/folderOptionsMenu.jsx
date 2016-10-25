@@ -2,13 +2,11 @@ import React from 'react';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import MoveItemModal from '../globalComponents/moveItemModal.jsx';
-import CircularProgress from 'material-ui/lib/circular-progress';
 import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
+import IconButton from 'material-ui/lib/icon-button';
 import IconMenu from 'material-ui/lib/menus/icon-menu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
-import IconButton from 'material-ui/lib/icon-button';
-import Popover from 'material-ui/lib/popover/popover';
 import Menu from 'material-ui/lib/menus/menu';
 import TextField from 'material-ui/lib/text-field';
 
@@ -63,9 +61,9 @@ class FolderOptionsMenu extends React.Component {
             <div>
                 <Dialog
                     style={styles.dialogStyles}
+                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Are you sure you want to delete this folder?"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={deleteActions}
                     onRequestClose={this.handleClose.bind(this)}
                     open={this.state.deleteOpen}>
@@ -76,15 +74,17 @@ class FolderOptionsMenu extends React.Component {
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
+                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Update Folder"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={editActions}
                     onRequestClose={this.handleClose.bind(this)}
                     open={this.state.editOpen}>
                     <form action="#" id="newFolderForm">
                         <TextField
                             style={styles.textStyles}
+                            autoFocus={true}
+                            onFocus={this.handleFloatingErrorInputChange.bind(this)}
                             hintText="Folder Name"
                             defaultValue={fName}
                             errorText={this.state.floatingErrorText}
@@ -98,9 +98,9 @@ class FolderOptionsMenu extends React.Component {
                 <Dialog
                     {...this.props}
                     style={styles.dialogStyles}
+                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Select Destination"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={moveActions}
                     open={this.props.moveModal}
                     onRequestClose={this.handleCloseMoveModal.bind(this)}>
@@ -108,9 +108,9 @@ class FolderOptionsMenu extends React.Component {
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
+                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Cannot Complete Action"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={moveWarnActions}
                     open={this.props.moveErrorModal}
                     onRequestClose={this.handleCloseMoveWarning.bind(this)}>
@@ -194,8 +194,9 @@ class FolderOptionsMenu extends React.Component {
     handleCloseMoveModal() {
         let id = this.props.params.id;
         let kind = 'folders';
+        let path = 'folders/';
         ProjectActions.getEntity(id, kind);
-        ProjectActions.loadFolderChildren(id);
+        ProjectActions.getChildren(id, path);
         ProjectActions.openMoveModal(false);
     }
 

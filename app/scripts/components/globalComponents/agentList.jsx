@@ -1,17 +1,13 @@
 import React from 'react';
-import { RouteHandler, Link } from 'react-router';
+import { RouteHandler } from 'react-router';
 import MainActions from '../../actions/mainActions';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import AddAgentModal from '../../components/globalComponents/addAgentModal.jsx';
-import BatchOps from '../../components/globalComponents/batchOps.jsx';
 import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
-import ErrorModal from '../../components/globalComponents/errorModal.jsx';
-import Header from '../../components/globalComponents/header.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import urlGen from '../../../util/urlGen.js';
-import RaisedButton from 'material-ui/lib/raised-button';
 import TextField from 'material-ui/lib/text-field';
 
 class AgentList extends React.Component {
@@ -21,26 +17,28 @@ class AgentList extends React.Component {
         let agentKey = this.props.agentKey ? this.props.agentKey.key : null;
         let userKey = this.props.userKey ? this.props.userKey.key : null;
         let apiToken = this.props.agentApiToken ? this.props.agentApiToken.api_token : null;
+        let obj = {agent_key: agentKey, user_key: userKey, api_token: apiToken};
         let open = this.props.modal ? this.props.modal : false;
         let msg = Object.keys(ProjectStore.agentApiToken).length === 0 ?
             <h6 style={styles.apiMsg}>You must have a valid user key, please create one by selecting 'USER SECRET KEY' in the drop down menu.</h6> :
-            <h6 style={styles.apiMsg2}>This API token will expire in 2 hours.</h6>;
+            <h6 style={styles.apiMsg2}>The API token included with these credentials will expire in 2 hours.</h6>;
 
         let keyActions = [
             <FlatButton
-                label="OKAY"
+                label="CANCEL"
                 secondary={true}
                 keyboardFocused={true}
                 onTouchTap={() => this.handleClose()} />,
             <FlatButton
-                label="COPY API TOKEN TO CLIPBOARD"
+                label="COPY CREDENTIALS TO CLIPBOARD"
                 secondary={true}
                 onTouchTap={this.copyApiKey.bind(this)} />
         ];
 
         let modal = <Dialog
             style={styles.dialogStyles}
-            title="API Token"
+            title="Agent Credentials"
+            contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
             autoDetectWindowHeight={true}
             autoScrollBodyContent={true}
             actions={keyActions}
@@ -49,9 +47,10 @@ class AgentList extends React.Component {
             { msg }
             <form action="#" id="apiKeyForm" className="keyText">
                 <TextField
+                    textareaStyle={styles.textArea}
                     style={styles.keyModal}
-                    defaultValue={apiToken}
-                    floatingLabelText="Api Token"
+                    defaultValue={JSON.stringify(obj, null, 4)}
+                    floatingLabelText="Agent Credentials"
                     id="keyText"
                     type="text"
                     multiLine={true}
@@ -92,7 +91,7 @@ class AgentList extends React.Component {
         });
 
         return (
-            <div className="list-container">
+            <div className="list-container" style={{marginTop: this.props.windowWidth > 680 ? 95 : ''}}>
                 {modal}
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
                     <div style={styles.headerTitle}>
@@ -101,7 +100,6 @@ class AgentList extends React.Component {
                     <div className="mdl-cell mdl-cell--12-col">
                         <AddAgentModal {...this.props}/>
                     </div>
-                    <ErrorModal {...this.props}/>
                 </div>
                 <div className="mdl-cell mdl-cell--12-col" style={styles.loading}>
                     { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
@@ -126,26 +124,68 @@ class AgentList extends React.Component {
             let formData = new FormData();
             formData.append('agent_key', agentKey);
             formData.append('user_key', userKey);
-            if (!userKey || !agentKey){
-                ProjectActions.openModal();
+            if (!userKey){
+                ProjectActions.createUserKey();
+                ProjectActions.getUserKey();
+                setTimeout(() => {
+                    let agentKey = this.props.agentKey ? this.props.agentKey.key : null;
+                    let userKey = this.props.userKey ? this.props.userKey.key : null;
+                    let formData = new FormData();
+                    formData.append('agent_key', agentKey);
+                    formData.append('user_key', userKey);
+                    if (!userKey){
+                        ProjectActions.createUserKey();
+                        ProjectActions.getUserKey();
+
+                    } else {
+                        ProjectActions.getAgentApiToken(agentKey, userKey, formData);
+                    }
+                }, 800);
             } else {
                 ProjectActions.getAgentApiToken(agentKey, userKey, formData);
             }
         }, 800);
-
-
     }
+
+    handleCopyButton() {
+        let copyTextArea = document.querySelector('#keyText');
+        copyTextArea.select();
+        var successful = document.execCommand('copy');
+        var msg = successful ? 'successful' : 'unsuccessful';
+        if(msg === 'successful') {
+            MainActions.addToast('Key copied to clipboard!');
+            this.setState({
+                apiKeyOpen: false,
+                newApiKeyOpen: false,
+                userKeyOpen: false,
+                newUserKeyOpen: false
+            });
+        }
+        if(msg === 'unsuccessful'){
+            MainActions.addToast('Failed copying key to clipboard!');
+            alert("Automatic copying to clipboard is not supported by Safari browsers: Manually copy the key by" +
+                " using CMD+C,");
+        }
+    };
 
     copyApiKey() {
         document.getElementById('keyText').select();
-        let clipText = document.execCommand('copy');
-        MainActions.addToast('API token copied to clipboard!');
-        ProjectActions.closeModal();
+        var successful = document.execCommand('copy');
+        var msg = successful ? 'successful' : 'unsuccessful';
+        if(msg === 'successful') {
+            MainActions.addToast('Credentials copied to clipboard!');
+            ProjectActions.closeModal();
+        }
+        if(msg === 'unsuccessful'){
+            MainActions.addToast('Failed copying credentials to clipboard!');
+            alert("Automatic copying to clipboard is not supported by Safari browsers: Manually copy the key by" +
+                " using CMD+C,");
+        }
     };
 
     handleClose() {
         ProjectActions.closeModal();
-        ProjectActions.clearApiToken();
+        ProjectActions.clearApiToken(); // Use this to make sure old api token doesn't show
     };
 }
 
@@ -205,7 +245,8 @@ var styles = {
     keyModal: {
         width: 300,
         textAlign: 'left',
-        fontFamily: 'monospace'
+        fontFamily: 'monospace',
+        fontSize: '1em'
     },
     list: {
         float: 'right',
@@ -213,6 +254,9 @@ var styles = {
     },
     loaders: {
         paddingTop: 40
+    },
+    textArea: {
+        color: '#F44336'
     },
     title: {
         marginRight: 40

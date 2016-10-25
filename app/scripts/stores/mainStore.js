@@ -1,5 +1,6 @@
 import Reflux from 'reflux';
 import MainActions from '../actions/mainActions';
+import ProjectStore from '../stores/projectStore';
 import appConfig from '../config';
 import cookie from 'react-cookie';
 
@@ -14,6 +15,7 @@ var MainStore = Reflux.createStore({
         this.asValidateLoading = false;
         this.currentUser = {};
         this.ddsApiTokenLoading = false;
+        this.failedUploads = [];
         this.modalOpen = cookie.load('modalOpen');
         this.signedInfo = null;
         this.toasts = [];
@@ -116,6 +118,7 @@ var MainStore = Reflux.createStore({
         cookie.remove('apiToken');
         this.appConfig.isLoggedIn = null;
         cookie.remove('isLoggedIn');
+        localStorage.removeItem('redirectTo');
         this.trigger({
             appConfig: this.appConfig
         });
@@ -150,6 +153,20 @@ var MainStore = Reflux.createStore({
         cookie.save('modalOpen', this.modalOpen, {expires: expiresAt});
         this.trigger({
             modalOpen: this.modalOpen
+        })
+    },
+
+    failedUpload(failedUploads) {
+        this.failedUploads = failedUploads;
+        this.trigger({
+            failedUploads: this.failedUploads
+        })
+    },
+
+    removeFailedUploads() {
+        this.failedUploads = [];
+        this.trigger({
+            failedUploads: this.failedUploads
         })
     }
 

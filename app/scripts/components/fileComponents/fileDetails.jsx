@@ -1,19 +1,21 @@
 import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
-import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-import ErrorModal from '../../components/globalComponents/errorModal.jsx';
 import FileOptionsMenu from './fileOptionsMenu.jsx';
 import FileVersionsList from './fileVersionsList.jsx';
 import VersionUpload from './versionUpload.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
-import urlGen from '../../../util/urlGen.js';
+import TagCloud from '../../components/globalComponents/tagCloud.jsx';
 import Tooltip from '../../../util/tooltip.js';
 import BaseUtils from '../../../util/baseUtils.js';
-import IconButton from 'material-ui/lib/icon-button';
 import Card from 'material-ui/lib/card/card';
+import FlatButton from 'material-ui/lib/flat-button';
+import IconButton from 'material-ui/lib/icon-button';
+import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
 import RaisedButton from 'material-ui/lib/raised-button';
+
+import Paper from 'material-ui/lib/paper';
 
 class FileDetails extends React.Component {
 
@@ -31,18 +33,18 @@ class FileDetails extends React.Component {
                     title="Download File"
                     rel="tooltip"
                     className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab mdl-button--colored"
-                    style={styles.floatingButton}
+                    style={styles.downloadBtn}
                     onTouchTap={() => this.handleDownload()}>
                     <i className="material-icons">get_app</i>
                 </button>;
-            optionsMenu = prjPrm === 'prjCrud' || prjPrm === 'flCrud' || prjPrm === 'flUpload' ? optionsMenu = <FileOptionsMenu {...this.props} /> : null;
+            optionsMenu = <FileOptionsMenu {...this.props} />;
         }
-        let id = this.props.params.id;
+        let id = this.props.entityObj && this.props.entityObj.current_version.id ? this.props.entityObj.current_version.id : null;
         let ancestors = this.props.entityObj ? this.props.entityObj.ancestors : null;
         let parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : null;
         let parentId = this.props.entityObj ? this.props.entityObj.parent.id : null;
         let name = this.props.entityObj ? this.props.entityObj.name : null;
-        let label = this.props.entityObj && this.props.entityObj.label ? this.props.entityObj.label : null;
+        let label = this.props.entityObj && this.props.entityObj.current_version.label ? this.props.entityObj.current_version.label : null;
         let projectName = this.props.entityObj && this.props.entityObj.ancestors ? this.props.entityObj.ancestors[0].name : null;
         let crdOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.created_on : null;
         let x = new Date(crdOn);
@@ -50,31 +52,57 @@ class FileDetails extends React.Component {
         let createdBy = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.created_by.full_name : null;
         let lastUpdatedOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.last_updated_on : null;
         let lastUpdatedBy = this.props.entityObj && this.props.entityObj.audit.last_updated_by ? this.props.entityObj.audit.last_updated_by.full_name : null;
-        let storage =  this.props.entityObj && this.props.entityObj.upload ? this.props.entityObj.upload.storage_provider.description : null;
-        let bytes = this.props.entityObj && this.props.entityObj.upload ? this.props.entityObj.upload.size : null;
-        let hash = this.props.entityObj && this.props.entityObj.upload.hash ? this.props.entityObj.upload.hash.algorithm +': '+ this.props.entityObj.upload.hash.value : null;
+        let storage =  this.props.entityObj && this.props.entityObj.current_version.upload ? this.props.entityObj.current_version.upload.storage_provider.description : null;
+        let bytes = this.props.entityObj && this.props.entityObj.current_version.upload ? this.props.entityObj.current_version.upload.size : null;
+        let hash = this.props.entityObj && this.props.entityObj.current_version.upload.hashes.length ? this.props.entityObj.current_version.upload.hashes[0].algorithm +': '+ this.props.entityObj.current_version.upload.hashes[0].value : null;
+        let currentVersion = this.props.entityObj && this.props.entityObj.current_version.version ? this.props.entityObj.current_version.version : null;
         let versionsButton = null;
         let versions = null;
-        if(this.props.fileVersions && this.props.fileVersions != undefined) {
+        let versionCount = [];
+        let width = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.width : window.innerWidth;
+
+        let provAlert = this.props.showProvAlert ? <Paper style={styles.provAlert} zDepth={1}>
+            <div style={styles.provAlert.wrapper}>Would you like to add provenance for this file?</div>
+            <IconButton style={styles.button} onTouchTap={() => this.dismissAlert()}>
+                <NavigationClose color="#E8F5E9"/>
+            </IconButton>
+            <FlatButton
+                label="Yes"
+                labelStyle={styles.provAlert.alertButton.label}
+                style={styles.provAlert.alertButton}
+                hoverColor="#4CAF50"
+                onTouchTap={() => this.openProv()}
+                />
+        </Paper> : '';
+
+        if(this.props.fileVersions && this.props.fileVersions != undefined && this.props.fileVersions.length > 1) {
             versions = this.props.fileVersions.map((version) => {
                 return version.is_deleted;
             });
             for (let i = 0; i < versions.length; i++) {
                 if (versions[i] === false) {
-                    versionsButton = <RaisedButton
-                        label="FILE VERSIONS"
-                        secondary={true}
-                        style={styles.button}
-                        onTouchTap={() => this.openModal()}
-                        />
+                    versionCount.push(versions[i]);
+                    if (versionCount.length > 1) {
+                        versionsButton = <RaisedButton
+                            label="FILE VERSIONS"
+                            secondary={true}
+                            style={styles.button}
+                            labelStyle={{fontWeight: 100}}
+                            onTouchTap={() => this.openModal()}
+                            />
+                    }
                 }
             }
         }
 
         Tooltip.bindEvents();
 
-        let file = <Card className="project-container mdl-color--white content mdl-color-text--grey-800" style={styles.container}>
-            { dlButton }
+        let file = <Card className="project-container mdl-color--white content mdl-color-text--grey-800"
+                         style={{marginTop: this.props.windowWidth > 680 ? 115 : 30, paddingBottom: 30,
+                                 overflow: 'visible', padding: '10px 0px 10px 0px'}}>
+            <div className="mdl-cell mdl-cell--12-col" style={{position: 'relative'}}>
+                { dlButton }
+            </div>
             <div id="tooltip"></div>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <div style={styles.menuIcon}>
@@ -89,21 +117,26 @@ class FileDetails extends React.Component {
                 <div className="mdl-cell mdl-cell--9-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
                     <span className="mdl-color-text--grey-800" style={styles.title}>{ name }</span>
                 </div>
-                { label != null ? <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
-                    <span className="mdl-color-text--grey-600">{ label }</span>
-                </div> : null}
-                <div className="mdl-cell mdl-cell--8-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.path}>
+                { label != null ? <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.subTitle}>
+                    <span className="mdl-color-text--grey-600" style={styles.spanTitle}>{ label }</span>
+                </div> : null }
+                <div className="mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.subTitle}>
+                    <span style={styles.spanTitle}>{ 'Version: ' + currentVersion }</span>
+                </div>
+                <div className="mdl-cell mdl-cell--8-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.subTitle}>
                     <span style={styles.spanTitle}>{ BaseUtils.getFilePath(ancestors) + name }</span>
                 </div>
                 <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.btnWrapper}>
                     { versionsButton }
                 </div>
+                {width >  300 ? <TagCloud {...this.props}/> : null}
                 <FileVersionsList {...this.props}/>
                 <VersionUpload {...this.props}/>
                 <div style={styles.uploadProg}>
                     { this.props.uploads ? <Loaders {...this.props}/> : null }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
+                    { provAlert }
                     <div className="list-block">
                         <div className="list-group">
                             <ul>
@@ -117,10 +150,30 @@ class FileDetails extends React.Component {
                         </div>
                         <div className="list-group">
                             <ul>
-                                <li className="list-group-title">Created On</li>
+                                <li className="list-group-title">Original File Created On</li>
                                 <li className="item-content">
                                     <div className="item-inner">
                                         <div>{ createdOn }</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="list-group">
+                            <ul>
+                                <li className="list-group-title">Last Updated By</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ lastUpdatedBy === null ? 'N/A' : lastUpdatedBy}</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="list-group">
+                            <ul>
+                                <li className="list-group-title">Last Updated On</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <div>{ lastUpdatedOn === null ? 'N/A' : new Date(lastUpdatedOn).toString() }</div>
                                     </div>
                                 </li>
                             </ul>
@@ -157,26 +210,6 @@ class FileDetails extends React.Component {
                         </div>
                         <div className="list-group">
                             <ul>
-                                <li className="list-group-title">Last Updated By</li>
-                                <li className="item-content">
-                                    <div className="item-inner">
-                                        <div>{ lastUpdatedBy === null ? 'N/A' : lastUpdatedBy}</div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                        <div className="list-group">
-                            <ul>
-                                <li className="list-group-title">Last Updated On</li>
-                                <li className="item-content">
-                                    <div className="item-inner">
-                                        <div>{ lastUpdatedOn === null ? 'N/A' : lastUpdatedOn }</div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                        <div className="list-group">
-                            <ul>
                                 <li className="list-group-title">Storage Location</li>
                                 <li className="item-content">
                                     <div className="item-inner">
@@ -201,10 +234,13 @@ class FileDetails extends React.Component {
         </Card>;
         return (
             <div>
-                <ErrorModal {...this.props}/>
                 {file}
             </div>
         )
+    }
+
+    dismissAlert(){
+        ProjectActions.hideProvAlert();
     }
 
     handleDownload(){
@@ -215,6 +251,14 @@ class FileDetails extends React.Component {
 
     openModal() {
         ProjectActions.openModal()
+    }
+
+    openProv() {
+        let versionId = this.props.entityObj.current_version.id;
+        ProjectActions.getWasGeneratedByNode(versionId);
+        ProjectActions.toggleProvView();
+        ProjectActions.toggleProvEditor();
+        ProjectActions.hideProvAlert();
     }
 }
 
@@ -231,29 +275,21 @@ var styles = {
         verticalAlign:-7
     },
     btnWrapper: {
-        marginTop: 11,
-        marginRight: 25,
+        margin: '11px 25px 20px 8px',
         float: 'right'
     },
     button: {
         float: 'right'
     },
-    container: {
-        marginTop: 30,
-        marginBottom: 30,
-        position: 'relative',
-        overflow: 'visible',
-        padding: '10px 0px 10px 0px'
-    },
     detailsTitle: {
         textAlign: 'left',
         float: 'left',
-        marginLeft: 26
+        marginLeft: 25
     },
-    floatingButton: {
+    downloadBtn: {
         position: 'absolute',
-        top: -20,
-        right: '2%',
+        top: -33,
+        right: '1.4%',
         zIndex: '2',
         color: '#ffffff'
     },
@@ -266,7 +302,26 @@ var styles = {
         marginTop: 30,
         marginBottom: -3
     },
-    path: {
+    provAlert: {
+        display: 'block',
+        overflow: 'auto',
+        backgroundColor: '#66BB6A',
+        minHeight: 48,
+        alertButton: {
+            float: 'right',
+            margin: 6,
+            label: {
+                color: '#E8F5E9',
+                fontWeight: 100
+            }
+        },
+        wrapper: {
+            float: 'left',
+            color: '#E8F5E9',
+            margin: '14px 10px 10px 10px'
+        }
+    },
+    subTitle: {
         textAlign: 'left',
         float: 'left',
         marginLeft: 25,

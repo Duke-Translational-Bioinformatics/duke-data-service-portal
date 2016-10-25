@@ -1,11 +1,9 @@
 import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
-import { Link } from 'react-router';
 import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
 import AgentOptionsMenu from '../components/globalComponents/agentOptionsMenu.jsx';
 import Loaders from '../components/globalComponents/loaders.jsx';
-import BaseUtils from '../../util/baseUtils.js';
 import urlGen from '../../util/urlGen.js';
 import Card from '../../../node_modules/material-ui/lib/card/card';
 
@@ -17,7 +15,8 @@ class Agent extends React.Component {
             agent: ProjectStore.agent,
             loading: false,
             errorModal: ProjectStore.errorModal,
-            error: ProjectStore.error
+            error: ProjectStore.error,
+            screenSize: ProjectStore.screenSize
         };
     }
 
@@ -55,7 +54,8 @@ class Agent extends React.Component {
         let lastUpdatedBy = this.state.entityObj && this.state.entityObj.audit.last_updated_by ? this.state.entityObj.audit.last_updated_by.full_name : null;
         let repoUrl = this.state.entityObj ? this.state.entityObj.repo_url : null;
         let agent = <Card className="project-container mdl-color--white content mdl-color-text--grey-800"
-                          style={styles.container}>
+                          style={{marginTop: this.props.windowWidth > 680 ? 115 : 30, marginBottom: 30,
+                                 overflow: 'visible', padding: '10px 0px 10px 0px'}}>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <div style={styles.menuIcon}>
                     <AgentOptionsMenu {...this.props} {...this.state}/>
