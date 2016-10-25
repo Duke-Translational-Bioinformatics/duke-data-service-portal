@@ -13,6 +13,11 @@ class Privacy extends React.Component {
             <Card className="project-container mdl-color--white content mdl-color-text--grey-800"
                   style={{marginTop: this.props.windowWidth > 680 ? 115 : 30, marginBottom: 30, padding: 30,
                                  overflow: 'visible'}}>
+                <a className="external mdl-color--white mdl-cell mdl-cell--12-col mdl-color-text--grey-800"
+                   onTouchTap={() => this.goBack()} style={{float: 'left', cursor: 'pointer'}}>
+                    <i className="material-icons" style={{verticalAlign: -7, marginLeft: -10, marginRight: 5}}>keyboard_backspace</i>
+                    Back
+                </a>
                 <h1 style={{textAlign: 'center', fontSize: '3em'}}>DukeDS / Data Service at Duke</h1>
                 <h6>This is the privacy policy for Data Service at Duke, and is intended to describe the privacy
                    practices employed and detail how information is collected, accessed, stored and transmitted,
@@ -65,6 +70,9 @@ class Privacy extends React.Component {
                 <p style={{textAlign: 'right'}}>Effective Date: 10/7/16</p>
             </Card>
         );
+    }
+    goBack() {
+        window.history.back();
     }
 }
 
