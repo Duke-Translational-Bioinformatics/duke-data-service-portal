@@ -129,7 +129,7 @@ class App extends React.Component {
             });
         }
         if (!this.state.appConfig.apiToken && !this.state.appConfig.isLoggedIn && this.props.routerPath !== '/login') {
-            if (location.hash != '' && location.hash != '#/login') {
+            if (location.hash !== '' && location.hash !== '#/login' && location.hash !== '#/public_privacy') {
                 let redUrl = location.href;
                 if (typeof(Storage) !== 'undefined') {
                     localStorage.setItem('redirectTo', redUrl);
