@@ -168,7 +168,7 @@ var ProjectActions = Reflux.createActions([
 ]);
 
 ProjectActions.addProvRelation.preEmit = function (kind, body) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'relations/'+ kind, {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'relations/' + kind, {
         method: 'post',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -186,7 +186,7 @@ ProjectActions.addProvRelation.preEmit = function (kind, body) {
     })
 };
 
-ProjectActions.deleteProvItem.preEmit = function (data ,id) {
+ProjectActions.deleteProvItem.preEmit = function (data, id) {
     let kind = data.hasOwnProperty('from') ? 'relations/' : 'activities/';
     let msg = kind === 'activities/' ? data.label : data.type;
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + kind + data.id, {
@@ -197,7 +197,7 @@ ProjectActions.deleteProvItem.preEmit = function (data ,id) {
         }
     }).then(checkResponse).then(function (response) {
     }).then(function (json) {
-        MainActions.addToast(msg +' deleted');
+        MainActions.addToast(msg + ' deleted');
         ProjectActions.deleteProvItemSuccess(data);
     }).catch(function (ex) {
         MainActions.addToast('Failed to delete ' + msg);
@@ -228,7 +228,7 @@ ProjectActions.addProvActivity.preEmit = function (name, desc) {
 };
 
 ProjectActions.editProvActivity.preEmit = function (id, name, desc, prevName) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'activities/'+ id, {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'activities/' + id, {
         method: 'put',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -241,7 +241,7 @@ ProjectActions.editProvActivity.preEmit = function (id, name, desc, prevName) {
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        if(name !== prevName) {
+        if (name !== prevName) {
             MainActions.addToast(prevName + ' name was changed to ' + name);
         } else {
             MainActions.addToast(prevName + ' was edited');
@@ -312,7 +312,7 @@ ProjectActions.getWasGeneratedByNode.preEmit = function (id, kind, prevGraph) {
 };
 
 ProjectActions.search.preEmit = function (text, id) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT+ id +'/children?name_contains='+text, {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT + id + '/children?name_contains=' + text, {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -329,7 +329,7 @@ ProjectActions.search.preEmit = function (text, id) {
 };
 
 ProjectActions.searchFiles.preEmit = function (text, id) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT+ id +'/children?name_contains='+text, {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT + id + '/children?name_contains=' + text, {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -345,7 +345,7 @@ ProjectActions.searchFiles.preEmit = function (text, id) {
 };
 
 ProjectActions.addNewTag.preEmit = function (id, kind, tag) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/'+kind+'/'+id, {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/' + kind + '/' + id, {
         method: 'post',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -357,7 +357,7 @@ ProjectActions.addNewTag.preEmit = function (id, kind, tag) {
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        MainActions.addToast('Added '+json.label+' tag');
+        MainActions.addToast('Added ' + json.label + ' tag');
         ProjectActions.addNewTagSuccess(id);
     }).catch(function (ex) {
         MainActions.addToast('Failed to add new tag');
@@ -366,7 +366,9 @@ ProjectActions.addNewTag.preEmit = function (id, kind, tag) {
 };
 
 ProjectActions.appendTags.preEmit = function (id, kind, tags) {
-    let msg = tags.map((tag)=>{return tag.label});
+    let msg = tags.map((tag)=> {
+        return tag.label
+    });
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/' + kind + '/' + id + '/append', {
         method: 'post',
         headers: {
@@ -379,7 +381,7 @@ ProjectActions.appendTags.preEmit = function (id, kind, tags) {
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        MainActions.addToast('Added '+msg+' as tags to all selected files.');
+        MainActions.addToast('Added ' + msg + ' as tags to all selected files.');
         ProjectActions.appendTagsSuccess(id);
     }).catch(function (ex) {
         MainActions.addToast('Failed to add tags');
@@ -396,10 +398,10 @@ ProjectActions.deleteTag.preEmit = function (id, label, fileId) {
         }
     }).then(checkResponse).then(function (response) {
     }).then(function () {
-        MainActions.addToast(label +' tag deleted!');
+        MainActions.addToast(label + ' tag deleted!');
         ProjectActions.deleteTagSuccess(fileId)
     }).catch(function (ex) {
-        MainActions.addToast('Failed to delete '+ label);
+        MainActions.addToast('Failed to delete ' + label);
         ProjectActions.handleErrors(ex)
     });
 };
@@ -422,8 +424,8 @@ ProjectActions.getTagLabels.preEmit = function () {
 
 
 ProjectActions.getTagAutoCompleteList.preEmit = function (text) {
-    let query = text === null ? '' : '&label_contains='+text;
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/labels/?object_kind=dds-file'+ query, {
+    let query = text === null ? '' : '&label_contains=' + text;
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/labels/?object_kind=dds-file' + query, {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -439,7 +441,7 @@ ProjectActions.getTagAutoCompleteList.preEmit = function (text) {
 };
 
 ProjectActions.getTags.preEmit = function (id, kind) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/' + kind +'/'+ id, {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/' + kind + '/' + id, {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -1071,7 +1073,7 @@ ProjectActions.getProjectMembers.preEmit = (id) => {
 };
 
 ProjectActions.getUserName.preEmit = (text) => {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + text , {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + text, {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -1105,7 +1107,7 @@ ProjectActions.getUserId.preEmit = (fullName, id, role) => {
 };
 
 ProjectActions.addProjectMember.preEmit = (id, userId, role, name) => {
-    let newRole = role.replace('_',' ');
+    let newRole = role.replace('_', ' ');
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions/' + userId, {
         method: 'put',
         headers: {
@@ -1118,7 +1120,7 @@ ProjectActions.addProjectMember.preEmit = (id, userId, role, name) => {
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        MainActions.addToast(name + ' ' + 'has been added as a ' +newRole+ ' to this project');
+        MainActions.addToast(name + ' ' + 'has been added as a ' + newRole + ' to this project');
         ProjectActions.addProjectMemberSuccess(id)
     })
         .catch(function (ex) {
@@ -1207,7 +1209,7 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
     }
     fileReader.onload = function (event, files) {
         // create project upload
-        fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT + projId +'/'+ Path.UPLOAD, {
+        fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT + projId + '/' + Path.UPLOAD, {
             method: 'post',
             headers: {
                 'Authorization': appConfig.apiToken,
@@ -1282,7 +1284,7 @@ function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKi
     xhr.upload.onprogress = uploadProgress;
     function uploadProgress(e) {
         if (e.lengthComputable) {
-            ProjectActions.updateChunkProgress(uploadId, chunkNum, e.loaded/e.total * (chunkBlob.size));
+            ProjectActions.updateChunkProgress(uploadId, chunkNum, e.loaded / e.total * (chunkBlob.size));
         }
     }
 
@@ -1318,7 +1320,7 @@ ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentK
     }).then(checkResponse).then(function (response) {
         return response.json()
     }).then(function (json) {
-        if(fileId == null){
+        if (fileId == null) {
             ProjectActions.addFile(uploadId, parentId, parentKind, fileName, label);
         } else {
             ProjectActions.addFileVersion(uploadId, label, fileId);
@@ -1394,8 +1396,8 @@ ProjectActions.hashFile.preEmit = function (file, id) {
 // "Server response"
     let assetPath = location.protocol + '//' + location.host + '/lib/md5.js';
     let response =
-        "importScripts("+"'"+assetPath+"'"+");" +
-        "let md5, cryptoType;" +
+        "importScripts(" + "'" + assetPath + "'" + ");" +
+        "var md5, cryptoType;" +
         "self.onmessage = " + webWorkerOnMessage.toString();
 
     let blob;
@@ -1415,7 +1417,7 @@ ProjectActions.hashFile.preEmit = function (file, id) {
         chunks = Math.ceil(f.size / chunksize),
         chunkTasks = [],
         startTime = (new Date()).getTime();
-        worker.onmessage = function (e) {
+    worker.onmessage = function (e) {
         // create callback
         for (let j = 0; j < chunks; j++) {
             (function (j, f) {
