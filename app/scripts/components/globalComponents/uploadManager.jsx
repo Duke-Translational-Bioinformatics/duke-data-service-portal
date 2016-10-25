@@ -158,7 +158,7 @@ class UploadManager extends React.Component {
             let parentId = this.props.params.id;
             let fileList = document.getElementById('uploadBtn').files;
             let tags = this.state.tagsToAdd;
-            for (var i = 0; i < fileList.length; i++) {
+            for (let i = 0; i < fileList.length; i++) {
                 let blob = fileList[i];
                 if (!this.props.entityObj) {
                     projId = this.props.params.id;

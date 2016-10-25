@@ -1399,7 +1399,6 @@ ProjectActions.hashFile.preEmit = function (file, id) {
         "importScripts(" + "'" + assetPath + "'" + ");" +
         "var md5, cryptoType;" +
         "self.onmessage = " + webWorkerOnMessage.toString();
-    console.log(webWorkerOnMessage.toString());
 
     let blob;
     try {
@@ -1452,6 +1451,5 @@ ProjectActions.hashFile.preEmit = function (file, id) {
 function checkResponse(response) {
     return checkStatus(response, MainActions);
 }
-
 
 export default ProjectActions;
