@@ -132,7 +132,7 @@ class TagManager extends React.Component {
                 setTimeout(()=>{
                     clearText();
                 }, 500);
-                this.setState({tagsToAdd: this.state.tagsToAdd})
+                this.setState({tagsToAdd: this.state.tagsToAdd, floatingErrorText: ''})
             }
         }
     }
@@ -141,14 +141,19 @@ class TagManager extends React.Component {
         let files = this.props.filesChecked;
         let id = this.props.params.id;
         let tags = this.state.tagsToAdd;
-        if(this.props.filesChecked.length > 0) {
-            for (let i = 0; i < files.length; i++) {
-                ProjectActions.appendTags(files[i], 'dds-file', tags);
-            }
+        if(!this.state.tagsToAdd.length) {
+            this.setState({floatingErrorText: 'You must add tags to the list. Type a tag name and press enter.'});
         } else {
-            ProjectActions.appendTags(id, 'dds-file', tags);
+            if (this.props.filesChecked.length > 0) {
+                for (let i = 0; i < files.length; i++) {
+                    ProjectActions.appendTags(files[i], 'dds-file', tags);
+                }
+            } else {
+                ProjectActions.appendTags(id, 'dds-file', tags);
+            }
+            this.toggleTagManager();
+            this.setState({floatingErrorText:''})
         }
-        this.toggleTagManager();
     }
 
     deleteTag(id, label) {
