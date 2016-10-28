@@ -14,7 +14,7 @@ class FolderPath extends React.Component {
         let ancestors = this.props.entityObj ? this.props.entityObj.ancestors : null;
         let parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : null;
         let parentId = this.props.entityObj ? this.props.entityObj.parent.id : null;
-        let name = this.props.entityObj ? this.props.entityObj.name : null;
+        let name = this.props.entityObj ? this.props.entityObj.name : '';
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
         
         let uploadMdl = null;
@@ -23,7 +23,7 @@ class FolderPath extends React.Component {
             uploadMdl = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <UploadManager {...this.props}/>;
             optionsMenu = prjPrm === 'prjCrud' || prjPrm === 'flCrud' ? optionsMenu = <FolderOptionsMenu {...this.props} /> : null;
         }
-
+        let path = ancestors !== null ? BaseUtils.getFilePath(ancestors) : '';
         return (
             <Card className="project-container group mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800"
                   style={{marginTop: this.props.windowWidth > 680 ? 115 : 40,
@@ -47,7 +47,7 @@ class FolderPath extends React.Component {
                         <h5 style={{marginTop: 18}}><i className="material-icons" style={styles.folderIcon}>folder_open</i>{ name }</h5>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.breadcrumbs}>
-                        <h6>{ BaseUtils.getFilePath(ancestors) + name }</h6>
+                        <h6>{path}  {' '+name}</h6>
                     </div>
                 </div>
             </Card>

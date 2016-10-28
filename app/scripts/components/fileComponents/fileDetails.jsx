@@ -43,7 +43,7 @@ class FileDetails extends React.Component {
         let ancestors = this.props.entityObj ? this.props.entityObj.ancestors : null;
         let parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : null;
         let parentId = this.props.entityObj ? this.props.entityObj.parent.id : null;
-        let name = this.props.entityObj ? this.props.entityObj.name : null;
+        let name = this.props.entityObj ? this.props.entityObj.name : '';
         let label = this.props.entityObj && this.props.entityObj.current_version.label ? this.props.entityObj.current_version.label : null;
         let projectName = this.props.entityObj && this.props.entityObj.ancestors ? this.props.entityObj.ancestors[0].name : null;
         let crdOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.created_on : null;
@@ -60,7 +60,7 @@ class FileDetails extends React.Component {
         let versions = null;
         let versionCount = [];
         let width = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.width : window.innerWidth;
-
+        let path = ancestors !== null ? BaseUtils.getFilePath(ancestors) : '';
         let provAlert = this.props.showProvAlert ? <Paper style={styles.provAlert} zDepth={1}>
             <div style={styles.provAlert.wrapper}>Would you like to add provenance for this file?</div>
             <IconButton style={styles.button} onTouchTap={() => this.dismissAlert()}>
@@ -124,7 +124,7 @@ class FileDetails extends React.Component {
                     <span style={styles.spanTitle}>{ 'Version: ' + currentVersion }</span>
                 </div>
                 <div className="mdl-cell mdl-cell--8-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.subTitle}>
-                    <span style={styles.spanTitle}>{ BaseUtils.getFilePath(ancestors) + name }</span>
+                    <span style={styles.spanTitle}>{path}  {' '+name}</span>
                 </div>
                 <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.btnWrapper}>
                     { versionsButton }
@@ -223,7 +223,7 @@ class FileDetails extends React.Component {
                                 <li className="list-group-title">File Path</li>
                                 <li className="item-content">
                                     <div className="item-inner">
-                                        <div>{BaseUtils.getFilePath(ancestors) + name}</div>
+                                        <div>{path}  {' '+name}</div>
                                     </div>
                                 </li>
                             </ul>
