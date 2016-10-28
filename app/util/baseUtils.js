@@ -1,3 +1,5 @@
+import React from 'react';
+
 let BaseUtils = {
         bytesToSize(bytes){
             if (bytes == 0) return '0 Byte';
@@ -6,14 +8,18 @@ let BaseUtils = {
         },
 
         getFilePath(ancestors) {
-            if (ancestors != undefined) {
-                let path = ancestors.map((path)=> {
-                    return path.name + ' ' + '>' + ' ';
-                });
-                return path.join('');
-            } else {
-                return null
-            }
+            let getKind = (kind) => {
+                if(kind === 'dds-file') {
+                    return '/file/';
+                } else if(kind === 'dds-folder') {
+                    return '/folder/'
+                }
+                return '/project/'
+            };
+            return ancestors !== null ? ancestors.map((obj)=>{
+                let kind = getKind(obj.kind);
+                return <a href={'#'+kind+obj.id} key={obj.id} className='external link'>{obj.name + ' > '}</a>;
+            }) : '';
         },
 
         getUrlPath (parentKind) {
