@@ -292,10 +292,11 @@ var styles = {
         float: 'left'
     },
     tagLabelsContainer: {
-        textAlign: 'left'
+        textAlign: 'left',
+        padding: 6
     },
     tagLabelsHeading: {
-        margin: '10px 0px 10px 0px',
+        margin: 0,
         span: {
             fontSize: '.7em'
         }
