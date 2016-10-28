@@ -21,6 +21,7 @@ var ProjectStore = Reflux.createStore({
         this.batchFiles = [];
         this.batchFolders = [];
         this.children = [];
+        this.childrenLoading = false;
         this.currentUser = {};
         this.destination = null;
         this.destinationKind = null;
@@ -1118,7 +1119,8 @@ var ProjectStore = Reflux.createStore({
 
     getChildren() {
         this.trigger({
-            loading: true
+            loading: true,
+            childrenLoading: true
         })
     },
 
@@ -1126,6 +1128,7 @@ var ProjectStore = Reflux.createStore({
         this.children = results;
         this.trigger({
             children: this.children,
+            childrenLoading: false,
             loading: false
         })
     },
