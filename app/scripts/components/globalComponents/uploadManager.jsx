@@ -33,7 +33,13 @@ class UploadManager extends React.Component {
                 <span className="closebtn" onTouchTap={() => this.deleteTag(tag.id, tag.label)}>&times;</span>
             </div>)
         }) : null;
-
+        let tagLabels = this.props.tagLabels.map((label)=>{
+            return (
+                <li key={label.label+Math.random()} style={styles.tagLabels} onTouchTap={() => this.addTagToCloud(label.label)}>{label.label}
+                    <span className="mdl-color-text--grey-600">,</span>
+                </li>
+            )
+        });
         let name = this.props.entityObj ? this.props.entityObj.name : '';
         let autoCompleteData = this.props.tagAutoCompleteList && this.props.tagAutoCompleteList.length > 0 ? this.props.tagAutoCompleteList : [];
         let height = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.height : window.innerHeight;
@@ -100,6 +106,14 @@ class UploadManager extends React.Component {
                                             style={styles.addTagIcon}>
                                     <AddCircle color={'#235F9C'}/>
                                 </IconButton><br/>
+                            </div>
+                            <div className="mdl-cell mdl-cell--6-col mdl-color-text--grey-400" style={styles.tagLabelsContainer}>
+                                <h6 style={styles.tagLabelsHeading}>Recently used tags <span style={styles.tagLabelsHeading.span}>(click on a tag to add it to {name})</span></h6>
+                                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400">
+                                    <ul style={styles.tagLabelList}>
+                                        { tagLabels }
+                                    </ul>
+                                </div>
                             </div>
                             <div className="mdl-cell mdl-cell--6-col mdl-color-text--grey-400" style={styles.chipWrapper}>
                                 {this.state.tagsToAdd.length ? <h6 style={styles.chipHeader}>Tags To Add</h6> : null}
@@ -271,11 +285,25 @@ var styles = {
     mainHeading: {
         textAlign: 'center'
     },
+    tagLabels: {
+        margin: 3,
+        cursor: 'pointer',
+        color: '#235F9C',
+        float: 'left'
+    },
+    tagLabelsContainer: {
+        textAlign: 'left'
+    },
     tagLabelsHeading: {
-        margin: '0px 0px 0px 16px',
+        margin: '10px 0px 10px 0px',
         span: {
             fontSize: '.7em'
         }
+    },
+    tagLabelList: {
+        listStyleType: 'none',
+        padding: '5px 0px 5px 0px',
+        margin: '0px 0px 0px -10px'
     },
     toggleBtn: {
         margin: '25px 0px 15px 0px',
