@@ -129,7 +129,7 @@ class ProjectChildren extends React.Component {
                         { this.props.showBatchOps ? <BatchOps {...this.props} {...this.state}/> : null }
                     </div>
                 </div>
-                { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
+                { this.props.uploads || this.props.loading || this.props.childrenLoading ? <Loaders {...this.props}/> : null }
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     <div className="list-block list-block-search searchbar-found media-list">
                         <ul>
