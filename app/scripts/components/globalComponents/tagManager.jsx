@@ -1,17 +1,14 @@
 import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
-import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import AddCircle from 'material-ui/lib/svg-icons/content/add-circle';
 import AutoComplete from 'material-ui/lib/auto-complete';
-import Divider from 'material-ui/lib/divider';
 import IconButton from 'material-ui/lib/icon-button';
 import LeftNav from 'material-ui/lib/left-nav';
 import Help from 'material-ui/lib/svg-icons/action/help';
 import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
 import RaisedButton from 'material-ui/lib/raised-button';
-import Tooltip from '../../../util/tooltip.js';
 
 class TagManager extends React.Component {
 

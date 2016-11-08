@@ -16,7 +16,7 @@ class File extends React.Component {
             error: ProjectStore.error,
             errorModal: ProjectStore.errorModal,
             filesChecked: ProjectStore.filesChecked,
-            graphLoading: ProjectStore.graphLoading,
+            drawerLoading: ProjectStore.drawerLoading,
             loading: false,
             moveModal: ProjectStore.moveModal,
             moveErrorModal: ProjectStore.moveErrorModal,

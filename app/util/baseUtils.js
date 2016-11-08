@@ -50,6 +50,26 @@ let BaseUtils = {
                 width = '';
             }
             return width;
+        },
+
+        hasWhiteSpace(s) {
+            return /\s/g.test(s);
+        },
+
+        validateTemplateName(s) {
+            return /^\w+$/.test(s);
+        },
+
+        getTemplatePropertyType(type) {
+            let propType = null;
+            if(type === 'long') {
+                propType = 'number';
+            } else if(type === 'double') {
+                propType = 'decimal';
+            } else {
+                propType = type;
+            }
+            return propType;
         }
 };
 

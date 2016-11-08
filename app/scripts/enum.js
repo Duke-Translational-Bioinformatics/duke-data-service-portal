@@ -8,12 +8,16 @@ export const StatusEnum = Object.freeze({
 });
 
 export const Path = Object.freeze({
+    ACTIVITIES: 'activities/',
     AGENT: 'software_agents/',
     CURRENT_USER: 'current_user/',
     FILE: 'files/',
     FILE_VERSION: 'file_versions/',
     FOLDER : 'folders/',
     PROJECT : 'projects/',
+    TAGS: 'tags/',
+    TEMPLATES: 'templates/',
+    TEMPLATE_PROPERTIES: 'template_properties/',
     UPLOAD: 'uploads/'
 });
 

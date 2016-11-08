@@ -8,6 +8,25 @@ import { StatusEnum, Path } from '../enum';
 import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.js';
 
 var ProjectActions = Reflux.createActions([
+    'deleteMetadataProperty',
+    'deleteMetadataPropertySuccess',
+    'getMetadataTemplateProperties',
+    'getMetadataTemplatePropertiesSuccess',
+    'showMetaDataTemplateDetails',
+    'createMetadataProperty',
+    'createMetadataPropertySuccess',
+    'showTemplatePropManager',
+    'deleteTemplate',
+    'deleteTemplateSuccess',
+    'updateMetadataTemplate',
+    'updateMetadataTemplateSuccess',
+    'createMetadataTemplateSuccess',
+    'createMetadataTemplate',
+    'toggleMetadataManager',
+    'getMetadataTemplateDetails',
+    'getMetadataTemplateDetailsSuccess',
+    'loadMetadataTemplates',
+    'loadMetadataTemplatesSuccess',
     'expandProvenanceGraph',
     'clearProvFileVersions',
     'clearSearchFilesData',
@@ -164,8 +183,166 @@ var ProjectActions = Reflux.createActions([
     'getChildren',
     'getChildrenSuccess',
     'removeErrorModal',
-    'removeFailedUploads'
+    'removeFailedUploads',
+    'toggleModals'
 ]);
+
+ProjectActions.deleteMetadataProperty.preEmit = function (id, label) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.TEMPLATE_PROPERTIES + id, {
+        method: 'delete',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+    }).then(function (json) {
+        MainActions.addToast('The '+label+' property has been deleted');
+        ProjectActions.deleteMetadataPropertySuccess(id);
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to delete '+label);
+        ProjectActions.handleErrors(ex)
+    });
+};
+
+ProjectActions.getMetadataTemplateProperties.preEmit = function (id) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.TEMPLATES +id+'/properties', {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getMetadataTemplatePropertiesSuccess(json.results)
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.createMetadataProperty.preEmit = function (id, name, label, desc, type) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.TEMPLATES +id+'/properties', {
+        method: 'post',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            "key": name,
+            "label": label,
+            "description": desc,
+            "type": type
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('A new template property called '+label+' was added');
+        //ProjectActions.getMetadataTemplateProperties(id);
+        ProjectActions.createMetadataPropertySuccess(json);
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to add new template property');
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.deleteTemplate.preEmit = function (id, label) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.TEMPLATES + id, {
+        method: 'delete',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+    }).then(function (json) {
+        MainActions.addToast('The '+label+' template has been deleted');
+        ProjectActions.deleteTemplateSuccess();
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to delete '+label);
+        ProjectActions.handleErrors(ex)
+    });
+};
+
+ProjectActions.updateMetadataTemplate.preEmit = function (id, name, label, desc) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.TEMPLATES + id, {
+        method: 'put',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            "name": name,
+            "label": label,
+            "description": desc
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast(label+' has been updated.');
+        ProjectActions.getMetadataTemplateDetailsSuccess(json);
+        ProjectActions.loadMetadataTemplates();
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to update '+label);
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+
+ProjectActions.createMetadataTemplate.preEmit = function (name, label, desc) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.TEMPLATES, {
+        method: 'post',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            "name": name,
+            "label": label,
+            "description": desc
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('A new template called '+label+' was added');
+        ProjectActions.getMetadataTemplateDetailsSuccess(json);
+        ProjectActions.createMetadataTemplateSuccess(json);
+    }).catch(function (ex) {
+        MainActions.addToast('Failed to add new template');
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.getMetadataTemplateDetails.preEmit = function (id) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.TEMPLATES + id, {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getMetadataTemplateDetailsSuccess(json)
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
+
+ProjectActions.loadMetadataTemplates.preEmit = function (value) {
+    let searchQuery = value !== null ? '?name_contains='+ value : '';
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.TEMPLATES + searchQuery, {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.loadMetadataTemplatesSuccess(json.results)
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
 
 ProjectActions.addProvRelation.preEmit = function (kind, body) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'relations/' + kind, {
@@ -206,7 +383,7 @@ ProjectActions.deleteProvItem.preEmit = function (data, id) {
 };
 
 ProjectActions.addProvActivity.preEmit = function (name, desc) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'activities/', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.ACTIVITIES, {
         method: 'post',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -228,7 +405,7 @@ ProjectActions.addProvActivity.preEmit = function (name, desc) {
 };
 
 ProjectActions.editProvActivity.preEmit = function (id, name, desc, prevName) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'activities/' + id, {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.ACTIVITIES + id, {
         method: 'put',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -253,7 +430,7 @@ ProjectActions.editProvActivity.preEmit = function (id, name, desc, prevName) {
 };
 
 ProjectActions.getActivities.preEmit = function () {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'activities/', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.ACTIVITIES, {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -345,7 +522,7 @@ ProjectActions.searchFiles.preEmit = function (text, id) {
 };
 
 ProjectActions.addNewTag.preEmit = function (id, kind, tag) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/' + kind + '/' + id, {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.TAGS + kind + '/' + id, {
         method: 'post',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -369,7 +546,7 @@ ProjectActions.appendTags.preEmit = function (id, kind, tags) {
     let msg = tags.map((tag)=> {
         return tag.label
     });
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/' + kind + '/' + id + '/append', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.TAGS + kind + '/' + id + '/append', {
         method: 'post',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -390,7 +567,7 @@ ProjectActions.appendTags.preEmit = function (id, kind, tags) {
 };
 
 ProjectActions.deleteTag.preEmit = function (id, label, fileId) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/' + id, {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.TAGS + id, {
         method: 'delete',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -441,7 +618,7 @@ ProjectActions.getTagAutoCompleteList.preEmit = function (text) {
 };
 
 ProjectActions.getTags.preEmit = function (id, kind) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/' + kind + '/' + id, {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.TAGS + kind + '/' + id, {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -1459,7 +1636,6 @@ ProjectActions.hashFile.preEmit = function (file, id) {
         };
         worker.postMessage({type: "create"});
     }
-
 };
 
 function checkResponse(response) {

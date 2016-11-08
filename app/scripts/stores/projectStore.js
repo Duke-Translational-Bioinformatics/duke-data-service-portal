@@ -35,13 +35,16 @@ var ProjectStore = Reflux.createStore({
         this.fileHashes = [];
         this.foldersChecked = [];
         this.fileVersions = [];
-        this.graphLoading = false;
+        this.drawerLoading = false;
         this.itemsSelected = null;
+        this.metaDataTemplate = null;
+        this.metaTemplates = [];
         this.modal = false;
         this.moveModal = false;
         this.moveToObj = {};
         this.moveErrorModal = false;
         this.objectTags = [];
+        this.openMetadataManager = false;
         this.openTagManager = false;
         this.openUploadManager = false;
         this.parent = {};
@@ -64,12 +67,17 @@ var ProjectStore = Reflux.createStore({
         this.selectedEdge = null;
         this.searchText = '';
         this.showBatchOps = false;
+        this.showPropertyCreator = false;
         this.showProvAlert = false;
         this.showProvCtrlBtns = false;
         this.showProvDetails = false;
+        this.showTemplateCreator = false;
+        this.showTemplateDetails = false;
         this.screenSize = {};
         this.showBatchOps = false;
         this.tagLabels = [];
+        this.templateProperties = [];
+        this.toggleModal = {open: false, id: null};
         this.toggleProv = false;
         this.toggleProvEdit = false;
         this.updatedGraphItem = [];
@@ -78,6 +86,126 @@ var ProjectStore = Reflux.createStore({
         this.users = [];
         this.userKey = {};
         this.versionModal = false;
+    },
+
+    deleteMetadataPropertySuccess(id) {
+        this.templateProperties = BaseUtils.removeObjByKey(this.templateProperties, {key: 'id', value: id});
+        this.trigger({
+            templateProperties: this.templateProperties
+        })
+    },
+
+    getMetadataTemplateProperties() {
+        this.trigger({
+            drawerLoading: true
+        })
+    },
+
+    getMetadataTemplatePropertiesSuccess(properties) {
+        this.templateProperties = properties;
+        this.trigger({
+            drawerLoading: false,
+            templateProperties: this.templateProperties
+        })
+    },
+
+    createMetadataProperty() {
+        this.trigger({
+            drawerLoading: true
+        })
+    },
+
+    createMetadataPropertySuccess(property) {
+        this.templateProperties.push(property);
+        this.trigger({
+            drawerLoading: false,
+            templateProperties: this.templateProperties
+        })
+    },
+
+    showMetaDataTemplateDetails() {
+        this.trigger({
+            showPropertyCreator: false,
+            showTemplateCreator: false,
+            showTemplateDetails: true
+        })
+    },
+
+    showTemplatePropManager() {
+        this.trigger({
+            showPropertyCreator: true,
+            showTemplateCreator: false,
+            showTemplateDetails: false
+        })
+    },
+
+    deleteTemplateSuccess() {
+        ProjectActions.toggleMetadataManager();
+        ProjectActions.loadMetadataTemplates();
+    },
+
+    updateMetadataTemplate() {
+        this.trigger({
+            drawerLoading: true
+        })
+    },
+
+    createMetadataTemplate() {
+        this.templateProperties = [];
+        this.trigger({
+            drawerLoading: true,
+            templateProperties: this.templateProperties
+        })
+    },
+
+    createMetadataTemplateSuccess(template) {
+        this.metaTemplates.push(template);
+        this.trigger({
+            drawerLoading: false,
+            metaTemplates: this.metaTemplates
+        })
+    },
+
+    toggleMetadataManager() {
+        this.openMetadataManager = !this.openMetadataManager;
+        this.trigger({
+            openMetadataManager: this.openMetadataManager,
+            showPropertyCreator: false,
+            showTemplateDetails: false,
+            showTemplateCreator: true
+        })
+    },
+
+    getMetadataTemplateDetails() {
+        this.openMetadataManager = !this.openMetadataManager;
+        this.trigger({
+            drawerLoading: true,
+            openMetadataManager: this.openMetadataManager
+        })
+    },
+
+    getMetadataTemplateDetailsSuccess(template) {
+        this.metaDataTemplate = template;
+        this.trigger({
+            drawerLoading: false,
+            metadataTemplate: this.metaDataTemplate,
+            showTemplateCreator: false,
+            showTemplateDetails: true
+        })
+    },
+
+    loadMetadataTemplates() {
+        this.trigger({
+            loading: true
+        })
+    },
+
+    loadMetadataTemplatesSuccess(templates) {
+        this.metaTemplates = templates;
+        this.trigger({
+            loading: false,
+            metaTemplates: this.metaTemplates
+        })
     },
 
     saveGraphZoomState(scale, position) {
@@ -418,19 +546,19 @@ var ProjectStore = Reflux.createStore({
 
     toggleGraphLoading() {
         this.trigger({
-            graphLoading: false
+            drawerLoading: false
         })
     },
 
     getWasGeneratedByNode() {
         this.trigger({
-            graphLoading: true
+            drawerLoading: true
         })
     },
 
     getProvenance() {
         this.trigger({
-            graphLoading: true
+            drawerLoading: true
         })
     },
 
@@ -970,7 +1098,9 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             error: err,
             errorModals: this.errorModals,
-            loading: false
+            loading: false,
+            drawerLoading: false,
+            graphLoading: false
         })
     },
 
@@ -1517,6 +1647,14 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             fileHashes: fileHashes
         })
+    },
+
+    toggleModals(id) {
+        this.toggleModal.open = !this.toggleModal.open;
+        this.toggleModal.id = id;
+        this.trigger({
+            toggleModal: this.toggleModal
+        });
     }
 });
 
