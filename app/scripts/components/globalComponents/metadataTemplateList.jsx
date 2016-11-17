@@ -6,6 +6,7 @@ import ProjectStore from '../../stores/projectStore';
 import AddAgentModal from '../../components/globalComponents/addAgentModal.jsx';
 import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
+import Help from 'material-ui/lib/svg-icons/action/help';
 import IconButton from 'material-ui/lib/icon-button';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import Paper from 'material-ui/lib/paper';
@@ -42,7 +43,7 @@ class MetadataTemplateList extends React.Component {
         let templateList = this.props.metaTemplates && this.props.metaTemplates !== null && currentUser !== null ? this.props.metaTemplates.map((obj) => {
             if(this.state.toggleSwitch){
                 return (
-                    <li key={ obj.id } className="hover">
+                    <li key={ obj.id } className="hover" style={styles.listItem}>
                         <a className="item-content external" onTouchTap={()=> this.viewTemplate(obj.id)}>
                             <div className="item-media">
                                 <i className="material-icons" style={styles.icon}>view_list</i>
@@ -59,8 +60,8 @@ class MetadataTemplateList extends React.Component {
             } else {
                 if (obj.audit.created_by.id === currentUser.id) {
                     return (
-                        <li key={ obj.id } className="hover">
-                            <a className="item-content external" onTouchTap={()=> this.viewTemplate(obj.id)}>
+                        <li key={ obj.id } className="hover" style={styles.listItem}>
+                            <a className="item-content external aTag" onTouchTap={()=> this.viewTemplate(obj.id)}>
                                 <div className="item-media">
                                     <i className="material-icons" style={styles.icon}>view_list</i>
                                 </div>
@@ -77,18 +78,29 @@ class MetadataTemplateList extends React.Component {
                 }
             }
         }) : '';
+        let route = this.props.routerPath.split('/').splice([1], 1).toString();
+        let tooltip = <span>Metadata templates allow<br/> you to define a group of key-value pairs
+            <br/> and then apply them to a file to create <br/> custom metadata. Metadata properties in the
+            <br/> form of key-value pairs can help<br/> facilitate powerful and accurate<br/> search queries.</span>;
 
         return (
-            <div className="list-container" style={{marginTop: this.props.windowWidth > 680 ? 95 : ''}}>
+            <div className="list-container">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
                     <div className="mdl-cell mdl-cell--12-col" style={styles.headerWrapper}>
-                        <RaisedButton
+                        {route === 'metadata' ? <RaisedButton
                             style={styles.addTemplateBtn}
                             label="Add New Template"
                             labelStyle={{fontWeight: 100}}
                             secondary={true}
-                            onTouchTap={() => this.openMetadataManager()} />
-                        <h4>Metadata Templates</h4>
+                            onTouchTap={() => this.openMetadataManager()} /> : null}
+                        <h4>Metadata Templates
+                            <IconButton tooltip={tooltip}
+                                        tooltipPosition="bottom-center"
+                                        iconStyle={{height: 20, width: 20}}
+                                        style={styles.infoIcon}>
+                                <Help color={'#BDBDBD'}/>
+                            </IconButton>
+                        </h4>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col">
                         {!this.state.searchMode ?
@@ -125,7 +137,7 @@ class MetadataTemplateList extends React.Component {
                     </div>
                 </div>
                 <div className="mdl-cell mdl-cell--12-col" style={styles.loading}>
-                    { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
+                    {this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null}
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     <div className="list-block media-list">
@@ -197,9 +209,15 @@ var styles = {
     icon: {
         fontSize: 36
     },
+    infoIcon: {
+        verticalAlign: 8
+    },
     list: {
         float: 'right',
         marginTop: -10
+    },
+    listItem: {
+        cursor: 'pointer'
     },
     loaders: {
         paddingTop: 40

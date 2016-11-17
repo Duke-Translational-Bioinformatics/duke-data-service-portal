@@ -19,6 +19,14 @@ import TextField from 'material-ui/lib/text-field';
 
 class MetadataTemplateManager extends React.Component {
 
+    componentDidMount() {
+        if (window.performance && this.props.openMetadataManager) { // If page refreshed, close drawer
+            if (performance.navigation.type == 1) {
+                this.toggleMetadataManager();
+            }
+        }
+    }
+
     render() {
         let height = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.height : window.innerHeight;
         let width = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.width : window.innerWidth;
@@ -32,7 +40,7 @@ class MetadataTemplateManager extends React.Component {
                             <NavigationClose />
                         </IconButton>
                     </div>
-                    {this.props.drawerLoading ? <CircularProgress size={1.5} style={styles.graphLoader}/> : <span>
+                    {this.props.drawerLoading ? <CircularProgress size={1.5} style={styles.drawerLoader}/> : <span>
                         {this.props.showTemplateCreator ? <MetadataTemplateCreator {...this.props}/> : null}
                         {this.props.showTemplateDetails ? <MetadataTemplateOptions {...this.props}/> : null}
                         {this.props.showPropertyCreator ? <MetadataPropertyManager {...this.props}/> : null}
@@ -51,7 +59,7 @@ var styles = {
     buttonWrapper: {
         textAlign: 'left'
     },
-    graphLoader: {
+    drawerLoader: {
         position: 'absolute',
         margin: '0 auto',
         top: 200,

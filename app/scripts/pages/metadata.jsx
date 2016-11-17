@@ -39,7 +39,7 @@ class Metadata extends React.Component {
 
     render() {
         return (
-            <div>
+            <div style={{marginTop: this.props.windowWidth > 680 ? 95 : ''}}>
                 <MetadataTemplateList {...this.props} {...this.state} />
                 <MetadataTemplateManager {...this.props} {...this.state} />
             </div>

@@ -60,12 +60,38 @@ let BaseUtils = {
             return /^\w+$/.test(s);
         },
 
+        validateInt(s) {
+            return /^\d+$/.test(s);
+        },
+
+        validatePropertyDatatype(v,t) {
+            switch (t) {
+                case 'number':
+                    return /^\d+$/.test(v);
+                    break;
+                case 'decimal':
+                    return /^[-+]?[0-9]+\.[0-9]+$/.test(v);
+                    break;
+                case 'boolean':
+                    return /^(true|false|1|0)$/.test(v);
+                    break;
+                case 'text':
+                    return true;
+                    break;
+                case 'date':
+                    return /^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$/.test(v);
+                    break;
+            }
+        },
+
         getTemplatePropertyType(type) {
             let propType = null;
             if(type === 'long') {
                 propType = 'number';
             } else if(type === 'double') {
                 propType = 'decimal';
+            } else if(type === 'string') {
+                propType = 'text';
             } else {
                 propType = type;
             }

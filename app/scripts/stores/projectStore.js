@@ -88,6 +88,12 @@ var ProjectStore = Reflux.createStore({
         this.versionModal = false;
     },
 
+    showMetadataTemplateList() {
+        this.trigger({
+            showTemplateDetails: false
+        })
+    },
+
     deleteMetadataPropertySuccess(id) {
         this.templateProperties = BaseUtils.removeObjByKey(this.templateProperties, {key: 'id', value: id});
         this.trigger({
@@ -159,7 +165,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     createMetadataTemplateSuccess(template) {
-        this.metaTemplates.push(template);
+        this.metaTemplates.unshift(template);
         this.trigger({
             drawerLoading: false,
             metaTemplates: this.metaTemplates
@@ -201,7 +207,11 @@ var ProjectStore = Reflux.createStore({
     },
 
     loadMetadataTemplatesSuccess(templates) {
-        this.metaTemplates = templates;
+        this.metaTemplates = templates.sort(function(a, b) {
+            a = new Date(a.audit.created_on);
+            b = new Date(b.audit.created_on);
+            return a>b ? -1 : a<b ? 1 : 0;
+        });
         this.trigger({
             loading: false,
             metaTemplates: this.metaTemplates

@@ -8,6 +8,7 @@ import { StatusEnum, Path } from '../enum';
 import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.js';
 
 var ProjectActions = Reflux.createActions([
+    'showMetadataTemplateList',
     'deleteMetadataProperty',
     'deleteMetadataPropertySuccess',
     'getMetadataTemplateProperties',

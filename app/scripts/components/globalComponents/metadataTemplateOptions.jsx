@@ -6,14 +6,10 @@ import EditTemplateModal from '../globalComponents/editTemplateModal.jsx';
 import DeleteTemplateModal from '../globalComponents/deleteTemplateModal.jsx';
 import MetadataTemplateProperties from '../globalComponents/metadataTemplateProperties.jsx';
 import BaseUtils from '../../../util/baseUtils'
-import BorderColor from 'material-ui/lib/svg-icons/editor/border-color';
-import Dialog from 'material-ui/lib/dialog';
-import FlatButton from 'material-ui/lib/flat-button';
 import IconButton from 'material-ui/lib/icon-button';
 import IconMenu from 'material-ui/lib/menus/icon-menu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 import RaisedButton from 'material-ui/lib/raised-button';
-import TextField from 'material-ui/lib/text-field';
 
 class MetadataTemplateOptions extends React.Component {
 
@@ -22,12 +18,12 @@ class MetadataTemplateOptions extends React.Component {
             return (
                 <span id={id}>
                     <dl>
-                        <dt className="mdl-color-text--grey-800" style={{fontSize: 12, fontWeight: 200}}>Name</dt>
-                        <dd className="mdl-color-text--grey-600" style={{fontSize: 16, marginLeft: 0, marginBottom: 10}}>{name}</dd>
-                        <dt className="mdl-color-text--grey-800" style={{fontSize: 12, fontWeight: 200}}>Display Label</dt>
-                        <dd className="mdl-color-text--grey-600" style={{fontSize: 16, marginLeft: 0, marginBottom: 10}}>{label}</dd>
-                        <dt className="mdl-color-text--grey-800" style={{fontSize: 12, fontWeight: 200}}>Description</dt>
-                        <dd className="mdl-color-text--grey-600" style={{fontSize: 16, marginLeft: 0, marginBottom: 10}}>{description}</dd>
+                        <dt className="mdl-color-text--grey-800" style={styles.tableKey}>Name</dt>
+                        <dd className="mdl-color-text--grey-600" style={styles.tableValue}>{name}</dd>
+                        <dt className="mdl-color-text--grey-800" style={styles.tableKey}>Display Label</dt>
+                        <dd className="mdl-color-text--grey-600" style={styles.tableValue}>{label}</dd>
+                        <dt className="mdl-color-text--grey-800" style={styles.tableKey}>Description</dt>
+                        <dd className="mdl-color-text--grey-600" style={styles.tableValue}>{description}</dd>
                     </dl>
                 </span>
             );
@@ -50,22 +46,22 @@ class MetadataTemplateOptions extends React.Component {
                           targetOrigin={{horizontal: 'right', vertical: 'top'}}>
                     <MenuItem primaryText="Delete Template" leftIcon={<i className="material-icons">delete</i>} onTouchTap={()=>this.deleteTemplateModal()}/>
                     <MenuItem primaryText="Edit Template" leftIcon={<i className="material-icons">mode_edit</i>} onTouchTap={() => this.editTemplateModal()}/>
-                    <MenuItem primaryText="Add Template Properties" leftIcon={<i className="material-icons">add_circle</i>}/>
+                    <MenuItem primaryText="Add Template Properties" leftIcon={<i className="material-icons">add_circle</i>} onTouchTap={() => this.createProperties()}/>
                 </IconMenu> : null}
-                <div className="mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" >
-                   <h5 className="mdl-color-text--grey-600" style={styles.title}>Metadata Template - {templateLabel}</h5>
+                <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" style={styles.headingWrapper}>
+                   <h5 className="mdl-color-text--grey-600" style={styles.title}>{templateLabel}</h5>
                 </div>
-                <div className="mdl-cell mdl-cell--6-col mdl-color-text--grey-600">
+                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.detailsWrapper}>
                     {templateInfo}
                 </div>
-                <div className="mdl-cell mdl-cell--6-col mdl-color-text--grey-600" style={styles.btnWrapper}>
+                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.btnWrapper}>
                     <h5 className="mdl-color-text--grey-600" style={styles.heading}>Properties</h5>
-                    <RaisedButton label={'Add Properties'} secondary={true}
+                    {templateCreator === currentUser.id ? <RaisedButton label={'Add Properties'} secondary={true}
                                   labelStyle={{fontWeight: 100}}
                                   style={styles.btn}
-                                  onTouchTap={() => this.createProperties()}/>
+                                  onTouchTap={() => this.createProperties()}/> : null}
                 </div>
-                <div className="mdl-cell mdl-cell--6-col mdl-color-text--grey-600" style={styles.listWrapper}>
+                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.listWrapper}>
                    <MetadataTemplateProperties {...this.props}/>
                 </div>
                 <EditTemplateModal {...this.props}/>
@@ -104,7 +100,11 @@ var styles = {
         float: 'right'
     },
     btnWrapper: {
-        marginBottom: -10
+        marginBottom: -10,
+        maxWidth: 670
+    },
+    detailsWrapper: {
+        maxWidth: 670
     },
     dialogStyles: {
         textAlign: 'center',
@@ -115,8 +115,21 @@ var styles = {
         textAlign: 'left',
         float: 'left'
     },
+    headingWrapper: {
+        maxWidth: 670
+    },
     listWrapper: {
-        marginTop: -10
+        marginTop: -10,
+        maxWidth: 670
+    },
+    tableKey: {
+        fontSize: 12,
+        fontWeight: 200
+    },
+    tableValue: {
+        fontSize: 16,
+        marginLeft: 0,
+        marginBottom: 10
     },
     title: {
         textAlign: 'center'
@@ -126,7 +139,6 @@ var styles = {
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'column',
-        marginTop: -78,
         paddingLeft: 5
     }
 };
