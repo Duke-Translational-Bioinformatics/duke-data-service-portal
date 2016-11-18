@@ -133,11 +133,13 @@ class ProjectOptionsMenu extends React.Component {
                     open={this.state.memberOpen}>
                     <form action="#" id="newMemberForm">
                         <AutoComplete
+                            style={{textAlign: 'left'}}
                             id="fullName"
                             floatingLabelText="Name"
                             filter={AutoComplete.caseInsensitiveFilter}
                             dataSource={names}
                             errorText={this.state.floatingErrorText}
+                            maxSearchResults={7}
                             onUpdateInput={this.handleUpdateInput.bind(this)}/><br/>
                         <SelectField value={this.state.value}
                                      onChange={this.handleSelectValueChange.bind(this, 'value')}

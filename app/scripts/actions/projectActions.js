@@ -8,6 +8,9 @@ import { StatusEnum, Path } from '../enum';
 import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.js';
 
 var ProjectActions = Reflux.createActions([
+    'createMetadataObject',
+    'createMetadataObjectSuccess',
+    'updateMetadataObject',
     'showMetadataTemplateList',
     'deleteMetadataProperty',
     'deleteMetadataPropertySuccess',
@@ -188,6 +191,56 @@ var ProjectActions = Reflux.createActions([
     'toggleModals'
 ]);
 
+ProjectActions.createMetadataObject.preEmit = function (kind, fileId, templateId, properties) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.META+kind+"/"+fileId+"/"+templateId, {
+        method: 'post',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            "properties": properties
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('A new metadata object was created.');
+        ProjectActions.createMetadataObjectSuccess(json);
+    }).catch(function (ex) {
+        if(ex.response.status === 400) {
+            ProjectActions.updateMetadataObject(kind, fileId, templateId, properties);
+        } else {
+            MainActions.addToast('Failed to add new metadata object');
+            ProjectActions.handleErrors(ex)
+        }
+    })
+};
+
+ProjectActions.updateMetadataObject.preEmit = function (kind, fileId, templateId, properties) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.META+kind+"/"+fileId+"/"+templateId, {
+        method: 'put',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            "properties": properties
+        })
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        MainActions.addToast('This metadata object was updated.');
+        ProjectActions.createMetadataObjectSuccess(json);
+    }).catch(function (ex) {
+        if(ex.response.status === 400) {
+            ProjectActions.createMetadataObject(kind, fileId, templateId, properties);
+        } else {
+            MainActions.addToast('Failed to update metadata object');
+            ProjectActions.handleErrors(ex)
+        }
+    })
+};
+
 ProjectActions.deleteMetadataProperty.preEmit = function (id, label) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.TEMPLATE_PROPERTIES + id, {
         method: 'delete',
@@ -206,7 +259,7 @@ ProjectActions.deleteMetadataProperty.preEmit = function (id, label) {
 };
 
 ProjectActions.getMetadataTemplateProperties.preEmit = function (id) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.TEMPLATES +id+'/properties', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.TEMPLATES +id+Path.PROPERTIES, {
         method: 'get',
         headers: {
             'Authorization': appConfig.apiToken,
@@ -222,7 +275,7 @@ ProjectActions.getMetadataTemplateProperties.preEmit = function (id) {
 };
 
 ProjectActions.createMetadataProperty.preEmit = function (id, name, label, desc, type) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.TEMPLATES +id+'/properties', {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.TEMPLATES +id+Path.PROPERTIES, {
         method: 'post',
         headers: {
             'Authorization': appConfig.apiToken,

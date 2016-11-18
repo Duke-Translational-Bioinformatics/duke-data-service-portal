@@ -137,7 +137,7 @@ class MetadataTemplateList extends React.Component {
                     </div>
                 </div>
                 <div className="mdl-cell mdl-cell--12-col" style={styles.loading}>
-                    {this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null}
+                    {this.props.uploads || this.props.loading && route === 'metadata' ? <Loaders {...this.props}/> : null}
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     <div className="list-block media-list">

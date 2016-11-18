@@ -43,6 +43,17 @@ class TagManager extends React.Component {
     }
 
     render() {
+        const actions = [
+            <FlatButton
+                label="No"
+                secondary={true}
+                onTouchTap={() => this.handleCloseAll()} />,
+            <FlatButton
+                label="Yes"
+                secondary={true}
+                keyboardFocused={true}
+                onTouchTap={() => this.handleClose()} />
+        ];
         const modalActions = [
             <FlatButton
                 label="DISCARD TAGS"
@@ -69,8 +80,9 @@ class TagManager extends React.Component {
         });
         let autoCompleteData = this.props.tagAutoCompleteList && this.props.tagAutoCompleteList.length > 0 ? this.props.tagAutoCompleteList : [];
         let height = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.height : window.innerHeight;
-        let name = this.props.entityObj && this.props.filesChecked < 1 ? this.props.entityObj.name : 'Selected Files';
-        let open = this.props.toggleModal && this.props.toggleModal.id === 'discardTags' ? this.props.toggleModal.open : false;
+        let name = this.props.entityObj && this.props.filesChecked < 1 ? this.props.entityObj.name : 'selected files';
+        let openDiscardTagsModal = this.props.toggleModal && this.props.toggleModal.id === 'discardTags' ? this.props.toggleModal.open : false;
+        let openCreateAnotherObjectModal = this.props.toggleModal && this.props.toggleModal.id === 'metaDataObjectConfirm' ? this.props.toggleModal.open : false;
         let width = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.width : window.innerWidth;
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
@@ -152,7 +164,7 @@ class TagManager extends React.Component {
                             autoDetectWindowHeight={true}
                             actions={modalActions}
                             modal={true}
-                            open={open}>
+                            open={openDiscardTagsModal}>
                             <div className="chip-container" style={styles.chipContainer}>
                                 { tags }
                             </div>
@@ -201,6 +213,7 @@ class TagManager extends React.Component {
             if (this.props.filesChecked.length > 0) {
                 for (let i = 0; i < files.length; i++) {
                     ProjectActions.appendTags(files[i], 'dds-file', tags);
+                    if(!!document.getElementById(files[i])) document.getElementById(files[i]).checked = false;
                 }
             } else {
                 ProjectActions.appendTags(id, 'dds-file', tags);
@@ -227,6 +240,10 @@ class TagManager extends React.Component {
         this.setState({tagsToAdd: []});
         ProjectActions.toggleModals('discardTags');
     }
+
+    handleClose() {
+        ProjectActions.toggleModals();
+    };
 
     handleUpdateInput (text) {
         // Add 500ms lag to autocomplete so that it only makes a call after user is done typing
@@ -299,6 +316,11 @@ var styles = {
     },
     infoIcon: {
         verticalAlign: 8
+    },
+    modalIcon: {
+        fontSize: 48,
+        textAlign: 'center',
+        color: '#4CAF50'
     },
     tabInkBar: {
         backgroundColor: '#EC407A',

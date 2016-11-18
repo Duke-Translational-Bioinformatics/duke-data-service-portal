@@ -53,7 +53,7 @@ class MetadataTemplateCreator extends React.Component {
                                   labelStyle={{fontWeight: 100}}
                                   style={styles.cancelBtn}
                                   onTouchTap={() => this.toggleMetadataManager()}/>
-                    <RaisedButton label={'Apply'} secondary={true}
+                    <RaisedButton label={'Create'} secondary={true}
                                   labelStyle={{fontWeight: 100}}
                                   style={styles.addBtn}
                                   onTouchTap={() => this.createTemplate()}/>

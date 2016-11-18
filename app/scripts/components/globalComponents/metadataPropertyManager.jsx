@@ -70,7 +70,6 @@ class MetadataPropertyManager extends React.Component {
                         <MenuItem style={styles.menuItemStyle} value={2} primaryText='decimal'/>
                         <MenuItem style={styles.menuItemStyle} value={3} primaryText='date'/>
                         <MenuItem style={styles.menuItemStyle} value={4} primaryText='boolean'/>
-                        <MenuItem style={styles.menuItemStyle} value={5} primaryText='binary'/>
                     </SelectField>
                 </div>
                 <div className="mdl-cell mdl-cell--12-col" style={styles.propTextField}>
@@ -151,9 +150,6 @@ class MetadataPropertyManager extends React.Component {
             case 4:
                 type = 'boolean';
                 break;
-            case 5:
-                type = 'binary';
-                break;
         }
         return type;
     }
@@ -164,27 +160,32 @@ class MetadataPropertyManager extends React.Component {
 
     handleInputValidation(e) {
         let name = e.target.value;
-        if(BaseUtils.validateTemplateName(name)) {
-            this.setState({
-                errorText: e.target.value ? '' : 'This field is required.'
-            });
+        let errorText = '';
+        if(name.length > 60){
+            errorText = 'Property key can only be 60 characters maximum';
+            document.getElementById('propertyName').value = name.slice(0,-1);
+            this.setErrorText(errorText);
         } else {
-            this.setState({
-                errorText: !BaseUtils.validateTemplateName(name) ? 'Invalid characters or spaces. Name must only' +
-                ' consist of alphanumerics and underscores.' : 'This field is required.'
-            });
+            if (BaseUtils.validateTemplateName(name)) {
+                errorText = e.target.value ? '' : 'This field is required';
+                this.setErrorText(errorText);
+            } else {
+                errorText = !BaseUtils.validateTemplateName(name) ? 'Invalid characters or spaces. Name must only' +
+                ' consist of alphanumerics and underscores.' : 'This field is required';
+                this.setErrorText(errorText);
+            }
         }
     }
 
     handleInputValidation2(e) {
         this.setState({
-            errorText2: e.target.value ? '' : 'This field is required.'
+            errorText2: e.target.value ? '' : 'This field is required'
         });
     }
 
     handleInputValidation3(e) {
         this.setState({
-            errorText3: e.target.value ? '' : 'This field is required.'
+            errorText3: e.target.value ? '' : 'This field is required'
         });
     }
 
@@ -192,6 +193,12 @@ class MetadataPropertyManager extends React.Component {
         this.setState({
             value: value,
             errorText4: ''
+        });
+    }
+
+    setErrorText(errorText) {
+        this.setState({
+            errorText: errorText
         });
     }
 }

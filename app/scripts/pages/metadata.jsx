@@ -26,6 +26,7 @@ class Metadata extends React.Component {
 
     componentDidMount() {
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
+        if(this.props.openMetadataManager) ProjectActions.toggleMetadataManager();
         this._loadMetadata();
     }
 

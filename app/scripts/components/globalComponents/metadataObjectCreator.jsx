@@ -2,11 +2,10 @@ import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-import EditTemplateModal from '../globalComponents/editTemplateModal.jsx';
-import DeleteTemplateModal from '../globalComponents/deleteTemplateModal.jsx';
 import MetadataTemplateProperties from '../globalComponents/metadataTemplateProperties.jsx';
 import BaseUtils from '../../../util/baseUtils'
 import DatePicker from 'material-ui/lib/date-picker/date-picker';
+import Paper from 'material-ui/lib/paper';
 import RaisedButton from 'material-ui/lib/raised-button';
 import Table from 'material-ui/lib/table/table';
 import TableHeaderColumn from 'material-ui/lib/table/table-header-column';
@@ -21,7 +20,8 @@ class MetadataObjectCreator extends React.Component {
         super(props);
         this.state = {
             errorText: {},
-            metaProps: []
+            metaProps: [],
+            noValueWarning: false
         };
     }
 
@@ -45,7 +45,7 @@ class MetadataObjectCreator extends React.Component {
             );
         }
         let currentUser = this.props.currentUser && this.props.currentUser !== null ? this.props.currentUser : null;
-        let file = this.props.entityObj && this.props.entityObj !== null ? this.props.entityObj : null;
+        let name = this.props.entityObj && this.props.filesChecked < 1 ? this.props.entityObj.name : 'selected files';
         let properties = this.props.templateProperties && this.props.templateProperties.length !== 0 ? this.props.templateProperties.map((obj)=>{
             let type = BaseUtils.getTemplatePropertyType(obj.type);
             return (
@@ -75,6 +75,7 @@ class MetadataObjectCreator extends React.Component {
             )
         }) : null;
         let height = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.height : window.innerHeight;
+        let showWarning = this.state.noValueWarning ? 'block' : 'none';
         let templateDesc = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.description : null;
         let templateId = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.id : null;
         let templateInfo = this.props.metadataTemplate && this.props.metadataTemplate !== null ? showTemplate(this.props.metadataTemplate) : null;
@@ -93,19 +94,28 @@ class MetadataObjectCreator extends React.Component {
                 </div>
                 <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" style={styles.headingWrapper}>
                     <h5 className="mdl-color-text--grey-600" style={styles.title}>
-                        {"Create a metadata object for "+file.name+" using the "+templateLabel+" template"}
+                        {"Create a metadata object for "+name+" using the "+templateLabel+" template"}
                     </h5>
                 </div>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.detailsWrapper}>
                     {templateInfo}
                 </div>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.btnWrapper}>
+                    {this.props.templateProperties && this.props.templateProperties.length ?
                     <h5 className="mdl-color-text--grey-600" style={styles.heading}>
                         Properties
-                    </h5>
+                    </h5> :
+                    <Paper className="mdl-cell mdl-cell--12-col"
+                           style={{backgroundColor: '#ef5350', color: '#EEEEEE',padding: 10, textAlign: 'left'}}
+                           zDepth={1}>
+                        <span>You must add properties to this template before you can use it.
+                        Go to the Annotations option in the main side menu at the top left of the screen to do this.
+                    </span>
+                    </Paper>
+                        }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.listWrapper}>
-                    <Table selectable={false}>
+                    {this.props.templateProperties && this.props.templateProperties.length ? <Table selectable={false}>
                         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                             <TableRow>
                                 <TableHeaderColumn style={{padding: 0}}>Key</TableHeaderColumn>
@@ -116,17 +126,23 @@ class MetadataObjectCreator extends React.Component {
                         <TableBody displayRowCheckbox={false}>
                                 {properties}
                         </TableBody>
-                    </Table>
+                    </Table> : null}
                 </div>
-                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.btnWrapper}>
+                <div className="mdl-cell mdl-cell--12-col" style={styles.btnWrapper}>
+                    <Paper className="mdl-cell mdl-cell--12-col"
+                           style={{backgroundColor: '#ef5350', color: '#EEEEEE', height: 40, marginBottom: 10, marginTop: 10, padding: 10, textAlign: 'center', display: showWarning}}
+                           zDepth={1}>
+                       <span>You must add at least one value</span>
+                    </Paper>
                     <RaisedButton label={'Cancel'} secondary={true}
                                   labelStyle={{fontWeight: 100}}
                                   style={{margin: '12px 0px 12px 12px', float: 'right'}}
                                   onTouchTap={() => this.toggleTagManager()}/>
+                    {this.props.templateProperties && this.props.templateProperties.length ?
                     <RaisedButton label={'Apply'} secondary={true}
                                   labelStyle={{fontWeight: 100}}
                                   style={{margin: '12px 12px 12px 12px', float: 'right'}}
-                                  onTouchTap={() => this.createMetadataObject(file, templateId)}/>
+                                  onTouchTap={() => this.createMetadataObject(templateId)}/> : null}
                 </div>
             </div>
         )
@@ -145,25 +161,27 @@ class MetadataObjectCreator extends React.Component {
         }
     }
 
-    createMetadataObject(file, templateId) {
-        let kind = file.kind;
-        let fileId = file.id;
+    createMetadataObject(templateId) {
+        let kind = 'dds-file';
+        let files = this.props.filesChecked;
+        let fileId = this.props.params.id;
         let properties = this.state.metaProps;
         let errors = this.state.errorText;
         if(Object.keys(errors).length === 0 && errors.constructor === Object) {
-            console.log(properties)
+            if(properties.length) {
+                if (this.props.filesChecked.length > 0) {
+                    for (let i = 0; i < files.length; i++) {
+                        ProjectActions.createMetadataObject(kind, files[i], templateId, properties);
+                        if(!!document.getElementById(files[i])) document.getElementById(files[i]).checked = false;
+                    }
+                } else {
+                    ProjectActions.createMetadataObject(kind, fileId, templateId, properties);
+                }
+                this.toggleTagManager();
+            } else {
+                this.setState({noValueWarning:true});
+            }
         }
-    }
-
-    deleteTemplateModal() {
-        ProjectActions.toggleModals('dltTemplate');
-    }
-
-    editTemplateModal() {
-        ProjectActions.toggleModals('editTemplate');
-        setTimeout(()=>{
-            document.getElementById('templateLabel').select();
-        },350);
     }
 
     goBack() {
@@ -185,7 +203,7 @@ class MetadataObjectCreator extends React.Component {
         if(!pass && type === 'decimal') this.state.errorText[id] = {type: type, text: 'must contain a decimal point'};
         if(!pass && type === 'text') this.state.errorText[id] = {type: type, text: 'must contain text'};
         if(!pass && type === 'date') this.state.errorText[id] = {type: type, text: 'must be a valid date'};
-        this.setState({ errorText: this.state.errorText});
+        this.setState({ errorText: this.state.errorText, noValueWarning: false});
         if(value === '') {
             let properties = this.state.metaProps;
             properties = properties.filter((obj) => {
@@ -195,12 +213,12 @@ class MetadataObjectCreator extends React.Component {
         }
     }
 
-    toggleMetadataManager() {
-        ProjectActions.toggleMetadataManager();
-        this.setState({
-            errorText: 'This field is required',
-            errorText2: 'This field is required'
-        });
+    toggleTagManager() {
+        ProjectActions.toggleTagManager();
+        setTimeout(() => {
+            if(document.getElementById("tagText").value !== '') this.refs[`autocomplete`].setState({searchText:''});
+        }, 500);
+        this.setState({tagsToAdd: []});
     }
 }
 

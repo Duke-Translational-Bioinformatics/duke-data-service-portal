@@ -66,7 +66,6 @@ var ProjectStore = Reflux.createStore({
         this.selectedNode = {};
         this.selectedEdge = null;
         this.searchText = '';
-        this.showBatchOps = false;
         this.showPropertyCreator = false;
         this.showProvAlert = false;
         this.showProvCtrlBtns = false;
@@ -86,6 +85,20 @@ var ProjectStore = Reflux.createStore({
         this.users = [];
         this.userKey = {};
         this.versionModal = false;
+    },
+
+    createMetadataObject() {
+        this.trigger({
+            drawerLoading: true
+        })
+    },
+
+    createMetadataObjectSuccess() {
+        this.trigger({
+            drawerLoading: false,
+            showBatchOps: false,
+            showTemplateDetails: false
+        })
     },
 
     showMetadataTemplateList() {
