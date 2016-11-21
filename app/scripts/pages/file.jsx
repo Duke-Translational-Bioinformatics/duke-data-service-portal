@@ -20,6 +20,7 @@ class File extends React.Component {
             loading: false,
             moveModal: ProjectStore.moveModal,
             moveErrorModal: ProjectStore.moveErrorModal,
+            objectMetadata: ProjectStore.objectMetadata,
             objectTags: ProjectStore.objectTags,
             openTagManager: ProjectStore.openTagManager,
             position: ProjectStore.position,
@@ -70,8 +71,10 @@ class File extends React.Component {
     }
 
     _loadFile(id, kind) {
+        let metadataKind = 'dds-file';
         ProjectActions.getEntity(id, kind);
         ProjectActions.getFileVersions(id);
+        ProjectActions.getObjectMetadata(id, metadataKind);
         ProjectActions.getTags(id, 'dds-file');
         ProjectActions.getTagLabels(); // Used to generate a list of tag labels
         ProjectActions.clearSelectedItems(); // Clear checked files and folders from list

@@ -87,6 +87,13 @@ var ProjectStore = Reflux.createStore({
         this.versionModal = false;
     },
 
+    getObjectMetadataSuccess(results) {
+        this.objectMetadata = results;
+        this.trigger({
+            objectMetadata: this.objectMetadata
+        })
+    },
+
     createMetadataObject() {
         this.trigger({
             drawerLoading: true
@@ -215,6 +222,7 @@ var ProjectStore = Reflux.createStore({
 
     loadMetadataTemplates() {
         this.trigger({
+            drawerLoading: true,
             loading: true
         })
     },
@@ -226,6 +234,7 @@ var ProjectStore = Reflux.createStore({
             return a>b ? -1 : a<b ? 1 : 0;
         });
         this.trigger({
+            drawerLoading: false,
             loading: false,
             metaTemplates: this.metaTemplates
         })

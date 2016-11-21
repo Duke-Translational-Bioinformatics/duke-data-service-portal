@@ -14,6 +14,7 @@ import TableHeader from 'material-ui/lib/table/table-header';
 import TableRowColumn from 'material-ui/lib/table/table-row-column';
 import TableBody from 'material-ui/lib/table/table-body';
 import TextField from 'material-ui/lib/text-field';
+import Theme from '../../theme/customTheme.js';
 
 class MetadataObjectCreator extends React.Component {
     constructor(props) {
@@ -26,10 +27,11 @@ class MetadataObjectCreator extends React.Component {
     }
 
     render() {
+
         function formatDate(date) {
-            let d = (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
-            return d;
+            return (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
         }
+
         function showTemplate({id, name, label, description}) {
             return (
                 <span id={id}>
@@ -50,26 +52,26 @@ class MetadataObjectCreator extends React.Component {
             let type = BaseUtils.getTemplatePropertyType(obj.type);
             return (
                 <TableRow  key={obj.id}>
-                    <TableRowColumn style={{padding: 0}}>{obj.key}</TableRowColumn>
-                    <TableRowColumn style={{paddingLeft: 20}}>{type}</TableRowColumn>
-                    <TableRowColumn style={{minWidth: 178, padding: 0}}>
+                    <TableRowColumn style={styles.tableHead1}>{obj.key}</TableRowColumn>
+                    <TableRowColumn style={styles.tableHead2}>{type}</TableRowColumn>
+                    <TableRowColumn style={styles.tableHead3}>
                         {type !== 'date' ? <TextField
                             fullWidth={true}
                             id={obj.key}
                             title={type}
-                            style={{minWidth: 178, marginTop: -20}}
-                            underlineStyle={{display: 'none'}}
+                            style={styles.textField}
+                            underlineStyle={styles.textField.underline}
                             hintText={"Must be a "+type}
                             errorText={this.state.errorText && this.state.errorText.hasOwnProperty(obj.key) ? this.state.errorText[obj.key].text : ''}
                             floatingLabelText="Value"
-                            floatingLabelStyle={{marginTop: 4}}
+                            floatingLabelStyle={styles.textField.floatingLabel}
                             onBlur={this.addToPropertyList.bind(this, obj.key, type)}
                             onChange={this.handleInputValidation.bind(this)}
                             /> : <DatePicker hintText="Value" container="inline"
                                              id={obj.key}
                                              formatDate={formatDate}
                                              mode="portrait" onChange={(x, event) => this.addDateProperty(x, event, obj.key)}
-                                             underlineStyle={{display: 'none'}} style={{marginBottom: -10}}/>}
+                                             underlineStyle={styles.datePicker.underline} style={styles.datePicker}/>}
                     </TableRowColumn>
                 </TableRow>
             )
@@ -106,7 +108,7 @@ class MetadataObjectCreator extends React.Component {
                         Properties
                     </h5> :
                     <Paper className="mdl-cell mdl-cell--12-col"
-                           style={{backgroundColor: '#ef5350', color: '#EEEEEE',padding: 10, textAlign: 'left'}}
+                           style={styles.warningDiv}
                            zDepth={1}>
                         <span>You must add properties to this template before you can use it.
                         Go to the Annotations option in the main side menu at the top left of the screen to do this.
@@ -118,9 +120,9 @@ class MetadataObjectCreator extends React.Component {
                     {this.props.templateProperties && this.props.templateProperties.length ? <Table selectable={false}>
                         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                             <TableRow>
-                                <TableHeaderColumn style={{padding: 0}}>Key</TableHeaderColumn>
-                                <TableHeaderColumn style={{paddingLeft: 20}}>Datatype</TableHeaderColumn>
-                                <TableHeaderColumn style={{minWidth: 178, padding: 0}}>Value</TableHeaderColumn>
+                                <TableHeaderColumn style={styles.tableHead1}>Key</TableHeaderColumn>
+                                <TableHeaderColumn style={styles.tableHead2}>Datatype</TableHeaderColumn>
+                                <TableHeaderColumn style={styles.tableHead3}>Value</TableHeaderColumn>
                             </TableRow>
                         </TableHeader>
                         <TableBody displayRowCheckbox={false}>
@@ -135,13 +137,13 @@ class MetadataObjectCreator extends React.Component {
                        <span>You must add at least one value</span>
                     </Paper>
                     <RaisedButton label={'Cancel'} secondary={true}
-                                  labelStyle={{fontWeight: 100}}
-                                  style={{margin: '12px 0px 12px 12px', float: 'right'}}
+                                  labelStyle={styles.button.cancel.label}
+                                  style={styles.button.cancel}
                                   onTouchTap={() => this.toggleTagManager()}/>
                     {this.props.templateProperties && this.props.templateProperties.length ?
                     <RaisedButton label={'Apply'} secondary={true}
-                                  labelStyle={{fontWeight: 100}}
-                                  style={{margin: '12px 12px 12px 12px', float: 'right'}}
+                                  labelStyle={styles.button.label}
+                                  style={styles.button.apply}
                                   onTouchTap={() => this.createMetadataObject(templateId)}/> : null}
                 </div>
             </div>
@@ -234,13 +236,28 @@ var styles = {
         verticalAlign: -7,
         marginLeft: 5
     },
-    btn: {
-        margin: '12px 0px 12px 12px',
-        float: 'right'
+    button: {
+        apply: {
+            margin: '12px 12px 12px 12px',
+            float: 'right'
+        },
+        cancel: {
+            margin: '12px 0px 12px 12px',
+            float: 'right'
+        },
+        label: {
+            fontWeight: 100
+        }
     },
     btnWrapper: {
         marginBottom: -10,
         maxWidth: 670
+    },
+    datePicker: {
+        marginBottom: -10,
+        underline: {
+            display: 'none'
+        }
     },
     detailsWrapper: {
         maxWidth: 670,
@@ -268,6 +285,16 @@ var styles = {
     listWrapper: {
         maxWidth: 670
     },
+    tableHead1: {
+        padding: 0
+    },
+    tableHead2: {
+        paddingLeft: 20
+    },
+    tableHead3: {
+        minWidth: 178,
+        padding: 0
+    },
     tableKey: {
         fontSize: 12,
         fontWeight: 200
@@ -277,9 +304,25 @@ var styles = {
         marginLeft: 0,
         marginBottom: 10
     },
+    textField: {
+        minWidth: 178,
+        marginTop: -20,
+        floatingLabel: {
+            marginTop: 4
+        },
+        underline: {
+            display: 'none'
+        }
+    },
     title: {
         textAlign: 'left',
         marginBottom: 0
+    },
+    warningDiv: {
+        backgroundColor: '#ef5350',
+        color: '#EEEEEE',
+        padding: 10,
+        textAlign: 'left'
     },
     wrapper:{
         display: 'flex',
@@ -296,6 +339,8 @@ MetadataObjectCreator.contextTypes = {
 
 MetadataObjectCreator.propTypes = {
     currentUser: React.PropTypes.object,
+    entityObj: React.PropTypes.object,
+    filesChecked: React.PropTypes.array,
     metaTemplates: React.PropTypes.array,
     metadataTemplate: React.PropTypes.object,
     screenSize: React.PropTypes.object

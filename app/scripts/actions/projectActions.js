@@ -8,6 +8,8 @@ import { StatusEnum, Path } from '../enum';
 import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.js';
 
 var ProjectActions = Reflux.createActions([
+    'getObjectMetadata',
+    'getObjectMetadataSuccess',
     'createMetadataObject',
     'createMetadataObjectSuccess',
     'updateMetadataObject',
@@ -190,6 +192,22 @@ var ProjectActions = Reflux.createActions([
     'removeFailedUploads',
     'toggleModals'
 ]);
+
+ProjectActions.getObjectMetadata.preEmit = function (id, kind) {
+    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.META+kind+"/"+id, {
+        method: 'get',
+        headers: {
+            'Authorization': appConfig.apiToken,
+            'Accept': 'application/json'
+        }
+    }).then(checkResponse).then(function (response) {
+        return response.json()
+    }).then(function (json) {
+        ProjectActions.getObjectMetadataSuccess(json.results)
+    }).catch(function (ex) {
+        ProjectActions.handleErrors(ex)
+    })
+};
 
 ProjectActions.createMetadataObject.preEmit = function (kind, fileId, templateId, properties) {
     fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.META+kind+"/"+fileId+"/"+templateId, {
