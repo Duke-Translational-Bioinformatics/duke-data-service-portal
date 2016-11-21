@@ -166,7 +166,7 @@ class TagManager extends React.Component {
                             modal={true}
                             open={openDiscardTagsModal}>
                             <div className="chip-container" style={styles.chipContainer}>
-                                { tags }
+                                {tags}
                             </div>
                         </Dialog>
                     </div>
