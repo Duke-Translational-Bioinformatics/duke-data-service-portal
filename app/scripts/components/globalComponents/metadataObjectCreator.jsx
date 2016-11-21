@@ -150,14 +150,18 @@ class MetadataObjectCreator extends React.Component {
 
     addDateProperty(x, date, id) { // x is event which is always null. This is MUI behavior
         if(!BaseUtils.objectPropInArray(this.state.metaProps, 'key', id)) { //If not in array, add object
-            this.state.metaProps.push({key: id, value: date});
+            let metaProps = this.state.metaProps;
+            metaProps.push({key: id, value: date});
+            this.setState({metaProps: metaProps});
         }
     }
 
     addToPropertyList(id, type) {
         if(document.getElementById(id).value !== '' && !BaseUtils.objectPropInArray(this.state.metaProps, 'key', id)) {
             let value = document.getElementById(id).value;
-            this.state.metaProps.push({key: id, value: value});
+            let metaProps = this.state.metaProps;
+            metaProps.push({key: id, value: value});
+            this.setState({metaProps: metaProps});
         }
     }
 

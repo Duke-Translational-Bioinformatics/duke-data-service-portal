@@ -1787,9 +1787,8 @@ var ProjectStore = Reflux.createStore({
 
     postHash(hash) {
         let fileHashes = this.fileHashes.push(hash);
-        this.fileHashes = fileHashes;
         this.trigger({
-            fileHashes: this.fileHashes
+            fileHashes: fileHashes
         })
     },
 
