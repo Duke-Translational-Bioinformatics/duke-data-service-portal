@@ -76,14 +76,12 @@ class MetadataObjectCreator extends React.Component {
                 </TableRow>
             )
         }) : null;
-        let height = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.height : window.innerHeight;
         let showWarning = this.state.noValueWarning ? 'block' : 'none';
         let templateDesc = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.description : null;
         let templateId = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.id : null;
         let templateInfo = this.props.metadataTemplate && this.props.metadataTemplate !== null ? showTemplate(this.props.metadataTemplate) : null;
         let templateLabel = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.label : null;
         let templateName = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.name : null;
-        let width = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.width : window.innerWidth;
 
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.wrapper}>
@@ -137,7 +135,7 @@ class MetadataObjectCreator extends React.Component {
                        <span>You must add at least one value</span>
                     </Paper>
                     <RaisedButton label={'Cancel'} secondary={true}
-                                  labelStyle={styles.button.cancel.label}
+                                  labelStyle={styles.button.label}
                                   style={styles.button.cancel}
                                   onTouchTap={() => this.toggleTagManager()}/>
                     {this.props.templateProperties && this.props.templateProperties.length ?
@@ -204,9 +202,8 @@ class MetadataObjectCreator extends React.Component {
         if(!pass && type === 'number') this.state.errorText[id] = {type: type, text: 'must contain only numbers'};
         if(!pass && type === 'decimal') this.state.errorText[id] = {type: type, text: 'must contain a decimal point'};
         if(!pass && type === 'text') this.state.errorText[id] = {type: type, text: 'must contain text'};
-        if(!pass && type === 'date') this.state.errorText[id] = {type: type, text: 'must be a valid date'};
         this.setState({ errorText: this.state.errorText, noValueWarning: false});
-        if(value === '') {
+        if(value === '') { // If value is deleted then remove property from metaProps
             let properties = this.state.metaProps;
             properties = properties.filter((obj) => {
                 return obj.key !== id;
@@ -216,11 +213,13 @@ class MetadataObjectCreator extends React.Component {
     }
 
     toggleTagManager() {
+        let properties = this.state.metaProps;
         ProjectActions.toggleTagManager();
+        if(this.props.showTemplateDetails) ProjectActions.showMetadataTemplateList();
         setTimeout(() => {
             if(document.getElementById("tagText").value !== '') this.refs[`autocomplete`].setState({searchText:''});
         }, 500);
-        this.setState({tagsToAdd: []});
+        this.setState({tagsToAdd: [], metaProps: []});
     }
 }
 
@@ -342,8 +341,7 @@ MetadataObjectCreator.propTypes = {
     entityObj: React.PropTypes.object,
     filesChecked: React.PropTypes.array,
     metaTemplates: React.PropTypes.array,
-    metadataTemplate: React.PropTypes.object,
-    screenSize: React.PropTypes.object
+    metadataTemplate: React.PropTypes.object
 };
 
 export default MetadataObjectCreator;

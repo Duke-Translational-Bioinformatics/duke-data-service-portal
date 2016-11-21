@@ -29,17 +29,15 @@ class MetadataTemplateList extends React.Component {
     }
 
     render() {
-        let currentUser = this.props.currentUser && this.props.currentUser !== null ? this.props.currentUser : null;
-        let showSearch = this.state.searchMode ? 'block' : 'none';
-        let switchColor = this.state.toggleSwitch ? {track: {backgroundColor: '#235F9C'}, thumb: {backgroundColor: '#003366'}} :
-            {track: {backgroundColor: '#BDBDBD'}, thumb: {backgroundColor: '#9E9E9E'}};
-        let screenWidth = this.props.screenSize.width;
-
         if (this.props.error && this.props.error.response) {
             this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
             this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
         }
-
+        let currentUser = this.props.currentUser && this.props.currentUser !== null ? this.props.currentUser : null;
+        let route = this.props.routerPath.split('/').splice([1], 1).toString();
+        let showSearch = this.state.searchMode ? 'block' : 'none';
+        let switchColor = this.state.toggleSwitch ? {track: {backgroundColor: '#235F9C'}, thumb: {backgroundColor: '#003366'}} :
+            {track: {backgroundColor: '#BDBDBD'}, thumb: {backgroundColor: '#9E9E9E'}};
         let templateList = this.props.metaTemplates && this.props.metaTemplates !== null && currentUser !== null ? this.props.metaTemplates.map((obj) => {
             if(this.state.toggleSwitch){
                 return (
@@ -78,7 +76,6 @@ class MetadataTemplateList extends React.Component {
                 }
             }
         }) : '';
-        let route = this.props.routerPath.split('/').splice([1], 1).toString();
         let tooltip = <span>Metadata templates allow<br/> you to define a group of key-value pairs
             <br/> and then apply them to a file to create <br/> custom metadata. Metadata properties in the
             <br/> form of key-value pairs can help<br/> facilitate powerful and accurate<br/> search queries.</span>;
@@ -90,13 +87,13 @@ class MetadataTemplateList extends React.Component {
                         {route === 'metadata' ? <RaisedButton
                             style={styles.addTemplateBtn}
                             label="Add New Template"
-                            labelStyle={{fontWeight: 100}}
+                            labelStyle={styles.addTemplateBtn.label}
                             secondary={true}
                             onTouchTap={() => this.openMetadataManager()} /> : null}
                         <h4>Metadata Templates
                             <IconButton tooltip={tooltip}
                                         tooltipPosition="bottom-center"
-                                        iconStyle={{height: 20, width: 20}}
+                                        iconStyle={styles.infoIcon.size}
                                         style={styles.infoIcon}>
                                 <Help color={'#BDBDBD'}/>
                             </IconButton>
@@ -106,11 +103,11 @@ class MetadataTemplateList extends React.Component {
                         {!this.state.searchMode ?
                             <IconButton
                                 tooltip="Search Templates"
-                                style={{float: 'right', marginTop: 0}} onTouchTap={()=>this.toggleSearch()}>
+                                style={styles.searchIcon} onTouchTap={()=>this.toggleSearch()}>
                             <Search />
                         </IconButton> :
                         <IconButton
-                            style={{float: 'right', marginTop: 0}} onTouchTap={()=>this.toggleSearch()}>
+                            style={styles.searchIcon} onTouchTap={()=>this.toggleSearch()}>
                             <Close />
                         </IconButton>}
                         <Toggle
@@ -130,8 +127,8 @@ class MetadataTemplateList extends React.Component {
                                 id="searchInput"
                                 hintText="Search"
                                 style={styles.searchInput}
-                                underlineStyle={{display: 'none'}}
-                                underlineFocusStyle={{display: 'none'}}
+                                underlineStyle={styles.textField.underline}
+                                underlineFocusStyle={styles.textField.underline}
                                 onChange={() => this.onSearchChange()}/>
                         </Paper>
                     </div>
@@ -197,7 +194,10 @@ MetadataTemplateList.contextTypes = {
 
 var styles = {
     addTemplateBtn: {
-        float: 'right'
+        float: 'right',
+        label: {
+            fontWeight: 100
+        }
     },
     headerTitle: {
         float: 'left',
@@ -210,7 +210,11 @@ var styles = {
         fontSize: 36
     },
     infoIcon: {
-        verticalAlign: 8
+        verticalAlign: 8,
+        size: {
+            height: 20,
+            width: 20
+        }
     },
     list: {
         float: 'right',
@@ -222,6 +226,10 @@ var styles = {
     loaders: {
         paddingTop: 40
     },
+    searchIcon: {
+        float: 'right',
+        marginTop: 0
+    },
     searchInput: {
         width: '80%',
         marginLeft: 10,
@@ -230,6 +238,11 @@ var styles = {
     searchWrapper: {
         width: '100%',
         paddingRight: 16
+    },
+    textField: {
+      underline: {
+          display: 'none'
+      }
     },
     title: {
         marginRight: 40

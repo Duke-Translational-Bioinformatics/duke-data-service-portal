@@ -25,7 +25,6 @@ class MetadataPropertyManager extends React.Component {
     }
 
     render() {
-        let height = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.height : window.innerHeight;
         let templateCreator = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.audit.created_by.id : null;
         let templateDesc = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.description : null;
         let templateId = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.id : null;
@@ -266,8 +265,8 @@ MetadataPropertyManager.contextTypes = {
 };
 
 MetadataPropertyManager.propTypes = {
-    loading: bool,
-    error: object
+    metadataTemplate: React.PropTypes.object,
+    screenSize: React.PropTypes.object
 };
 
 export default MetadataPropertyManager;

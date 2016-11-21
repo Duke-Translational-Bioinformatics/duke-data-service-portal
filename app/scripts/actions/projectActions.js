@@ -309,7 +309,6 @@ ProjectActions.createMetadataProperty.preEmit = function (id, name, label, desc,
         return response.json()
     }).then(function (json) {
         MainActions.addToast('A new template property called '+label+' was added');
-        //ProjectActions.getMetadataTemplateProperties(id);
         ProjectActions.createMetadataPropertySuccess(json);
     }).catch(function (ex) {
         MainActions.addToast('Failed to add new template property');

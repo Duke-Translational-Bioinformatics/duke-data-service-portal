@@ -143,7 +143,7 @@ class TagManager extends React.Component {
                                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.buttonWrapper}>
                                     <RaisedButton label={'Cancel'} secondary={true}
                                                   labelStyle={{fontWeight: 100}}
-                                                  style={{margin: '12px 0px 12px 12px', float: 'right'}}
+                                                  style={styles.cancelBtn}
                                                   onTouchTap={() => this.toggleTagManager()}/>
                                     <RaisedButton label={'Apply'} secondary={true}
                                                   labelStyle={{fontWeight: 100}}
@@ -287,6 +287,10 @@ var styles = {
     },
     buttonWrapper: {
         textAlign: 'left'
+    },
+    cancelBtn: {
+        margin: '12px 0px 12px 12px',
+        float: 'right'
     },
     chipWrapper: {
         textAlign: 'left'

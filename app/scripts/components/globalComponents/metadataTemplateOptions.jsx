@@ -5,7 +5,6 @@ import ProjectStore from '../../stores/projectStore';
 import EditTemplateModal from '../globalComponents/editTemplateModal.jsx';
 import DeleteTemplateModal from '../globalComponents/deleteTemplateModal.jsx';
 import MetadataTemplateProperties from '../globalComponents/metadataTemplateProperties.jsx';
-import BaseUtils from '../../../util/baseUtils'
 import IconButton from 'material-ui/lib/icon-button';
 import IconMenu from 'material-ui/lib/menus/icon-menu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
@@ -29,7 +28,6 @@ class MetadataTemplateOptions extends React.Component {
             );
         }
         let currentUser = this.props.currentUser && this.props.currentUser !== null ? this.props.currentUser : null;
-        let height = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.height : window.innerHeight;
         let templateInfo = this.props.metadataTemplate && this.props.metadataTemplate !== null ? showTemplate(this.props.metadataTemplate) : null;
         let templateCreator = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.audit.created_by.id : null;
         let templateDesc = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.description : null;
@@ -57,7 +55,7 @@ class MetadataTemplateOptions extends React.Component {
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.btnWrapper}>
                     <h5 className="mdl-color-text--grey-600" style={styles.heading}>Properties</h5>
                     {templateCreator === currentUser.id ? <RaisedButton label={'Add Properties'} secondary={true}
-                                  labelStyle={{fontWeight: 100}}
+                                  labelStyle={styles.btn.label}
                                   style={styles.btn}
                                   onTouchTap={() => this.createProperties()}/> : null}
                 </div>
@@ -97,7 +95,10 @@ class MetadataTemplateOptions extends React.Component {
 var styles = {
     btn: {
         margin: '12px 0px 12px 12px',
-        float: 'right'
+        float: 'right',
+        label: {
+            fontWeight: 100
+        }
     },
     btnWrapper: {
         marginBottom: -10,
@@ -105,11 +106,6 @@ var styles = {
     },
     detailsWrapper: {
         maxWidth: 670
-    },
-    dialogStyles: {
-        textAlign: 'center',
-        fontColor: '#303F9F',
-        zIndex: '5000'
     },
     heading: {
         textAlign: 'left',
@@ -149,7 +145,6 @@ MetadataTemplateOptions.contextTypes = {
 
 MetadataTemplateOptions.propTypes = {
     currentUser: React.PropTypes.object,
-    metaTemplates: React.PropTypes.array,
     metadataTemplate: React.PropTypes.object,
     screenSize: React.PropTypes.object
 };

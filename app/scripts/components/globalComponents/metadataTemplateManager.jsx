@@ -6,16 +6,10 @@ import MetadataPropertyManager from '../globalComponents/metadataPropertyManager
 import MetadataTemplateCreator from '../globalComponents/metadataTemplateCreator.jsx';
 import MetadataTemplateOptions from '../globalComponents/metadataTemplateOptions.jsx';
 import BaseUtils from '../../../util/baseUtils'
-import AddCircle from 'material-ui/lib/svg-icons/content/add-circle';
-import AutoComplete from 'material-ui/lib/auto-complete';
 import CircularProgress from 'material-ui/lib/circular-progress';
-import Divider from 'material-ui/lib/divider';
 import IconButton from 'material-ui/lib/icon-button';
 import LeftNav from 'material-ui/lib/left-nav';
-import Help from 'material-ui/lib/svg-icons/action/help';
 import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
-import RaisedButton from 'material-ui/lib/raised-button';
-import TextField from 'material-ui/lib/text-field';
 
 class MetadataTemplateManager extends React.Component {
 
@@ -28,7 +22,6 @@ class MetadataTemplateManager extends React.Component {
     }
 
     render() {
-        let height = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.height : window.innerHeight;
         let width = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.width : window.innerWidth;
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
@@ -56,24 +49,12 @@ class MetadataTemplateManager extends React.Component {
 }
 
 var styles = {
-    buttonWrapper: {
-        textAlign: 'left'
-    },
     drawerLoader: {
         position: 'absolute',
         margin: '0 auto',
         top: 200,
         left: 0,
         right: 0
-    },
-    heading: {
-        textAlign: 'center'
-    },
-    infoIcon: {
-        verticalAlign: 8
-    },
-    textFieldContainer: {
-        textAlign: 'left'
     },
     toggleBtn: {
         margin: '25px 0px 15px 0px',
@@ -86,7 +67,11 @@ MetadataTemplateManager.contextTypes = {
 };
 
 MetadataTemplateManager.propTypes = {
-    drawerLoading: bool
+    drawerLoading: React.PropTypes.bool,
+    screenSize: React.PropTypes.object,
+    showPropertyCreator: React.PropTypes.bool,
+    showTemplateCreator: React.PropTypes.bool,
+    showTemplateDetails: React.PropTypes.bool
 };
 
 export default MetadataTemplateManager;
