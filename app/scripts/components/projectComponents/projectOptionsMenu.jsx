@@ -70,6 +70,7 @@ class ProjectOptionsMenu extends React.Component {
             <div>
                 <Dialog
                     style={styles.dialogStyles}
+                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Are you sure you want to delete this project?"
                     autoDetectWindowHeight={true}
                     actions={deleteActions}
@@ -88,6 +89,7 @@ class ProjectOptionsMenu extends React.Component {
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
+                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Update Project"
                     autoDetectWindowHeight={true}
                     actions={editActions}
@@ -123,6 +125,7 @@ class ProjectOptionsMenu extends React.Component {
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
+                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Add a Member"
                     autoDetectWindowHeight={true}
                     actions={memberActions}
@@ -130,11 +133,13 @@ class ProjectOptionsMenu extends React.Component {
                     open={this.state.memberOpen}>
                     <form action="#" id="newMemberForm">
                         <AutoComplete
+                            style={{textAlign: 'left'}}
                             id="fullName"
                             floatingLabelText="Name"
                             filter={AutoComplete.caseInsensitiveFilter}
                             dataSource={names}
                             errorText={this.state.floatingErrorText}
+                            maxSearchResults={7}
                             onUpdateInput={this.handleUpdateInput.bind(this)}/><br/>
                         <SelectField value={this.state.value}
                                      onChange={this.handleSelectValueChange.bind(this, 'value')}

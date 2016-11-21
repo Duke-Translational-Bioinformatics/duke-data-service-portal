@@ -3,6 +3,7 @@ import Header from '../components/globalComponents/header.jsx';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions.js';
 import CircularProgress from 'material-ui/lib/circular-progress';
+import LinearProgress from 'material-ui/lib/linear-progress';
 import RaisedButton from 'material-ui/lib/raised-button';
 import urlGen from '../../util/urlGen.js';
 
@@ -56,8 +57,7 @@ class Login extends React.Component {
                 content = this.state.error
             }
             else if (this.state.asValidateLoading || this.state.ddsApiTokenLoading) {
-                content = (<div className="mdl-progress mdl-js-progress mdl-progress__indeterminate loader"
-                                style={styles.loader}></div>);
+                content = (<LinearProgress mode="indeterminate" color={'#EC407A'} style={styles.loader}/>);
             }
             else if (this.state.signedInfo) {
                 MainActions.getDdsApiToken(this.state.appConfig, this.state.signedInfo);
@@ -104,7 +104,8 @@ var styles = {
         maxWidth: '26.333%'
     },
     loader: {
-        margin: '0 auto'
+        margin: '0 auto',
+        width: '95%'
     }
 };
 

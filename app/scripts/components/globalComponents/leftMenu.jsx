@@ -25,9 +25,10 @@ class LeftMenu extends React.Component {
                         <div className="content-block">
                             { home }
                             <p>
-                                <a className="mdl-color-text--grey-800 item-content external" href="https://medium.com/@dukedataservice"
-                                   target="_blank" rel="noopener noreferrer"><i className="material-icons" style={styles.navIcon}>rate_review</i>
-                                    Duke DS Blog</a>
+                                <a href={urlGen.routes.metadata()}
+                                   className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
+                                    <i className="material-icons" style={styles.navIcon}>local_offer</i>
+                                    Annotations</a>
                             </p>
                             <p>
                                 <a href={urlGen.routes.agents()}
@@ -36,13 +37,19 @@ class LeftMenu extends React.Component {
                                 </a>
                             </p>
                             <p>
+                                <a className="mdl-color-text--grey-800 item-content external" href="https://medium.com/@dukedataservice"
+                                   target="_blank" rel="noopener noreferrer"><i className="material-icons" style={styles.navIcon}>rate_review</i>
+                                    Duke DS Blog</a>
+                            </p>
+                            <p>
                                 <a href={urlGen.routes.privacy()}
-                                  className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
+                                   className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
                                     <i className="material-icons" style={styles.navIcon}>lock</i>Privacy Policy
                                 </a>
                             </p>
                             <p>
-                                <a href="#" className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.handleTouchTap()}>
+                                <a href="#"
+                                   className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.handleTouchTap()}>
                                     <i className="material-icons" style={styles.navIcon}>exit_to_app</i>Log Out
                                 </a>
                             </p>

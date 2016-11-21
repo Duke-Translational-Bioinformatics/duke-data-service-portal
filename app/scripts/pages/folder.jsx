@@ -35,6 +35,7 @@ class Folder extends React.Component {
         let path = 'folders/';
         let id = this.props.params.id;
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
+        if(ProjectStore.openTagManager) ProjectActions.toggleTagManager();
         this._loadFolder(id, kind, path);
     }
 
