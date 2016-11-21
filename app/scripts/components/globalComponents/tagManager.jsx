@@ -101,7 +101,7 @@ class TagManager extends React.Component {
                                     <h5 className="mdl-color-text--grey-600" style={styles.heading}>Add Tags to {name}
                                         <IconButton tooltip={<span>Tag your files with relevant keywords<br/> that can help with search and organization of content</span>}
                                                     tooltipPosition="bottom-center"
-                                                    iconStyle={{height: 20, width: 20}}
+                                                    iconStyle={styles.infoIcon.size}
                                                     style={styles.infoIcon}>
                                             <Help color={'#BDBDBD'}/>
                                         </IconButton>
@@ -112,7 +112,7 @@ class TagManager extends React.Component {
                                         ref={`autocomplete`}
                                         fullWidth={true}
                                         id="tagText"
-                                        style={{maxWidth: '100%'}}
+                                        style={styles.autoComplete}
                                         floatingLabelText="Type a Tag Label Here"
                                         filter={AutoComplete.fuzzyFilter}
                                         dataSource={autoCompleteData}
@@ -121,7 +121,7 @@ class TagManager extends React.Component {
                                         onUpdateInput={this.handleUpdateInput.bind(this)}
                                         underlineStyle={styles.autoCompleteUnderline}/>
                                     <IconButton onTouchTap={() => this.addTagToCloud(document.getElementById("tagText").value)}
-                                                iconStyle={{width: 24, height: 24}}
+                                                iconStyle={styles.addTagIconBtn.size}
                                                 style={styles.addTagIconBtn}>
                                         <AddCircle color={'#235F9C'}/>
                                     </IconButton><br/>
@@ -142,12 +142,12 @@ class TagManager extends React.Component {
                                 </div>
                                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.buttonWrapper}>
                                     <RaisedButton label={'Cancel'} secondary={true}
-                                                  labelStyle={{fontWeight: 100}}
+                                                  labelStyle={styles.buttonLabel}
                                                   style={styles.cancelBtn}
                                                   onTouchTap={() => this.toggleTagManager()}/>
                                     <RaisedButton label={'Apply'} secondary={true}
-                                                  labelStyle={{fontWeight: 100}}
-                                                  style={{margin: '12px 12px 12px 12px', float: 'right'}}
+                                                  labelStyle={styles.buttonLabel}
+                                                  style={styles.applyBtn}
                                                   onTouchTap={() => this.addTagsToFiles()}/>
                                 </div>
                             </Tab>
@@ -276,7 +276,18 @@ var styles = {
         float: 'right',
         width: 24,
         height: 24,
-        padding: 0
+        padding: 0,
+        size: {
+            height: 24,
+            width: 24
+        }
+    },
+    applyBtn: {
+        margin: '12px 12px 12px 12px',
+        float: 'right'
+    },
+    autoComplete: {
+        maxWidth: '100%'
     },
     autoCompleteContainer: {
         maxWidth: '100%'
@@ -284,6 +295,9 @@ var styles = {
     autoCompleteUnderline: {
         borderColor: '#0680CD',
         maxWidth: 'calc(100% - 42px)'
+    },
+    buttonLabel: {
+        fontWeight: 100
     },
     buttonWrapper: {
         textAlign: 'left'
@@ -319,7 +333,11 @@ var styles = {
         textAlign: 'left'
     },
     infoIcon: {
-        verticalAlign: 8
+        verticalAlign: 8,
+        size: {
+            height: 20,
+            width: 20
+        }
     },
     modalIcon: {
         fontSize: 48,
