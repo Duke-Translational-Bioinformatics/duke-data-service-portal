@@ -60,10 +60,6 @@ let BaseUtils = {
             return /^\w+$/.test(s);
         },
 
-        validateInt(s) {
-            return /^\d+$/.test(s);
-        },
-
         validatePropertyDatatype(v,t) {
             switch (t) {
                 case 'number':
