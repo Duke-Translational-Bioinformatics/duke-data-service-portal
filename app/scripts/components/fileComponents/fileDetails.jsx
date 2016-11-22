@@ -235,7 +235,7 @@ class FileDetails extends React.Component {
         return (
             <div>
                 {file}
-                <CustomMetadata {...this.props}/>
+                {this.props.objectMetadata && this.props.objectMetadata.length ? <CustomMetadata {...this.props}/> : null}
             </div>
         )
     }
