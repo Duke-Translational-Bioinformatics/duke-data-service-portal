@@ -28,7 +28,7 @@ class LeftMenu extends React.Component {
                                 <a href={urlGen.routes.metadata()}
                                    className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
                                     <i className="material-icons" style={styles.navIcon}>local_offer</i>
-                                    Annotations</a>
+                                    Advanced Metadata</a>
                             </p>
                             <p>
                                 <a href={urlGen.routes.agents()}

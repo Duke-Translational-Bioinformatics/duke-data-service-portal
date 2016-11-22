@@ -79,7 +79,7 @@ class MetadataTemplateOptions extends React.Component {
     editTemplateModal() {
         ProjectActions.toggleModals('editTemplate');
         setTimeout(()=>{
-            document.getElementById('templateLabel').select();
+            document.getElementById('tempLabel').select(); // Todo: Change to use refs
         },350);
     }
 

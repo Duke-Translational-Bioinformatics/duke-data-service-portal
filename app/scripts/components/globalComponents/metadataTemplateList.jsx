@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { RouteHandler } from 'react-router';
 import MainActions from '../../actions/mainActions';
 import ProjectActions from '../../actions/projectActions';
@@ -23,6 +24,7 @@ class MetadataTemplateList extends React.Component {
         super(props);
         this.state = {
             searchMode: false,
+            searchValue: null,
             timeout: null,
             toggleSwitch: false
         };
@@ -76,9 +78,9 @@ class MetadataTemplateList extends React.Component {
                 }
             }
         }) : '';
-        let tooltip = <span>Metadata templates allow<br/> you to define a group of key-value pairs
+        let tooltip = <span>Metadata templates allow you<br/>  to define a group of key-value pairs
             <br/> and then apply them to a file to create <br/> custom metadata. Metadata properties in the
-            <br/> form of key-value pairs can help<br/> facilitate powerful and accurate<br/> search queries.</span>;
+            <br/> form of key-value pairs can help facilitate<br/> powerful and accurate search queries.</span>;
 
         return (
             <div className="list-container">
@@ -116,8 +118,7 @@ class MetadataTemplateList extends React.Component {
                             style={!this.state.searchMode ? styles.toggleSearch : {display: 'none'}}
                             trackStyle={switchColor.track}
                             thumbStyle={switchColor.thumb}
-                            onToggle={()=>this.toggleSwitch()}
-                            />
+                            onToggle={()=>this.toggleSwitch()}/>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col" style={styles.searchWrapper}>
                         <Paper className="mdl-cell mdl-cell--12-col"
@@ -125,11 +126,14 @@ class MetadataTemplateList extends React.Component {
                                zDepth={1}>
                             <TextField
                                 id="searchInput"
+                                ref="searchInput"
                                 hintText="Search"
+                                value={this.state.searchValue}
                                 style={styles.searchInput}
                                 underlineStyle={styles.textField.underline}
                                 underlineFocusStyle={styles.textField.underline}
-                                onChange={() => this.onSearchChange()}/>
+                                onChange={this.handleChange.bind(this)}
+                                onKeyUp={() => this.onSearchChange()}/>
                         </Paper>
                     </div>
                 </div>
@@ -147,31 +151,36 @@ class MetadataTemplateList extends React.Component {
         );
     }
 
-    onSearchChange() {
-        let textInput = document.getElementById('searchInput');
-        let timeout = this.state.timeout;
-        textInput.onkeyup = () => {
-            clearTimeout(timeout);
-            this.state.timeout = setTimeout(() => {
-                if (!textInput.value.indexOf(' ') <= 0) {
-                    let value = textInput.value;
-                    ProjectActions.loadMetadataTemplates(value);
-                }
-            }, 600);
-        };
+    handleChange(e) {
+        this.setState({searchValue: e.target.value});
     }
+
+    onSearchChange() {
+        let searchInput = this.refs.searchInput;
+        let timeout = this.state.timeout;
+        let value = searchInput.getValue();
+        clearTimeout(timeout);
+        this.setState({timeout: setTimeout(() => {
+            let value = searchInput.getValue();
+            if (!value.indexOf(' ') <= 0) {
+                ProjectActions.loadMetadataTemplates(value);
+            }
+        }, 600)
+        });
+    }
+
 
     openMetadataManager() {
         ProjectActions.toggleMetadataManager();
     }
 
     toggleSearch() {
-        let input = document.getElementById('searchInput');
         setTimeout(()=> {
-            input.focus();
-            if (input.value !== ('' || 'search')) input.value = '';
+        let searchInput = this.refs.searchInput;
+        searchInput.focus();
+            if (this.state.searchValue !== ('' || 'search')) this.setState({searchValue:''});
         }, 100);
-        this.setState({searchMode: !this.state.searchMode})
+        this.setState({searchMode: !this.state.searchMode});
     }
 
     toggleSwitch() {

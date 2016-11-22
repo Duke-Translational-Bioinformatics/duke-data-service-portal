@@ -20,6 +20,9 @@ class MetadataPropertyManager extends React.Component {
             errorText2: 'This field is required',
             errorText3: 'This field is required',
             errorText4: 'This field is required',
+            nameText: '',
+            labelText: '',
+            descripText: '',
             value: null
         };
     }
@@ -45,7 +48,8 @@ class MetadataPropertyManager extends React.Component {
                 <div className="mdl-cell mdl-cell--8-col mdl-cell--8-col-tablet">
                     <TextField
                             fullWidth={true}
-                            id="propertyName"
+                            ref="propertyName"
+                            value={this.state.nameText}
                             autoFocus={true}
                             hintStyle={{fontSize: 12}}
                             hintText={width > 680 ? "Only alphanumerics and underscores (i.e. template_123_ABC)" : "Only alphanumerics and underscores"}
@@ -57,7 +61,6 @@ class MetadataPropertyManager extends React.Component {
                 <div className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
                     <SelectField value={this.state.value}
                                  fullWidth={true}
-                                 id="selectRelation"
                                  onChange={this.handleSelectValueChange.bind(this, 'value')}
                                  floatingLabelText="Data Type"
                                  errorText={this.state.errorText4}
@@ -74,7 +77,8 @@ class MetadataPropertyManager extends React.Component {
                 <div className="mdl-cell mdl-cell--12-col" style={styles.propTextField}>
                     <TextField
                             fullWidth={true}
-                            id="propertyLabel"
+                            ref="propertyLabel"
+                            value={this.state.labelText}
                             hintText="A readable label for your template property"
                             errorText={this.state.errorText2}
                             floatingLabelText="Display Label"
@@ -83,7 +87,8 @@ class MetadataPropertyManager extends React.Component {
                 <div className="mdl-cell mdl-cell--12-col" style={styles.descTextField}>
                     <TextField
                         fullWidth={true}
-                        id="propertyDesc"
+                        ref="propertyDesc"
+                        value={this.state.descripText}
                         hintText="Verbose template property description"
                         errorText={this.state.errorText3}
                         onChange={this.handleInputValidation3.bind(this)}
@@ -106,9 +111,9 @@ class MetadataPropertyManager extends React.Component {
     }
 
     createProperty(id) {
-        let label = document.getElementById('propertyLabel').value;
-        let name = document.getElementById('propertyName').value.trim();
-        let desc = document.getElementById('propertyDesc').value;
+        let label = this.refs.propertyLabel.getValue();
+        let name = this.refs.propertyName.getValue();
+        let desc = this.refs.propertyDesc.getValue();
         let type = this.getSelectValue();
         if(!BaseUtils.validateTemplateName(name)) {
             this.setState({
@@ -117,14 +122,14 @@ class MetadataPropertyManager extends React.Component {
         } else {
             if (name !== '' && label !== '' && desc !== '' && type !== null) {
                 ProjectActions. createMetadataProperty(id, name, label, desc, type);
-                document.getElementById('propertyName').value = '';
-                document.getElementById('propertyLabel').value = '';
-                document.getElementById('propertyDesc').value = '';
                 this.setState({
                     errorText: 'This field is required.',
                     errorText2: 'This field is required.',
                     errorText3: 'This field is required.',
                     errorText4: 'This field is required.',
+                    nameText: '',
+                    labelText: '',
+                    descripText: '',
                     value: null
                 });
             }
@@ -162,7 +167,7 @@ class MetadataPropertyManager extends React.Component {
         let errorText = '';
         if(name.length > 60){
             errorText = 'Property key can only be 60 characters maximum';
-            document.getElementById('propertyName').value = name.slice(0,-1);
+            this.setState({nameText: name.slice(0,-1)});
             this.setErrorText(errorText);
         } else {
             if (BaseUtils.validateTemplateName(name)) {
@@ -173,18 +178,21 @@ class MetadataPropertyManager extends React.Component {
                 ' consist of alphanumerics and underscores.' : 'This field is required';
                 this.setErrorText(errorText);
             }
+            this.setState({nameText: name})
         }
     }
 
     handleInputValidation2(e) {
         this.setState({
-            errorText2: e.target.value ? '' : 'This field is required'
+            errorText2: e.target.value ? '' : 'This field is required',
+            labelText: e.target.value
         });
     }
 
     handleInputValidation3(e) {
         this.setState({
-            errorText3: e.target.value ? '' : 'This field is required'
+            errorText3: e.target.value ? '' : 'This field is required',
+            descripText: e.target.value
         });
     }
 

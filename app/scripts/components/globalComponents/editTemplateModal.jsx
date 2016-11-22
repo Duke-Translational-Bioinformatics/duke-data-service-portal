@@ -44,16 +44,16 @@ class EditTemplateModal extends React.Component {
                 open={open}>
                 <TextField
                     fullWidth={true}
-                    id="templateName"
+                    ref="templateName"
                     disabled={true}
                     underlineDisabledStyle={{display: 'none'}}
                     inputStyle={{color: '#212121'}}
                     defaultValue={templateName}
-                    floatingLabelText="Name"
-                    /><br/>
+                    floatingLabelText="Name"/><br/>
                 <TextField
                     fullWidth={true}
-                    id="templateLabel"
+                    ref="templateLabel"
+                    id="tempLabel"
                     autoFocus={true}
                     onFocus={this.handleInputValidation.bind(this)}
                     defaultValue={templateLabel}
@@ -63,7 +63,7 @@ class EditTemplateModal extends React.Component {
                     onChange={this.handleInputValidation.bind(this)}/><br/>
                 <TextField
                     fullWidth={true}
-                    id="templateDesc"
+                    ref="templateDesc"
                     style={{textAlign: 'left'}}
                     defaultValue={templateDesc}
                     hintText="Verbose template description"
@@ -75,9 +75,9 @@ class EditTemplateModal extends React.Component {
     }
 
     editTemplate(id) {
-        let name = document.getElementById('templateName').value.trim();
-        let label = document.getElementById('templateLabel').value;
-        let desc = document.getElementById('templateDesc').value;
+        let name = this.refs.templateName.getValue();
+        let label = this.refs.templateLabel.getValue();
+        let desc = this.refs.templateDesc.getValue();
         if(!BaseUtils.validateTemplateName(name)) {
             this.setState({
                 errorText: 'Invalid characters or spaces. Name must only consist of alphanumerics and underscores.'

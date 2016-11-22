@@ -58,6 +58,7 @@ class MetadataObjectCreator extends React.Component {
                         {type !== 'date' ? <TextField
                             fullWidth={true}
                             id={obj.key}
+                            ref={obj.key}
                             title={type}
                             style={styles.textField}
                             underlineStyle={styles.textField.underline}
@@ -157,8 +158,8 @@ class MetadataObjectCreator extends React.Component {
     }
 
     addToPropertyList(id, type) {
-        if(document.getElementById(id).value !== '' && !BaseUtils.objectPropInArray(this.state.metaProps, 'key', id)) {
-            let value = document.getElementById(id).value;
+        if(this.refs[id].getValue() !== '' && !BaseUtils.objectPropInArray(this.state.metaProps, 'key', id)) {
+            let value = this.refs[id].getValue();
             let metaProps = this.state.metaProps;
             metaProps.push({key: id, value: value});
             this.setState({metaProps: metaProps});
@@ -193,7 +194,7 @@ class MetadataObjectCreator extends React.Component {
     }
 
     handleInputValidation(e) {
-        let id = e.target.id;
+        let id = e.target.id; // Using e.target.id here because MUI textfield doesn't support refs in the event
         let type = e.target.title;
         let value = e.target.value;
         let pass = value !== '' ? BaseUtils.validatePropertyDatatype(value, type) : true;
@@ -217,12 +218,8 @@ class MetadataObjectCreator extends React.Component {
     }
 
     toggleTagManager() {
-        let properties = this.state.metaProps;
         ProjectActions.toggleTagManager();
         if(this.props.showTemplateDetails) ProjectActions.showMetadataTemplateList();
-        setTimeout(() => {
-            if(document.getElementById("tagText").value !== '') this.refs[`autocomplete`].setState({searchText:''});
-        }, 500);
         this.setState({tagsToAdd: [], metaProps: []});
     }
 }

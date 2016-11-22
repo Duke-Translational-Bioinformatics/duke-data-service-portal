@@ -26,7 +26,7 @@ class MetadataTemplateCreator extends React.Component {
                 <div className="mdl-cell mdl-cell--6-col mdl-color-text--grey-600">
                     <TextField
                         fullWidth={true}
-                        id="templateName"
+                        ref="templateName"
                         autoFocus={true}
                         hintText={width > 680 ? "Only alphanumerics and underscores (i.e. template_123_ABC)" : "Only alphanumerics and underscores"}
                         errorText={this.state.errorText}
@@ -34,14 +34,14 @@ class MetadataTemplateCreator extends React.Component {
                         onChange={this.handleInputValidation.bind(this)}/>
                     <TextField
                         fullWidth={true}
-                        id="templateLabel"
+                        ref="templateLabel"
                         hintText="A readable label for your template"
                         errorText={this.state.errorText2}
                         floatingLabelText="Display Label"
                         onChange={this.handleInputValidation2.bind(this)}/>
                     <TextField
                         fullWidth={true}
-                        id="templateDesc"
+                        ref="templateDesc"
                         hintText="Verbose template description"
                         floatingLabelText="Description"
                         multiLine={true}
@@ -62,15 +62,15 @@ class MetadataTemplateCreator extends React.Component {
     }
 
     createTemplate() {
-        let name = document.getElementById('templateName').value.trim();
-        let label = document.getElementById('templateLabel').value;
-        let desc = document.getElementById('templateDesc').value;
+        let name = this.refs.templateName.getValue();
+        let label = this.refs.templateLabel.getValue();
+        let desc = this.refs.templateDesc.getValue();
         if(!BaseUtils.validateTemplateName(name)) {
             this.setState({
                 errorText: 'Invalid characters or spaces. Name must only consist of alphanumerics and underscores.'
             });
         } else {
-            if (name !== '' && label !== '') {
+            if (name!== '' && label !== '') {
                 ProjectActions. createMetadataTemplate(name, label, desc);
             }
         }
