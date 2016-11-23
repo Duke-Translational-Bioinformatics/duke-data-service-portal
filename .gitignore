@@ -9,9 +9,6 @@ app/bundles
 .idea/
 *.iml
 
-# UTIL
-app/util/urlEnum.js
-
 # OSX
 .DS_Store
 
