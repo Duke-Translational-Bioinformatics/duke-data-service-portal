@@ -1,10 +1,11 @@
-let UrlGen = {
+export const UrlGen = {
     routes: {
         authServiceUri: DDS_PORTAL_CONFIG.authServiceUri,
         baseUrl: DDS_PORTAL_CONFIG.baseUrl,
         apiPrefix: '/api/v1/',
         login: () => '/login',
         home: () => '/',
+        metadata: () => '/#/metadata',
         publicPrivacy: () => '/#/public_privacy',
         privacy: () => '/#/privacy',
         project: (projectId) => '/#/project/' + projectId,
@@ -16,4 +17,19 @@ let UrlGen = {
     }
 };
 
-export default UrlGen;
+export const Path = Object.freeze({
+    ACTIVITIES: 'activities/',
+    AGENT: 'software_agents/',
+    CHILDREN: '/children',
+    CURRENT_USER: 'current_user/',
+    FILE: 'files/',
+    FILE_VERSION: 'file_versions/',
+    FOLDER : 'folders/',
+    META: 'meta/',
+    PROJECT : 'projects/',
+    PROPERTIES : '/properties',
+    TAGS: 'tags/',
+    TEMPLATES: 'templates/',
+    TEMPLATE_PROPERTIES: 'template_properties/',
+    UPLOAD: 'uploads/'
+});

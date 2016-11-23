@@ -35,13 +35,16 @@ var ProjectStore = Reflux.createStore({
         this.fileHashes = [];
         this.foldersChecked = [];
         this.fileVersions = [];
-        this.graphLoading = false;
+        this.drawerLoading = false;
         this.itemsSelected = null;
+        this.metaDataTemplate = null;
+        this.metaTemplates = [];
         this.modal = false;
         this.moveModal = false;
         this.moveToObj = {};
         this.moveErrorModal = false;
         this.objectTags = [];
+        this.openMetadataManager = false;
         this.openTagManager = false;
         this.openUploadManager = false;
         this.parent = {};
@@ -63,13 +66,17 @@ var ProjectStore = Reflux.createStore({
         this.selectedNode = {};
         this.selectedEdge = null;
         this.searchText = '';
-        this.showBatchOps = false;
+        this.showPropertyCreator = false;
         this.showProvAlert = false;
         this.showProvCtrlBtns = false;
         this.showProvDetails = false;
+        this.showTemplateCreator = false;
+        this.showTemplateDetails = false;
         this.screenSize = {};
         this.showBatchOps = false;
         this.tagLabels = [];
+        this.templateProperties = [];
+        this.toggleModal = {open: false, id: null};
         this.toggleProv = false;
         this.toggleProvEdit = false;
         this.updatedGraphItem = [];
@@ -80,10 +87,190 @@ var ProjectStore = Reflux.createStore({
         this.versionModal = false;
     },
 
-    saveGraphZoomState(scale, position) {
+    getObjectMetadataSuccess(results) {
+        this.objectMetadata = results;
         this.trigger({
-            scale: scale,
-            position: position
+            objectMetadata: this.objectMetadata
+        })
+    },
+
+    createMetadataObject() {
+        this.drawerLoading = true;
+        this.trigger({
+            drawerLoading: this.drawerLoading
+        })
+    },
+
+    createMetadataObjectSuccess() {
+        this.drawerLoading = false;
+        this.showBatchOps = false;
+        this.showTemplateDetails = false;
+        this.trigger({
+            drawerLoading: this.drawerLoading,
+            showBatchOps: this.showBatchOps,
+            showTemplateDetails: this.showTemplateDetails
+        })
+    },
+
+    showMetadataTemplateList() {
+        this.showTemplateDetails = false;
+        this.trigger({
+            showTemplateDetails: this.showTemplateDetails
+        })
+    },
+
+    deleteMetadataPropertySuccess(id) {
+        this.templateProperties = BaseUtils.removeObjByKey(this.templateProperties, {key: 'id', value: id});
+        this.trigger({
+            templateProperties: this.templateProperties
+        })
+    },
+
+    getMetadataTemplateProperties() {
+        this.drawerLoading = true;
+        this.trigger({
+            drawerLoading: this.drawerLoading
+        })
+    },
+
+    getMetadataTemplatePropertiesSuccess(properties) {
+        this.drawerLoading = false;
+        this.templateProperties = properties;
+        this.trigger({
+            drawerLoading: this.drawerLoading,
+            templateProperties: this.templateProperties
+        })
+    },
+
+    createMetadataProperty() {
+        this.drawerLoading = true;
+        this.trigger({
+            drawerLoading: this.drawerLoading
+        })
+    },
+
+    createMetadataPropertySuccess(property) {
+        this.drawerLoading = false;
+        this.templateProperties.push(property);
+        this.trigger({
+            drawerLoading: this.drawerLoading,
+            templateProperties: this.templateProperties
+        })
+    },
+
+    showMetaDataTemplateDetails() {
+        this.showPropertyCreator = false;
+        this.showTemplateCreator = false;
+        this.showTemplateDetails = true;
+        this.trigger({
+            showPropertyCreator: this.showPropertyCreator,
+            showTemplateCreator: this.showTemplateCreator,
+            showTemplateDetails: this.showTemplateDetails
+        })
+    },
+
+    showTemplatePropManager() {
+        this.showPropertyCreator = true;
+        this.showTemplateCreator = false;
+        this.showTemplateDetails = false;
+        this.trigger({
+            showPropertyCreator: this.showPropertyCreator,
+            showTemplateCreator: this.showTemplateCreator,
+            showTemplateDetails: this.showTemplateDetails
+        })
+    },
+
+    deleteTemplateSuccess() {
+        ProjectActions.toggleMetadataManager();
+        ProjectActions.loadMetadataTemplates();
+    },
+
+    updateMetadataTemplate() {
+        this.drawerLoading = true;
+        this.trigger({
+            drawerLoading: this.drawerLoading
+        })
+    },
+
+    createMetadataTemplate() {
+        this.drawerLoading = true;
+        this.templateProperties = [];
+        this.trigger({
+            drawerLoading: this.drawerLoading,
+            templateProperties: this.templateProperties
+        })
+    },
+
+    createMetadataTemplateSuccess(template) {
+        this.drawerLoading = false;
+        this.metaTemplates.unshift(template);
+        this.trigger({
+            drawerLoading: this.drawerLoading,
+            metaTemplates: this.metaTemplates
+        })
+    },
+
+    toggleMetadataManager() {
+        this.openMetadataManager = !this.openMetadataManager;
+        this.showPropertyCreator = false;
+        this.showTemplateCreator = true;
+        this.showTemplateDetails = false;
+        this.trigger({
+            openMetadataManager: this.openMetadataManager,
+            showPropertyCreator: this.showPropertyCreator,
+            showTemplateCreator: this.showTemplateCreator,
+            showTemplateDetails: this.showTemplateDetails
+        })
+    },
+
+    getMetadataTemplateDetails() {
+        this.drawerLoading = true;
+        this.openMetadataManager = !this.openMetadataManager;
+        this.trigger({
+            drawerLoading: this.drawerLoading,
+            openMetadataManager: this.openMetadataManager
+        })
+    },
+
+    getMetadataTemplateDetailsSuccess(template) {
+        this.drawerLoading = false;
+        this.metaDataTemplate = template;
+        this.showTemplateCreator = false;
+        this.showTemplateDetails = true;
+        this.trigger({
+            drawerLoading: this.drawerLoading,
+            metadataTemplate: this.metaDataTemplate,
+            showTemplateCreator: this.showTemplateCreator,
+            showTemplateDetails: this.showTemplateDetails
+        })
+    },
+
+    loadMetadataTemplates() {
+        this.loading = true;
+        this.trigger({
+            loading: this.loading
+        })
+    },
+
+    loadMetadataTemplatesSuccess(templates) {
+        this.loading = false;
+        this.metaTemplates = templates.sort(function(a, b) {
+            a = new Date(a.audit.created_on);
+            b = new Date(b.audit.created_on);
+            return a>b ? -1 : a<b ? 1 : 0;
+        });
+        this.trigger({
+            loading: this.loading,
+            metaTemplates: this.metaTemplates
+        })
+    },
+
+    saveGraphZoomState(scale, position) {
+        this.scale = scale;
+        this.position = position;
+        this.trigger({
+            scale: this.scale,
+            position: this.position
         });
     },
 
@@ -100,17 +287,22 @@ var ProjectStore = Reflux.createStore({
     },
 
     switchRelationFromTo(from, to){
+        this.openConfirmRel = true;
+        this.relFrom = to;
+        this.relTo = from;
         this.trigger({
-            relFrom: to,
-            relTo: from,
-            openConfirmRel: true
+            relFrom: this.relFrom,
+            relTo: this.relTo,
+            openConfirmRel: this.openConfirmRel
         });
     },
 
     confirmDerivedFromRel(from, to) {
+        this.relFrom = from;
+        this.relTo = to;
         this.trigger({
-            relFrom: from,
-            relTo: to,
+            relFrom: this.relFrom,
+            relTo: this.relTo,
             provEditorModal: {open: true, id: 'confirmRel'}
         });
     },
@@ -344,10 +536,12 @@ var ProjectStore = Reflux.createStore({
             };
         });
         nodes.push(this.updatedGraphItem[0]);
+        this.provNodes = nodes;
+        this.showProvCtrlBtns = false;
         this.trigger({
             updatedGraphItem: this.updatedGraphItem,
-            provNodes: nodes,
-            showProvCtrlBtns: false
+            provNodes: this.provNodes,
+            showProvCtrlBtns: this.showProvCtrlBtns
         })
     },
 
@@ -363,6 +557,7 @@ var ProjectStore = Reflux.createStore({
         item.push(data);
         let edges = this.provEdges;
         let nodes = this.provNodes;
+        this.showProvCtrlBtns = false;
         if(data.hasOwnProperty('from')){
             edges = BaseUtils.removeObjByKey(edges, {key: 'id', value: data.id});
         } else {
@@ -373,7 +568,7 @@ var ProjectStore = Reflux.createStore({
             updatedGraphItem: item,
             provEdges: edges,
             provNodes: nodes,
-            showProvCtrlBtns: false
+            showProvCtrlBtns: this.showProvCtrlBtns
         })
 
     },
@@ -417,20 +612,23 @@ var ProjectStore = Reflux.createStore({
     },
 
     toggleGraphLoading() {
+        this.drawerLoading = false;
         this.trigger({
-            graphLoading: false
+            drawerLoading: this.drawerLoading
         })
     },
 
     getWasGeneratedByNode() {
+        this.drawerLoading = true;
         this.trigger({
-            graphLoading: true
+            drawerLoading: this.drawerLoading
         })
     },
 
     getProvenance() {
+        this.drawerLoading = true;
         this.trigger({
-            graphLoading: true
+            drawerLoading: this.drawerLoading
         })
     },
 
@@ -592,38 +790,44 @@ var ProjectStore = Reflux.createStore({
 
     setSearchText(text) {
         if(!text.indexOf(' ') <= 0) this.searchText = text;
+        this.showBatchOps = false;
+        this.itemsSelected = null;
         this.trigger({
             searchText: this.searchText,
-            itemsSelected: null,
-            showBatchOps: false
+            itemsSelected: this.itemsSelected,
+            showBatchOps: this.showBatchOps
         })
     },
 
     search() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
     searchFiles() {
+        this.autoCompleteLoading = true;
         this.trigger({
-            autoCompleteLoading: true
+            autoCompleteLoading: this.autoCompleteLoading
         })
     },
 
     searchFilesSuccess(results) {
+        this.autoCompleteLoading = false;
         this.searchFilesList = results.filter((file)=>{
             if(file.kind === 'dds-file') return file.name;
         });
         this.trigger({
             searchFilesList: this.searchFilesList,
-            autoCompleteLoading: false
+            autoCompleteLoading: this.autoCompleteLoading
         })
     },
 
     clearSearchFilesData() {
+        this.searchFilesList = [];
         this.trigger({
-            searchFilesList: []
+            searchFilesList: this.searchFilesList
         })
     },
 
@@ -685,13 +889,15 @@ var ProjectStore = Reflux.createStore({
 
     getFileVersions(id, prov) {
         if(!prov) {
+            this.loading = true;
             this.trigger({
-                loading: true
+                loading: this.loading
             })
         }
     },
 
     getFileVersionsSuccess(results, prov) {
+        this.loading = false;
         if(prov) {
             this.provFileVersions = results
         } else {
@@ -700,14 +906,15 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             fileVersions: this.fileVersions,
             provFileVersions: this.provFileVersions,
-            loading: false
+            loading: this.loading
         })
     },
 
     clearProvFileVersions() {
         if(this.provFileVersions.length) {
+            this.provFileVersions = [];
             this.trigger({
-                provFileVersions: []
+                provFileVersions: this.provFileVersions
             })
         }
     },
@@ -727,153 +934,171 @@ var ProjectStore = Reflux.createStore({
     },
 
     deleteVersion() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
     deleteVersionSuccess() {
+        this.loading = false;
         this.trigger({
-            loading: false
+            loading: this.loading
         })
     },
 
     editVersion() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
     editVersionSuccess(id) {
+        this.loading = false;
         let kind = 'file_versions';
         ProjectActions.getEntity(id, kind);
         this.trigger({
-            loading: false
+            loading: this.loading
         })
     },
 
     openModal() {
         this.modal = true;
         this.trigger({
-            modal: true
+            modal: this.modal
         })
     },
 
     closeModal() {
         this.modal = false;
         this.trigger({
-            modal: false
+            modal: this.modal
         })
     },
 
     openVersionModal() {
         this.versionModal = true;
         this.trigger({
-            versionModal: true
+            versionModal: this.versionModal
         })
     },
 
     closeVersionModal() {
         this.versionModal = false;
         this.trigger({
-            versionModal: false
+            versionModal: this.versionModal
         })
     },
 
     loadAgents () {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
     loadAgentsSuccess (results) {
         this.agents = results;
+        this.loading = false;
         this.trigger({
             agents: this.agents,
-            loading: false
+            loading: this.loading
         })
     },
 
     addAgent () {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
     addAgentSuccess () {
+        this.loading = false;
         ProjectActions.loadAgents();
         this.trigger({
-            loading: false
+            loading: this.loading
         })
     },
 
     editAgent(id) {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
     editAgentSuccess(id) {
         let kind = 'software_agents';
+        this.loading = false;
         ProjectActions.getEntity(id, kind);
         this.trigger({
-            loading: false
+            loading: this.loading
         })
     },
 
     deleteAgent() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
     deleteAgentSuccess() {
+        this.loading = false;
         ProjectActions.loadAgents();
         this.trigger({
-            loading: false
+            loading: this.loading
         })
     },
 
     createAgentKey() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
     createAgentKeySuccess(json) {
         this.agentKey = json;
+        this.loading = false;
         this.trigger({
             agentKey: this.agentKey,
-            loading: false
+            loading: this.loading
         })
     },
 
     getAgentKey() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
     getAgentKeySuccess(json) {
         this.agentKey = json;
+        this.loading = false;
         this.trigger({
             agentKey: this.agentKey,
-            loading: false
+            loading: this.loading
         })
     },
 
     getAgentApiToken() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
     getAgentApiTokenSuccess(json) {
         this.agentApiToken = json;
+        this.loading = false;
         ProjectActions.openModal();
         this.trigger({
             agentApiToken: this.agentApiToken,
-            loading: false
+            loading: this.loading
         })
 
     },
@@ -967,10 +1192,14 @@ var ProjectStore = Reflux.createStore({
                 ref: 'modal' + Math.floor(Math.random() * 10000)
             });
         }
+        this.error = err;
+        this.loading = false;
+        this.drawerLoading = false;
         this.trigger({
-            error: err,
+            drawerLoading: this.drawerLoading,
+            error: this.error,
             errorModals: this.errorModals,
-            loading: false
+            loading: this.loading
         })
     },
 
@@ -981,8 +1210,9 @@ var ProjectStore = Reflux.createStore({
                 break;
             }
         }
+        this.error = {};
         this.trigger({
-            error: {},
+            error: this.error,
             errorModals: this.errorModals
         })
     },
@@ -1029,30 +1259,34 @@ var ProjectStore = Reflux.createStore({
     },
 
     loadProjects() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
     loadProjectsSuccess(results) {
+        this.loading = false;
         this.projects = results;
         this.trigger({
             projects: this.projects,
-            loading: false
+            loading: this.loading
         })
     },
 
     showDetails() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
     showDetailsSuccess(json) {
         this.project = json;
+        this.loading = false;
         this.trigger({
             project: this.project,
-            loading: false
+            loading: this.loading
         })
     },
 
@@ -1068,74 +1302,86 @@ var ProjectStore = Reflux.createStore({
                 ProjectActions.getChildren(id, 'folders/');
             }
         }
+        this.loading = false;
         this.showBatchOps = false;
         this.trigger({
             batchFiles: this.batchFiles,
             batchFolders: this.batchFolders,
-            loading: false,
+            loading: this.loading,
             showBatchOps: this.showBatchOps
         })
     },
 
     addProject() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
     addProjectSuccess() {
         ProjectActions.loadProjects();
+        this.loading = false;
         this.trigger({
-            loading: false
+            loading: this.loading
         })
     },
 
     deleteProject() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
     deleteProjectSuccess() {
         ProjectActions.loadProjects();
         ProjectActions.getUsageDetails();
+        this.loading = false;
         this.trigger({
-            loading: false
+            loading: this.loading
         })
     },
 
     editProject(id) {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
     editProjectSuccess(id) {
         ProjectActions.showDetails(id);
+        this.loading = false;
         this.trigger({
-            loading: false
+            loading: this.loading
         })
     },
 
     getChildren() {
+        this.childrenLoading = true;
+        this.loading = true;
         this.trigger({
-            loading: true,
-            childrenLoading: true
+            loading: this.loading,
+            childrenLoading: this.childrenLoading
         })
     },
 
     getChildrenSuccess(results) {
         this.children = results;
+        this.childrenLoading = false;
+        this.loading = false;
         this.trigger({
             children: this.children,
-            childrenLoading: false,
-            loading: false
+            childrenLoading: this.childrenLoading,
+            loading: this.loading
         })
     },
 
     addFolder() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
@@ -1145,20 +1391,23 @@ var ProjectStore = Reflux.createStore({
         } else {
             ProjectActions.getChildren(id, 'folders/');
         }
+        this.loading = false;
         this.trigger({
-            loading: false
+            loading: this.loading
         })
     },
 
     deleteFolder() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
     editFolder() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
@@ -1166,26 +1415,30 @@ var ProjectStore = Reflux.createStore({
         let kind = 'folders/';
         ProjectActions.getChildren(id, 'folders/');
         ProjectActions.getEntity(id, kind);
+        this.loading = false;
         this.trigger({
-            loading: false
+            loading: this.loading
         })
     },
 
     moveFolder() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
     moveFolderSuccess() {
+        this.loading = false;
         this.trigger({
-            loading: false
+            loading: this.loading
         })
     },
 
     addFile() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
@@ -1203,41 +1456,48 @@ var ProjectStore = Reflux.createStore({
         if(this.uploads.hasOwnProperty(uploadId)) {
             delete this.uploads[uploadId];
         }
+        this.loading = false;
         this.trigger({
+            loading: this.loading,
             uploads: this.uploads
         })
     },
 
 
     deleteFile() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
     editFile() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
     editFileSuccess(id) {
         let kind = 'files/';
         ProjectActions.getEntity(id, kind);
+        this.loading = false;
         this.trigger({
-            loading: false
+            loading: this.loading
         })
     },
 
     moveFile() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
     moveFileSuccess() {
+        this.loading = false;
         this.trigger({
-            loading: false
+            loading: this.loading
         })
     },
 
@@ -1250,25 +1510,28 @@ var ProjectStore = Reflux.createStore({
         if (requester === 'moveItemModal') {
             this.moveToObj = json;
         }
+        this.loading = false;
         this.trigger({
             entityObj: this.entityObj,
             moveToObj: this.moveToObj,
             parent: this.parent,
-            loading: false
+            loading: this.loading
         })
     },
 
     getProjectMembers() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
     getProjectMembersSuccess(results) {
+        this.loading = false;
         this.projectMembers = results;
         this.trigger({
             projectMembers: this.projectMembers,
-            loading: false
+            loading: this.loading
         })
     },
 
@@ -1280,8 +1543,9 @@ var ProjectStore = Reflux.createStore({
     },
 
     getUserId() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
@@ -1295,40 +1559,46 @@ var ProjectStore = Reflux.createStore({
         let userId = userInfo.toString();
         let name = getName.toString();
         ProjectActions.addProjectMember(id, userId, role, name);
+        this.loading = false;
         this.trigger({
-            loading: false
+            loading: this.loading
         })
     },
 
     addProjectMember() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
     addProjectMemberSuccess(id) {
         ProjectActions.getProjectMembers(id);
+        this.loading = false;
         this.trigger({
-            loading: false
+            loading: this.loading
         })
     },
 
     deleteProjectMember() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
     deleteProjectMemberSuccess(id) {
         ProjectActions.getProjectMembers(id);
+        this.loading = false;
         this.trigger({
-            loading: false
+            loading: this.loading
         })
     },
 
     getDownloadUrl() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
@@ -1343,30 +1613,34 @@ var ProjectStore = Reflux.createStore({
         } else { // if browser blocks popups use location.href instead
             window.location.href = host + url;
         }
+        this.loading = false;
         this.trigger({
-            loading: false,
+            loading: this.loading,
             itemsSelected: this.itemsSelected,
             showBatchOps: this.showBatchOps
         })
     },
 
     getUsageDetails() {
+        this.loading = true;
         this.trigger({
-            loading: true
+            loading: this.loading
         })
     },
 
     getUsageDetailsSuccess(json) {
         this.usage = json;
+        this.loading = false;
         this.trigger({
             usage: this.usage,
-            loading: false
+            loading: this.loading
         })
     },
 
     startUpload() {
+        this.loading = true;
         this.trigger({
-            uploading: true
+            uploading: this.loading
         })
     },
 
@@ -1409,7 +1683,6 @@ var ProjectStore = Reflux.createStore({
             chunks.map(chunk => bytesUploaded += chunk.chunkUpdates.progress);
             upload.uploadProgress = upload.size > 0 ? (bytesUploaded / upload.size) * 100 : 0;
         }
-
         this.trigger({
             uploads: this.uploads
         });
@@ -1517,6 +1790,14 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             fileHashes: fileHashes
         })
+    },
+
+    toggleModals(id) {
+        this.toggleModal.open = !this.toggleModal.open;
+        this.toggleModal.id = id;
+        this.trigger({
+            toggleModal: this.toggleModal
+        });
     }
 });
 

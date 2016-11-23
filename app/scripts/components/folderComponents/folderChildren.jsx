@@ -7,7 +7,7 @@ import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx
 import BatchOps from '../../components/globalComponents/batchOps.jsx';
 import FolderOptionsMenu from '../folderComponents/folderOptionsMenu.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
-import urlGen from '../../../util/urlGen.js';
+import {UrlGen} from '../../../util/urlEnum';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 class FolderChildren extends React.Component {
@@ -63,7 +63,7 @@ class FolderChildren extends React.Component {
                 return (
                     <li key={ children.id } className="hover">
                         <div style={styles.fillerDiv}>{/*temporary filler div until add dropdown menu*/}</div>
-                        <a href={urlGen.routes.folder(children.id)}
+                        <a href={UrlGen.routes.folder(children.id)}
                            className="item-content external">
                             <label className="label-checkbox item-content" style={styles.checkboxLabel}
                                    onClick={e => this.change()}>
@@ -95,7 +95,7 @@ class FolderChildren extends React.Component {
                                onTouchTap={() => this.handleDownload(children.id)}>
                                 <i className="material-icons">get_app</i>
                             </a> }
-                        <a href={urlGen.routes.file(children.id)}
+                        <a href={UrlGen.routes.file(children.id)}
                            className="item-content external">
                             <label className="label-checkbox item-content" style={styles.checkboxLabel}
                                    onClick={e => this.change()}>

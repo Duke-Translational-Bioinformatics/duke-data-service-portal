@@ -2,14 +2,14 @@ import React from 'react';
 import { RouteHandler } from 'react-router';
 import MainStore from '../../stores/mainStore';
 import MainActions from '../../actions/mainActions';
-import urlGen from '../../../util/urlGen.js';
+import {UrlGen} from '../../../util/urlEnum';
 
 class LeftMenu extends React.Component {
 
     render() {
         let home = <span>
                     <p>
-                        <a href={urlGen.routes.home()}
+                        <a href={UrlGen.routes.home()}
                            className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
                             <i className="material-icons" style={styles.navIcon}>home</i>Home
                         </a>
@@ -25,24 +25,31 @@ class LeftMenu extends React.Component {
                         <div className="content-block">
                             { home }
                             <p>
-                                <a className="mdl-color-text--grey-800 item-content external" href="https://medium.com/@dukedataservice"
-                                   target="_blank" rel="noopener noreferrer"><i className="material-icons" style={styles.navIcon}>rate_review</i>
-                                    Duke DS Blog</a>
+                                <a href={UrlGen.routes.metadata()}
+                                   className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
+                                    <i className="material-icons" style={styles.navIcon}>local_offer</i>
+                                    Advanced Metadata</a>
                             </p>
                             <p>
-                                <a href={urlGen.routes.agents()}
+                                <a href={UrlGen.routes.agents()}
                                    className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
                                     <i className="material-icons" style={styles.navIcon}>build</i>Software Agents
                                 </a>
                             </p>
                             <p>
-                                <a href={urlGen.routes.privacy()}
-                                  className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
+                                <a className="mdl-color-text--grey-800 item-content external" href="https://medium.com/@dukedataservice"
+                                   target="_blank" rel="noopener noreferrer"><i className="material-icons" style={styles.navIcon}>rate_review</i>
+                                    Duke DS Blog</a>
+                            </p>
+                            <p>
+                                <a href={UrlGen.routes.privacy()}
+                                   className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
                                     <i className="material-icons" style={styles.navIcon}>lock</i>Privacy Policy
                                 </a>
                             </p>
                             <p>
-                                <a href="#" className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.handleTouchTap()}>
+                                <a href="#"
+                                   className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.handleTouchTap()}>
                                     <i className="material-icons" style={styles.navIcon}>exit_to_app</i>Log Out
                                 </a>
                             </p>

@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
+import CustomMetadata from './customMetadata.jsx';
 import FileOptionsMenu from './fileOptionsMenu.jsx';
 import FileVersionsList from './fileVersionsList.jsx';
 import VersionUpload from './versionUpload.jsx';
@@ -13,9 +14,8 @@ import Card from 'material-ui/lib/card/card';
 import FlatButton from 'material-ui/lib/flat-button';
 import IconButton from 'material-ui/lib/icon-button';
 import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
-import RaisedButton from 'material-ui/lib/raised-button';
-
 import Paper from 'material-ui/lib/paper';
+import RaisedButton from 'material-ui/lib/raised-button';
 
 class FileDetails extends React.Component {
 
@@ -235,6 +235,7 @@ class FileDetails extends React.Component {
         return (
             <div>
                 {file}
+                {this.props.objectMetadata && this.props.objectMetadata.length ? <CustomMetadata {...this.props}/> : null}
             </div>
         )
     }

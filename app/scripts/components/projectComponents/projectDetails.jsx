@@ -4,7 +4,7 @@ import ProjectStore from '../../stores/projectStore';
 import ProjectOptionsMenu from './projectOptionsMenu.jsx';
 import Details from './details.jsx';
 import UploadManager from '../globalComponents/uploadManager.jsx';
-import urlGen from '../../../util/urlGen.js';
+import {UrlGen} from '../../../util/urlEnum';
 import baseUtils from '../../../util/baseUtils.js';
 import FlatButton from 'material-ui/lib/flat-button';
 import Card from 'material-ui/lib/card/card';
@@ -42,7 +42,7 @@ class ProjectDetails extends React.Component {
                         { optionsMenu }
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                        <a href={urlGen.routes.home()} style={styles.back}
+                        <a href={UrlGen.routes.home()} style={styles.back}
                            className="external mdl-color-text--grey-800"><i
                             className="material-icons mdl-color-text--grey-800" style={styles.backIcon}>keyboard_backspace</i>Back</a>
                     </div>

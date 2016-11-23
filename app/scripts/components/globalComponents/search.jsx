@@ -49,20 +49,7 @@ class Search extends React.Component {
                 <Close color={'#fff'}/>
             </IconButton> : '';
         let search = '';
-        if (route === '' ||
-            route === 'privacy' ||
-            route === 'home' ||
-            route === 'file' ||
-            route === 'agent' ||
-            route === 'agents' ||
-            route === 'version') {
-            search = <form className="searchbar" action="#" style={styles.themeColor}>
-                <div className="searchbar-input" style={styles.themeColor}>
-                    <a href="#" className="searchbar-clear"></a>
-                </div>
-                <a href="#" className="searchbar-cancel">Cancel</a>
-            </form>
-        } else {
+        if (route === 'project' || route === 'folder') {
             search = <form id="searchForm" data-search-list=".list-block-search"
                            data-search-in=".item-title" autoComplete="off"
                            className="searchbar" style={{padding: 30, backgroundColor: '#235F9C'}}>
@@ -75,6 +62,13 @@ class Search extends React.Component {
                         />
                     { cancelSearch }
                 </div>
+            </form>
+        } else {
+            search = <form className="searchbar" action="#" style={styles.themeColor}>
+                <div className="searchbar-input" style={styles.themeColor}>
+                    <a href="#" className="searchbar-clear"></a>
+                </div>
+                <a href="#" className="searchbar-cancel">Cancel</a>
             </form>
         }
         return ( search )

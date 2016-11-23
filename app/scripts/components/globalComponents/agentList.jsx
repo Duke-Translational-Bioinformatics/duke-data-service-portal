@@ -7,7 +7,7 @@ import AddAgentModal from '../../components/globalComponents/addAgentModal.jsx';
 import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
 import Loaders from '../../components/globalComponents/loaders.jsx';
-import urlGen from '../../../util/urlGen.js';
+import {UrlGen} from '../../../util/urlEnum.js';
 import TextField from 'material-ui/lib/text-field';
 
 class AgentList extends React.Component {
@@ -70,7 +70,7 @@ class AgentList extends React.Component {
                 return (
                     <li key={ agent.id } className="hover">
                         <FlatButton label="credentials" primary={true} style={styles.getKeyButton} onTouchTap={() => this.handleTouchTapApiKey(agent.id)}/>
-                        <a href={urlGen.routes.agent(agent.id)} className="item-content external">
+                        <a href={UrlGen.routes.agent(agent.id)} className="item-content external">
                             <div className="item-media">
                                 <i className="material-icons" style={styles.icon}>laptop_mac</i>
                             </div>
@@ -146,27 +146,6 @@ class AgentList extends React.Component {
             }
         }, 800);
     }
-
-    handleCopyButton() {
-        let copyTextArea = document.querySelector('#keyText');
-        copyTextArea.select();
-        var successful = document.execCommand('copy');
-        var msg = successful ? 'successful' : 'unsuccessful';
-        if(msg === 'successful') {
-            MainActions.addToast('Key copied to clipboard!');
-            this.setState({
-                apiKeyOpen: false,
-                newApiKeyOpen: false,
-                userKeyOpen: false,
-                newUserKeyOpen: false
-            });
-        }
-        if(msg === 'unsuccessful'){
-            MainActions.addToast('Failed copying key to clipboard!');
-            alert("Automatic copying to clipboard is not supported by Safari browsers: Manually copy the key by" +
-                " using CMD+C,");
-        }
-    };
 
     copyApiKey() {
         document.getElementById('keyText').select();

@@ -4,7 +4,7 @@ import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import VersionOptionsMenu from './versionOptionsMenu.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
-import urlGen from '../../../util/urlGen.js';
+import {UrlGen} from '../../../util/urlEnum';
 import Tooltip from '../../../util/tooltip.js';
 import BaseUtils from '../../../util/baseUtils.js';
 import Card from 'material-ui/lib/card/card';
@@ -62,7 +62,7 @@ class VersionDetails extends React.Component {
                     { optionsMenu }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                    <a href={urlGen.routes.file(parentId)} style={styles.back}
+                    <a href={UrlGen.routes.file(parentId)} style={styles.back}
                        className="mdl-color-text--grey-800 external">
                         <i className="material-icons"
                            style={styles.backIcon}>keyboard_backspace</i>Back</a>

@@ -20,7 +20,7 @@ import TableHeader from 'material-ui/lib/table/table-header';
 import TableRowColumn from 'material-ui/lib/table/table-row-column';
 import TableBody from 'material-ui/lib/table/table-body';
 import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
-import MyRawTheme from '../theme/customTheme.js';
+import Theme from '../theme/customTheme.js';
 
 let zIndex = {
     zIndex: {
@@ -44,7 +44,7 @@ class App extends React.Component {
 
     getChildContext() {
         return {
-            muiTheme: getMuiTheme(MyRawTheme, zIndex)
+            muiTheme: getMuiTheme(Theme, zIndex)
         };
     }
 
@@ -61,7 +61,8 @@ class App extends React.Component {
             iphone: app.device.iphone
         };
         if (this.state.appConfig.apiToken) MainActions.getCurrentUser();
-        ProjectActions.getDeviceType(device)
+        ProjectActions.getDeviceType(device);
+        ProjectActions.loadMetadataTemplates(null);
     }
 
     componentWillUnmount() {

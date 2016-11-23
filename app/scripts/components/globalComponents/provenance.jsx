@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-//import vis from 'vis';
 import {graphOptions, graphColors} from '../../graphConfig';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
@@ -27,7 +26,6 @@ import Paper from 'material-ui/lib/paper';
 import RaisedButton from 'material-ui/lib/raised-button';
 import SelectField from 'material-ui/lib/select-field';
 import TextField from 'material-ui/lib/text-field';
-import urlGen from '../../../util/urlGen.js';
 
 class Provenance extends React.Component {
     /**
@@ -501,7 +499,7 @@ class Provenance extends React.Component {
                         <span style={styles.provEditor.title.span1}>{fileName}</span>
                         <span style={styles.provEditor.title.span2}>{'Version '+ fileVersion}</span>
                     </h6>
-                    {this.props.graphLoading ?
+                    {this.props.drawerLoading ?
                         <CircularProgress size={1.5} style={styles.graphLoader}/>
                         : null}
                     <div id="graphContainer" ref="graphContainer"
