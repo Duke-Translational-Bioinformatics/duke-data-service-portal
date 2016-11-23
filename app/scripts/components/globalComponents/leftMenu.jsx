@@ -2,14 +2,14 @@ import React from 'react';
 import { RouteHandler } from 'react-router';
 import MainStore from '../../stores/mainStore';
 import MainActions from '../../actions/mainActions';
-import urlGen from '../../../util/urlGen.js';
+import {UrlGen} from '../../../util/urlEnum';
 
 class LeftMenu extends React.Component {
 
     render() {
         let home = <span>
                     <p>
-                        <a href={urlGen.routes.home()}
+                        <a href={UrlGen.routes.home()}
                            className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
                             <i className="material-icons" style={styles.navIcon}>home</i>Home
                         </a>
@@ -25,13 +25,13 @@ class LeftMenu extends React.Component {
                         <div className="content-block">
                             { home }
                             <p>
-                                <a href={urlGen.routes.metadata()}
+                                <a href={UrlGen.routes.metadata()}
                                    className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
                                     <i className="material-icons" style={styles.navIcon}>local_offer</i>
-                                    Annotations</a>
+                                    Advanced Metadata</a>
                             </p>
                             <p>
-                                <a href={urlGen.routes.agents()}
+                                <a href={UrlGen.routes.agents()}
                                    className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
                                     <i className="material-icons" style={styles.navIcon}>build</i>Software Agents
                                 </a>
@@ -42,7 +42,7 @@ class LeftMenu extends React.Component {
                                     Duke DS Blog</a>
                             </p>
                             <p>
-                                <a href={urlGen.routes.privacy()}
+                                <a href={UrlGen.routes.privacy()}
                                    className="mdl-color-text--grey-800 item-content external" onTouchTap={() => this.closeLeftNav()}>
                                     <i className="material-icons" style={styles.navIcon}>lock</i>Privacy Policy
                                 </a>

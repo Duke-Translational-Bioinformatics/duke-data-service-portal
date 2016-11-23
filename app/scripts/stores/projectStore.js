@@ -213,8 +213,8 @@ var ProjectStore = Reflux.createStore({
     toggleMetadataManager() {
         this.openMetadataManager = !this.openMetadataManager;
         this.showPropertyCreator = false;
-        this.showTemplateCreator = false;
-        this.showTemplateDetails = true;
+        this.showTemplateCreator = true;
+        this.showTemplateDetails = false;
         this.trigger({
             openMetadataManager: this.openMetadataManager,
             showPropertyCreator: this.showPropertyCreator,
@@ -246,21 +246,21 @@ var ProjectStore = Reflux.createStore({
     },
 
     loadMetadataTemplates() {
-        this.drawerLoading = true;
+        this.loading = true;
         this.trigger({
-            drawerLoading: this.drawerLoading
+            loading: this.loading
         })
     },
 
     loadMetadataTemplatesSuccess(templates) {
-        this.drawerLoading = false;
+        this.loading = false;
         this.metaTemplates = templates.sort(function(a, b) {
             a = new Date(a.audit.created_on);
             b = new Date(b.audit.created_on);
             return a>b ? -1 : a<b ? 1 : 0;
         });
         this.trigger({
-            drawerLoading: this.drawerLoading,
+            loading: this.loading,
             metaTemplates: this.metaTemplates
         })
     },
@@ -1787,9 +1787,8 @@ var ProjectStore = Reflux.createStore({
 
     postHash(hash) {
         let fileHashes = this.fileHashes.push(hash);
-        this.fileHashes = fileHashes;
         this.trigger({
-            fileHashes: this.fileHashes
+            fileHashes: fileHashes
         })
     },
 

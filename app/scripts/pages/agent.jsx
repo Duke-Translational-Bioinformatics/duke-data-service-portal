@@ -4,7 +4,7 @@ import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
 import AgentOptionsMenu from '../components/globalComponents/agentOptionsMenu.jsx';
 import Loaders from '../components/globalComponents/loaders.jsx';
-import urlGen from '../../util/urlGen.js';
+import {UrlGen} from '../../util/urlEnum';
 import Card from '../../../node_modules/material-ui/lib/card/card';
 
 class Agent extends React.Component {
@@ -61,7 +61,7 @@ class Agent extends React.Component {
                     <AgentOptionsMenu {...this.props} {...this.state}/>
                 </div>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                    <a href={urlGen.routes.agents() }
+                    <a href={UrlGen.routes.agents() }
                        className="mdl-color-text--grey-800 external">
                         <i className="material-icons"
                            style={styles.backIcon}>keyboard_backspace</i>Back</a>
