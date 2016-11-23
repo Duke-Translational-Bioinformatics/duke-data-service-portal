@@ -26,7 +26,6 @@ import Paper from 'material-ui/lib/paper';
 import RaisedButton from 'material-ui/lib/raised-button';
 import SelectField from 'material-ui/lib/select-field';
 import TextField from 'material-ui/lib/text-field';
-import urlGen from '../../../util/urlGen.js';
 
 class Provenance extends React.Component {
     /**

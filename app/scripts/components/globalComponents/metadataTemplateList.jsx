@@ -11,7 +11,6 @@ import Help from 'material-ui/lib/svg-icons/action/help';
 import IconButton from 'material-ui/lib/icon-button';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import Paper from 'material-ui/lib/paper';
-import urlGen from '../../../util/urlGen.js';
 import RaisedButton from 'material-ui/lib/raised-button';
 import Search from 'material-ui/lib/svg-icons/action/search';
 import Close from 'material-ui/lib/svg-icons/navigation/close';

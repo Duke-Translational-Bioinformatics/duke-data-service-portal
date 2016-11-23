@@ -3,7 +3,7 @@ import { RouteHandler } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import AddProjectModal from '../projectComponents/addProjectModal.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
-import urlGen from '../../../util/urlGen.js';
+import {UrlGen} from '../../../util/urlEnum';
 import Card from 'material-ui/lib/card/card';
 import CardText from 'material-ui/lib/card/card-text';
 import CardTitle from 'material-ui/lib/card/card-title';
@@ -24,7 +24,7 @@ class ProjectList extends React.Component {
                 return (
                     <Card key={ project.id } className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.card}>
                         <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>content_paste</i>
-                        <a href={urlGen.routes.project(project.id)} className="external">
+                        <a href={UrlGen.routes.project(project.id)} className="external">
                             <CardTitle title={project.name} subtitle={'ID: ' + project.id} titleColor="#424242" style={styles.cardTitle}/>
                         </a>
                         <CardText>

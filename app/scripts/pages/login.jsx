@@ -5,7 +5,7 @@ import MainActions from '../actions/mainActions.js';
 import CircularProgress from 'material-ui/lib/circular-progress';
 import LinearProgress from 'material-ui/lib/linear-progress';
 import RaisedButton from 'material-ui/lib/raised-button';
-import urlGen from '../../util/urlGen.js';
+import {UrlGen} from '../../util/urlEnum';
 
 class Login extends React.Component {
 
@@ -44,7 +44,7 @@ class Login extends React.Component {
                             </RaisedButton>
                         </a> :  <CircularProgress color="#fff"/>}
                         <div className="mdl-cell mdl-cell--12-col mdl-color-text--white">
-                            <a href={urlGen.routes.publicPrivacy()} className="external mdl-color-text--white" style={{float: 'right', fontSize: 10, margin: -10}}>
+                            <a href={UrlGen.routes.publicPrivacy()} className="external mdl-color-text--white" style={{float: 'right', fontSize: 10, margin: -10}}>
                                 <i className="material-icons" style={{fontSize: 16, verticalAlign: -2}}>lock</i>Privacy Policy
                             </a>
                         </div>

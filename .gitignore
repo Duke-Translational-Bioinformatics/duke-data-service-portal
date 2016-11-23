@@ -10,7 +10,7 @@ app/bundles
 *.iml
 
 # UTIL
-app/util/urlGen.js
+app/util/urlEnum.js
 
 # OSX
 .DS_Store
