@@ -5,6 +5,7 @@ import MainActions from '../../actions/mainActions';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import AddAgentModal from '../../components/globalComponents/addAgentModal.jsx';
+import CircularProgress from 'material-ui/lib/circular-progress';
 import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
 import Help from 'material-ui/lib/svg-icons/action/help';
@@ -104,11 +105,11 @@ class MetadataTemplateList extends React.Component {
                         {!this.state.searchMode ?
                             <IconButton
                                 tooltip="Search Templates"
-                                style={styles.searchIcon} onTouchTap={()=>this.toggleSearch()}>
+                                style={styles.searchIcon} onTouchTap={()=>this.toggleSearch(false)}>
                             <Search />
                         </IconButton> :
                         <IconButton
-                            style={styles.searchIcon} onTouchTap={()=>this.toggleSearch()}>
+                            style={styles.searchIcon} onTouchTap={()=>this.toggleSearch(true)}>
                             <Close />
                         </IconButton>}
                         <Toggle
@@ -138,6 +139,7 @@ class MetadataTemplateList extends React.Component {
                 </div>
                 <div className="mdl-cell mdl-cell--12-col" style={styles.loading}>
                     {this.props.uploads || this.props.loading && route === 'metadata' ? <Loaders {...this.props}/> : null}
+                    {this.props.uploads || this.props.loading && route !== 'metadata' ? <CircularProgress size={1.5} style={styles.drawerLoader}/> : null}
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     <div className="list-block media-list">
@@ -173,12 +175,16 @@ class MetadataTemplateList extends React.Component {
         ProjectActions.toggleMetadataManager();
     }
 
-    toggleSearch() {
-        setTimeout(()=> {
-        let searchInput = this.refs.searchInput;
-        searchInput.focus();
-            if (this.state.searchValue !== ('' || 'search')) this.setState({searchValue:''});
-        }, 100);
+    toggleSearch(close) {
+        if(!close) {
+            setTimeout(()=> {
+                let searchInput = this.refs.searchInput;
+                searchInput.focus();
+                if (this.state.searchValue !== ('' || 'search')) this.setState({searchValue: ''});
+            }, 100);
+        } else {
+            ProjectActions.loadMetadataTemplates(null);
+        }
         this.setState({searchMode: !this.state.searchMode});
     }
 
@@ -206,6 +212,13 @@ var styles = {
         label: {
             fontWeight: 100
         }
+    },
+    drawerLoader: {
+        position: 'absolute',
+        margin: '0 auto',
+        top: 200,
+        left: 0,
+        right: 0
     },
     headerTitle: {
         float: 'left',

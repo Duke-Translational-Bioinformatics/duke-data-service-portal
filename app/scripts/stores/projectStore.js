@@ -246,9 +246,11 @@ var ProjectStore = Reflux.createStore({
     },
 
     loadMetadataTemplates() {
+        if(this.metaTemplates.length) this.metaTemplates = [];
         this.loading = true;
         this.trigger({
-            loading: this.loading
+            loading: this.loading,
+            metaTemplates: this.metaTemplates
         })
     },
 
