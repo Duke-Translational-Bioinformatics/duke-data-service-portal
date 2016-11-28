@@ -47,7 +47,7 @@ class FileDetails extends React.Component {
         let label = this.props.entityObj && this.props.entityObj.current_version.label ? this.props.entityObj.current_version.label : null;
         let projectName = this.props.entityObj && this.props.entityObj.ancestors ? this.props.entityObj.ancestors[0].name : null;
         let crdOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.created_on : null;
-        let x = new Date(crdOn);
+        let x = crdOn !== null ? new Date(crdOn) : '';
         let createdOn = x.toString();
         let createdBy = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.created_by.full_name : null;
         let lastUpdatedOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.last_updated_on : null;
@@ -183,7 +183,7 @@ class FileDetails extends React.Component {
                                 <li className="list-group-title">Size</li>
                                 <li className="item-content">
                                     <div className="item-inner">
-                                        <div>{ BaseUtils.bytesToSize(bytes) }</div>
+                                        <div>{ bytes !== null ? BaseUtils.bytesToSize(bytes) : '' }</div>
                                     </div>
                                 </li>
                             </ul>

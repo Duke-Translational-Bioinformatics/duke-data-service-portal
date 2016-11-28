@@ -149,20 +149,36 @@ class MetadataObjectCreator extends React.Component {
         )
     }
 
+    replacePropertyValue(metaProps, id, value) {
+        metaProps = metaProps.filter(( obj ) => {
+            return obj.key !== id;
+        });
+        metaProps.push({key: id, value: value});
+        this.setState({metaProps: metaProps});
+    }
+
     addDateProperty(x, date, id) { // x is event which is always null. This is MUI behavior
+        let metaProps = this.state.metaProps;
         if(!BaseUtils.objectPropInArray(this.state.metaProps, 'key', id)) { //If not in array, add object
-            let metaProps = this.state.metaProps;
             metaProps.push({key: id, value: date});
             this.setState({metaProps: metaProps});
+        } else {
+            if(BaseUtils.objectPropInArray(this.state.metaProps, 'key', id)) { //If in array, value changed, replace obj
+                this.replacePropertyValue(metaProps, id, date);
+            }
         }
     }
 
-    addToPropertyList(id, type) {
+    addToPropertyList(id) {
+        let value = this.refs[id].getValue();
+        let metaProps = this.state.metaProps;
         if(this.refs[id].getValue() !== '' && !BaseUtils.objectPropInArray(this.state.metaProps, 'key', id)) {
-            let value = this.refs[id].getValue();
-            let metaProps = this.state.metaProps;
             metaProps.push({key: id, value: value});
             this.setState({metaProps: metaProps});
+        } else {
+            if(BaseUtils.objectPropInArray(this.state.metaProps, 'key', id)) {
+                this.replacePropertyValue(metaProps, id, value);
+            }
         }
     }
 
