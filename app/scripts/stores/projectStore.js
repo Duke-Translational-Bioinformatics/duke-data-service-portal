@@ -38,6 +38,7 @@ var ProjectStore = Reflux.createStore({
         this.drawerLoading = false;
         this.itemsSelected = null;
         this.metaDataTemplate = null;
+        this.metaProps = [];
         this.metaTemplates = [];
         this.modal = false;
         this.moveModal = false;
@@ -91,6 +92,13 @@ var ProjectStore = Reflux.createStore({
         this.objectMetadata = results;
         this.trigger({
             objectMetadata: this.objectMetadata
+        })
+    },
+
+    createMetaPropsList(metaProps) {
+        this.metaProps = metaProps;
+        this.trigger({
+            metaProps: this.metaProps
         })
     },
 
@@ -246,9 +254,11 @@ var ProjectStore = Reflux.createStore({
     },
 
     loadMetadataTemplates() {
+        if(this.metaTemplates.length) this.metaTemplates = [];
         this.loading = true;
         this.trigger({
-            loading: this.loading
+            loading: this.loading,
+            metaTemplates: this.metaTemplates
         })
     },
 
