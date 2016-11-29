@@ -1,15 +1,11 @@
 import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
-import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-import BaseUtils from '../../../util/baseUtils.js';
 import Card from 'material-ui/lib/card/card';
 
-class CustomMetadata extends React.Component {
-
-    render() {
+const CustomMetadata = () => {
         let metadataItems = [];
-        metadataItems = this.props.objectMetadata && this.props.objectMetadata !== null ? this.props.objectMetadata.map((obj)=>{
+        metadataItems = ProjectStore.objectMetadata && ProjectStore.objectMetadata !== null ? ProjectStore.objectMetadata.map((obj)=>{
            let properties = obj.properties.map((prop)=>{
                return <span key={prop.template_property.id}>
                     <li className="list-group-title">{prop.template_property.key}</li>
@@ -42,8 +38,7 @@ class CustomMetadata extends React.Component {
                 {customMetadata}
             </div>
         )
-    }
-}
+};
 
 var styles = {
     card: {
@@ -63,7 +58,7 @@ CustomMetadata.contextTypes = {
 };
 
 CustomMetadata.propTypes = {
-    error: object
+    objectMetadata: React.PropTypes.array
 };
 
 export default CustomMetadata;

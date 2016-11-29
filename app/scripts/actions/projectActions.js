@@ -8,6 +8,7 @@ import { StatusEnum } from '../enum';
 import { checkStatus, getFetchParams } from '../../util/fetchUtil';
 
 var ProjectActions = Reflux.createActions([
+    'createMetaPropsList',
     'getObjectMetadata',
     'getObjectMetadataSuccess',
     'createMetadataObject',
