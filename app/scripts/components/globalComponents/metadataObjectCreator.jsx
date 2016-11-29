@@ -154,16 +154,16 @@ class MetadataObjectCreator extends React.Component {
             return obj.key !== id;
         });
         metaProps.push({key: id, value: value});
-        this.setState({metaProps: metaProps});
+        ProjectActions.createMetaPropsList(metaProps);
     }
 
     addDateProperty(x, date, id) { // x is event which is always null. This is MUI behavior
-        let metaProps = this.state.metaProps;
-        if(!BaseUtils.objectPropInArray(this.state.metaProps, 'key', id)) { //If not in array, add object
+        let metaProps = ProjectStore.metaProps;
+        if(!BaseUtils.objectPropInArray(metaProps, 'key', id)) { //If not in array, add object
             metaProps.push({key: id, value: date});
-            this.setState({metaProps: metaProps});
+            ProjectActions.createMetaPropsList(metaProps);
         } else {
-            if(BaseUtils.objectPropInArray(this.state.metaProps, 'key', id)) { //If in array, value changed, replace obj
+            if(BaseUtils.objectPropInArray(metaProps, 'key', id)) { //If in array, value changed, replace obj
                 this.replacePropertyValue(metaProps, id, date);
             }
         }
@@ -171,12 +171,12 @@ class MetadataObjectCreator extends React.Component {
 
     addToPropertyList(id) {
         let value = this.refs[id].getValue();
-        let metaProps = this.state.metaProps;
-        if(this.refs[id].getValue() !== '' && !BaseUtils.objectPropInArray(this.state.metaProps, 'key', id)) {
+        let metaProps = ProjectStore.metaProps;
+        if(this.refs[id].getValue() !== '' && !BaseUtils.objectPropInArray(metaProps, 'key', id)) {
             metaProps.push({key: id, value: value});
-            this.setState({metaProps: metaProps});
+            ProjectActions.createMetaPropsList(metaProps);
         } else {
-            if(BaseUtils.objectPropInArray(this.state.metaProps, 'key', id)) {
+            if(BaseUtils.objectPropInArray(metaProps, 'key', id)) {
                 this.replacePropertyValue(metaProps, id, value);
             }
         }
@@ -186,17 +186,17 @@ class MetadataObjectCreator extends React.Component {
         let kind = 'dds-file';
         let files = this.props.filesChecked;
         let fileId = this.props.params.id;
-        let properties = this.state.metaProps;
+        let metaProps = ProjectStore.metaProps;
         let errors = this.state.errorText;
         if(Object.keys(errors).length === 0 && errors.constructor === Object) {
-            if(properties.length) {
+            if(metaProps.length) {
                 if (this.props.filesChecked.length > 0) {
                     for (let i = 0; i < files.length; i++) {
-                        ProjectActions.createMetadataObject(kind, files[i], templateId, properties);
+                        ProjectActions.createMetadataObject(kind, files[i], templateId, metaProps);
                         if(!!document.getElementById(files[i])) document.getElementById(files[i]).checked = false;
                     }
                 } else {
-                    ProjectActions.createMetadataObject(kind, fileId, templateId, properties);
+                    ProjectActions.createMetadataObject(kind, fileId, templateId, metaProps);
                 }
                 this.toggleTagManager();
             } else {
@@ -225,18 +225,18 @@ class MetadataObjectCreator extends React.Component {
         if(!pass && type === 'text') this.state.errorText[id] = {type: type, text: 'must contain text'};
         this.setState({ errorText: this.state.errorText, noValueWarning: false});
         if(value === '') { // If value is deleted then remove property from metaProps
-            let properties = this.state.metaProps;
-            properties = properties.filter((obj) => {
+            let metaProps = ProjectStore.metaProps;
+            metaProps = metaProps.filter((obj) => {
                 return obj.key !== id;
             });
-            this.setState({metaProps: properties});
+            ProjectActions.createMetaPropsList(metaProps);
         }
     }
 
     toggleTagManager() {
         ProjectActions.toggleTagManager();
+        ProjectActions.createMetaPropsList([]);
         if(this.props.showTemplateDetails) ProjectActions.showMetadataTemplateList();
-        this.setState({tagsToAdd: [], metaProps: []});
     }
 }
 
@@ -357,6 +357,7 @@ MetadataObjectCreator.propTypes = {
     currentUser: React.PropTypes.object,
     entityObj: React.PropTypes.object,
     filesChecked: React.PropTypes.array,
+    metaProps: React.PropTypes.array,
     metaTemplates: React.PropTypes.array,
     metadataTemplate: React.PropTypes.object
 };
