@@ -69,7 +69,7 @@ let BaseUtils = {
                     return /^[-+]?[0-9]+\.[0-9]+$/.test(v);
                     break;
                 case 'boolean':
-                    return /^(true|false|1|0)$/.test(v);
+                    return /^(true|false|1|0)$/i.test(v);
                     break;
                 case 'text':
                     return true;

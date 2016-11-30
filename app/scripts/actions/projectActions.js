@@ -8,6 +8,7 @@ import { StatusEnum } from '../enum';
 import { checkStatus, getFetchParams } from '../../util/fetchUtil';
 
 var ProjectActions = Reflux.createActions([
+    'createMetaPropsList',
     'getObjectMetadata',
     'getObjectMetadataSuccess',
     'createMetadataObject',
@@ -217,7 +218,7 @@ ProjectActions.createMetadataObject.preEmit = (kind, fileId, templateId, propert
         MainActions.addToast('A new metadata object was created.');
         ProjectActions.createMetadataObjectSuccess(json);
     }).catch((ex) => {
-        if(ex.response.status === 400) {
+        if(ex.response.status === 409) {
             ProjectActions.updateMetadataObject(kind, fileId, templateId, properties);
         } else {
             MainActions.addToast('Failed to add new metadata object');
@@ -237,12 +238,8 @@ ProjectActions.updateMetadataObject.preEmit = (kind, fileId, templateId, propert
         MainActions.addToast('This metadata object was updated.');
         ProjectActions.createMetadataObjectSuccess(json);
     }).catch((ex) => {
-        if(ex.response.status === 400) {
-            ProjectActions.createMetadataObject(kind, fileId, templateId, properties);
-        } else {
-            MainActions.addToast('Failed to update metadata object');
-            ProjectActions.handleErrors(ex)
-        }
+        MainActions.addToast('Failed to update metadata object');
+        ProjectActions.handleErrors(ex)
     })
 };
 
