@@ -34,7 +34,7 @@ class ProjectDetails extends React.Component {
         return (
             <Card
                 className="project-container mdl-color--white mdl-color-text--grey-800"
-                style={{marginTop: this.props.windowWidth > 680 ? 115 : 40,
+                style={{marginTop: this.props.windowWidth > 680 ? 135 : 40,
                         overflow: 'visible', padding: '10px 0px 10px 0px'}}>
                 { uploadMdl }
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">

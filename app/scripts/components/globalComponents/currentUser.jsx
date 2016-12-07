@@ -10,8 +10,8 @@ class CurrentUser extends React.Component {
             let currentUser = this.props.currentUser ? this.props.currentUser.full_name : null;
             return (
                 <span>
-                    <span style={styles.currentUser}>{currentUser !== null ? currentUser.toUpperCase() : currentUser}</span>
                     <i className="material-icons" style={styles.icon}>account_box</i>
+                    {/*<span style={styles.currentUser}>{currentUser !== null ? currentUser.toUpperCase() : currentUser}</span>*/}
                 </span>
             );
         }
@@ -26,8 +26,9 @@ var styles = {
     },
     icon: {
         fontSize: 24,
-        verticalAlign: -18,
-        paddingRight: 10
+        position: 'absolute',
+        bottom: 3,
+        right: 10
     }
 };
 

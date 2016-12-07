@@ -71,7 +71,7 @@ class Search extends React.Component {
                 <a href="#" className="searchbar-cancel">Cancel</a>
             </form>
         }
-        return ( search )
+        return ( null )
     }
 
     clearSearch(route) {
