@@ -8,6 +8,10 @@ import { StatusEnum } from '../enum';
 import { checkStatus, getFetchParams } from '../../util/fetchUtil';
 
 var ProjectActions = Reflux.createActions([
+    'toggleSearchFilters',
+    'searchObjects',
+    'searchObjectsSuccess',
+    'toggleSearch',
     'createMetaPropsList',
     'getObjectMetadata',
     'getObjectMetadataSuccess',
@@ -193,6 +197,45 @@ var ProjectActions = Reflux.createActions([
     'removeFailedUploads',
     'toggleModals'
 ]);
+
+ProjectActions.searchObjects.preEmit = (value) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix +'/search',
+        getFetchParams('post', appConfig.apiToken, {
+            "include_kinds": ['dds-file', 'dds-folder'],
+            "search_query": {
+                "query": {
+                    "filtered": {
+                        "query": {
+                            "multi_match" : {
+                                "query": value,
+                                "type": "phrase_prefix",
+                                "fields": [
+                                    "tags.*",
+                                    "meta.properties.*",
+                                    "name",
+                                    "label"
+                                ]
+                            }
+                        },
+                        "filter": {
+                            "term": {
+                                "is_deleted": false
+                            }
+                        }
+                    }
+                },
+                size: 1000
+            }
+        }))
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            console.log(JSON.stringify(json));
+            ProjectActions.searchObjectsSuccess(json.results);
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
+};
 
 ProjectActions.getObjectMetadata.preEmit = (id, kind) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.META+kind+"/"+id,

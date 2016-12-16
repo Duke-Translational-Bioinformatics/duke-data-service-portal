@@ -64,9 +64,14 @@ var ProjectStore = Reflux.createStore({
         this.removeFileFromProvBtn = false;
         this.scale = null;
         this.searchFilesList = [];
+        this.searchResults = [{"kind":"dds-file","id":"39612f01-d521-42fb-acf5-9028f65c1cb7","parent":{"kind":"dds-project","id":"da728ad1-7530-4ec1-b533-d219e96c0f46"},"name":"temp_10B_file copy (1) copy","audit":{"created_on":"2016-11-23T16:56:58.957Z","created_by":{"id":"e8aeeeb8-0071-4308-8bfa-e24d08094c1d","username":"cc487","full_name":"Casey Choiniere"},"last_updated_on":null,"last_updated_by":null,"deleted_on":null,"deleted_by":null},"is_deleted":false,"current_version":{"id":"c2fe093e-8365-4ceb-b60a-8fcefdbfb25e","version":1,"label":null,"upload":{"id":"fbb7e093-755d-4bd2-89e4-617013031c2f","size":5120,"storage_provider":{"id":"e71e2106-2243-4795-a9a0-70de89f68d64","name":"duke_swift","description":"Duke OIT Swift Service"},"hashes":[{"algorithm":"md5","value":"32ca18808933aa12e979375d07048a11","audit":{"created_on":"2016-11-23T16:56:57.648Z","created_by":{"id":"e8aeeeb8-0071-4308-8bfa-e24d08094c1d","username":"cc487","full_name":"Casey Choiniere"},"last_updated_on":null,"last_updated_by":null,"deleted_on":null,"deleted_by":null}}]}},"project":{"id":"da728ad1-7530-4ec1-b533-d219e96c0f46"},"ancestors":[{"kind":"dds-project","id":"da728ad1-7530-4ec1-b533-d219e96c0f46","name":"Project C"}]},{"kind":"dds-file","id":"d40573eb-1cab-40d0-ab59-bab1fe99debb","parent":{"kind":"dds-project","id":"da728ad1-7530-4ec1-b533-d219e96c0f46"},"name":"temp_10B_file copy (1)","audit":{"created_on":"2016-11-23T16:56:58.965Z","created_by":{"id":"e8aeeeb8-0071-4308-8bfa-e24d08094c1d","username":"cc487","full_name":"Casey Choiniere"},"last_updated_on":null,"last_updated_by":null,"deleted_on":null,"deleted_by":null},"is_deleted":false,"current_version":{"id":"61fb6781-f17c-4981-8f6c-fdaf8a0ad286","version":1,"label":null,"upload":{"id":"8167c77c-3bcc-4bc3-8b13-a95908c02bce","size":5120,"storage_provider":{"id":"e71e2106-2243-4795-a9a0-70de89f68d64","name":"duke_swift","description":"Duke OIT Swift Service"},"hashes":[{"algorithm":"md5","value":"32ca18808933aa12e979375d07048a11","audit":{"created_on":"2016-11-23T16:56:57.653Z","created_by":{"id":"e8aeeeb8-0071-4308-8bfa-e24d08094c1d","username":"cc487","full_name":"Casey Choiniere"},"last_updated_on":null,"last_updated_by":null,"deleted_on":null,"deleted_by":null}}]}},"project":{"id":"da728ad1-7530-4ec1-b533-d219e96c0f46"},"ancestors":[{"kind":"dds-project","id":"da728ad1-7530-4ec1-b533-d219e96c0f46","name":"Project C"}]},{"kind":"dds-file","id":"2ac5a13a-93fc-4fa2-ab21-fcbc4b90a705","parent":{"kind":"dds-project","id":"da728ad1-7530-4ec1-b533-d219e96c0f46"},"name":"temp_10B_file copy (1) copy","audit":{"created_on":"2016-11-22T21:43:17.656Z","created_by":{"id":"e8aeeeb8-0071-4308-8bfa-e24d08094c1d","username":"cc487","full_name":"Casey Choiniere"},"last_updated_on":null,"last_updated_by":null,"deleted_on":null,"deleted_by":null},"is_deleted":false,"current_version":{"id":"c028f28c-38ed-4843-a820-a39cd13a9fb3","version":1,"label":null,"upload":{"id":"5007e364-5d27-4386-81f5-ab1515002700","size":5120,"storage_provider":{"id":"e71e2106-2243-4795-a9a0-70de89f68d64","name":"duke_swift","description":"Duke OIT Swift Service"},"hashes":[{"algorithm":"md5","value":"32ca18808933aa12e979375d07048a11","audit":{"created_on":"2016-11-22T21:43:16.751Z","created_by":{"id":"e8aeeeb8-0071-4308-8bfa-e24d08094c1d","username":"cc487","full_name":"Casey Choiniere"},"last_updated_on":null,"last_updated_by":null,"deleted_on":null,"deleted_by":null}}]}},"project":{"id":"da728ad1-7530-4ec1-b533-d219e96c0f46"},"ancestors":[{"kind":"dds-project","id":"da728ad1-7530-4ec1-b533-d219e96c0f46","name":"Project C"}]},{"kind":"dds-file","id":"4256860c-a1a5-4eb8-8778-37048c0be7a7","parent":{"kind":"dds-project","id":"da728ad1-7530-4ec1-b533-d219e96c0f46"},"name":"temp_10B_file copy (1)","audit":{"created_on":"2016-11-21T23:21:27.543Z","created_by":{"id":"e8aeeeb8-0071-4308-8bfa-e24d08094c1d","username":"cc487","full_name":"Casey Choiniere"},"last_updated_on":null,"last_updated_by":null,"deleted_on":null,"deleted_by":null},"is_deleted":false,"current_version":{"id":"dd95a035-c64f-4fcd-848a-ed3c0c91840d","version":1,"label":null,"upload":{"id":"5f8a6890-7509-4615-bf3d-56ab4bb6a3dc","size":5120,"storage_provider":{"id":"e71e2106-2243-4795-a9a0-70de89f68d64","name":"duke_swift","description":"Duke OIT Swift Service"},"hashes":[{"algorithm":"md5","value":"32ca18808933aa12e979375d07048a11","audit":{"created_on":"2016-11-21T23:21:26.168Z","created_by":{"id":"e8aeeeb8-0071-4308-8bfa-e24d08094c1d","username":"cc487","full_name":"Casey Choiniere"},"last_updated_on":null,"last_updated_by":null,"deleted_on":null,"deleted_by":null}}]}},"project":{"id":"da728ad1-7530-4ec1-b533-d219e96c0f46"},"ancestors":[{"kind":"dds-project","id":"da728ad1-7530-4ec1-b533-d219e96c0f46","name":"Project C"}]}];
+        this.searchResultsFiles = [];
+        this.searchResultsFolders = [];
+        this.searchResultsProjects = [];
         this.selectedNode = {};
         this.selectedEdge = null;
         this.searchText = '';
+        this.showFilters = false;
         this.showPropertyCreator = false;
         this.showProvAlert = false;
         this.showProvCtrlBtns = false;
@@ -75,6 +80,7 @@ var ProjectStore = Reflux.createStore({
         this.showTemplateDetails = false;
         this.screenSize = {};
         this.showBatchOps = false;
+        this.showSearch = false;
         this.tagLabels = [];
         this.templateProperties = [];
         this.toggleModal = {open: false, id: null};
@@ -86,6 +92,49 @@ var ProjectStore = Reflux.createStore({
         this.users = [];
         this.userKey = {};
         this.versionModal = false;
+    },
+
+    toggleSearchFilters() {
+        this.showFilters = !this.showFilters;
+        this.trigger({
+            showFilters: this.showFilters
+        })
+    },
+
+    searchObjects() {
+        this.loading = true;
+        this.trigger({
+            loading: this.loading
+        })
+    },
+
+    searchObjectsSuccess(results) {
+        this.loading = false;
+        this.searchResults = results;
+        this.searchResultsFiles = results.filter((obj)=>{
+            return obj.kind === 'dds-file';
+        });
+        this.searchResultsFolders = results.filter((obj)=>{
+            return obj.kind === 'dds-folder';
+        });
+        let p = results.map((obj) => {
+            return {name: obj.ancestors[0].name, id: obj.ancestors[0].id};
+        });
+        this.searchResultsProjects = BaseUtils.removeDuplicates(p, 'id');
+        this.trigger({
+            loading: this.loading,
+            searchResults: this.searchResults,
+            searchResultsFiles: this.searchResultsFiles,
+            searchResultsFolders: this.searchResultsFolders,
+            searchResultsProjects: this.searchResultsProjects
+        })
+    },
+
+    toggleSearch() {
+        this.showSearch = !this.showSearch;
+        this.trigger({
+            showSearch: this.showSearch
+        })
     },
 
     getObjectMetadataSuccess(results) {

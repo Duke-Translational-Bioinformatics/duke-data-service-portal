@@ -3,7 +3,7 @@ import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
 import FileDetails from '../components/fileComponents/fileDetails.jsx';
 import Provenance from '../components/globalComponents/provenance.jsx';
-import TagManager from '../components/globalComponents/tagManager.jsx'
+import TagManager from '../components/globalComponents/tagManager.jsx';
 
 class File extends React.Component {
 

@@ -39,6 +39,18 @@ let BaseUtils = {
             return array;
         },
 
+        removeDuplicates(originalArray, prop) {
+            var newArray = [];
+            var lookupObject  = {};
+            for(var i in originalArray) {
+                lookupObject[originalArray[i][prop]] = originalArray[i];
+            }
+            for(i in lookupObject) {
+                newArray.push(lookupObject[i]);
+            }
+            return newArray;
+        },
+
         objectPropInArray(list, prop, val) {
             if (list.length > 0 ) for (let i in list) {if (list[i][prop] === val) {return true;}}
             return false;

@@ -5,125 +5,55 @@ import ProjectStore from '../../stores/projectStore';
 import Close from 'material-ui/lib/svg-icons/navigation/close';
 import IconButton from 'material-ui/lib/icon-button';
 
+import Paper from 'material-ui/lib/paper';
+import TextField from 'material-ui/lib/text-field';
+
 class Search extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            clear: false,
-            inputStyle: {cursor: 'pointer'},
-            timeout: null
-        };
-    }
 
     componentDidMount() {
-        if (window.performance) { // If page refreshed, clear searchText
-            if (performance.navigation.type == 1) {
-                ProjectActions.setSearchText('');
-            }
-        }
-        if (!!document.getElementById("searchForm")) { // Check if 'searchForm is in DOM before adding event listener'
-            document.getElementById('searchForm').addEventListener('submit', (e) => {
-                e.preventDefault();
-            }, false);
-        }
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        if (prevProps.routerPath !== this.props.routerPath) {
-            // For some reason, setting state here without timeOut causes an error???
-            setTimeout(()=> {
-                this.setState({clear: false});
-            }, 100);
-            if (!!document.getElementById("searchForm")) { // Check if 'searchForm is in DOM
-                document.getElementById('searchInput').value = '';
-            }
-            ProjectActions.setSearchText('');
+        if (this.refs.searchInput) { // Check if searchInput is in DOM and focus
+            let search = this.refs.searchInput ? this.refs.searchInput : null;
+            if(this.props.showSearch && search !== null) search.focus();
         }
     }
 
     render() {
-        let projectName = ProjectStore.project && ProjectStore.project.name && window.innerWidth > 580 ? 'in '+ProjectStore.project.name+'...' : '...';
-        let route = this.props.routerPath.split('/').splice([1], 1).toString();
-        let cancelSearch = this.state.clear ?
-            <IconButton style={{marginBottom: this.props.windowWidth > 680 ? 33 : ''}} onTouchTap={() => this.clearSearch(route)} className="searchbar-cancel">
-                <Close color={'#fff'}/>
-            </IconButton> : '';
-        let search = '';
-        if (route === 'project' || route === 'folder') {
-            search = <form id="searchForm" data-search-list=".list-block-search"
-                           data-search-in=".item-title" autoComplete="off"
-                           className="searchbar" style={{padding: 30, backgroundColor: '#235F9C'}}>
-                <div className="searchbar-input mdl-cell mdl-cell--12-col" style={styles.searchBar.inputWrapper}>
-                    <input id='searchInput' className="search" style={this.state.inputStyle}
-                           type="text" name="search" placeholder={"Search "+ projectName}
-                           onChange={() => this.onSearchChange()}
-                           onFocus={() => this.onSearchFocus()}
-                           onBlur={() => this.onSearchBlur(route)}
-                        />
-                    { cancelSearch }
-                </div>
-            </form>
-        } else {
-            search = <form className="searchbar" action="#" style={styles.themeColor}>
-                <div className="searchbar-input" style={styles.themeColor}>
-                    <a href="#" className="searchbar-clear"></a>
-                </div>
-                <a href="#" className="searchbar-cancel">Cancel</a>
-            </form>
-        }
-        return ( null )
+        return (this.props.showSearch ? <Paper style={{height: 76}} zDepth={2}>
+            <i className="material-icons"
+               style={{position: 'absolute', left: '4%', bottom: '36%', cursor: 'pointer'}}
+               onTouchTap={()=>this.showSearch()}>search</i>
+            <TextField
+                ref="searchInput"
+                id="searchInput"
+                hintText="Search"
+                hintStyle={{fontWeight: 100}}
+                onKeyDown={(e)=>this.search(e)}
+                style={styles.searchInput}
+                underlineStyle={styles.textField.underline}
+                underlineFocusStyle={styles.textField.underline} />
+            <i className="material-icons"
+               style={{position: 'absolute', right: '3.66%', bottom: '34%', cursor: 'pointer'}}
+               onTouchTap={()=>this.showSearch()}>
+                close</i>
+        </Paper> : null)
     }
 
-    clearSearch(route) {
-        let path = route + 's/';
-        let id = this.props.routerPath.split('/').pop();
-        // For some reason, setting state here without timeOut causes an error???
-        setTimeout(()=> {
-            document.getElementById('searchInput').value = '';
-            this.setState({clear: false, inputStyle: {cursor: 'pointer'}});
-        }, 100);
-        ProjectActions.getChildren(id, path);
-        ProjectActions.setSearchText('');
-    }
-
-    onSearchBlur(route) {
-        let path = route + 's/';
-        let id = this.props.routerPath.split('/').pop();
-        if (document.getElementById('searchInput').value === '') {
-            this.setState({clear: false});
-            ProjectActions.getChildren(id, path);
-        } else {
-            this.setState({inputStyle: {cursor: 'pointer', color: '#616161'}});
+    search(e) {
+        let searchInput = this.refs.searchInput;
+        if(e.keyCode === 13) {
+            let value = searchInput.getValue();
+            ProjectActions.searchObjects(value);
+            this.props.appRouter.transitionTo('/results')
         }
     }
 
-    onSearchChange() {
-        let textInput = document.getElementById('searchInput');
-        let timeout = this.state.timeout;
-        textInput.onkeyup = () => {
-            clearTimeout(timeout);
-            this.state.timeout = setTimeout(() => {
-                let id = this.props.routerPath.split('/').pop();
-                let path = this.props.routerPath.split('/').splice([1], 1).toString() + 's/';
-                if (!textInput.value.indexOf(' ') <= 0) {
-                    if (textInput.value === '') {
-                        ProjectActions.setSearchText('');
-                        ProjectActions.getChildren(id, path);
-                    } else {
-                        if (ProjectStore.entityObj !== null) id = ProjectStore.entityObj.ancestors[0].id;
-                        ProjectActions.search(textInput.value, id);
-                    }
-                }
-            }, 500);
-        };
-    }
-
-    onSearchFocus() {
-        this.setState({clear: true});
+    showSearch() {
+        ProjectActions.toggleSearch();
+        if(this.props.routerPath === '/results') this.props.appRouter.goBack();
     }
 }
 
-var styles = {
+const styles = {
     searchBar: {
         width: '50vw',
         margin: '0 auto',
@@ -142,6 +72,17 @@ var styles = {
         },
         underlineStyle: {
             borderColor: '#fff'
+        }
+    },
+    searchInput: {
+        width: '90%',
+        position: 'absolute',
+        top: '20%',
+        left: '8%'
+    },
+    textField: {color: "#fff",
+        underline: {
+            display: 'none'
         }
     },
     themeColor: {

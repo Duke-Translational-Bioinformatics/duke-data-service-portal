@@ -37,7 +37,7 @@ class App extends React.Component {
             windowWidth: window.innerWidth,
             errorModal: true,
             errorModals: ProjectStore.errorModals,
-            failedUploads: MainStore.failedUploads
+            failedUploads: MainStore.failedUploads,
         };
         this.handleResize = this.handleResize.bind(this);
     }

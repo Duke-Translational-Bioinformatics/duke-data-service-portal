@@ -3,6 +3,7 @@ import { RouteHandler } from 'react-router';
 import ProjectStore from '../../stores/projectStore';
 import MainStore from '../../stores/mainStore';
 import MainActions from '../../actions/mainActions';
+import ProjectActions from '../../actions/projectActions';
 import CurrentUser from './currentUser.jsx';
 import Divider from 'material-ui/lib/divider';
 import Popover from 'material-ui/lib/popover/popover';
@@ -11,7 +12,6 @@ import Search from '../globalComponents/search.jsx';
 import TextField from 'material-ui/lib/text-field';
 
 import Paper from 'material-ui/lib/paper';
-import Card from 'material-ui/lib/card/card';
 
 class Header extends React.Component {
 
@@ -19,8 +19,16 @@ class Header extends React.Component {
         super(props);
         this.state = {
             open: false,
-            showSearch: false
+            showSearch: ProjectStore.showSearch
         };
+    }
+
+    componentDidMount() {
+        this.unsubscribe = ProjectStore.listen(state => this.setState(state));
+    }
+
+    componentWillUnmount() {
+        this.unsubscribe();
     }
 
     render() {
@@ -44,7 +52,7 @@ class Header extends React.Component {
                 <i className="material-icons mdl-color-text--grey-700" style={styles.userLogoutIcon} onTouchTap={() => this.handleLogout()}>exit_to_app</i>
             </div>
         </Popover>;
-        let header = <div className="navbar " style={{height: this.props.windowWidth > 680 ? 76 : '',backgroundColor: '#235F9C'}}>
+        let header = <div className="navbar " style={{height: 76, backgroundColor: '#235F9C'}}>
             <div className="navbar-inner" style={{display: this.state.showSearch ? 'none' : '', height: 106}}>
                 <div className="left" style={{maxWidth: 130, marginBottom: 10,display: 'flex',flexDirection: 'row',alignItems: 'flex-start',justifyContent: 'center'}}>
                     {!this.props.appConfig.apiToken ? '' :
@@ -53,7 +61,8 @@ class Header extends React.Component {
                         <img src="images/dukeDSVertical.png" style={styles.logo}/>}
                 </div>
                 <div className="center" style={{width: '100%'}}>
-                    {!this.props.appConfig.apiToken || this.props.windowWidth < 680 ? '' : <Search {...this.props} {...this.state} />}
+                    {/*!this.props.appConfig.apiToken || this.props.windowWidth < 680 ? '' : <Search {...this.props}
+                     {...this.state} />*/}
                 </div>
                 <div className="right">
                     <a className="external" onTouchTap={this.handleTouchTap.bind(this)} style={styles.userOptions}>
@@ -66,24 +75,7 @@ class Header extends React.Component {
                     { popover }
                 </div>
             </div>
-            {this.state.showSearch ? <Paper style={{height: 76}} zDepth={2}>
-                <i className="material-icons"
-                   style={{position: 'absolute', left: '4%', bottom: '36%', cursor: 'pointer'}}
-                   onTouchTap={()=>this.showSearch()}>search</i>
-                <TextField
-                    //id="searchInput"
-                    ref="searchInput"
-                    hintText="Search"
-                    hintStyle={{ fontWeight: 100}}
-                    //value={this.state.searchValue}
-                    style={styles.searchInput}
-                    underlineStyle={styles.textField.underline}
-                    underlineFocusStyle={styles.textField.underline}/>
-                <i className="material-icons"
-                   style={{position: 'absolute', right: '3.66%', bottom: '34%', cursor: 'pointer'}}
-                   onTouchTap={()=>this.showSearch()}>
-                    close</i>
-            </Paper> : null}
+            {this.state.showSearch ? <Search {...this.props} {...this.state}/> : null}
         </div>;
 
         if(!this.props.appConfig.apiToken) {
@@ -92,20 +84,28 @@ class Header extends React.Component {
             return header
         }
     }
+
+    //search(e) {
+    //    let searchInput = this.refs.searchInput;
+    //    if(e.keyCode === 13) {
+    //        let value = searchInput.getValue();
+    //        ProjectActions.searchObjects(value);
+    //        this.props.appRouter.transitionTo('/results')
+    //    }
+    //}
+
     showSearch() {
         setTimeout(()=>{
-            let search = this.refs.searchInput;
-            if(this.state.showSearch) search.focus();
+            let search = this.refs.searchInput ? this.refs.searchInput : null;
+            if(this.props.showSearch && search !== null) search.focus();
         },500);
-        this.setState({
-            showSearch: !this.state.showSearch
-        })
+        ProjectActions.toggleSearch();
+        if(this.props.routerPath === '/results') this.props.appRouter.goBack();
     }
 
     handleTouchTap(event){
         this.setState({
-            open: true,
-            anchorEl: event.currentTarget
+            open: true
         });
     }
 
@@ -155,17 +155,17 @@ var styles = {
     popover: {
         padding: '0px 10px 0px 10px'
     },
-    searchInput: {
-        width: '90%',
-        position: 'absolute',
-        top: '20%',
-        left: '8%'
-    },
-    textField: {color: "#fff",
-        underline: {
-            display: 'none'
-        }
-    },
+    //searchInput: {
+    //    width: '90%',
+    //    position: 'absolute',
+    //    top: '20%',
+    //    left: '8%'
+    //},
+    //textField: {color: "#fff",
+    //    underline: {
+    //        display: 'none'
+    //    }
+    //},
     themeColor: {
         backgroundColor: '#235F9C',
         height: 86
