@@ -204,8 +204,8 @@ ProjectActions.searchObjects.preEmit = (value) => {
             "include_kinds": ['dds-file', 'dds-folder'],
             "search_query": {
                 "query": {
-                    "filtered": {
-                        "query": {
+                    "bool": {
+                        "must": {
                             "multi_match" : {
                                 "query": value,
                                 "type": "phrase_prefix",
@@ -213,13 +213,16 @@ ProjectActions.searchObjects.preEmit = (value) => {
                                     "tags.*",
                                     "meta.properties.*",
                                     "name",
-                                    "label"
+                                    "label",
+                                    "project.*"
                                 ]
                             }
                         },
                         "filter": {
-                            "term": {
-                                "is_deleted": false
+                            "bool" : {
+                                "must" : [
+                                    {"term" : {"is_deleted": false}}
+                                ]
                             }
                         }
                     }

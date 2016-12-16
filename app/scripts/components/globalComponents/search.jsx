@@ -28,7 +28,7 @@ class Search extends React.Component {
                 hintText="Search"
                 hintStyle={{fontWeight: 100}}
                 onKeyDown={(e)=>this.search(e)}
-                style={styles.searchInput}
+                style={{width: '90%',position: 'absolute',top: '20%', left: this.props.screenSize.width < 680 ? '11%' : '8%'}}
                 underlineStyle={styles.textField.underline}
                 underlineFocusStyle={styles.textField.underline} />
             <i className="material-icons"
@@ -78,7 +78,7 @@ const styles = {
         width: '90%',
         position: 'absolute',
         top: '20%',
-        left: '8%'
+        left: '12%'
     },
     textField: {color: "#fff",
         underline: {

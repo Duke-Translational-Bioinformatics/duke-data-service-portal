@@ -16,23 +16,16 @@ class SearchFilters extends React.Component {
 
     componentDidUpdate(prevProps) {
         if(prevProps.searchResults !== this.props.searchResults){
-            if(this.props.showFilters) this.toggleFilters();
-            //Todo: should clear all filters here too
+            if(this.props.showFilters && (!this.props.searchResultsFiles.length && !this.props.searchResultsFolders.length) || (!this.props.searchResultsProjects.length)) this.toggleFilters();
+            //Todo: should clear all filters here too!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         }
     }
 
     render() {
         let results = this.props.searchResults;
-        let folders = this.props.searchResults.filter((obj)=>{
-            return obj.kind === 'dds-folder';
-        });
-        let files = this.props.searchResults.filter((obj)=>{
-            return obj.kind === 'dds-file';
-        });
-        let p = results.map((obj) => {
-            return {name: obj.ancestors[0].name, id: obj.ancestors[0].id};
-        });
-        let uniqueProjects = BaseUtils.removeDuplicates(p, 'id');
+        let folders = this.props.searchResultsFolders;
+        let files = this.props.searchResultsFiles;
+        let uniqueProjects = this.props.searchResultsProjects;
         let projects = uniqueProjects.map((obj) => {
             return <span>
                 <ListItem key={obj.id} primaryText={obj.name}
@@ -40,9 +33,10 @@ class SearchFilters extends React.Component {
                           style={{textAlign: 'right'}}/>
             </span>
         });
-        console.log(uniqueProjects)
-
-        let projectCount = results.reduce((sums,obj) => {
+        let r = results.filter((obj)=>{
+            return obj.project.name === 'project c';
+        });
+        let projectCount = results.reduce((sums,obj) => { //Todo: Am I using this?????????????
             sums[obj.ancestors[0].name] = (sums[obj.ancestors[0].name] || 0) + 1;
             return sums;
         },{});

@@ -45,7 +45,7 @@ var styles = {
         padding: '10px 0px 10px 0px'
     },
     heading: {
-        paddingLeft: 10
+        paddingLeft: 15
     },
     list: {
         paddingTop: 5,

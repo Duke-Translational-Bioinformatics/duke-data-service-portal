@@ -51,8 +51,7 @@ class VersionDetails extends React.Component {
         Tooltip.bindEvents();
 
         let version = <Card className="project-container mdl-color--white content mdl-color-text--grey-800"
-                            style={{marginTop: this.props.windowWidth > 680 ? 115 : 30, marginBottom: 30,
-                                    overflow: 'visible', padding: '10px 0px 10px 0px'}}>
+                            style={{mmarginBottom: 30, overflow: 'visible', padding: '10px 0px 10px 0px'}}>
             <div className="mdl-cell mdl-cell--12-col" style={{position: 'relative'}}>
                 { dlButton }
             </div>

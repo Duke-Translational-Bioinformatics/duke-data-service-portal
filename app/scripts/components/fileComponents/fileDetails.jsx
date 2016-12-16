@@ -98,8 +98,7 @@ class FileDetails extends React.Component {
         Tooltip.bindEvents();
 
         let file = <Card className="project-container mdl-color--white content mdl-color-text--grey-800"
-                         style={{marginTop: this.props.windowWidth > 680 ? 115 : 30, paddingBottom: 30,
-                                 overflow: 'visible', padding: '10px 0px 10px 0px'}}>
+                         style={{paddingBottom: 30, overflow: 'visible', padding: '10px 0px 10px 0px'}}>
             <div className="mdl-cell mdl-cell--12-col" style={{position: 'relative'}}>
                 { dlButton }
             </div>

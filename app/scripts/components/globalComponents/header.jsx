@@ -61,8 +61,6 @@ class Header extends React.Component {
                         <img src="images/dukeDSVertical.png" style={styles.logo}/>}
                 </div>
                 <div className="center" style={{width: '100%'}}>
-                    {/*!this.props.appConfig.apiToken || this.props.windowWidth < 680 ? '' : <Search {...this.props}
-                     {...this.state} />*/}
                 </div>
                 <div className="right">
                     <a className="external" onTouchTap={this.handleTouchTap.bind(this)} style={styles.userOptions}>

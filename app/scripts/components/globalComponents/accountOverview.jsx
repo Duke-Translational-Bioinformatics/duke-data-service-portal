@@ -11,7 +11,7 @@ class AccountOverview extends React.Component {
 
         return (
             <Card className="account-overview content mdl-color-text--grey-800"
-                  style={{marginTop: this.props.windowWidth > 680 ? 137 : 30,padding: 20,textAlign: 'center'}}>
+                  style={{padding: 20,textAlign: 'center'}}>
                 <div style={styles.cardSquare}
                      className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
                     <h4>{numProjects + ' Projects'}</h4>

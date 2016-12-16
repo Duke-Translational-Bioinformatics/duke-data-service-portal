@@ -6,6 +6,7 @@ import BaseUtils from '../../../util/baseUtils.js';
 import Loaders from '../globalComponents/loaders.jsx';
 import SearchFilters from '../globalComponents/searchFilters.jsx';
 import IconButton from 'material-ui/lib/icon-button';
+import RaisedButton from 'material-ui/lib/raised-button';
 import Paper from 'material-ui/lib/paper';
 import {UrlGen} from '../../../util/urlEnum';
 
@@ -30,16 +31,16 @@ class SearchResults extends React.Component {
         if (results.length > 20) {
             switch (this.state.page) {
                 case 0:
-                    results = this.props.results.slice(0, 20);
+                    results = this.props.searchResults.slice(0, 20);
                     break;
                 case 1:
-                    results = this.props.results.slice(0, 40);
+                    results = this.props.searchResults.slice(0, 40);
                     break;
                 case 2:
-                    results = this.props.results.slice(0, 60);
+                    results = this.props.searchResults.slice(0, 60);
                     break;
                 case 3:
-                    results = this.props.results;
+                    results = this.props.searchResults;
                     break;
             }
         } else {
@@ -114,7 +115,7 @@ class SearchResults extends React.Component {
                             {searchResults}
                         </ul>
                     </div>
-                    {results.length > 25 && results.length > results.length && this.state.page < 3 ?
+                    {this.props.searchResults.length > 25 && this.props.searchResults.length > results.length && this.state.page < 3 ?
                         <div className="mdl-cell mdl-cell--12-col">
                             <RaisedButton
                                 label="Load More"
