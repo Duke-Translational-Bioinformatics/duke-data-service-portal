@@ -42,7 +42,7 @@ class Search extends React.Component {
         let searchInput = this.refs.searchInput;
         if(e.keyCode === 13) {
             let value = searchInput.getValue();
-            ProjectActions.searchObjects(value);
+            ProjectActions.searchObjects(value, ['dds-file', 'dds-folder']);
             this.props.appRouter.transitionTo('/results')
         }
     }

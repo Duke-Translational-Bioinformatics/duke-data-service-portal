@@ -198,10 +198,10 @@ var ProjectActions = Reflux.createActions([
     'toggleModals'
 ]);
 
-ProjectActions.searchObjects.preEmit = (value) => {
+ProjectActions.searchObjects.preEmit = (value, include_kinds) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix +'/search',
         getFetchParams('post', appConfig.apiToken, {
-            "include_kinds": ['dds-file', 'dds-folder'],
+            "include_kinds": include_kinds,
             "search_query": {
                 "query": {
                     "bool": {
@@ -210,11 +210,9 @@ ProjectActions.searchObjects.preEmit = (value) => {
                                 "query": value,
                                 "type": "phrase_prefix",
                                 "fields": [
-                                    "tags.*",
-                                    "meta.properties.*",
-                                    "name",
                                     "label",
-                                    "project.*"
+                                    "meta",
+                                    "name"
                                 ]
                             }
                         },

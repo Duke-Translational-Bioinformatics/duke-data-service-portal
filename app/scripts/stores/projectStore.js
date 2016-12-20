@@ -6,9 +6,7 @@ import BaseUtils from '../../util/baseUtils.js';
 import { StatusEnum, Path } from '../enum';
 import {graphOptions, graphColors} from '../graphConfig';
 
-
 var ProjectStore = Reflux.createStore({
-
     init() {
         this.listenToMany(ProjectActions);
         this.activities = [];
@@ -36,6 +34,7 @@ var ProjectStore = Reflux.createStore({
         this.foldersChecked = [];
         this.fileVersions = [];
         this.drawerLoading = false;
+        this.includeKinds = null;
         this.itemsSelected = null;
         this.metaDataTemplate = null;
         this.metaProps = [];
@@ -68,6 +67,7 @@ var ProjectStore = Reflux.createStore({
         this.searchResultsFiles = [];
         this.searchResultsFolders = [];
         this.searchResultsProjects = [];
+        this.searchValue = null;
         this.selectedNode = {};
         this.selectedEdge = null;
         this.searchText = '';
@@ -101,10 +101,14 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    searchObjects() {
+    searchObjects(value, includeKinds) {
+        this.searchValue = value;
+        this.includeKinds = includeKinds;
         this.loading = true;
         this.trigger({
-            loading: this.loading
+            loading: this.loading,
+            searchValue: this.searchValue,
+            includeKinds: this.includeKinds
         })
     },
 
@@ -1811,30 +1815,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     checkForHash(uploadId, parentId, parentKind, name, label, fileId) {
-        if (!Array.prototype.find) { // Polyfill for Internet Explorer Array.find()
-            Array.prototype.find = function(predicate) {
-                'use strict';
-                if (this == null) {
-                    throw new TypeError('Array.prototype.find called on null or undefined');
-                }
-                if (typeof predicate !== 'function') {
-                    throw new TypeError('predicate must be a function');
-                }
-                var list = Object(this);
-                var length = list.length >>> 0;
-                var thisArg = arguments[1];
-                var value;
-
-                for (var i = 0; i < length; i++) {
-                    value = list[i];
-                    if (predicate.call(thisArg, value, i, list)) {
-                        return value;
-                    }
-                }
-                return undefined;
-            };
-        }
-        let hash = this.fileHashes.find((fileHash)=>{ // array.find() method not supported in IE
+        let hash = this.fileHashes.find((fileHash)=>{ //Array.find method not supported in IE. See polyfills.js
             return fileHash.id === uploadId;
         });
         if(!hash) {
