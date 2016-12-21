@@ -156,7 +156,7 @@ class ProjectOptionsMenu extends React.Component {
                         </SelectField><br/>
                     </form>
                 </Dialog>
-                <IconMenu iconButtonElement={<IconButton iconClassName="material-icons">more_vert</IconButton>}
+                <IconMenu iconButtonElement={<IconButton iconClassName="material-icons" style={styles.openIcon}>more_vert</IconButton>}
                           anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                           targetOrigin={{horizontal: 'right', vertical: 'top'}}>
                     <MenuItem primaryText="Delete Project" leftIcon={<i className="material-icons">delete</i>} onTouchTap={this.handleTouchTapDelete.bind(this)}/>
@@ -332,6 +332,9 @@ var styles = {
     msg: {
         textAlign: 'left',
         marginLeft: 30
+    },
+    openIcon: {
+        marginBottom: 12
     },
     warning: {
         fontSize: 48,
