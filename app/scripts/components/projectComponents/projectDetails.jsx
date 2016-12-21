@@ -48,15 +48,17 @@ class ProjectDetails extends React.Component {
                     </div>
                     <div className="mdl-cell mdl-cell--3-col mdl-cell--4-col-tablet mdl-cell--4-col-phone"
                          style={styles.detailsTitle}>
-                        <h4>{ projectName }</h4>
+                        <h4 style={styles.projectName}>{ projectName }</h4>
                     </div>
                     <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.details}>
-                        <p><span className="mdl-color-text--grey-900"
-                                 style={styles.span}>Created By:</span> { createdBy } </p>
+                        <span className="mdl-color-text--grey-900"
+                                 style={styles.span}>Created By:</span>
+                        <span className="mdl-color-text--grey-900">{ createdBy }</span>
                     </div>
                     <div className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.details2}>
-                        <p><span className="mdl-color-text--grey-900"
-                                 style={styles.span}>Created On:</span> { createdOn } </p>
+                        <span className="mdl-color-text--grey-900"
+                                 style={styles.span}>Created On:</span>
+                        <span>{ createdOn }</span>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.detailsButton}>
                         <FlatButton
@@ -91,22 +93,21 @@ var styles = {
     },
     detailsTitle: {
         textAlign: 'left',
-        marginTop: -15,
         float: 'left',
-        marginLeft: 8
+        marginLeft: 8,
+        fontWeight: 200
     },
     details: {
         textAlign: 'left',
         float: 'left',
         marginLeft: 7,
-        marginTop: 16
+        marginTop: 19
     },
     details2: {
         textAlign: 'left',
         float: 'left',
         marginLeft: 7,
-        marginRight: -20,
-        marginTop: 16
+        marginTop: 19
     },
     summary: {
         float: 'left',
@@ -124,6 +125,10 @@ var styles = {
         float: 'right',
         marginTop: 32,
         marginRight: -5
+    },
+    projectName: {
+        margin: 0,
+        fontWeight: 200
     },
     backIcon: {
         fontSize: 24,
