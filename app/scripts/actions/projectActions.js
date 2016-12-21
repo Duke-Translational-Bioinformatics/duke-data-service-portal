@@ -8,6 +8,7 @@ import { StatusEnum } from '../enum';
 import { checkStatus, getFetchParams } from '../../util/fetchUtil';
 
 var ProjectActions = Reflux.createActions([
+    'setIncludedSearchKinds',
     'toggleSearchFilters',
     'searchObjects',
     'searchObjectsSuccess',
@@ -205,6 +206,12 @@ ProjectActions.searchObjects.preEmit = (value, include_kinds) => {
             "search_query": {
                 "query": {
                     "bool": {
+                        "filter": {
+                            "bool" : {
+                                "must_not" : {"term" : {"is_deleted": true}},
+                                "must" : {"term" : {"name": "must_not"}}
+                            }
+                        },
                         "must": {
                             "multi_match" : {
                                 "query": value,
@@ -212,14 +219,8 @@ ProjectActions.searchObjects.preEmit = (value, include_kinds) => {
                                 "fields": [
                                     "label",
                                     "meta",
-                                    "name"
-                                ]
-                            }
-                        },
-                        "filter": {
-                            "bool" : {
-                                "must" : [
-                                    {"term" : {"is_deleted": false}}
+                                    "name",
+                                    "tags.*"
                                 ]
                             }
                         }

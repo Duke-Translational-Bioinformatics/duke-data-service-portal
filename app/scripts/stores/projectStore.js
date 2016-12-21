@@ -34,7 +34,7 @@ var ProjectStore = Reflux.createStore({
         this.foldersChecked = [];
         this.fileVersions = [];
         this.drawerLoading = false;
-        this.includeKinds = null;
+        this.includeKinds = [];
         this.itemsSelected = null;
         this.metaDataTemplate = null;
         this.metaProps = [];
@@ -94,6 +94,13 @@ var ProjectStore = Reflux.createStore({
         this.versionModal = false;
     },
 
+    setIncludedSearchKinds(includeKinds) {
+        this.includeKinds = includeKinds;
+        this.trigger({
+            includeKinds: this.includeKinds
+        })
+    },
+
     toggleSearchFilters() {
         this.showFilters = !this.showFilters;
         this.trigger({
@@ -103,12 +110,12 @@ var ProjectStore = Reflux.createStore({
 
     searchObjects(value, includeKinds) {
         this.searchValue = value;
-        this.includeKinds = includeKinds;
+        //this.includeKinds = includeKinds;
         this.loading = true;
         this.trigger({
             loading: this.loading,
             searchValue: this.searchValue,
-            includeKinds: this.includeKinds
+            //includeKinds: this.includeKinds
         })
     },
 

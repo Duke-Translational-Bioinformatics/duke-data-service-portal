@@ -5,12 +5,11 @@ import ProjectStore from '../../stores/projectStore';
 import BaseUtils from '../../../util/baseUtils.js';
 import Loaders from '../globalComponents/loaders.jsx';
 import SearchFilters from '../globalComponents/searchFilters.jsx';
+import FontIcon from 'material-ui/lib/font-icon';
 import IconButton from 'material-ui/lib/icon-button';
 import RaisedButton from 'material-ui/lib/raised-button';
 import Paper from 'material-ui/lib/paper';
 import {UrlGen} from '../../../util/urlEnum';
-
-import LeftNav from 'material-ui/lib/left-nav';
 
 class SearchResults extends React.Component {
 
@@ -53,7 +52,7 @@ class SearchResults extends React.Component {
                         <a href={UrlGen.routes.folder(results.id)}
                            className="item-content external">
                             <div className="item-media">
-                                <i className="material-icons" style={styles.icon}>folder</i>
+                                <FontIcon className="material-icons" style={styles.icon}>folder</FontIcon>
                             </div>
                             <div className="item-inner">
                                 <div className="item-title-row">
@@ -74,7 +73,7 @@ class SearchResults extends React.Component {
                     <li key={ results.id } className="hover">
                         <a href={UrlGen.routes.file(results.id)}
                            className="item-content external">
-                            <div className="item-media"><i className="material-icons" style={styles.icon}>description</i>
+                            <div className="item-media"><FontIcon className="material-icons" style={styles.icon}>description</FontIcon>
                             </div>
                             <div className="item-inner">
                                 <div className="item-title-row">

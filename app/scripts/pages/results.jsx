@@ -10,8 +10,10 @@ class Results extends React.Component {
         this.state = {
             error: ProjectStore.error,
             errorModal: ProjectStore.errorModal,
+            includeKinds: ProjectStore.includeKinds,
             showFilters: ProjectStore.showFilters,
             showSearch: ProjectStore.showSearch,
+            searchValue: ProjectStore.searchValue,
             searchResults: ProjectStore.searchResults,
             searchResultsFolders: ProjectStore.searchResultsFolders,
             searchResultsFiles: ProjectStore.searchResultsFiles,

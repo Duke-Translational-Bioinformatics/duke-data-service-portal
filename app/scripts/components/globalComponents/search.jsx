@@ -20,7 +20,7 @@ class Search extends React.Component {
     render() {
         return (this.props.showSearch ? <Paper style={{height: 76}} zDepth={2}>
             <i className="material-icons"
-               style={{position: 'absolute', left: '4%', bottom: '36%', cursor: 'pointer'}}
+               style={styles.searchIcon}
                onTouchTap={()=>this.showSearch()}>search</i>
             <TextField
                 ref="searchInput"
@@ -32,7 +32,7 @@ class Search extends React.Component {
                 underlineStyle={styles.textField.underline}
                 underlineFocusStyle={styles.textField.underline} />
             <i className="material-icons"
-               style={{position: 'absolute', right: '3.66%', bottom: '34%', cursor: 'pointer'}}
+               style={styles.closeSearchIcon}
                onTouchTap={()=>this.showSearch()}>
                 close</i>
         </Paper> : null)
@@ -54,6 +54,12 @@ class Search extends React.Component {
 }
 
 const styles = {
+    closeSearchIcon: {
+        position: 'absolute',
+        right: '3.66%',
+        bottom: '34%',
+        cursor: 'pointer'
+    },
     searchBar: {
         width: '50vw',
         margin: '0 auto',
@@ -73,6 +79,12 @@ const styles = {
         underlineStyle: {
             borderColor: '#fff'
         }
+    },
+    searchIcon: {
+        position: 'absolute',
+        left: '4%',
+        bottom: '36%',
+        cursor: 'pointer'
     },
     searchInput: {
         width: '90%',
