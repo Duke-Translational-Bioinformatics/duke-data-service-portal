@@ -3,10 +3,11 @@ import { RouteHandler } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import BaseUtils from '../../../util/baseUtils.js';
+import {UrlGen} from '../../../util/urlEnum';
 import BatchOps from '../../components/globalComponents/batchOps.jsx';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
-import {UrlGen} from '../../../util/urlEnum';
+import FontIcon from 'material-ui/lib/font-icon';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 class ProjectChildren extends React.Component {
@@ -70,7 +71,7 @@ class ProjectChildren extends React.Component {
                                 { chkBx }
                             </label>
                             <div className="item-media">
-                                <i className="material-icons" style={styles.icon}>folder</i>
+                                <FontIcon className="material-icons" style={styles.icon}>folder</FontIcon>
                             </div>
                             <div className="item-inner">
                                 <div className="item-title-row">
@@ -101,7 +102,7 @@ class ProjectChildren extends React.Component {
                                 { chkBx }
                             </label>
                             <div className="item-media">
-                                <i className="material-icons" style={styles.icon}>description</i>
+                                <FontIcon className="material-icons" style={styles.icon}>description</FontIcon>
                             </div>
                             <div className="item-inner">
                                 <div className="item-title-row">
@@ -242,8 +243,8 @@ var styles = {
     },
     icon: {
         fontSize: 36,
-        marginTop: 20
-
+        marginTop: 20,
+        color: '#616161'
     },
     list: {
         float: 'right',

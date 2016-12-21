@@ -8,6 +8,7 @@ import BatchOps from '../../components/globalComponents/batchOps.jsx';
 import FolderOptionsMenu from '../folderComponents/folderOptionsMenu.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import {UrlGen} from '../../../util/urlEnum';
+import FontIcon from 'material-ui/lib/font-icon';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 class FolderChildren extends React.Component {
@@ -71,9 +72,8 @@ class FolderChildren extends React.Component {
                                        value={children.id} id={children.id}/>
                                 { chkBx }
                             </label>
-
                             <div className="item-media">
-                                <i className="material-icons" style={styles.icon}>folder</i>
+                                <FontIcon className="material-icons" style={styles.icon}>folder</FontIcon>
                             </div>
                             <div className="item-inner">
                                 <div className="item-title-row">
@@ -103,9 +103,8 @@ class FolderChildren extends React.Component {
                                        value={children.id} id={children.id}/>
                                 { chkBx }
                             </label>
-
-                            <div className="item-media"><i className="material-icons"
-                                                           style={styles.icon}>description</i>
+                            <div className="item-media">
+                                <FontIcon className="material-icons" style={styles.icon}>description</FontIcon>
                             </div>
                             <div className="item-inner">
                                 <div className="item-title-row">
@@ -241,6 +240,11 @@ var styles = {
         padding: '08px 08px 08px 08px'
     },
     icon: {
+        fontSize: 36,
+        marginTop: 20,
+        color: '#616161'
+    },
+    icon2: {
         fontSize: 36,
         marginTop: 20
     },
