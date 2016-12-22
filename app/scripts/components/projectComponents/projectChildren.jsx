@@ -126,11 +126,10 @@ class ProjectChildren extends React.Component {
                         { newFolderModal }
                     </div> : null}
                     <div className="mdl-cell mdl-cell--12-col" style={styles.batchOpsWrapper}>
-                        { this.props.searchText !== '' ? <div className="mdl-cell mdl-cell--4-col mdl-color-text--grey-600" style={styles.searchText}>Showing{" "+this.props.children.length+" "}results for{" '"+this.props.searchText+"'"}</div> : null}
                         { this.props.showBatchOps ? <BatchOps {...this.props} {...this.state}/> : null }
                     </div>
                 </div>
-                { this.props.uploads || this.props.loading || this.props.childrenLoading ? <Loaders {...this.props}/> : null }
+                { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     <div className="list-block list-block-search searchbar-found media-list">
                         <ul>
@@ -249,10 +248,6 @@ var styles = {
     list: {
         float: 'right',
         marginTop: -10
-    },
-    searchText: {
-        marginLeft: 8,
-        marginTop: 36
     },
     title: {
         marginRight: 40

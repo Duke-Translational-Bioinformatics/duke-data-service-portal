@@ -8,6 +8,8 @@ import { StatusEnum } from '../enum';
 import { checkStatus, getFetchParams } from '../../util/fetchUtil';
 
 var ProjectActions = Reflux.createActions([
+    'toggleUserInfoPanel',
+    'setIncludedSearchProjects',
     'setIncludedSearchKinds',
     'toggleSearchFilters',
     'searchObjects',
@@ -190,8 +192,6 @@ var ProjectActions = Reflux.createActions([
     'uploadError',
     'getChunkUrl',
     'getWindowSize',
-    'search',
-    'setSearchText',
     'getChildren',
     'getChildrenSuccess',
     'removeErrorModal',
@@ -200,18 +200,13 @@ var ProjectActions = Reflux.createActions([
 ]);
 
 ProjectActions.searchObjects.preEmit = (value, include_kinds) => {
+    if (include_kinds === null || !include_kinds.length) include_kinds = ['dds-file', 'dds-folder'];
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix +'/search',
         getFetchParams('post', appConfig.apiToken, {
             "include_kinds": include_kinds,
             "search_query": {
                 "query": {
                     "bool": {
-                        "filter": {
-                            "bool" : {
-                                "must_not" : {"term" : {"is_deleted": true}},
-                                "must" : {"term" : {"name": "must_not"}}
-                            }
-                        },
                         "must": {
                             "multi_match" : {
                                 "query": value,
@@ -223,6 +218,11 @@ ProjectActions.searchObjects.preEmit = (value, include_kinds) => {
                                     "tags.*"
                                 ]
                             }
+                        },
+                        "filter": {
+                            "bool" : {
+                                "must_not" : {"term" : {"is_deleted": true}}
+                            }
                         }
                     }
                 },
@@ -232,7 +232,6 @@ ProjectActions.searchObjects.preEmit = (value, include_kinds) => {
         .then(checkResponse).then((response) => {
             return response.json()
         }).then((json) => {
-            console.log(JSON.stringify(json));
             ProjectActions.searchObjectsSuccess(json.results);
         }).catch((ex) => {
             ProjectActions.handleErrors(ex)
@@ -515,19 +514,6 @@ ProjectActions.getWasGeneratedByNode.preEmit = (id, kind, prevGraph) => {
         return response.json()
     }).then((json) => {
         ProjectActions.getProvenanceSuccess(json.graph, prevGraph);
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    })
-};
-
-ProjectActions.search.preEmit = (text, id) => {
-    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/children?name_contains=' + text,
-        getFetchParams('get', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.getChildrenSuccess(json.results);
-        ProjectActions.setSearchText(text);
     }).catch((ex) => {
         ProjectActions.handleErrors(ex)
     })

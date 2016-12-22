@@ -12,6 +12,7 @@ import FontIcon from 'material-ui/lib/font-icon';
 import Help from 'material-ui/lib/svg-icons/action/help';
 import IconButton from 'material-ui/lib/icon-button';
 import Loaders from '../../components/globalComponents/loaders.jsx';
+import LinearProgress from 'material-ui/lib/linear-progress';
 import Paper from 'material-ui/lib/paper';
 import RaisedButton from 'material-ui/lib/raised-button';
 import Search from 'material-ui/lib/svg-icons/action/search';
@@ -139,7 +140,7 @@ class MetadataTemplateList extends React.Component {
                     </div>
                 </div>
                 <div className="mdl-cell mdl-cell--12-col" style={styles.loading}>
-                    {this.props.uploads || this.props.loading && route === 'metadata' ? <Loaders {...this.props}/> : null}
+                    {this.props.uploads || this.props.loading && route === 'metadata' ? <LinearProgress mode="indeterminate" color={'#EC407A'} style={styles.uploader}/> : null}
                     {this.props.uploads || this.props.loading && route !== 'metadata' ? <CircularProgress size={1.5} style={styles.drawerLoader}/> : null}
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
@@ -275,6 +276,10 @@ var styles = {
         float: 'left',
         width: '20%',
         marginTop: 12
+    },
+    uploader: {
+        width: '95%',
+        margin: '0 auto'
     }
 };
 

@@ -27,14 +27,12 @@ class Project extends React.Component {
             screenSize: ProjectStore.screenSize,
             tagAutoCompleteList: ProjectStore.tagAutoCompleteList,
             tagLabels: ProjectStore.tagLabels,
-            searchText: ProjectStore.searchText,
             uploads: ProjectStore.uploads,
             users: ProjectStore.users
         };
     }
 
     componentDidMount() {
-        if(this.state.searchText !== '') ProjectActions.setSearchText('');
         let id = this.props.params.id;
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
         if(ProjectStore.openTagManager) ProjectActions.toggleTagManager();

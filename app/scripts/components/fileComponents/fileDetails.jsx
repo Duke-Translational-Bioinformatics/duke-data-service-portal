@@ -98,7 +98,7 @@ class FileDetails extends React.Component {
         Tooltip.bindEvents();
 
         let file = <Card className="project-container mdl-color--white content mdl-color-text--grey-800"
-                         style={{paddingBottom: 30, overflow: 'visible', padding: '10px 0px 10px 0px'}}>
+                         style={styles.card}>
             <div className="mdl-cell mdl-cell--12-col" style={{position: 'relative'}}>
                 { dlButton }
             </div>
@@ -132,7 +132,7 @@ class FileDetails extends React.Component {
                 <FileVersionsList {...this.props}/>
                 <VersionUpload {...this.props}/>
                 <div style={styles.uploadProg}>
-                    { this.props.uploads ? <Loaders {...this.props}/> : null }
+                    { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     { provAlert }
@@ -280,6 +280,11 @@ var styles = {
     },
     button: {
         float: 'right'
+    },
+    card: {
+        paddingBottom: 30,
+        overflow: 'visible',
+        padding: '10px 0px 10px 0px'
     },
     detailsTitle: {
         textAlign: 'left',

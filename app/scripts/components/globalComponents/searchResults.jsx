@@ -14,13 +14,14 @@ import {UrlGen} from '../../../util/urlEnum';
 class SearchResults extends React.Component {
 
     constructor() {
-        this.state = {
+        this.state = { // Temporary pagination until the services get properly updated to return paginated results
             page: 0
         }
     }
 
     render() {
         let results = this.props.searchResults.length ? this.props.searchResults : [];
+        let searchValue = this.props.searchValue !== null ? 'for ' +'"'+this.props.searchValue+'"' : '';
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
         if (this.props.error && this.props.error.response) {
             this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
@@ -50,7 +51,7 @@ class SearchResults extends React.Component {
                 return (
                     <li key={ results.id } className="hover">
                         <a href={UrlGen.routes.folder(results.id)}
-                           className="item-content external">
+                           className="item-content external" onTouchTap={() => this.toggleSearch()}>
                             <div className="item-media">
                                 <FontIcon className="material-icons" style={styles.icon}>folder</FontIcon>
                             </div>
@@ -96,7 +97,7 @@ class SearchResults extends React.Component {
                  <SearchFilters {...this.props} />
                  <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
                     <div style={styles.searchTextWrapper}>
-                        {<div style={styles.searchText}>Showing{" "+searchResults.length+" "}results</div>}
+                        {<div style={styles.searchText}>Showing{" "+searchResults.length+" "}results{' '+searchValue}</div>}
                         {this.props.searchResultsFolders.length && this.props.searchResultsFiles.length || this.props.searchResultsProjects.length ? <IconButton
                             iconClassName="material-icons"
                             tooltip="filter results"
@@ -107,7 +108,7 @@ class SearchResults extends React.Component {
                         </IconButton> : null}
                     </div>
                 </div>
-                { this.props.uploads || this.props.loading || this.props.childrenLoading ? <Loaders {...this.props}/> : null }
+                { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     <div className="list-block list-block-search searchbar-found media-list">
                         <ul>
@@ -135,6 +136,10 @@ class SearchResults extends React.Component {
     toggleFilters() {
         ProjectActions.toggleSearchFilters();
     }
+
+    toggleSearch() {
+        if(this.props.showSearch) ProjectActions.toggleSearch();
+    }
 }
 
 SearchResults.contextTypes = {
@@ -146,15 +151,15 @@ var styles = {
     },
     icon: {
         fontSize: 36,
-        marginTop: 20
+        marginTop: 20,
+        color: '#616161'
     },
     list: {
-        float: 'right',
+        float: 'right'
     },
     searchText: {
         marginLeft: 17,
         marginTop: 13,
-        //marginBottom: -20
         float: 'left'
     },
     title: {
@@ -163,9 +168,15 @@ var styles = {
 };
 
 SearchResults.propTypes = {
+    error: React.PropTypes.object,
     loading: React.PropTypes.bool,
     results: React.PropTypes.array,
-    error: React.PropTypes.object
+    searchResults: React.PropTypes.array,
+    searchResultsFolders: React.PropTypes.array,
+    searchResultsFiles: React.PropTypes.array,
+    searchResultsProjects: React.PropTypes.array,
+    searchValue: React.PropTypes.string,
+    showFilters: React.PropTypes.bool
 };
 
 export default SearchResults;

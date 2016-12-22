@@ -328,7 +328,7 @@ UploadManager.contextTypes = {
 };
 
 UploadManager.propTypes = {
-    loading: bool,
+    loading: React.PropTypes.bool,
     details: array,
     error: object
 };

@@ -389,10 +389,4 @@ TagManager.contextTypes = {
     muiTheme: React.PropTypes.object
 };
 
-TagManager.propTypes = {
-    loading: bool,
-    details: array,
-    error: object
-};
-
 export default TagManager;

@@ -11,6 +11,8 @@ class Results extends React.Component {
             error: ProjectStore.error,
             errorModal: ProjectStore.errorModal,
             includeKinds: ProjectStore.includeKinds,
+            includeProjects: ProjectStore.includeProjects,
+            screenSize: ProjectStore.screenSize,
             showFilters: ProjectStore.showFilters,
             showSearch: ProjectStore.showSearch,
             searchValue: ProjectStore.searchValue,

@@ -11,16 +11,14 @@ class Loaders extends React.Component {
             uploading = Object.keys(this.props.uploads).map(uploadId => {
                 let upload = this.props.uploads[uploadId];
                 return <div key={'pgrs'+uploadId}>
-                    <LinearProgress mode="determinate" color={'#EC407A'} style={styles.uploader}
-                                    value={upload.uploadProgress} max={100} min={0}/>
-
+                    <LinearProgress mode="determinate" color={'#EC407A'} style={styles.uploader} value={upload.uploadProgress} max={100} min={0}/>
                     <div className="mdl-color-text--grey-600" style={styles.uploadText}>
                         {upload.uploadProgress.toFixed(2) + '% of ' + upload.name } uploaded...
                     </div>
                 </div>;
             });
         }
-       let loading = this.props.loading || this.props.childrenLoading ?
+       let loading = this.props.loading ?
        <LinearProgress mode="indeterminate" color={'#EC407A'} style={styles.uploader}/> : '';
         if (this.props.uploads && Object.keys(this.props.uploads).length != 0) {
             return (

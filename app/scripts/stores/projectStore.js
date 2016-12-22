@@ -19,7 +19,6 @@ var ProjectStore = Reflux.createStore({
         this.batchFiles = [];
         this.batchFolders = [];
         this.children = [];
-        this.childrenLoading = false;
         this.currentUser = {};
         this.destination = null;
         this.destinationKind = null;
@@ -35,6 +34,7 @@ var ProjectStore = Reflux.createStore({
         this.fileVersions = [];
         this.drawerLoading = false;
         this.includeKinds = [];
+        this.includeProjects = [];
         this.itemsSelected = null;
         this.metaDataTemplate = null;
         this.metaProps = [];
@@ -62,15 +62,15 @@ var ProjectStore = Reflux.createStore({
         this.relMsg = null;
         this.removeFileFromProvBtn = false;
         this.scale = null;
+        this.screenSize = {};
         this.searchFilesList = [];
-        this.searchResults = [{"kind":"dds-file","id":"39612f01-d521-42fb-acf5-9028f65c1cb7","parent":{"kind":"dds-project","id":"da728ad1-7530-4ec1-b533-d219e96c0f46"},"name":"temp_10B_file copy (1) copy","audit":{"created_on":"2016-11-23T16:56:58.957Z","created_by":{"id":"e8aeeeb8-0071-4308-8bfa-e24d08094c1d","username":"cc487","full_name":"Casey Choiniere"},"last_updated_on":null,"last_updated_by":null,"deleted_on":null,"deleted_by":null},"is_deleted":false,"current_version":{"id":"c2fe093e-8365-4ceb-b60a-8fcefdbfb25e","version":1,"label":null,"upload":{"id":"fbb7e093-755d-4bd2-89e4-617013031c2f","size":5120,"storage_provider":{"id":"e71e2106-2243-4795-a9a0-70de89f68d64","name":"duke_swift","description":"Duke OIT Swift Service"},"hashes":[{"algorithm":"md5","value":"32ca18808933aa12e979375d07048a11","audit":{"created_on":"2016-11-23T16:56:57.648Z","created_by":{"id":"e8aeeeb8-0071-4308-8bfa-e24d08094c1d","username":"cc487","full_name":"Casey Choiniere"},"last_updated_on":null,"last_updated_by":null,"deleted_on":null,"deleted_by":null}}]}},"project":{"id":"da728ad1-7530-4ec1-b533-d219e96c0f46"},"ancestors":[{"kind":"dds-project","id":"da728ad1-7530-4ec1-b533-d219e96c0f46","name":"Project C"}]},{"kind":"dds-file","id":"d40573eb-1cab-40d0-ab59-bab1fe99debb","parent":{"kind":"dds-project","id":"da728ad1-7530-4ec1-b533-d219e96c0f46"},"name":"temp_10B_file copy (1)","audit":{"created_on":"2016-11-23T16:56:58.965Z","created_by":{"id":"e8aeeeb8-0071-4308-8bfa-e24d08094c1d","username":"cc487","full_name":"Casey Choiniere"},"last_updated_on":null,"last_updated_by":null,"deleted_on":null,"deleted_by":null},"is_deleted":false,"current_version":{"id":"61fb6781-f17c-4981-8f6c-fdaf8a0ad286","version":1,"label":null,"upload":{"id":"8167c77c-3bcc-4bc3-8b13-a95908c02bce","size":5120,"storage_provider":{"id":"e71e2106-2243-4795-a9a0-70de89f68d64","name":"duke_swift","description":"Duke OIT Swift Service"},"hashes":[{"algorithm":"md5","value":"32ca18808933aa12e979375d07048a11","audit":{"created_on":"2016-11-23T16:56:57.653Z","created_by":{"id":"e8aeeeb8-0071-4308-8bfa-e24d08094c1d","username":"cc487","full_name":"Casey Choiniere"},"last_updated_on":null,"last_updated_by":null,"deleted_on":null,"deleted_by":null}}]}},"project":{"id":"da728ad1-7530-4ec1-b533-d219e96c0f46"},"ancestors":[{"kind":"dds-project","id":"da728ad1-7530-4ec1-b533-d219e96c0f46","name":"Project C"}]},{"kind":"dds-file","id":"2ac5a13a-93fc-4fa2-ab21-fcbc4b90a705","parent":{"kind":"dds-project","id":"da728ad1-7530-4ec1-b533-d219e96c0f46"},"name":"temp_10B_file copy (1) copy","audit":{"created_on":"2016-11-22T21:43:17.656Z","created_by":{"id":"e8aeeeb8-0071-4308-8bfa-e24d08094c1d","username":"cc487","full_name":"Casey Choiniere"},"last_updated_on":null,"last_updated_by":null,"deleted_on":null,"deleted_by":null},"is_deleted":false,"current_version":{"id":"c028f28c-38ed-4843-a820-a39cd13a9fb3","version":1,"label":null,"upload":{"id":"5007e364-5d27-4386-81f5-ab1515002700","size":5120,"storage_provider":{"id":"e71e2106-2243-4795-a9a0-70de89f68d64","name":"duke_swift","description":"Duke OIT Swift Service"},"hashes":[{"algorithm":"md5","value":"32ca18808933aa12e979375d07048a11","audit":{"created_on":"2016-11-22T21:43:16.751Z","created_by":{"id":"e8aeeeb8-0071-4308-8bfa-e24d08094c1d","username":"cc487","full_name":"Casey Choiniere"},"last_updated_on":null,"last_updated_by":null,"deleted_on":null,"deleted_by":null}}]}},"project":{"id":"da728ad1-7530-4ec1-b533-d219e96c0f46"},"ancestors":[{"kind":"dds-project","id":"da728ad1-7530-4ec1-b533-d219e96c0f46","name":"Project C"}]},{"kind":"dds-file","id":"4256860c-a1a5-4eb8-8778-37048c0be7a7","parent":{"kind":"dds-project","id":"da728ad1-7530-4ec1-b533-d219e96c0f46"},"name":"temp_10B_file copy (1)","audit":{"created_on":"2016-11-21T23:21:27.543Z","created_by":{"id":"e8aeeeb8-0071-4308-8bfa-e24d08094c1d","username":"cc487","full_name":"Casey Choiniere"},"last_updated_on":null,"last_updated_by":null,"deleted_on":null,"deleted_by":null},"is_deleted":false,"current_version":{"id":"dd95a035-c64f-4fcd-848a-ed3c0c91840d","version":1,"label":null,"upload":{"id":"5f8a6890-7509-4615-bf3d-56ab4bb6a3dc","size":5120,"storage_provider":{"id":"e71e2106-2243-4795-a9a0-70de89f68d64","name":"duke_swift","description":"Duke OIT Swift Service"},"hashes":[{"algorithm":"md5","value":"32ca18808933aa12e979375d07048a11","audit":{"created_on":"2016-11-21T23:21:26.168Z","created_by":{"id":"e8aeeeb8-0071-4308-8bfa-e24d08094c1d","username":"cc487","full_name":"Casey Choiniere"},"last_updated_on":null,"last_updated_by":null,"deleted_on":null,"deleted_by":null}}]}},"project":{"id":"da728ad1-7530-4ec1-b533-d219e96c0f46"},"ancestors":[{"kind":"dds-project","id":"da728ad1-7530-4ec1-b533-d219e96c0f46","name":"Project C"}]}];
+        this.searchResults = [];
         this.searchResultsFiles = [];
         this.searchResultsFolders = [];
         this.searchResultsProjects = [];
         this.searchValue = null;
         this.selectedNode = {};
         this.selectedEdge = null;
-        this.searchText = '';
         this.showFilters = false;
         this.showPropertyCreator = false;
         this.showProvAlert = false;
@@ -78,7 +78,7 @@ var ProjectStore = Reflux.createStore({
         this.showProvDetails = false;
         this.showTemplateCreator = false;
         this.showTemplateDetails = false;
-        this.screenSize = {};
+        this.showUserInfoPanel = false;
         this.showBatchOps = false;
         this.showSearch = false;
         this.tagLabels = [];
@@ -92,6 +92,20 @@ var ProjectStore = Reflux.createStore({
         this.users = [];
         this.userKey = {};
         this.versionModal = false;
+    },
+
+    toggleUserInfoPanel() {
+        this.showUserInfoPanel = !this.showUserInfoPanel;
+        this.trigger({
+            showUserInfoPanel: this.showUserInfoPanel
+        })
+    },
+
+    setIncludedSearchProjects(includeProjects) {
+        this.includeProjects = includeProjects;
+        this.trigger({
+            includeProjects: this.includeProjects
+        })
     },
 
     setIncludedSearchKinds(includeKinds) {
@@ -110,12 +124,10 @@ var ProjectStore = Reflux.createStore({
 
     searchObjects(value, includeKinds) {
         this.searchValue = value;
-        //this.includeKinds = includeKinds;
         this.loading = true;
         this.trigger({
             loading: this.loading,
-            searchValue: this.searchValue,
-            //includeKinds: this.includeKinds
+            searchValue: this.searchValue
         })
     },
 
@@ -142,8 +154,10 @@ var ProjectStore = Reflux.createStore({
     },
 
     toggleSearch() {
+        this.searchValue = null;
         this.showSearch = !this.showSearch;
         this.trigger({
+            searchValue: this.searchValue,
             showSearch: this.showSearch
         })
     },
@@ -858,24 +872,6 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    setSearchText(text) {
-        if(!text.indexOf(' ') <= 0) this.searchText = text;
-        this.showBatchOps = false;
-        this.itemsSelected = null;
-        this.trigger({
-            searchText: this.searchText,
-            itemsSelected: this.itemsSelected,
-            showBatchOps: this.showBatchOps
-        })
-    },
-
-    search() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    },
-
     searchFiles() {
         this.autoCompleteLoading = true;
         this.trigger({
@@ -1429,21 +1425,17 @@ var ProjectStore = Reflux.createStore({
     },
 
     getChildren() {
-        this.childrenLoading = true;
         this.loading = true;
         this.trigger({
-            loading: this.loading,
-            childrenLoading: this.childrenLoading
+            loading: this.loading
         })
     },
 
     getChildrenSuccess(results) {
         this.children = results;
-        this.childrenLoading = false;
         this.loading = false;
         this.trigger({
             children: this.children,
-            childrenLoading: this.childrenLoading,
             loading: this.loading
         })
     },
@@ -1566,6 +1558,13 @@ var ProjectStore = Reflux.createStore({
 
     moveFileSuccess() {
         this.loading = false;
+        this.trigger({
+            loading: this.loading
+        })
+    },
+
+    getEntity() {
+        this.loading = true;
         this.trigger({
             loading: this.loading
         })

@@ -14,12 +14,6 @@ import Divider from 'material-ui/lib/divider';
 
 class SearchFilters extends React.Component {
 
-    constructor() {
-        this.state = {
-            activeCheckboxes: []
-        }
-    }
-
     componentDidUpdate(prevProps) {
         if(prevProps.searchResults !== this.props.searchResults){
             if(this.props.showFilters && (!this.props.searchResultsFiles.length && !this.props.searchResultsFolders.length || !this.props.searchResultsProjects.length)) this.toggleFilters();
@@ -36,10 +30,9 @@ class SearchFilters extends React.Component {
         let projects = uniqueProjects.map((obj) => {
             return <span key={obj.id}>
                 <ListItem primaryText={obj.name}
-                          leftCheckbox={<Checkbox style={styles.checkbox}
-                                                  onCheck={() => this.handleCheck(obj.id)}
-                                                  checked={this.state.activeCheckboxes.includes(obj.id)}/>}
-                          style={{textAlign: 'right'}}/>
+                          leftCheckbox={<Checkbox style={styles.checkbox} checked={this.props.includeProjects.includes(obj.id)}/>}
+                          style={{textAlign: 'right'}}
+                          onClick={() => this.setIncludeProjects(obj.id)}/>
             </span>
         });
         let projectCount = results.reduce((sums,obj) => { //Todo: Am I using this?????????????
@@ -64,13 +57,11 @@ class SearchFilters extends React.Component {
                                 <Divider style={styles.listDivider}/>
                                 <List>
                                     {files.length ? <ListItem primaryText={"Files ("+files.length+")"}
-                                              leftCheckbox={<Checkbox style={styles.checkbox} onCheck={() => this.handleCheck('dds-file')}
-                                                                      checked={includeKinds.includes('dds-file')}/>}
-                                              style={{textAlign: 'right'}}/> : null}
+                                              leftCheckbox={<Checkbox style={styles.checkbox} checked={includeKinds.includes('dds-file')}/>}
+                                              style={{textAlign: 'right'}} onClick={() => this.setIncludeKinds('dds-file')}/> : null}
                                     {folders.length ? <ListItem primaryText={"Folders ("+folders.length+")"}
-                                              leftCheckbox={<Checkbox style={styles.checkbox} onCheck={() => this.handleCheck('dds-folder')}
-                                                                      checked={includeKinds.includes('dds-folder')}/>}
-                                              style={{textAlign: 'right'}}/> : null}
+                                              leftCheckbox={<Checkbox style={styles.checkbox} checked={includeKinds.includes('dds-folder')}/>}
+                                              style={{textAlign: 'right'}} onClick={() => this.setIncludeKinds('dds-folder')}/> : null}
                                 </List>
                             </div> : null}
                             <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
@@ -86,7 +77,8 @@ class SearchFilters extends React.Component {
                                     label="Clear Filters"
                                     labelStyle={styles.button.label}
                                     style={styles.button}
-                                    secondary={true} />
+                                    secondary={true}
+                                    onTouchTap={()=>this.clearFilters()}/>
                             </div>
                     </div>
                 </LeftNav>
@@ -95,50 +87,48 @@ class SearchFilters extends React.Component {
     }
 
     applyFilters() {
-        let checked = this.state.activeCheckboxes;
-        let includeKinds = [];
-        if(checked.length) {
-            if(checked.includes('dds-file') || checked.includes('dds-folder')) {
-                for(let i=0; i<checked.length;i++){
-                    if(checked[i].includes('dds-file') || checked[i].includes('dds-folder')) includedKinds.push(checked[i]);
-                }
-                //ProjectActions.setIncludedSearchKinds()
-            }
-        }
+        let value = this.props.searchValue;
+        let includeKinds = this.props.includeKinds;
+        ProjectActions.searchObjects(value, includeKinds);
+        if(this.props.screenSize.width < 580) this.toggleFilters();
     }
 
-    handleCheck(id) {
+    clearFilters() {
+        let value = this.props.searchValue;
+        let includeKinds = ['dds-file', 'dds-folder'];
+        ProjectActions.searchObjects(value, includeKinds);
+        ProjectActions.setIncludedSearchKinds([]);
+        if(this.props.screenSize.width < 580) this.toggleFilters();
+    }
+
+    setIncludeKinds(id) {
         let found = this.props.includeKinds.includes(id);//Array.includes not supported in IE. See polyfills.js
         let includeKinds = [];
         if (found) {
-            //this.setState({
-                includeKinds = this.props.includeKinds.filter(x => x !== id);
-                //activeCheckboxes: this.state.activeCheckboxes.filter(x => x !== id)
-                ProjectActions.setIncludedSearchKinds(includeKinds);
-            //})
-        } else {
-            //this.setState({
-            includeKinds = [ ...this.state.activeCheckboxes, id ];
+            includeKinds = this.props.includeKinds.filter(x => x !== id);
             ProjectActions.setIncludedSearchKinds(includeKinds);
-            //})
+        } else {
+            includeKinds = [ ...this.props.includeKinds, id ];
+            ProjectActions.setIncludedSearchKinds(includeKinds);
         }
     }
 
-    //setKind(kind) {
-    //    this.setState({
-    //        filesChecked: !this.state.filesChecked
-    //    });
-    //    ProjectActions.searchObjects(ProjectStore.searchValue, kind);
-    //}
+    setIncludeProjects(id) {
+        let found = this.props.includeProjects.includes(id);//Array.includes not supported in IE. See polyfills.js
+        let includeProjects = [];
+        if (found) {
+            includeProjects = this.props.includeProjects.filter(x => x !== id);
+            ProjectActions.setIncludedSearchProjects(includeProjects);
+        } else {
+            includeProjects = [ ...this.props.includeProjects, id ];
+            ProjectActions.setIncludedSearchProjects(includeProjects);
+        }
+    }
 
     toggleFilters() {
         ProjectActions.toggleSearchFilters();
     }
 }
-
-SearchFilters.contextTypes = {
-    muiTheme: React.PropTypes.object
-};
 
 const styles = {
     button: {
@@ -178,8 +168,20 @@ const styles = {
     }
 };
 
+SearchFilters.contextTypes = {
+    muiTheme: React.PropTypes.object
+};
+
 SearchFilters.propTypes = {
-    results: React.PropTypes.array
+    includeKinds: React.PropTypes.array,
+    includeProjects: React.PropTypes.array,
+    screenSize: React.PropTypes.object,
+    searchResults: React.PropTypes.array,
+    searchResultsFolders: React.PropTypes.array,
+    searchResultsFiles: React.PropTypes.array,
+    searchResultsProjects: React.PropTypes.array,
+    searchValue: React.PropTypes.string,
+    showFilters: React.PropTypes.bool
 };
 
 export default SearchFilters;

@@ -4,7 +4,6 @@ import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import Close from 'material-ui/lib/svg-icons/navigation/close';
 import IconButton from 'material-ui/lib/icon-button';
-
 import Paper from 'material-ui/lib/paper';
 import TextField from 'material-ui/lib/text-field';
 
@@ -18,21 +17,21 @@ class Search extends React.Component {
     }
 
     render() {
-        return (this.props.showSearch ? <Paper style={{height: 76}} zDepth={2}>
+        return (this.props.showSearch ? <Paper style={styles.searchBar} zDepth={2}>
             <i className="material-icons"
-               style={styles.searchIcon}
+               style={styles.searchBar.searchIcon}
                onTouchTap={()=>this.showSearch()}>search</i>
             <TextField
                 ref="searchInput"
-                id="searchInput"
                 hintText="Search"
-                hintStyle={{fontWeight: 100}}
+                defaultValue={this.props.searchValue ? this.props.searchValue : null}
+                hintStyle={styles.searchBar.hintText}
                 onKeyDown={(e)=>this.search(e)}
                 style={{width: '90%',position: 'absolute',top: '20%', left: this.props.screenSize.width < 680 ? '11%' : '8%'}}
-                underlineStyle={styles.textField.underline}
-                underlineFocusStyle={styles.textField.underline} />
+                underlineStyle={styles.searchBar.textFieldUnderline}
+                underlineFocusStyle={styles.searchBar.textFieldUnderline} />
             <i className="material-icons"
-               style={styles.closeSearchIcon}
+               style={styles.searchBar.closeSearchIcon}
                onTouchTap={()=>this.showSearch()}>
                 close</i>
         </Paper> : null)
@@ -42,68 +41,54 @@ class Search extends React.Component {
         let searchInput = this.refs.searchInput;
         if(e.keyCode === 13) {
             let value = searchInput.getValue();
-            ProjectActions.searchObjects(value, ['dds-file', 'dds-folder']);
+            ProjectActions.searchObjects(value, null);
             this.props.appRouter.transitionTo('/results')
         }
     }
 
     showSearch() {
+        if (this.props.routerPath === '/results') {
+            let goBack = this.props.appRouter.goBack();
+            if (goBack) this.props.appRouter.goBack();
+            if (!goBack) this.props.appRouter.transitionTo('/home');
+        }
+        if(this.props.showFilters) ProjectActions.toggleSearchFilters();
+        if(this.props.includeKinds.length) ProjectActions.setIncludedSearchKinds([]);
         ProjectActions.toggleSearch();
-        if(this.props.routerPath === '/results') this.props.appRouter.goBack();
     }
 }
 
 const styles = {
-    closeSearchIcon: {
-        position: 'absolute',
-        right: '3.66%',
-        bottom: '34%',
-        cursor: 'pointer'
-    },
     searchBar: {
-        width: '50vw',
-        margin: '0 auto',
-        fontSize: '.9em',
-        display: 'block',
-        hintStyle: {
-            color: '#eeeeee',
-            marginLeft: 25
+        height: 76,
+        closeSearchIcon: {
+            position: 'absolute',
+            right: '3.66%',
+            bottom: '34%',
+            cursor: 'pointer'
         },
-        inputWrapper: {
-            margin: '0px 8px 0px 8px',
-            padding: -15,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
+        hintText: {
+            fontWeight: 100
         },
-        underlineStyle: {
-            borderColor: '#fff'
-        }
-    },
-    searchIcon: {
-        position: 'absolute',
-        left: '4%',
-        bottom: '36%',
-        cursor: 'pointer'
-    },
-    searchInput: {
-        width: '90%',
-        position: 'absolute',
-        top: '20%',
-        left: '12%'
-    },
-    textField: {color: "#fff",
-        underline: {
+        searchIcon: {
+            position: 'absolute',
+            left: '4%',
+            bottom: '36%',
+            cursor: 'pointer'
+        },
+        textFieldUnderline: {
             display: 'none'
         }
-    },
-    themeColor: {
-        backgroundColor: '#235F9C'
     }
 };
 
 Search.childContextTypes = {
     muiTheme: React.PropTypes.object
+};
+
+Search.propTypes = {
+    searchValue: React.PropTypes.string,
+    showSearch: React.PropTypes.bool
 };
 
 export default Search;
