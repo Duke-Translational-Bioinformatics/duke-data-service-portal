@@ -17,7 +17,6 @@ class SearchFilters extends React.Component {
     componentDidUpdate(prevProps) {
         if(prevProps.searchResults !== this.props.searchResults){
             if(this.props.showFilters && (!this.props.searchResultsFiles.length && !this.props.searchResultsFolders.length || !this.props.searchResultsProjects.length)) this.toggleFilters();
-            //Todo: should clear all filters here too!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         }
     }
 
@@ -27,18 +26,20 @@ class SearchFilters extends React.Component {
         let files = this.props.searchResultsFiles;
         let includeKinds = this.props.includeKinds && this.props.includeKinds !== null ? this.props.includeKinds : [];
         let uniqueProjects = this.props.searchResultsProjects;
+        let projectCount = results.reduce((sums,obj) => {
+            sums[obj.ancestors[0].id] = (sums[obj.ancestors[0].id] || 0) + 1;
+            return sums;
+        },{});
         let projects = uniqueProjects.map((obj) => {
+            let count = projectCount.hasOwnProperty(obj.id) ? projectCount[obj.id] : 0;
             return <span key={obj.id}>
-                <ListItem primaryText={obj.name}
+                <ListItem primaryText={obj.name + " ("+count+")"}
                           leftCheckbox={<Checkbox style={styles.checkbox} checked={this.props.includeProjects.includes(obj.id)}/>}
                           style={{textAlign: 'right'}}
                           onClick={() => this.setIncludeProjects(obj.id)}/>
             </span>
         });
-        let projectCount = results.reduce((sums,obj) => { //Todo: Am I using this?????????????
-            sums[obj.ancestors[0].name] = (sums[obj.ancestors[0].name] || 0) + 1;
-            return sums;
-        },{});
+
 
         return (
             <div>
@@ -64,40 +65,33 @@ class SearchFilters extends React.Component {
                                               style={{textAlign: 'right'}} onClick={() => this.setIncludeKinds('dds-folder')}/> : null}
                                 </List>
                             </div> : null}
-                            <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
+                            {this.props.screenSize.width < 580 ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
                                 <RaisedButton
-                                    label="Apply Filters"
+                                    label="Hide Filters"
                                     labelStyle={styles.button.label}
                                     style={styles.button}
                                     secondary={true}
-                                    onTouchTap={()=>this.applyFilters()}/>
-                            </div>
-                            <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
+                                    onTouchTap={()=>this.toggleFilters()}/>
+                            </div> : null}
+                            {this.props.includeKinds.length || this.props.includeProjects.length ?<div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
                                 <RaisedButton
                                     label="Clear Filters"
                                     labelStyle={styles.button.label}
                                     style={styles.button}
                                     secondary={true}
                                     onTouchTap={()=>this.clearFilters()}/>
-                            </div>
+                            </div> : null}
                     </div>
                 </LeftNav>
             </div>
         );
     }
 
-    applyFilters() {
-        let value = this.props.searchValue;
-        let includeKinds = this.props.includeKinds;
-        ProjectActions.searchObjects(value, includeKinds);
-        if(this.props.screenSize.width < 580) this.toggleFilters();
-    }
-
     clearFilters() {
         let value = this.props.searchValue;
-        let includeKinds = ['dds-file', 'dds-folder'];
-        ProjectActions.searchObjects(value, includeKinds);
-        ProjectActions.setIncludedSearchKinds([]);
+        ProjectActions.searchObjects(value, null);
+        if(this.props.includeKinds.length) ProjectActions.setIncludedSearchKinds([]);
+        if(this.props.includeProjects.length) ProjectActions.setIncludedSearchProjects([]);
         if(this.props.screenSize.width < 580) this.toggleFilters();
     }
 

@@ -103,6 +103,7 @@ var ProjectStore = Reflux.createStore({
 
     setIncludedSearchProjects(includeProjects) {
         this.includeProjects = includeProjects;
+        ProjectActions.searchObjects(this.searchValue, this.includeKinds, includeProjects);
         this.trigger({
             includeProjects: this.includeProjects
         })
@@ -110,6 +111,7 @@ var ProjectStore = Reflux.createStore({
 
     setIncludedSearchKinds(includeKinds) {
         this.includeKinds = includeKinds;
+        ProjectActions.searchObjects(this.searchValue, this.includeKinds);
         this.trigger({
             includeKinds: this.includeKinds
         })
@@ -122,7 +124,7 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    searchObjects(value, includeKinds) {
+    searchObjects(value) {
         this.searchValue = value;
         this.loading = true;
         this.trigger({

@@ -38,22 +38,21 @@ class Search extends React.Component {
     }
 
     search(e) {
+        let includeKinds = this.props.includeKinds;
+        let includeProjects = this.props.includeProjects;
         let searchInput = this.refs.searchInput;
         if(e.keyCode === 13) {
             let value = searchInput.getValue();
-            ProjectActions.searchObjects(value, null);
+            ProjectActions.searchObjects(value, includeKinds, includeProjects);
             this.props.appRouter.transitionTo('/results')
         }
     }
 
     showSearch() {
-        if (this.props.routerPath === '/results') {
-            let goBack = this.props.appRouter.goBack();
-            if (goBack) this.props.appRouter.goBack();
-            if (!goBack) this.props.appRouter.transitionTo('/home');
-        }
+        if(this.props.routerPath === '/results') this.props.appRouter.goBack();
         if(this.props.showFilters) ProjectActions.toggleSearchFilters();
         if(this.props.includeKinds.length) ProjectActions.setIncludedSearchKinds([]);
+        if(this.props.includeProjects.length) ProjectActions.setIncludedSearchProjects([]);
         ProjectActions.toggleSearch();
     }
 }

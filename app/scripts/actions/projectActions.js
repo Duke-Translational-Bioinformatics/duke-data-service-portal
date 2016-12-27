@@ -199,11 +199,11 @@ var ProjectActions = Reflux.createActions([
     'toggleModals'
 ]);
 
-ProjectActions.searchObjects.preEmit = (value, include_kinds) => {
-    if (include_kinds === null || !include_kinds.length) include_kinds = ['dds-file', 'dds-folder'];
+ProjectActions.searchObjects.preEmit = (value, includeKinds, includeProjects) => {
+    if (includeKinds === null || !includeKinds.length) includeKinds = ['dds-file', 'dds-folder'];
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix +'/search',
         getFetchParams('post', appConfig.apiToken, {
-            "include_kinds": include_kinds,
+            "include_kinds": includeKinds,
             "search_query": {
                 "query": {
                     "bool": {
