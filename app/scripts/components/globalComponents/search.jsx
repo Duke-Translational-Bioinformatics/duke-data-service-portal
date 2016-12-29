@@ -20,7 +20,7 @@ class Search extends React.Component {
         return (this.props.showSearch ? <Paper style={styles.searchBar} zDepth={2}>
             <i className="material-icons"
                style={styles.searchBar.searchIcon}
-               onTouchTap={()=>this.showSearch()}>search</i>
+               onTouchTap={()=>this.showSearch()}>arrow_back</i>
             <TextField
                 ref="searchInput"
                 hintText="Search"
