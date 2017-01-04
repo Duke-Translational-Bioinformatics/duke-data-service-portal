@@ -2,6 +2,7 @@ import React from 'react'
 import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
 import FileDetails from '../components/fileComponents/fileDetails.jsx';
+import FileOptions from '../components/fileComponents/fileOptions.jsx';
 import Provenance from '../components/globalComponents/provenance.jsx';
 import TagManager from '../components/globalComponents/tagManager.jsx'
 
@@ -18,6 +19,7 @@ class File extends React.Component {
             filesChecked: ProjectStore.filesChecked,
             drawerLoading: ProjectStore.drawerLoading,
             loading: false,
+            moveItemList: ProjectStore.moveItemList,
             moveModal: ProjectStore.moveModal,
             moveErrorModal: ProjectStore.moveErrorModal,
             objectMetadata: ProjectStore.objectMetadata,
@@ -37,6 +39,7 @@ class File extends React.Component {
             scale: ProjectStore.scale,
             screenSize: ProjectStore.screenSize,
             searchFilesList: ProjectStore.searchFilesList,
+            selectedEntity: ProjectStore.selectedEntity,
             selectedEdge: ProjectStore.selectedEdge,
             selectedNode: ProjectStore.selectedNode,
             showProvAlert: ProjectStore.showProvAlert,
@@ -90,6 +93,7 @@ class File extends React.Component {
             <div>
                 <Provenance {...this.props} {...this.state}/>
                 <FileDetails {...this.props} {...this.state} />
+                <FileOptions {...this.props} {...this.state}/>
                 <TagManager {...this.props} {...this.state} />
             </div>
         );

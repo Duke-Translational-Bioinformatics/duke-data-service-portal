@@ -92,7 +92,7 @@ class UploadManager extends React.Component {
                                 <AutoComplete
                                     fullWidth={true}
                                     id="tagInputText"
-                                    ref={`autocomplete`}
+                                    ref={(autocomplete) => this.autocomplete = autocomplete}
                                     style={{maxWidth: 'calc(100% - 5px)'}}
                                     floatingLabelText="Type a Tag Label Here"
                                     filter={AutoComplete.fuzzyFilter}
@@ -101,7 +101,7 @@ class UploadManager extends React.Component {
                                     onNewRequest={(value) => this.addTagToCloud(value)}
                                     onUpdateInput={this.handleUpdateInput.bind(this)}
                                     underlineStyle={{borderColor: '#0680CD', maxWidth: 'calc(100% - 42px)'}}/>
-                                <IconButton onTouchTap={() => this.addTagToCloud(document.getElementById("tagInputText").value)}
+                                <IconButton onTouchTap={() => this.addTagToCloud(this.tagInputText.getValue())}
                                             iconStyle={{width: 24, height: 24}}
                                             style={styles.addTagIcon}>
                                     <AddCircle color={'#235F9C'}/>
@@ -136,8 +136,8 @@ class UploadManager extends React.Component {
 
     addTagToCloud(label) {
         let clearText = ()=> {
-            this.refs[`autocomplete`].setState({searchText:''});
-            this.refs[`autocomplete`].focus();
+            this.autocomplete.setState({searchText:''});
+            this.autocomplete.focus();
         };
         if(label && !label.indexOf(' ') <= 0) {
             if (this.state.tagsToAdd.some((el) => { return el.label === label; })) {
@@ -220,7 +220,7 @@ class UploadManager extends React.Component {
         ProjectActions.toggleUploadManager();
         document.getElementById('uploadFile').value = '';
         setTimeout(() => {
-            if(document.getElementById("tagInputText").value !== '') this.refs[`autocomplete`].setState({searchText:''});
+            if(document.getElementById("tagInputText").value !== '') this.autocomplete.setState({searchText:''});//ref.getValue() deprecated on MUI Autocomplete component
         }, 500);
         this.setState({tagsToAdd: []});
     }

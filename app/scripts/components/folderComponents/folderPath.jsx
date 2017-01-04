@@ -1,4 +1,5 @@
 import React from 'react'
+import ProjectActions from '../../actions/projectActions';
 import FolderOptionsMenu from './folderOptionsMenu.jsx';
 import UploadModal from '../globalComponents/uploadModal.jsx';
 import UploadManager from '../globalComponents/uploadManager.jsx';
@@ -22,7 +23,7 @@ class FolderPath extends React.Component {
         let optionsMenu = null;
         if (prjPrm !== null) {
             uploadMdl = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <UploadManager {...this.props}/>;
-            optionsMenu = prjPrm === 'prjCrud' || prjPrm === 'flCrud' ? optionsMenu = <FolderOptionsMenu {...this.props} /> : null;
+            optionsMenu = prjPrm === 'prjCrud' || prjPrm === 'flCrud' ? optionsMenu = <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity()} /> : null;
         }
         let path = ancestors !== null ? BaseUtils.getFilePath(ancestors) : '';
         return (
@@ -53,6 +54,12 @@ class FolderPath extends React.Component {
                 </div>
             </Card>
         );
+    }
+
+    setSelectedEntity() {
+        let id = this.props.params.id;
+        let kind = 'folders';
+        ProjectActions.setSelectedEntity(id, kind);
     }
 }
 

@@ -3,19 +3,21 @@ import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import List from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
-import Folder from 'material-ui/lib/svg-icons/file/folder';
+import Archive from 'material-ui/lib/svg-icons/content/archive.js';
 import ContentPaste from 'material-ui/lib/svg-icons/content/content-paste.js';
+import Folder from 'material-ui/lib/svg-icons/file/folder';
 import IconButton from 'material-ui/lib/icon-button';
 import KeyboardBackspace from 'material-ui/lib/svg-icons/hardware/keyboard-backspace.js';
-import Archive from 'material-ui/lib/svg-icons/content/archive.js';
+import Paper from 'material-ui/lib/paper';
 
 let MoveItemModal = React.createClass({
 
     getInitialState() {
         return {
+            goBack: false,
             openChildren: false,
             projectChildren: false,
-            goBack: false
+            showWarning: false
         };
     },
 
@@ -24,15 +26,17 @@ let MoveItemModal = React.createClass({
         let children = [];
         let projectChildren = [];
         let openItem = <span></span>;
+        let path = this.props.routerPath.split('/').splice([1], 1).toString();
+        let itemId = this.props.selectedEntity && this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.entityObj.id;
 
         if (!this.state.projectChildren && this.props.moveToObj) {
-            if (this.props.params.id === this.props.moveToObj.id) {
+            if (itemId === this.props.moveToObj.id) {
                 openItem = <span></span>
             }
-            if (this.props.params.id != this.props.moveToObj.id && !this.state.openChildren) {
+            if (itemId != this.props.moveToObj.id && !this.state.openChildren) {
                 openItem = <span></span>;
             }
-            if (this.props.params.id != this.props.moveToObj.id && this.state.openChildren) {
+            if (itemId != this.props.moveToObj.id && this.state.openChildren) {
                 openItem = <ListItem
                     style={styles.listItem}
                     value={this.props.moveToObj.id}
@@ -45,7 +49,7 @@ let MoveItemModal = React.createClass({
 
         if (this.props.moveToObj && this.props.moveToObj.ancestors) {
             ancestors = this.props.moveToObj.ancestors.map((item) => {
-                if (item.id === this.props.params.id) {
+                if (item.id === itemId) {
                     return (
                         <span key={item.id}></span>
                     )
@@ -68,9 +72,9 @@ let MoveItemModal = React.createClass({
             });
         }
 
-        if (this.props.children && this.state.openChildren) {
-            children = this.props.children.map((children) => {
-                if (children.id === this.props.params.id || children.parent.id === this.props.params.id) {
+        if (this.props.moveItemList && this.state.openChildren) {
+            children = this.props.moveItemList.map((children) => {
+                if (children.id === itemId || children.parent.id === itemId) {
                     return (
                         <span key={children.id}></span>
                     )
@@ -94,9 +98,9 @@ let MoveItemModal = React.createClass({
             });
         }
 
-        if (this.props.children && this.state.projectChildren) {
-            projectChildren = this.props.children.map((children) => {
-                if (children.id === this.props.params.id || children.parent.id === this.props.params.id) {
+        if (this.props.moveItemList && this.state.projectChildren) {
+            projectChildren = this.props.moveItemList.map((children) => {
+                if (children.id === itemId || children.parent.id === itemId) {
                     return (
                         <span key={children.id}></span>
                     )
@@ -132,10 +136,13 @@ let MoveItemModal = React.createClass({
                         </div>
                     </a> : null}
                 </div>
-                <List
-                    {...this.props}
-                    value={3}
-                    >
+                {this.state.showWarning ? <Paper className="mdl-cell mdl-cell--12-col"
+                       style={{backgroundColor: '#ef5350', color: '#EEEEEE', height: 40, marginBottom: 10, marginTop: 10, padding: 10, textAlign: 'center'}}
+                       zDepth={1}>
+                    <span>The item you're trying to move is already located here. Please pick another
+                        location to move to</span>
+                </Paper> : null}
+                <List {...this.props} value={3}>
                     {ancestors}
                     {projectChildren}
                     {openItem}
@@ -146,17 +153,14 @@ let MoveItemModal = React.createClass({
     },
 
     handleMove(destinationId, destinationKind) {
-        let id = this.props.params.id;
+        let id = this.props.selectedEntity && this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.params.id;
+        let kind = this.props.selectedEntity && this.props.selectedEntity !== null ? this.props.selectedEntity.kind : this.props.entityObj.kind;
         let parent = this.props.parent ? this.props.parent.id : null;
         let parentKind = this.props.parent ? this.props.parent.kind : null;
-        if (destinationId === this.props.parent.id || destinationId === this.props.entityObj.id) {
-            ProjectActions.moveItemWarning(true);
+        if (destinationId === this.props.parent.id || destinationId === id) {
+            this.setState({showWarning: true});
         } else {
-            if (this.props.entityObj.kind === 'dds-folder') {
-                ProjectActions.moveFolder(id, destinationId, destinationKind);
-            } else {
-                ProjectActions.moveFile(id, destinationId, destinationKind);
-            }
+            ProjectActions.moveItem(id, kind, destinationId, destinationKind);
             if (parentKind === 'dds-folder') {
                 this.props.appRouter.transitionTo('/folder/' + parent);
                 ProjectActions.getChildren(parent, 'folders/');
@@ -164,7 +168,8 @@ let MoveItemModal = React.createClass({
                 this.props.appRouter.transitionTo('/project/' + parent);
                 ProjectActions.getChildren(parent, 'projects/');
             }
-            ProjectActions.openMoveModal(false);
+            this.setState({showWarning: false});
+            ProjectActions.toggleModals('moveItem');
         }
     },
 
@@ -173,11 +178,12 @@ let MoveItemModal = React.createClass({
         let kind = 'folders';
         ProjectActions.getEntity(id, kind, requester);
         ProjectActions.selectMoveLocation(id, parentKind);
-        ProjectActions.getChildren(id, 'folders/');
+        ProjectActions.getMoveItemList(id, 'folders/');
         this.setState({
             goBack: true,
             openChildren: true,
-            projectChildren: false
+            projectChildren: false,
+            showWarning: false
         })
     },
 
@@ -194,28 +200,23 @@ let MoveItemModal = React.createClass({
             ProjectActions.getChildren(parentId, 'projects/');
             this.setState({
                 goBack: false,
-                openChildren: false
+                openChildren: false,
+                showWarning: false
             })
         }
     },
 
     getProjectChildren(id){
-        ProjectActions.getChildren(id, 'projects/');
+        ProjectActions.getMoveItemList(id, 'projects/');
         this.setState({
             openChildren: false,
-            projectChildren: true
+            projectChildren: true,
+            showWarning: false
         })
     },
 
     selectedLocation(parentId, parentKind){
         ProjectActions.selectMoveLocation(parentId, parentKind)
-    },
-
-    closeChildren(){
-        this.setState({
-            openChildren: false,
-            projectChildren: false
-        })
     }
 });
 var styles = {

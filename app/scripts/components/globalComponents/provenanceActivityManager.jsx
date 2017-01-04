@@ -22,7 +22,7 @@ class ProvenanceActivityManager extends React.Component {
         this.state = {
             activityNode: null,
             errorText: null,
-            floatingErrorText: 'This field is required.',
+            floatingErrorText: '',
             network: null,
             node: null,
             timeout: null,
@@ -117,7 +117,7 @@ class ProvenanceActivityManager extends React.Component {
                                         hintText="New Activity Name"
                                         errorText={this.state.floatingErrorText}
                                         floatingLabelText="New Activity Name"
-                                        id="activityNameText"
+                                        ref={(input) => this.activityNameText = input}
                                         type="text"
                                         multiLine={true}
                                         onChange={this.handleFloatingError.bind(this)}/> <br/>
@@ -126,7 +126,7 @@ class ProvenanceActivityManager extends React.Component {
                                         fullWidth={true}
                                         hintText="New Activity Description"
                                         floatingLabelText="New Activity Description"
-                                        id="activityDescText"
+                                        ref={(input) => this.activityDescText = input}
                                         type="text"
                                         multiLine={true}/>
                                 </form>
@@ -134,7 +134,6 @@ class ProvenanceActivityManager extends React.Component {
                             <Tab onActive={() => this.toggleActivityForm()} label="Use Existing Activity" style={styles.tabStyles}>
                                 <h2 style={styles.tabHeadline}>Add an Existing Activity</h2>
                                 <AutoComplete
-                                    id="searchText"
                                     fullWidth={true}
                                     menuStyle={{maxHeight: 200}}
                                     errorText={this.state.floatingErrorText}
@@ -174,7 +173,8 @@ class ProvenanceActivityManager extends React.Component {
                             hintText="Activity Name"
                             errorText={this.state.floatingErrorText}
                             floatingLabelText="Activity Name"
-                            id="activityNameText"
+                            id="editActivityNameText"
+                            ref={(input) => this.editActivityNameText = input}
                             type="text"
                             multiLine={true}
                             onChange={this.handleFloatingError.bind(this)}/> <br/>
@@ -184,7 +184,7 @@ class ProvenanceActivityManager extends React.Component {
                             defaultValue={this.props.selectedNode.properties ? this.props.selectedNode.properties.description : null}
                             hintText="Activity Description"
                             floatingLabelText="Activity Description"
-                            id="activityDescText"
+                            ref={(input) => this.editActivityDescText = input}
                             type="text"
                             multiLine={true}/>
                     </form>
@@ -201,9 +201,7 @@ class ProvenanceActivityManager extends React.Component {
             if (!BaseUtils.objectPropInArray(graphNodes, 'id', id)) {
                 ProjectActions.addProvActivitySuccess(node);
                 ProjectActions.closeProvEditorModal('addAct');
-                this.setState({
-                    activityNode: null
-                });
+                this.setState({activityNode: null});
             } else {
                 ProjectActions.openProvEditorModal('nodeWarning');
             }
@@ -211,15 +209,12 @@ class ProvenanceActivityManager extends React.Component {
             if (this.state.floatingErrorText !== '') {
                 return null
             } else {
-                let name = document.getElementById('activityNameText').value;
-                let desc = document.getElementById('activityDescText').value;
+                let name = this.activityNameText.getValue();
+                let desc = this.activityDescText.getValue();
                 if (this.props.addEdgeMode) this.toggleEdgeMode();
                 //ProjectActions.saveGraphZoomState(this.state.network.getScale(), this.state.network.getViewPosition());
                 ProjectActions.addProvActivity(name, desc);
                 ProjectActions.closeProvEditorModal('addAct');
-                this.setState({
-                    floatingErrorText: 'This field is required.'
-                });
             }
         }
     }
@@ -237,16 +232,13 @@ class ProvenanceActivityManager extends React.Component {
         if (this.state.floatingErrorText) {
             return null
         } else {
-            let name = document.getElementById('activityNameText').value;
-            let desc = document.getElementById('activityDescText').value;
+            let name = this.editActivityNameText.getValue();
+            let desc = this.editActivityDescText.getValue();
             if(this.props.addEdgeMode) this.toggleEdgeMode();
             //ProjectActions.saveGraphZoomState(this.state.network.getScale(), this.state.network.getViewPosition());
             ProjectActions.editProvActivity(id, name, desc, actName);
             ProjectActions.closeProvEditorModal('editAct');
             ProjectActions.showProvControlBtns();
-            this.setState({
-                floatingErrorText: 'This field is required.'
-            });
         }
     }
 
@@ -276,7 +268,7 @@ class ProvenanceActivityManager extends React.Component {
 
     toggleActivityForm() {
         this.setState({floatingErrorText: 'This field is required.'});
-        document.getElementById('activityNameText').value = '';
+        document.getElementById('editActivityNameText').value = ''; // Todo: Couldn't get refs to work clearing this
     }
 }
 

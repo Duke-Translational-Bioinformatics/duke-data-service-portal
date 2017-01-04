@@ -53,7 +53,6 @@ class RetryUploads extends React.Component {
                     <i className="material-icons" style={styles.warning}>warning</i>
                     <h6 style={this.state.warningText}>Please select files and try again</h6>
                     <Table multiSelectable={true}
-                           allRowsSelected={true}
                            onRowSelection={(e)=>this.selectTableRow(e)}>
                         <TableHeader>
                             <TableRow>
@@ -82,12 +81,12 @@ class RetryUploads extends React.Component {
     }
 
     retryUploads() {
-        let projId = this.props.appRouter.getCurrentParams().id;
         if(this.state.retryUploads.length) {
             for (let i = 0; i < this.state.retryUploads.length; i++) {
                 let blob = this.state.retryUploads[i].upload.blob;
                 let parentId = this.state.retryUploads[i].upload.parentId;
                 let parentKind = this.state.retryUploads[i].upload.parentKind;
+                let projId = this.state.retryUploads[i].upload.projectId;
                 let tags = this.state.retryUploads[i].upload.tags;
                 ProjectActions.startUpload(projId, blob, parentId, parentKind, null, null, tags);
             }

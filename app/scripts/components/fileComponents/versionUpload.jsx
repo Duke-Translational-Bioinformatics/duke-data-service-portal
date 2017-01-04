@@ -7,19 +7,17 @@ import TextField from 'material-ui/lib/text-field';
 class VersionUpload extends React.Component {
 
     render() {
+        let open = this.props.toggleModal && this.props.toggleModal.id === 'newVersionModal' ? this.props.toggleModal.open : false;
         let standardActions = [
             <FlatButton
                 label="Cancel"
                 secondary={true}
-                onTouchTap={this.handleClose.bind(this)} />,
+                onTouchTap={() => this.handleClose()} />,
             <FlatButton
                 label="Submit"
                 secondary={true}
-                onTouchTap={this.handleUploadButton.bind(this)} />
+                onTouchTap={() => this.handleUploadButton()} />
         ];
-
-        let open = this.props.versionModal ? this.props.versionModal : false;
-
         return (
             <div style={styles.fileUpload}>
                 <Dialog
@@ -32,17 +30,17 @@ class VersionUpload extends React.Component {
                     open={open}>
                     <form action='#' id='newFileForm'>
                         <div className="mdl-cell mdl-cell--6-col mdl-textfield mdl-textfield--file">
-                            <textarea className="mdl-textfield__input mdl-color-text--grey-800" placeholder="File" type="text" id="uploadFile" rows="3"readOnly></textarea>
+                            <textarea className="mdl-textfield__input mdl-color-text--grey-800" placeholder="File" type="text" ref={(input) => this.fileList = input} rows="3" readOnly></textarea>
                             <div className="mdl-button mdl-button--icon mdl-button--file">
                                 <i className="material-icons" style={styles.iconColor}>attach_file</i>
-                                <input type='file' id="uploadBtn" ref='fileUpload' onChange={this.handleFileName.bind(this)} />
+                                <input type='file' ref={(input) => this.fileInput = input} onChange={this.handleFileName.bind(this)} />
                             </div>
                         </div> <br/>
                         <TextField
                             style={styles.textStyles}
                             hintText="Optional Label"
                             floatingLabelText="Label"
-                            id="labelText"
+                            ref={(input) => this.labelText = input}
                             type="text"
                             multiLine={true}/> <br/>
                     </form>
@@ -52,19 +50,19 @@ class VersionUpload extends React.Component {
     }
 
     handleUploadButton() {
-        if (document.getElementById("uploadFile").value) {
+        if (this.fileInput.value) {
             let projId = '';
             let parentKind = '';
-            let fileId = this.props.entityObj ? this.props.entityObj.id : null;
-            let parentId = this.props.entityObj ? this.props.entityObj.parent.id : null;
-            let fileList = document.getElementById('uploadBtn').files;
+            let fileId = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.entityObj.id;
+            let parentId = this.props.selectedEntity !== null ?  this.props.selectedEntity.parent.id : this.props.entityObj.parent.id;
+            let fileList = this.fileInput.files;
             for (var i = 0; i < fileList.length; i++) {
                 let blob = fileList[i];
-                let label = document.getElementById('labelText').value;
-                projId = this.props.entityObj ? this.props.entityObj.ancestors[0].id : null;
-                parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : null;
+                let label = this.labelText.value;
+                projId = this.props.entityObj ? this.props.entityObj.ancestors[0].id : this.props.selectedEntity.ancestors[0].id;
+                parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : this.props.selectedEntity.parent.kind;
                 ProjectActions.startUpload(projId, blob, parentId, parentKind, label, fileId);
-                ProjectActions.closeVersionModal();
+                ProjectActions.toggleModals('newVersionModal');
             }
         } else {
             return null
@@ -73,16 +71,16 @@ class VersionUpload extends React.Component {
 
     handleFileName() {
         let fList = [];
-        let fl = document.getElementById('uploadBtn').files;
+        let fl = this.fileInput.files;
         for (var i = 0; i < fl.length; i++) {
             fList.push(fl[i].name);
             var fileList = fList.toString().split(',').join(', ');
         }
-        document.getElementById('uploadFile').value = 'Preparing to upload: ' + fileList;
+        this.fileList.value = 'Preparing to upload: ' + fileList;
     }
 
     handleClose() {
-        ProjectActions.closeVersionModal();
+        ProjectActions.toggleModals('newVersionModal');
     }
 }
 
