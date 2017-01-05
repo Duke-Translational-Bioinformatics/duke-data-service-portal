@@ -108,12 +108,13 @@ class ProvenanceActivityManager extends React.Component {
                     open={addAct}
                     onRequestClose={() => this.handleClose('addAct')}>
                         <Tabs inkBarStyle={styles.tabInkBar}>
-                            <Tab onActive={() => this.toggleActivityForm()} label="New Activity" style={styles.tabStyles}>
+                            <Tab onActive={() => this.toggleTab1()} label="New Activity" style={styles.tabStyles}>
                                 <h2 style={styles.tabHeadline}>Add a New Activity</h2>
                                 <form action="#" id="newActivityForm">
                                     <TextField
                                         style={styles.textStyles}
                                         fullWidth={true}
+                                        autoFocus={true}
                                         hintText="New Activity Name"
                                         errorText={this.state.floatingErrorText}
                                         floatingLabelText="New Activity Name"
@@ -131,7 +132,7 @@ class ProvenanceActivityManager extends React.Component {
                                         multiLine={true}/>
                                 </form>
                             </Tab>
-                            <Tab onActive={() => this.toggleActivityForm()} label="Use Existing Activity" style={styles.tabStyles}>
+                            <Tab onActive={() => this.toggleTab2()} label="Use Existing Activity" style={styles.tabStyles}>
                                 <h2 style={styles.tabHeadline}>Add an Existing Activity</h2>
                                 <AutoComplete
                                     fullWidth={true}
@@ -140,6 +141,7 @@ class ProvenanceActivityManager extends React.Component {
                                     floatingLabelText="Type an Existing Activity Name"
                                     dataSource={autoCompleteData}
                                     filter={AutoComplete.caseInsensitiveFilter}
+                                    ref={(input) => this.activityNameSearch = input}
                                     openOnFocus={true}
                                     onNewRequest={(value) => this.chooseActivity(value)}
                                     underlineStyle={styles.autoCompleteUnderline}/>
@@ -167,13 +169,11 @@ class ProvenanceActivityManager extends React.Component {
                     <form action="#" id="newActivityForm">
                         <TextField
                             autoFocus={true}
-                            onFocus={this.handleFloatingError.bind(this)}
                             style={styles.textStyles}
                             defaultValue={this.props.selectedNode.properties ? this.props.selectedNode.properties.name : this.props.selectedNode.label}
                             hintText="Activity Name"
                             errorText={this.state.floatingErrorText}
                             floatingLabelText="Activity Name"
-                            id="editActivityNameText"
                             ref={(input) => this.editActivityNameText = input}
                             type="text"
                             multiLine={true}
@@ -266,9 +266,12 @@ class ProvenanceActivityManager extends React.Component {
         ProjectActions.openProvEditorModal(id);
     }
 
-    toggleActivityForm() {
-        this.setState({floatingErrorText: 'This field is required.'});
-        document.getElementById('editActivityNameText').value = ''; // Todo: Couldn't get refs to work clearing this
+    toggleTab1() {
+        this.activityNameText.focus();
+    }
+
+    toggleTab2() {
+        this.activityNameSearch.focus();
     }
 }
 
