@@ -2,7 +2,7 @@ import Reflux from 'reflux';
 import MainActions from '../actions/mainActions';
 import MainStore from '../stores/mainStore';
 import ProjectStore from '../stores/projectStore';
-import { UrlGen, Path } from '../../util/urlEnum';
+import { UrlGen, Kind, Path } from '../../util/urlEnum';
 import appConfig from '../config';
 import { StatusEnum } from '../enum';
 import { checkStatus, getFetchParams } from '../../util/fetchUtil';
@@ -99,14 +99,10 @@ var ProjectActions = Reflux.createActions([
     'checkForHash',
     'openModal',
     'closeModal',
-    'openMoveModal',
     'openVersionModal',
     'closeVersionModal',
-    'moveItemWarning',
-    'moveFolder',
-    'moveFolderSuccess',
-    'moveFile',
-    'moveFileSuccess',
+    'moveItem',
+    'moveItemSuccess',
     'selectMoveLocation',
     'handleBatch',
     'closeErrorModal',
@@ -165,8 +161,8 @@ var ProjectActions = Reflux.createActions([
     'addFile',
     'addFileSuccess',
     'deleteFile',
-    'editFile',
-    'editFileSuccess',
+    'editItem',
+    'editItemSuccess',
     'getEntity',
     'getEntitySuccess',
     'getProjectMembers',
@@ -196,7 +192,11 @@ var ProjectActions = Reflux.createActions([
     'getChildrenSuccess',
     'removeErrorModal',
     'removeFailedUploads',
-    'toggleModals'
+    'toggleModals',
+    'setSelectedEntity',
+    'setSelectedEntitySuccess',
+    'getMoveItemList',
+    'getMoveItemListSuccess'
 ]);
 
 ProjectActions.searchObjects.preEmit = (value, includeKinds, includeProjects) => {
@@ -233,6 +233,18 @@ ProjectActions.searchObjects.preEmit = (value, includeKinds, includeProjects) =>
             return response.json()
         }).then((json) => {
             ProjectActions.searchObjectsSuccess(json.results);
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
+};
+
+ProjectActions.getMoveItemList.preEmit = (id, path) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + Path.CHILDREN,
+        getFetchParams('get', appConfig.apiToken)
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getMoveItemListSuccess(json.results)
         }).catch((ex) => {
             ProjectActions.handleErrors(ex)
         })
@@ -356,7 +368,7 @@ ProjectActions.updateMetadataTemplate.preEmit = (id, name, label, desc) => {
     }).then((json) => {
         MainActions.addToast(label+' has been updated.');
         ProjectActions.getMetadataTemplateDetailsSuccess(json);
-        ProjectActions.loadMetadataTemplates();
+        ProjectActions.loadMetadataTemplates('');
     }).catch((ex) => {
         MainActions.addToast('Failed to update '+label);
         ProjectActions.handleErrors(ex)
@@ -504,7 +516,7 @@ ProjectActions.getProvenance.preEmit = (id, kind, prevGraph) => {
 };
 
 ProjectActions.getWasGeneratedByNode.preEmit = (id, kind, prevGraph) => {
-    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'search/provenance/was_generated_by',
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'search/provenance/origin',
         getFetchParams('post', appConfig.apiToken, {
             'file_versions': [{
                 id: id
@@ -977,24 +989,10 @@ ProjectActions.deleteFolder.preEmit = (id, parentId, parentKind) => {
     });
 };
 
-ProjectActions.editFolder.preEmit = (id, name) => {
-    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FOLDER + id + '/rename',
-        getFetchParams('put', appConfig.apiToken, {
-            "name": name
-        })
-    ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        MainActions.addToast('Folder Updated!');
-        ProjectActions.editFolderSuccess(id)
-    }).catch((ex) => {
-        MainActions.addToast('Failed to Update Folder');
-        ProjectActions.handleErrors(ex)
-    });
-};
-
-ProjectActions.moveFolder.preEmit = (id, destination, destinationKind) => {
-    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FOLDER + id + '/move',
+ProjectActions.moveItem.preEmit = (id, kind, destination, destinationKind) => {
+    let path = kind === Kind.DDS_FILE ? Path.FILE : Path.FOLDER;
+    let type = kind === Kind.DDS_FILE ? 'File' : 'Folder';
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + '/move',
         getFetchParams('put', appConfig.apiToken, {
             "parent": {
                 "kind": destinationKind,
@@ -1004,10 +1002,10 @@ ProjectActions.moveFolder.preEmit = (id, destination, destinationKind) => {
     ).then(checkResponse).then((response) => {
         return response.json()
     }).then((json) => {
-        MainActions.addToast('Folder moved successfully');
-        ProjectActions.moveFolderSuccess();
+        MainActions.addToast(type+' moved successfully');
+        ProjectActions.moveItemSuccess();
     }).catch((ex) => {
-        MainActions.addToast('Failed to move folder to new location');
+        MainActions.addToast('Failed to move '+type+' to new location');
         ProjectActions.handleErrors(ex)
     })
 };
@@ -1025,39 +1023,20 @@ ProjectActions.deleteFile.preEmit = (id, parentId, parentKind) => {
     });
 };
 
-ProjectActions.editFile.preEmit = (id, fileName) => {
-    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE + id + '/rename',
+ProjectActions.editItem.preEmit = (id, name, path, kind) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + '/rename',
         getFetchParams('put', appConfig.apiToken, {
-            "name": fileName
+            "name": name
         })
     ).then(checkResponse).then((response) => {
         return response.json()
     }).then((json) => {
-        MainActions.addToast('File Updated!');
-        ProjectActions.editFileSuccess(id)
+        MainActions.addToast('Item name updated to '+name);
+        ProjectActions.editItemSuccess(id, json, kind)
     }).catch((ex) => {
-        MainActions.addToast('Failed to Update File');
+        MainActions.addToast('Failed to update item');
         ProjectActions.handleErrors(ex)
     });
-};
-
-ProjectActions.moveFile.preEmit = (id, destination, destinationKind) => {
-    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE + id + '/move',
-        getFetchParams('put', appConfig.apiToken, {
-            "parent": {
-                "kind": destinationKind,
-                "id": destination
-            }
-        })
-    ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        MainActions.addToast('File moved successfully');
-        ProjectActions.moveFileSuccess();
-    }).catch((ex) => {
-        MainActions.addToast('Failed to move file to new location');
-        ProjectActions.handleErrors(ex)
-    })
 };
 
 ProjectActions.getEntity.preEmit = (id, kind, requester) => {
@@ -1173,6 +1152,7 @@ ProjectActions.startUpload.preEmit = (projId, blob, parentId, parentKind, label,
         blob: blob,
         parentId: parentId,
         parentKind: parentKind,
+        projectId: projId,
         uploadProgress: 0,
         chunks: []
     };
@@ -1280,7 +1260,7 @@ function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKi
     xhr.send(chunkBlob);
 }
 
-ProjectActions.allChunksUploaded.preEmit = (uploadId, parentId, parentKind, fileName, label, fileId, hash) => {
+ProjectActions.allChunksUploaded.preEmit = (uploadId, parentId, parentKind, fileName, label, fileId, hash, projectId) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.UPLOAD + uploadId + '/complete',
         getFetchParams('put', appConfig.apiToken, {
             'hash': {
@@ -1297,7 +1277,7 @@ ProjectActions.allChunksUploaded.preEmit = (uploadId, parentId, parentKind, file
             ProjectActions.addFileVersion(uploadId, label, fileId);
         }
     }).catch((ex) => {
-        ProjectActions.uploadError(uploadId, fileName);
+        ProjectActions.uploadError(uploadId, fileName, projectId);
     })
 };
 
@@ -1423,6 +1403,22 @@ ProjectActions.hashFile.preEmit = (file, id) => {
             });
         };
         worker.postMessage({type: "create"});
+    }
+};
+
+ProjectActions.setSelectedEntity.preEmit = (id, kind) => {
+    if(id === null) {
+        ProjectActions.setSelectedEntitySuccess(null);
+    } else {
+        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + kind + '/' + id,
+            getFetchParams('get', appConfig.apiToken))
+            .then(checkResponse).then((response) => {
+                return response.json()
+            }).then((json) => {
+                ProjectActions.setSelectedEntitySuccess(json)
+            }).catch((ex) => {
+                ProjectActions.handleErrors(ex)
+            });
     }
 };
 

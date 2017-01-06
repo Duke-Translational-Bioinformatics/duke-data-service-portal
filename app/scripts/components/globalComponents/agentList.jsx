@@ -53,6 +53,7 @@ class AgentList extends React.Component {
                     defaultValue={JSON.stringify(obj, null, 4)}
                     floatingLabelText="Agent Credentials"
                     id="keyText"
+                    ref={(input) => this.keyText = input}
                     type="text"
                     multiLine={true}
                     />
@@ -70,7 +71,7 @@ class AgentList extends React.Component {
             if (agent.audit.created_by.id === this.props.currentUser.id) {
                 return (
                     <li key={ agent.id } className="hover">
-                        <FlatButton label="credentials" primary={true} style={styles.getKeyButton} onTouchTap={() => this.handleTouchTapApiKey(agent.id)}/>
+                        <FlatButton label="credentials" primary={true} style={styles.getKeyButton} onTouchTap={() => this.getCredentials(agent.id)}/>
                         <a href={UrlGen.routes.agent(agent.id)} className="item-content external">
                             <div className="item-media">
                                 <FontIcon className="material-icons" style={styles.icon}>laptop_mac</FontIcon>
@@ -116,7 +117,7 @@ class AgentList extends React.Component {
         );
     }
 
-    handleTouchTapApiKey(id) {
+    getCredentials(id) {
         ProjectActions.getAgentKey(id);
         ProjectActions.getUserKey();
         setTimeout(() => {
@@ -149,7 +150,7 @@ class AgentList extends React.Component {
     }
 
     copyApiKey() {
-        document.getElementById('keyText').select();
+        this.keyText.select();
         var successful = document.execCommand('copy');
         var msg = successful ? 'successful' : 'unsuccessful';
         if(msg === 'successful') {

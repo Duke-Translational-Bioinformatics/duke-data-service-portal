@@ -2,9 +2,12 @@ import React from 'react';
 import { RouteHandler } from 'react-router';
 import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
-import ProjectChildren from '../components/projectComponents/projectChildren.jsx';
+import Children from '../components/globalComponents/children.jsx';
 import ProjectDetails from '../components/projectComponents/projectDetails.jsx';
+import FileOptions from '../components/fileComponents/fileOptions.jsx';
+import FolderOptions from '../components/folderComponents/folderOptions.jsx';
 import TagManager from '../components/globalComponents/tagManager.jsx'
+import VersionUpload from '../components/fileComponents/versionUpload.jsx';
 
 class Project extends React.Component {
 
@@ -14,19 +17,25 @@ class Project extends React.Component {
         this.state = {
             children: ProjectStore.children,
             currentUser: ProjectStore.currentUser,
+            drawerLoading: ProjectStore.drawerLoading,
             error: ProjectStore.error,
             errorModal: ProjectStore.errorModal,
             filesChecked: ProjectStore.filesChecked,
             foldersChecked: ProjectStore.foldersChecked,
             loading: false,
+            moveItemList: ProjectStore.moveItemList,
+            moveToObj: ProjectStore.moveToObj,
             objectTags: ProjectStore.objectTags,
             openTagManager: ProjectStore.openTagManager,
             openUploadManager: ProjectStore.openUploadManager,
             projects: ProjectStore.projects,
             project: ProjectStore.project,
             screenSize: ProjectStore.screenSize,
+            selectedEntity: ProjectStore.selectedEntity,
             tagAutoCompleteList: ProjectStore.tagAutoCompleteList,
             tagLabels: ProjectStore.tagLabels,
+            toggleModal: ProjectStore.toggleModal,
+            searchValue: ProjectStore.searchValue,
             uploads: ProjectStore.uploads,
             users: ProjectStore.users
         };
@@ -59,8 +68,11 @@ class Project extends React.Component {
         return (
             <div>
                 <ProjectDetails {...this.props} {...this.state} />
-                <ProjectChildren {...this.props} {...this.state} />
+                <Children {...this.props} {...this.state} />
+                <FileOptions {...this.props} {...this.state}/>
+                <FolderOptions {...this.props} {...this.state}/>
                 <TagManager {...this.props} {...this.state} />
+                <VersionUpload {...this.props} {...this.state}/>
             </div>
         );
     }

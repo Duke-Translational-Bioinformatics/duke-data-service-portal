@@ -33,3 +33,8 @@ export const Path = Object.freeze({
     TEMPLATE_PROPERTIES: 'template_properties/',
     UPLOAD: 'uploads/'
 });
+
+export const Kind = Object.freeze({
+    DDS_FILE: 'dds-file',
+    DDS_FOLDER: 'dds-folder'
+});

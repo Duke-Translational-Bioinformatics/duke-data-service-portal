@@ -176,11 +176,10 @@ class TagManager extends React.Component {
 
     activeTab() {
         if(this.state.tagsToAdd.length) ProjectActions.toggleModals('discardTags');
-        if(!this.props.metaTemplates) ProjectActions.loadMetadataTemplates(null);
+        if(!this.props.metaTemplates) ProjectActions.loadMetadataTemplates('');
     }
 
     addTagToCloud(label) {
-        let id = this.props.params.id;
         let clearText = ()=> {
             this.refs.autocomplete.setState({searchText:''});
             this.refs.autocomplete.focus();
@@ -205,7 +204,7 @@ class TagManager extends React.Component {
 
     addTagsToFiles() {
         let files = this.props.filesChecked;
-        let id = this.props.params.id;
+        let id = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.params.id;
         let tags = this.state.tagsToAdd;
         if(!tags.length) {
             this.setState({floatingErrorText: 'You must add tags to the list. Type a tag name and press enter.'});
@@ -213,7 +212,7 @@ class TagManager extends React.Component {
             if (this.props.filesChecked.length > 0) {
                 for (let i = 0; i < files.length; i++) {
                     ProjectActions.appendTags(files[i], 'dds-file', tags);
-                    if(!!document.getElementById(files[i])) document.getElementById(files[i]).checked = false;
+                    if(!!this.refs[files[i]]) this.refs[files[i]].checked = false;
                 }
             } else {
                 ProjectActions.appendTags(id, 'dds-file', tags);
@@ -228,7 +227,7 @@ class TagManager extends React.Component {
     }
 
     deleteTag(id, label) {
-        let fileId = this.props.params.id;
+        let fileId = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.params.id;
         let tags = this.state.tagsToAdd;
         tags = tags.filter(( obj ) => {
             return obj.label !== label;
