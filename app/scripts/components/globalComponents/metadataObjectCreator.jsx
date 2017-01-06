@@ -194,7 +194,7 @@ class MetadataObjectCreator extends React.Component {
                 if (this.props.filesChecked.length > 0) {
                     for (let i = 0; i < files.length; i++) {
                         ProjectActions.createMetadataObject(kind, files[i], templateId, metaProps);
-                        if(!!document.getElementById(files[i])) document.getElementById(files[i]).checked = false;
+                        if(!!this.refs[files[i]]) this.refs[files[i]].checked = false;
                     }
                 } else {
                     ProjectActions.createMetadataObject(kind, fileId, templateId, metaProps);

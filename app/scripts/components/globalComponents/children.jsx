@@ -6,11 +6,13 @@ import BaseUtils from '../../../util/baseUtils.js';
 import {UrlGen} from '../../../util/urlEnum';
 import BatchOps from '../../components/globalComponents/batchOps.jsx';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
+import FileOptionsMenu from '../../components/fileComponents/fileOptionsMenu.jsx';
+import FolderOptionsMenu from '../../components/folderComponents/folderOptionsMenu.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import FontIcon from 'material-ui/lib/font-icon';
 import RaisedButton from 'material-ui/lib/raised-button';
 
-class ProjectChildren extends React.Component {
+class Children extends React.Component {
 
     constructor() {
         this.state = {
@@ -57,17 +59,22 @@ class ProjectChildren extends React.Component {
         } else {
             children = this.props.children;
         }
-        let projectChildren = children.map((children) => {
+        let Children = children.map((children) => {
+            let fileOptionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, 'files')}/>;
+            let folderOptionsMenu = <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, 'folders')}/>;
             if (children.kind === 'dds-folder') {
                 return (
                     <li key={ children.id } className="hover">
-                        <div style={styles.fillerDiv}>{/*temporary filler div until add dropdown menu*/}</div>
+                        { prjPrm !== 'viewOnly' ?
+                            <span style={styles.menuIcon}>
+                                { folderOptionsMenu }
+                            </span> : null}
                         <a href={UrlGen.routes.folder(children.id)}
                            className="item-content external">
                             <label className="label-checkbox item-content" style={styles.checkboxLabel}
                                    onClick={e => this.change()}>
                                 <input className="folderChkBoxes" type={type} name="chkboxName" value={children.id}
-                                       id={children.id}/>
+                                       ref={children.id}/>
                                 { chkBx }
                             </label>
                             <div className="item-media">
@@ -88,17 +95,16 @@ class ProjectChildren extends React.Component {
             } else {
                 return (
                     <li key={ children.id } className="hover">
-                        { prjPrm === 'viewOnly' || prjPrm === 'flUpload' ? <div style={styles.fillerDiv}></div> :
-                            <a className="mdl-button mdl-js-button mdl-button--icon external" style={styles.dlIcon}
-                               onTouchTap={() => this.handleDownload(children.id)}>
-                                <i className="material-icons">get_app</i>
-                            </a> }
+                        { prjPrm !== 'viewOnly' ?
+                            <span style={styles.menuIcon}>
+                                { fileOptionsMenu }
+                            </span> : null }
                         <a href={UrlGen.routes.file(children.id)}
                            className="item-content external">
                             <label className="label-checkbox item-content" style={styles.checkboxLabel}
                                    onClick={e => this.change()}>
                                 <input className="fileChkBoxes" type={type} name="chkboxName" value={children.id}
-                                       id={children.id}/>
+                                       ref={children.id}/>
                                 { chkBx }
                             </label>
                             <div className="item-media">
@@ -134,7 +140,7 @@ class ProjectChildren extends React.Component {
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     <div className="list-block list-block-search searchbar-found media-list">
                         <ul>
-                            { projectChildren }
+                            { Children }
                         </ul>
                     </div>
                     {this.props.children.length > 25 && this.props.children.length > children.length && this.state.page < 3 ?
@@ -160,32 +166,24 @@ class ProjectChildren extends React.Component {
     }
 
     handleChange() {
-        let checked = null;
-        // See if checkboxes are selected
         let checkedBoxes = document.querySelectorAll('input[name=chkboxName]:checked');
         let filesChecked = [];
         let foldersChecked = [];
-        // Create arrays of checked boxes
         let fileInput = document.getElementsByClassName('fileChkBoxes');
         let folderInput = document.getElementsByClassName('folderChkBoxes');
         for (let i = 0; fileInput[i]; ++i) {
-            if (fileInput[i].checked) {
-                filesChecked.push(fileInput[i].value);
-            }
+            if (fileInput[i].checked) filesChecked.push(fileInput[i].value);
         }
         for (let i = 0; folderInput[i]; ++i) {
-            if (folderInput[i].checked) {
-                foldersChecked.push(folderInput[i].value);
-            }
+            if (folderInput[i].checked) foldersChecked.push(folderInput[i].value);
         }
-        // Process files/folders
         ProjectActions.handleBatch(filesChecked, foldersChecked);
-        // If nothing is selected, change state and hide options
+        // If nothing is selected hide options bar
         if (!checkedBoxes.length) ProjectActions.showBatchOptions();
     }
 
     handleDownload(id) {
-        let kind = 'files/'
+        let kind = 'files/';
         ProjectActions.getDownloadUrl(id, kind);
     }
 
@@ -193,23 +191,27 @@ class ProjectChildren extends React.Component {
         this.setState({page: this.state.page + 1});
     }
 
+    setSelectedEntity(id, kind) {
+        ProjectActions.setSelectedEntity(id, kind);
+    }
+
     uncheck() {
         let files = this.props.filesChecked ? this.props.filesChecked : null;
         let folders = this.props.foldersChecked ? this.props.foldersChecked : null;
         if(folders !== null) {
             for (let i = 0; i < folders.length; i++) {
-                if(!!document.getElementById(folders[i])) document.getElementById(folders[i]).checked = false;
+                if(!!this.refs[folders[i]]) this.refs[folders[i]].checked = false;
             }
         }
         if(files !== null) {
             for (let i = 0; i < files.length; i++) {
-                if(!!document.getElementById(files[i])) document.getElementById(files[i]).checked = false;
+                if(!!this.refs[files[i]]) this.refs[files[i]].checked = false;
             }
         }
     }
 }
 
-ProjectChildren.contextTypes = {
+Children.contextTypes = {
     muiTheme: React.PropTypes.object
 };
 
@@ -225,13 +227,10 @@ var styles = {
         borderRadius: 35,
         paddingRight: 20
     },
-    dlIcon: {
-        float: 'right',
-        fontSize: 18,
-        color: '#EC407A',
-        marginTop: 28,
-        marginLeft: 15,
-        padding: '08px 08px 08px 08px',
+    menuIcon: {
+        position: 'absolute',
+        right: 0,
+        top: 26,
         zIndex: 100
     },
     fillerDiv: {
@@ -259,10 +258,10 @@ var styles = {
     }
 };
 
-ProjectChildren.propTypes = {
+Children.propTypes = {
     loading: React.PropTypes.bool,
     uploading: React.PropTypes.bool,
     error: React.PropTypes.object
 };
 
-export default ProjectChildren;
+export default Children;

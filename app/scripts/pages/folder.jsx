@@ -2,8 +2,11 @@ import React from 'react'
 import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
 import FolderPath from '../components/folderComponents/folderPath.jsx';
-import FolderChildren from '../components/folderComponents/folderChildren.jsx';
+import FileOptions from '../components/fileComponents/fileOptions.jsx';
+import FolderOptions from '../components/folderComponents/folderOptions.jsx';
+import Children from '../components/globalComponents/children.jsx';
 import TagManager from '../components/globalComponents/tagManager.jsx'
+import VersionUpload from '../components/fileComponents/versionUpload.jsx';
 
 class Folder extends React.Component {
 
@@ -16,6 +19,7 @@ class Folder extends React.Component {
             filesChecked: ProjectStore.filesChecked,
             foldersChecked: ProjectStore.foldersChecked,
             loading: false,
+            moveItemList: ProjectStore.moveItemList,
             moveModal: ProjectStore.moveModal,
             moveErrorModal: ProjectStore.moveErrorModal,
             objectTags: ProjectStore.objectTags,
@@ -24,6 +28,7 @@ class Folder extends React.Component {
             uploads: ProjectStore.uploads,
             projPermissions: ProjectStore.projPermissions,
             screenSize: ProjectStore.screenSize,
+            selectedEntity: ProjectStore.selectedEntity,
             tagAutoCompleteList: ProjectStore.tagAutoCompleteList,
             tagLabels: ProjectStore.tagLabels
         };
@@ -60,16 +65,14 @@ class Folder extends React.Component {
     }
 
     render() {
-        if(this.state.entityObj && this.props.currentUser && this.props.currentUser.id) {
-            let projId = this.state.entityObj && this.state.entityObj.project ? this.state.entityObj.project.id : null;
-            let userId = this.props.currentUser && this.props.currentUser.id ? this.props.currentUser.id : null;
-            if (this.state.projPermissions === null) ProjectActions.getPermissions(projId, userId);
-        }
         return (
             <div>
                 <FolderPath {...this.state} {...this.props} />
-                <FolderChildren {...this.state} {...this.props} />
+                <Children {...this.state} {...this.props} />
+                <FileOptions {...this.props} {...this.state}/>
+                <FolderOptions {...this.props} {...this.state}/>
                 <TagManager {...this.props} {...this.state} />
+                <VersionUpload {...this.props} {...this.state}/>
             </div>
         );
     }

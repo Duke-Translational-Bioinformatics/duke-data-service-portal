@@ -16,7 +16,8 @@ class Agent extends React.Component {
             loading: false,
             errorModal: ProjectStore.errorModal,
             error: ProjectStore.error,
-            screenSize: ProjectStore.screenSize
+            screenSize: ProjectStore.screenSize,
+            toggleModal: ProjectStore.toggleModal
         };
     }
 

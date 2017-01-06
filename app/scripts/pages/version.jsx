@@ -65,11 +65,6 @@ class Version extends React.Component {
     }
 
     render() {
-        if(this.state.entityObj && this.props.currentUser && this.props.currentUser.id) {
-            let projId = this.state.entityObj && this.state.entityObj.file.project ? this.state.entityObj.file.project.id : null;
-            let userId = this.props.currentUser && this.props.currentUser.id ? this.props.currentUser.id : null;
-            if (this.state.projPermissions === null) ProjectActions.getPermissions(projId, userId);
-        }
         return (
             <div>
                 <Provenance {...this.props} {...this.state}/>

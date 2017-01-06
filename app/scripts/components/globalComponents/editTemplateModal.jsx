@@ -40,11 +40,11 @@ class EditTemplateModal extends React.Component {
                 title="Edit Template"
                 autoDetectWindowHeight={true}
                 actions={editActions}
-                onRequestClose={this.handleClose.bind(this)}
+                onRequestClose={() => this.handleClose()}
                 open={open}>
                 <TextField
                     fullWidth={true}
-                    ref="templateName"
+                    ref={(input) => this.templateName = input}
                     disabled={true}
                     underlineDisabledStyle={{display: 'none'}}
                     inputStyle={{color: '#212121'}}
@@ -52,18 +52,17 @@ class EditTemplateModal extends React.Component {
                     floatingLabelText="Name"/><br/>
                 <TextField
                     fullWidth={true}
-                    ref="templateLabel"
-                    id="tempLabel"
+                    ref={(input) => this.templateLabel = input}
                     autoFocus={true}
-                    onFocus={this.handleInputValidation.bind(this)}
+                    onFocus={() => this.selectText()}
                     defaultValue={templateLabel}
                     hintText="A readable label for your template"
                     errorText={this.state.errorText}
                     floatingLabelText="Display Label"
-                    onChange={this.handleInputValidation.bind(this)}/><br/>
+                    onChange={(e) => this.validateText(e)}/><br/>
                 <TextField
                     fullWidth={true}
-                    ref="templateDesc"
+                    ref={(input) => this.templateDesc = input}
                     style={{textAlign: 'left'}}
                     defaultValue={templateDesc}
                     hintText="Verbose template description"
@@ -75,9 +74,9 @@ class EditTemplateModal extends React.Component {
     }
 
     editTemplate(id) {
-        let name = this.refs.templateName.getValue();
-        let label = this.refs.templateLabel.getValue();
-        let desc = this.refs.templateDesc.getValue();
+        let name = this.templateName.getValue();
+        let label = this.templateLabel.getValue();
+        let desc = this.templateDesc.getValue();
         if(!BaseUtils.validateTemplateName(name)) {
             this.setState({
                 errorText: 'Invalid characters or spaces. Name must only consist of alphanumerics and underscores.'
@@ -88,7 +87,7 @@ class EditTemplateModal extends React.Component {
                 ProjectActions.toggleModals();
             }
         }
-    };
+    }
 
     handleClose() {
         ProjectActions.toggleModals();
@@ -96,9 +95,13 @@ class EditTemplateModal extends React.Component {
             errorText: '',
             errorText2: ''
         });
-    };
+    }
 
-    handleInputValidation(e) {
+    selectText() {
+        setTimeout(()=>this.templateLabel.select(),100);
+    }
+
+    validateText(e) {
         this.setState({
             errorText: e.target.value ? '' : 'This field is required'
         });

@@ -41,9 +41,8 @@ var ProjectStore = Reflux.createStore({
         this.metaProps = [];
         this.metaTemplates = [];
         this.modal = false;
-        this.moveModal = false;
+        this.moveItemList = [];
         this.moveToObj = {};
-        this.moveErrorModal = false;
         this.objectTags = [];
         this.openMetadataManager = false;
         this.openTagManager = false;
@@ -64,6 +63,7 @@ var ProjectStore = Reflux.createStore({
         this.removeFileFromProvBtn = false;
         this.scale = null;
         this.searchFilesList = [];
+        this.selectedEntity = null;
         this.selectedNode = {};
         this.selectedEdge = null;
         this.searchText = '';
@@ -86,6 +86,20 @@ var ProjectStore = Reflux.createStore({
         this.users = [];
         this.userKey = {};
         this.versionModal = false;
+    },
+
+    getMoveItemList() {
+        this.moveItemList = [];
+        this.trigger({
+            moveItemList: this.moveItemList
+        })
+    },
+
+    getMoveItemListSuccess(results) {
+        this.moveItemList = results;
+        this.trigger({
+            moveItemList: this.moveItemList
+        })
     },
 
     getObjectMetadataSuccess(results) {
@@ -190,7 +204,7 @@ var ProjectStore = Reflux.createStore({
 
     deleteTemplateSuccess() {
         ProjectActions.toggleMetadataManager();
-        ProjectActions.loadMetadataTemplates();
+        ProjectActions.loadMetadataTemplates('');
     },
 
     updateMetadataTemplate() {
@@ -264,7 +278,7 @@ var ProjectStore = Reflux.createStore({
 
     loadMetadataTemplatesSuccess(templates) {
         this.loading = false;
-        this.metaTemplates = templates.sort(function(a, b) {
+        this.metaTemplates = templates.sort((a, b) => {
             a = new Date(a.audit.created_on);
             b = new Date(b.audit.created_on);
             return a>b ? -1 : a<b ? 1 : 0;
@@ -1120,26 +1134,12 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    openMoveModal (open) {
-        this.moveModal = open;
-        this.trigger({
-            moveModal: this.moveModal
-        })
-    },
-
     selectMoveLocation (id, kind){
         this.destination = id;
         this.destinationKind = kind;
         this.trigger({
             destination: this.destination,
             destinationKind: this.destinationKind
-        })
-    },
-
-    moveItemWarning (error) {
-        this.moveErrorModal = error;
-        this.trigger({
-            moveErrorModal: this.moveErrorModal
         })
     },
 
@@ -1414,31 +1414,14 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    editFolder() {
+    moveItem() {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
     },
 
-    editFolderSuccess(id) {
-        let kind = 'folders/';
-        ProjectActions.getChildren(id, 'folders/');
-        ProjectActions.getEntity(id, kind);
-        this.loading = false;
-        this.trigger({
-            loading: this.loading
-        })
-    },
-
-    moveFolder() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    },
-
-    moveFolderSuccess() {
+    moveItemSuccess() {
         this.loading = false;
         this.trigger({
             loading: this.loading
@@ -1481,43 +1464,33 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    editFile() {
+    editItem() {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
     },
 
-    editFileSuccess(id) {
-        let kind = 'files/';
+    editItemSuccess(id, json, objectKind) {
+        let kind = objectKind === 'dds-file' ? 'files' : 'folders';
         ProjectActions.getEntity(id, kind);
+        if(BaseUtils.objectPropInArray(this.children, 'id', id)) {
+            this.children = BaseUtils.removeObjByKey(this.children, {key: 'id', value: id});
+            this.children.unshift(json);
+        }
         this.loading = false;
         this.trigger({
-            loading: this.loading
-        })
-    },
-
-    moveFile() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    },
-
-    moveFileSuccess() {
-        this.loading = false;
-        this.trigger({
+            children: this.children,
             loading: this.loading
         })
     },
 
     getEntitySuccess(json, requester) {
+        if(this.projPermissions === null) ProjectActions.getUser(json.project.id);
         if (requester === undefined) this.entityObj = json;
+        if (requester === 'moveItemModal') this.moveToObj = json;
         if (requester === 'optionsMenu') {
             this.parent = json.parent;
-            this.moveToObj = json;
-        }
-        if (requester === 'moveItemModal') {
             this.moveToObj = json;
         }
         this.loading = false;
@@ -1731,18 +1704,19 @@ var ProjectStore = Reflux.createStore({
             }
             if (chunk.chunkUpdates.status !== StatusEnum.STATUS_SUCCESS) allDone = false;
         }
-        if (allDone === true) ProjectActions.checkForHash(uploadId, upload.parentId, upload.parentKind, upload.name, upload.label, upload.fileId);
+        if (allDone === true) ProjectActions.checkForHash(uploadId, upload.parentId, upload.parentKind, upload.name, upload.label, upload.fileId, upload.projectId);
         window.onbeforeunload = function (e) { // If done, set to false so no warning is sent.
             let preventLeave = false;
         };
     },
 
-    uploadError(uploadId, fileName) {
+    uploadError(uploadId, fileName, projectId) {
         if (this.uploads.hasOwnProperty(uploadId)) {
             this.failedUploads.push({
                 upload: this.uploads[uploadId],
                 fileName: fileName,
-                id: uploadId
+                id: uploadId,
+                projectId: projectId
             });
             delete this.uploads[uploadId];
             MainActions.failedUpload(this.failedUploads);
@@ -1761,7 +1735,7 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    checkForHash(uploadId, parentId, parentKind, name, label, fileId) {
+    checkForHash(uploadId, parentId, parentKind, name, label, fileId, projectId) {
         if (!Array.prototype.find) { // Polyfill for Internet Explorer Array.find()
             Array.prototype.find = function(predicate) {
                 'use strict';
@@ -1791,7 +1765,7 @@ var ProjectStore = Reflux.createStore({
         if(!hash) {
             ProjectActions.updateAndProcessChunks(uploadId, null, null);
         }else{
-            ProjectActions.allChunksUploaded(uploadId, parentId, parentKind, name, label, fileId, hash.hash);
+            ProjectActions.allChunksUploaded(uploadId, parentId, parentKind, name, label, fileId, hash.hash, projectId);
         }
     },
 
@@ -1808,6 +1782,13 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             toggleModal: this.toggleModal
         });
+    },
+
+    setSelectedEntitySuccess(entity) {
+        this.selectedEntity = entity;
+        this.trigger({
+            selectedEntity: this.selectedEntity
+        })
     }
 });
 

@@ -95,15 +95,15 @@ class VersionsOptionsMenu extends React.Component {
                         <TextField
                             style={styles.textStyles}
                             autoFocus={true}
-                            onFocus={this.handleFloatingErrorInputChange.bind(this)}
+                            onFocus={()=>this.selectText()}
                             hintText="Version Label"
                             defaultValue={labelText}
                             errorText={this.state.floatingErrorText}
+                            ref={(input) => this.versionLabelText = input}
                             floatingLabelText="Version Label"
-                            id="versionLabelText"
                             type="text"
                             multiLine={true}
-                            onChange={this.handleFloatingErrorInputChange.bind(this)}/> <br/>
+                            onChange={(e)=>this.validateText(e)}/> <br/>
                     </form>
                 </Dialog>
                 <IconMenu {...this.props}
@@ -135,7 +135,7 @@ class VersionsOptionsMenu extends React.Component {
 
     handleUpdateButton() {
         let id = this.props.params.id;
-        let label = document.getElementById("versionLabelText").value;
+        let label = this.versionLabelText.getValue();
         if (this.state.floatingErrorText != '') {
             return null
         } else {
@@ -145,12 +145,6 @@ class VersionsOptionsMenu extends React.Component {
                 floatingErrorText: 'This field is required.'
             });
         }
-    }
-
-    handleFloatingErrorInputChange(e) {
-        this.setState({
-            floatingErrorText: e.target.value ? '' : 'This field is required.'
-        });
     }
 
     handleClose() {
@@ -166,13 +160,18 @@ class VersionsOptionsMenu extends React.Component {
         ProjectActions.getFileVersions(fileId);
         ProjectActions.toggleProvView();
     }
+
+    selectText() {
+        setTimeout(()=>this.versionLabelText.select(),100);
+    }
+
+    validateText(e) {
+        this.setState({
+            floatingErrorText: e.target.value ? '' : 'This field is required.'
+        });
+    }
 }
 var styles = {
-    deleteFile: {
-        float: 'right',
-        position: 'relative',
-        margin: '12px 8px 0px 0px'
-    },
     dialogStyles: {
         textAlign: 'center',
         fontColor: '#303F9F',

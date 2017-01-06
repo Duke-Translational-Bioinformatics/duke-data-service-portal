@@ -71,8 +71,8 @@ DeleteTemplateModal.contextTypes = {
 };
 
 DeleteTemplateModal.propTypes = {
-    loading: bool,
-    error: object
+    loading: React.PropTypes.bool,
+    error: React.PropTypes.object
 };
 
 export default DeleteTemplateModal;

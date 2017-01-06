@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
+import {Kind, Path} from '../../../util/urlEnum';
 import CustomMetadata from './customMetadata.jsx';
 import FileOptionsMenu from './fileOptionsMenu.jsx';
 import FileVersionsList from './fileVersionsList.jsx';
@@ -27,6 +28,7 @@ class FileDetails extends React.Component {
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
         let dlButton = null;
         let optionsMenu = null;
+        let id = this.props.entityObj && this.props.entityObj.current_version.id ? this.props.entityObj.current_version.id : null;
         if (prjPrm !== null) {
             dlButton = prjPrm === 'viewOnly' || prjPrm === 'flUpload' ? null :
                 <button
@@ -37,9 +39,8 @@ class FileDetails extends React.Component {
                     onTouchTap={() => this.handleDownload()}>
                     <i className="material-icons">get_app</i>
                 </button>;
-            optionsMenu = <FileOptionsMenu {...this.props} />;
+            optionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity()}/>;
         }
-        let id = this.props.entityObj && this.props.entityObj.current_version.id ? this.props.entityObj.current_version.id : null;
         let ancestors = this.props.entityObj ? this.props.entityObj.ancestors : null;
         let parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : null;
         let parentId = this.props.entityObj ? this.props.entityObj.parent.id : null;
@@ -244,9 +245,8 @@ class FileDetails extends React.Component {
         ProjectActions.hideProvAlert();
     }
 
-    handleDownload(){
+    handleDownload(id, kind){
         let id = this.props.params.id;
-        let kind = 'files/';
         ProjectActions.getDownloadUrl(id, kind);
     }
 
@@ -260,6 +260,12 @@ class FileDetails extends React.Component {
         ProjectActions.toggleProvView();
         ProjectActions.toggleProvEditor();
         ProjectActions.hideProvAlert();
+    }
+
+    setSelectedEntity() {
+        let id = this.props.params.id;
+        let kind = 'files';
+        ProjectActions.setSelectedEntity(id, kind);
     }
 }
 
