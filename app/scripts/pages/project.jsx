@@ -34,8 +34,8 @@ class Project extends React.Component {
             selectedEntity: ProjectStore.selectedEntity,
             tagAutoCompleteList: ProjectStore.tagAutoCompleteList,
             tagLabels: ProjectStore.tagLabels,
+            tagsToAdd: ProjectStore.tagsToAdd,
             toggleModal: ProjectStore.toggleModal,
-            searchText: ProjectStore.searchText,
             uploads: ProjectStore.uploads,
             users: ProjectStore.users
         };

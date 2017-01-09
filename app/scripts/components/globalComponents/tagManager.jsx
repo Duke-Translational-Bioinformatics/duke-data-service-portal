@@ -27,10 +27,8 @@ class TagManager extends React.Component {
         super(props);
         this.state = {
             floatingErrorText: '',
-            lastTag: null,
             timeout: null,
-            searchText: '',
-            tagsToAdd: []
+            searchText: ''
         };
     }
 
@@ -39,6 +37,12 @@ class TagManager extends React.Component {
             if (performance.navigation.type == 1) {
                 this.toggleTagManager();
             }
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        if(prevProps.openTagManager !== this.props.openTagManager) {
+            if(this.props.openTagManager === true) this.autocomplete.focus();
         }
     }
 
@@ -65,7 +69,7 @@ class TagManager extends React.Component {
                 keyboardFocused={true}
                 onTouchTap={() => this.addTagsToFiles()} />
         ];
-        let tags = this.state.tagsToAdd.length > 0 ? this.state.tagsToAdd.map((tag)=>{
+        let tags = this.props.tagsToAdd && this.props.tagsToAdd.length > 0 ? this.props.tagsToAdd.map((tag)=>{
             return (<div key={Math.random()} className="chip">
                 <span className="chip-text">{tag.label}</span>
                 <span className="closebtn" onTouchTap={() => this.deleteTag(tag.id, tag.label)}>&times;</span>
@@ -109,7 +113,8 @@ class TagManager extends React.Component {
                                 </div>
                                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.autoCompleteContainer}>
                                     <AutoComplete
-                                        ref="autocomplete"
+                                        //ref="autocomplete"
+                                        ref={(input) => this.autocomplete = input}
                                         fullWidth={true}
                                         style={styles.autoComplete}
                                         floatingLabelText="Type a Tag Label Here"
@@ -134,7 +139,7 @@ class TagManager extends React.Component {
                                     </div>
                                 </div>
                                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.chipWrapper}>
-                                    {this.state.tagsToAdd.length ? <h6 style={styles.chipHeader}>New Tags To Add</h6> : null}
+                                    {this.props.tagsToAdd.length ? <h6 style={styles.chipHeader}>New Tags To Add</h6> : null}
                                     <div className="chip-container" style={styles.chipContainer}>
                                         { tags }
                                     </div>
@@ -175,17 +180,17 @@ class TagManager extends React.Component {
     }
 
     activeTab() {
-        if(this.state.tagsToAdd.length) ProjectActions.toggleModals('discardTags');
+        if(this.props.tagsToAdd.length) ProjectActions.toggleModals('discardTags');
         if(!this.props.metaTemplates) ProjectActions.loadMetadataTemplates('');
     }
 
     addTagToCloud(label) {
         let clearText = ()=> {
-            this.refs.autocomplete.setState({searchText:''});
-            this.refs.autocomplete.focus();
+            this.autocomplete.setState({searchText:''});
+            this.autocomplete.focus();
         };
         if(label && !label.indexOf(' ') <= 0) {
-            let tags = this.state.tagsToAdd;
+            let tags = this.props.tagsToAdd;
             if (tags.some((el) => { return el.label === label.trim(); })) {
                 this.setState({floatingErrorText: label + ' tag is already in the list'});
                 setTimeout(()=>{
@@ -194,10 +199,9 @@ class TagManager extends React.Component {
                 }, 2000)
             } else {
                 tags.push({label: label.trim()});
-                setTimeout(()=>{
-                    clearText();
-                }, 500);
-                this.setState({tagsToAdd: tags, floatingErrorText: ''})
+                ProjectActions.defineTagsToAdd(tags);
+                setTimeout(()=>clearText(), 500);
+                this.setState({floatingErrorText: ''})
             }
         }
     }
@@ -205,7 +209,7 @@ class TagManager extends React.Component {
     addTagsToFiles() {
         let files = this.props.filesChecked;
         let id = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.params.id;
-        let tags = this.state.tagsToAdd;
+        let tags = this.props.tagsToAdd;
         if(!tags.length) {
             this.setState({floatingErrorText: 'You must add tags to the list. Type a tag name and press enter.'});
         } else {
@@ -228,15 +232,15 @@ class TagManager extends React.Component {
 
     deleteTag(id, label) {
         let fileId = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.params.id;
-        let tags = this.state.tagsToAdd;
+        let tags = this.props.tagsToAdd;
         tags = tags.filter(( obj ) => {
             return obj.label !== label;
         });
-        this.setState({tagsToAdd: tags});
+        ProjectActions.defineTagsToAdd(tags);
     }
 
     discardTags() {
-        this.setState({tagsToAdd: []});
+        ProjectActions.defineTagsToAdd([]);
         ProjectActions.toggleModals('discardTags');
     }
 
@@ -245,9 +249,8 @@ class TagManager extends React.Component {
     };
 
     handleUpdateInput (text) {
-        // Add 500ms lag to autocomplete so that it only makes a call after user is done typing
         let timeout = this.state.timeout;
-        let searchInput = this.refs.autocomplete;
+        let searchInput = this.autocomplete;
         clearTimeout(this.state.timeout);
         this.setState({
             timeout: setTimeout(() => {
@@ -261,11 +264,8 @@ class TagManager extends React.Component {
 
     toggleTagManager() {
         ProjectActions.toggleTagManager();
-        setTimeout(() => {
-            if(this.refs.autocomplete.state.searchText !== '') this.refs.autocomplete.setState({searchText:''});
-            this.refs.autocomplete.focus();
-        }, 500);
-        this.setState({tagsToAdd: []});
+        ProjectActions.defineTagsToAdd([]);
+        if(this.autocomplete.state.searchText !== '') this.autocomplete.setState({searchText:''});
     }
 }
 

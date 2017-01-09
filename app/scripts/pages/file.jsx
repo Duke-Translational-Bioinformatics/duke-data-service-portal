@@ -47,6 +47,7 @@ class File extends React.Component {
             showProvDetails: ProjectStore.showProvDetails,
             tagAutoCompleteList: ProjectStore.tagAutoCompleteList,
             tagLabels: ProjectStore.tagLabels,
+            tagsToAdd: ProjectStore.tagsToAdd,
             updatedGraphItem: ProjectStore.updatedGraphItem
         };
     }
