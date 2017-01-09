@@ -42,7 +42,7 @@ class TagManager extends React.Component {
 
     componentDidUpdate(prevProps) {
         if(prevProps.openTagManager !== this.props.openTagManager) {
-            if(this.props.openTagManager === true) this.autocomplete.focus();
+            if(this.props.openTagManager) this.autocomplete.focus();
         }
     }
 
