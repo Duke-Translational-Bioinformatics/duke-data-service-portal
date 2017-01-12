@@ -81,6 +81,7 @@ var ProjectActions = Reflux.createActions([
     'getScreenSize',
     'toggleUploadManager',
     'toggleTagManager',
+    'defineTagsToAdd',
     'addNewTag',
     'addNewTagSuccess',
     'appendTags',

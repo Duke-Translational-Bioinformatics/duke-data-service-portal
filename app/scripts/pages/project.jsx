@@ -31,11 +31,12 @@ class Project extends React.Component {
             projects: ProjectStore.projects,
             project: ProjectStore.project,
             screenSize: ProjectStore.screenSize,
+            searchValue: ProjectStore.searchValue,
             selectedEntity: ProjectStore.selectedEntity,
             tagAutoCompleteList: ProjectStore.tagAutoCompleteList,
             tagLabels: ProjectStore.tagLabels,
+            tagsToAdd: ProjectStore.tagsToAdd,
             toggleModal: ProjectStore.toggleModal,
-            searchValue: ProjectStore.searchValue,
             uploads: ProjectStore.uploads,
             users: ProjectStore.users
         };

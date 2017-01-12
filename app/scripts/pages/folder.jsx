@@ -30,7 +30,8 @@ class Folder extends React.Component {
             screenSize: ProjectStore.screenSize,
             selectedEntity: ProjectStore.selectedEntity,
             tagAutoCompleteList: ProjectStore.tagAutoCompleteList,
-            tagLabels: ProjectStore.tagLabels
+            tagLabels: ProjectStore.tagLabels,
+            tagsToAdd: ProjectStore.tagsToAdd
         };
     }
 
