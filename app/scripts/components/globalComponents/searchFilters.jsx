@@ -46,7 +46,7 @@ class SearchFilters extends React.Component {
                 <LeftNav open={this.props.showFilters} width={this.props.showFilters ? 320 : null} zDepth={1}>
                     <div style={styles.spacer}></div>
                         <div style={styles.drawer}>
-                            {projects.length > 1 ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
+                            {projects.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
                                 <p style={styles.listHeader}>Project</p>
                                 <Divider style={styles.listDivider}/>
                                 <List>
@@ -73,7 +73,7 @@ class SearchFilters extends React.Component {
                                     secondary={true}
                                     onTouchTap={()=>this.toggleFilters()}/>
                             </div> : null}
-                            {this.props.includeKinds.length || this.props.includeProjects.length ?<div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
+                            {this.props.includeKinds.length || this.props.includeProjects.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
                                 <RaisedButton
                                     label="Clear Filters"
                                     labelStyle={styles.button.label}

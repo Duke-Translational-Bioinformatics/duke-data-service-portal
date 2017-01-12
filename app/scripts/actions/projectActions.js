@@ -221,7 +221,8 @@ ProjectActions.searchObjects.preEmit = (value, includeKinds, includeProjects) =>
                         },
                         "filter": {
                             "bool" : {
-                                "must_not" : {"term" : {"is_deleted": true}}
+                                "must_not" : {"match" : {"is_deleted": true}},
+                                "should" : includeProjects
                             }
                         }
                     }
@@ -229,13 +230,13 @@ ProjectActions.searchObjects.preEmit = (value, includeKinds, includeProjects) =>
                 size: 1000
             }
         }))
-        .then(checkResponse).then((response) => {
-            return response.json()
-        }).then((json) => {
-            ProjectActions.searchObjectsSuccess(json.results);
-        }).catch((ex) => {
-            ProjectActions.handleErrors(ex)
-        })
+    .then(checkResponse).then((response) => {
+        return response.json()
+    }).then((json) => {
+        ProjectActions.searchObjectsSuccess(json.results);
+    }).catch((ex) => {
+        ProjectActions.handleErrors(ex)
+    })
 };
 
 ProjectActions.getMoveItemList.preEmit = (id, path) => {
@@ -243,11 +244,11 @@ ProjectActions.getMoveItemList.preEmit = (id, path) => {
         getFetchParams('get', appConfig.apiToken)
     ).then(checkResponse).then((response) => {
             return response.json()
-        }).then((json) => {
-            ProjectActions.getMoveItemListSuccess(json.results)
-        }).catch((ex) => {
-            ProjectActions.handleErrors(ex)
-        })
+    }).then((json) => {
+        ProjectActions.getMoveItemListSuccess(json.results)
+    }).catch((ex) => {
+        ProjectActions.handleErrors(ex)
+    })
 };
 
 ProjectActions.getObjectMetadata.preEmit = (id, kind) => {

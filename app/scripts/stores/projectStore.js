@@ -63,6 +63,7 @@ var ProjectStore = Reflux.createStore({
         this.scale = null;
         this.screenSize = {};
         this.searchFilesList = [];
+        this.searchFilters = [];
         this.searchResults = [];
         this.searchResultsFiles = [];
         this.searchResultsFolders = [];
@@ -103,15 +104,26 @@ var ProjectStore = Reflux.createStore({
 
     setIncludedSearchProjects(includeProjects) {
         this.includeProjects = includeProjects;
-        ProjectActions.searchObjects(this.searchValue, this.includeKinds, includeProjects);
         this.trigger({
             includeProjects: this.includeProjects
-        })
+        });
+        this.setSearchFilters();
+    },
+
+    setSearchFilters() {
+        this.searchFilters = [];
+        this.includeProjects.forEach((projectId)=>{
+            this.searchFilters.push({"match":{"project.id": projectId}})
+        });
+        this.trigger({
+            searchFilters: this.searchFilters
+        });
+        ProjectActions.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
     },
 
     setIncludedSearchKinds(includeKinds) {
         this.includeKinds = includeKinds;
-        ProjectActions.searchObjects(this.searchValue, this.includeKinds);
+        ProjectActions.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
         this.trigger({
             includeKinds: this.includeKinds
         })
@@ -1796,7 +1808,7 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    checkForHash(uploadId, parentId, parentKind, name, label, fileId) {
+    checkForHash(uploadId, parentId, parentKind, name, label, fileId, projectId) {
         let hash = this.fileHashes.find((fileHash)=>{ //Array.find method not supported in IE. See polyfills.js
             return fileHash.id === uploadId;
         });
