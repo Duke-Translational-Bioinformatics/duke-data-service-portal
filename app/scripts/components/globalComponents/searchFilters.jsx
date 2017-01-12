@@ -96,27 +96,13 @@ class SearchFilters extends React.Component {
     }
 
     setIncludeKinds(id) {
-        let found = this.props.includeKinds.includes(id);//Array.includes not supported in IE. See polyfills.js
-        let includeKinds = [];
-        if (found) {
-            includeKinds = this.props.includeKinds.filter(x => x !== id);
-            ProjectActions.setIncludedSearchKinds(includeKinds);
-        } else {
-            includeKinds = [ ...this.props.includeKinds, id ];
-            ProjectActions.setIncludedSearchKinds(includeKinds);
-        }
+        let includeKinds = BaseUtils.removeDuplicatesFromArray(this.props.includeKinds, id);
+        ProjectActions.setIncludedSearchKinds(includeKinds);
     }
 
     setIncludeProjects(id) {
-        let found = this.props.includeProjects.includes(id);//Array.includes not supported in IE. See polyfills.js
-        let includeProjects = [];
-        if (found) {
-            includeProjects = this.props.includeProjects.filter(x => x !== id);
-            ProjectActions.setIncludedSearchProjects(includeProjects);
-        } else {
-            includeProjects = [ ...this.props.includeProjects, id ];
-            ProjectActions.setIncludedSearchProjects(includeProjects);
-        }
+        let includeProjects = BaseUtils.removeDuplicatesFromArray(this.props.includeProjects, id);
+        ProjectActions.setIncludedSearchProjects(includeProjects);
     }
 
     toggleFilters() {

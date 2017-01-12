@@ -104,6 +104,19 @@ let BaseUtils = {
                 propType = type;
             }
             return propType;
+        },
+
+        removeDuplicatesFromArray(array, id){
+            let found = array.includes(id);//Array.includes not supported in IE. See polyfills.js
+            let newArray = [];
+            if (found) {
+                newArray = array.filter(x => x !== id);
+                //ProjectActions.setIncludedSearchKinds(includeKinds);
+            } else {
+                newArray = [ ...array, id ];
+                //ProjectActions.setIncludedSearchKinds(includeKinds);
+            }
+            return newArray;
         }
 };
 
