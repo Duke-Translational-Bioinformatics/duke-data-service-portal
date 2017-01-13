@@ -181,6 +181,7 @@ var ProjectActions = Reflux.createActions([
     'showBatchOptions',
     'setBatchItems',
     'batchDeleteItems',
+    'processFilesToUpload',
     'startUpload',
     'startUploadSuccess',
     'updateChunkProgress',

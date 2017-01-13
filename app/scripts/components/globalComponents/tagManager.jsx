@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
+import BaseUtils from '../../../util/baseUtils';
 import MetadataObjectCreator from '../globalComponents/metadataObjectCreator.jsx';
 import MetadataPropertyManager from '../globalComponents/metadataPropertyManager.jsx';
 import MetadataTemplateCreator from '../globalComponents/metadataTemplateCreator.jsx';
@@ -70,14 +71,14 @@ class TagManager extends React.Component {
                 onTouchTap={() => this.addTagsToFiles()} />
         ];
         let tags = this.props.tagsToAdd && this.props.tagsToAdd.length > 0 ? this.props.tagsToAdd.map((tag)=>{
-            return (<div key={Math.random()} className="chip">
+            return (<div key={BaseUtils.generateUniqueKey()} className="chip">
                 <span className="chip-text">{tag.label}</span>
                 <span className="closebtn" onTouchTap={() => this.deleteTag(tag.id, tag.label)}>&times;</span>
             </div>)
         }) : null;
         let tagLabels = this.props.tagLabels.map((label)=>{
             return (
-                <li key={label.label+Math.random()} style={styles.tagLabels} onTouchTap={() => this.addTagToCloud(label.label)}>{label.label}
+                <li key={BaseUtils.generateUniqueKey()} style={styles.tagLabels} onTouchTap={() => this.addTagToCloud(label.label)}>{label.label}
                     <span className="mdl-color-text--grey-600">,</span>
                 </li>
             )
@@ -113,7 +114,6 @@ class TagManager extends React.Component {
                                 </div>
                                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.autoCompleteContainer}>
                                     <AutoComplete
-                                        //ref="autocomplete"
                                         ref={(input) => this.autocomplete = input}
                                         fullWidth={true}
                                         style={styles.autoComplete}

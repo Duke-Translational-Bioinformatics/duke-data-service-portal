@@ -29,6 +29,8 @@ var ProjectStore = Reflux.createStore({
         this.errorModals = [];
         this.failedUploads = [];
         this.filesChecked = [];
+        this.filesToUpload = [];
+        this.filesRejectedForUpload = [];
         this.fileHashes = [];
         this.foldersChecked = [];
         this.fileVersions = [];
@@ -1698,6 +1700,15 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             usage: this.usage,
             loading: this.loading
+        })
+    },
+
+    processFilesToUpload(files, rejectedFiles) {
+        this.filesToUpload = files;
+        this.filesRejectedForUpload = rejectedFiles;
+        this.trigger({
+            filesToUpload: this.filesToUpload,
+            filesRejectedForUpload: this.filesRejectedForUpload
         })
     },
 
