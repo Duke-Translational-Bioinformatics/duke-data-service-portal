@@ -244,8 +244,9 @@ class FileDetails extends React.Component {
         ProjectActions.hideProvAlert();
     }
 
-    handleDownload(id, kind){
+    handleDownload(){
         let id = this.props.params.id;
+        let kind = Path.FILE;
         ProjectActions.getDownloadUrl(id, kind);
     }
 

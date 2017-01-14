@@ -4,7 +4,7 @@ import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import VersionOptionsMenu from './versionOptionsMenu.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
-import {UrlGen} from '../../../util/urlEnum';
+import {UrlGen, Path} from '../../../util/urlEnum';
 import Tooltip from '../../../util/tooltip.js';
 import BaseUtils from '../../../util/baseUtils.js';
 import Card from 'material-ui/lib/card/card';
@@ -171,7 +171,7 @@ class VersionDetails extends React.Component {
 
     handleDownload(){
         let id = this.props.params.id;
-        let kind = 'file_versions/';
+        let kind = Path.FILE;
         ProjectActions.getDownloadUrl(id, kind);
     }
 }
