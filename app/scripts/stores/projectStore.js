@@ -1764,7 +1764,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     updateAndProcessChunks(uploadId, chunkNum, chunkUpdates) {
-        if (!uploadId && !this.uploads[uploadId]) {
+        if (!uploadId || !this.uploads[uploadId]) {
             return;
         }
         let upload = this.uploads[uploadId];
@@ -1816,6 +1816,16 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             uploads: this.uploads,
             failedUploads: this.failedUploads
+        })
+    },
+
+    cancelUpload(uploadId, name) {
+        if(this.uploads.hasOwnProperty(uploadId)) {
+            delete this.uploads[uploadId];
+        }
+        MainActions.addToast('Canceled upload of '+name);
+        this.trigger({
+            uploads: this.uploads
         })
     },
 

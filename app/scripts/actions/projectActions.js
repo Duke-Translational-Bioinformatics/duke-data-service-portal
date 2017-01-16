@@ -188,6 +188,7 @@ var ProjectActions = Reflux.createActions([
     'updateAndProcessChunks',
     'allChunksUploaded',
     'uploadError',
+    'cancelUpload',
     'getChunkUrl',
     'getWindowSize',
     'getChildren',
@@ -1196,7 +1197,7 @@ ProjectActions.startUpload.preEmit = (projId, blob, parentId, parentKind, label,
         })
     };
     fileReader.onerror = function (e) {
-        ProjectActions.handleErrors();
+        ProjectActions.handleErrors(e.target.error);
         console.log("error", e);
         console.log(e.target.error.message);
     };

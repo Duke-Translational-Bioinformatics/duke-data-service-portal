@@ -54,7 +54,7 @@ class UploadManager extends React.Component {
         let autoCompleteData = this.props.tagAutoCompleteList && this.props.tagAutoCompleteList.length > 0 ? this.props.tagAutoCompleteList : [];
         let dropzoneColor = this.state.dropzoneHover ? '#EEE' : '#FFF';
         let height = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.height : window.innerHeight;
-        let name = this.props.entityObj ? this.props.entityObj.name : '';
+        let name = this.props.entityObj ? this.props.entityObj.name : 'these files';
         let width = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.width : window.innerWidth;
 
         return (
@@ -97,7 +97,7 @@ class UploadManager extends React.Component {
                         <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.wrapper}>
                             <div className="mdl-cell mdl-cell--6-col mdl-cell--6-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" >
                                 <h6 className="mdl-color-text--grey-600" style={styles.heading}>Add Tags For These Files
-                                    <span className="mdl-color-text--grey-400" style={styles.heading.span}>(optional)</span>
+                                    <span className="mdl-color-text--grey-600" style={styles.heading.span}>(optional)</span>
                                     <IconButton tooltip={<span>Tag your files with relevant keywords<br/> that can help with search and organization of content</span>}
                                                 tooltipPosition="top-center"
                                                 iconStyle={styles.infoIcon.icon}
@@ -315,7 +315,7 @@ var styles = {
         margin: '0px 0px -26px 5px ',
         span: {
             marginLeft: 5,
-            fontSize: '.8em'
+            fontSize: '.7em'
         }
     },
     infoIcon: {

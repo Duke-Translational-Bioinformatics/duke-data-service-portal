@@ -91,7 +91,6 @@ class App extends React.Component {
         let content = <RouteHandler {...this.props} {...this.state}/>;
         let toasts = null;
         let dialogs = null;
-        let x=null;
         if (this.state.appConfig.apiToken) {
             if (localStorage.getItem('redirectTo') !== null) {
                 setTimeout(() => {
@@ -101,9 +100,7 @@ class App extends React.Component {
         }
         if (this.state.toasts) {
             toasts = this.state.toasts.map(obj => {
-                return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} autoHideDuration={3000}
-                                 onRequestClose={this.handleRequestClose.bind(this)}
-                                 open={true} style={styles.toast}/>
+                return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} open={true}/>
             });
         }
         if (this.state.appConfig.apiToken && this.state.errorModals) {
@@ -175,10 +172,6 @@ class App extends React.Component {
         ProjectActions.removeErrorModal(refId);
         this.setState({errorModal: false});
         setTimeout(() => this.setState({errorModal: true}), 500);
-    }
-
-    handleRequestClose() {
-        // Avoids error when toasts time out
     }
 
     showToasts() {
