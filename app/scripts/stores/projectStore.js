@@ -234,6 +234,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     deleteMetadataPropertySuccess(id) {
+        this.templateProperties = BaseUtils.removeObjByKey(this.templateProperties, {key: 'id', value: id});
         this.trigger({
             templateProperties: this.templateProperties
         })
