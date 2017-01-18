@@ -220,7 +220,7 @@ class UploadManager extends React.Component {
         });
     }
 
-    onDrop (files, rejectedFiles, e) {
+    onDrop (files, rejectedFiles) {
         ProjectActions.processFilesToUpload(files, rejectedFiles);
     }
 
