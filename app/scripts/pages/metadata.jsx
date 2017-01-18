@@ -10,8 +10,6 @@ class Metadata extends React.Component {
         super(props);
         this.state = {
             loading: false,
-            errorModal: ProjectStore.errorModal,
-            error: ProjectStore.error,
             screenSize: ProjectStore.screenSize,
             metadataTemplate: ProjectStore.metadataTemplate,
             metaTemplates: ProjectStore.metaTemplates,

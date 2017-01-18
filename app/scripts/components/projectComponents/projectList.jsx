@@ -13,10 +13,6 @@ import RaisedButton from 'material-ui/lib/raised-button';
 class ProjectList extends React.Component {
 
     render() {
-        if (this.props.error && this.props.error.response){
-            this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
-            this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
-        }
         let headers = this.props.responseHeaders && this.props.responseHeaders !== null ? this.props.responseHeaders : null;
         let nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
         let totalProjects = headers !== null && !!headers['x-total'] ? headers['x-total'][0] : null;

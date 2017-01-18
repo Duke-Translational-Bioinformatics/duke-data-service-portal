@@ -21,10 +21,6 @@ import RaisedButton from 'material-ui/lib/raised-button';
 class FileDetails extends React.Component {
 
     render() {
-        if (this.props.error && this.props.error.response){
-            this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
-            this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
-        }
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
         let dlButton = null;
         let optionsMenu = null;

@@ -12,8 +12,6 @@ class Version extends React.Component {
             addEdgeMode: ProjectStore.addEdgeMode,
             autoCompleteLoading: ProjectStore.autoCompleteLoading,
             dltRelationsBtn: ProjectStore.dltRelationsBtn,
-            error: ProjectStore.error,
-            errorModal: ProjectStore.errorModal,
             fileVersions: ProjectStore.fileVersions,
             relFrom: ProjectStore.relFrom,
             loading: false,
