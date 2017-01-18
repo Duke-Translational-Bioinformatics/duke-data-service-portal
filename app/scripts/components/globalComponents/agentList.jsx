@@ -60,11 +60,6 @@ class AgentList extends React.Component {
             </form>
         </Dialog>;
 
-        if (this.props.error && this.props.error.response) {
-            this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
-            this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
-        }
-
         agents = this.props.agents;
 
         let agentList = agents.map((agent) => {

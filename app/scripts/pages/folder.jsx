@@ -15,8 +15,6 @@ class Folder extends React.Component {
         this.state = {
             children: ProjectStore.children,
             responseHeaders: ProjectStore.responseHeaders,
-            error: ProjectStore.error,
-            errorModal: ProjectStore.errorModal,
             filesChecked: ProjectStore.filesChecked,
             filesToUpload: ProjectStore.filesToUpload,
             filesRejectedForUpload: ProjectStore.filesRejectedForUpload,

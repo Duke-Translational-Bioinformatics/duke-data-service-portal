@@ -20,8 +20,6 @@ class Project extends React.Component {
             responseHeaders: ProjectStore.responseHeaders,
             currentUser: ProjectStore.currentUser,
             drawerLoading: ProjectStore.drawerLoading,
-            error: ProjectStore.error,
-            errorModal: ProjectStore.errorModal,
             filesChecked: ProjectStore.filesChecked,
             filesToUpload: ProjectStore.filesToUpload,
             filesRejectedForUpload: ProjectStore.filesRejectedForUpload,

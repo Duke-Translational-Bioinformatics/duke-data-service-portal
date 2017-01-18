@@ -193,7 +193,6 @@ var ProjectActions = Reflux.createActions([
     'getWindowSize',
     'getChildren',
     'getChildrenSuccess',
-    'removeErrorModal',
     'removeFailedUploads',
     'toggleModals',
     'setSelectedEntity',

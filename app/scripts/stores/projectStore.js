@@ -25,8 +25,6 @@ var ProjectStore = Reflux.createStore({
         this.device = {};
         this.dltRelationsBtn = false;
         this.entityObj = null;
-        this.error = {};
-        this.errorModals = [];
         this.failedUploads = [];
         this.filesChecked = [];
         this.filesToUpload = [];
@@ -1274,45 +1272,12 @@ var ProjectStore = Reflux.createStore({
     },
 
     handleErrors (error) {
-        let err = error && error.message ? {msg: error.message, response: error.response ? error.response.status : null} : null;
-        if(err.response === null) {
-            this.errorModals.push({
-                msg: error.message,
-                response: 'Folders can not be uploaded',
-                ref: 'modal' + Math.floor(Math.random() * 10000)
-            });
-        } else {
-            if (error && error.response.status !== 404) {
-                this.errorModals.push({
-                    msg: error.response.status === 403 ? error.message + ': You don\'t have permissions to view or change' +
-                    ' this resource' : error.message,
-                    response: error.response.status,
-                    ref: 'modal' + Math.floor(Math.random() * 10000)
-                });
-            }
-        }
-        this.error = err;
+        MainActions.displayErrorModals(error);
         this.loading = false;
         this.drawerLoading = false;
         this.trigger({
             drawerLoading: this.drawerLoading,
-            error: this.error,
-            errorModals: this.errorModals,
             loading: this.loading
-        })
-    },
-
-    removeErrorModal(refId) {
-        for (let i = 0; i < this.errorModals.length; i++) {
-            if (this.errorModals[i].ref === refId) {
-                this.errorModals.splice(i, 1);
-                break;
-            }
-        }
-        this.error = {};
-        this.trigger({
-            error: this.error,
-            errorModals: this.errorModals
         })
     },
 

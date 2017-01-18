@@ -14,8 +14,6 @@ class File extends React.Component {
             addEdgeMode: ProjectStore.addEdgeMode,
             autoCompleteLoading: ProjectStore.autoCompleteLoading,
             dltRelationsBtn: ProjectStore.dltRelationsBtn,
-            error: ProjectStore.error,
-            errorModal: ProjectStore.errorModal,
             filesChecked: ProjectStore.filesChecked,
             drawerLoading: ProjectStore.drawerLoading,
             loading: false,

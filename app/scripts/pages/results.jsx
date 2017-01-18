@@ -8,8 +8,6 @@ class Results extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            error: ProjectStore.error,
-            errorModal: ProjectStore.errorModal,
             includeKinds: ProjectStore.includeKinds,
             includeProjects: ProjectStore.includeProjects,
             screenSize: ProjectStore.screenSize,
