@@ -8,6 +8,7 @@ import FileOptions from '../components/fileComponents/fileOptions.jsx';
 import FolderOptions from '../components/folderComponents/folderOptions.jsx';
 import TagManager from '../components/globalComponents/tagManager.jsx'
 import VersionUpload from '../components/fileComponents/versionUpload.jsx';
+import {Path} from '../../util/urlEnum';
 
 class Project extends React.Component {
 
@@ -16,6 +17,7 @@ class Project extends React.Component {
         this.props = props;
         this.state = {
             children: ProjectStore.children,
+            responseHeaders: ProjectStore.responseHeaders,
             currentUser: ProjectStore.currentUser,
             drawerLoading: ProjectStore.drawerLoading,
             error: ProjectStore.error,
@@ -48,7 +50,7 @@ class Project extends React.Component {
         let id = this.props.params.id;
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
         if(ProjectStore.openTagManager) ProjectActions.toggleTagManager();
-        ProjectActions.getChildren(id, 'projects/');
+        ProjectActions.getChildren(id, Path.PROJECT);
         ProjectActions.showDetails(id);
         ProjectActions.getProjectMembers(id);
         ProjectActions.getUser(id);

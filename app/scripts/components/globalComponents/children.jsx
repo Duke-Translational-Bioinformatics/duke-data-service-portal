@@ -3,7 +3,7 @@ import { RouteHandler } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import BaseUtils from '../../../util/baseUtils.js';
-import {UrlGen} from '../../../util/urlEnum';
+import {UrlGen, Path} from '../../../util/urlEnum';
 import BatchOps from '../../components/globalComponents/batchOps.jsx';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
 import FileOptionsMenu from '../../components/fileComponents/fileOptionsMenu.jsx';
@@ -14,19 +14,15 @@ import RaisedButton from 'material-ui/lib/raised-button';
 
 class Children extends React.Component {
 
-    constructor() {
-        this.state = {
-            page: 0
-        }
-    }
-
     render() {
         if(!this.props.showBatchOps) this.uncheck();
-        let children = [];
-        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
         let chkBx = <div className="item-media"></div>;
+        let headers = this.props.responseHeaders && this.props.responseHeaders !== null ? this.props.responseHeaders : null;
+        let nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
+        let totalChildren = headers !== null && !!headers['x-total'] ? headers['x-total'][0] : null;
         let type = 'hidden';
         let newFolderModal = null;
+        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
         if (prjPrm !== null) {
             newFolderModal = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <AddFolderModal {...this.props}/>;
             if (prjPrm !== 'viewOnly' && prjPrm !== 'flUpload') {
@@ -41,25 +37,7 @@ class Children extends React.Component {
             this.props.error.response === 401 ? this.props.appRouter.transitionTo('/login') : null;
             this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
         }
-        if (this.props.children.length > 20) {
-            switch (this.state.page) {
-                case 0:
-                    children = this.props.children.slice(0, 20);
-                    break;
-                case 1:
-                    children = this.props.children.slice(0, 40);
-                    break;
-                case 2:
-                    children = this.props.children.slice(0, 60);
-                    break;
-                case 3:
-                    children = this.props.children;
-                    break;
-            }
-        } else {
-            children = this.props.children;
-        }
-        let Children = children.map((children) => {
+        let children = this.props.children ? this.props.children.map((children) => {
             let fileOptionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, 'files')}/>;
             let folderOptionsMenu = <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, 'folders')}/>;
             if (children.kind === 'dds-folder') {
@@ -123,7 +101,7 @@ class Children extends React.Component {
                     </li>
                 );
             }
-        });
+        }) : null;
 
         return (
             <div className="list-container">
@@ -139,15 +117,15 @@ class Children extends React.Component {
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     <div className="list-block list-block-search searchbar-found media-list">
                         <ul>
-                            { Children }
+                            { children }
                         </ul>
                     </div>
-                    {this.props.children.length > 25 && this.props.children.length > children.length && this.state.page < 3 ?
+                    {this.props.children.length < totalChildren ?
                         <div className="mdl-cell mdl-cell--12-col">
                             <RaisedButton
-                                label="Load More"
+                                label={this.props.loading ? "Loading..." : "Load More"}
                                 secondary={true}
-                                onTouchTap={this.loadMore.bind(this)}
+                                onTouchTap={()=>this.loadMore(nextPage)}
                                 fullWidth={true}
                                 labelStyle={{fontWeight: '100'}}/>
                         </div> : null}
@@ -177,7 +155,6 @@ class Children extends React.Component {
             if (folderInput[i].checked) foldersChecked.push(folderInput[i].value);
         }
         ProjectActions.handleBatch(filesChecked, foldersChecked);
-        // If nothing is selected hide options bar
         if (!checkedBoxes.length) ProjectActions.showBatchOptions();
     }
 
@@ -186,8 +163,10 @@ class Children extends React.Component {
         ProjectActions.getDownloadUrl(id, kind);
     }
 
-    loadMore() {
-        this.setState({page: this.state.page + 1});
+    loadMore(page) {
+        let id = this.props.params.id;
+        let kind = this.props.entityObj ? this.props.entityObj.kind : Path.PROJECT;
+        ProjectActions.getChildren(id, kind, page);
     }
 
     setSelectedEntity(id, kind) {
@@ -232,13 +211,6 @@ var styles = {
         top: 26,
         zIndex: 100
     },
-    fillerDiv: {
-        height: 24,
-        width: 32,
-        float: 'right',
-        marginLeft: 32,
-        padding: '08px 08px 08px 08px'
-    },
     icon: {
         fontSize: 36,
         marginTop: 20,
@@ -254,6 +226,10 @@ var styles = {
 };
 
 Children.propTypes = {
+    filesChecked: React.PropTypes.array,
+    foldersChecked: React.PropTypes.array,
+    entityObj: React.PropTypes.object,
+    responseHeaders: React.PropTypes.object,
     loading: React.PropTypes.bool,
     uploading: React.PropTypes.bool,
     error: React.PropTypes.object

@@ -143,8 +143,8 @@ var ProjectActions = Reflux.createActions([
     'getAgentApiToken',
     'getAgentApiTokenSuccess',
     'clearApiToken',
-    'loadProjects',
-    'loadProjectsSuccess',
+    'getProjects',
+    'getProjectsSuccess',
     'deleteItemSuccess',
     'addProject',
     'addProjectSuccess',
@@ -233,13 +233,13 @@ ProjectActions.searchObjects.preEmit = (value, includeKinds, includeProjects) =>
                 size: 1000
             }
         }))
-    .then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.searchObjectsSuccess(json.results);
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    })
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.searchObjectsSuccess(json.results);
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.getMoveItemList.preEmit = (id, path) => {
@@ -247,23 +247,23 @@ ProjectActions.getMoveItemList.preEmit = (id, path) => {
         getFetchParams('get', appConfig.apiToken)
     ).then(checkResponse).then((response) => {
             return response.json()
-    }).then((json) => {
-        ProjectActions.getMoveItemListSuccess(json.results)
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    })
+        }).then((json) => {
+            ProjectActions.getMoveItemListSuccess(json.results)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.getObjectMetadata.preEmit = (id, kind) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.META+kind+"/"+id,
         getFetchParams('get', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.getObjectMetadataSuccess(json.results)
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    })
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getObjectMetadataSuccess(json.results)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.createMetadataObject.preEmit = (kind, fileId, templateId, properties) => {
@@ -273,18 +273,18 @@ ProjectActions.createMetadataObject.preEmit = (kind, fileId, templateId, propert
             }
         )
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        MainActions.addToast('A new metadata object was created.');
-        ProjectActions.createMetadataObjectSuccess(json);
-    }).catch((ex) => {
-        if(ex.response.status === 409) {
-            ProjectActions.updateMetadataObject(kind, fileId, templateId, properties);
-        } else {
-            MainActions.addToast('Failed to add new metadata object');
-            ProjectActions.handleErrors(ex)
-        }
-    })
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('A new metadata object was created.');
+            ProjectActions.createMetadataObjectSuccess(json);
+        }).catch((ex) => {
+            if(ex.response.status === 409) {
+                ProjectActions.updateMetadataObject(kind, fileId, templateId, properties);
+            } else {
+                MainActions.addToast('Failed to add new metadata object');
+                ProjectActions.handleErrors(ex)
+            }
+        })
 };
 
 ProjectActions.updateMetadataObject.preEmit = (kind, fileId, templateId, properties) => {
@@ -293,71 +293,71 @@ ProjectActions.updateMetadataObject.preEmit = (kind, fileId, templateId, propert
             "properties": properties
         })
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        MainActions.addToast('This metadata object was updated.');
-        ProjectActions.createMetadataObjectSuccess(json);
-    }).catch((ex) => {
-        MainActions.addToast('Failed to update metadata object');
-        ProjectActions.handleErrors(ex)
-    })
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('This metadata object was updated.');
+            ProjectActions.createMetadataObjectSuccess(json);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to update metadata object');
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.deleteMetadataProperty.preEmit = (id, label) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATE_PROPERTIES + id,
         getFetchParams('delete', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-    }).then((json) => {
-        MainActions.addToast('The '+label+' property has been deleted');
-        ProjectActions.deleteMetadataPropertySuccess(id);
-    }).catch((ex) => {
-        MainActions.addToast('Failed to delete '+label);
-        ProjectActions.handleErrors(ex)
-    });
+        .then(checkResponse).then((response) => {
+        }).then((json) => {
+            MainActions.addToast('The '+label+' property has been deleted');
+            ProjectActions.deleteMetadataPropertySuccess(id);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to delete '+label);
+            ProjectActions.handleErrors(ex)
+        });
 };
 
 ProjectActions.getMetadataTemplateProperties.preEmit = (id) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES +id+Path.PROPERTIES,
         getFetchParams('get', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.getMetadataTemplatePropertiesSuccess(json.results)
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    })
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getMetadataTemplatePropertiesSuccess(json.results)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.createMetadataProperty.preEmit = (id, name, label, desc, type) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES +id+Path.PROPERTIES,
         getFetchParams('post', appConfig.apiToken, {
-                "key": name,
-                "label": label,
-                "description": desc,
-                "type": type
+            "key": name,
+            "label": label,
+            "description": desc,
+            "type": type
         })
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        MainActions.addToast('A new template property called '+label+' was added');
-        ProjectActions.createMetadataPropertySuccess(json);
-    }).catch((ex) => {
-        MainActions.addToast('Failed to add new template property');
-        ProjectActions.handleErrors(ex)
-    })
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('A new template property called '+label+' was added');
+            ProjectActions.createMetadataPropertySuccess(json);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to add new template property');
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.deleteTemplate.preEmit = (id, label) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id,
         getFetchParams('delete', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-    }).then((json) => {
-        MainActions.addToast('The '+label+' template has been deleted');
-        ProjectActions.deleteTemplateSuccess();
-    }).catch((ex) => {
-        MainActions.addToast('Failed to delete '+label);
-        ProjectActions.handleErrors(ex)
-    });
+        .then(checkResponse).then((response) => {
+        }).then((json) => {
+            MainActions.addToast('The '+label+' template has been deleted');
+            ProjectActions.deleteTemplateSuccess();
+        }).catch((ex) => {
+            MainActions.addToast('Failed to delete '+label);
+            ProjectActions.handleErrors(ex)
+        });
 };
 
 ProjectActions.updateMetadataTemplate.preEmit = (id, name, label, desc) => {
@@ -368,15 +368,15 @@ ProjectActions.updateMetadataTemplate.preEmit = (id, name, label, desc) => {
             "description": desc
         })
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        MainActions.addToast(label+' has been updated.');
-        ProjectActions.getMetadataTemplateDetailsSuccess(json);
-        ProjectActions.loadMetadataTemplates('');
-    }).catch((ex) => {
-        MainActions.addToast('Failed to update '+label);
-        ProjectActions.handleErrors(ex)
-    })
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast(label+' has been updated.');
+            ProjectActions.getMetadataTemplateDetailsSuccess(json);
+            ProjectActions.loadMetadataTemplates('');
+        }).catch((ex) => {
+            MainActions.addToast('Failed to update '+label);
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 
@@ -388,54 +388,54 @@ ProjectActions.createMetadataTemplate.preEmit = (name, label, desc) => {
             "description": desc
         })
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        MainActions.addToast('A new template called '+label+' was added');
-        ProjectActions.getMetadataTemplateDetailsSuccess(json);
-        ProjectActions.createMetadataTemplateSuccess(json);
-    }).catch((ex) => {
-        MainActions.addToast('Failed to add new template');
-        ProjectActions.handleErrors(ex)
-    })
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('A new template called '+label+' was added');
+            ProjectActions.getMetadataTemplateDetailsSuccess(json);
+            ProjectActions.createMetadataTemplateSuccess(json);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to add new template');
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.getMetadataTemplateDetails.preEmit = (id) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id,
         getFetchParams('get', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.getMetadataTemplateDetailsSuccess(json)
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    })
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getMetadataTemplateDetailsSuccess(json)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.loadMetadataTemplates.preEmit = (value) => {
     let searchQuery = value !== null ? '?name_contains='+ value : '';
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + searchQuery,
         getFetchParams('get', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.loadMetadataTemplatesSuccess(json.results)
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    })
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.loadMetadataTemplatesSuccess(json.results)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.addProvRelation.preEmit = (kind, body) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'relations/' + kind,
         getFetchParams('post', appConfig.apiToken, body)
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        MainActions.addToast('New relation Added');
-        ProjectActions.addProvRelationSuccess(json);
-    }).catch((ex) => {
-        MainActions.addToast('Failed to add new relation');
-        ProjectActions.handleErrors(ex)
-    })
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('New relation Added');
+            ProjectActions.addProvRelationSuccess(json);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to add new relation');
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.deleteProvItem.preEmit = (data, id) => {
@@ -443,14 +443,14 @@ ProjectActions.deleteProvItem.preEmit = (data, id) => {
     let msg = kind === 'activities/' ? data.label : data.type;
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + kind + data.id,
         getFetchParams('delete', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-    }).then((json) => {
-        MainActions.addToast(msg + ' deleted');
-        ProjectActions.deleteProvItemSuccess(data);
-    }).catch((ex) => {
-        MainActions.addToast('Failed to delete ' + msg);
-        ProjectActions.handleErrors(ex)
-    });
+        .then(checkResponse).then((response) => {
+        }).then((json) => {
+            MainActions.addToast(msg + ' deleted');
+            ProjectActions.deleteProvItemSuccess(data);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to delete ' + msg);
+            ProjectActions.handleErrors(ex)
+        });
 };
 
 ProjectActions.addProvActivity.preEmit = (name, desc) => {
@@ -460,14 +460,14 @@ ProjectActions.addProvActivity.preEmit = (name, desc) => {
             "description": desc
         })
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        MainActions.addToast('New Activity Added');
-        ProjectActions.addProvActivitySuccess(json);
-    }).catch((ex) => {
-        MainActions.addToast('Failed to add new actvity');
-        ProjectActions.handleErrors(ex)
-    })
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('New Activity Added');
+            ProjectActions.addProvActivitySuccess(json);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to add new actvity');
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.editProvActivity.preEmit = (id, name, desc, prevName) => {
@@ -477,29 +477,29 @@ ProjectActions.editProvActivity.preEmit = (id, name, desc, prevName) => {
             "description": desc
         })
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        if (name !== prevName) {
-            MainActions.addToast(prevName + ' name was changed to ' + name);
-        } else {
-            MainActions.addToast(prevName + ' was edited');
-        }
-        ProjectActions.editProvActivitySuccess(json);
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    })
+            return response.json()
+        }).then((json) => {
+            if (name !== prevName) {
+                MainActions.addToast(prevName + ' name was changed to ' + name);
+            } else {
+                MainActions.addToast(prevName + ' was edited');
+            }
+            ProjectActions.editProvActivitySuccess(json);
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.getActivities.preEmit = () => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.ACTIVITIES,
         getFetchParams('get', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.getActivitiesSuccess(json.results)
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    })
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getActivitiesSuccess(json.results)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.getProvenance.preEmit = (id, kind, prevGraph) => {
@@ -511,12 +511,12 @@ ProjectActions.getProvenance.preEmit = (id, kind, prevGraph) => {
             }
         })
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.getProvenanceSuccess(json.graph, prevGraph);
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    })
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getProvenanceSuccess(json.graph, prevGraph);
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.getWasGeneratedByNode.preEmit = (id, kind, prevGraph) => {
@@ -527,24 +527,24 @@ ProjectActions.getWasGeneratedByNode.preEmit = (id, kind, prevGraph) => {
             }]
         })
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.getProvenanceSuccess(json.graph, prevGraph);
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    })
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getProvenanceSuccess(json.graph, prevGraph);
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.searchFiles.preEmit = (text, id) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/children?name_contains=' + text,
         getFetchParams('get', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.searchFilesSuccess(json.results);
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    })
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.searchFilesSuccess(json.results);
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.addNewTag.preEmit = (id, kind, tag) => {
@@ -553,14 +553,14 @@ ProjectActions.addNewTag.preEmit = (id, kind, tag) => {
             'label': tag
         })
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        MainActions.addToast('Added ' + json.label + ' tag');
-        ProjectActions.addNewTagSuccess(id);
-    }).catch((ex) => {
-        MainActions.addToast('Failed to add new tag');
-        ProjectActions.handleErrors(ex)
-    })
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('Added ' + json.label + ' tag');
+            ProjectActions.addNewTagSuccess(id);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to add new tag');
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.appendTags.preEmit = (id, kind, tags) => {
@@ -572,39 +572,39 @@ ProjectActions.appendTags.preEmit = (id, kind, tags) => {
             tags
         })
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        MainActions.addToast('Added ' + msg + ' as tags to all selected files.');
-        ProjectActions.appendTagsSuccess(id);
-    }).catch((ex) => {
-        MainActions.addToast('Failed to add tags');
-        ProjectActions.handleErrors(ex)
-    })
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('Added ' + msg + ' as tags to all selected files.');
+            ProjectActions.appendTagsSuccess(id);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to add tags');
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.deleteTag.preEmit = (id, label, fileId) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TAGS + id,
         getFetchParams('delete', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-    }).then(() => {
-        MainActions.addToast(label + ' tag deleted!');
-        ProjectActions.deleteTagSuccess(fileId)
-    }).catch((ex) => {
-        MainActions.addToast('Failed to delete ' + label);
-        ProjectActions.handleErrors(ex)
-    });
+        .then(checkResponse).then((response) => {
+        }).then(() => {
+            MainActions.addToast(label + ' tag deleted!');
+            ProjectActions.deleteTagSuccess(fileId)
+        }).catch((ex) => {
+            MainActions.addToast('Failed to delete ' + label);
+            ProjectActions.handleErrors(ex)
+        });
 };
 
 ProjectActions.getTagLabels.preEmit = () => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'tags/labels/?object_kind=dds-file',
         getFetchParams('get', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.getTagLabelsSuccess(json.results)
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    })
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getTagLabelsSuccess(json.results)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 
@@ -612,37 +612,37 @@ ProjectActions.getTagAutoCompleteList.preEmit = (text) => {
     let query = text === null ? '' : '&label_contains=' + text;
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'tags/labels/?object_kind=dds-file' + query,
         getFetchParams('get', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.getTagAutoCompleteListSuccess(json.results)
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    })
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getTagAutoCompleteListSuccess(json.results)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.getTags.preEmit = (id, kind) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TAGS + kind + '/' + id,
         getFetchParams('get', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.getTagsSuccess(json.results)
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    })
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getTagsSuccess(json.results)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.getFileVersions.preEmit = (id, prov) => { // prov = boolean used for file selection in prov editor
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE + id + '/versions',
         getFetchParams('get', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.getFileVersionsSuccess(json.results, prov)
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    })
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getFileVersionsSuccess(json.results, prov)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.addFileVersion.preEmit = (uploadId, label, fileId) => {
@@ -654,29 +654,29 @@ ProjectActions.addFileVersion.preEmit = (uploadId, label, fileId) => {
             'label': label
         })
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        MainActions.addToast('Created New File Version!');
-        ProjectActions.addFileVersionSuccess(fileId, uploadId)
-    }).catch((ex) => {
-        MainActions.addToast('Failed to Create New Version');
-        ProjectActions.uploadError(uploadId, label);
-        ProjectActions.handleErrors(ex);
-    });
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('Created New File Version!');
+            ProjectActions.addFileVersionSuccess(fileId, uploadId)
+        }).catch((ex) => {
+            MainActions.addToast('Failed to Create New Version');
+            ProjectActions.uploadError(uploadId, label);
+            ProjectActions.handleErrors(ex);
+        });
 };
 
 
 ProjectActions.deleteVersion.preEmit = (id) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE_VERSION + id,
         getFetchParams('delete', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-    }).then(() => {
-        MainActions.addToast('Version Deleted!');
-        ProjectActions.deleteVersionSuccess()
-    }).catch((ex) => {
-        MainActions.addToast('Failed to Delete Version!');
-        ProjectActions.handleErrors(ex)
-    });
+        .then(checkResponse).then((response) => {
+        }).then(() => {
+            MainActions.addToast('Version Deleted!');
+            ProjectActions.deleteVersionSuccess()
+        }).catch((ex) => {
+            MainActions.addToast('Failed to Delete Version!');
+            ProjectActions.handleErrors(ex)
+        });
 };
 
 ProjectActions.editVersion.preEmit = (id, label) => {
@@ -685,14 +685,14 @@ ProjectActions.editVersion.preEmit = (id, label) => {
             "label": label
         })
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        MainActions.addToast('Label Updated!');
-        ProjectActions.editVersionSuccess(id)
-    }).catch((ex) => {
-        MainActions.addToast('Failed to Update Label');
-        ProjectActions.handleErrors(ex)
-    });
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('Label Updated!');
+            ProjectActions.editVersionSuccess(id)
+        }).catch((ex) => {
+            MainActions.addToast('Failed to Update Label');
+            ProjectActions.handleErrors(ex)
+        });
 };
 
 ProjectActions.addAgent.preEmit = (name, desc, repo) => {
@@ -703,14 +703,14 @@ ProjectActions.addAgent.preEmit = (name, desc, repo) => {
             "repo_url": repo
         })
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        MainActions.addToast('New software agent added');
-        ProjectActions.addAgentSuccess()
-    }).catch((ex) => {
-        MainActions.addToast('Failed to add new software agent');
-        ProjectActions.handleErrors(ex)
-    })
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('New software agent added');
+            ProjectActions.addAgentSuccess()
+        }).catch((ex) => {
+            MainActions.addToast('Failed to add new software agent');
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.editAgent.preEmit = (id, name, desc, repo) => {
@@ -721,63 +721,63 @@ ProjectActions.editAgent.preEmit = (id, name, desc, repo) => {
             "repo_url": repo
         })
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        MainActions.addToast('Software Agent Updated');
-        ProjectActions.editAgentSuccess(id)
-    }).catch((ex) => {
-        MainActions.addToast('Software Agent Update Failed');
-        ProjectActions.handleErrors(ex)
-    });
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('Software Agent Updated');
+            ProjectActions.editAgentSuccess(id)
+        }).catch((ex) => {
+            MainActions.addToast('Software Agent Update Failed');
+            ProjectActions.handleErrors(ex)
+        });
 };
 
 ProjectActions.deleteAgent.preEmit = (id) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + id,
         getFetchParams('delete', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-    }).then((json) => {
-        MainActions.addToast('Software Agent Deleted');
-        ProjectActions.deleteAgentSuccess(json)
-    }).catch((ex) => {
-        MainActions.addToast('Failed to delete software agent');
-        ProjectActions.handleErrors(ex)
-    });
+        .then(checkResponse).then((response) => {
+        }).then((json) => {
+            MainActions.addToast('Software Agent Deleted');
+            ProjectActions.deleteAgentSuccess(json)
+        }).catch((ex) => {
+            MainActions.addToast('Failed to delete software agent');
+            ProjectActions.handleErrors(ex)
+        });
 };
 
 ProjectActions.loadAgents.preEmit = () => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT,
         getFetchParams('get', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.loadAgentsSuccess(json.results)
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    })
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.loadAgentsSuccess(json.results)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.createAgentKey.preEmit = (id) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + id + '/api_key',
         getFetchParams('put', appConfig.apiToken)
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        MainActions.addToast('API Key created successfully');
-        ProjectActions.createAgentKeySuccess(json);
-    }).catch((ex) => {
-        MainActions.addToast('Failed to create new API key');
-        ProjectActions.handleErrors(ex)
-    })
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('API Key created successfully');
+            ProjectActions.createAgentKeySuccess(json);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to create new API key');
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.getAgentKey.preEmit = (id) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + id + '/api_key',
         getFetchParams('get', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.getAgentKeySuccess(json)
-    })
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getAgentKeySuccess(json)
+        })
         .catch((ex) => {
             ProjectActions.handleErrors(ex)
         });
@@ -790,115 +790,120 @@ ProjectActions.getAgentApiToken.preEmit = (agentKey, userKey) => {
             'user_key': userKey
         })
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.getAgentApiTokenSuccess(json)
-    }).catch((ex) => {
-        MainActions.addToast('Failed to generate an API token');
-        ProjectActions.handleErrors(ex)
-    })
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getAgentApiTokenSuccess(json)
+        }).catch((ex) => {
+            MainActions.addToast('Failed to generate an API token');
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.getUser.preEmit = (id) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'current_user',
         getFetchParams('get', appConfig.apiToken))
-    .then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.getUserSuccess(json, id)
-    })
-    .catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    });
+        .then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getUserSuccess(json, id)
+        })
+        .catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        });
 };
 
 ProjectActions.getPermissions.preEmit = (id, userId) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions/' + userId,
         getFetchParams('get', appConfig.apiToken))
-    .then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.getPermissionsSuccess(json)
-    })
-    .catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    });
+        .then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getPermissionsSuccess(json)
+        })
+        .catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        });
 };
 
 ProjectActions.getUserKey.preEmit = () => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'api_key',
         getFetchParams('get', appConfig.apiToken))
-    .then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.getUserKeySuccess(json)
-    })
-    .catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    });
+        .then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getUserKeySuccess(json)
+        })
+        .catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        });
 };
 
 ProjectActions.createUserKey.preEmit = (id) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'api_key',
         getFetchParams('put', appConfig.apiToken)
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        MainActions.addToast('User Key created successfully');
-        ProjectActions.createUserKeySuccess(json);
-    }).catch((ex) => {
-        MainActions.addToast('Failed to create new User key');
-        ProjectActions.handleErrors(ex)
-    })
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('User Key created successfully');
+            ProjectActions.createUserKeySuccess(json);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to create new User key');
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.deleteUserKey.preEmit = () => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'api_key',
         getFetchParams('delete', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-    }).then((json) => {
-        MainActions.addToast('User key deleted');
-        ProjectActions.deleteUserKeySuccess(json)
-    }).catch((ex) => {
-        MainActions.addToast('Failed to delete user key');
-        ProjectActions.handleErrors(ex)
-    });
+        .then(checkResponse).then((response) => {
+        }).then((json) => {
+            MainActions.addToast('User key deleted');
+            ProjectActions.deleteUserKeySuccess(json)
+        }).catch((ex) => {
+            MainActions.addToast('Failed to delete user key');
+            ProjectActions.handleErrors(ex)
+        });
 };
 
 ProjectActions.getUsageDetails.preEmit = () => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'usage',
         getFetchParams('get', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.getUsageDetailsSuccess(json)
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    })
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getUsageDetailsSuccess(json)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
-ProjectActions.loadProjects.preEmit = () => {
-    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT,
+ProjectActions.getProjects.preEmit = (page) => {
+    if(page == null) page = 1;
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT+"?page="+page+"&per_page=25",
         getFetchParams('get', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.loadProjectsSuccess(json.results)
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    })
+        .then(checkResponse).then((response) => {
+            const results = response.json();
+            const headers = response.headers;
+            return Promise.all([results, headers]);
+        }).then((json) => {
+            let results = json[0].results;
+            let headers = json[1].map;
+            ProjectActions.getProjectsSuccess(results, headers, page)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.showDetails.preEmit = (id) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id,
         getFetchParams('get', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.showDetailsSuccess(json)
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    })
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.showDetailsSuccess(json)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.addProject.preEmit = (name, desc) => {
@@ -908,27 +913,27 @@ ProjectActions.addProject.preEmit = (name, desc) => {
             "description": desc
         })
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        MainActions.addToast('Project Added');
-        ProjectActions.addProjectSuccess()
-    }).catch((ex) => {
-        MainActions.addToast('Failed to add new project');
-        ProjectActions.handleErrors(ex)
-    })
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('Project Added');
+            ProjectActions.addProjectSuccess()
+        }).catch((ex) => {
+            MainActions.addToast('Failed to add new project');
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.deleteProject.preEmit = (id) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id,
         getFetchParams('delete', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-    }).then((json) => {
-        MainActions.addToast('Project Deleted');
-        ProjectActions.deleteProjectSuccess(json)
-    }).catch((ex) => {
-        MainActions.addToast('Project Delete Failed');
-        ProjectActions.handleErrors(ex)
-    });
+        .then(checkResponse).then((response) => {
+        }).then((json) => {
+            MainActions.addToast('Project Deleted');
+            ProjectActions.deleteProjectSuccess(json)
+        }).catch((ex) => {
+            MainActions.addToast('Project Delete Failed');
+            ProjectActions.handleErrors(ex)
+        });
 };
 
 ProjectActions.editProject.preEmit = (id, name, desc) => {
@@ -938,26 +943,31 @@ ProjectActions.editProject.preEmit = (id, name, desc) => {
             "description": desc
         })
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        MainActions.addToast('Project Updated');
-        ProjectActions.editProjectSuccess(id)
-    }).catch((ex) => {
-        MainActions.addToast('Project Update Failed');
-        ProjectActions.handleErrors(ex)
-    });
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('Project Updated');
+            ProjectActions.editProjectSuccess(id)
+        }).catch((ex) => {
+            MainActions.addToast('Project Update Failed');
+            ProjectActions.handleErrors(ex)
+        });
 };
 
-ProjectActions.getChildren.preEmit = (id, path) => {
-    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + Path.CHILDREN,
+ProjectActions.getChildren.preEmit = (id, path, page) => {
+    if(page == null) page = 1;
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + Path.CHILDREN+"?page="+page+"&per_page=25",
         getFetchParams('get', appConfig.apiToken)
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.getChildrenSuccess(json.results)
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    })
+            const results = response.json();
+            const headers = response.headers;
+            return Promise.all([results, headers]);
+        }).then((json) => {
+            let results = json[0].results;
+            let headers = json[1].map;
+            ProjectActions.getChildrenSuccess(results, headers, page)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.addFolder.preEmit = (id, parentKind, name) => {
@@ -970,27 +980,27 @@ ProjectActions.addFolder.preEmit = (id, parentKind, name) => {
             }
         })
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        MainActions.addToast('Folder Added');
-        ProjectActions.addFolderSuccess(id, parentKind);
-    }).catch((ex) => {
-        MainActions.addToast('Failed to Add a New Folder');
-        ProjectActions.handleErrors(ex)
-    })
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('Folder Added');
+            ProjectActions.addItemSuccess(json);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to Add a New Folder');
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.deleteFolder.preEmit = (id, parentId, parentKind) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FOLDER + id,
         getFetchParams('delete', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-    }).then(() => {
-        MainActions.addToast('Folder(s) Deleted!');
-        ProjectActions.deleteItemSuccess(parentId, parentKind)
-    }).catch((ex) => {
-        MainActions.addToast('Folder Deleted Failed!');
-        ProjectActions.handleErrors(ex)
-    });
+        .then(checkResponse).then((response) => {
+        }).then(() => {
+            MainActions.addToast('Folder(s) Deleted!');
+            ProjectActions.deleteItemSuccess(parentId, parentKind)
+        }).catch((ex) => {
+            MainActions.addToast('Folder Deleted Failed!');
+            ProjectActions.handleErrors(ex)
+        });
 };
 
 ProjectActions.moveItem.preEmit = (id, kind, destination, destinationKind) => {
@@ -1004,27 +1014,27 @@ ProjectActions.moveItem.preEmit = (id, kind, destination, destinationKind) => {
             }
         })
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        MainActions.addToast(type+' moved successfully');
-        ProjectActions.moveItemSuccess();
-    }).catch((ex) => {
-        MainActions.addToast('Failed to move '+type+' to new location');
-        ProjectActions.handleErrors(ex)
-    })
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast(type+' moved successfully');
+            ProjectActions.moveItemSuccess();
+        }).catch((ex) => {
+            MainActions.addToast('Failed to move '+type+' to new location');
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.deleteFile.preEmit = (id, parentId, parentKind) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE + id,
         getFetchParams('delete', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-    }).then(() => {
-        MainActions.addToast('File(s) Deleted!');
-        ProjectActions.deleteItemSuccess(parentId, parentKind)
-    }).catch((ex) => {
-        MainActions.addToast('Failed to Delete File!');
-        ProjectActions.handleErrors(ex)
-    });
+        .then(checkResponse).then((response) => {
+        }).then(() => {
+            MainActions.addToast('File(s) Deleted!');
+            ProjectActions.deleteItemSuccess(parentId, parentKind)
+        }).catch((ex) => {
+            MainActions.addToast('Failed to Delete File!');
+            ProjectActions.handleErrors(ex)
+        });
 };
 
 ProjectActions.editItem.preEmit = (id, name, path, kind) => {
@@ -1033,62 +1043,62 @@ ProjectActions.editItem.preEmit = (id, name, path, kind) => {
             "name": name
         })
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        MainActions.addToast('Item name updated to '+name);
-        ProjectActions.editItemSuccess(id, json, kind)
-    }).catch((ex) => {
-        MainActions.addToast('Failed to update item');
-        ProjectActions.handleErrors(ex)
-    });
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('Item name updated to '+name);
+            ProjectActions.editItemSuccess(id, json, kind)
+        }).catch((ex) => {
+            MainActions.addToast('Failed to update item');
+            ProjectActions.handleErrors(ex)
+        });
 };
 
 ProjectActions.getEntity.preEmit = (id, kind, requester) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + kind + '/' + id,
         getFetchParams('get', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.getEntitySuccess(json, requester)
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    });
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getEntitySuccess(json, requester)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        });
 };
 
 ProjectActions.getProjectMembers.preEmit = (id) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions',
         getFetchParams('get', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.getProjectMembersSuccess(json.results)
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    });
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getProjectMembersSuccess(json.results)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        });
 };
 
 ProjectActions.getUserName.preEmit = (text) => {
-    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + text,
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + text + '&page=1&per_page=500',
         getFetchParams('get', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.getUserNameSuccess(json.results)
-    }).catch((ex) => {
-        console.log('Error occurred while filling autocomplete field');
-    });
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getUserNameSuccess(json.results)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        });
 };
 
 ProjectActions.getUserId.preEmit = (fullName, id, role) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + fullName,
         getFetchParams('get', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.getUserIdSuccess(json.results, id, role)
-    }).catch((ex) => {
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getUserIdSuccess(json.results, id, role)
+        }).catch((ex) => {
             ProjectActions.handleErrors(ex)
-    });
+        });
 };
 
 ProjectActions.addProjectMember.preEmit = (id, userId, role, name) => {
@@ -1098,39 +1108,39 @@ ProjectActions.addProjectMember.preEmit = (id, userId, role, name) => {
             'auth_role': {'id': role}
         })
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        MainActions.addToast(name + ' ' + 'has been added as a ' + newRole + ' to this project');
-        ProjectActions.addProjectMemberSuccess(id)
-    }).catch((ex) => {
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast(name + ' ' + 'has been added as a ' + newRole + ' to this project');
+            ProjectActions.addProjectMemberSuccess(id)
+        }).catch((ex) => {
             MainActions.addToast('Could not add member to this project or member does not exist');
             ProjectActions.handleErrors(ex)
-    });
+        });
 };
 
 ProjectActions.deleteProjectMember.preEmit = (id, userId, userName) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions/' + userId,
         getFetchParams('delete', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-    }).then((json) => {
-        MainActions.addToast(userName + ' ' + 'has been removed from this project');
-        ProjectActions.deleteProjectMemberSuccess(id, userId);
-    }).catch((ex) => {
-        MainActions.addToast('Unable to remove ' + userName + ' from this project');
-        ProjectActions.handleErrors(ex)
-    });
+        .then(checkResponse).then((response) => {
+        }).then((json) => {
+            MainActions.addToast(userName + ' ' + 'has been removed from this project');
+            ProjectActions.deleteProjectMemberSuccess(id, userId);
+        }).catch((ex) => {
+            MainActions.addToast('Unable to remove ' + userName + ' from this project');
+            ProjectActions.handleErrors(ex)
+        });
 };
 
 ProjectActions.getDownloadUrl.preEmit = (id, kind) => {
     fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + kind + id + '/url',
         getFetchParams('get', appConfig.apiToken))
-    .then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        ProjectActions.getDownloadUrlSuccess(json)
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex)
-    })
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getDownloadUrlSuccess(json)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.startUpload.preEmit = (projId, blob, parentId, parentKind, label, fileId, tags) => {
@@ -1187,14 +1197,14 @@ ProjectActions.startUpload.preEmit = (projId, blob, parentId, parentKind, label,
                 'size': SIZE
             })
         ).then(checkResponse).then((response) => {
-            return response.json()
-        }).then((json) => {
-            let uploadObj = json;
-            if (!uploadObj || !uploadObj.id) throw "Problem, no upload created";
-            ProjectActions.startUploadSuccess(uploadObj.id, details);
-        }).catch((ex) => {
-            ProjectActions.handleErrors(ex)
-        })
+                return response.json()
+            }).then((json) => {
+                let uploadObj = json;
+                if (!uploadObj || !uploadObj.id) throw "Problem, no upload created";
+                ProjectActions.startUploadSuccess(uploadObj.id, details);
+            }).catch((ex) => {
+                ProjectActions.handleErrors(ex)
+            })
     };
     fileReader.onerror = function (e) {
         ProjectActions.handleErrors(e.target.error);
@@ -1220,18 +1230,18 @@ ProjectActions.getChunkUrl.preEmit = (uploadId, chunkBlob, chunkNum, size, paren
                 }
             })
         ).then(checkResponse).then((response) => {
-            return response.json()
-        }).then((json) => {
-            let chunkObj = json;
-            if (chunkObj && chunkObj.url && chunkObj.host) {
-                // upload chunks
-                uploadChunk(uploadId, chunkObj.host + chunkObj.url, chunkBlob, size, parentId, parentKind, chunkNum, fileName, chunkUpdates)
-            } else {
-                throw 'Unexpected response';
-            }
-        }).catch((ex) => {
-            ProjectActions.updateAndProcessChunks(uploadId, chunkNum, {status: StatusEnum.STATUS_RETRY});
-        });
+                return response.json()
+            }).then((json) => {
+                let chunkObj = json;
+                if (chunkObj && chunkObj.url && chunkObj.host) {
+                    // upload chunks
+                    uploadChunk(uploadId, chunkObj.host + chunkObj.url, chunkBlob, size, parentId, parentKind, chunkNum, fileName, chunkUpdates)
+                } else {
+                    throw 'Unexpected response';
+                }
+            }).catch((ex) => {
+                ProjectActions.updateAndProcessChunks(uploadId, chunkNum, {status: StatusEnum.STATUS_RETRY});
+            });
     };
     fileReader.readAsArrayBuffer(chunkBlob);
 };
@@ -1273,16 +1283,16 @@ ProjectActions.allChunksUploaded.preEmit = (uploadId, parentId, parentKind, file
             }
         })
     ).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        if (fileId == null) {
-            ProjectActions.addFile(uploadId, parentId, parentKind, fileName, label);
-        } else {
-            ProjectActions.addFileVersion(uploadId, label, fileId);
-        }
-    }).catch((ex) => {
-        ProjectActions.uploadError(uploadId, fileName, projectId);
-    })
+            return response.json()
+        }).then((json) => {
+            if (fileId == null) {
+                ProjectActions.addFile(uploadId, parentId, parentKind, fileName, label);
+            } else {
+                ProjectActions.addFileVersion(uploadId, label, fileId);
+            }
+        }).catch((ex) => {
+            ProjectActions.uploadError(uploadId, fileName, projectId);
+        })
 };
 
 ProjectActions.addFile.preEmit = (uploadId, parentId, parentKind, fileName) => {
@@ -1296,14 +1306,14 @@ ProjectActions.addFile.preEmit = (uploadId, parentId, parentKind, fileName) => {
                 'id': uploadId
             }
         })).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        MainActions.addToast(fileName + ' uploaded successfully');
-        ProjectActions.addFileSuccess(parentId, parentKind, uploadId, json.id)
-    }).catch((ex) => {
-        MainActions.addToast('Failed to upload ' + fileName + '!');
-        ProjectActions.handleErrors(ex)
-    })
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast(fileName + ' uploaded successfully');
+            ProjectActions.addFileSuccess(parentId, parentKind, uploadId, json.id)
+        }).catch((ex) => {
+            MainActions.addToast('Failed to upload ' + fileName + '!');
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 // File Hashing

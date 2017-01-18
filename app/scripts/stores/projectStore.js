@@ -62,6 +62,7 @@ var ProjectStore = Reflux.createStore({
         this.relTo = null;
         this.relMsg = null;
         this.removeFileFromProvBtn = false;
+        this.responseHeaders = {};
         this.scale = null;
         this.screenSize = {};
         this.searchFilesList = [];
@@ -233,7 +234,6 @@ var ProjectStore = Reflux.createStore({
     },
 
     deleteMetadataPropertySuccess(id) {
-        this.templateProperties = BaseUtils.removeObjByKey(this.templateProperties, {key: 'id', value: id});
         this.trigger({
             templateProperties: this.templateProperties
         })
@@ -1273,14 +1273,22 @@ var ProjectStore = Reflux.createStore({
     },
 
     handleErrors (error) {
-        let err = error && error.message ? {msg: error.message, response: error.response.status} : null;
-        if(error && error.response.status !== 404) {
+        let err = error && error.message ? {msg: error.message, response: error.response ? error.response.status : null} : null;
+        if(err.response === null) {
             this.errorModals.push({
-                msg: error.response.status === 403 ? error.message + ': You don\'t have permissions to view or change' +
-                ' this resource' : error.message,
-                response: error.response.status,
+                msg: error.message,
+                response: 'Folders can not be uploaded',
                 ref: 'modal' + Math.floor(Math.random() * 10000)
             });
+        } else {
+            if (error && error.response.status !== 404) {
+                this.errorModals.push({
+                    msg: error.response.status === 403 ? error.message + ': You don\'t have permissions to view or change' +
+                    ' this resource' : error.message,
+                    response: error.response.status,
+                    ref: 'modal' + Math.floor(Math.random() * 10000)
+                });
+            }
         }
         this.error = err;
         this.loading = false;
@@ -1348,19 +1356,25 @@ var ProjectStore = Reflux.createStore({
         });
     },
 
-    loadProjects() {
+    getProjects() {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
     },
 
-    loadProjectsSuccess(results) {
+    getProjectsSuccess(results, headers, page) {
+        if(page <= 1) {
+            this.projects = results;
+        } else {
+            this.projects = [...this.projects, ...results];
+        }
+        this.responseHeaders = headers;
         this.loading = false;
-        this.projects = results;
         this.trigger({
             projects: this.projects,
-            loading: this.loading
+            loading: this.loading,
+            responseHeaders: this.responseHeaders
         })
     },
 
@@ -1410,7 +1424,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     addProjectSuccess() {
-        ProjectActions.loadProjects();
+        ProjectActions.getProjects();
         this.loading = false;
         this.trigger({
             loading: this.loading
@@ -1425,7 +1439,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     deleteProjectSuccess() {
-        ProjectActions.loadProjects();
+        ProjectActions.getProjects();
         ProjectActions.getUsageDetails();
         this.loading = false;
         this.trigger({
@@ -1455,11 +1469,17 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    getChildrenSuccess(results) {
-        this.children = results;
+    getChildrenSuccess(results, headers, page) {
+        if(page <= 1) {
+            this.children = results;
+        } else {
+            this.children = [...this.children, ...results];
+        }
+        this.responseHeaders = headers;
         this.loading = false;
         this.trigger({
             children: this.children,
+            responseHeaders: this.responseHeaders,
             loading: this.loading
         })
     },
@@ -1471,14 +1491,11 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    addFolderSuccess(id, parentKind) {
-        if (parentKind === 'dds-project') {
-            ProjectActions.getChildren(id, 'projects/');
-        } else {
-            ProjectActions.getChildren(id, 'folders/');
-        }
+    addFolderSuccess(json) {
+        this.children = [json, ...this.children];
         this.loading = false;
         this.trigger({
+            children: this.children,
             loading: this.loading
         })
     },

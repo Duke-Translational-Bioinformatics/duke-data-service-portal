@@ -16,14 +16,14 @@ class Home extends React.Component {
             projects: ProjectStore.projects,
             loading: false,
             modalOpen: MainStore.modalOpen === undefined ? true : MainStore.modalOpen,
+            responseHeaders: ProjectStore.responseHeaders,
             screenSize: ProjectStore.screenSize
         };
     }
 
     componentDidMount() {
-        let id = this.props.params.id;
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
-        ProjectActions.loadProjects(id);
+        ProjectActions.getProjects();
         ProjectActions.getUsageDetails();
         MainActions.removeLoginCookie();
     }

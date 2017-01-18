@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
-import { Link } from 'react-router';
 import Dropzone from 'react-dropzone';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
@@ -12,7 +11,6 @@ import LeftNav from 'material-ui/lib/left-nav';
 import Info from 'material-ui/lib/svg-icons/action/info';
 import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
 import RaisedButton from 'material-ui/lib/raised-button';
-import Tooltip from '../../../util/tooltip.js';
 
 class UploadManager extends React.Component {
 
@@ -87,7 +85,7 @@ class UploadManager extends React.Component {
                                           onDrop={this.onDrop.bind(this)}
                                           maxSize={5*1024*1024*1024}
                                           style={{width: '100%', border: '2px dashed #BDBDBD', backgroundColor: dropzoneColor}}>
-                                    <div style={styles.dropzoneText}>Drag and drop files here, or click to select files to upload.</div>
+                                    <div style={styles.dropzoneText}>Drag and drop files here, or click to select files to upload.<br/>Folders cannot be uploaded.</div>
                                 </Dropzone>
                                 {this.props.filesToUpload.length ? <h6 className="mdl-color-text--grey-600" style={styles.fileListHeader}>Preparing to upload:</h6> : null}
                             </div>
@@ -222,12 +220,12 @@ class UploadManager extends React.Component {
         });
     }
 
-    onDrop (files, rejectedFiles) {
+    onDrop (files, rejectedFiles, e) {
         ProjectActions.processFilesToUpload(files, rejectedFiles);
     }
 
     onHoverDropzone(e) {
-        this.setState({dropzoneHover: !this.state.dropzoneHover})
+        this.setState({dropzoneHover: !this.state.dropzoneHover});
     }
 
     toggleUploadManager() {
