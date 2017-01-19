@@ -21,10 +21,6 @@ import RaisedButton from 'material-ui/lib/raised-button';
 class FileDetails extends React.Component {
 
     render() {
-        if (this.props.error && this.props.error.response){
-            this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
-            this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
-        }
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
         let dlButton = null;
         let optionsMenu = null;
@@ -99,8 +95,7 @@ class FileDetails extends React.Component {
         Tooltip.bindEvents();
 
         let file = <Card className="project-container mdl-color--white content mdl-color-text--grey-800"
-                         style={{marginTop: this.props.windowWidth > 680 ? 115 : 30, paddingBottom: 30,
-                                 overflow: 'visible', padding: '10px 0px 10px 0px'}}>
+                         style={styles.card}>
             <div className="mdl-cell mdl-cell--12-col" style={{position: 'relative'}}>
                 { dlButton }
             </div>
@@ -134,7 +129,7 @@ class FileDetails extends React.Component {
                 <FileVersionsList {...this.props}/>
                 <VersionUpload {...this.props}/>
                 <div style={styles.uploadProg}>
-                    { this.props.uploads ? <Loaders {...this.props}/> : null }
+                    { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     { provAlert }
@@ -245,8 +240,9 @@ class FileDetails extends React.Component {
         ProjectActions.hideProvAlert();
     }
 
-    handleDownload(id, kind){
+    handleDownload(){
         let id = this.props.params.id;
+        let kind = Path.FILE;
         ProjectActions.getDownloadUrl(id, kind);
     }
 
@@ -287,6 +283,11 @@ var styles = {
     },
     button: {
         float: 'right'
+    },
+    card: {
+        paddingBottom: 30,
+        overflow: 'visible',
+        padding: '10px 0px 10px 0px'
     },
     detailsTitle: {
         textAlign: 'left',

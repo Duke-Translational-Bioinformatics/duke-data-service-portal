@@ -22,7 +22,7 @@ class ProjectDetails extends React.Component {
         let createdBy = this.props.project && this.props.project.audit ? this.props.project.audit.created_by.full_name : null;
         let projectName = this.props.project ? this.props.project.name : null;
         let crdOn = this.props.project && this.props.project.audit ? this.props.project.audit.created_on : null;
-        let x = new Date(crdOn);
+        let x = crdOn !== null ? new Date(crdOn) : '';
         let createdOn = x.toString();
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
         let uploadMdl = null;
@@ -34,8 +34,7 @@ class ProjectDetails extends React.Component {
         return (
             <Card
                 className="project-container mdl-color--white mdl-color-text--grey-800"
-                style={{marginTop: this.props.windowWidth > 680 ? 115 : 40,
-                        overflow: 'visible', padding: '10px 0px 10px 0px'}}>
+                style={{overflow: 'visible', padding: '10px 0px 10px 0px'}}>
                 { uploadMdl }
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div style={styles.menuIcon}>

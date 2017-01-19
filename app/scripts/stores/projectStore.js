@@ -6,9 +6,7 @@ import BaseUtils from '../../util/baseUtils.js';
 import { StatusEnum, Path } from '../enum';
 import {graphOptions, graphColors} from '../graphConfig';
 
-
 var ProjectStore = Reflux.createStore({
-
     init() {
         this.listenToMany(ProjectActions);
         this.activities = [];
@@ -21,21 +19,22 @@ var ProjectStore = Reflux.createStore({
         this.batchFiles = [];
         this.batchFolders = [];
         this.children = [];
-        this.childrenLoading = false;
         this.currentUser = {};
         this.destination = null;
         this.destinationKind = null;
         this.device = {};
         this.dltRelationsBtn = false;
         this.entityObj = null;
-        this.error = {};
-        this.errorModals = [];
         this.failedUploads = [];
         this.filesChecked = [];
+        this.filesToUpload = [];
+        this.filesRejectedForUpload = [];
         this.fileHashes = [];
         this.foldersChecked = [];
         this.fileVersions = [];
         this.drawerLoading = false;
+        this.includeKinds = [];
+        this.includeProjects = [];
         this.itemsSelected = null;
         this.metaDataTemplate = null;
         this.metaProps = [];
@@ -61,20 +60,29 @@ var ProjectStore = Reflux.createStore({
         this.relTo = null;
         this.relMsg = null;
         this.removeFileFromProvBtn = false;
+        this.responseHeaders = {};
         this.scale = null;
+        this.screenSize = {};
         this.searchFilesList = [];
+        this.searchFilters = [];
+        this.searchResults = [];
+        this.searchResultsFiles = [];
+        this.searchResultsFolders = [];
+        this.searchResultsProjects = [];
+        this.searchValue = null;
         this.selectedEntity = null;
         this.selectedNode = {};
         this.selectedEdge = null;
-        this.searchText = '';
+        this.showFilters = false;
         this.showPropertyCreator = false;
         this.showProvAlert = false;
         this.showProvCtrlBtns = false;
         this.showProvDetails = false;
         this.showTemplateCreator = false;
         this.showTemplateDetails = false;
-        this.screenSize = {};
+        this.showUserInfoPanel = false;
         this.showBatchOps = false;
+        this.showSearch = false;
         this.tagLabels = [];
         this.tagsToAdd = [];
         this.templateProperties = [];
@@ -87,6 +95,87 @@ var ProjectStore = Reflux.createStore({
         this.users = [];
         this.userKey = {};
         this.versionModal = false;
+    },
+
+    toggleUserInfoPanel() {
+        this.showUserInfoPanel = !this.showUserInfoPanel;
+        this.trigger({
+            showUserInfoPanel: this.showUserInfoPanel
+        })
+    },
+
+    setIncludedSearchProjects(includeProjects) {
+        this.includeProjects = includeProjects;
+        this.trigger({
+            includeProjects: this.includeProjects
+        });
+        this.setSearchFilters();
+    },
+
+    setSearchFilters() {
+        this.searchFilters = [];
+        this.includeProjects.forEach((projectId)=>{
+            this.searchFilters.push({"match":{"project.id": projectId}})
+        });
+        this.trigger({
+            searchFilters: this.searchFilters
+        });
+        ProjectActions.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
+    },
+
+    setIncludedSearchKinds(includeKinds) {
+        this.includeKinds = includeKinds;
+        ProjectActions.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
+        this.trigger({
+            includeKinds: this.includeKinds
+        })
+    },
+
+    toggleSearchFilters() {
+        this.showFilters = !this.showFilters;
+        this.trigger({
+            showFilters: this.showFilters
+        })
+    },
+
+    searchObjects(value) {
+        this.searchValue = value;
+        this.loading = true;
+        this.trigger({
+            loading: this.loading,
+            searchValue: this.searchValue
+        })
+    },
+
+    searchObjectsSuccess(results) {
+        this.loading = false;
+        this.searchResults = results;
+        this.searchResultsFiles = results.filter((obj)=>{
+            return obj.kind === 'dds-file';
+        });
+        this.searchResultsFolders = results.filter((obj)=>{
+            return obj.kind === 'dds-folder';
+        });
+        let p = results.map((obj) => {
+            return {name: obj.ancestors[0].name, id: obj.ancestors[0].id};
+        });
+        this.searchResultsProjects = BaseUtils.removeDuplicates(p, 'id');
+        this.trigger({
+            loading: this.loading,
+            searchResults: this.searchResults,
+            searchResultsFiles: this.searchResultsFiles,
+            searchResultsFolders: this.searchResultsFolders,
+            searchResultsProjects: this.searchResultsProjects
+        })
+    },
+
+    toggleSearch() {
+        this.searchValue = null;
+        this.showSearch = !this.showSearch;
+        this.trigger({
+            searchValue: this.searchValue,
+            showSearch: this.showSearch
+        })
     },
 
     getMoveItemList() {
@@ -820,24 +909,6 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    setSearchText(text) {
-        if(!text.indexOf(' ') <= 0) this.searchText = text;
-        this.showBatchOps = false;
-        this.itemsSelected = null;
-        this.trigger({
-            searchText: this.searchText,
-            itemsSelected: this.itemsSelected,
-            showBatchOps: this.showBatchOps
-        })
-    },
-
-    search() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    },
-
     searchFiles() {
         this.autoCompleteLoading = true;
         this.trigger({
@@ -1201,37 +1272,12 @@ var ProjectStore = Reflux.createStore({
     },
 
     handleErrors (error) {
-        let err = error && error.message ? {msg: error.message, response: error.response.status} : null;
-        if(error && error.response.status !== 404) {
-            this.errorModals.push({
-                msg: error.response.status === 403 ? error.message + ': You don\'t have permissions to view or change' +
-                ' this resource' : error.message,
-                response: error.response.status,
-                ref: 'modal' + Math.floor(Math.random() * 10000)
-            });
-        }
-        this.error = err;
+        MainActions.displayErrorModals(error);
         this.loading = false;
         this.drawerLoading = false;
         this.trigger({
             drawerLoading: this.drawerLoading,
-            error: this.error,
-            errorModals: this.errorModals,
             loading: this.loading
-        })
-    },
-
-    removeErrorModal(refId) {
-        for (let i = 0; i < this.errorModals.length; i++) {
-            if (this.errorModals[i].ref === refId) {
-                this.errorModals.splice(i, 1);
-                break;
-            }
-        }
-        this.error = {};
-        this.trigger({
-            error: this.error,
-            errorModals: this.errorModals
         })
     },
 
@@ -1276,19 +1322,25 @@ var ProjectStore = Reflux.createStore({
         });
     },
 
-    loadProjects() {
+    getProjects() {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
     },
 
-    loadProjectsSuccess(results) {
+    getProjectsSuccess(results, headers, page) {
+        if(page <= 1) {
+            this.projects = results;
+        } else {
+            this.projects = [...this.projects, ...results];
+        }
+        this.responseHeaders = headers;
         this.loading = false;
-        this.projects = results;
         this.trigger({
             projects: this.projects,
-            loading: this.loading
+            loading: this.loading,
+            responseHeaders: this.responseHeaders
         })
     },
 
@@ -1338,7 +1390,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     addProjectSuccess() {
-        ProjectActions.loadProjects();
+        ProjectActions.getProjects();
         this.loading = false;
         this.trigger({
             loading: this.loading
@@ -1353,7 +1405,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     deleteProjectSuccess() {
-        ProjectActions.loadProjects();
+        ProjectActions.getProjects();
         ProjectActions.getUsageDetails();
         this.loading = false;
         this.trigger({
@@ -1377,21 +1429,23 @@ var ProjectStore = Reflux.createStore({
     },
 
     getChildren() {
-        this.childrenLoading = true;
         this.loading = true;
         this.trigger({
-            loading: this.loading,
-            childrenLoading: this.childrenLoading
+            loading: this.loading
         })
     },
 
-    getChildrenSuccess(results) {
-        this.children = results;
-        this.childrenLoading = false;
+    getChildrenSuccess(results, headers, page) {
+        if(page <= 1) {
+            this.children = results;
+        } else {
+            this.children = [...this.children, ...results];
+        }
+        this.responseHeaders = headers;
         this.loading = false;
         this.trigger({
             children: this.children,
-            childrenLoading: this.childrenLoading,
+            responseHeaders: this.responseHeaders,
             loading: this.loading
         })
     },
@@ -1403,14 +1457,11 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    addFolderSuccess(id, parentKind) {
-        if (parentKind === 'dds-project') {
-            ProjectActions.getChildren(id, 'projects/');
-        } else {
-            ProjectActions.getChildren(id, 'folders/');
-        }
+    addFolderSuccess(json) {
+        this.children = [json, ...this.children];
         this.loading = false;
         this.trigger({
+            children: this.children,
             loading: this.loading
         })
     },
@@ -1489,6 +1540,13 @@ var ProjectStore = Reflux.createStore({
         this.loading = false;
         this.trigger({
             children: this.children,
+            loading: this.loading
+        })
+    },
+
+    getEntity() {
+        this.loading = true;
+        this.trigger({
             loading: this.loading
         })
     },
@@ -1628,6 +1686,15 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
+    processFilesToUpload(files, rejectedFiles) {
+        this.filesToUpload = files;
+        this.filesRejectedForUpload = rejectedFiles;
+        this.trigger({
+            filesToUpload: this.filesToUpload,
+            filesRejectedForUpload: this.filesRejectedForUpload
+        })
+    },
+
     startUpload() {
         this.loading = true;
         this.trigger({
@@ -1680,7 +1747,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     updateAndProcessChunks(uploadId, chunkNum, chunkUpdates) {
-        if (!uploadId && !this.uploads[uploadId]) {
+        if (!uploadId || !this.uploads[uploadId]) {
             return;
         }
         let upload = this.uploads[uploadId];
@@ -1735,6 +1802,16 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
+    cancelUpload(uploadId, name) {
+        if(this.uploads.hasOwnProperty(uploadId)) {
+            delete this.uploads[uploadId];
+        }
+        MainActions.addToast('Canceled upload of '+name);
+        this.trigger({
+            uploads: this.uploads
+        })
+    },
+
     removeFailedUploads() {
         this.failedUploads = [];
         MainActions.removeFailedUploads(this.failedUploads);
@@ -1744,30 +1821,7 @@ var ProjectStore = Reflux.createStore({
     },
 
     checkForHash(uploadId, parentId, parentKind, name, label, fileId, projectId) {
-        if (!Array.prototype.find) { // Polyfill for Internet Explorer Array.find()
-            Array.prototype.find = function(predicate) {
-                'use strict';
-                if (this == null) {
-                    throw new TypeError('Array.prototype.find called on null or undefined');
-                }
-                if (typeof predicate !== 'function') {
-                    throw new TypeError('predicate must be a function');
-                }
-                var list = Object(this);
-                var length = list.length >>> 0;
-                var thisArg = arguments[1];
-                var value;
-
-                for (var i = 0; i < length; i++) {
-                    value = list[i];
-                    if (predicate.call(thisArg, value, i, list)) {
-                        return value;
-                    }
-                }
-                return undefined;
-            };
-        }
-        let hash = this.fileHashes.find((fileHash)=>{ // array.find() method not supported in IE
+        let hash = this.fileHashes.find((fileHash)=>{ //Array.find method not supported in IE. See polyfills.js
             return fileHash.id === uploadId;
         });
         if(!hash) {
