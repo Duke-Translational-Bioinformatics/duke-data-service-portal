@@ -4,7 +4,7 @@ import ProjectStore from '../stores/projectStore';
 import FileDetails from '../components/fileComponents/fileDetails.jsx';
 import FileOptions from '../components/fileComponents/fileOptions.jsx';
 import Provenance from '../components/globalComponents/provenance.jsx';
-import TagManager from '../components/globalComponents/tagManager.jsx'
+import TagManager from '../components/globalComponents/tagManager.jsx';
 
 class File extends React.Component {
 
@@ -14,8 +14,6 @@ class File extends React.Component {
             addEdgeMode: ProjectStore.addEdgeMode,
             autoCompleteLoading: ProjectStore.autoCompleteLoading,
             dltRelationsBtn: ProjectStore.dltRelationsBtn,
-            error: ProjectStore.error,
-            errorModal: ProjectStore.errorModal,
             filesChecked: ProjectStore.filesChecked,
             drawerLoading: ProjectStore.drawerLoading,
             loading: false,

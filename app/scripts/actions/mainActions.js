@@ -6,6 +6,8 @@ var MainActions = Reflux.createActions([
     'authenticationServiceValidate',
     'authenticationServiceValidateSuccess',
     'authenticationServiceValidateError',
+    'clearErrors',
+    'displayErrorModals',
     'failedUpload',
     'getDdsApiToken',
     'getDdsApiTokenSuccess',
@@ -20,7 +22,8 @@ var MainActions = Reflux.createActions([
     'closePhiModal',
     'handleLogout',
     'removeLoginCookie',
-    'removeFailedUploads'
+    'removeFailedUploads',
+    'removeErrorModal'
 ]);
 
 MainActions.authenticationServiceValidate.preEmit = (appConfig, accessToken) => {

@@ -12,6 +12,7 @@ import FontIcon from 'material-ui/lib/font-icon';
 import Help from 'material-ui/lib/svg-icons/action/help';
 import IconButton from 'material-ui/lib/icon-button';
 import Loaders from '../../components/globalComponents/loaders.jsx';
+import LinearProgress from 'material-ui/lib/linear-progress';
 import Paper from 'material-ui/lib/paper';
 import RaisedButton from 'material-ui/lib/raised-button';
 import Search from 'material-ui/lib/svg-icons/action/search';
@@ -32,10 +33,6 @@ class MetadataTemplateList extends React.Component {
     }
 
     render() {
-        if (this.props.error && this.props.error.response) {
-            this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
-            this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
-        }
         let currentUser = this.props.currentUser && this.props.currentUser !== null ? this.props.currentUser : null;
         let route = this.props.routerPath.split('/').splice([1], 1).toString();
         let showSearch = this.state.searchMode ? 'block' : 'none';
@@ -275,6 +272,10 @@ var styles = {
         float: 'left',
         width: '20%',
         marginTop: 12
+    },
+    uploader: {
+        width: '95%',
+        margin: '0 auto'
     }
 };
 

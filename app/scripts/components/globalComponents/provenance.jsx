@@ -54,7 +54,7 @@ class Provenance extends React.Component {
     componentDidMount() {
         // Listen for resize changes when rotating device
         window.addEventListener('resize', this.handleResize);
-        ProjectActions.loadProjects();
+        ProjectActions.getProjects();
         ProjectActions.getActivities();
         if(this.props.provNodes && this.props.provNodes.length > 0) {
             let edges = this.props.provEdges && this.props.provEdges.length > 0 ? this.props.provEdges : [];

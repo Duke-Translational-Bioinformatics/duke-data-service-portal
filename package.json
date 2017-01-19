@@ -52,6 +52,7 @@
     "react": "^0.14.0",
     "react-cookie": "^0.3.4",
     "react-dom": "0.14.6",
+    "react-dropzone": "^3.9.0",
     "react-router": "^0.13.2",
     "react-tap-event-plugin": "^0.2.2",
     "reflux": "^0.2.7"

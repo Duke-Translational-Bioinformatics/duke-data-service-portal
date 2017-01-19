@@ -14,9 +14,10 @@ class Folder extends React.Component {
         super(props);
         this.state = {
             children: ProjectStore.children,
-            error: ProjectStore.error,
-            errorModal: ProjectStore.errorModal,
+            responseHeaders: ProjectStore.responseHeaders,
             filesChecked: ProjectStore.filesChecked,
+            filesToUpload: ProjectStore.filesToUpload,
+            filesRejectedForUpload: ProjectStore.filesRejectedForUpload,
             foldersChecked: ProjectStore.foldersChecked,
             loading: false,
             moveItemList: ProjectStore.moveItemList,
@@ -36,7 +37,6 @@ class Folder extends React.Component {
     }
 
     componentDidMount() {
-        if(this.state.searchText !== '') ProjectActions.setSearchText('');
         let kind = 'folders';
         let path = 'folders/';
         let id = this.props.params.id;

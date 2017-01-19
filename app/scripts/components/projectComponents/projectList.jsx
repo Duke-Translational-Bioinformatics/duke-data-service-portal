@@ -8,32 +8,26 @@ import Card from 'material-ui/lib/card/card';
 import CardText from 'material-ui/lib/card/card-text';
 import CardTitle from 'material-ui/lib/card/card-title';
 import FontIcon from 'material-ui/lib/font-icon';
+import RaisedButton from 'material-ui/lib/raised-button';
 
 class ProjectList extends React.Component {
 
-    constructor(props) {
-        super(props)
-    }
-
     render() {
-        if (this.props.error && this.props.error.response){
-            this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
-            this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
-        }
+        let headers = this.props.responseHeaders && this.props.responseHeaders !== null ? this.props.responseHeaders : null;
+        let nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
+        let totalProjects = headers !== null && !!headers['x-total'] ? headers['x-total'][0] : null;
         let projects = this.props.projects.map((project) => {
-            if (!project.is_deleted){
-                return (
-                    <Card key={ project.id } className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.card}>
-                        <FontIcon className="material-icons" style={styles.icon}>content_paste</FontIcon>
-                        <a href={UrlGen.routes.project(project.id)} className="external">
-                            <CardTitle title={project.name} subtitle={'ID: ' + project.id} titleColor="#424242" style={styles.cardTitle}/>
-                        </a>
-                        <CardText>
-                            <span className="mdl-color-text--grey-900">Description:</span>{ project.description.length > 300 ? ' ' + project.description.substring(0,300)+'...' : ' ' + project.description }
-                        </CardText>
-                    </Card>
-                );
-            }
+            return (
+                <Card key={ project.id } className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.card}>
+                    <FontIcon className="material-icons" style={styles.icon}>content_paste</FontIcon>
+                    <a href={UrlGen.routes.project(project.id)} className="external">
+                        <CardTitle title={project.name} subtitle={'ID: ' + project.id} titleColor="#424242" style={styles.cardTitle}/>
+                    </a>
+                    <CardText>
+                        <span className="mdl-color-text--grey-900">Description:</span>{ project.description.length > 300 ? ' ' + project.description.substring(0,300)+'...' : ' ' + project.description }
+                    </CardText>
+                </Card>
+            );
         });
 
         return (
@@ -46,14 +40,22 @@ class ProjectList extends React.Component {
                     <Loaders {...this.props}/>
                 </div>
                 { projects }
+                {this.props.projects.length < totalProjects ? <div className="mdl-cell mdl-cell--12-col">
+                        <RaisedButton
+                            label={this.props.loading ? "Loading..." : "Load More"}
+                            secondary={true}
+                            onTouchTap={()=>this.loadMore(nextPage)}
+                            fullWidth={true}
+                            labelStyle={{fontWeight: '100'}}/>
+                    </div> : null}
             </div>
         );
     }
-}
 
-ProjectList.contextTypes = {
-    muiTheme: React.PropTypes.object
-};
+    loadMore(page) {
+        ProjectActions.getProjects(page);
+    }
+}
 
 var styles = {
     card: {
@@ -82,6 +84,10 @@ var styles = {
         float: 'left',
         marginLeft: -14
     }
+};
+
+ProjectList.contextTypes = {
+    muiTheme: React.PropTypes.object
 };
 
 ProjectList.propTypes = {
