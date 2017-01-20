@@ -25,9 +25,7 @@ class NotFound extends React.Component {
     }
 
     goHome() {
-        MainActions.clearErrors();
-        setTimeout(()=> this.props.appRouter.transitionTo('/home'), 350);
-
+       this.props.appRouter.transitionTo('/home');
     }
 }
 var styles = {

@@ -186,7 +186,7 @@ class MetadataObjectCreator extends React.Component {
     createMetadataObject(templateId) {
         let kind = 'dds-file';
         let files = this.props.filesChecked;
-        let fileId = this.props.params.id;
+        let fileId = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.params.id;
         let metaProps = ProjectStore.metaProps;
         let errors = this.state.errorText;
         if(Object.keys(errors).length === 0 && errors.constructor === Object) {

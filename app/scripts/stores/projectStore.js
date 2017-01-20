@@ -213,10 +213,11 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    createMetadataObjectSuccess() {
+    createMetadataObjectSuccess(id, kind) {
         this.drawerLoading = false;
         this.showBatchOps = false;
         this.showTemplateDetails = false;
+        ProjectActions.getObjectMetadata(id,kind);
         this.trigger({
             drawerLoading: this.drawerLoading,
             showBatchOps: this.showBatchOps,

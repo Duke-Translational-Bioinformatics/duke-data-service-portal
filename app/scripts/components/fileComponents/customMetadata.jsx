@@ -33,7 +33,7 @@ const CustomMetadata = () => {
         </div>
     </Card>;
     return (
-        <div className="project-container">
+        <div className="project-container" style={style.wrapper}>
             <h5 className="mdl-color-text--grey-800" style={styles.heading}>Custom Metadata</h5>
             {customMetadata}
         </div>
@@ -42,7 +42,8 @@ const CustomMetadata = () => {
 
 var styles = {
     card: {
-        padding: '10px 0px 10px 0px'
+        padding: '10px 0px 10px 0px',
+        marginTop: 0
     },
     heading: {
         paddingLeft: 0,
@@ -51,6 +52,9 @@ var styles = {
     list: {
         paddingTop: 5,
         clear: 'both'
+    },
+    wrapper: {
+        marginTop: 0
     }
 };
 

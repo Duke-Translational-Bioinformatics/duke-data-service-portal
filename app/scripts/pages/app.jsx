@@ -81,7 +81,10 @@ class App extends React.Component {
 
     checkError() {
         if (this.state.error && this.state.error.response){
-            this.state.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
+            if(this.state.error.response === 404) {
+                this.props.appRouter.transitionTo('/notFound');
+                MainActions.clearErrors();
+            }
             this.state.error.response != 404 ? console.log(this.state.error.msg) : null;
         }
     }
