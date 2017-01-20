@@ -33,7 +33,7 @@ const CustomMetadata = () => {
         </div>
     </Card>;
     return (
-        <div className="project-container" style={style.wrapper}>
+        <div className="project-container" style={styles.wrapper}>
             <h5 className="mdl-color-text--grey-800" style={styles.heading}>Custom Metadata</h5>
             {customMetadata}
         </div>
