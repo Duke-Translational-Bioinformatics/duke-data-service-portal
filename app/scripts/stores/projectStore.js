@@ -52,6 +52,7 @@ var ProjectStore = Reflux.createStore({
         this.project = {};
         this.projPermissions = null;
         this.projectMembers = [];
+        this.metaObjProps = [];
         this.provEditorModal = {open: false, id: null};
         this.provFileVersions = [];
         this.provEdges = [];
@@ -194,8 +195,14 @@ var ProjectStore = Reflux.createStore({
 
     getObjectMetadataSuccess(results) {
         this.objectMetadata = results;
+        this.metaObjProps = results.map((prop)=>{
+            return prop.properties.map((prop)=>{
+                return {key: prop.template_property.key, id: prop.template_property.id, value: prop.value};
+            })
+        });
         this.trigger({
-            objectMetadata: this.objectMetadata
+            objectMetadata: this.objectMetadata,
+            metaObjProps: this.metaObjProps
         })
     },
 

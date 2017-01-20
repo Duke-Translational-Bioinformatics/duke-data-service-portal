@@ -87,6 +87,8 @@ class FileOptionsMenu extends React.Component {
     }
 
     openTagManager() {
+        let id = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.entityObj.id;
+        ProjectActions.getObjectMetadata(id, Kind.DDS_FILE);
         ProjectActions.toggleTagManager();
     }
 }

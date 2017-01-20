@@ -25,6 +25,7 @@ class Project extends React.Component {
             filesRejectedForUpload: ProjectStore.filesRejectedForUpload,
             foldersChecked: ProjectStore.foldersChecked,
             loading: false,
+            metaObjProps: ProjectStore.metaObjProps,
             moveItemList: ProjectStore.moveItemList,
             moveToObj: ProjectStore.moveToObj,
             objectTags: ProjectStore.objectTags,

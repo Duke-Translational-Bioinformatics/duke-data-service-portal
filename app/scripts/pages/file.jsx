@@ -1,6 +1,7 @@
 import React from 'react'
 import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
+import {Kind} from '../../util/urlEnum';
 import FileDetails from '../components/fileComponents/fileDetails.jsx';
 import FileOptions from '../components/fileComponents/fileOptions.jsx';
 import Provenance from '../components/globalComponents/provenance.jsx';
@@ -17,6 +18,7 @@ class File extends React.Component {
             filesChecked: ProjectStore.filesChecked,
             drawerLoading: ProjectStore.drawerLoading,
             loading: false,
+            metaObjProps: ProjectStore.metaObjProps,
             moveItemList: ProjectStore.moveItemList,
             moveModal: ProjectStore.moveModal,
             moveErrorModal: ProjectStore.moveErrorModal,
@@ -73,11 +75,10 @@ class File extends React.Component {
     }
 
     _loadFile(id, kind) {
-        let metadataKind = 'dds-file';
         ProjectActions.getEntity(id, kind);
         ProjectActions.getFileVersions(id);
-        ProjectActions.getObjectMetadata(id, metadataKind);
-        ProjectActions.getTags(id, 'dds-file');
+        ProjectActions.getObjectMetadata(id, Kind.DDS_FILE);
+        ProjectActions.getTags(id, Kind.DDS_FILE);
         ProjectActions.getTagLabels(); // Used to generate a list of tag labels
         ProjectActions.clearSelectedItems(); // Clear checked files and folders from list
     }

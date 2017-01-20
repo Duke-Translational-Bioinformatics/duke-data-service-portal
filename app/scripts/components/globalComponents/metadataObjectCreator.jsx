@@ -20,8 +20,8 @@ class MetadataObjectCreator extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            dateValue: {},
             errorText: {},
-            metaProps: [],
             noValueWarning: false
         };
     }
@@ -46,33 +46,55 @@ class MetadataObjectCreator extends React.Component {
                 </span>
             );
         }
+
         let currentUser = this.props.currentUser && this.props.currentUser !== null ? this.props.currentUser : null;
         let name = this.props.entityObj && this.props.filesChecked < 1 ? this.props.entityObj.name : 'selected files';
+        let metaObjProps = this.props.metaObjProps && this.props.metaObjProps !== null ? this.props.metaObjProps : null;
         let properties = this.props.templateProperties && this.props.templateProperties.length !== 0 ? this.props.templateProperties.map((obj)=>{
             let type = BaseUtils.getTemplatePropertyType(obj.type);
+            let setValues = (metaObjProps) => {
+                let value = '';
+                metaObjProps.forEach((prop)=> {
+                    return prop.forEach((p)=> {
+                        if(p.id === obj.id && obj.type !== 'date') {
+                            value = p.value;
+                        } else if(p.id === obj.id && obj.type === 'date') {
+                            value = new Date(p.value.split("-").join("/"))
+                        }
+                    });
+                });
+                return value;
+            };
             return (
                 <TableRow  key={obj.id}>
                     <TableRowColumn style={styles.tableHead1}>{obj.key}</TableRowColumn>
                     <TableRowColumn style={styles.tableHead2}>{type}</TableRowColumn>
                     <TableRowColumn style={styles.tableHead3}>
-                        {type !== 'date' ? <TextField
-                            fullWidth={true}
-                            id={obj.key}
-                            ref={obj.key}
-                            title={type}
-                            style={styles.textField}
-                            underlineStyle={styles.textField.underline}
-                            hintText={"Must be a "+type}
-                            errorText={this.state.errorText && this.state.errorText.hasOwnProperty(obj.key) ? this.state.errorText[obj.key].text : ''}
-                            floatingLabelText="Value"
-                            floatingLabelStyle={styles.textField.floatingLabel}
-                            onBlur={this.addToPropertyList.bind(this, obj.key, type)}
-                            onChange={this.handleInputValidation.bind(this)}
-                            /> : <DatePicker hintText="Value" container="inline"
-                                             id={obj.key}
-                                             formatDate={formatDate}
-                                             mode="portrait" onChange={(x, event) => this.addDateProperty(x, event, obj.key)}
-                                             underlineStyle={styles.datePicker.underline} style={styles.datePicker}/>}
+                        {type !== 'date' ?
+                            <TextField
+                                fullWidth={true}
+                                id={obj.key}
+                                ref={obj.key}
+                                defaultValue={setValues(metaObjProps)}
+                                title={type}
+                                style={styles.textField}
+                                underlineStyle={styles.textField.underline}
+                                hintText={"Must be a "+type}
+                                errorText={this.state.errorText && this.state.errorText.hasOwnProperty(obj.key) ? this.state.errorText[obj.key].text : ''}
+                                floatingLabelText="Value"
+                                floatingLabelStyle={styles.textField.floatingLabel}
+                                onBlur={this.addToPropertyList.bind(this, obj.key)}
+                                onChange={this.handleInputValidation.bind(this)}/> :
+                            <DatePicker
+                                hintText="Value" container="inline"
+                                id={obj.key}
+                                ref={obj.key}
+                                formatDate={formatDate}
+                                value={this.state.dateValue[obj.key] ? this.state.dateValue[obj.key].value : setValues(metaObjProps)}
+                                mode="portrait"
+                                onChange={(x, event) => this.addDateProperty(x, event, obj.key)}
+                                underlineStyle={styles.datePicker.underline}
+                                style={styles.datePicker}/>}
                     </TableRowColumn>
                 </TableRow>
             )
@@ -133,7 +155,7 @@ class MetadataObjectCreator extends React.Component {
                     <Paper className="mdl-cell mdl-cell--12-col"
                            style={{backgroundColor: '#ef5350', color: '#EEEEEE', height: 40, marginBottom: 10, marginTop: 10, padding: 10, textAlign: 'center', display: showWarning}}
                            zDepth={1}>
-                       <span>You must add at least one value</span>
+                       <span>You must add or edit at least one value</span>
                     </Paper>
                     <RaisedButton label={'Cancel'} secondary={true}
                                   labelStyle={styles.button.label}
@@ -149,36 +171,38 @@ class MetadataObjectCreator extends React.Component {
         )
     }
 
-    replacePropertyValue(metaProps, id, value) {
-        metaProps = metaProps.filter(( obj ) => {
-            return obj.key !== id;
+    replacePropertyValue(metaProps, key, value) {
+        metaProps = metaProps.filter((obj) => {
+            return obj.key !== key;
         });
-        metaProps.push({key: id, value: value});
+        metaProps.push({key: key, value: value});
         ProjectActions.createMetaPropsList(metaProps);
     }
 
-    addDateProperty(x, date, id) { // x is event which is always null. This is MUI behavior
+    addDateProperty(x, date, key) { // x is event which is always null. This is MUI behavior
         let metaProps = ProjectStore.metaProps;
         let formattedDate = date.toISOString().split('T')[0];
-        if(!BaseUtils.objectPropInArray(metaProps, 'key', id)) { //If not in array, add object
-            metaProps.push({key: id, value: formattedDate});
+        this.state.dateValue[key] = {value: date}; // Workaround for strange MUI defaultValue behavior. Changes value.
+        this.setState({dateValue: this.state.dateValue});
+        if(!BaseUtils.objectPropInArray(metaProps, 'key', key)) { //If not in array, add object
+            metaProps.push({key: key, value: formattedDate});
             ProjectActions.createMetaPropsList(metaProps);
         } else {
-            if(BaseUtils.objectPropInArray(metaProps, 'key', id)) { //If in array, value changed, replace obj
-                this.replacePropertyValue(metaProps, id, formattedDate);
+            if(BaseUtils.objectPropInArray(metaProps, 'key', key)) { //If in array, value changed, replace obj
+                this.replacePropertyValue(metaProps, key, formattedDate);
             }
         }
     }
 
-    addToPropertyList(id) {
-        let value = this.refs[id].getValue();
+    addToPropertyList(key) {
+        let value = this.refs[key].getValue();
         let metaProps = ProjectStore.metaProps;
-        if(this.refs[id].getValue() !== '' && !BaseUtils.objectPropInArray(metaProps, 'key', id)) {
-            metaProps.push({key: id, value: value});
+        if(this.refs[key].getValue() !== '' && !BaseUtils.objectPropInArray(metaProps, 'key', key)) {
+            metaProps.push({key: key, value: value});
             ProjectActions.createMetaPropsList(metaProps);
         } else {
-            if(BaseUtils.objectPropInArray(metaProps, 'key', id)) {
-                this.replacePropertyValue(metaProps, id, value);
+            if(BaseUtils.objectPropInArray(metaProps, 'key', key)) {
+                this.replacePropertyValue(metaProps, key, value);
             }
         }
     }
@@ -237,6 +261,7 @@ class MetadataObjectCreator extends React.Component {
     toggleTagManager() {
         ProjectActions.toggleTagManager();
         ProjectActions.createMetaPropsList([]);
+        this.setState({dateValue:{}});
         if(this.props.showTemplateDetails) ProjectActions.showMetadataTemplateList();
     }
 }
