@@ -259,7 +259,6 @@ ProjectActions.getObjectMetadata.preEmit = (id, kind) => {
         .then(checkResponse).then((response) => {
             return response.json()
         }).then((json) => {
-            console.log(JSON.stringify(json.results))
             ProjectActions.getObjectMetadataSuccess(json.results);
         }).catch((ex) => {
             ProjectActions.handleErrors(ex)
