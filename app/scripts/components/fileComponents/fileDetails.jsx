@@ -20,10 +20,6 @@ import RaisedButton from 'material-ui/lib/raised-button';
 
 class FileDetails extends React.Component {
 
-    //componentDidUpdate(prevProps) {
-    //    if(prevProps.objectMetadata !== this.props.objectMetadata) console.log(this.props.objectMetadata)
-    //}
-
     render() {
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
         let dlButton = null;
