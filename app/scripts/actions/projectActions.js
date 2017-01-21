@@ -259,7 +259,7 @@ ProjectActions.getObjectMetadata.preEmit = (id, kind) => {
         .then(checkResponse).then((response) => {
             return response.json()
         }).then((json) => {
-            ProjectActions.getObjectMetadataSuccess(json.results)
+            ProjectActions.getObjectMetadataSuccess(json.results);
         }).catch((ex) => {
             ProjectActions.handleErrors(ex)
         })
@@ -275,7 +275,7 @@ ProjectActions.createMetadataObject.preEmit = (kind, fileId, templateId, propert
             return response.json()
         }).then((json) => {
             MainActions.addToast('A new metadata object was created.');
-            ProjectActions.createMetadataObjectSuccess(json);
+            ProjectActions.createMetadataObjectSuccess(fileId, kind);
         }).catch((ex) => {
             if(ex.response.status === 409) {
                 ProjectActions.updateMetadataObject(kind, fileId, templateId, properties);
@@ -295,7 +295,7 @@ ProjectActions.updateMetadataObject.preEmit = (kind, fileId, templateId, propert
             return response.json()
         }).then((json) => {
             MainActions.addToast('This metadata object was updated.');
-            ProjectActions.createMetadataObjectSuccess(json);
+            ProjectActions.createMetadataObjectSuccess(fileId, kind);
         }).catch((ex) => {
             MainActions.addToast('Failed to update metadata object');
             ProjectActions.handleErrors(ex)

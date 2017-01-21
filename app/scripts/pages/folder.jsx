@@ -20,6 +20,7 @@ class Folder extends React.Component {
             filesRejectedForUpload: ProjectStore.filesRejectedForUpload,
             foldersChecked: ProjectStore.foldersChecked,
             loading: false,
+            metaObjProps: ProjectStore.metaObjProps,
             moveItemList: ProjectStore.moveItemList,
             moveModal: ProjectStore.moveModal,
             moveErrorModal: ProjectStore.moveErrorModal,

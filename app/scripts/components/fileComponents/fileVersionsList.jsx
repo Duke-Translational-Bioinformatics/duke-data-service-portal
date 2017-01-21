@@ -5,7 +5,6 @@ import Dialog from 'material-ui/lib/dialog';
 import Divider from 'material-ui/lib/divider';
 import List from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
-import ActionInfo from 'material-ui/lib/svg-icons/action/info';
 
 class FileVersionsList extends React.Component {
 
@@ -21,7 +20,6 @@ class FileVersionsList extends React.Component {
                             <ListItem primaryText={'Version: ' + version.version}
                                       secondaryText={<p><span>{version.label}</span><br/> Created on: {' ' + createdOn}</p>}
                                       secondaryTextLines={2}
-                                      rightIcon={<ActionInfo />}
                                       style={styles.listItem}
                                       onTouchTap={() => this.goTo(version.id)}/>
                             <Divider />
