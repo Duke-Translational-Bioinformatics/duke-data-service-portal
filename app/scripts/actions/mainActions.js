@@ -3,15 +3,12 @@ import appConfig from '../config';
 import {UrlGen} from '../../util/urlEnum';
 
 var MainActions = Reflux.createActions([
-    'authenticationServiceValidate',
-    'authenticationServiceValidateSuccess',
-    'authenticationServiceValidateError',
+    'getApiToken',
+    'getApiTokenSuccess',
+    'getApiTokenError',
     'clearErrors',
     'displayErrorModals',
     'failedUpload',
-    'getDdsApiToken',
-    'getDdsApiTokenSuccess',
-    'getDdsApiTokenError',
     'setApiToken',
     'getCurrentUser',
     'getCurrentUserSuccess',
@@ -26,8 +23,8 @@ var MainActions = Reflux.createActions([
     'removeErrorModal'
 ]);
 
-MainActions.authenticationServiceValidate.preEmit = (appConfig, accessToken) => {
-    fetch(UrlGen.routes.authServiceUri + '/api/v1/token_info?access_token=' + accessToken, {
+MainActions.getApiToken.preEmit = (appConfig, accessToken) => {
+    fetch('https://dukeds-dev.herokuapp.com/api/v1/user/api_token?access_token=' + accessToken+'&authentication_service_id=be33eb97-3bc8-4ce8-a109-c82aa1b32b23', {
         method: 'get',
         headers: {
             'Accept': 'application/json',
@@ -36,34 +33,13 @@ MainActions.authenticationServiceValidate.preEmit = (appConfig, accessToken) => 
     }).then(function (response) {
         return response.json()
     }).then(function (json) {
-        if (json.signed_info) {
-            MainActions.authenticationServiceValidateSuccess(json.signed_info)
+        if (json.api_token) {
+            MainActions.getApiTokenSuccess(json.api_token)
         } else {
             throw "Error has occurred";
         }
     }).catch(function (ex) {
-        MainActions.authenticationServiceValidateError(ex)
-    });
-};
-
-MainActions.getDdsApiToken.preEmit = (appConfig, signedInfo) => {
-    fetch(UrlGen.routes.baseUrl + '/api/v1/user/api_token?access_token=' + signedInfo, {
-        method: 'get',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    }).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        if (json && json.api_token) {
-            MainActions.setApiToken(json.api_token);
-            MainActions.getDdsApiTokenSuccess(json.api_token);
-        } else {
-            throw error;
-        }
-    }).catch(function (ex) {
-        MainActions.getDdsApiTokenError(ex)
+        MainActions.getApiTokenError(ex)
     });
 };
 

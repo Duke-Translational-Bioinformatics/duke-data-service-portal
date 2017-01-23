@@ -61,9 +61,11 @@ class App extends React.Component {
             ipad: app.device.ipad,
             iphone: app.device.iphone
         };
-        if (this.state.appConfig.apiToken) MainActions.getCurrentUser();
+        if (this.state.appConfig.apiToken) {
+            MainActions.getCurrentUser();
+            ProjectActions.loadMetadataTemplates(null);
+        }
         ProjectActions.getDeviceType(device);
-        ProjectActions.loadMetadataTemplates(null);
         this.checkError();
     }
 
@@ -74,7 +76,7 @@ class App extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if(prevProps.routerPath === '/login' && this.state.appConfig.apiToken) MainActions.getCurrentUser();
+        if(prevProps.routerPath === '/home' && this.state.appConfig.apiToken) MainActions.getCurrentUser();
         this.showToasts();
         this.checkError();
     }
