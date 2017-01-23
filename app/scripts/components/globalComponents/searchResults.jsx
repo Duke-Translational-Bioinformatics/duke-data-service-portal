@@ -86,13 +86,13 @@ class SearchResults extends React.Component {
                 );
             }
         });
-
+        let pageResults = this.props.searchResults.length > searchResults.length ? searchResults.length+' out of '+this.props.searchResults.length : searchResults.length;
         return (
             <div className="search-results-container" style={{marginLeft: this.props.showFilters ? '23%' : ''}}>
                  <SearchFilters {...this.props} />
                  <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
                     <div style={styles.searchTextWrapper}>
-                        {<div style={styles.searchText}>Showing{" "+searchResults.length+" "}results{' '+searchValue}</div>}
+                        {<div style={styles.searchText}>Showing{" "+pageResults+" "}results{' '+searchValue}</div>}
                         {this.props.searchResultsFolders.length && this.props.searchResultsFiles.length || this.props.searchResultsProjects.length ? <IconButton
                             iconClassName="material-icons"
                             tooltip="filter results"
