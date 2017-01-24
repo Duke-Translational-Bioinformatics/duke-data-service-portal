@@ -19,7 +19,7 @@ import NotFound from './pages/notFound.jsx';
 var routes = (
     <Route name="app" path="/" handler={ App }>
         <Route name="login" handler={ Login } />
-        <Route name="loginTokens" path="/login/:tokens" handler={ Login } />
+        <Route name="loginTokens" path="/:access_token" handler={ Login } />
         <Route name="home" handler={ Home } />
         <Route name="metadata" handler={ Metadata } />
         <Route name="privacy" handler={ Privacy } />
