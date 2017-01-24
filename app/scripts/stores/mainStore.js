@@ -13,8 +13,9 @@ var MainStore = Reflux.createStore({
         this.appConfig = appConfig;
         this.appConfig.apiToken = cookie.load('apiToken');
         this.appConfig.isLoggedIn = cookie.load('isLoggedIn');
-        this.authServiceLoading = false;
+        this.asValidateLoading = false;
         this.currentUser = {};
+        this.ddsApiTokenLoading = false;
         this.error = {};
         this.errorModals = [];
         this.failedUploads = [];
@@ -23,30 +24,53 @@ var MainStore = Reflux.createStore({
         this.toasts = [];
     },
 
-    getApiToken(appConfig, accessToken) {
-        this.authServiceLoading = true;
+    authenticationServiceValidate(appConfig, accessToken) {
+        this.asValidateLoading = true;
         this.trigger({
-            authServiceLoading: this.authServiceLoading,
+            asValidateLoading: this.asValidateLoading,
             appConfig: this.appConfig
         });
     },
 
-    getApiTokenSuccess (token) {
-        this.appConfig.apiToken = token;
-        this.authServiceLoading = false;
-        this.setApiToken(token);
+    authenticationServiceValidateSuccess (signedInfo) {
+        this.signedInfo = signedInfo;
+        this.asValidateLoading = false;
         this.trigger({
-            authServiceLoading: this.authServiceLoading,
-            appConfig: this.appConfig
+            asValidateLoading: this.asValidateLoading,
+            signedInfo: signedInfo
         });
 
     },
 
-    getApiTokenError (error) {
+    authenticationServiceValidateError (error) {
         let msg = error && error.message ? error.message : 'An error occurred.';
         this.trigger({
             error: msg,
-            authServiceLoading: false
+            asValidateLoading: false
+        });
+    },
+
+    getDdsApiToken(appConfig, signedInfo) {
+        this.ddsApiTokenLoading = true;
+        this.trigger({
+            ddsApiTokenLoading: this.ddsApiTokenLoading
+        });
+    },
+
+    getDdsApiTokenSuccess (apiToken) {
+        this.appConfig.apiToken = apiToken;
+        this.ddsApiTokenLoading = false;
+        this.trigger({
+            ddsApiTokenLoading: this.ddsApiTokenLoading,
+            appConfig: this.appConfig
+        });
+    },
+
+    getDdsApiTokenError (error) {
+        let msg = error && error.message ? error.message : 'An error occurred.';
+        this.trigger({
+            error: msg,
+            ddsValidateLoading: false
         });
     },
 
@@ -57,7 +81,6 @@ var MainStore = Reflux.createStore({
         this.trigger({
             appConfig: this.appConfig
         });
-        MainActions.getCurrentUser();
     },
 
     getCurrentUserSuccess (json) {

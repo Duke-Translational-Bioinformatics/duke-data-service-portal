@@ -18,7 +18,6 @@ export const UrlGen = {
 };
 
 export const Path = Object.freeze({
-    ACCESS_TOKEN: '/user/api_token?access_token=',
     ACTIVITIES: 'activities/',
     AGENT: 'software_agents/',
     CHILDREN: '/children',
