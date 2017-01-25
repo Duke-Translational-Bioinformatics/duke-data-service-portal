@@ -61,9 +61,11 @@ class App extends React.Component {
             ipad: app.device.ipad,
             iphone: app.device.iphone
         };
-        if (this.state.appConfig.apiToken) MainActions.getCurrentUser();
         ProjectActions.getDeviceType(device);
-        ProjectActions.loadMetadataTemplates(null);
+        if (this.state.appConfig.apiToken) {
+            MainActions.getCurrentUser();
+            ProjectActions.loadMetadataTemplates(null);
+        }
         this.checkError();
     }
 
