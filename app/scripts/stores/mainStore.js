@@ -7,9 +7,8 @@ import cookie from 'react-cookie';
 
 var MainStore = Reflux.createStore({
 
-    listenables: MainActions,
-
     init() {
+        this.listenToMany(MainActions);
         this.appConfig = appConfig;
         this.appConfig.apiToken = cookie.load('apiToken');
         this.appConfig.isLoggedIn = cookie.load('isLoggedIn');

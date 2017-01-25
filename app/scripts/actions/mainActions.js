@@ -36,7 +36,7 @@ MainActions.getApiToken.preEmit = (appConfig, accessToken) => {
         return response.json()
     }).then((json) => {
         if (json.api_token) {
-            MainActions.getApiTokenSuccess(json.api_token)
+            MainActions.getApiTokenSuccess(json.api_token);
         } else {
             throw "An error has occurred while trying to authenticate";
         }

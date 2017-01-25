@@ -154,7 +154,7 @@ class Children extends React.Component {
     }
 
     handleDownload(id) {
-        let kind = 'files/';
+        let kind = Path.FILE;
         ProjectActions.getDownloadUrl(id, kind);
     }
 
