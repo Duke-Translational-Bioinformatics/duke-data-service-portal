@@ -25,7 +25,7 @@ class Login extends React.Component {
     }
 
     createLoginUrl() {
-        return this.state.appConfig.authServiceUri + "/authenticate?client_id=" + this.state.appConfig.serviceId + "&state=" + this.state.appConfig.securityState;
+        return this.state.appConfig.authServiceUri+'&state='+this.state.appConfig.serviceId+'&redirect_uri='+window.location.href;
     }
 
     render() {
@@ -41,7 +41,7 @@ class Login extends React.Component {
                                           backgroundColor={'#0680CD'} style={{marginBottom: 40, width: 150}}
                                           onClick={() => this.handleLoginBtn()}>
                             </RaisedButton>
-                        </a> :  <CircularProgress color="#fff"/>}
+                        </a> : <CircularProgress color="#fff"/>}
                         <div className="mdl-cell mdl-cell--12-col mdl-color-text--white">
                             <a href={UrlGen.routes.publicPrivacy()} className="external mdl-color-text--white" style={{float: 'right', fontSize: 10, margin: -10}}>
                                 <i className="material-icons" style={{fontSize: 16, verticalAlign: -2}}>lock</i>Privacy Policy
@@ -50,26 +50,23 @@ class Login extends React.Component {
                     </div>
                 </div>
             );
-            let splitUrl = window.location.hash.split('&');
-            let accessToken = splitUrl[0].split('=')[1];
+            let url = window.location.hash.split('&');
+            let accessToken = url[0].split('=')[1];
             if (this.state.error) {
                 content = this.state.error
             }
-            else if (this.state.asValidateLoading || this.state.ddsApiTokenLoading) {
+            else if (this.state.authServiceLoading) {
                 content = (<LinearProgress mode="indeterminate" color={'#EC407A'} style={styles.loader}/>);
             }
-            else if (this.state.signedInfo) {
-                MainActions.getDdsApiToken(this.state.appConfig, this.state.signedInfo);
-            }
             else if (accessToken) {
-                MainActions.authenticationServiceValidate(this.state.appConfig, accessToken);
+                MainActions.getApiToken(this.state.appConfig, accessToken);
             }
         } else {
             if (localStorage.getItem('redirectTo') !== null) {
                 let redUrl = localStorage.getItem('redirectTo');
                 document.location.replace(redUrl);
             } else {
-                this.props.appRouter.transitionTo('/home');
+                this.props.appRouter.transitionTo('/');
             }
         }
         return (
