@@ -33,8 +33,8 @@ class Children extends React.Component {
             }
         }
         let children = this.props.children ? this.props.children.map((children) => {
-            let fileOptionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, 'files')}/>;
-            let folderOptionsMenu = <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, 'folders')}/>;
+            let fileOptionsMenu = this.props.screenSize && this.props.screenSize.width >= 680 ? <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, 'files')}/> : null;
+            let folderOptionsMenu = this.props.screenSize && this.props.screenSize.width >= 680 ? <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, 'folders')}/> : null;
             if (children.kind === 'dds-folder') {
                 return (
                     <li key={ children.id } className="hover">
