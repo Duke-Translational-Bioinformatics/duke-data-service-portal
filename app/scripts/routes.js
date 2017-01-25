@@ -31,7 +31,7 @@ var routes = (
         <Route name="version" handler={ Version } />
         <Route name="version/:id" handler={ Version } />
         <Route name="login" handler={ Login } />
-        <Route path='notFound' handler={ NotFound} />
+        <Route path='notFound' handler={ NotFound } />
         <DefaultRoute handler={ Home } />
         <Route name="loginTokens" path="/:access_token" handler={ Login } />
     </Route>
