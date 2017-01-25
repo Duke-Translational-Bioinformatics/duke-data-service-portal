@@ -66,7 +66,7 @@ class Login extends React.Component {
                 let redUrl = localStorage.getItem('redirectTo');
                 document.location.replace(redUrl);
             } else {
-                this.props.appRouter.transitionTo('/');
+                if(this.props.routerPath !== '/notFound') this.props.appRouter.transitionTo('/');
             }
         }
         return (
