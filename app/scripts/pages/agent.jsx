@@ -37,10 +37,6 @@ class Agent extends React.Component {
     }
 
     render() {
-        if (this.state.error && this.state.error.response){
-            this.state.error.response === 404 ? this.state.appRouter.transitionTo('/notFound') : null;
-            this.state.error.response != 404 ? console.log(this.state.error.msg) : null;
-        }
         let agentKey = this.state.agentKey ? this.state.agentKey.key : null;
         let id = this.state.entityObj ? this.state.entityObj.id : null;
         let name = this.state.entityObj ? this.state.entityObj.name : null;

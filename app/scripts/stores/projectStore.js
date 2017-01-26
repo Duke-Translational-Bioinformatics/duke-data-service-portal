@@ -1560,7 +1560,8 @@ var ProjectStore = Reflux.createStore({
     },
 
     getEntitySuccess(json, requester) {
-        if(this.projPermissions === null) ProjectActions.getUser(json.project.id);
+        if(this.projPermissions === null && (json.kind === 'dds-file' || json.kind === 'dds-folder')) ProjectActions.getUser(json.project.id);
+        if(this.projPermissions === null && json.kind === 'dds-file-version') ProjectActions.getUser(json.file.project.id);
         if (requester === undefined) this.entityObj = json;
         if (requester === 'moveItemModal') this.moveToObj = json;
         if (requester === 'optionsMenu') {
