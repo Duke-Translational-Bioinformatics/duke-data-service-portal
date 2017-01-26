@@ -1016,7 +1016,7 @@ ProjectActions.moveItem.preEmit = (id, kind, destination, destinationKind) => {
             return response.json()
         }).then((json) => {
             MainActions.addToast(type+' moved successfully');
-            ProjectActions.moveItemSuccess();
+            ProjectActions.moveItemSuccess(id);
         }).catch((ex) => {
             MainActions.addToast('Failed to move '+type+' to new location');
             ProjectActions.handleErrors(ex)

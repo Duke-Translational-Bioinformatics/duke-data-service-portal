@@ -1,9 +1,11 @@
 import React from 'react';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
+import {Kind, Path} from '../../../util/urlEnum';
 import List from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
 import Archive from 'material-ui/lib/svg-icons/content/archive.js';
+import CircularProgress from 'material-ui/lib/circular-progress';
 import ContentPaste from 'material-ui/lib/svg-icons/content/content-paste.js';
 import Folder from 'material-ui/lib/svg-icons/file/folder';
 import IconButton from 'material-ui/lib/icon-button';
@@ -137,17 +139,17 @@ let MoveItemModal = React.createClass({
                     </a> : null}
                 </div>
                 {this.state.showWarning ? <Paper className="mdl-cell mdl-cell--12-col"
-                       style={{backgroundColor: '#ef5350', color: '#EEEEEE', height: 40, marginBottom: 10, marginTop: 10, padding: 10, textAlign: 'center'}}
+                       style={styles.warning}
                        zDepth={1}>
                     <span>The item you're trying to move is already located here. Please pick another
                         location to move to</span>
                 </Paper> : null}
-                <List {...this.props} value={3}>
+                {!this.props.loading ? <List {...this.props} value={3}>
                     {ancestors}
                     {projectChildren}
                     {openItem}
                     {children}
-                </List>
+                </List> : <CircularProgress size={1} style={styles.loading}/>}
             </div>
         )
     },
@@ -157,16 +159,17 @@ let MoveItemModal = React.createClass({
         let kind = this.props.selectedEntity && this.props.selectedEntity !== null ? this.props.selectedEntity.kind : this.props.entityObj.kind;
         let parent = this.props.parent ? this.props.parent.id : null;
         let parentKind = this.props.parent ? this.props.parent.kind : null;
+        let transitionToParent = (root, parent)=> {
+            setTimeout(()=>{this.props.appRouter.transitionTo(root + parent)}, 500)
+        };
         if (destinationId === this.props.parent.id || destinationId === id) {
             this.setState({showWarning: true});
         } else {
             ProjectActions.moveItem(id, kind, destinationId, destinationKind);
-            if (parentKind === 'dds-folder') {
-                this.props.appRouter.transitionTo('/folder/' + parent);
-                ProjectActions.getChildren(parent, 'folders/');
+            if (parentKind === Kind.DDS_FOLDER) {
+                transitionToParent('/folder/', parent);
             } else {
-                this.props.appRouter.transitionTo('/project/' + parent);
-                ProjectActions.getChildren(parent, 'projects/');
+                transitionToParent('/project/', parent);
             }
             this.setState({showWarning: false});
             ProjectActions.toggleModals('moveItem');
@@ -178,7 +181,7 @@ let MoveItemModal = React.createClass({
         let kind = 'folders';
         ProjectActions.getEntity(id, kind, requester);
         ProjectActions.selectMoveLocation(id, parentKind);
-        ProjectActions.getMoveItemList(id, 'folders/');
+        ProjectActions.getMoveItemList(id, Path.FOLDER);
         this.setState({
             goBack: true,
             openChildren: true,
@@ -195,9 +198,9 @@ let MoveItemModal = React.createClass({
         ProjectActions.selectMoveLocation(parentId, parentKind);
         if (parentKind === 'dds-folder') {
             ProjectActions.getEntity(parentId, kind, requester);
-            ProjectActions.getChildren(parentId, 'folders/');
+            ProjectActions.getChildren(parentId, Path.FOLDER);
         } else {
-            ProjectActions.getChildren(parentId, 'projects/');
+            ProjectActions.getChildren(parentId, Path.PROJECT);
             this.setState({
                 goBack: false,
                 openChildren: false,
@@ -207,7 +210,7 @@ let MoveItemModal = React.createClass({
     },
 
     getProjectChildren(id){
-        ProjectActions.getMoveItemList(id, 'projects/');
+        ProjectActions.getMoveItemList(id, Path.PROJECT);
         this.setState({
             openChildren: false,
             projectChildren: true,
@@ -233,10 +236,26 @@ var styles = {
     listItem: {
         textAlign: 'left'
     },
+    loading: {
+        position: 'absolute',
+        margin: '0 auto',
+        //top: 200,
+        left: 0,
+        right: 0
+    },
     rightIcon: {
         position: 'absolute',
         top: 10,
         right: 4
+    },
+    warning: {
+        backgroundColor: '#ef5350',
+        color: '#EEEEEE',
+        height: 40,
+        marginBottom: 10,
+        marginTop: 10,
+        padding: 10,
+        textAlign: 'center'
     }
 };
 

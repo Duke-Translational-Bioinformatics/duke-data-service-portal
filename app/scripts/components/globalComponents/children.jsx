@@ -115,7 +115,7 @@ class Children extends React.Component {
                             { children }
                         </ul>
                     </div>
-                    {this.props.children.length < totalChildren ?
+                    {this.props.children.length < totalChildren && totalChildren > 25 ?
                         <div className="mdl-cell mdl-cell--12-col">
                             <RaisedButton
                                 label={this.props.loading ? "Loading..." : "Load More"}
@@ -160,7 +160,7 @@ class Children extends React.Component {
 
     loadMore(page) {
         let id = this.props.params.id;
-        let kind = this.props.entityObj ? this.props.entityObj.kind : Path.PROJECT;
+        let kind = this.props.entityObj ? Path.FOLDER : Path.PROJECT;
         ProjectActions.getChildren(id, kind, page);
     }
 
