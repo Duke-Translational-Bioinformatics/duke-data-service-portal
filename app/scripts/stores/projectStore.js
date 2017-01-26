@@ -181,14 +181,18 @@ var ProjectStore = Reflux.createStore({
 
     getMoveItemList() {
         this.moveItemList = [];
+        this.loading = true;
         this.trigger({
+            loading: this.loading,
             moveItemList: this.moveItemList
         })
     },
 
     getMoveItemListSuccess(results) {
         this.moveItemList = results;
+        this.loading = false;
         this.trigger({
+            loading: this.loading,
             moveItemList: this.moveItemList
         })
     },
@@ -1488,9 +1492,13 @@ var ProjectStore = Reflux.createStore({
         })
     },
 
-    moveItemSuccess() {
+    moveItemSuccess(id) {
+        if(BaseUtils.objectPropInArray(this.children, 'id', id)) {
+            this.children = BaseUtils.removeObjByKey(this.children, {key: 'id', value: id});
+        }
         this.loading = false;
         this.trigger({
+            children: this.children,
             loading: this.loading
         })
     },
