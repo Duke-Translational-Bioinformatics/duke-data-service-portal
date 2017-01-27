@@ -18,7 +18,7 @@ class AgentList extends React.Component {
         let agentKey = this.props.agentKey ? this.props.agentKey.key : null;
         let userKey = this.props.userKey ? this.props.userKey.key : null;
         let apiToken = this.props.agentApiToken ? this.props.agentApiToken.api_token : null;
-        let apiUrl = location.protocol+'//'+location.host+location.pathname;
+        let apiUrl = window.location.href.split("#")[0];
         let obj = {agent_key: agentKey, user_key: userKey, api_token: apiToken, api_url: apiUrl};
         let open = this.props.modal ? this.props.modal : false;
         let msg = Object.keys(ProjectStore.agentApiToken).length === 0 ?
