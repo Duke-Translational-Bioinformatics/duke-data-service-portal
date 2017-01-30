@@ -18,7 +18,8 @@ class AgentList extends React.Component {
         let agentKey = this.props.agentKey ? this.props.agentKey.key : null;
         let userKey = this.props.userKey ? this.props.userKey.key : null;
         let apiToken = this.props.agentApiToken ? this.props.agentApiToken.api_token : null;
-        let obj = {agent_key: agentKey, user_key: userKey, api_token: apiToken};
+        let apiUrl = DDS_PORTAL_CONFIG.baseUrl;
+        let obj = {agent_key: agentKey, user_key: userKey, api_token: apiToken, api_url: apiUrl};
         let open = this.props.modal ? this.props.modal : false;
         let msg = Object.keys(ProjectStore.agentApiToken).length === 0 ?
             <h6 style={styles.apiMsg}>You must have a valid user key, please create one by selecting 'USER SECRET KEY' in the drop down menu.</h6> :
