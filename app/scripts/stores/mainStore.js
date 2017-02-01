@@ -23,7 +23,7 @@ var MainStore = Reflux.createStore({
     },
 
     getAuthProvidersSuccess(providers) {
-        let url = providers.reduce(function(prev, curr) { return (!curr.is_deprecated) ? curr : prev; }, null);
+        let url = providers.reduce((prev, curr) => { return (!curr.is_deprecated) ? curr : prev; }, null);
         this.appConfig.authServiceUri = url.login_initiation_url;
         this.appConfig.authServiceName = url.name;
         this.trigger({
