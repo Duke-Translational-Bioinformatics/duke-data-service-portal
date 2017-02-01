@@ -5,6 +5,8 @@ import {UrlGen, Path} from '../../util/urlEnum';
 import { checkStatus, getFetchParams } from '../../util/fetchUtil';
 
 var MainActions = Reflux.createActions([
+    'getAuthProviders',
+    'getAuthProvidersSuccess',
     'getApiToken',
     'getApiTokenSuccess',
     'getApiTokenError',
@@ -24,6 +26,26 @@ var MainActions = Reflux.createActions([
     'removeFailedUploads',
     'removeErrorModal'
 ]);
+
+MainActions.getAuthProviders.preEmit = (appConfig) => {
+    fetch(DDS_PORTAL_CONFIG.baseUrl+UrlGen.routes.apiPrefix+'auth_providers', {
+        method: 'get',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    }).then(checkResponse).then((response) => {
+        return response.json()
+    }).then((json) => {
+        if (json.results) {
+            MainActions.getAuthProvidersSuccess(json.results);
+        } else {
+            throw "An error has occurred while trying to authenticate";
+        }
+    }).catch((ex) => {
+        ProjectActions.handleErrors(ex);
+    });
+};
 
 MainActions.getApiToken.preEmit = (appConfig, accessToken) => {
     fetch(appConfig.baseUrl+UrlGen.routes.apiPrefix+Path.ACCESS_TOKEN+accessToken+'&authentication_service_id='+appConfig.serviceId, {

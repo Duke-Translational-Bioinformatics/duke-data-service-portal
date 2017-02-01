@@ -22,6 +22,15 @@ var MainStore = Reflux.createStore({
         this.toasts = [];
     },
 
+    getAuthProvidersSuccess(providers) {
+        let url = providers.reduce(function(prev, curr) { return (!curr.is_deprecated) ? curr : prev; }, null);
+        this.appConfig.authServiceUri = url.login_initiation_url;
+        this.appConfig.authServiceName = url.name;
+        this.trigger({
+            appConfig: this.appConfig
+        })
+    },
+
     getApiToken(appConfig, accessToken) {
         this.authServiceLoading = true;
         this.trigger({
