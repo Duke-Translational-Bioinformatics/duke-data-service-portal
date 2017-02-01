@@ -58,7 +58,7 @@ class Login extends React.Component {
             else if (this.state.authServiceLoading) {
                 content = (<LinearProgress mode="indeterminate" color={'#EC407A'} style={styles.loader}/>);
             }
-            else if (accessToken) {
+            else if (accessToken && this.state.appConfig.serviceId !== null) {
                 MainActions.getApiToken(this.state.appConfig, accessToken);
             }
         } else {
