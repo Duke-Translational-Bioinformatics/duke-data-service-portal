@@ -982,7 +982,7 @@ ProjectActions.addFolder.preEmit = (id, parentKind, name) => {
             return response.json()
         }).then((json) => {
             MainActions.addToast('Folder Added');
-            ProjectActions.addItemSuccess(json);
+            ProjectActions.addFolderSuccess(json);
         }).catch((ex) => {
             MainActions.addToast('Failed to Add a New Folder');
             ProjectActions.handleErrors(ex)
