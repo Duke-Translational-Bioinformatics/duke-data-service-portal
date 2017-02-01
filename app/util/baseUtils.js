@@ -18,7 +18,7 @@ let BaseUtils = {
             };
             return ancestors !== null ? ancestors.map((obj)=>{
                 let kind = getKind(obj.kind);
-                return <a href={'#'+kind+obj.id} key={obj.id} className='external link'>{obj.name + ' > '}</a>;
+                return <a href={'#'+kind+obj.id} key={obj.id} className='external link' style={{fontWeight: 400}}>{obj.name + ' > '}</a>;
             }) : '';
         },
 
@@ -37,6 +37,18 @@ let BaseUtils = {
                 return (array[index][obj.key] === obj.value) ? !!(array.splice(index, 1)) : false;
             });
             return array;
+        },
+
+        removeDuplicates(originalArray, prop) {
+            var newArray = [];
+            var lookupObject  = {};
+            for(var i in originalArray) {
+                lookupObject[originalArray[i][prop]] = originalArray[i];
+            }
+            for(i in lookupObject) {
+                newArray.push(lookupObject[i]);
+            }
+            return newArray;
         },
 
         objectPropInArray(list, prop, val) {
@@ -92,6 +104,30 @@ let BaseUtils = {
                 propType = type;
             }
             return propType;
+        },
+
+        removeDuplicatesFromArray(array, id){
+            let found = array.includes(id);//Array.includes not supported in IE. See polyfills.js
+            let newArray = [];
+            if (found) {
+                newArray = array.filter(x => x !== id);
+            } else {
+                newArray = [ ...array, id ];
+            }
+            return newArray;
+        },
+
+        generateUniqueKey() {
+            var i, random;
+            var uuid = '';
+            for (i = 0; i < 32; i++) {
+                random = Math.random() * 16 | 0;
+                if (i === 8 || i === 12 || i === 16 || i === 20) {
+                    uuid += '-';
+                }
+                uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random)).toString(16);
+            }
+            return uuid;
         }
 };
 

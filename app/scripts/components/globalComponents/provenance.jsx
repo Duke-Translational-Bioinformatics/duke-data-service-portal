@@ -37,7 +37,6 @@ class Provenance extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            addFileNode: null,
             doubleClicked: false,
             errorText: null,
             floatingErrorText: 'This field is required.',
@@ -47,7 +46,7 @@ class Provenance extends React.Component {
             projectId: 0,
             relationMode: false,
             value: null,
-            width: window.innerWidth,
+            width: window.innerWidth
         };
         this.handleResize = this.handleResize.bind(this);
     }
@@ -55,7 +54,7 @@ class Provenance extends React.Component {
     componentDidMount() {
         // Listen for resize changes when rotating device
         window.addEventListener('resize', this.handleResize);
-        ProjectActions.loadProjects();
+        ProjectActions.getProjects();
         ProjectActions.getActivities();
         if(this.props.provNodes && this.props.provNodes.length > 0) {
             let edges = this.props.provEdges && this.props.provEdges.length > 0 ? this.props.provEdges : [];
@@ -587,11 +586,6 @@ class Provenance extends React.Component {
 
     toggleEditor() {
         ProjectActions.toggleProvEditor();
-    }
-
-    useFileVersion(id, name, version, node) {
-        document.getElementById('searchText').value = name +'- Version: '+ version;
-        this.state.addFileNode = node;
     }
 }
 

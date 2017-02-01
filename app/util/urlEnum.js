@@ -18,6 +18,7 @@ export const UrlGen = {
 };
 
 export const Path = Object.freeze({
+    ACCESS_TOKEN: '/user/api_token?access_token=',
     ACTIVITIES: 'activities/',
     AGENT: 'software_agents/',
     CHILDREN: '/children',
@@ -32,4 +33,9 @@ export const Path = Object.freeze({
     TEMPLATES: 'templates/',
     TEMPLATE_PROPERTIES: 'template_properties/',
     UPLOAD: 'uploads/'
+});
+
+export const Kind = Object.freeze({
+    DDS_FILE: 'dds-file',
+    DDS_FOLDER: 'dds-folder'
 });

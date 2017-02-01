@@ -10,8 +10,7 @@ class AddFolderModal extends React.Component {
 
     constructor() {
         this.state = {
-            floatingErrorText: 'This field is required.',
-            open: false
+            floatingErrorText: ''
         }
     }
 
@@ -20,39 +19,39 @@ class AddFolderModal extends React.Component {
             <FlatButton
                 label="Cancel"
                 secondary={true}
-                onTouchTap={this.handleClose.bind(this)}/>,
+                onTouchTap={()=>this.closeModal()}/>,
             <FlatButton
                 label="Submit"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={this.handleFolderButton.bind(this)}/>
+                onTouchTap={()=>this.addFolder()}/>
         ];
-
+        let open = this.props.toggleModal && this.props.toggleModal.id === 'addFolder' ? this.props.toggleModal.open : false;
         return (
             <div>
                 <RaisedButton
                     label="Add Folder"
                     labelStyle={{color: '#235F9C'}}
                     style={styles.addFolder}
-                    onTouchTap={this.openModal.bind(this)}/>
+                    onTouchTap={()=>this.openModal()}/>
                 <Dialog
                     style={styles.dialogStyles}
                     contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Add New Folder"
                     autoDetectWindowHeight={true}
                     actions={actions}
-                    open={this.state.open}
-                    onRequestClose={this.handleClose.bind(this)}>
+                    open={open}
+                    onRequestClose={()=>this.closeModal()}>
                     <form action="#" id="newFolderForm">
                         <TextField
                             style={styles.textStyles}
                             hintText="Folder Name"
                             errorText={this.state.floatingErrorText}
                             floatingLabelText="Folder Name"
-                            id="folderNameText"
+                            ref={(input) => this.folderNameText = input}
                             type="text"
                             multiLine={true}
-                            onChange={this.handleFloatingErrorInputChange.bind(this)}/> <br/>
+                            onChange={(e)=>this.validateText(e)}/> <br/>
                     </form>
                 </Dialog>
             </div>
@@ -60,43 +59,29 @@ class AddFolderModal extends React.Component {
     }
 
     openModal() {
-        this.setState({open: true});
-        setTimeout(() => { document.getElementById('folderNameText').select() }, 300);
-    };
+        ProjectActions.toggleModals('addFolder');
+        setTimeout(()=>this.folderNameText.select(), 100);
+    }
 
-    handleFolderButton() {
-        let name = document.getElementById('folderNameText').value;
+    addFolder() {
+        let id = this.props.params.id;
+        let name = this.folderNameText.getValue();
+        let parentKind = !this.props.entityObj ? 'dds-project' : 'dds-folder';
         if (this.state.floatingErrorText) {
             return null
         } else {
-            if (!this.props.entityObj) {
-                let id = this.props.params.id;
-                let parentKind = 'dds-project';
-                ProjectActions.addFolder(id, parentKind, name);
-                this.setState({
-                    floatingErrorText: 'This field is required.'
-                });
-            } else {
-                let id = this.props.params.id;
-                let parentKind = 'dds-folder';
-                ProjectActions.addFolder(id, parentKind, name);
-                this.setState({
-                    floatingErrorText: 'This field is required.'
-                });
-            }
-            this.setState({open: false});
+            ProjectActions.addFolder(id, parentKind, name);
+            this.closeModal();
         }
-    };
+    }
 
-    handleFloatingErrorInputChange(e) {
-        this.setState({
-            floatingErrorText: e.target.value ? '' : 'This field is required.'
-        });
-    };
+    closeModal() {
+        ProjectActions.toggleModals('addFolder');
+    }
 
-    handleClose() {
-        this.setState({open: false});
-    };
+    validateText(e) {
+        this.setState({floatingErrorText: e.target.value ? '' : 'This field is required.'});
+    }
 }
 
 let styles = {
@@ -120,6 +105,10 @@ let styles = {
 
 AddFolderModal.contextTypes = {
     muiTheme: React.PropTypes.object
+};
+
+AddFolderModal.propTypes = {
+    toggleModal: React.PropTypes.object
 };
 
 export default AddFolderModal;

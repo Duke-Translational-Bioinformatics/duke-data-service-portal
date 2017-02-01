@@ -1,7 +1,7 @@
 @import 'normalize'
 @import 'helper'
 
-/* variables */
+/* color variables */
 $linkColor = #555
 $grey = #eee
 $black = #222
@@ -43,10 +43,12 @@ body
 .account-overview
   max-width: 1200px
   margin: 0 auto
+  margin-top: 110px
 
 .project-container
   max-width: 1230px
   margin: 0 auto
+  margin-top: 110px
 
 .preview-container
   max-width: 1260px
@@ -55,6 +57,11 @@ body
 .list-container
   max-width: 1280px
   margin: 0 auto
+
+.search-results-container
+  max-width: 980px
+  margin: 0 auto
+  margin-top: 80px
 
 .link:hover
   color: $blue
@@ -90,14 +97,6 @@ input[type=text]::-ms-clear /*To remove the cancel button inside inputs IE10+*/
   .mdl-button--file {
     right: 0;
   }
-}
-
-//Styles for progress bar//
-
-.loader {
-  width: 80%;
-  marginTop: 10px;
-  margin: 0 auto;
 }
 
 //Tooltip Styles
@@ -167,13 +166,11 @@ div.vis-network-tooltip {
   border-radius: 2px;
   margin: 1rem !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-  //transition: all 0.3s cubic-bezier(.25,.8,.25,1);
   border none;
 }
 
 //chips styles
 .chip-container {
-  //padding-right: 18%;
   padding-left: 6px;
   display: flex;
   -webkit-flex-wrap: wrap; /* Safari */

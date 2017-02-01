@@ -4,10 +4,11 @@ import MainActions from '../../actions/mainActions';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import AddAgentModal from '../../components/globalComponents/addAgentModal.jsx';
+import {UrlGen} from '../../../util/urlEnum.js';
 import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
+import FontIcon from 'material-ui/lib/font-icon';
 import Loaders from '../../components/globalComponents/loaders.jsx';
-import {UrlGen} from '../../../util/urlEnum.js';
 import TextField from 'material-ui/lib/text-field';
 
 class AgentList extends React.Component {
@@ -17,7 +18,8 @@ class AgentList extends React.Component {
         let agentKey = this.props.agentKey ? this.props.agentKey.key : null;
         let userKey = this.props.userKey ? this.props.userKey.key : null;
         let apiToken = this.props.agentApiToken ? this.props.agentApiToken.api_token : null;
-        let obj = {agent_key: agentKey, user_key: userKey, api_token: apiToken};
+        let apiUrl = DDS_PORTAL_CONFIG.baseUrl;
+        let obj = {agent_key: agentKey, user_key: userKey, api_token: apiToken, api_url: apiUrl};
         let open = this.props.modal ? this.props.modal : false;
         let msg = Object.keys(ProjectStore.agentApiToken).length === 0 ?
             <h6 style={styles.apiMsg}>You must have a valid user key, please create one by selecting 'USER SECRET KEY' in the drop down menu.</h6> :
@@ -52,16 +54,12 @@ class AgentList extends React.Component {
                     defaultValue={JSON.stringify(obj, null, 4)}
                     floatingLabelText="Agent Credentials"
                     id="keyText"
+                    ref={(input) => this.keyText = input}
                     type="text"
                     multiLine={true}
                     />
             </form>
         </Dialog>;
-
-        if (this.props.error && this.props.error.response) {
-            this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
-            this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
-        }
 
         agents = this.props.agents;
 
@@ -69,10 +67,10 @@ class AgentList extends React.Component {
             if (agent.audit.created_by.id === this.props.currentUser.id) {
                 return (
                     <li key={ agent.id } className="hover">
-                        <FlatButton label="credentials" primary={true} style={styles.getKeyButton} onTouchTap={() => this.handleTouchTapApiKey(agent.id)}/>
+                        <FlatButton label="credentials" primary={true} style={styles.getKeyButton} onTouchTap={() => this.getCredentials(agent.id)}/>
                         <a href={UrlGen.routes.agent(agent.id)} className="item-content external">
                             <div className="item-media">
-                                <i className="material-icons" style={styles.icon}>laptop_mac</i>
+                                <FontIcon className="material-icons" style={styles.icon}>laptop_mac</FontIcon>
                             </div>
                             <div className="item-inner">
                                 <div className="item-title-row">
@@ -115,7 +113,7 @@ class AgentList extends React.Component {
         );
     }
 
-    handleTouchTapApiKey(id) {
+    getCredentials(id) {
         ProjectActions.getAgentKey(id);
         ProjectActions.getUserKey();
         setTimeout(() => {
@@ -148,7 +146,7 @@ class AgentList extends React.Component {
     }
 
     copyApiKey() {
-        document.getElementById('keyText').select();
+        this.keyText.select();
         var successful = document.execCommand('copy');
         var msg = successful ? 'successful' : 'unsuccessful';
         if(msg === 'successful') {
@@ -180,35 +178,10 @@ var styles = {
     apiMsg2: {
         textAlign: 'center'
     },
-    checkBox: {
-        width: 16,
-        height: 16,
-        marginBottom: 21
-    },
-    checkboxLabel: {
-        borderRadius: 35,
-        paddingRight: 20
-    },
     dialogStyles: {
         textAlign: 'center',
         fontColor: '#303F9F',
         zIndex: '5000'
-    },
-    dlIcon: {
-        float: 'right',
-        fontSize: 18,
-        color: '#EC407A',
-        marginTop: 6,
-        marginLeft: 15,
-        padding: '08px 08px 08px 08px',
-        zIndex: 100
-    },
-    fillerDiv: {
-        height: 24,
-        width: 32,
-        float: 'right',
-        marginLeft: 32,
-        padding: '08px 08px 08px 08px'
     },
     getKeyButton: {
         float: 'right',
@@ -219,7 +192,8 @@ var styles = {
         margin: '10px 0px 0px 14px'
     },
     icon: {
-        fontSize: 36
+        fontSize: 36,
+        color: '#616161'
     },
     keyModal: {
         width: 300,

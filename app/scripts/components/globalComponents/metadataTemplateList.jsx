@@ -8,9 +8,11 @@ import AddAgentModal from '../../components/globalComponents/addAgentModal.jsx';
 import CircularProgress from 'material-ui/lib/circular-progress';
 import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
+import FontIcon from 'material-ui/lib/font-icon';
 import Help from 'material-ui/lib/svg-icons/action/help';
 import IconButton from 'material-ui/lib/icon-button';
 import Loaders from '../../components/globalComponents/loaders.jsx';
+import LinearProgress from 'material-ui/lib/linear-progress';
 import Paper from 'material-ui/lib/paper';
 import RaisedButton from 'material-ui/lib/raised-button';
 import Search from 'material-ui/lib/svg-icons/action/search';
@@ -31,10 +33,6 @@ class MetadataTemplateList extends React.Component {
     }
 
     render() {
-        if (this.props.error && this.props.error.response) {
-            this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
-            this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
-        }
         let currentUser = this.props.currentUser && this.props.currentUser !== null ? this.props.currentUser : null;
         let route = this.props.routerPath.split('/').splice([1], 1).toString();
         let showSearch = this.state.searchMode ? 'block' : 'none';
@@ -46,7 +44,7 @@ class MetadataTemplateList extends React.Component {
                     <li key={ obj.id } className="hover" style={styles.listItem}>
                         <a className="item-content external" onTouchTap={()=> this.viewTemplate(obj.id)}>
                             <div className="item-media">
-                                <i className="material-icons" style={styles.icon}>view_list</i>
+                                <FontIcon className="material-icons" style={styles.icon}>view_list</FontIcon>
                             </div>
                             <div className="item-inner">
                                 <div className="item-title-row">
@@ -63,7 +61,7 @@ class MetadataTemplateList extends React.Component {
                         <li key={ obj.id } className="hover" style={styles.listItem}>
                             <a className="item-content external aTag" onTouchTap={()=> this.viewTemplate(obj.id)}>
                                 <div className="item-media">
-                                    <i className="material-icons" style={styles.icon}>view_list</i>
+                                    <FontIcon className="material-icons" style={styles.icon}>view_list</FontIcon>
                                 </div>
                                 <div className="item-inner">
                                     <div className="item-title-row">
@@ -138,8 +136,8 @@ class MetadataTemplateList extends React.Component {
                     </div>
                 </div>
                 <div className="mdl-cell mdl-cell--12-col" style={styles.loading}>
-                    {this.props.uploads || this.props.loading && route === 'metadata' ? <Loaders {...this.props}/> : null}
-                    {this.props.uploads || this.props.loading && route !== 'metadata' ? <CircularProgress size={1.5} style={styles.drawerLoader}/> : null}
+                    {this.props.loading && route === 'metadata' ? <Loaders {...this.props}/> : null}
+                    {this.props.loading && route !== 'metadata' ? <CircularProgress size={1.5} style={styles.drawerLoader}/> : null}
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     <div className="list-block media-list">
@@ -228,7 +226,8 @@ var styles = {
         padding: '0px 8px'
     },
     icon: {
-        fontSize: 36
+        fontSize: 36,
+        color: '#616161'
     },
     infoIcon: {
         verticalAlign: 8,
@@ -273,6 +272,10 @@ var styles = {
         float: 'left',
         width: '20%',
         marginTop: 12
+    },
+    uploader: {
+        width: '95%',
+        margin: '0 auto'
     }
 };
 

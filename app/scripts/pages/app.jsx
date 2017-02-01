@@ -35,8 +35,9 @@ class App extends React.Component {
         this.state = {
             appConfig: MainStore.appConfig,
             windowWidth: window.innerWidth,
+            error: MainStore.error,
             errorModal: true,
-            errorModals: ProjectStore.errorModals,
+            errorModals: MainStore.errorModals,
             failedUploads: MainStore.failedUploads
         };
         this.handleResize = this.handleResize.bind(this);
@@ -60,9 +61,12 @@ class App extends React.Component {
             ipad: app.device.ipad,
             iphone: app.device.iphone
         };
-        if (this.state.appConfig.apiToken) MainActions.getCurrentUser();
         ProjectActions.getDeviceType(device);
-        ProjectActions.loadMetadataTemplates(null);
+        if (this.state.appConfig.apiToken) {
+            MainActions.getCurrentUser();
+            ProjectActions.loadMetadataTemplates(null);
+        }
+        this.checkError();
     }
 
     componentWillUnmount() {
@@ -74,8 +78,18 @@ class App extends React.Component {
     componentDidUpdate(prevProps, prevState) {
         if(prevProps.routerPath === '/login' && this.state.appConfig.apiToken) MainActions.getCurrentUser();
         this.showToasts();
+        this.checkError();
     }
 
+    checkError() {
+        if (this.state.error && this.state.error.response){
+            if(this.state.error.response === 404) {
+                this.props.appRouter.transitionTo('/notFound');
+                MainActions.clearErrors();
+            }
+            this.state.error.response != 404 ? console.log(this.state.error.msg) : null;
+        }
+    }
 
     handleResize(e) {
         this.setState({windowWidth: window.innerWidth});
@@ -91,7 +105,6 @@ class App extends React.Component {
         let content = <RouteHandler {...this.props} {...this.state}/>;
         let toasts = null;
         let dialogs = null;
-        let x=null;
         if (this.state.appConfig.apiToken) {
             if (localStorage.getItem('redirectTo') !== null) {
                 setTimeout(() => {
@@ -101,9 +114,7 @@ class App extends React.Component {
         }
         if (this.state.toasts) {
             toasts = this.state.toasts.map(obj => {
-                return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} autoHideDuration={3000}
-                                 onRequestClose={this.handleRequestClose.bind(this)}
-                                 open={true} style={styles.toast}/>
+                return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} open={true}/>
             });
         }
         if (this.state.appConfig.apiToken && this.state.errorModals) {
@@ -113,14 +124,14 @@ class App extends React.Component {
                     ref={obj.ref}
                     label="Okay"
                     secondary={true}
-                    onTouchTap={() => this.handleClose(obj.ref)}
+                    onTouchTap={() => this.closeErrorModal(obj.ref)}
                     />;
                 return <Dialog key={obj.ref} ref={obj.ref} message={obj.msg}
                                title="An Error Occurred"
                                actions={actions}
                                modal={false}
                                open={this.state.errorModal}
-                               onRequestClose={this.handleClose.bind(this, obj.ref)}
+                               onRequestClose={() => this.closeErrorModal(obj.ref)}
                                style={styles.dialogStyles}>
                     <i className="material-icons" style={styles.warning}>warning</i>
                     <h3>{obj.response}</h3>
@@ -171,14 +182,10 @@ class App extends React.Component {
         );
     }
 
-    handleClose(refId) {
-        ProjectActions.removeErrorModal(refId);
+    closeErrorModal(refId) {
+        MainActions.removeErrorModal(refId);
         this.setState({errorModal: false});
         setTimeout(() => this.setState({errorModal: true}), 500);
-    }
-
-    handleRequestClose() {
-        // Avoids error when toasts time out
     }
 
     showToasts() {

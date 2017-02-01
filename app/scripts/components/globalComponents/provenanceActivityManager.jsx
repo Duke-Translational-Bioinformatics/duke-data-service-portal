@@ -22,7 +22,7 @@ class ProvenanceActivityManager extends React.Component {
         this.state = {
             activityNode: null,
             errorText: null,
-            floatingErrorText: 'This field is required.',
+            floatingErrorText: '',
             network: null,
             node: null,
             timeout: null,
@@ -108,16 +108,17 @@ class ProvenanceActivityManager extends React.Component {
                     open={addAct}
                     onRequestClose={() => this.handleClose('addAct')}>
                         <Tabs inkBarStyle={styles.tabInkBar}>
-                            <Tab onActive={() => this.toggleActivityForm()} label="New Activity" style={styles.tabStyles}>
+                            <Tab onActive={() => this.toggleTab1()} label="New Activity" style={styles.tabStyles}>
                                 <h2 style={styles.tabHeadline}>Add a New Activity</h2>
                                 <form action="#" id="newActivityForm">
                                     <TextField
                                         style={styles.textStyles}
                                         fullWidth={true}
+                                        autoFocus={true}
                                         hintText="New Activity Name"
                                         errorText={this.state.floatingErrorText}
                                         floatingLabelText="New Activity Name"
-                                        id="activityNameText"
+                                        ref={(input) => this.activityNameText = input}
                                         type="text"
                                         multiLine={true}
                                         onChange={this.handleFloatingError.bind(this)}/> <br/>
@@ -126,21 +127,21 @@ class ProvenanceActivityManager extends React.Component {
                                         fullWidth={true}
                                         hintText="New Activity Description"
                                         floatingLabelText="New Activity Description"
-                                        id="activityDescText"
+                                        ref={(input) => this.activityDescText = input}
                                         type="text"
                                         multiLine={true}/>
                                 </form>
                             </Tab>
-                            <Tab onActive={() => this.toggleActivityForm()} label="Use Existing Activity" style={styles.tabStyles}>
+                            <Tab onActive={() => this.toggleTab2()} label="Use Existing Activity" style={styles.tabStyles}>
                                 <h2 style={styles.tabHeadline}>Add an Existing Activity</h2>
                                 <AutoComplete
-                                    id="searchText"
                                     fullWidth={true}
                                     menuStyle={{maxHeight: 200}}
                                     errorText={this.state.floatingErrorText}
                                     floatingLabelText="Type an Existing Activity Name"
                                     dataSource={autoCompleteData}
                                     filter={AutoComplete.caseInsensitiveFilter}
+                                    ref={(input) => this.activityNameSearch = input}
                                     openOnFocus={true}
                                     onNewRequest={(value) => this.chooseActivity(value)}
                                     underlineStyle={styles.autoCompleteUnderline}/>
@@ -168,13 +169,12 @@ class ProvenanceActivityManager extends React.Component {
                     <form action="#" id="newActivityForm">
                         <TextField
                             autoFocus={true}
-                            onFocus={this.handleFloatingError.bind(this)}
                             style={styles.textStyles}
                             defaultValue={this.props.selectedNode.properties ? this.props.selectedNode.properties.name : this.props.selectedNode.label}
                             hintText="Activity Name"
                             errorText={this.state.floatingErrorText}
                             floatingLabelText="Activity Name"
-                            id="activityNameText"
+                            ref={(input) => this.editActivityNameText = input}
                             type="text"
                             multiLine={true}
                             onChange={this.handleFloatingError.bind(this)}/> <br/>
@@ -184,7 +184,7 @@ class ProvenanceActivityManager extends React.Component {
                             defaultValue={this.props.selectedNode.properties ? this.props.selectedNode.properties.description : null}
                             hintText="Activity Description"
                             floatingLabelText="Activity Description"
-                            id="activityDescText"
+                            ref={(input) => this.editActivityDescText = input}
                             type="text"
                             multiLine={true}/>
                     </form>
@@ -201,9 +201,7 @@ class ProvenanceActivityManager extends React.Component {
             if (!BaseUtils.objectPropInArray(graphNodes, 'id', id)) {
                 ProjectActions.addProvActivitySuccess(node);
                 ProjectActions.closeProvEditorModal('addAct');
-                this.setState({
-                    activityNode: null
-                });
+                this.setState({activityNode: null});
             } else {
                 ProjectActions.openProvEditorModal('nodeWarning');
             }
@@ -211,15 +209,12 @@ class ProvenanceActivityManager extends React.Component {
             if (this.state.floatingErrorText !== '') {
                 return null
             } else {
-                let name = document.getElementById('activityNameText').value;
-                let desc = document.getElementById('activityDescText').value;
+                let name = this.activityNameText.getValue();
+                let desc = this.activityDescText.getValue();
                 if (this.props.addEdgeMode) this.toggleEdgeMode();
                 //ProjectActions.saveGraphZoomState(this.state.network.getScale(), this.state.network.getViewPosition());
                 ProjectActions.addProvActivity(name, desc);
                 ProjectActions.closeProvEditorModal('addAct');
-                this.setState({
-                    floatingErrorText: 'This field is required.'
-                });
             }
         }
     }
@@ -237,16 +232,13 @@ class ProvenanceActivityManager extends React.Component {
         if (this.state.floatingErrorText) {
             return null
         } else {
-            let name = document.getElementById('activityNameText').value;
-            let desc = document.getElementById('activityDescText').value;
+            let name = this.editActivityNameText.getValue();
+            let desc = this.editActivityDescText.getValue();
             if(this.props.addEdgeMode) this.toggleEdgeMode();
             //ProjectActions.saveGraphZoomState(this.state.network.getScale(), this.state.network.getViewPosition());
             ProjectActions.editProvActivity(id, name, desc, actName);
             ProjectActions.closeProvEditorModal('editAct');
             ProjectActions.showProvControlBtns();
-            this.setState({
-                floatingErrorText: 'This field is required.'
-            });
         }
     }
 
@@ -274,9 +266,12 @@ class ProvenanceActivityManager extends React.Component {
         ProjectActions.openProvEditorModal(id);
     }
 
-    toggleActivityForm() {
-        this.setState({floatingErrorText: 'This field is required.'});
-        document.getElementById('activityNameText').value = '';
+    toggleTab1() {
+        this.activityNameText.focus();
+    }
+
+    toggleTab2() {
+        this.activityNameSearch.focus();
     }
 }
 

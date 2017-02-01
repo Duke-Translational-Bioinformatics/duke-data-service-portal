@@ -12,13 +12,12 @@ import Folder from './pages/folder.jsx';
 import File from './pages/file.jsx';
 import Agents from './pages/agents.jsx';
 import Agent from './pages/agent.jsx';
+import Results from './pages/results.jsx';
 import Version from './pages/version.jsx';
 import NotFound from './pages/notFound.jsx';
 
 var routes = (
     <Route name="app" path="/" handler={ App }>
-        <Route name="login" handler={ Login } />
-        <Route name="loginTokens" path="/login/:tokens" handler={ Login } />
         <Route name="home" handler={ Home } />
         <Route name="metadata" handler={ Metadata } />
         <Route name="privacy" handler={ Privacy } />
@@ -28,10 +27,13 @@ var routes = (
         <Route name="file/:id" handler={File} />
         <Route name="agents" handler={ Agents } />
         <Route name="agent/:id" handler={ Agent } />
+        <Route name="results" handler={ Results } />
         <Route name="version" handler={ Version } />
         <Route name="version/:id" handler={ Version } />
+        <Route name="login" handler={ Login } />
+        <Route path='notFound' handler={ NotFound } />
         <DefaultRoute handler={ Home } />
-        <NotFoundRoute handler={ NotFound } />
+        <Route name="loginTokens" path="/:access_token" handler={ Login } />
     </Route>
 );
 

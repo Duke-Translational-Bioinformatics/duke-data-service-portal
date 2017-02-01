@@ -1,4 +1,5 @@
 import React from 'react'
+import MainActions from '../actions/mainActions';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 class NotFound extends React.Component {
@@ -24,7 +25,7 @@ class NotFound extends React.Component {
     }
 
     goHome() {
-        this.props.appRouter.transitionTo('/home')
+       this.props.appRouter.transitionTo('/home');
     }
 }
 var styles = {

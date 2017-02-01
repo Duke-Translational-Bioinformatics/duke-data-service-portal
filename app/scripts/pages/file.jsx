@@ -1,9 +1,11 @@
 import React from 'react'
 import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
+import {Kind} from '../../util/urlEnum';
 import FileDetails from '../components/fileComponents/fileDetails.jsx';
+import FileOptions from '../components/fileComponents/fileOptions.jsx';
 import Provenance from '../components/globalComponents/provenance.jsx';
-import TagManager from '../components/globalComponents/tagManager.jsx'
+import TagManager from '../components/globalComponents/tagManager.jsx';
 
 class File extends React.Component {
 
@@ -13,11 +15,11 @@ class File extends React.Component {
             addEdgeMode: ProjectStore.addEdgeMode,
             autoCompleteLoading: ProjectStore.autoCompleteLoading,
             dltRelationsBtn: ProjectStore.dltRelationsBtn,
-            error: ProjectStore.error,
-            errorModal: ProjectStore.errorModal,
             filesChecked: ProjectStore.filesChecked,
             drawerLoading: ProjectStore.drawerLoading,
             loading: false,
+            metaObjProps: ProjectStore.metaObjProps,
+            moveItemList: ProjectStore.moveItemList,
             moveModal: ProjectStore.moveModal,
             moveErrorModal: ProjectStore.moveErrorModal,
             objectMetadata: ProjectStore.objectMetadata,
@@ -37,6 +39,7 @@ class File extends React.Component {
             scale: ProjectStore.scale,
             screenSize: ProjectStore.screenSize,
             searchFilesList: ProjectStore.searchFilesList,
+            selectedEntity: ProjectStore.selectedEntity,
             selectedEdge: ProjectStore.selectedEdge,
             selectedNode: ProjectStore.selectedNode,
             showProvAlert: ProjectStore.showProvAlert,
@@ -44,6 +47,7 @@ class File extends React.Component {
             showProvDetails: ProjectStore.showProvDetails,
             tagAutoCompleteList: ProjectStore.tagAutoCompleteList,
             tagLabels: ProjectStore.tagLabels,
+            tagsToAdd: ProjectStore.tagsToAdd,
             updatedGraphItem: ProjectStore.updatedGraphItem
         };
     }
@@ -71,25 +75,20 @@ class File extends React.Component {
     }
 
     _loadFile(id, kind) {
-        let metadataKind = 'dds-file';
         ProjectActions.getEntity(id, kind);
         ProjectActions.getFileVersions(id);
-        ProjectActions.getObjectMetadata(id, metadataKind);
-        ProjectActions.getTags(id, 'dds-file');
+        ProjectActions.getObjectMetadata(id, Kind.DDS_FILE);
+        ProjectActions.getTags(id, Kind.DDS_FILE);
         ProjectActions.getTagLabels(); // Used to generate a list of tag labels
         ProjectActions.clearSelectedItems(); // Clear checked files and folders from list
     }
 
     render() {
-        if(this.state.entityObj && this.props.currentUser && this.props.currentUser.id) {
-            let projId = this.state.entityObj && this.state.entityObj.project ? this.state.entityObj.project.id : null;
-            let userId = this.props.currentUser && this.props.currentUser.id ? this.props.currentUser.id : null;
-            if (this.state.projPermissions === null) ProjectActions.getPermissions(projId, userId);
-        }
         return (
             <div>
                 <Provenance {...this.props} {...this.state}/>
                 <FileDetails {...this.props} {...this.state} />
+                <FileOptions {...this.props} {...this.state}/>
                 <TagManager {...this.props} {...this.state} />
             </div>
         );
