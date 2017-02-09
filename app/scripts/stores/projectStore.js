@@ -18,7 +18,7 @@ var ProjectStore = Reflux.createStore({
         this.audit = {};
         this.batchFiles = [];
         this.batchFolders = [];
-        this.children = [];
+        this.listItems = [];
         this.currentUser = {};
         this.destination = null;
         this.destinationKind = null;
@@ -1295,7 +1295,7 @@ var ProjectStore = Reflux.createStore({
 
     getUserSuccess (json, id) {
         this.currentUser = json;
-        ProjectActions.getPermissions(id, json.id);
+        if(id) ProjectActions.getPermissions(id, json.id);
         this.trigger({
             currentUser: this.currentUser
         });
@@ -1449,14 +1449,14 @@ var ProjectStore = Reflux.createStore({
 
     getChildrenSuccess(results, headers, page) {
         if(page <= 1) {
-            this.children = results;
+            this.listItems = results;
         } else {
-            this.children = [...this.children, ...results];
+            this.listItems = [...this.listItems, ...results];
         }
         this.responseHeaders = headers;
         this.loading = false;
         this.trigger({
-            children: this.children,
+            listItems: this.listItems,
             responseHeaders: this.responseHeaders,
             loading: this.loading
         })
@@ -1470,10 +1470,10 @@ var ProjectStore = Reflux.createStore({
     },
 
     addFolderSuccess(json) {
-        this.children = [json, ...this.children];
+        this.listItems = [json, ...this.listItems];
         this.loading = false;
         this.trigger({
-            children: this.children,
+            listItems: this.listItems,
             loading: this.loading
         })
     },
@@ -1493,12 +1493,12 @@ var ProjectStore = Reflux.createStore({
     },
 
     moveItemSuccess(id) {
-        if(BaseUtils.objectPropInArray(this.children, 'id', id)) {
-            this.children = BaseUtils.removeObjByKey(this.children, {key: 'id', value: id});
+        if(BaseUtils.objectPropInArray(this.listItems, 'id', id)) {
+            this.listItems = BaseUtils.removeObjByKey(this.listItems, {key: 'id', value: id});
         }
         this.loading = false;
         this.trigger({
-            children: this.children,
+            listItems: this.listItems,
             loading: this.loading
         })
     },
@@ -1549,13 +1549,13 @@ var ProjectStore = Reflux.createStore({
     editItemSuccess(id, json, objectKind) {
         let kind = objectKind === 'dds-file' ? 'files' : 'folders';
         ProjectActions.getEntity(id, kind);
-        if(BaseUtils.objectPropInArray(this.children, 'id', id)) {
-            this.children = BaseUtils.removeObjByKey(this.children, {key: 'id', value: id});
-            this.children.unshift(json);
+        if(BaseUtils.objectPropInArray(this.listItems, 'id', id)) {
+            this.listItems = BaseUtils.removeObjByKey(this.listItems, {key: 'id', value: id});
+            this.listItems.unshift(json);
         }
         this.loading = false;
         this.trigger({
-            children: this.children,
+            listItems: this.listItems,
             loading: this.loading
         })
     },

@@ -3,8 +3,8 @@ const { object, bool, array, string } = PropTypes;
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import BaseUtils from '../../../util/baseUtils'
-import RaisedButton from 'material-ui/lib/raised-button';
-import TextField from 'material-ui/lib/text-field';
+import RaisedButton from 'material-ui/RaisedButton';
+import TextField from 'material-ui/TextField';
 
 class MetadataTemplateCreator extends React.Component {
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import Card from 'material-ui/lib/card/card';
+import Card from 'material-ui/Card';
 
 class Privacy extends React.Component {
 

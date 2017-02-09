@@ -3,9 +3,9 @@ import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import {Kind, Path} from '../../../util/urlEnum';
 import MoveItemModal from '../globalComponents/moveItemModal.jsx';
-import TextField from 'material-ui/lib/text-field';
-import Dialog from 'material-ui/lib/dialog';
-import FlatButton from 'material-ui/lib/flat-button';
+import TextField from 'material-ui/TextField';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
 
 class FileOptions extends React.Component {
 
@@ -21,6 +21,7 @@ class FileOptions extends React.Component {
         let moveOpen = this.props.toggleModal && this.props.toggleModal.id === 'moveItem' ? this.props.toggleModal.open : false;
         let fileName = this.props.selectedEntity !== null ? this.props.selectedEntity.name : null;
         if(fileName === null) fileName = this.props.entityObj && this.props.entityObj !== null ? this.props.entityObj.name : null;
+        let dialogWidth = this.props.screenSize.width < 580 ? {width: '100%'} : {};
         const deleteActions = [
             <FlatButton
                 label="CANCEL"
@@ -54,7 +55,7 @@ class FileOptions extends React.Component {
             <div>
                 <Dialog
                     style={styles.dialogStyles}
-                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
+                    contentStyle={dialogWidth}
                     title="Are you sure you want to delete this file?"
                     autoDetectWindowHeight={true}
                     actions={deleteActions}
@@ -66,7 +67,7 @@ class FileOptions extends React.Component {
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
-                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
+                    contentStyle={dialogWidth}
                     title="Edit File Name"
                     autoDetectWindowHeight={true}
                     actions={editActions}
@@ -90,7 +91,7 @@ class FileOptions extends React.Component {
                 <Dialog
                     {...this.props}
                     style={styles.dialogStyles}
-                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
+                    contentStyle={dialogWidth}
                     title="Select Destination"
                     autoDetectWindowHeight={true}
                     actions={moveActions}
@@ -114,7 +115,7 @@ class FileOptions extends React.Component {
         parentKind === 'dds-project' ? urlPath = '/project/' : urlPath = '/folder/';
         ProjectActions.deleteFile(id, parentId, parentKind);
         this.handleClose('dltFile');
-        setTimeout(()=>this.props.appRouter.transitionTo(urlPath + parentId), 500)
+        setTimeout(()=>this.props.router.push(urlPath + parentId), 500)
     }
 
     handleUpdateButton() {
@@ -137,10 +138,6 @@ class FileOptions extends React.Component {
 
     handleClose(id) {
         ProjectActions.toggleModals(id);
-    }
-
-    openTagManager() {
-        ProjectActions.toggleTagManager();
     }
 
     selectText() {

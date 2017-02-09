@@ -6,10 +6,10 @@ import MetadataPropertyManager from '../globalComponents/metadataPropertyManager
 import MetadataTemplateCreator from '../globalComponents/metadataTemplateCreator.jsx';
 import MetadataTemplateOptions from '../globalComponents/metadataTemplateOptions.jsx';
 import BaseUtils from '../../../util/baseUtils'
-import CircularProgress from 'material-ui/lib/circular-progress';
-import IconButton from 'material-ui/lib/icon-button';
-import LeftNav from 'material-ui/lib/left-nav';
-import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
+import CircularProgress from 'material-ui/CircularProgress';
+import IconButton from 'material-ui/IconButton';
+import Drawer from 'material-ui/Drawer';
+import NavigationClose from 'material-ui/svg-icons/navigation/close';
 
 class MetadataTemplateManager extends React.Component {
 
@@ -25,20 +25,20 @@ class MetadataTemplateManager extends React.Component {
         let width = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.width : window.innerWidth;
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                <LeftNav disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openRight={true} open={this.props.openMetadataManager}>
+                <Drawer disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openSecondary={true} open={this.props.openMetadataManager}>
                     <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800"
-                         style={{marginTop: width > 680 ? 65 : 85}}>
+                         style={{marginTop: 85}}>
                         <IconButton style={styles.toggleBtn}
                                     onTouchTap={() => this.toggleMetadataManager()}>
                             <NavigationClose />
                         </IconButton>
                     </div>
-                    {this.props.drawerLoading ? <CircularProgress size={1.5} style={styles.drawerLoader}/> : <span>
+                    {this.props.drawerLoading ? <CircularProgress size={80} thickness={5} style={styles.drawerLoader}/> : <span>
                         {this.props.showTemplateCreator ? <MetadataTemplateCreator {...this.props}/> : null}
                         {this.props.showTemplateDetails ? <MetadataTemplateOptions {...this.props}/> : null}
                         {this.props.showPropertyCreator ? <MetadataPropertyManager {...this.props}/> : null}
                     </span>}
-                </LeftNav>
+                </Drawer>
             </div>
         )
     }
@@ -57,7 +57,7 @@ var styles = {
         right: 0
     },
     toggleBtn: {
-        margin: '25px 0px 15px 0px',
+        margin: '5px 0px 5px 0px',
         zIndex: 9999
     }
 };

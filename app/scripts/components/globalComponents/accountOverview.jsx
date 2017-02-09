@@ -1,7 +1,7 @@
 import React from 'react';
 import BaseUtils from '../../../util/baseUtils.js';
-import Card from 'material-ui/lib/card/card';
-import FontIcon from 'material-ui/lib/font-icon';
+import Card from 'material-ui/Card';
+import FontIcon from 'material-ui/FontIcon';
 
 class AccountOverview extends React.Component {
 

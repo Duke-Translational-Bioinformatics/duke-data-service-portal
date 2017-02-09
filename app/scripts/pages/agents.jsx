@@ -9,6 +9,7 @@ class Agents extends React.Component {
         super(props);
         this.state = {
             agents: ProjectStore.agents,
+            currentUser: ProjectStore.currentUser,
             loading: false,
             screenSize: ProjectStore.screenSize,
             toggleModal: ProjectStore.toggleModal
@@ -25,6 +26,7 @@ class Agents extends React.Component {
     }
 
     _loadAgents() {
+        ProjectActions.getUser();
         ProjectActions.getUserKey();
         ProjectActions.loadAgents();
     }

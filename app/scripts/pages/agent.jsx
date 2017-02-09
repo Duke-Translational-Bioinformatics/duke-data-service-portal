@@ -5,7 +5,7 @@ import ProjectStore from '../stores/projectStore';
 import AgentOptionsMenu from '../components/globalComponents/agentOptionsMenu.jsx';
 import Loaders from '../components/globalComponents/loaders.jsx';
 import {UrlGen} from '../../util/urlEnum';
-import Card from '../../../node_modules/material-ui/lib/card/card';
+import Card from 'material-ui/Card';
 
 class Agent extends React.Component {
 
@@ -120,13 +120,8 @@ class Agent extends React.Component {
         return (
             <div>
                 {agent}
-
             </div>
         )
-    }
-    handleDownload(){
-        let id = this.props.params.id;
-        ProjectActions.getDownloadUrl(id);
     }
 }
 

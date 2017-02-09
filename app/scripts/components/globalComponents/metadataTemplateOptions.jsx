@@ -5,10 +5,10 @@ import ProjectStore from '../../stores/projectStore';
 import EditTemplateModal from '../globalComponents/editTemplateModal.jsx';
 import DeleteTemplateModal from '../globalComponents/deleteTemplateModal.jsx';
 import MetadataTemplateProperties from '../globalComponents/metadataTemplateProperties.jsx';
-import IconButton from 'material-ui/lib/icon-button';
-import IconMenu from 'material-ui/lib/menus/icon-menu';
-import MenuItem from 'material-ui/lib/menus/menu-item';
-import RaisedButton from 'material-ui/lib/raised-button';
+import IconButton from 'material-ui/IconButton';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
+import RaisedButton from 'material-ui/RaisedButton';
 
 class MetadataTemplateOptions extends React.Component {
 
@@ -39,7 +39,7 @@ class MetadataTemplateOptions extends React.Component {
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.wrapper}>
                 {this.props.currentUser.id === templateCreator ? <IconMenu iconButtonElement={<IconButton iconClassName="material-icons">more_vert</IconButton>}
-                          style={{position: 'absolute',top: width > 680 ? 91 : 101,right: 25,zIndex: 200}}
+                          style={styles.menuIconBtn}
                           anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                           targetOrigin={{horizontal: 'right', vertical: 'top'}}>
                     <MenuItem primaryText="Delete Template" leftIcon={<i className="material-icons">delete</i>} onTouchTap={()=>this.deleteTemplateModal()}/>
@@ -114,6 +114,12 @@ var styles = {
     listWrapper: {
         marginTop: -10,
         maxWidth: 670
+    },
+    menuIconBtn: {
+        position: 'absolute',
+        top: 90 ,
+        right: 5,
+        zIndex: 200
     },
     tableKey: {
         fontSize: 12,

@@ -1,16 +1,13 @@
 import React from 'react';
-import { RouteHandler } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import BaseUtils from '../../../util/baseUtils';
-import Checkbox from 'material-ui/lib/checkbox';
-import IconButton from 'material-ui/lib/icon-button';
-import LeftNav from 'material-ui/lib/left-nav';
-import RaisedButton from 'material-ui/lib/raised-button';
-
-import List from 'material-ui/lib/lists/list';
-import ListItem from 'material-ui/lib/lists/list-item';
-import Divider from 'material-ui/lib/divider';
+import Checkbox from 'material-ui/Checkbox';
+import IconButton from 'material-ui/IconButton';
+import Drawer from 'material-ui/Drawer';
+import RaisedButton from 'material-ui/RaisedButton';
+import {List, ListItem} from 'material-ui/List';
+import Divider from 'material-ui/Divider';
 
 class SearchFilters extends React.Component {
 
@@ -43,7 +40,7 @@ class SearchFilters extends React.Component {
 
         return (
             <div>
-                <LeftNav open={this.props.showFilters} width={this.props.showFilters ? 320 : null} zDepth={1}>
+                <Drawer open={this.props.showFilters} width={this.props.showFilters ? 320 : null} zDepth={1}>
                     <div style={styles.spacer}></div>
                         <div style={styles.drawer}>
                             {projects.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
@@ -82,7 +79,7 @@ class SearchFilters extends React.Component {
                                     onTouchTap={()=>this.clearFilters()}/>
                             </div> : null}
                     </div>
-                </LeftNav>
+                </Drawer>
             </div>
         );
     }

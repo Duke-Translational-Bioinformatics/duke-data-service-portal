@@ -1,24 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { RouteHandler } from 'react-router';
 import MainActions from '../../actions/mainActions';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import AddAgentModal from '../../components/globalComponents/addAgentModal.jsx';
-import CircularProgress from 'material-ui/lib/circular-progress';
-import Dialog from 'material-ui/lib/dialog';
-import FlatButton from 'material-ui/lib/flat-button';
-import FontIcon from 'material-ui/lib/font-icon';
-import Help from 'material-ui/lib/svg-icons/action/help';
-import IconButton from 'material-ui/lib/icon-button';
+import CircularProgress from 'material-ui/CircularProgress';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import FontIcon from 'material-ui/FontIcon';
+import Help from 'material-ui/svg-icons/action/help';
+import IconButton from 'material-ui/IconButton';
 import Loaders from '../../components/globalComponents/loaders.jsx';
-import LinearProgress from 'material-ui/lib/linear-progress';
-import Paper from 'material-ui/lib/paper';
-import RaisedButton from 'material-ui/lib/raised-button';
-import Search from 'material-ui/lib/svg-icons/action/search';
-import Close from 'material-ui/lib/svg-icons/navigation/close';
-import TextField from 'material-ui/lib/text-field';
-import Toggle from 'material-ui/lib/toggle';
+import LinearProgress from 'material-ui/LinearProgress';
+import Paper from 'material-ui/Paper';
+import RaisedButton from 'material-ui/RaisedButton';
+import Search from 'material-ui/svg-icons/action/search';
+import Close from 'material-ui/svg-icons/navigation/close';
+import TextField from 'material-ui/TextField';
+import Toggle from 'material-ui/Toggle';
 
 class MetadataTemplateList extends React.Component {
 
@@ -26,7 +25,7 @@ class MetadataTemplateList extends React.Component {
         super(props);
         this.state = {
             searchMode: false,
-            searchValue: null,
+            searchValue: '',
             timeout: null,
             toggleSwitch: false
         };
@@ -34,7 +33,7 @@ class MetadataTemplateList extends React.Component {
 
     render() {
         let currentUser = this.props.currentUser && this.props.currentUser !== null ? this.props.currentUser : null;
-        let route = this.props.routerPath.split('/').splice([1], 1).toString();
+        let route = this.props.location.pathname.split('/').splice([1], 1).toString();
         let showSearch = this.state.searchMode ? 'block' : 'none';
         let switchColor = this.state.toggleSwitch ? {track: {backgroundColor: '#235F9C'}, thumb: {backgroundColor: '#003366'}} :
             {track: {backgroundColor: '#BDBDBD'}, thumb: {backgroundColor: '#9E9E9E'}};
@@ -137,7 +136,7 @@ class MetadataTemplateList extends React.Component {
                 </div>
                 <div className="mdl-cell mdl-cell--12-col" style={styles.loading}>
                     {this.props.loading && route === 'metadata' ? <Loaders {...this.props}/> : null}
-                    {this.props.loading && route !== 'metadata' ? <CircularProgress size={1.5} style={styles.drawerLoader}/> : null}
+                    {this.props.loading && route !== 'metadata' ? <CircularProgress size={80} thickness={5} style={styles.drawerLoader}/> : null}
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     <div className="list-block media-list">

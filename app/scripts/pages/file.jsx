@@ -14,6 +14,7 @@ class File extends React.Component {
         this.state = {
             addEdgeMode: ProjectStore.addEdgeMode,
             autoCompleteLoading: ProjectStore.autoCompleteLoading,
+            currentUser: ProjectStore.currentUser,
             dltRelationsBtn: ProjectStore.dltRelationsBtn,
             filesChecked: ProjectStore.filesChecked,
             drawerLoading: ProjectStore.drawerLoading,

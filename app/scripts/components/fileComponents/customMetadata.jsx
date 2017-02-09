@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
 import ProjectStore from '../../stores/projectStore';
-import Card from 'material-ui/lib/card/card';
+import Card from 'material-ui/Card';
 
 const CustomMetadata = () => {
     let metadataItems = [];

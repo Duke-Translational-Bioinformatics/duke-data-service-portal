@@ -1,9 +1,9 @@
 import React from 'react';
 import ProjectActions from '../../actions/projectActions';
-import FlatButton from 'material-ui/lib/flat-button';
-import RaisedButton from 'material-ui/lib/raised-button';
-import Dialog from 'material-ui/lib/dialog';
-import TextField from 'material-ui/lib/text-field';
+import FlatButton from 'material-ui/FlatButton';
+import RaisedButton from 'material-ui/RaisedButton';
+import Dialog from 'material-ui/Dialog';
+import TextField from 'material-ui/TextField';
 
 class AddAgentModal extends React.Component {
 
@@ -91,6 +91,7 @@ class AddAgentModal extends React.Component {
     }
 
     toggleModal() {
+        setTimeout(() => { this.agentNameText.select() }, 300);
         ProjectActions.toggleModals('addAgent')
     }
 

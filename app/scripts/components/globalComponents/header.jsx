@@ -1,11 +1,10 @@
 import React from 'react';
-import { RouteHandler } from 'react-router';
 import ProjectStore from '../../stores/projectStore';
 import MainActions from '../../actions/mainActions';
 import ProjectActions from '../../actions/projectActions';
 import CurrentUser from '../globalComponents/currentUser.jsx';
 import Search from '../globalComponents/search.jsx';
-import FontIcon from 'material-ui/lib/font-icon';
+import FontIcon from 'material-ui/FontIcon';
 
 class Header extends React.Component {
 
@@ -27,7 +26,7 @@ class Header extends React.Component {
     }
 
     render() {
-        let header = <div className="navbar " style={styles.navBar}>
+        let header = <div className="navbar" style={styles.navBar}>
             <div className="navbar-inner" style={{display: this.state.showSearch ? 'none' : '', height: 106}}>
                 <div className="left" style={styles.navBar.leftDiv}>
                     {!this.props.appConfig.apiToken ? '' : <a href="#" className="open-panel"><FontIcon className="material-icons" style={styles.openIcon}>menu</FontIcon></a>}
@@ -35,9 +34,6 @@ class Header extends React.Component {
                 </div>
                 <div className="center" style={styles.navBar.centerDiv}></div>
                 <div className="right">
-                    <a className="external" onTouchTap={() => this.showUserInfoPanel()} style={styles.userOptions}>
-                        <FontIcon className="material-icons" style={styles.icon}>account_box</FontIcon>
-                    </a>
                     <FontIcon className="material-icons" style={styles.searchIcon} onTouchTap={()=>this.showSearch()}>search</FontIcon>
                     <CurrentUser {...this.props} {...this.state}/>
                 </div>
@@ -55,10 +51,6 @@ class Header extends React.Component {
     showSearch() {
         ProjectActions.toggleSearch();
     }
-
-    showUserInfoPanel(){
-        ProjectActions.toggleUserInfoPanel();
-    }
 }
 
 var styles = {
@@ -74,9 +66,7 @@ var styles = {
         maxWidth: '20%',
         minWidth: 58,
         minHeight: 46,
-        position: 'absolute',
-        left: 50,
-        bottom: -11
+        marginLeft: 50
     },
     navBar: {
         height: 76,
@@ -85,11 +75,7 @@ var styles = {
         },
         leftDiv: {
             maxWidth: 130,
-            marginBottom: 10,
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'flex-start',
-            justifyContent: 'center'
+            marginBottom: 35
         }
     },
     openIcon: {
@@ -97,7 +83,7 @@ var styles = {
         color: '#fff',
         position: 'absolute',
         left: 10,
-        bottom: -2
+        bottom: 9
     },
     searchIcon: {
         color: "#fff",
@@ -113,10 +99,6 @@ var styles = {
         right: 0,
         width: 200
     }
-};
-
-Header.contextTypes = {
-    router: React.PropTypes.func.isRequired
 };
 
 export default Header;

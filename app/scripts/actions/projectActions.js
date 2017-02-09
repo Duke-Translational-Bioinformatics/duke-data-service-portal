@@ -776,8 +776,7 @@ ProjectActions.getAgentKey.preEmit = (id) => {
             return response.json()
         }).then((json) => {
             ProjectActions.getAgentKeySuccess(json)
-        })
-        .catch((ex) => {
+        }).catch((ex) => {
             ProjectActions.handleErrors(ex)
         });
 };
@@ -805,8 +804,7 @@ ProjectActions.getUser.preEmit = (id) => {
             return response.json()
         }).then((json) => {
             ProjectActions.getUserSuccess(json, id)
-        })
-        .catch((ex) => {
+        }).catch((ex) => {
             ProjectActions.handleErrors(ex)
         });
 };
@@ -818,8 +816,7 @@ ProjectActions.getPermissions.preEmit = (id, userId) => {
             return response.json()
         }).then((json) => {
             ProjectActions.getPermissionsSuccess(json)
-        })
-        .catch((ex) => {
+        }).catch((ex) => {
             ProjectActions.handleErrors(ex)
         });
 };
