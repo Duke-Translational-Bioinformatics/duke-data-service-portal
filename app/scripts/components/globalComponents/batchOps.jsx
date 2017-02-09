@@ -1,13 +1,13 @@
 import React from 'react';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-import Card from 'material-ui/lib/card/card';
-import DeleteIcon from 'material-ui/lib/svg-icons/action/delete';
-import Dialog from 'material-ui/lib/dialog';
-import FlatButton from 'material-ui/lib/flat-button';
-import GetAppIcon from 'material-ui/lib/svg-icons/action/get-app';
-import IconButton from 'material-ui/lib/icon-button';
-import LocalOffer from 'material-ui/lib/svg-icons/maps/local-offer';
+import Card from 'material-ui/Card';
+import DeleteIcon from 'material-ui/svg-icons/action/delete';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import GetAppIcon from 'material-ui/svg-icons/action/get-app';
+import IconButton from 'material-ui/IconButton';
+import LocalOffer from 'material-ui/svg-icons/maps/local-offer';
 
 class BatchOps extends React.Component {
 

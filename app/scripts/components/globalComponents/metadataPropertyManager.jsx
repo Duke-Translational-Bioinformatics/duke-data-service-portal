@@ -4,12 +4,12 @@ import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import MetadataTemplateProperties from '../globalComponents/metadataTemplateProperties.jsx';
 import BaseUtils from '../../../util/baseUtils'
-import AddCircle from 'material-ui/lib/svg-icons/content/add-circle';
-import IconButton from 'material-ui/lib/icon-button';
-import MenuItem from 'material-ui/lib/menus/menu-item';
-import RaisedButton from 'material-ui/lib/raised-button';
-import SelectField from 'material-ui/lib/select-field';
-import TextField from 'material-ui/lib/text-field';
+import AddCircle from 'material-ui/svg-icons/content/add-circle';
+import IconButton from 'material-ui/IconButton';
+import MenuItem from 'material-ui/MenuItem';
+import RaisedButton from 'material-ui/RaisedButton';
+import SelectField from 'material-ui/SelectField';
+import TextField from 'material-ui/TextField';
 
 class MetadataPropertyManager extends React.Component {
 

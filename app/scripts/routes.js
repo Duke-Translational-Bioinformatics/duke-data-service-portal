@@ -1,6 +1,5 @@
 import React from 'react';
-import { Route, DefaultRoute, NotFoundRoute } from 'react-router';
-
+import { Router, Route, IndexRoute, Redirect, hashHistory } from 'react-router';
 import App from './pages/app.jsx';
 import Login from './pages/login.jsx';
 import Home from './pages/home.jsx';
@@ -16,25 +15,27 @@ import Results from './pages/results.jsx';
 import Version from './pages/version.jsx';
 import NotFound from './pages/notFound.jsx';
 
-var routes = (
-    <Route name="app" path="/" handler={ App }>
-        <Route name="home" handler={ Home } />
-        <Route name="metadata" handler={ Metadata } />
-        <Route name="privacy" handler={ Privacy } />
-        <Route name="public_privacy" handler={ PublicPrivacy } />
-        <Route name="project/:id" handler={ Project } />
-        <Route name="folder/:id" handler={ Folder } />
-        <Route name="file/:id" handler={File} />
-        <Route name="agents" handler={ Agents } />
-        <Route name="agent/:id" handler={ Agent } />
-        <Route name="results" handler={ Results } />
-        <Route name="version" handler={ Version } />
-        <Route name="version/:id" handler={ Version } />
-        <Route name="login" handler={ Login } />
-        <Route path='notFound' handler={ NotFound } />
-        <DefaultRoute handler={ Home } />
-        <Route name="loginTokens" path="/:access_token" handler={ Login } />
-    </Route>
+const routes = (
+    <Router history={ hashHistory }>
+        <Route path="/" component={ App } >
+            <IndexRoute component={Home}/>
+            <Route path="/404" component={ NotFound } />
+            <Redirect from="/home" to="/" />
+            <Route path="metadata" component={ Metadata } />
+            <Route path="privacy" component={ Privacy } />
+            <Route path="public_privacy" component={ PublicPrivacy } />
+            <Route path="project/:id" component={ Project }/>
+            <Route path="folder/:id" component={ Folder } />
+            <Route path="file/:id" component={ File } />
+            <Route path="agents" component={ Agents } />
+            <Route path="agent/:id" component={ Agent } />
+            <Route path="results" component={ Results } />
+            <Route path="version" component={ Version } />
+            <Route path="version/:id" component={ Version } />
+            <Route path="login" component={ Login } />
+            <Route path="/(:access_token)" component={ Login } />
+        </Route>
+    </Router>
 );
 
 export default routes;

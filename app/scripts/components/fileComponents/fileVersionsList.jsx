@@ -1,10 +1,10 @@
 import React from 'react';
 import ProjectActions from '../../actions/projectActions';
-import FlatButton from 'material-ui/lib/flat-button';
-import Dialog from 'material-ui/lib/dialog';
-import Divider from 'material-ui/lib/divider';
-import List from 'material-ui/lib/lists/list';
-import ListItem from 'material-ui/lib/lists/list-item';
+import FlatButton from 'material-ui/FlatButton';
+import Dialog from 'material-ui/Dialog';
+import Divider from 'material-ui/Divider';
+import {List, ListItem} from 'material-ui/List';
+
 
 class FileVersionsList extends React.Component {
 
@@ -56,7 +56,7 @@ class FileVersionsList extends React.Component {
     }
 
     goTo(versionId) {
-        this.props.appRouter.transitionTo('/version/' + versionId)
+        this.props.router.push('/version/' + versionId)
         ProjectActions.closeModal();
     }
 

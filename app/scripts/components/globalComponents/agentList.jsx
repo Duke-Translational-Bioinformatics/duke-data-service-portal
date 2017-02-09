@@ -1,15 +1,14 @@
 import React from 'react';
-import { RouteHandler } from 'react-router';
 import MainActions from '../../actions/mainActions';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import AddAgentModal from '../../components/globalComponents/addAgentModal.jsx';
 import {UrlGen} from '../../../util/urlEnum.js';
-import Dialog from 'material-ui/lib/dialog';
-import FlatButton from 'material-ui/lib/flat-button';
-import FontIcon from 'material-ui/lib/font-icon';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import FontIcon from 'material-ui/FontIcon';
 import Loaders from '../../components/globalComponents/loaders.jsx';
-import TextField from 'material-ui/lib/text-field';
+import TextField from 'material-ui/TextField';
 
 class AgentList extends React.Component {
 
@@ -89,7 +88,7 @@ class AgentList extends React.Component {
         });
 
         return (
-            <div className="list-container" style={{marginTop: this.props.windowWidth > 680 ? 95 : ''}}>
+            <div className="list-container" style={styles.listContainer}>
                 {modal}
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
                     <div style={styles.headerTitle}>
@@ -202,8 +201,10 @@ var styles = {
         fontSize: '1em'
     },
     list: {
-        float: 'right',
-        marginTop: -10
+        float: 'right'
+    },
+    listContainer: {
+        marginTop: 65
     },
     loaders: {
         paddingTop: 40

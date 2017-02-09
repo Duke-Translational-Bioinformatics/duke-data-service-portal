@@ -4,16 +4,11 @@ import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import MetadataTemplateProperties from '../globalComponents/metadataTemplateProperties.jsx';
 import BaseUtils from '../../../util/baseUtils'
-import DatePicker from 'material-ui/lib/date-picker/date-picker';
-import Paper from 'material-ui/lib/paper';
-import RaisedButton from 'material-ui/lib/raised-button';
-import Table from 'material-ui/lib/table/table';
-import TableHeaderColumn from 'material-ui/lib/table/table-header-column';
-import TableRow from 'material-ui/lib/table/table-row';
-import TableHeader from 'material-ui/lib/table/table-header';
-import TableRowColumn from 'material-ui/lib/table/table-row-column';
-import TableBody from 'material-ui/lib/table/table-body';
-import TextField from 'material-ui/lib/text-field';
+import DatePicker from 'material-ui/DatePicker';
+import Paper from 'material-ui/Paper';
+import RaisedButton from 'material-ui/RaisedButton';
+import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
+import TextField from 'material-ui/TextField';
 import Theme from '../../theme/customTheme.js';
 
 class MetadataObjectCreator extends React.Component {

@@ -18,7 +18,6 @@ var MainStore = Reflux.createStore({
         this.errorModals = [];
         this.failedUploads = [];
         this.modalOpen = cookie.load('modalOpen');
-        this.signedInfo = null;
         this.toasts = [];
     },
 

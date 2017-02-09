@@ -1,5 +1,4 @@
 import React from 'react';
-import { RouteHandler } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import BaseUtils from '../../../util/baseUtils.js';
@@ -9,10 +8,10 @@ import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx
 import FileOptionsMenu from '../../components/fileComponents/fileOptionsMenu.jsx';
 import FolderOptionsMenu from '../../components/folderComponents/folderOptionsMenu.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
-import FontIcon from 'material-ui/lib/font-icon';
-import RaisedButton from 'material-ui/lib/raised-button';
+import FontIcon from 'material-ui/FontIcon';
+import RaisedButton from 'material-ui/RaisedButton';
 
-class Children extends React.Component {
+class ListItems extends React.Component {
 
     render() {
         if(!this.props.showBatchOps) this.uncheck();
@@ -32,7 +31,7 @@ class Children extends React.Component {
                 </div>
             }
         }
-        let children = this.props.children ? this.props.children.map((children) => {
+        let children = this.props.listItems ? this.props.listItems.map((children) => {
             let fileOptionsMenu = this.props.screenSize && this.props.screenSize.width >= 680 ? <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, 'files')}/> : null;
             let folderOptionsMenu = this.props.screenSize && this.props.screenSize.width >= 680 ? <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, 'folders')}/> : null;
             if (children.kind === 'dds-folder') {
@@ -46,7 +45,7 @@ class Children extends React.Component {
                            className="item-content external">
                             <label className="label-checkbox item-content" style={styles.checkboxLabel}
                                    onClick={e => this.change()}>
-                                <input className="folderChkBoxes" type={type} name="chkboxName" value={children.id}
+                                <input className="folderChkBoxes" type="checkbox" name="chkboxName" value={children.id}
                                        ref={children.id}/>
                                 { chkBx }
                             </label>
@@ -76,7 +75,7 @@ class Children extends React.Component {
                            className="item-content external">
                             <label className="label-checkbox item-content" style={styles.checkboxLabel}
                                    onClick={e => this.change()}>
-                                <input className="fileChkBoxes" type={type} name="chkboxName" value={children.id}
+                                <input className="fileChkBoxes" type="checkbox" name="chkboxName" value={children.id}
                                        ref={children.id}/>
                                 { chkBx }
                             </label>
@@ -99,7 +98,7 @@ class Children extends React.Component {
         }) : null;
 
         return (
-            <div className="list-container">
+            <div className="list-container" ref={(c) => this.listContainer = c}>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
                     {!this.props.showBatchOps ? <div className="mdl-cell mdl-cell--12-col">
                         { newFolderModal }
@@ -115,7 +114,7 @@ class Children extends React.Component {
                             { children }
                         </ul>
                     </div>
-                    {this.props.children.length < totalChildren && totalChildren > 25 ?
+                    {this.props.listItems.length < totalChildren && totalChildren > 25 ?
                         <div className="mdl-cell mdl-cell--12-col">
                             <RaisedButton
                                 label={this.props.loading ? "Loading..." : "Load More"}
@@ -184,7 +183,7 @@ class Children extends React.Component {
     }
 }
 
-Children.contextTypes = {
+ListItems.contextTypes = {
     muiTheme: React.PropTypes.object
 };
 
@@ -220,7 +219,7 @@ var styles = {
     }
 };
 
-Children.propTypes = {
+ListItems.propTypes = {
     filesChecked: React.PropTypes.array,
     foldersChecked: React.PropTypes.array,
     entityObj: React.PropTypes.object,
@@ -230,4 +229,4 @@ Children.propTypes = {
     error: React.PropTypes.object
 };
 
-export default Children;
+export default ListItems;

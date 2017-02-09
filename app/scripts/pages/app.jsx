@@ -1,5 +1,4 @@
 import React from 'react';
-import { RouteHandler } from 'react-router';
 import Header from '../components/globalComponents/header.jsx';
 import Footer from '../components/globalComponents/footer.jsx';
 import LeftMenu from '../components/globalComponents/leftMenu.jsx';
@@ -9,17 +8,11 @@ import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions';
 import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
-import Dialog from 'material-ui/lib/dialog';
-import FlatButton from 'material-ui/lib/flat-button';
-import RaisedButton from 'material-ui/lib/raised-button';
-import Snackbar from 'material-ui/lib/snackbar';
-import Table from 'material-ui/lib/table/table';
-import TableHeaderColumn from 'material-ui/lib/table/table-header-column';
-import TableRow from 'material-ui/lib/table/table-row';
-import TableHeader from 'material-ui/lib/table/table-header';
-import TableRowColumn from 'material-ui/lib/table/table-row-column';
-import TableBody from 'material-ui/lib/table/table-body';
-import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import RaisedButton from 'material-ui/RaisedButton';
+import Snackbar from 'material-ui/Snackbar';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Theme from '../theme/customTheme.js';
 
 let zIndex = {
@@ -34,6 +27,7 @@ class App extends React.Component {
         super(props);
         this.state = {
             appConfig: MainStore.appConfig,
+            currentUser: MainStore.currentUser,
             windowWidth: window.innerWidth,
             error: MainStore.error,
             errorModal: true,
@@ -75,8 +69,23 @@ class App extends React.Component {
         new Framework7().closePanel();
     }
 
+    componentWillMount() {
+        if (!this.state.appConfig.apiToken && !this.state.appConfig.isLoggedIn && this.props.location.pathname !== '/login') {
+            if (location.hash !== '' && location.hash !== '#/login' && location.hash !== '#/public_privacy') {
+                let redUrl = location.href;
+                if (typeof(Storage) !== 'undefined') {
+                    localStorage.setItem('redirectTo', redUrl);
+                } else {
+                    this.props.router.push('/login')
+                }
+            }
+            let routeTo = this.props.location.pathname === '/public_privacy' ? '/public_privacy' : '/login';
+            this.props.router.push(routeTo);
+        }
+    }
+
     componentDidUpdate(prevProps, prevState) {
-        if(prevProps.routerPath === '/login' && this.state.appConfig.apiToken) MainActions.getCurrentUser();
+        if(prevProps.location.pathname === '/login' && this.state.appConfig.apiToken) MainActions.getCurrentUser();
         this.showToasts();
         this.checkError();
     }
@@ -84,8 +93,8 @@ class App extends React.Component {
     checkError() {
         if (this.state.error && this.state.error.response){
             if(this.state.error.response === 404) {
-                this.props.appRouter.transitionTo('/notFound');
                 MainActions.clearErrors();
+                setTimeout(()=>this.props.router.push('/404'),1000);
             }
             this.state.error.response != 404 ? console.log(this.state.error.msg) : null;
         }
@@ -102,7 +111,6 @@ class App extends React.Component {
     }
 
     render() {
-        let content = <RouteHandler {...this.props} {...this.state}/>;
         let toasts = null;
         let dialogs = null;
         if (this.state.appConfig.apiToken) {
@@ -140,18 +148,6 @@ class App extends React.Component {
                 </Dialog>
             });
         }
-        if (!this.state.appConfig.apiToken && !this.state.appConfig.isLoggedIn && this.props.routerPath !== '/login') {
-            if (location.hash !== '' && location.hash !== '#/login' && location.hash !== '#/public_privacy') {
-                let redUrl = location.href;
-                if (typeof(Storage) !== 'undefined') {
-                    localStorage.setItem('redirectTo', redUrl);
-                } else {
-                    this.props.appRouter.transitionTo('/login')
-                }
-            }
-            let routeTo = this.props.routerPath === '/public_privacy' ? '/public_privacy' : '/login';
-            this.props.appRouter.transitionTo(routeTo);
-        }
         return (
             <span>
                 <div className="statusbar-overlay"></div>
@@ -165,7 +161,7 @@ class App extends React.Component {
                                 {this.state.windowWidth < 680 ? !this.state.appConfig.apiToken ? '' : <Search {...this.props} {...this.state} /> : null}
                                 <div className="searchbar-overlay"></div>
                                 <div className="page-content">
-                                    {content}
+                                    {this.props.children}
                                     {toasts}
                                     {dialogs}
                                     <RetryUploads {...this.props} {...this.state}/>

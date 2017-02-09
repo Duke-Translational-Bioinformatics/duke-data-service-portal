@@ -1,8 +1,8 @@
 import React from 'react';
 import ProjectActions from '../../actions/projectActions';
-import FlatButton from 'material-ui/lib/flat-button';
-import Dialog from 'material-ui/lib/dialog';
-import TextField from 'material-ui/lib/text-field';
+import FlatButton from 'material-ui/FlatButton';
+import Dialog from 'material-ui/Dialog';
+import TextField from 'material-ui/TextField';
 
 class VersionUpload extends React.Component {
 

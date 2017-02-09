@@ -9,6 +9,7 @@ class Metadata extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            currentUser: ProjectStore.currentUser,
             loading: false,
             screenSize: ProjectStore.screenSize,
             metadataTemplate: ProjectStore.metadataTemplate,
@@ -33,17 +34,24 @@ class Metadata extends React.Component {
     }
 
     _loadMetadata() {
+        ProjectActions.getUser();
         ProjectActions.loadMetadataTemplates(null);
     }
 
     render() {
         return (
-            <div style={{marginTop: this.props.windowWidth > 680 ? 95 : ''}}>
+            <div style={styles.container}>
                 <MetadataTemplateList {...this.props} {...this.state} />
                 <MetadataTemplateManager {...this.props} {...this.state} />
             </div>
         );
     }
 }
+
+const styles = {
+    container: {
+        marginTop: 85
+    }
+};
 
 export default Metadata;

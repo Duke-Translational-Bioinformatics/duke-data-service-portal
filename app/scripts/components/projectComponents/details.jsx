@@ -1,10 +1,10 @@
 import React from 'react';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-import Dialog from 'material-ui/lib/dialog';
-import FlatButton from 'material-ui/lib/flat-button';
-import MenuItem from 'material-ui/lib/menus/menu-item';
-import SelectField from 'material-ui/lib/select-field';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import MenuItem from 'material-ui/MenuItem';
+import SelectField from 'material-ui/SelectField';
 
 class Details extends React.Component {
 
@@ -46,6 +46,7 @@ class Details extends React.Component {
         let createdById = this.props.project && this.props.project.audit ? this.props.project.audit.created_by.id : null;
         let currentUserId = this.props.currentUser ? this.props.currentUser.id : null;
         let description = this.props.project ? this.props.project.description : null;
+        let dialogWidth = this.props.screenSize.width < 580 ? {width: '100%'} : {};
         let projectId =  this.props.project ? this.props.project.id : null;
         let lastUpdatedBy = this.props.project && this.props.project.audit.last_updated_by !== null ? this.props.project.audit.last_updated_by.full_name : 'n/a';
         let lstUpdtOn = this.props.project && this.props.project.audit.last_updated_on !== null ? this.props.project.audit.last_updated_on : null;
@@ -78,20 +79,19 @@ class Details extends React.Component {
             <div>
                 <Dialog
                     style={styles.dialogStyles}
+                    contentStyle={dialogWidth}
                     title={'Remove ' +this.state.userName+ ' from this project?'}
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={deleteActions}
                     onRequestClose={() => this.handleClose()}
                     open={this.state.deleteModal}>
                     <i className="material-icons" style={styles.warning}>warning</i>
                 </Dialog>
                 <Dialog
-
                     style={styles.dialogStyles}
+                    contentStyle={dialogWidth}
                     title={"Change the project role for " + this.state.userName + '?' }
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={memberActions}
                     onRequestClose={() => this.handleClose()}
                     open={this.state.memberModal}>

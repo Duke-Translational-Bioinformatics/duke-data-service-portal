@@ -4,8 +4,8 @@ import FolderOptionsMenu from './folderOptionsMenu.jsx';
 import UploadModal from '../globalComponents/uploadModal.jsx';
 import UploadManager from '../globalComponents/uploadManager.jsx';
 import BaseUtils from '../../../util/baseUtils';
-import Card from 'material-ui/lib/card/card';
-import FontIcon from 'material-ui/lib/font-icon';
+import Card from 'material-ui/Card';
+import FontIcon from 'material-ui/FontIcon';
 
 class FolderPath extends React.Component {
     

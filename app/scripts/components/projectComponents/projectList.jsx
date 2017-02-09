@@ -1,14 +1,11 @@
 import React from 'react';
-import { RouteHandler } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import AddProjectModal from '../projectComponents/addProjectModal.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import {UrlGen} from '../../../util/urlEnum';
-import Card from 'material-ui/lib/card/card';
-import CardText from 'material-ui/lib/card/card-text';
-import CardTitle from 'material-ui/lib/card/card-title';
-import FontIcon from 'material-ui/lib/font-icon';
-import RaisedButton from 'material-ui/lib/raised-button';
+import {Card, CardTitle, CardText} from 'material-ui/Card';
+import FontIcon from 'material-ui/FontIcon';
+import RaisedButton from 'material-ui/RaisedButton';
 
 class ProjectList extends React.Component {
 
