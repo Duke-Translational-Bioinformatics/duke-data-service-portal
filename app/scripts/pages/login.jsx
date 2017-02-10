@@ -70,9 +70,6 @@ class Login extends React.Component {
                 let redUrl = localStorage.getItem('redirectTo');
                 document.location.replace(redUrl);
             }
-            //else {
-            //    //if(this.props.location.pathname !== '/404') this.props.router.push('/');
-            //}
         }
         return (
             <div>
