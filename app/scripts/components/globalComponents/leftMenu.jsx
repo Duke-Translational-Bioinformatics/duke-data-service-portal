@@ -1,5 +1,4 @@
 import React from 'react';
-import { RouteHandler } from 'react-router';
 import MainStore from '../../stores/mainStore';
 import MainActions from '../../actions/mainActions';
 import {UrlGen} from '../../../util/urlEnum';
@@ -15,7 +14,7 @@ class LeftMenu extends React.Component {
                         </a>
                     </p>
                </span>;
-        if (this.props.routerPath === '/home' || this.props.routerPath === '/') {
+        if (this.props.location.pathname === '/home' || this.props.location.pathname === '/') {
             home = <span></span>
         }
         return (
@@ -60,7 +59,6 @@ class LeftMenu extends React.Component {
     }
 
     handleTouchTap() {
-        this.props.appRouter.transitionTo('/login');
         MainStore.handleLogout()
     }
 

@@ -6,8 +6,8 @@ import Details from './details.jsx';
 import UploadManager from '../globalComponents/uploadManager.jsx';
 import {UrlGen} from '../../../util/urlEnum';
 import baseUtils from '../../../util/baseUtils.js';
-import FlatButton from 'material-ui/lib/flat-button';
-import Card from 'material-ui/lib/card/card';
+import FlatButton from 'material-ui/FlatButton';
+import Card from 'material-ui/Card';
 
 class ProjectDetails extends React.Component {
 

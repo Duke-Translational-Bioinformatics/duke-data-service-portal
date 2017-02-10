@@ -4,8 +4,8 @@ import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import Tooltip from '../../../util/tooltip.js';
-import IconButton from 'material-ui/lib/icon-button';
-import LocalOffer from 'material-ui/lib/svg-icons/maps/local-offer';
+import IconButton from 'material-ui/IconButton';
+import LocalOffer from 'material-ui/svg-icons/maps/local-offer';
 
 class TagCloud extends React.Component {
 

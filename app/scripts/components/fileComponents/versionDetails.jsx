@@ -7,7 +7,7 @@ import Loaders from '../../components/globalComponents/loaders.jsx';
 import {UrlGen, Path} from '../../../util/urlEnum';
 import Tooltip from '../../../util/tooltip.js';
 import BaseUtils from '../../../util/baseUtils.js';
-import Card from 'material-ui/lib/card/card';
+import Card from 'material-ui/Card';
 
 class VersionDetails extends React.Component {
 

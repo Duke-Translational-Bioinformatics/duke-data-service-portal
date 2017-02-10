@@ -1,7 +1,7 @@
 import React from 'react'
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-import LinearProgress from 'material-ui/lib/linear-progress';
+import LinearProgress from 'material-ui/LinearProgress';
 
 class Loaders extends React.Component {
 

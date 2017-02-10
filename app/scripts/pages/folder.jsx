@@ -4,7 +4,7 @@ import ProjectStore from '../stores/projectStore';
 import FolderPath from '../components/folderComponents/folderPath.jsx';
 import FileOptions from '../components/fileComponents/fileOptions.jsx';
 import FolderOptions from '../components/folderComponents/folderOptions.jsx';
-import Children from '../components/globalComponents/children.jsx';
+import ListItems from '../components/globalComponents/listItems.jsx';
 import TagManager from '../components/globalComponents/tagManager.jsx'
 import VersionUpload from '../components/fileComponents/versionUpload.jsx';
 
@@ -13,7 +13,7 @@ class Folder extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            children: ProjectStore.children,
+            listItems: ProjectStore.listItems,
             responseHeaders: ProjectStore.responseHeaders,
             filesChecked: ProjectStore.filesChecked,
             filesToUpload: ProjectStore.filesToUpload,
@@ -70,7 +70,7 @@ class Folder extends React.Component {
         return (
             <div>
                 <FolderPath {...this.state} {...this.props} />
-                <Children {...this.state} {...this.props} />
+                <ListItems {...this.props} {...this.state} />
                 <FileOptions {...this.props} {...this.state}/>
                 <FolderOptions {...this.props} {...this.state}/>
                 <TagManager {...this.props} {...this.state} />

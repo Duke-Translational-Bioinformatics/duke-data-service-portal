@@ -1,14 +1,13 @@
 import React from 'react';
-import { RouteHandler } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import BaseUtils from '../../../util/baseUtils.js';
 import Loaders from '../globalComponents/loaders.jsx';
 import SearchFilters from '../globalComponents/searchFilters.jsx';
-import FontIcon from 'material-ui/lib/font-icon';
-import IconButton from 'material-ui/lib/icon-button';
-import RaisedButton from 'material-ui/lib/raised-button';
-import Paper from 'material-ui/lib/paper';
+import FontIcon from 'material-ui/FontIcon';
+import IconButton from 'material-ui/IconButton';
+import RaisedButton from 'material-ui/RaisedButton';
+import Paper from 'material-ui/Paper';
 import {UrlGen} from '../../../util/urlEnum';
 
 class SearchResults extends React.Component {

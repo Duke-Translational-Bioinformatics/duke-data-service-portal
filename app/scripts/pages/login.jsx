@@ -2,9 +2,9 @@ import React from 'react';
 import Header from '../components/globalComponents/header.jsx';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions.js';
-import CircularProgress from 'material-ui/lib/circular-progress';
-import LinearProgress from 'material-ui/lib/linear-progress';
-import RaisedButton from 'material-ui/lib/raised-button';
+import CircularProgress from 'material-ui/CircularProgress';
+import LinearProgress from 'material-ui/LinearProgress';
+import RaisedButton from 'material-ui/RaisedButton';
 import {UrlGen} from '../../util/urlEnum';
 
 class Login extends React.Component {
@@ -24,6 +24,10 @@ class Login extends React.Component {
         this.unsubscribe();
     }
 
+    componentDidUpdate() {
+        if(this.props.location.pathname !== '/404' && this.state.appConfig.apiToken ) this.props.router.push('/');
+    }
+
     createLoginUrl() {
         return this.state.appConfig.authServiceUri+'&state='+this.state.appConfig.serviceId+'&redirect_uri='+window.location.href;
     }
@@ -41,7 +45,7 @@ class Login extends React.Component {
                                           backgroundColor={'#0680CD'} style={{marginBottom: 40, width: 150}}
                                           onClick={() => this.handleLoginBtn()}>
                             </RaisedButton>
-                        </a> : <CircularProgress color="#fff"/>}
+                        </a> : <CircularProgress size={70} thickness={5} color="#fff"/>}
                         <div className="mdl-cell mdl-cell--12-col mdl-color-text--white">
                             <a href={UrlGen.routes.publicPrivacy()} className="external mdl-color-text--white" style={{float: 'right', fontSize: 10, margin: -10}}>
                                 <i className="material-icons" style={{fontSize: 16, verticalAlign: -2}}>lock</i>Privacy Policy
@@ -65,8 +69,6 @@ class Login extends React.Component {
             if (localStorage.getItem('redirectTo') !== null) {
                 let redUrl = localStorage.getItem('redirectTo');
                 document.location.replace(redUrl);
-            } else {
-                if(this.props.routerPath !== '/notFound') this.props.appRouter.transitionTo('/');
             }
         }
         return (

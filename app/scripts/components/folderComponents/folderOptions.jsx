@@ -3,13 +3,13 @@ import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import MoveItemModal from '../globalComponents/moveItemModal.jsx';
 import {Kind, Path} from '../../../util/urlEnum';
-import Dialog from 'material-ui/lib/dialog';
-import FlatButton from 'material-ui/lib/flat-button';
-import IconButton from 'material-ui/lib/icon-button';
-import IconMenu from 'material-ui/lib/menus/icon-menu';
-import MenuItem from 'material-ui/lib/menus/menu-item';
-import Menu from 'material-ui/lib/menus/menu';
-import TextField from 'material-ui/lib/text-field';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import IconButton from 'material-ui/IconButton';
+import IconMenu from 'material-ui/IconMenu';
+import Menu from 'material-ui/Menu';
+import MenuItem from 'material-ui/MenuItem';
+import TextField from 'material-ui/TextField';
 
 class FolderOptions extends React.Component {
 
@@ -113,7 +113,7 @@ class FolderOptions extends React.Component {
         let urlPath = parentKind === 'dds-project' ? '/project/' : '/folder/';
         ProjectActions.deleteFolder(id, parentId, parentKind);
         ProjectActions.toggleModals('dltFolder');
-        setTimeout(()=>this.props.appRouter.transitionTo(urlPath + parentId), 500)
+        setTimeout(()=>this.props.router.push(urlPath + parentId), 500)
     }
 
     handleUpdateButton() {

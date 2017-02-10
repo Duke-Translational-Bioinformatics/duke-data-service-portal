@@ -3,13 +3,13 @@ import ReactDOM from 'react-dom';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import BaseUtils from '../../../util/baseUtils.js';
-import AutoComplete from 'material-ui/lib/auto-complete';
-import CircularProgress from 'material-ui/lib/circular-progress';
-import Dialog from 'material-ui/lib/dialog';
-import FlatButton from 'material-ui/lib/flat-button';
-import MenuItem from 'material-ui/lib/menus/menu-item';
-import RaisedButton from 'material-ui/lib/raised-button';
-import SelectField from 'material-ui/lib/select-field';
+import AutoComplete from 'material-ui/AutoComplete';
+import CircularProgress from 'material-ui/CircularProgress';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import MenuItem from 'material-ui/MenuItem';
+import RaisedButton from 'material-ui/RaisedButton';
+import SelectField from 'material-ui/SelectField';
 
 class ProvenanceFilePicker extends React.Component {
 
@@ -97,6 +97,7 @@ class ProvenanceFilePicker extends React.Component {
                     </SelectField>
                     <AutoComplete
                         id="searchText"
+                        ref={(input) => this.searchText = input}
                         fullWidth={true}
                         style={styles.autoComplete}
                         menuStyle={{maxHeight: 200}}
@@ -107,7 +108,7 @@ class ProvenanceFilePicker extends React.Component {
                         openOnFocus={true}
                         onNewRequest={(value, e) => this.chooseFileVersion(value, e)}
                         onUpdateInput={this.handleUpdateInput.bind(this)}/>
-                    {this.props.autoCompleteLoading ? <CircularProgress size={1} style={styles.autoCompleteProgress}/> : null}
+                    {this.props.autoCompleteLoading ? <CircularProgress size={60} thickness={5} style={styles.autoCompleteProgress}/> : null}
                     {this.props.provFileVersions.length > 1 ?
                         <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.versionListWrapper}>
                             <h7>Would you like to use a different version of this file?</h7>
@@ -169,29 +170,26 @@ class ProvenanceFilePicker extends React.Component {
     }
 
     handleUpdateInput (text, isProject) {
-        // Add 500ms lag to autocomplete so that it only makes a call after user is done typing
         if(isProject) ProjectActions.clearSearchFilesData(); //Boolean: If project is changed clear files from autocomplete list
         let id = this.state.projectSelectValue !== null ? this.state.projectSelectValue : this.props.entityObj.file ? this.props.entityObj.file.project.id : this.props.entityObj.project.id;
         let timeout = this.state.timeout;
-        let textInput = document.getElementById('searchText');
-        textInput.onkeyup = () => {
-            clearTimeout(this.state.timeout);
-            this.setState({
-                timeout: setTimeout(() => {
-                    if (!textInput.value.indexOf(' ') <= 0) {
-                        ProjectActions.searchFiles(textInput.value, id);
-                    }
-                }, 500)
-            })
-        };
+        clearTimeout(this.state.timeout);
+        this.setState({
+            timeout: setTimeout(() => {
+                if (!text.indexOf(' ') <= 0) {
+                    ProjectActions.searchFiles(text, id);
+                }
+            }, 500)
+        })
     }
 
     openModal(id) {
         ProjectActions.openProvEditorModal(id);
+        setTimeout(() => this.searchText.focus(), 300);
     }
 
     useFileVersion(name, version, node) {
-        document.getElementById('searchText').value = name +'- Version: '+ version;
+        document.getElementById('searchText').value = name +' - Version: '+ version;
         this.state.addFileNode = node;
     }
 }

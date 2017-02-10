@@ -9,18 +9,17 @@ import MetadataTemplateCreator from '../globalComponents/metadataTemplateCreator
 import MetadataTemplateList from '../globalComponents/metadataTemplateList.jsx';
 import MetadataTemplateManager from '../globalComponents/metadataTemplateManager.jsx';
 import MetadataTemplateOptions from '../globalComponents/metadataTemplateOptions.jsx';
-import AddCircle from 'material-ui/lib/svg-icons/content/add-circle';
-import AutoComplete from 'material-ui/lib/auto-complete';
-import CircularProgress from 'material-ui/lib/circular-progress';
-import Dialog from 'material-ui/lib/dialog';
-import FlatButton from 'material-ui/lib/flat-button';
-import IconButton from 'material-ui/lib/icon-button';
-import LeftNav from 'material-ui/lib/left-nav';
-import Help from 'material-ui/lib/svg-icons/action/help';
-import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
-import RaisedButton from 'material-ui/lib/raised-button';
-import Tabs from 'material-ui/lib/tabs/tabs';
-import Tab from 'material-ui/lib/tabs/tab';
+import AddCircle from 'material-ui/svg-icons/content/add-circle';
+import AutoComplete from 'material-ui/AutoComplete';
+import CircularProgress from 'material-ui/CircularProgress';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import IconButton from 'material-ui/IconButton';
+import Drawer from 'material-ui/Drawer';
+import Help from 'material-ui/svg-icons/action/help';
+import NavigationClose from 'material-ui/svg-icons/navigation/close';
+import RaisedButton from 'material-ui/RaisedButton';
+import {Tabs, Tab} from 'material-ui/Tabs';
 
 class TagManager extends React.Component {
 
@@ -83,6 +82,7 @@ class TagManager extends React.Component {
                 </li>
             )
         });
+
         let autoCompleteData = this.props.tagAutoCompleteList && this.props.tagAutoCompleteList.length > 0 ? this.props.tagAutoCompleteList : [];
         let height = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.height : window.innerHeight;
         let name = this.props.entityObj && this.props.filesChecked < 1 ? this.props.entityObj.name : 'selected files';
@@ -91,9 +91,9 @@ class TagManager extends React.Component {
         let width = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.width : window.innerWidth;
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                <LeftNav disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openRight={true} open={this.props.openTagManager}>
+                <Drawer docked={false} disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openSecondary={true} open={this.props.openTagManager}>
                     <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800"
-                         style={{marginTop: width > 680 ? 65 : 85}}>
+                         style={styles.drawer}>
                         <IconButton style={styles.toggleBtn}
                                     onTouchTap={() => this.toggleTagManager()}>
                             <NavigationClose />
@@ -139,7 +139,7 @@ class TagManager extends React.Component {
                                     </div>
                                 </div>
                                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.chipWrapper}>
-                                    {this.props.tagsToAdd.length ? <h6 style={styles.chipHeader}>New Tags To Add</h6> : null}
+                                    {this.props.tagsToAdd.length ? <h6 className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.chipHeader}>New Tags To Add</h6> : null}
                                     <div className="chip-container" style={styles.chipContainer}>
                                         { tags }
                                     </div>
@@ -156,7 +156,7 @@ class TagManager extends React.Component {
                                 </div>
                             </Tab>
                             <Tab label="Advanced" style={styles.tabStyles} onActive={() => this.activeTab()}>
-                                {this.props.drawerLoading ? <CircularProgress size={1.5} style={styles.drawerLoader}/> : <span>
+                                {this.props.drawerLoading ? <CircularProgress size={80} thickness={5} style={styles.drawerLoader}/> : <span>
                                     {this.props.showTemplateDetails ? <MetadataObjectCreator {...this.props}/> : <MetadataTemplateList {...this.props}/>}
                                 </span>}
                             </Tab>
@@ -174,7 +174,7 @@ class TagManager extends React.Component {
                             </div>
                         </Dialog>
                     </div>
-                </LeftNav>
+                </Drawer>
             </div>
         )
     }
@@ -313,13 +313,15 @@ var styles = {
         padding: 0
     },
     chipHeader: {
-        margin: '10px 0px 10px 0px',
-        paddingTop: 20
+        margin: '20px 0px 20px 0px'
     },
     dialogStyles: {
         textAlign: 'center',
         fontColor: '#303F9F',
         zIndex: '5000'
+    },
+    drawer: {
+        marginTop: 65
     },
     drawerLoader: {
         position: 'absolute',
@@ -358,7 +360,8 @@ var styles = {
         float: 'left'
     },
     tagLabelsContainer: {
-        textAlign: 'left'
+        textAlign: 'left',
+        overflow: 'auto'
     },
     tagLabelsHeading: {
         margin: '10px 0px 10px 0px',

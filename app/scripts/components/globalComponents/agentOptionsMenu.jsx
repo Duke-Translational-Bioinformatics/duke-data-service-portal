@@ -2,12 +2,12 @@ import React from 'react';
 import MainActions from '../../actions/mainActions';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-import TextField from 'material-ui/lib/text-field';
-import Dialog from 'material-ui/lib/dialog';
-import FlatButton from 'material-ui/lib/flat-button';
-import IconMenu from 'material-ui/lib/menus/icon-menu';
-import MenuItem from 'material-ui/lib/menus/menu-item';
-import IconButton from 'material-ui/lib/icon-button';
+import TextField from 'material-ui/TextField';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
+import IconButton from 'material-ui/IconButton';
 
 class AgentOptionsMenu extends React.Component {
 
@@ -380,7 +380,7 @@ class AgentOptionsMenu extends React.Component {
         } else {
             ProjectActions.deleteAgent(id);
             this.setState({deleteOpen: false});
-            setTimeout(()=>this.props.appRouter.transitionTo('/agents'),300)
+            setTimeout(()=>this.props.router.push('/agents'),300)
         }
     }
 

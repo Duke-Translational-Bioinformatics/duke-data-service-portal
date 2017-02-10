@@ -2,15 +2,14 @@ import React from 'react';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import {Kind, Path} from '../../../util/urlEnum';
-import List from 'material-ui/lib/lists/list';
-import ListItem from 'material-ui/lib/lists/list-item';
-import Archive from 'material-ui/lib/svg-icons/content/archive.js';
-import CircularProgress from 'material-ui/lib/circular-progress';
-import ContentPaste from 'material-ui/lib/svg-icons/content/content-paste.js';
-import Folder from 'material-ui/lib/svg-icons/file/folder';
-import IconButton from 'material-ui/lib/icon-button';
-import KeyboardBackspace from 'material-ui/lib/svg-icons/hardware/keyboard-backspace.js';
-import Paper from 'material-ui/lib/paper';
+import {List, ListItem} from 'material-ui/List';
+import Archive from 'material-ui/svg-icons/content/archive.js';
+import CircularProgress from 'material-ui/CircularProgress';
+import ContentPaste from 'material-ui/svg-icons/content/content-paste.js';
+import Folder from 'material-ui/svg-icons/file/folder';
+import IconButton from 'material-ui/IconButton';
+import KeyboardBackspace from 'material-ui/svg-icons/hardware/keyboard-backspace.js';
+import Paper from 'material-ui/Paper';
 
 let MoveItemModal = React.createClass({
 
@@ -28,7 +27,7 @@ let MoveItemModal = React.createClass({
         let children = [];
         let projectChildren = [];
         let openItem = <span></span>;
-        let path = this.props.routerPath.split('/').splice([1], 1).toString();
+        let path = this.props.location.pathname.split('/').splice([1], 1).toString();
         let itemId = this.props.selectedEntity && this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.entityObj.id;
 
         if (!this.state.projectChildren && this.props.moveToObj) {
@@ -45,7 +44,7 @@ let MoveItemModal = React.createClass({
                     primaryText={this.props.moveToObj.name}
                     leftIcon={<Folder />}
                     onTouchTap={() => this.selectedLocation(this.props.moveToObj.id, this.props.moveToObj.kind)}
-                    rightIconButton={<Archive touch={true} style={styles.rightIcon} color={'#EC407A'} onTouchTap={() => this.handleMove(this.props.moveToObj.id, this.props.moveToObj.kind)}/>}/>
+                    rightIconButton={<Archive style={styles.rightIcon} color={'#EC407A'} onTouchTap={() => this.handleMove(this.props.moveToObj.id, this.props.moveToObj.kind)}/>}/>
             }
         }
 
@@ -64,7 +63,7 @@ let MoveItemModal = React.createClass({
                                   primaryText={item.name}
                                   leftIcon={<ContentPaste />}
                                   onTouchTap={() => this.getProjectChildren(item.id)}
-                                  rightIconButton={<Archive touch={true} style={styles.rightIcon} color={'#EC407A'} onTouchTap={() => this.handleMove(item.id, item.kind)}/>}/>
+                                  rightIconButton={<Archive style={styles.rightIcon} color={'#EC407A'} onTouchTap={() => this.handleMove(item.id, item.kind)}/>}/>
                     )
                 } else {
                     return (
@@ -90,7 +89,7 @@ let MoveItemModal = React.createClass({
                                   primaryText={children.name}
                                   leftIcon={<Folder />}
                                   onTouchTap={() => this.openListItem(children.id, children.kind)}
-                                  rightIconButton={<Archive touch={true} style={styles.rightIcon} color={'#EC407A'} onTouchTap={() => this.handleMove(children.id, children.kind)}/>}/>
+                                  rightIconButton={<Archive style={styles.rightIcon} color={'#EC407A'} onTouchTap={() => this.handleMove(children.id, children.kind)}/>}/>
                     )
                 } else {
                     return (
@@ -116,7 +115,7 @@ let MoveItemModal = React.createClass({
                                   primaryText={children.name}
                                   leftIcon={<Folder />}
                                   onTouchTap={() => this.openListItem(children.id, children.kind)}
-                                  rightIconButton={<Archive touch={true} style={styles.rightIcon} color={'#EC407A'} onTouchTap={() => this.handleMove(children.id, children.kind)}/>}/>
+                                  rightIconButton={<Archive style={styles.rightIcon} color={'#EC407A'} onTouchTap={() => this.handleMove(children.id, children.kind)}/>}/>
                     )
                 } else {
                     return (
@@ -138,18 +137,16 @@ let MoveItemModal = React.createClass({
                         </div>
                     </a> : null}
                 </div>
-                {this.state.showWarning ? <Paper className="mdl-cell mdl-cell--12-col"
-                       style={styles.warning}
-                       zDepth={1}>
-                    <span>The item you're trying to move is already located here. Please pick another
-                        location to move to</span>
+                {this.state.showWarning ? <Paper className="mdl-cell mdl-cell--12-col" style={styles.warning} zDepth={1}>
+                        <span>The item you're trying to move is already located here. Please pick another
+                            location to move to</span>
                 </Paper> : null}
-                {!this.props.loading ? <List {...this.props} value={3}>
+                {!this.props.loading ? <List value={3}>
                     {ancestors}
                     {projectChildren}
                     {openItem}
                     {children}
-                </List> : <CircularProgress size={1} style={styles.loading}/>}
+                </List> : <CircularProgress size={60} thickness={5} style={styles.loading}/>}
             </div>
         )
     },
@@ -159,8 +156,8 @@ let MoveItemModal = React.createClass({
         let kind = this.props.selectedEntity && this.props.selectedEntity !== null ? this.props.selectedEntity.kind : this.props.entityObj.kind;
         let parent = this.props.parent ? this.props.parent.id : null;
         let parentKind = this.props.parent ? this.props.parent.kind : null;
-        let transitionToParent = (root, parent)=> {
-            setTimeout(()=>{this.props.appRouter.transitionTo(root + parent)}, 500)
+        let transitionToParent = (root, parent) => {
+            setTimeout(()=>{this.props.router.push(root + parent)}, 500)
         };
         if (destinationId === this.props.parent.id || destinationId === id) {
             this.setState({showWarning: true});
@@ -239,7 +236,6 @@ var styles = {
     loading: {
         position: 'absolute',
         margin: '0 auto',
-        //top: 200,
         left: 0,
         right: 0
     },

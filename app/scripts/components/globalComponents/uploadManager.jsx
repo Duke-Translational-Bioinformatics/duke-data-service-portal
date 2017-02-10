@@ -4,13 +4,13 @@ import Dropzone from 'react-dropzone';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import BaseUtils from '../../../util/baseUtils';
-import AddCircle from 'material-ui/lib/svg-icons/content/add-circle';
-import AutoComplete from 'material-ui/lib/auto-complete';
-import IconButton from 'material-ui/lib/icon-button';
-import LeftNav from 'material-ui/lib/left-nav';
-import Info from 'material-ui/lib/svg-icons/action/info';
-import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
-import RaisedButton from 'material-ui/lib/raised-button';
+import AddCircle from 'material-ui/svg-icons/content/add-circle';
+import AutoComplete from 'material-ui/AutoComplete';
+import IconButton from 'material-ui/IconButton';
+import Drawer from 'material-ui/Drawer';
+import Info from 'material-ui/svg-icons/action/info';
+import NavigationClose from 'material-ui/svg-icons/navigation/close';
+import RaisedButton from 'material-ui/RaisedButton';
 
 class UploadManager extends React.Component {
 
@@ -66,7 +66,7 @@ class UploadManager extends React.Component {
                     <i className='material-icons'>file_upload</i>
                 </button>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                    <LeftNav disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openRight={true} open={this.props.openUploadManager}>
+                    <Drawer docked={false} disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openSecondary={true} open={this.props.openUploadManager}>
                         <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800"
                              style={{marginTop: width > 680 ? 65 : 85}}>
                             <IconButton style={styles.toggleBtn}
@@ -144,7 +144,7 @@ class UploadManager extends React.Component {
                                               onTouchTap={() => this.handleUploadButton()}/>
                             </div>
                         </div>
-                    </LeftNav>
+                    </Drawer>
                 </div>
             </div>
         )

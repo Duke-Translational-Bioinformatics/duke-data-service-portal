@@ -12,11 +12,4 @@ require('es6-promise').polyfill();
 var injectTapEventPlugin = require("react-tap-event-plugin");
 injectTapEventPlugin();
 
-let appRouter = Router.create({
-    routes: routes,
-    location: Router.HashLocation
-});
-
-appRouter.run((Handler, state) => {
-    ReactDOM.render(<Handler routerPath={state.path} appRouter={appRouter}/>, document.body)
-});
+ReactDOM.render(routes, document.body);

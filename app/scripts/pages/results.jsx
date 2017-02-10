@@ -24,7 +24,7 @@ class Results extends React.Component {
     componentDidMount() {
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
         setTimeout(()=>{
-            if(this.props.routerPath === '/results' && !this.state.showSearch) ProjectActions.toggleSearch();
+            if(this.props.location.pathname === '/results' && !this.state.showSearch) ProjectActions.toggleSearch();
         }, 500);
     }
 

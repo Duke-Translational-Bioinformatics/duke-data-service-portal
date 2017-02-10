@@ -1,11 +1,10 @@
 import React from 'react';
-import { RouteHandler } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-import Close from 'material-ui/lib/svg-icons/navigation/close';
-import IconButton from 'material-ui/lib/icon-button';
-import Paper from 'material-ui/lib/paper';
-import TextField from 'material-ui/lib/text-field';
+import Close from 'material-ui/svg-icons/navigation/close';
+import IconButton from 'material-ui/IconButton';
+import Paper from 'material-ui/Paper';
+import TextField from 'material-ui/TextField';
 
 class Search extends React.Component {
 
@@ -44,12 +43,12 @@ class Search extends React.Component {
         if(e.keyCode === 13) {
             let value = searchInput.getValue();
             ProjectActions.searchObjects(value, includeKinds, includeProjects);
-            this.props.appRouter.transitionTo('/results')
+            this.props.router.push('/results')
         }
     }
 
     showSearch() {
-        if(this.props.routerPath === '/results') this.props.appRouter.goBack();
+        if(this.props.location.pathname === '/results') this.props.router.goBack();
         if(this.props.showFilters) ProjectActions.toggleSearchFilters();
         if(this.props.includeKinds.length) ProjectActions.setIncludedSearchKinds([]);
         if(this.props.includeProjects.length) ProjectActions.setIncludedSearchProjects([]);
