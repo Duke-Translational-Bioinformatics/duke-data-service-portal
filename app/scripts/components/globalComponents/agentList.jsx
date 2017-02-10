@@ -15,6 +15,7 @@ class AgentList extends React.Component {
     render() {
         let agents = [];
         let agentKey = this.props.agentKey ? this.props.agentKey.key : null;
+        let dialogStyle= this.props.screenSize.width < 580 ? {width: '100%', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'} : {position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'};
         let userKey = this.props.userKey ? this.props.userKey.key : null;
         let apiToken = this.props.agentApiToken ? this.props.agentApiToken.api_token : null;
         let apiUrl = DDS_PORTAL_CONFIG.baseUrl;
@@ -39,9 +40,8 @@ class AgentList extends React.Component {
         let modal = <Dialog
             style={styles.dialogStyles}
             title="Agent Credentials"
-            contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
+            contentStyle={dialogStyle}
             autoDetectWindowHeight={true}
-            autoScrollBodyContent={true}
             actions={keyActions}
             onRequestClose={() => this.handleClose()}
             open={open}>
