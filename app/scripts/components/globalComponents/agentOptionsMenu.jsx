@@ -162,7 +162,7 @@ class AgentOptionsMenu extends React.Component {
                         ref={(input) => this.agentName = input}
                         type="text"
                         multiLine={true}
-                        onChange={(e) => this.validateText(e)}/> <br/>
+                        onChange={(e) => this.validateText2(e)}/> <br/>
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
@@ -422,10 +422,6 @@ class AgentOptionsMenu extends React.Component {
             this.setState({newUserKeyOpen: true});
             this.newUserKeyText.select() }, 800
         );
-    }
-
-    validateText(e) {
-        this.setState({floatingErrorText: e.target.value ? '' : 'This field is required'});
     }
 
     handleCopyButton() {
