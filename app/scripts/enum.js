@@ -6,14 +6,3 @@ export const StatusEnum = Object.freeze({
     STATUS_FAILED : 4,
     MAX_RETRY : 2
 });
-
-export const Path = Object.freeze({
-    AGENT: 'software_agents/',
-    CURRENT_USER: 'current_user/',
-    FILE: 'files/',
-    FILE_VERSION: 'file_versions/',
-    FOLDER : 'folders/',
-    PROJECT : 'projects/',
-    UPLOAD: 'uploads/'
-});
-

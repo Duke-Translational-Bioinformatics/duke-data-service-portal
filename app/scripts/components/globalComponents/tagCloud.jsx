@@ -4,8 +4,8 @@ import { Link } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import Tooltip from '../../../util/tooltip.js';
-import IconButton from 'material-ui/lib/icon-button';
-import LocalOffer from 'material-ui/lib/svg-icons/maps/local-offer';
+import IconButton from 'material-ui/IconButton';
+import LocalOffer from 'material-ui/svg-icons/maps/local-offer';
 
 class TagCloud extends React.Component {
 
@@ -21,7 +21,7 @@ class TagCloud extends React.Component {
                            </IconButton>
         }
         let tags = this.props.objectTags.map((tag)=>{
-            return (<div key={tag.id} id={tag.id} className="chip">
+            return (<div key={tag.id} ref={(tag) => this.id = tag} className="chip">
                 <span className="chip-text">{tag.label}</span>
                 <span className="closebtn"
                       onTouchTap={() => this.deleteTag(tag.id, tag.label)}>
@@ -39,7 +39,7 @@ class TagCloud extends React.Component {
 
     deleteTag(id, label) {
         let fileId = this.props.params.id;
-        document.getElementById(id).style.display = 'none';
+        this.id.style.display = 'none';
         ProjectActions.deleteTag(id, label, fileId);
     }
 

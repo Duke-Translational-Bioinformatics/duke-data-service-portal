@@ -1,162 +1,92 @@
 import React from 'react';
-import { RouteHandler } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-import Close from 'material-ui/lib/svg-icons/navigation/close';
-import IconButton from 'material-ui/lib/icon-button';
+import Close from 'material-ui/svg-icons/navigation/close';
+import IconButton from 'material-ui/IconButton';
+import Paper from 'material-ui/Paper';
+import TextField from 'material-ui/TextField';
 
 class Search extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            clear: false,
-            inputStyle: {cursor: 'pointer'},
-            timeout: null
-        };
-    }
 
     componentDidMount() {
-        if (window.performance) { // If page refreshed, clear searchText
-            if (performance.navigation.type == 1) {
-                ProjectActions.setSearchText('');
-            }
-        }
-        if (!!document.getElementById("searchForm")) { // Check if 'searchForm is in DOM before adding event listener'
-            document.getElementById('searchForm').addEventListener('submit', (e) => {
-                e.preventDefault();
-            }, false);
-        }
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        if (prevProps.routerPath !== this.props.routerPath) {
-            // For some reason, setting state here without timeOut causes an error???
-            setTimeout(()=> {
-                this.setState({clear: false});
-            }, 100);
-            if (!!document.getElementById("searchForm")) { // Check if 'searchForm is in DOM
-                document.getElementById('searchInput').value = '';
-            }
-            ProjectActions.setSearchText('');
+        if (this.refs.searchInput) { // Check if searchInput is in DOM and focus
+            let search = this.refs.searchInput ? this.refs.searchInput : null;
+            if(this.props.showSearch && search !== null) search.focus();
         }
     }
 
     render() {
-        let projectName = ProjectStore.project && ProjectStore.project.name && window.innerWidth > 580 ? 'in '+ProjectStore.project.name+'...' : '...';
-        let route = this.props.routerPath.split('/').splice([1], 1).toString();
-        let cancelSearch = this.state.clear ?
-            <IconButton style={{marginBottom: this.props.windowWidth > 680 ? 33 : ''}} onTouchTap={() => this.clearSearch(route)} className="searchbar-cancel">
-                <Close color={'#fff'}/>
-            </IconButton> : '';
-        let search = '';
-        if (route === '' ||
-            route === 'privacy' ||
-            route === 'home' ||
-            route === 'file' ||
-            route === 'agent' ||
-            route === 'agents' ||
-            route === 'version') {
-            search = <form className="searchbar" action="#" style={styles.themeColor}>
-                <div className="searchbar-input" style={styles.themeColor}>
-                    <a href="#" className="searchbar-clear"></a>
-                </div>
-                <a href="#" className="searchbar-cancel">Cancel</a>
-            </form>
-        } else {
-            search = <form id="searchForm" data-search-list=".list-block-search"
-                           data-search-in=".item-title" autoComplete="off"
-                           className="searchbar" style={{padding: 30, backgroundColor: '#235F9C'}}>
-                <div className="searchbar-input mdl-cell mdl-cell--12-col" style={styles.searchBar.inputWrapper}>
-                    <input id='searchInput' className="search" style={this.state.inputStyle}
-                           type="text" name="search" placeholder={"Search "+ projectName}
-                           onChange={() => this.onSearchChange()}
-                           onFocus={() => this.onSearchFocus()}
-                           onBlur={() => this.onSearchBlur(route)}
-                        />
-                    { cancelSearch }
-                </div>
-            </form>
-        }
-        return ( search )
+        return (this.props.showSearch ? <Paper style={styles.searchBar} zDepth={2}>
+            <i className="material-icons"
+               style={styles.searchBar.searchIcon}
+               onTouchTap={()=>this.showSearch()}>arrow_back</i>
+            <TextField
+                ref="searchInput"
+                hintText="Search"
+                defaultValue={this.props.searchValue ? this.props.searchValue : null}
+                hintStyle={styles.searchBar.hintText}
+                onKeyDown={(e)=>this.search(e)}
+                style={{width: '90%',position: 'absolute',top: '20%', left: this.props.screenSize.width < 680 ? '11%' : '8%'}}
+                underlineStyle={styles.searchBar.textFieldUnderline}
+                underlineFocusStyle={styles.searchBar.textFieldUnderline} />
+            <i className="material-icons"
+               style={styles.searchBar.closeSearchIcon}
+               onTouchTap={()=>this.showSearch()}>
+                close</i>
+        </Paper> : null)
     }
 
-    clearSearch(route) {
-        let path = route + 's/';
-        let id = this.props.routerPath.split('/').pop();
-        // For some reason, setting state here without timeOut causes an error???
-        setTimeout(()=> {
-            document.getElementById('searchInput').value = '';
-            this.setState({clear: false, inputStyle: {cursor: 'pointer'}});
-        }, 100);
-        ProjectActions.getChildren(id, path);
-        ProjectActions.setSearchText('');
-    }
-
-    onSearchBlur(route) {
-        let path = route + 's/';
-        let id = this.props.routerPath.split('/').pop();
-        if (document.getElementById('searchInput').value === '') {
-            this.setState({clear: false});
-            ProjectActions.getChildren(id, path);
-        } else {
-            this.setState({inputStyle: {cursor: 'pointer', color: '#616161'}});
+    search(e) {
+        let includeKinds = this.props.includeKinds;
+        let includeProjects = this.props.includeProjects;
+        let searchInput = this.refs.searchInput;
+        if(e.keyCode === 13) {
+            let value = searchInput.getValue();
+            ProjectActions.searchObjects(value, includeKinds, includeProjects);
+            this.props.router.push('/results')
         }
     }
 
-    onSearchChange() {
-        let textInput = document.getElementById('searchInput');
-        let timeout = this.state.timeout;
-        textInput.onkeyup = () => {
-            clearTimeout(timeout);
-            this.state.timeout = setTimeout(() => {
-                let id = this.props.routerPath.split('/').pop();
-                let path = this.props.routerPath.split('/').splice([1], 1).toString() + 's/';
-                if (!textInput.value.indexOf(' ') <= 0) {
-                    if (textInput.value === '') {
-                        ProjectActions.setSearchText('');
-                        ProjectActions.getChildren(id, path);
-                    } else {
-                        if (ProjectStore.entityObj !== null) id = ProjectStore.entityObj.ancestors[0].id;
-                        ProjectActions.search(textInput.value, id);
-                    }
-                }
-            }, 500);
-        };
-    }
-
-    onSearchFocus() {
-        this.setState({clear: true});
+    showSearch() {
+        if(this.props.location.pathname === '/results') this.props.router.goBack();
+        if(this.props.showFilters) ProjectActions.toggleSearchFilters();
+        if(this.props.includeKinds.length) ProjectActions.setIncludedSearchKinds([]);
+        if(this.props.includeProjects.length) ProjectActions.setIncludedSearchProjects([]);
+        ProjectActions.toggleSearch();
     }
 }
 
-var styles = {
+const styles = {
     searchBar: {
-        width: '50vw',
-        margin: '0 auto',
-        fontSize: '.9em',
-        display: 'block',
-        hintStyle: {
-            color: '#eeeeee',
-            marginLeft: 25
+        height: 76,
+        closeSearchIcon: {
+            position: 'absolute',
+            right: '3.66%',
+            bottom: '34%',
+            cursor: 'pointer'
         },
-        inputWrapper: {
-            margin: '0px 8px 0px 8px',
-            padding: -15,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
+        hintText: {
+            fontWeight: 100
         },
-        underlineStyle: {
-            borderColor: '#fff'
+        searchIcon: {
+            position: 'absolute',
+            left: '4%',
+            bottom: '36%',
+            cursor: 'pointer'
+        },
+        textFieldUnderline: {
+            display: 'none'
         }
-    },
-    themeColor: {
-        backgroundColor: '#235F9C'
     }
 };
 
 Search.childContextTypes = {
     muiTheme: React.PropTypes.object
+};
+
+Search.propTypes = {
+    searchValue: React.PropTypes.string,
+    showSearch: React.PropTypes.bool
 };
 
 export default Search;

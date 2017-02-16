@@ -5,27 +5,30 @@ import ProjectStore from '../stores/projectStore';
 import ProjectActions from '../actions/projectActions';
 import MainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions';
-import FlatButton from 'material-ui/lib/flat-button';
-import Dialog from 'material-ui/lib/dialog';
+import FlatButton from 'material-ui/FlatButton';
+import Dialog from 'material-ui/Dialog';
 
 class Home extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            appConfig: MainStore.appConfig,
             projects: ProjectStore.projects,
             loading: false,
             modalOpen: MainStore.modalOpen === undefined ? true : MainStore.modalOpen,
+            responseHeaders: ProjectStore.responseHeaders,
             screenSize: ProjectStore.screenSize
         };
     }
 
     componentDidMount() {
-        let id = this.props.params.id;
         this.unsubscribe = ProjectStore.listen(state => this.setState(state));
-        ProjectActions.loadProjects(id);
-        ProjectActions.getUsageDetails();
-        MainActions.removeLoginCookie();
+        if(this.state.appConfig.apiToken) {
+            ProjectActions.getProjects();
+            ProjectActions.getUsageDetails();
+            MainActions.removeLoginCookie();
+        }
     }
 
     componentWillUnmount() {
@@ -33,6 +36,7 @@ class Home extends React.Component {
     }
 
     render() {
+        let dialogWidth = this.state.screenSize.width < 580 ? {width: '100%'} : {};
         let standardActions = [
             <FlatButton
                 label="Cancel"
@@ -46,11 +50,10 @@ class Home extends React.Component {
         let modal = (
             <Dialog
                 style={styles.dialogStyles}
-                contentStyle={this.state.screenSize.width < 580 ? {width: '100%'} : {}}
+                contentStyle={dialogWidth}
                 title="Terms of Use - Protected Health Information"
                 actions={standardActions}
                 autoDetectWindowHeight={true}
-                autoScrollBodyContent={true}
                 open={this.state.modalOpen}
                 modal={true}>
                 <div style={{height: '300px'}}>

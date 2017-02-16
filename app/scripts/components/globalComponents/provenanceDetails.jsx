@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import BaseUtils from '../../../util/baseUtils.js';
-import urlGen from '../../../util/urlGen.js';
+import {UrlGen} from '../../../util/urlEnum';
 
 class ProvenanceDetails extends React.Component {
 
@@ -37,8 +37,8 @@ class ProvenanceDetails extends React.Component {
             let fileLink = null;
             if (fileName !== null) {
                 fileLink = <a href={fileId !== null ?
-                urlGen.routes.file(fileId) :
-                urlGen.routes.version(versionId)} className="external mdl-color-text--grey-600"
+                UrlGen.routes.file(fileId) :
+                UrlGen.routes.version(versionId)} className="external mdl-color-text--grey-600"
                               onTouchTap={() => this.toggleProv()}>
                     {fileName}
                 </a>

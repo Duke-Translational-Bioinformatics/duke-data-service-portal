@@ -1,73 +1,59 @@
 import Reflux from 'reflux';
 import MainActions from '../actions/mainActions';
 import ProjectStore from '../stores/projectStore';
+import BaseUtils from '../../util/baseUtils.js';
 import appConfig from '../config';
 import cookie from 'react-cookie';
 
 var MainStore = Reflux.createStore({
 
-    listenables: MainActions,
-
     init() {
+        this.listenToMany(MainActions);
         this.appConfig = appConfig;
         this.appConfig.apiToken = cookie.load('apiToken');
         this.appConfig.isLoggedIn = cookie.load('isLoggedIn');
-        this.asValidateLoading = false;
+        this.authServiceLoading = false;
         this.currentUser = {};
-        this.ddsApiTokenLoading = false;
+        this.error = {};
+        this.errorModals = [];
         this.failedUploads = [];
         this.modalOpen = cookie.load('modalOpen');
-        this.signedInfo = null;
         this.toasts = [];
     },
 
-    authenticationServiceValidate(appConfig, accessToken) {
-        this.asValidateLoading = true;
+    getAuthProvidersSuccess(providers) {
+        let url = providers.reduce((prev, curr) => { return (!curr.is_deprecated) ? curr : prev; }, null);
+        this.appConfig.authServiceUri = url.login_initiation_url;
+        this.appConfig.authServiceName = url.name;
+        this.appConfig.serviceId = url.service_id;
         this.trigger({
-            asValidateLoading: this.asValidateLoading,
+            appConfig: this.appConfig
+        })
+    },
+
+    getApiToken(accessToken) {
+        this.authServiceLoading = true;
+        this.trigger({
+            authServiceLoading: this.authServiceLoading
+        });
+    },
+
+    getApiTokenSuccess (token) {
+        this.appConfig.apiToken = token;
+        this.authServiceLoading = false;
+        this.setApiToken(token);
+        this.trigger({
+            authServiceLoading: this.authServiceLoading,
             appConfig: this.appConfig
         });
-    },
-
-    authenticationServiceValidateSuccess (signedInfo) {
-        this.signedInfo = signedInfo;
-        this.asValidateLoading = false;
-        this.trigger({
-            asValidateLoading: this.asValidateLoading,
-            signedInfo: signedInfo
-        });
 
     },
 
-    authenticationServiceValidateError (error) {
+    getApiTokenError (error) {
         let msg = error && error.message ? error.message : 'An error occurred.';
         this.trigger({
             error: msg,
-            asValidateLoading: false
-        });
-    },
-
-    getDdsApiToken(appConfig, signedInfo) {
-        this.ddsApiTokenLoading = true;
-        this.trigger({
-            ddsApiTokenLoading: this.ddsApiTokenLoading
-        });
-    },
-
-    getDdsApiTokenSuccess (apiToken) {
-        this.appConfig.apiToken = apiToken;
-        this.ddsApiTokenLoading = false;
-        this.trigger({
-            ddsApiTokenLoading: this.ddsApiTokenLoading,
-            appConfig: this.appConfig
-        });
-    },
-
-    getDdsApiTokenError (error) {
-        let msg = error && error.message ? error.message : 'An error occurred.';
-        this.trigger({
-            error: msg,
-            ddsValidateLoading: false
+            authServiceLoading: false
         });
     },
 
@@ -78,6 +64,7 @@ var MainStore = Reflux.createStore({
         this.trigger({
             appConfig: this.appConfig
         });
+        MainActions.getCurrentUser();
     },
 
     getCurrentUserSuccess (json) {
@@ -167,6 +154,52 @@ var MainStore = Reflux.createStore({
         this.failedUploads = [];
         this.trigger({
             failedUploads: this.failedUploads
+        })
+    },
+
+    displayErrorModals(error) {
+        let err = error && error.message ? {msg: error.message, response: error.response ? error.response.status : null} : null;
+        if(err.response === null) {
+            this.errorModals.push({
+                msg: error.message,
+                response: 'Folders can not be uploaded',
+                ref: 'modal' + Math.floor(Math.random() * 10000)
+            });
+        } else {
+            if (error && error.response.status !== 404) {
+                this.errorModals.push({
+                    msg: error.response.status === 403 ? error.message + ': You don\'t have permissions to view or change' +
+                    ' this resource' : error.message,
+                    response: error.response.status,
+                    ref: 'modal' + Math.floor(Math.random() * 10000)
+                });
+            }
+        }
+        this.error = err;
+        this.trigger({
+            error: this.error,
+            errorModals: this.errorModals
+        })
+    },
+
+    clearErrors(error) {
+        this.error = {};
+        this.trigger({
+            error: this.error
+        })
+    },
+
+    removeErrorModal(refId) {
+        for (let i = 0; i < this.errorModals.length; i++) {
+            if (this.errorModals[i].ref === refId) {
+                this.errorModals.splice(i, 1);
+                break;
+            }
+        }
+        this.error = {};
+        this.trigger({
+            error: this.error,
+            errorModals: this.errorModals
         })
     }
 

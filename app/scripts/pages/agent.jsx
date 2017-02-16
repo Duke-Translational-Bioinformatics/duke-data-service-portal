@@ -4,8 +4,8 @@ import ProjectActions from '../actions/projectActions';
 import ProjectStore from '../stores/projectStore';
 import AgentOptionsMenu from '../components/globalComponents/agentOptionsMenu.jsx';
 import Loaders from '../components/globalComponents/loaders.jsx';
-import urlGen from '../../util/urlGen.js';
-import Card from '../../../node_modules/material-ui/lib/card/card';
+import {UrlGen} from '../../util/urlEnum';
+import Card from 'material-ui/Card';
 
 class Agent extends React.Component {
 
@@ -14,9 +14,8 @@ class Agent extends React.Component {
         this.state = {
             agent: ProjectStore.agent,
             loading: false,
-            errorModal: ProjectStore.errorModal,
-            error: ProjectStore.error,
-            screenSize: ProjectStore.screenSize
+            screenSize: ProjectStore.screenSize,
+            toggleModal: ProjectStore.toggleModal
         };
     }
 
@@ -38,10 +37,6 @@ class Agent extends React.Component {
     }
 
     render() {
-        if (this.state.error && this.state.error.response){
-            this.state.error.response === 404 ? this.state.appRouter.transitionTo('/notFound') : null;
-            this.state.error.response != 404 ? console.log(this.state.error.msg) : null;
-        }
         let agentKey = this.state.agentKey ? this.state.agentKey.key : null;
         let id = this.state.entityObj ? this.state.entityObj.id : null;
         let name = this.state.entityObj ? this.state.entityObj.name : null;
@@ -54,14 +49,13 @@ class Agent extends React.Component {
         let lastUpdatedBy = this.state.entityObj && this.state.entityObj.audit.last_updated_by ? this.state.entityObj.audit.last_updated_by.full_name : null;
         let repoUrl = this.state.entityObj ? this.state.entityObj.repo_url : null;
         let agent = <Card className="project-container mdl-color--white content mdl-color-text--grey-800"
-                          style={{marginTop: this.props.windowWidth > 680 ? 115 : 30, marginBottom: 30,
-                                 overflow: 'visible', padding: '10px 0px 10px 0px'}}>
+                          style={{marginBottom: 30, overflow: 'visible', padding: '10px 0px 10px 0px'}}>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <div style={styles.menuIcon}>
                     <AgentOptionsMenu {...this.props} {...this.state}/>
                 </div>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                    <a href={urlGen.routes.agents() }
+                    <a href={UrlGen.routes.agents() }
                        className="mdl-color-text--grey-800 external">
                         <i className="material-icons"
                            style={styles.backIcon}>keyboard_backspace</i>Back</a>
@@ -126,13 +120,8 @@ class Agent extends React.Component {
         return (
             <div>
                 {agent}
-
             </div>
         )
-    }
-    handleDownload(){
-        let id = this.props.params.id;
-        ProjectActions.getDownloadUrl(id);
     }
 }
 

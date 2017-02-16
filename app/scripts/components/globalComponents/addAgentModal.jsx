@@ -1,63 +1,64 @@
 import React from 'react';
 import ProjectActions from '../../actions/projectActions';
-import FlatButton from 'material-ui/lib/flat-button';
-import RaisedButton from 'material-ui/lib/raised-button';
-import Dialog from 'material-ui/lib/dialog';
-import TextField from 'material-ui/lib/text-field';
+import FlatButton from 'material-ui/FlatButton';
+import RaisedButton from 'material-ui/RaisedButton';
+import Dialog from 'material-ui/Dialog';
+import TextField from 'material-ui/TextField';
 
 class AddAgentModal extends React.Component {
 
     constructor() {
         this.state = {
             open: false,
-            floatingErrorText: 'This field is required.'
+            floatingErrorText: ''
         }
     }
 
     render() {
-
         const actions = [
             <FlatButton
                 label="Cancel"
                 secondary={true}
-                onTouchTap={this.handleClose.bind(this)} />,
+                onTouchTap={() => this.toggleModal()} />,
             <FlatButton
                 label="Submit"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={this.handleAgentButton.bind(this)} />
+                onTouchTap={() => this.addAgent()} />
         ];
-
+        let modalWidth = this.props.screenSize.width < 580 ? {width: '100%'} : {};
+        let open = this.props.toggleModal && this.props.toggleModal.id === 'addAgent' ? this.props.toggleModal.open : false;
         return (
             <div>
                 <RaisedButton
                     label="Add New Agent"
                     labelColor="#235F9C"
                     style={styles.addButton}
-                    onTouchTap={this.handleTouchTap.bind(this)} />
+                    onTouchTap={() => this.toggleModal()} />
                 <Dialog
                     style={styles.dialogStyles}
-                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
+                    contentStyle={modalWidth}
                     title="Add New Software Agent"
                     autoDetectWindowHeight={true}
                     actions={actions}
-                    open={this.state.open}
-                    onRequestClose={this.handleClose.bind(this)}>
+                    open={open}
+                    onRequestClose={() => this.toggleModal()}>
                     <form action="#" id="newAgentForm">
                         <TextField
                             style={styles.textStyles}
                             hintText="Software Agent Name"
                             errorText={this.state.floatingErrorText}
                             floatingLabelText="Software Agent Name"
-                            id="agentNameText"
+                            autoFocus={true}
+                            ref={(input)=>this.agentNameText = input}
                             type="text"
                             multiLine={true}
-                            onChange={this.handleFloatingErrorInputChange.bind(this)}/> <br/>
+                            onChange={(e) => this.validateText(e)}/> <br/>
                         <TextField
                             style={styles.textStyles}
                             hintText="Agent Description"
                             floatingLabelText="Software Agent Description"
-                            id="agentDescriptionText"
+                            ref={(input)=>this.agentDescriptionText = input}
                             type="text"
                             multiLine={true}
                             /> <br/>
@@ -65,7 +66,7 @@ class AddAgentModal extends React.Component {
                             style={styles.textStyles}
                             hintText="Agent Repository URL"
                             floatingLabelText="Software Agent Repository URL"
-                            id="agentRepoText"
+                            ref={(input)=>this.agentRepoText = input}
                             type="text"
                             multiLine={true}
                             />
@@ -75,38 +76,28 @@ class AddAgentModal extends React.Component {
         );
     }
 
-    handleTouchTap() {
-        this.setState({open: true});
-    };
-
-    handleAgentButton() {
+    addAgent() {
         if (this.state.floatingErrorText) {
             return null
         }
         else {
-            let name = document.getElementById('agentNameText').value;
-            let desc = document.getElementById('agentDescriptionText').value;
-            let repo = document.getElementById('agentRepoText').value;
-            if (!/^https?:\/\//i.test(repo)) { //TODO: Make this regex more robust//////////////////
-                repo = 'https://' + repo;
-            }
+            let name = this.agentNameText.getValue();
+            let desc = this.agentDescriptionText.getValue();
+            let repo = this.agentRepoText.getValue();
+            if (!/^https?:\/\//i.test(repo)) repo = 'https://' + repo;
             ProjectActions.addAgent(name, desc, repo);
-            this.setState({
-                open: false,
-                floatingErrorText: 'This field is required.'
-            });
+            this.toggleModal();
         }
-    };
+    }
 
-    handleFloatingErrorInputChange(e) {
-        this.setState({
-            floatingErrorText: e.target.value ? '' : 'This field is required.'
-        });
-    };
+    toggleModal() {
+        setTimeout(() => { this.agentNameText.select() }, 300);
+        ProjectActions.toggleModals('addAgent')
+    }
 
-    handleClose() {
-        this.setState({open: false});
-    };
+    validateText(e) {
+        this.setState({floatingErrorText: e.target.value ? '' : 'This field is required.'});
+    }
 }
 
 var styles = {
@@ -128,6 +119,11 @@ var styles = {
 
 AddAgentModal.contextTypes = {
     muiTheme: React.PropTypes.object
+};
+
+AddAgentModal.propTypes = {
+    toggleModal: React.PropTypes.object,
+    screenSize: React.PropTypes.object
 };
 
 export default AddAgentModal;

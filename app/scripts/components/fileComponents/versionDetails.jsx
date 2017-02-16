@@ -4,18 +4,14 @@ import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import VersionOptionsMenu from './versionOptionsMenu.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
-import urlGen from '../../../util/urlGen.js';
+import {UrlGen, Path} from '../../../util/urlEnum';
 import Tooltip from '../../../util/tooltip.js';
 import BaseUtils from '../../../util/baseUtils.js';
-import Card from 'material-ui/lib/card/card';
+import Card from 'material-ui/Card';
 
 class VersionDetails extends React.Component {
 
     render() {
-        if (this.props.error && this.props.error.response){
-            this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
-            this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
-        }
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
         let dlButton = null;
         let optionsMenu = null;
@@ -39,7 +35,7 @@ class VersionDetails extends React.Component {
         let label = this.props.entityObj && this.props.entityObj.label ? this.props.entityObj.label : null;
         let projectName = this.props.entityObj && this.props.entityObj.ancestors ? this.props.entityObj.ancestors[0].name : null;
         let crdOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.created_on : null;
-        let x = new Date(crdOn);
+        let x = crdOn !== null ? new Date(crdOn) : '';
         let createdOn = x.toString();
         let createdBy = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.created_by.full_name : null;
         let lastUpdatedOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.last_updated_on : null;
@@ -51,8 +47,7 @@ class VersionDetails extends React.Component {
         Tooltip.bindEvents();
 
         let version = <Card className="project-container mdl-color--white content mdl-color-text--grey-800"
-                            style={{marginTop: this.props.windowWidth > 680 ? 115 : 30, marginBottom: 30,
-                                    overflow: 'visible', padding: '10px 0px 10px 0px'}}>
+                            style={styles.card}>
             <div className="mdl-cell mdl-cell--12-col" style={{position: 'relative'}}>
                 { dlButton }
             </div>
@@ -62,7 +57,7 @@ class VersionDetails extends React.Component {
                     { optionsMenu }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                    <a href={urlGen.routes.file(parentId)} style={styles.back}
+                    <a href={UrlGen.routes.file(parentId)} style={styles.back}
                        className="mdl-color-text--grey-800 external">
                         <i className="material-icons"
                            style={styles.backIcon}>keyboard_backspace</i>Back</a>
@@ -103,7 +98,7 @@ class VersionDetails extends React.Component {
                                 <li className="list-group-title">Size</li>
                                 <li className="item-content">
                                     <div className="item-inner">
-                                        <div>{ BaseUtils.bytesToSize(bytes) }</div>
+                                        <div>{ bytes !== null ? BaseUtils.bytesToSize(bytes) : '' }</div>
                                     </div>
                                 </li>
                             </ul>
@@ -172,7 +167,7 @@ class VersionDetails extends React.Component {
 
     handleDownload(){
         let id = this.props.params.id;
-        let kind = 'file_versions/';
+        let kind = Path.FILE;
         ProjectActions.getDownloadUrl(id, kind);
     }
 }
@@ -196,6 +191,11 @@ var styles = {
     },
     button: {
         float: 'right'
+    },
+    card: {
+        paddingBottom: 30,
+        overflow: 'visible',
+        padding: '10px 0px 10px 0px'
     },
     detailsTitle: {
         textAlign: 'left',

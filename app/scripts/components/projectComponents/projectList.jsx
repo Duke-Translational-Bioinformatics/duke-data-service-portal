@@ -1,38 +1,30 @@
 import React from 'react';
-import { RouteHandler } from 'react-router';
 import ProjectActions from '../../actions/projectActions';
 import AddProjectModal from '../projectComponents/addProjectModal.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
-import urlGen from '../../../util/urlGen.js';
-import Card from 'material-ui/lib/card/card';
-import CardText from 'material-ui/lib/card/card-text';
-import CardTitle from 'material-ui/lib/card/card-title';
+import {UrlGen} from '../../../util/urlEnum';
+import {Card, CardTitle, CardText} from 'material-ui/Card';
+import FontIcon from 'material-ui/FontIcon';
+import RaisedButton from 'material-ui/RaisedButton';
 
 class ProjectList extends React.Component {
 
-    constructor(props) {
-        super(props)
-    }
-
     render() {
-        if (this.props.error && this.props.error.response){
-            this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
-            this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
-        }
+        let headers = this.props.responseHeaders && this.props.responseHeaders !== null ? this.props.responseHeaders : null;
+        let nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
+        let totalProjects = headers !== null && !!headers['x-total'] ? headers['x-total'][0] : null;
         let projects = this.props.projects.map((project) => {
-            if (!project.is_deleted){
-                return (
-                    <Card key={ project.id } className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.card}>
-                        <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>content_paste</i>
-                        <a href={urlGen.routes.project(project.id)} className="external">
-                            <CardTitle title={project.name} subtitle={'ID: ' + project.id} titleColor="#424242" style={styles.cardTitle}/>
-                        </a>
-                        <CardText>
-                            <span className="mdl-color-text--grey-900">Description:</span>{ project.description.length > 300 ? ' ' + project.description.substring(0,300)+'...' : ' ' + project.description }
-                        </CardText>
-                    </Card>
-                );
-            }
+            return (
+                <Card key={ project.id } className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.card}>
+                    <FontIcon className="material-icons" style={styles.icon}>content_paste</FontIcon>
+                    <a href={UrlGen.routes.project(project.id)} className="external">
+                        <CardTitle title={project.name} subtitle={'ID: ' + project.id} titleColor="#424242" style={styles.cardTitle}/>
+                    </a>
+                    <CardText>
+                        <span className="mdl-color-text--grey-900">Description:</span>{ project.description.length > 300 ? ' ' + project.description.substring(0,300)+'...' : ' ' + project.description }
+                    </CardText>
+                </Card>
+            );
         });
 
         return (
@@ -45,14 +37,24 @@ class ProjectList extends React.Component {
                     <Loaders {...this.props}/>
                 </div>
                 { projects }
+                {this.props.projects.length < totalProjects ? <div className="mdl-cell mdl-cell--12-col">
+                    <RaisedButton
+                        label={this.props.loading ? "Loading..." : "Load More"}
+                        secondary={true}
+                        disabled={this.props.loading ? true : false}
+                        onTouchTap={()=>this.loadMore(nextPage)}
+                        fullWidth={true}
+                        style={this.props.loading ? {backgroundColor: '#69A3DD'} : {}}
+                        labelStyle={this.props.loading ? {color: '#235F9C'} : {fontWeight: '100'}}/>
+                    </div> : null}
             </div>
         );
     }
-}
 
-ProjectList.contextTypes = {
-    muiTheme: React.PropTypes.object
-};
+    loadMore(page) {
+        ProjectActions.getProjects(page);
+    }
+}
 
 var styles = {
     card: {
@@ -66,7 +68,8 @@ var styles = {
     icon: {
         fontSize: 36,
         float: 'left',
-        margin: '20px 15px 0px 13px'
+        margin: '20px 15px 0px 13px',
+        color: '#616161'
     },
     listTitle: {
         margin: '0px 0px 0px 0px',
@@ -82,11 +85,14 @@ var styles = {
     }
 };
 
+ProjectList.contextTypes = {
+    muiTheme: React.PropTypes.object
+};
+
 ProjectList.propTypes = {
     loading: React.PropTypes.bool,
     projects: React.PropTypes.array,
-    error: React.PropTypes.object,
-    is_deleted: React.PropTypes.bool
+    error: React.PropTypes.object
 };
 
 export default ProjectList;

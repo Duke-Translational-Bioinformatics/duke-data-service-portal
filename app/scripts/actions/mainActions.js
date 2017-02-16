@@ -1,15 +1,18 @@
 import Reflux from 'reflux';
 import appConfig from '../config';
-import urlGen from '../../util/urlGen.js';
+import ProjectActions from '../actions/projectActions';
+import {UrlGen, Path} from '../../util/urlEnum';
+import { checkStatus, getFetchParams } from '../../util/fetchUtil';
 
 var MainActions = Reflux.createActions([
-    'authenticationServiceValidate',
-    'authenticationServiceValidateSuccess',
-    'authenticationServiceValidateError',
+    'getAuthProviders',
+    'getAuthProvidersSuccess',
+    'getApiToken',
+    'getApiTokenSuccess',
+    'getApiTokenError',
+    'clearErrors',
+    'displayErrorModals',
     'failedUpload',
-    'getDdsApiToken',
-    'getDdsApiTokenSuccess',
-    'getDdsApiTokenError',
     'setApiToken',
     'getCurrentUser',
     'getCurrentUserSuccess',
@@ -20,66 +23,67 @@ var MainActions = Reflux.createActions([
     'closePhiModal',
     'handleLogout',
     'removeLoginCookie',
-    'removeFailedUploads'
+    'removeFailedUploads',
+    'removeErrorModal'
 ]);
 
-MainActions.authenticationServiceValidate.preEmit = (appConfig, accessToken) => {
-    fetch(urlGen.routes.authServiceUri + '/api/v1/token_info?access_token=' + accessToken, {
+MainActions.getAuthProviders.preEmit = (appConfig) => {
+    fetch(DDS_PORTAL_CONFIG.baseUrl+UrlGen.routes.apiPrefix+'auth_providers', {
         method: 'get',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
-    }).then(function (response) {
+    }).then(checkResponse).then((response) => {
         return response.json()
-    }).then(function (json) {
-        if (json.signed_info) {
-            MainActions.authenticationServiceValidateSuccess(json.signed_info)
+    }).then((json) => {
+        if (json.results) {
+            MainActions.getAuthProvidersSuccess(json.results);
         } else {
-            throw "Error has occurred";
+            throw "An error has occurred while trying to authenticate";
         }
-    }).catch(function (ex) {
-        MainActions.authenticationServiceValidateError(ex)
+    }).catch((ex) => {
+        ProjectActions.handleErrors(ex);
     });
 };
 
-MainActions.getDdsApiToken.preEmit = (appConfig, signedInfo) => {
-    fetch(urlGen.routes.baseUrl + '/api/v1/user/api_token?access_token=' + signedInfo, {
+MainActions.getApiToken.preEmit = (appConfig, accessToken) => {
+    fetch(appConfig.baseUrl+UrlGen.routes.apiPrefix+Path.ACCESS_TOKEN+accessToken+'&authentication_service_id='+appConfig.serviceId, {
         method: 'get',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
-    }).then(function (response) {
+    }).then(checkResponse).then((response) => {
         return response.json()
-    }).then(function (json) {
-        if (json && json.api_token) {
-            MainActions.setApiToken(json.api_token);
-            MainActions.getDdsApiTokenSuccess(json.api_token);
+    }).then((json) => {
+        if (json.api_token) {
+            MainActions.getApiTokenSuccess(json.api_token);
         } else {
-            throw error;
+            throw "An error has occurred while trying to authenticate";
         }
-    }).catch(function (ex) {
-        MainActions.getDdsApiTokenError(ex)
+    }).catch((ex) => {
+        MainActions.getApiTokenError(ex);
+        ProjectActions.handleErrors(ex);
     });
 };
 
 MainActions.getCurrentUser.preEmit = () => {
-    fetch(urlGen.routes.baseUrl + '/api/v1/current_user', {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    })
-        .then(function (response) {
+    fetch(UrlGen.routes.baseUrl+UrlGen.routes.apiPrefix+Path.CURRENT_USER,
+        getFetchParams('get', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
             return response.json()
-        }).then(function (json) {
-            MainActions.getCurrentUserSuccess(json)
+        }).then((json) => {
+            MainActions.getCurrentUserSuccess(json);
         })
-        .catch(function (ex) {
-            MainActions.getCurrentUserError(ex)
+        .catch((ex) => {
+            MainActions.getCurrentUserError(ex);
+            ProjectActions.handleErrors(ex);
         });
 };
+
+function checkResponse(response) {
+    return checkStatus(response, MainActions);
+}
 
 export default MainActions;

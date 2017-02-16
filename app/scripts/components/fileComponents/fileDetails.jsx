@@ -2,6 +2,8 @@ import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
+import {Kind, Path} from '../../../util/urlEnum';
+import CustomMetadata from './customMetadata.jsx';
 import FileOptionsMenu from './fileOptionsMenu.jsx';
 import FileVersionsList from './fileVersionsList.jsx';
 import VersionUpload from './versionUpload.jsx';
@@ -9,24 +11,20 @@ import Loaders from '../../components/globalComponents/loaders.jsx';
 import TagCloud from '../../components/globalComponents/tagCloud.jsx';
 import Tooltip from '../../../util/tooltip.js';
 import BaseUtils from '../../../util/baseUtils.js';
-import Card from 'material-ui/lib/card/card';
-import FlatButton from 'material-ui/lib/flat-button';
-import IconButton from 'material-ui/lib/icon-button';
-import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
-import RaisedButton from 'material-ui/lib/raised-button';
-
-import Paper from 'material-ui/lib/paper';
+import Card from 'material-ui/Card';
+import FlatButton from 'material-ui/FlatButton';
+import IconButton from 'material-ui/IconButton';
+import NavigationClose from 'material-ui/svg-icons/navigation/close';
+import Paper from 'material-ui/Paper';
+import RaisedButton from 'material-ui/RaisedButton';
 
 class FileDetails extends React.Component {
 
     render() {
-        if (this.props.error && this.props.error.response){
-            this.props.error.response === 404 ? this.props.appRouter.transitionTo('/notFound') : null;
-            this.props.error.response != 404 ? console.log(this.props.error.msg) : null;
-        }
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
         let dlButton = null;
         let optionsMenu = null;
+        let id = this.props.entityObj && this.props.entityObj.current_version.id ? this.props.entityObj.current_version.id : null;
         if (prjPrm !== null) {
             dlButton = prjPrm === 'viewOnly' || prjPrm === 'flUpload' ? null :
                 <button
@@ -37,9 +35,8 @@ class FileDetails extends React.Component {
                     onTouchTap={() => this.handleDownload()}>
                     <i className="material-icons">get_app</i>
                 </button>;
-            optionsMenu = <FileOptionsMenu {...this.props} />;
+            optionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity()}/>;
         }
-        let id = this.props.entityObj && this.props.entityObj.current_version.id ? this.props.entityObj.current_version.id : null;
         let ancestors = this.props.entityObj ? this.props.entityObj.ancestors : null;
         let parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : null;
         let parentId = this.props.entityObj ? this.props.entityObj.parent.id : null;
@@ -47,7 +44,7 @@ class FileDetails extends React.Component {
         let label = this.props.entityObj && this.props.entityObj.current_version.label ? this.props.entityObj.current_version.label : null;
         let projectName = this.props.entityObj && this.props.entityObj.ancestors ? this.props.entityObj.ancestors[0].name : null;
         let crdOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.created_on : null;
-        let x = new Date(crdOn);
+        let x = crdOn !== null ? new Date(crdOn) : '';
         let createdOn = x.toString();
         let createdBy = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.created_by.full_name : null;
         let lastUpdatedOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.last_updated_on : null;
@@ -98,8 +95,7 @@ class FileDetails extends React.Component {
         Tooltip.bindEvents();
 
         let file = <Card className="project-container mdl-color--white content mdl-color-text--grey-800"
-                         style={{marginTop: this.props.windowWidth > 680 ? 115 : 30, paddingBottom: 30,
-                                 overflow: 'visible', padding: '10px 0px 10px 0px'}}>
+                         style={styles.card}>
             <div className="mdl-cell mdl-cell--12-col" style={{position: 'relative'}}>
                 { dlButton }
             </div>
@@ -133,7 +129,7 @@ class FileDetails extends React.Component {
                 <FileVersionsList {...this.props}/>
                 <VersionUpload {...this.props}/>
                 <div style={styles.uploadProg}>
-                    { this.props.uploads ? <Loaders {...this.props}/> : null }
+                    { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     { provAlert }
@@ -183,7 +179,7 @@ class FileDetails extends React.Component {
                                 <li className="list-group-title">Size</li>
                                 <li className="item-content">
                                     <div className="item-inner">
-                                        <div>{ BaseUtils.bytesToSize(bytes) }</div>
+                                        <div>{ bytes !== null ? BaseUtils.bytesToSize(bytes) : '' }</div>
                                     </div>
                                 </li>
                             </ul>
@@ -235,6 +231,7 @@ class FileDetails extends React.Component {
         return (
             <div>
                 {file}
+                {this.props.objectMetadata && this.props.objectMetadata.length ? <CustomMetadata {...this.props}/> : null}
             </div>
         )
     }
@@ -245,7 +242,7 @@ class FileDetails extends React.Component {
 
     handleDownload(){
         let id = this.props.params.id;
-        let kind = 'files/';
+        let kind = Path.FILE;
         ProjectActions.getDownloadUrl(id, kind);
     }
 
@@ -259,6 +256,12 @@ class FileDetails extends React.Component {
         ProjectActions.toggleProvView();
         ProjectActions.toggleProvEditor();
         ProjectActions.hideProvAlert();
+    }
+
+    setSelectedEntity() {
+        let id = this.props.params.id;
+        let kind = 'files';
+        ProjectActions.setSelectedEntity(id, kind);
     }
 }
 
@@ -280,6 +283,11 @@ var styles = {
     },
     button: {
         float: 'right'
+    },
+    card: {
+        paddingBottom: 30,
+        overflow: 'visible',
+        padding: '10px 0px 10px 0px'
     },
     detailsTitle: {
         textAlign: 'left',

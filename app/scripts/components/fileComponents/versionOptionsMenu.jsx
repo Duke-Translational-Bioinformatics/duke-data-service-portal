@@ -1,12 +1,12 @@
 import React from 'react';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-import TextField from 'material-ui/lib/text-field';
-import Dialog from 'material-ui/lib/dialog';
-import FlatButton from 'material-ui/lib/flat-button';
-import IconButton from 'material-ui/lib/icon-button';
-import IconMenu from 'material-ui/lib/menus/icon-menu';
-import MenuItem from 'material-ui/lib/menus/menu-item';
+import TextField from 'material-ui/TextField';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import IconButton from 'material-ui/IconButton';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
 
 class VersionsOptionsMenu extends React.Component {
 
@@ -23,27 +23,38 @@ class VersionsOptionsMenu extends React.Component {
         let menu = null;
         if (prjPrm !== null) {
             if(prjPrm === 'viewOnly' || prjPrm === 'flDownload'){
-                menu = <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
-                                 onTouchTap={() => this.openProv()}/>;
+                menu = <IconMenu
+                            iconButtonElement={<IconButton iconClassName="material-icons" style={{marginRight: -10}}>more_vert</IconButton>}
+                            anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+                            targetOrigin={{horizontal: 'right', vertical: 'top'}}>
+                            <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
+                                         onTouchTap={() => this.openProv()}/>
+                </IconMenu>;
             }
             if (prjPrm === 'flUpload') {
-                menu = <span>
-                        <MenuItem primaryText="Edit Version Label" leftIcon={<i className="material-icons">mode_edit</i>}
-                                     onTouchTap={this.handleTouchTapEdit.bind(this)}/>
-                        <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
-                                  onTouchTap={() => this.openProv()}/>
-                </span>;
+                menu = <IconMenu
+                            iconButtonElement={<IconButton iconClassName="material-icons" style={{marginRight: -10}}>more_vert</IconButton>}
+                            anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+                            targetOrigin={{horizontal: 'right', vertical: 'top'}}>
+                            <MenuItem primaryText="Edit Version Label" leftIcon={<i className="material-icons">mode_edit</i>}
+                                         onTouchTap={this.handleTouchTapEdit.bind(this)}/>
+                            <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
+                                      onTouchTap={() => this.openProv()}/>
+                </IconMenu>;
             }
             if (prjPrm === 'prjCrud' || prjPrm === 'flCrud') {
-                menu = <span>
-                        <MenuItem primaryText="Delete Version" leftIcon={<i className="material-icons">delete</i>}
-                                  onTouchTap={this.handleTouchTapDelete.bind(this)}/>
-                        <MenuItem primaryText="Edit Version Label"
-                                  leftIcon={<i className="material-icons">mode_edit</i>}
-                                  onTouchTap={this.handleTouchTapEdit.bind(this)}/>
-                        <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
-                               onTouchTap={() => this.openProv()}/>
-                </span>;
+                menu = <IconMenu
+                            iconButtonElement={<IconButton iconClassName="material-icons" style={{marginRight: -10}}>more_vert</IconButton>}
+                            anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+                            targetOrigin={{horizontal: 'right', vertical: 'top'}}>
+                            <MenuItem primaryText="Delete Version" leftIcon={<i className="material-icons">delete</i>}
+                                      onTouchTap={this.handleTouchTapDelete.bind(this)}/>
+                            <MenuItem primaryText="Edit Version Label"
+                                      leftIcon={<i className="material-icons">mode_edit</i>}
+                                      onTouchTap={this.handleTouchTapEdit.bind(this)}/>
+                            <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
+                                   onTouchTap={() => this.openProv()}/>
+                </IconMenu>;
             }
         }
         const deleteActions = [
@@ -95,23 +106,18 @@ class VersionsOptionsMenu extends React.Component {
                         <TextField
                             style={styles.textStyles}
                             autoFocus={true}
-                            onFocus={this.handleFloatingErrorInputChange.bind(this)}
+                            onFocus={()=>this.selectText()}
                             hintText="Version Label"
                             defaultValue={labelText}
                             errorText={this.state.floatingErrorText}
+                            ref={(input) => this.versionLabelText = input}
                             floatingLabelText="Version Label"
-                            id="versionLabelText"
                             type="text"
                             multiLine={true}
-                            onChange={this.handleFloatingErrorInputChange.bind(this)}/> <br/>
+                            onChange={(e)=>this.validateText(e)}/> <br/>
                     </form>
                 </Dialog>
-                <IconMenu {...this.props}
-                    iconButtonElement={<IconButton iconClassName="material-icons" style={{marginRight: -10}}>more_vert</IconButton>}
-                    anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-                    targetOrigin={{horizontal: 'right', vertical: 'top'}}>
-                    { menu }
-                </IconMenu>
+                { menu }
             </div>
         );
     }
@@ -129,13 +135,13 @@ class VersionsOptionsMenu extends React.Component {
         let parentId = this.props.entityObj ? this.props.entityObj.file.id : null;
         ProjectActions.deleteVersion(id);
         this.setState({deleteOpen: false});
-        setTimeout(()=>this.props.appRouter.transitionTo('/file' + '/' + parentId), 500)
+        setTimeout(()=>this.props.router.push('/file' + '/' + parentId), 500)
     }
 
 
     handleUpdateButton() {
         let id = this.props.params.id;
-        let label = document.getElementById("versionLabelText").value;
+        let label = this.versionLabelText.getValue();
         if (this.state.floatingErrorText != '') {
             return null
         } else {
@@ -147,12 +153,6 @@ class VersionsOptionsMenu extends React.Component {
         }
     }
 
-    handleFloatingErrorInputChange(e) {
-        this.setState({
-            floatingErrorText: e.target.value ? '' : 'This field is required.'
-        });
-    }
-
     handleClose() {
         this.setState({
             deleteOpen: false,
@@ -162,17 +162,24 @@ class VersionsOptionsMenu extends React.Component {
     }
 
     openProv() {
+        let id = this.props.params.id;
         let fileId = this.props.entityObj && this.props.entityObj.file ? this.props.entityObj.file.id : null;
+        if(!this.props.provNodes.length) ProjectActions.getWasGeneratedByNode(id);
         ProjectActions.getFileVersions(fileId);
         ProjectActions.toggleProvView();
     }
+
+    selectText() {
+        setTimeout(()=>this.versionLabelText.select(),100);
+    }
+
+    validateText(e) {
+        this.setState({
+            floatingErrorText: e.target.value ? '' : 'This field is required.'
+        });
+    }
 }
 var styles = {
-    deleteFile: {
-        float: 'right',
-        position: 'relative',
-        margin: '12px 8px 0px 0px'
-    },
     dialogStyles: {
         textAlign: 'center',
         fontColor: '#303F9F',

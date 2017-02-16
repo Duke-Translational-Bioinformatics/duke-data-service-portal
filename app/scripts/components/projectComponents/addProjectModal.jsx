@@ -1,16 +1,16 @@
 import React from 'react';
 import ProjectActions from '../../actions/projectActions';
-import FlatButton from 'material-ui/lib/flat-button';
-import Dialog from 'material-ui/lib/dialog';
-import TextField from 'material-ui/lib/text-field';
-import RaisedButton from 'material-ui/lib/raised-button';
+import FlatButton from 'material-ui/FlatButton';
+import Dialog from 'material-ui/Dialog';
+import TextField from 'material-ui/TextField';
+import RaisedButton from 'material-ui/RaisedButton';
 
 class AddProjectModal extends React.Component {
 
     constructor() {
         this.state = {
             open: false,
-            floatingErrorText: 'This field is required.',
+            floatingErrorText: 'This field is required',
             floatingErrorText2: 'This field is required'
         }
     }
@@ -50,7 +50,7 @@ class AddProjectModal extends React.Component {
                             hintText="Project Name"
                             errorText={this.state.floatingErrorText}
                             floatingLabelText="Project Name"
-                            id="projectNameText"
+                            ref={(input) => this.projectNameText = input}
                             type="text"
                             multiLine={true}
                             onChange={this.handleFloatingErrorInputChange.bind(this)}/> <br/>
@@ -59,7 +59,7 @@ class AddProjectModal extends React.Component {
                             hintText="Project Description"
                             errorText={this.state.floatingErrorText2}
                             floatingLabelText="Project Description"
-                            id="projectDescriptionText"
+                            ref={(input) => this.projectDescriptionText = input}
                             type="text"
                             multiLine={true}
                             onChange={this.handleFloatingErrorInputChange2.bind(this)}
@@ -72,15 +72,15 @@ class AddProjectModal extends React.Component {
 
     handleTouchTap() {
         this.setState({open: true});
-        setTimeout(() => { document.getElementById('projectNameText').select() }, 300);
+        setTimeout(() => { this.projectNameText.select() }, 300);
     };
 
     handleProjectButton() {
         if (this.state.floatingErrorText || this.state.floatingErrorText2) {
             return null
         } else {
-            let name = document.getElementById('projectNameText').value;
-            let desc = document.getElementById('projectDescriptionText').value;
+            let name = this.projectNameText.getValue();
+            let desc = this.projectDescriptionText.getValue();
             ProjectActions.addProject(name, desc);
             this.setState({
                 open: false,

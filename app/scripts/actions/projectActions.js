@@ -2,12 +2,45 @@ import Reflux from 'reflux';
 import MainActions from '../actions/mainActions';
 import MainStore from '../stores/mainStore';
 import ProjectStore from '../stores/projectStore';
-import urlGen from '../../util/urlGen.js';
+import { UrlGen, Kind, Path } from '../../util/urlEnum';
 import appConfig from '../config';
-import { StatusEnum, Path } from '../enum';
-import { checkStatus, getAuthenticatedFetchParams } from '../../util/fetchUtil.js';
+import { StatusEnum } from '../enum';
+import { checkStatus, getFetchParams } from '../../util/fetchUtil';
 
 var ProjectActions = Reflux.createActions([
+    'toggleUserInfoPanel',
+    'setIncludedSearchProjects',
+    'setIncludedSearchKinds',
+    'toggleSearchFilters',
+    'searchObjects',
+    'searchObjectsSuccess',
+    'toggleSearch',
+    'createMetaPropsList',
+    'getObjectMetadata',
+    'getObjectMetadataSuccess',
+    'createMetadataObject',
+    'createMetadataObjectSuccess',
+    'updateMetadataObject',
+    'showMetadataTemplateList',
+    'deleteMetadataProperty',
+    'deleteMetadataPropertySuccess',
+    'getMetadataTemplateProperties',
+    'getMetadataTemplatePropertiesSuccess',
+    'showMetaDataTemplateDetails',
+    'createMetadataProperty',
+    'createMetadataPropertySuccess',
+    'showTemplatePropManager',
+    'deleteTemplate',
+    'deleteTemplateSuccess',
+    'updateMetadataTemplate',
+    'updateMetadataTemplateSuccess',
+    'createMetadataTemplateSuccess',
+    'createMetadataTemplate',
+    'toggleMetadataManager',
+    'getMetadataTemplateDetails',
+    'getMetadataTemplateDetailsSuccess',
+    'loadMetadataTemplates',
+    'loadMetadataTemplatesSuccess',
     'expandProvenanceGraph',
     'clearProvFileVersions',
     'clearSearchFilesData',
@@ -48,6 +81,7 @@ var ProjectActions = Reflux.createActions([
     'getScreenSize',
     'toggleUploadManager',
     'toggleTagManager',
+    'defineTagsToAdd',
     'addNewTag',
     'addNewTagSuccess',
     'appendTags',
@@ -66,14 +100,10 @@ var ProjectActions = Reflux.createActions([
     'checkForHash',
     'openModal',
     'closeModal',
-    'openMoveModal',
     'openVersionModal',
     'closeVersionModal',
-    'moveItemWarning',
-    'moveFolder',
-    'moveFolderSuccess',
-    'moveFile',
-    'moveFileSuccess',
+    'moveItem',
+    'moveItemSuccess',
     'selectMoveLocation',
     'handleBatch',
     'closeErrorModal',
@@ -113,8 +143,8 @@ var ProjectActions = Reflux.createActions([
     'getAgentApiToken',
     'getAgentApiTokenSuccess',
     'clearApiToken',
-    'loadProjects',
-    'loadProjectsSuccess',
+    'getProjects',
+    'getProjectsSuccess',
     'deleteItemSuccess',
     'addProject',
     'addProjectSuccess',
@@ -132,8 +162,8 @@ var ProjectActions = Reflux.createActions([
     'addFile',
     'addFileSuccess',
     'deleteFile',
-    'editFile',
-    'editFileSuccess',
+    'editItem',
+    'editItemSuccess',
     'getEntity',
     'getEntitySuccess',
     'getProjectMembers',
@@ -151,1019 +181,965 @@ var ProjectActions = Reflux.createActions([
     'showBatchOptions',
     'setBatchItems',
     'batchDeleteItems',
+    'processFilesToUpload',
     'startUpload',
     'startUploadSuccess',
     'updateChunkProgress',
     'updateAndProcessChunks',
     'allChunksUploaded',
     'uploadError',
+    'cancelUpload',
     'getChunkUrl',
     'getWindowSize',
-    'search',
-    'setSearchText',
     'getChildren',
     'getChildrenSuccess',
-    'removeErrorModal',
-    'removeFailedUploads'
+    'removeFailedUploads',
+    'toggleModals',
+    'setSelectedEntity',
+    'setSelectedEntitySuccess',
+    'getMoveItemList',
+    'getMoveItemListSuccess'
 ]);
 
-ProjectActions.addProvRelation.preEmit = function (kind, body) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'relations/' + kind, {
-        method: 'post',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify(body)
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        MainActions.addToast('New relation Added');
-        ProjectActions.addProvRelationSuccess(json);
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to add new relation');
-        ProjectActions.handleErrors(ex)
-    })
+ProjectActions.searchObjects.preEmit = (value, includeKinds, includeProjects) => {
+    if (includeKinds === null || !includeKinds.length) includeKinds = ['dds-file', 'dds-folder'];
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix +'/search',
+        getFetchParams('post', appConfig.apiToken, {
+            "include_kinds": includeKinds,
+            "search_query": {
+                "query": {
+                    "bool": {
+                        "must": {
+                            "multi_match" : {
+                                "query": value,
+                                "type": "phrase_prefix",
+                                "fields": [
+                                    "label",
+                                    "meta",
+                                    "name",
+                                    "tags.*"
+                                ]
+                            }
+                        },
+                        "filter": {
+                            "bool" : {
+                                "must_not" : {"match" : {"is_deleted": true}},
+                                "should" : includeProjects
+                            }
+                        }
+                    }
+                },
+                size: 1000
+            }
+        }))
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.searchObjectsSuccess(json.results);
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
-ProjectActions.deleteProvItem.preEmit = function (data, id) {
+ProjectActions.getMoveItemList.preEmit = (id, path) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + Path.CHILDREN,
+        getFetchParams('get', appConfig.apiToken)
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getMoveItemListSuccess(json.results)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
+};
+
+ProjectActions.getObjectMetadata.preEmit = (id, kind) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.META+kind+"/"+id,
+        getFetchParams('get', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getObjectMetadataSuccess(json.results);
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
+};
+
+ProjectActions.createMetadataObject.preEmit = (kind, fileId, templateId, properties) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.META+kind+"/"+fileId+"/"+templateId,
+        getFetchParams('post', appConfig.apiToken, {
+                "properties": properties
+            }
+        )
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('A new metadata object was created.');
+            ProjectActions.createMetadataObjectSuccess(fileId, kind);
+        }).catch((ex) => {
+            if(ex.response.status === 409) {
+                ProjectActions.updateMetadataObject(kind, fileId, templateId, properties);
+            } else {
+                MainActions.addToast('Failed to add new metadata object');
+                ProjectActions.handleErrors(ex)
+            }
+        })
+};
+
+ProjectActions.updateMetadataObject.preEmit = (kind, fileId, templateId, properties) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.META+kind+"/"+fileId+"/"+templateId,
+        getFetchParams('put', appConfig.apiToken, {
+            "properties": properties
+        })
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('This metadata object was updated.');
+            ProjectActions.createMetadataObjectSuccess(fileId, kind);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to update metadata object');
+            ProjectActions.handleErrors(ex)
+        })
+};
+
+ProjectActions.deleteMetadataProperty.preEmit = (id, label) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATE_PROPERTIES + id,
+        getFetchParams('delete', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+        }).then((json) => {
+            MainActions.addToast('The '+label+' property has been deleted');
+            ProjectActions.deleteMetadataPropertySuccess(id);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to delete '+label);
+            ProjectActions.handleErrors(ex)
+        });
+};
+
+ProjectActions.getMetadataTemplateProperties.preEmit = (id) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES +id+Path.PROPERTIES,
+        getFetchParams('get', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getMetadataTemplatePropertiesSuccess(json.results)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
+};
+
+ProjectActions.createMetadataProperty.preEmit = (id, name, label, desc, type) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES +id+Path.PROPERTIES,
+        getFetchParams('post', appConfig.apiToken, {
+            "key": name,
+            "label": label,
+            "description": desc,
+            "type": type
+        })
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('A new template property called '+label+' was added');
+            ProjectActions.createMetadataPropertySuccess(json);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to add new template property');
+            ProjectActions.handleErrors(ex)
+        })
+};
+
+ProjectActions.deleteTemplate.preEmit = (id, label) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id,
+        getFetchParams('delete', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+        }).then((json) => {
+            MainActions.addToast('The '+label+' template has been deleted');
+            ProjectActions.deleteTemplateSuccess();
+        }).catch((ex) => {
+            MainActions.addToast('Failed to delete '+label);
+            ProjectActions.handleErrors(ex)
+        });
+};
+
+ProjectActions.updateMetadataTemplate.preEmit = (id, name, label, desc) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id,
+        getFetchParams('put', appConfig.apiToken, {
+            "name": name,
+            "label": label,
+            "description": desc
+        })
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast(label+' has been updated.');
+            ProjectActions.getMetadataTemplateDetailsSuccess(json);
+            ProjectActions.loadMetadataTemplates('');
+        }).catch((ex) => {
+            MainActions.addToast('Failed to update '+label);
+            ProjectActions.handleErrors(ex)
+        })
+};
+
+
+ProjectActions.createMetadataTemplate.preEmit = (name, label, desc) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES,
+        getFetchParams('post', appConfig.apiToken, {
+            "name": name,
+            "label": label,
+            "description": desc
+        })
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('A new template called '+label+' was added');
+            ProjectActions.getMetadataTemplateDetailsSuccess(json);
+            ProjectActions.createMetadataTemplateSuccess(json);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to add new template');
+            ProjectActions.handleErrors(ex)
+        })
+};
+
+ProjectActions.getMetadataTemplateDetails.preEmit = (id) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id,
+        getFetchParams('get', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getMetadataTemplateDetailsSuccess(json)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
+};
+
+ProjectActions.loadMetadataTemplates.preEmit = (value) => {
+    let searchQuery = value !== null ? '?name_contains='+ value : '';
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + searchQuery,
+        getFetchParams('get', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.loadMetadataTemplatesSuccess(json.results)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
+};
+
+ProjectActions.addProvRelation.preEmit = (kind, body) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'relations/' + kind,
+        getFetchParams('post', appConfig.apiToken, body)
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('New relation Added');
+            ProjectActions.addProvRelationSuccess(json);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to add new relation');
+            ProjectActions.handleErrors(ex)
+        })
+};
+
+ProjectActions.deleteProvItem.preEmit = (data, id) => {
     let kind = data.hasOwnProperty('from') ? 'relations/' : 'activities/';
     let msg = kind === 'activities/' ? data.label : data.type;
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + kind + data.id, {
-        method: 'delete',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-    }).then(function (json) {
-        MainActions.addToast(msg + ' deleted');
-        ProjectActions.deleteProvItemSuccess(data);
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to delete ' + msg);
-        ProjectActions.handleErrors(ex)
-    });
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + kind + data.id,
+        getFetchParams('delete', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+        }).then((json) => {
+            MainActions.addToast(msg + ' deleted');
+            ProjectActions.deleteProvItemSuccess(data);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to delete ' + msg);
+            ProjectActions.handleErrors(ex)
+        });
 };
 
-ProjectActions.addProvActivity.preEmit = function (name, desc) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'activities/', {
-        method: 'post',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
+ProjectActions.addProvActivity.preEmit = (name, desc) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.ACTIVITIES,
+        getFetchParams('post', appConfig.apiToken, {
             "name": name,
             "description": desc
         })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        MainActions.addToast('New Activity Added');
-        ProjectActions.addProvActivitySuccess(json);
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to add new actvity');
-        ProjectActions.handleErrors(ex)
-    })
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('New Activity Added');
+            ProjectActions.addProvActivitySuccess(json);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to add new actvity');
+            ProjectActions.handleErrors(ex)
+        })
 };
 
-ProjectActions.editProvActivity.preEmit = function (id, name, desc, prevName) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'activities/' + id, {
-        method: 'put',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
+ProjectActions.editProvActivity.preEmit = (id, name, desc, prevName) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.ACTIVITIES + id,
+        getFetchParams('put', appConfig.apiToken, {
             "name": name,
             "description": desc
         })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        if (name !== prevName) {
-            MainActions.addToast(prevName + ' name was changed to ' + name);
-        } else {
-            MainActions.addToast(prevName + ' was edited');
-        }
-        ProjectActions.editProvActivitySuccess(json);
-    }).catch(function (ex) {
-        ProjectActions.handleErrors(ex)
-    })
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            if (name !== prevName) {
+                MainActions.addToast(prevName + ' name was changed to ' + name);
+            } else {
+                MainActions.addToast(prevName + ' was edited');
+            }
+            ProjectActions.editProvActivitySuccess(json);
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
-ProjectActions.getActivities.preEmit = function () {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'activities/', {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.getActivitiesSuccess(json.results)
-    }).catch(function (ex) {
-        ProjectActions.handleErrors(ex)
-    })
+ProjectActions.getActivities.preEmit = () => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.ACTIVITIES,
+        getFetchParams('get', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getActivitiesSuccess(json.results)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
-ProjectActions.getProvenance.preEmit = function (id, kind, prevGraph) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'search/provenance?max_hops=1', {
-        method: 'post',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
+ProjectActions.getProvenance.preEmit = (id, kind, prevGraph) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'search/provenance?max_hops=1',
+        getFetchParams('post', appConfig.apiToken, {
             'start_node': {
                 kind: kind,
                 id: id
             }
         })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.getProvenanceSuccess(json.graph, prevGraph);
-    }).catch(function (ex) {
-        ProjectActions.handleErrors(ex)
-    })
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getProvenanceSuccess(json.graph, prevGraph);
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
-ProjectActions.getWasGeneratedByNode.preEmit = function (id, kind, prevGraph) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'search/provenance/was_generated_by', {
-        method: 'post',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
+ProjectActions.getWasGeneratedByNode.preEmit = (id, kind, prevGraph) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'search/provenance/origin',
+        getFetchParams('post', appConfig.apiToken, {
             'file_versions': [{
                 id: id
             }]
         })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.getProvenanceSuccess(json.graph, prevGraph);
-    }).catch(function (ex) {
-        ProjectActions.handleErrors(ex)
-    })
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getProvenanceSuccess(json.graph, prevGraph);
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
-ProjectActions.search.preEmit = function (text, id) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT + id + '/children?name_contains=' + text, {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.getChildrenSuccess(json.results);
-        ProjectActions.setSearchText(text);
-    }).catch(function (ex) {
-        ProjectActions.handleErrors(ex)
-    })
+ProjectActions.searchFiles.preEmit = (text, id) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/children?name_contains=' + text,
+        getFetchParams('get', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.searchFilesSuccess(json.results);
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
-ProjectActions.searchFiles.preEmit = function (text, id) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT + id + '/children?name_contains=' + text, {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.searchFilesSuccess(json.results);
-    }).catch(function (ex) {
-        ProjectActions.handleErrors(ex)
-    })
-};
-
-ProjectActions.addNewTag.preEmit = function (id, kind, tag) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/' + kind + '/' + id, {
-        method: 'post',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
+ProjectActions.addNewTag.preEmit = (id, kind, tag) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TAGS + kind + '/' + id,
+        getFetchParams('post', appConfig.apiToken, {
             'label': tag
         })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        MainActions.addToast('Added ' + json.label + ' tag');
-        ProjectActions.addNewTagSuccess(id);
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to add new tag');
-        ProjectActions.handleErrors(ex)
-    })
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('Added ' + json.label + ' tag');
+            ProjectActions.addNewTagSuccess(id);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to add new tag');
+            ProjectActions.handleErrors(ex)
+        })
 };
 
-ProjectActions.appendTags.preEmit = function (id, kind, tags) {
+ProjectActions.appendTags.preEmit = (id, kind, tags) => {
     let msg = tags.map((tag)=> {
         return tag.label
     });
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/' + kind + '/' + id + '/append', {
-        method: 'post',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TAGS + kind + '/' + id + '/append',
+        getFetchParams('post', appConfig.apiToken, {
             tags
         })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        MainActions.addToast('Added ' + msg + ' as tags to all selected files.');
-        ProjectActions.appendTagsSuccess(id);
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to add tags');
-        ProjectActions.handleErrors(ex)
-    })
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('Added ' + msg + ' as tags to all selected files.');
+            ProjectActions.appendTagsSuccess(id);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to add tags');
+            ProjectActions.handleErrors(ex)
+        })
 };
 
-ProjectActions.deleteTag.preEmit = function (id, label, fileId) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/' + id, {
-        method: 'delete',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-    }).then(function () {
-        MainActions.addToast(label + ' tag deleted!');
-        ProjectActions.deleteTagSuccess(fileId)
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to delete ' + label);
-        ProjectActions.handleErrors(ex)
-    });
+ProjectActions.deleteTag.preEmit = (id, label, fileId) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TAGS + id,
+        getFetchParams('delete', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+        }).then(() => {
+            MainActions.addToast(label + ' tag deleted!');
+            ProjectActions.deleteTagSuccess(fileId)
+        }).catch((ex) => {
+            MainActions.addToast('Failed to delete ' + label);
+            ProjectActions.handleErrors(ex)
+        });
 };
 
-ProjectActions.getTagLabels.preEmit = function () {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/labels/?object_kind=dds-file', {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.getTagLabelsSuccess(json.results)
-    }).catch(function (ex) {
-        ProjectActions.handleErrors(ex)
-    })
+ProjectActions.getTagLabels.preEmit = () => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'tags/labels/?object_kind=dds-file',
+        getFetchParams('get', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getTagLabelsSuccess(json.results)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 
-ProjectActions.getTagAutoCompleteList.preEmit = function (text) {
+ProjectActions.getTagAutoCompleteList.preEmit = (text) => {
     let query = text === null ? '' : '&label_contains=' + text;
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/labels/?object_kind=dds-file' + query, {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.getTagAutoCompleteListSuccess(json.results)
-    }).catch(function (ex) {
-        ProjectActions.handleErrors(ex)
-    })
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'tags/labels/?object_kind=dds-file' + query,
+        getFetchParams('get', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getTagAutoCompleteListSuccess(json.results)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
-ProjectActions.getTags.preEmit = function (id, kind) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'tags/' + kind + '/' + id, {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.getTagsSuccess(json.results)
-    }).catch(function (ex) {
-        ProjectActions.handleErrors(ex)
-    })
+ProjectActions.getTags.preEmit = (id, kind) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TAGS + kind + '/' + id,
+        getFetchParams('get', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getTagsSuccess(json.results)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
-ProjectActions.getFileVersions.preEmit = function (id, prov) { // prov = boolean used for file selection in prov editor
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.FILE + id + '/versions', {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.getFileVersionsSuccess(json.results, prov)
-    }).catch(function (ex) {
-        ProjectActions.handleErrors(ex)
-    })
+ProjectActions.getFileVersions.preEmit = (id, prov) => { // prov = boolean used for file selection in prov editor
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE + id + '/versions',
+        getFetchParams('get', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getFileVersionsSuccess(json.results, prov)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
-ProjectActions.addFileVersion.preEmit = function (uploadId, label, fileId) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.FILE + fileId, {
-        method: 'put',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
+ProjectActions.addFileVersion.preEmit = (uploadId, label, fileId) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE + fileId,
+        getFetchParams('put', appConfig.apiToken, {
             'upload': {
                 'id': uploadId
             },
             'label': label
         })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        MainActions.addToast('Created New File Version!');
-        ProjectActions.addFileVersionSuccess(fileId, uploadId)
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to Create New Version');
-        ProjectActions.uploadError(uploadId, label);
-        ProjectActions.handleErrors(ex);
-    });
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('Created New File Version!');
+            ProjectActions.addFileVersionSuccess(fileId, uploadId)
+        }).catch((ex) => {
+            MainActions.addToast('Failed to Create New Version');
+            ProjectActions.uploadError(uploadId, label);
+            ProjectActions.handleErrors(ex);
+        });
 };
 
 
-ProjectActions.deleteVersion.preEmit = function (id) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.FILE_VERSION + id, {
-        method: 'delete',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-    }).then(function () {
-        MainActions.addToast('Version Deleted!');
-        ProjectActions.deleteVersionSuccess()
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to Delete Version!');
-        ProjectActions.handleErrors(ex)
-    });
-};
-
-ProjectActions.editVersion.preEmit = function (id, label) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.FILE_VERSION + id, {
-        method: 'put',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-            "label": label
-        })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        MainActions.addToast('Label Updated!');
-        ProjectActions.editVersionSuccess(id)
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to Update Label');
-        ProjectActions.handleErrors(ex)
-    });
-};
-
-ProjectActions.addAgent.preEmit = function (name, desc, repo) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.AGENT, {
-        method: 'post',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-            "name": name,
-            "description": desc,
-            "repo_url": repo
-        })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        MainActions.addToast('New software agent added');
-        ProjectActions.addAgentSuccess()
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to add new software agent');
-        ProjectActions.handleErrors(ex)
-    })
-};
-
-ProjectActions.editAgent.preEmit = function (id, name, desc, repo) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.AGENT + id, {
-        method: 'put',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            "name": name,
-            "description": desc,
-            "repo_url": repo
-        })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        MainActions.addToast('Software Agent Updated');
-        ProjectActions.editAgentSuccess(id)
-    }).catch(function (ex) {
-        MainActions.addToast('Software Agent Update Failed');
-        ProjectActions.handleErrors(ex)
-    });
-};
-
-ProjectActions.deleteAgent.preEmit = function (id) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.AGENT + id, {
-        method: 'delete',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-    }).then(function (json) {
-        MainActions.addToast('Software Agent Deleted');
-        ProjectActions.deleteAgentSuccess(json)
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to delete software agent');
-        ProjectActions.handleErrors(ex)
-    });
-};
-
-ProjectActions.loadAgents.preEmit = function () {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.AGENT, {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.loadAgentsSuccess(json.results)
-    }).catch(function (ex) {
-        ProjectActions.handleErrors(ex)
-    })
-};
-
-ProjectActions.createAgentKey.preEmit = function (id) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.AGENT + id + '/api_key', {
-        method: 'put',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        MainActions.addToast('API Key created successfully');
-        ProjectActions.createAgentKeySuccess(json);
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to create new API key');
-        ProjectActions.handleErrors(ex)
-    })
-};
-
-ProjectActions.getAgentKey.preEmit = (id) => {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.AGENT + id + '/api_key', {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.getAgentKeySuccess(json)
-    })
-        .catch(function (ex) {
+ProjectActions.deleteVersion.preEmit = (id) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE_VERSION + id,
+        getFetchParams('delete', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+        }).then(() => {
+            MainActions.addToast('Version Deleted!');
+            ProjectActions.deleteVersionSuccess()
+        }).catch((ex) => {
+            MainActions.addToast('Failed to Delete Version!');
             ProjectActions.handleErrors(ex)
         });
 };
 
-ProjectActions.getAgentApiToken.preEmit = function (agentKey, userKey) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.AGENT + 'api_token', {
-        method: 'post',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
+ProjectActions.editVersion.preEmit = (id, label) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE_VERSION + id,
+        getFetchParams('put', appConfig.apiToken, {
+            "label": label
+        })
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('Label Updated!');
+            ProjectActions.editVersionSuccess(id)
+        }).catch((ex) => {
+            MainActions.addToast('Failed to Update Label');
+            ProjectActions.handleErrors(ex)
+        });
+};
+
+ProjectActions.addAgent.preEmit = (name, desc, repo) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT,
+        getFetchParams('post', appConfig.apiToken, {
+            "name": name,
+            "description": desc,
+            "repo_url": repo
+        })
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('New software agent added');
+            ProjectActions.addAgentSuccess()
+        }).catch((ex) => {
+            MainActions.addToast('Failed to add new software agent');
+            ProjectActions.handleErrors(ex)
+        })
+};
+
+ProjectActions.editAgent.preEmit = (id, name, desc, repo) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + id,
+        getFetchParams('put', appConfig.apiToken, {
+            "name": name,
+            "description": desc,
+            "repo_url": repo
+        })
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('Software Agent Updated');
+            ProjectActions.editAgentSuccess(id)
+        }).catch((ex) => {
+            MainActions.addToast('Software Agent Update Failed');
+            ProjectActions.handleErrors(ex)
+        });
+};
+
+ProjectActions.deleteAgent.preEmit = (id) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + id,
+        getFetchParams('delete', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+        }).then((json) => {
+            MainActions.addToast('Software Agent Deleted');
+            ProjectActions.deleteAgentSuccess(json)
+        }).catch((ex) => {
+            MainActions.addToast('Failed to delete software agent');
+            ProjectActions.handleErrors(ex)
+        });
+};
+
+ProjectActions.loadAgents.preEmit = () => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT,
+        getFetchParams('get', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.loadAgentsSuccess(json.results)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
+};
+
+ProjectActions.createAgentKey.preEmit = (id) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + id + '/api_key',
+        getFetchParams('put', appConfig.apiToken)
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('API Key created successfully');
+            ProjectActions.createAgentKeySuccess(json);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to create new API key');
+            ProjectActions.handleErrors(ex)
+        })
+};
+
+ProjectActions.getAgentKey.preEmit = (id) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + id + '/api_key',
+        getFetchParams('get', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getAgentKeySuccess(json)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        });
+};
+
+ProjectActions.getAgentApiToken.preEmit = (agentKey, userKey) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + 'api_token',
+        getFetchParams('post', appConfig.apiToken, {
             'agent_key': agentKey,
             'user_key': userKey
         })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.getAgentApiTokenSuccess(json)
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to generate an API token');
-        ProjectActions.handleErrors(ex)
-    })
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getAgentApiTokenSuccess(json)
+        }).catch((ex) => {
+            MainActions.addToast('Failed to generate an API token');
+            ProjectActions.handleErrors(ex)
+        })
 };
 
 ProjectActions.getUser.preEmit = (id) => {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'current_user', {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    })
-        .then(function (response) {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'current_user',
+        getFetchParams('get', appConfig.apiToken))
+        .then((response) => {
             return response.json()
-        }).then(function (json) {
+        }).then((json) => {
             ProjectActions.getUserSuccess(json, id)
-        })
-        .catch(function (ex) {
+        }).catch((ex) => {
             ProjectActions.handleErrors(ex)
         });
 };
 
 ProjectActions.getPermissions.preEmit = (id, userId) => {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions/' + userId, {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    })
-        .then(function (response) {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions/' + userId,
+        getFetchParams('get', appConfig.apiToken))
+        .then((response) => {
             return response.json()
-        }).then(function (json) {
+        }).then((json) => {
             ProjectActions.getPermissionsSuccess(json)
-        })
-        .catch(function (ex) {
+        }).catch((ex) => {
             ProjectActions.handleErrors(ex)
         });
 };
 
 ProjectActions.getUserKey.preEmit = () => {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.CURRENT_USER + 'api_key', {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    })
-        .then(function (response) {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'api_key',
+        getFetchParams('get', appConfig.apiToken))
+        .then((response) => {
             return response.json()
-        }).then(function (json) {
+        }).then((json) => {
             ProjectActions.getUserKeySuccess(json)
         })
-        .catch(function (ex) {
+        .catch((ex) => {
             ProjectActions.handleErrors(ex)
         });
 };
 
-ProjectActions.createUserKey.preEmit = function (id) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.CURRENT_USER + 'api_key', {
-        method: 'put',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        MainActions.addToast('User Key created successfully');
-        ProjectActions.createUserKeySuccess(json);
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to create new User key');
-        ProjectActions.handleErrors(ex)
-    })
+ProjectActions.createUserKey.preEmit = (id) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'api_key',
+        getFetchParams('put', appConfig.apiToken)
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('User Key created successfully');
+            ProjectActions.createUserKeySuccess(json);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to create new User key');
+            ProjectActions.handleErrors(ex)
+        })
 };
 
-ProjectActions.deleteUserKey.preEmit = function () {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.CURRENT_USER + 'api_key', {
-        method: 'delete',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-    }).then(function (json) {
-        MainActions.addToast('User key deleted');
-        ProjectActions.deleteUserKeySuccess(json)
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to delete user key');
-        ProjectActions.handleErrors(ex)
-    });
+ProjectActions.deleteUserKey.preEmit = () => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'api_key',
+        getFetchParams('delete', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+        }).then((json) => {
+            MainActions.addToast('User key deleted');
+            ProjectActions.deleteUserKeySuccess(json)
+        }).catch((ex) => {
+            MainActions.addToast('Failed to delete user key');
+            ProjectActions.handleErrors(ex)
+        });
 };
 
-ProjectActions.getUsageDetails.preEmit = function () {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.CURRENT_USER + 'usage', {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.getUsageDetailsSuccess(json)
-    }).catch(function (ex) {
-        ProjectActions.handleErrors(ex)
-    })
+ProjectActions.getUsageDetails.preEmit = () => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'usage',
+        getFetchParams('get', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getUsageDetailsSuccess(json)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
-ProjectActions.loadProjects.preEmit = function () {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT, {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.loadProjectsSuccess(json.results)
-    }).catch(function (ex) {
-        ProjectActions.handleErrors(ex)
-    })
+ProjectActions.getProjects.preEmit = (page) => {
+    if(page == null) page = 1;
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT+"?page="+page+"&per_page=25",
+        getFetchParams('get', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+            const results = response.json();
+            const headers = response.headers;
+            return Promise.all([results, headers]);
+        }).then((json) => {
+            let results = json[0].results;
+            let headers = json[1].map;
+            ProjectActions.getProjectsSuccess(results, headers, page)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
-ProjectActions.showDetails.preEmit = function (id) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT + id, {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.showDetailsSuccess(json)
-    }).catch(function (ex) {
-        ProjectActions.handleErrors(ex)
-    })
+ProjectActions.showDetails.preEmit = (id) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id,
+        getFetchParams('get', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.showDetailsSuccess(json)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
-ProjectActions.addProject.preEmit = function (name, desc) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT, {
-        method: 'post',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
+ProjectActions.addProject.preEmit = (name, desc) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT,
+        getFetchParams('post', appConfig.apiToken, {
             "name": name,
             "description": desc
         })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        MainActions.addToast('Project Added');
-        ProjectActions.addProjectSuccess()
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to add new project');
-        ProjectActions.handleErrors(ex)
-    })
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('Project Added');
+            ProjectActions.addProjectSuccess()
+        }).catch((ex) => {
+            MainActions.addToast('Failed to add new project');
+            ProjectActions.handleErrors(ex)
+        })
 };
 
-ProjectActions.deleteProject.preEmit = function (id) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT + id, {
-        method: 'delete',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-    }).then(function (json) {
-        MainActions.addToast('Project Deleted');
-        ProjectActions.deleteProjectSuccess(json)
-    }).catch(function (ex) {
-        MainActions.addToast('Project Delete Failed');
-        ProjectActions.handleErrors(ex)
-    });
+ProjectActions.deleteProject.preEmit = (id) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id,
+        getFetchParams('delete', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+        }).then((json) => {
+            MainActions.addToast('Project Deleted');
+            ProjectActions.deleteProjectSuccess(json)
+        }).catch((ex) => {
+            MainActions.addToast('Project Delete Failed');
+            ProjectActions.handleErrors(ex)
+        });
 };
 
-ProjectActions.editProject.preEmit = function (id, name, desc) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT + id, {
-        method: 'put',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
+ProjectActions.editProject.preEmit = (id, name, desc) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id,
+        getFetchParams('put', appConfig.apiToken, {
             "name": name,
             "description": desc
         })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        MainActions.addToast('Project Updated');
-        ProjectActions.editProjectSuccess(id)
-    }).catch(function (ex) {
-        MainActions.addToast('Project Update Failed');
-        ProjectActions.handleErrors(ex)
-    });
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('Project Updated');
+            ProjectActions.editProjectSuccess(id)
+        }).catch((ex) => {
+            MainActions.addToast('Project Update Failed');
+            ProjectActions.handleErrors(ex)
+        });
 };
 
-ProjectActions.getChildren.preEmit = function (id, path) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + path + id + '/children', {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.getChildrenSuccess(json.results)
-    }).catch(function (ex) {
-        ProjectActions.handleErrors(ex)
-    })
+ProjectActions.getChildren.preEmit = (id, path, page) => {
+    if(page == null) page = 1;
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + Path.CHILDREN+"?page="+page+"&per_page=25",
+        getFetchParams('get', appConfig.apiToken)
+    ).then(checkResponse).then((response) => {
+            const results = response.json();
+            const headers = response.headers;
+            return Promise.all([results, headers]);
+        }).then((json) => {
+            let results = json[0].results;
+            let headers = json[1].map;
+            ProjectActions.getChildrenSuccess(results, headers, page)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
-ProjectActions.addFolder.preEmit = function (id, parentKind, name) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.FOLDER, {
-        method: 'post',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
+ProjectActions.addFolder.preEmit = (id, parentKind, name) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FOLDER,
+        getFetchParams('post', appConfig.apiToken, {
             "name": name,
             "parent": {
                 "kind": parentKind,
                 "id": id
             }
         })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        MainActions.addToast('Folder Added');
-        ProjectActions.addFolderSuccess(id, parentKind);
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to Add a New Folder');
-        ProjectActions.handleErrors(ex)
-    })
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('Folder Added');
+            ProjectActions.addFolderSuccess(json);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to Add a New Folder');
+            ProjectActions.handleErrors(ex)
+        })
 };
 
-ProjectActions.deleteFolder.preEmit = function (id, parentId, parentKind) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.FOLDER + id, {
-        method: 'delete',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-    }).then(function () {
-        MainActions.addToast('Folder(s) Deleted!');
-        ProjectActions.deleteItemSuccess(parentId, parentKind)
-    }).catch(function (ex) {
-        MainActions.addToast('Folder Deleted Failed!');
-        ProjectActions.handleErrors(ex)
-    });
+ProjectActions.deleteFolder.preEmit = (id, parentId, parentKind) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FOLDER + id,
+        getFetchParams('delete', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+        }).then(() => {
+            MainActions.addToast('Folder(s) Deleted!');
+            ProjectActions.deleteItemSuccess(parentId, parentKind)
+        }).catch((ex) => {
+            MainActions.addToast('Folder Deleted Failed!');
+            ProjectActions.handleErrors(ex)
+        });
 };
 
-ProjectActions.editFolder.preEmit = function (id, name) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.FOLDER + id + '/rename', {
-        method: 'put',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
+ProjectActions.moveItem.preEmit = (id, kind, destination, destinationKind) => {
+    let path = kind === Kind.DDS_FILE ? Path.FILE : Path.FOLDER;
+    let type = kind === Kind.DDS_FILE ? 'File' : 'Folder';
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + '/move',
+        getFetchParams('put', appConfig.apiToken, {
+            "parent": {
+                "kind": destinationKind,
+                "id": destination
+            }
+        })
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast(type+' moved successfully');
+            ProjectActions.moveItemSuccess(id);
+        }).catch((ex) => {
+            MainActions.addToast('Failed to move '+type+' to new location');
+            ProjectActions.handleErrors(ex)
+        })
+};
+
+ProjectActions.deleteFile.preEmit = (id, parentId, parentKind) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE + id,
+        getFetchParams('delete', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+        }).then(() => {
+            MainActions.addToast('File(s) Deleted!');
+            ProjectActions.deleteItemSuccess(parentId, parentKind)
+        }).catch((ex) => {
+            MainActions.addToast('Failed to Delete File!');
+            ProjectActions.handleErrors(ex)
+        });
+};
+
+ProjectActions.editItem.preEmit = (id, name, path, kind) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + '/rename',
+        getFetchParams('put', appConfig.apiToken, {
             "name": name
         })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        MainActions.addToast('Folder Updated!');
-        ProjectActions.editFolderSuccess(id)
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to Update Folder');
-        ProjectActions.handleErrors(ex)
-    });
-};
-
-ProjectActions.moveFolder.preEmit = function (id, destination, destinationKind) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.FOLDER + id + '/move', {
-        method: 'put',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-            "parent": {
-                "kind": destinationKind,
-                "id": destination
-            }
-        })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        MainActions.addToast('Folder moved successfully');
-        ProjectActions.moveFolderSuccess();
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to move folder to new location');
-        ProjectActions.handleErrors(ex)
-    })
-};
-
-ProjectActions.deleteFile.preEmit = function (id, parentId, parentKind) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.FILE + id, {
-        method: 'delete',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-    }).then(function () {
-        MainActions.addToast('File(s) Deleted!');
-        ProjectActions.deleteItemSuccess(parentId, parentKind)
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to Delete File!');
-        ProjectActions.handleErrors(ex)
-    });
-};
-
-ProjectActions.editFile.preEmit = function (id, fileName) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.FILE + id + '/rename', {
-        method: 'put',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-            "name": fileName
-        })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        MainActions.addToast('File Updated!');
-        ProjectActions.editFileSuccess(id)
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to Update File');
-        ProjectActions.handleErrors(ex)
-    });
-};
-
-ProjectActions.moveFile.preEmit = function (id, destination, destinationKind) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.FILE + id + '/move', {
-        method: 'put',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-            "parent": {
-                "kind": destinationKind,
-                "id": destination
-            }
-        })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        MainActions.addToast('File moved successfully');
-        ProjectActions.moveFileSuccess();
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to move file to new location');
-        ProjectActions.handleErrors(ex)
-    })
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast('Item name updated to '+name);
+            ProjectActions.editItemSuccess(id, json, kind)
+        }).catch((ex) => {
+            MainActions.addToast('Failed to update item');
+            ProjectActions.handleErrors(ex)
+        });
 };
 
 ProjectActions.getEntity.preEmit = (id, kind, requester) => {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + kind + '/' + id, {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.getEntitySuccess(json, requester)
-    })
-        .catch(function (ex) {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + kind + '/' + id,
+        getFetchParams('get', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getEntitySuccess(json, requester)
+        }).catch((ex) => {
             ProjectActions.handleErrors(ex)
         });
 };
 
 ProjectActions.getProjectMembers.preEmit = (id) => {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions', {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.getProjectMembersSuccess(json.results)
-    })
-        .catch(function (ex) {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions',
+        getFetchParams('get', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getProjectMembersSuccess(json.results)
+        }).catch((ex) => {
             ProjectActions.handleErrors(ex)
         });
 };
 
 ProjectActions.getUserName.preEmit = (text) => {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + text, {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.getUserNameSuccess(json.results)
-    })
-        .catch(function (ex) {
-            console.log('Error occurred while filling autocomplete field');
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + text + '&page=1&per_page=500',
+        getFetchParams('get', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getUserNameSuccess(json.results)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
         });
 };
 
 ProjectActions.getUserId.preEmit = (fullName, id, role) => {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + fullName, {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.getUserIdSuccess(json.results, id, role)
-    })
-        .catch(function (ex) {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + fullName,
+        getFetchParams('get', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getUserIdSuccess(json.results, id, role)
+        }).catch((ex) => {
             ProjectActions.handleErrors(ex)
         });
 };
 
 ProjectActions.addProjectMember.preEmit = (id, userId, role, name) => {
     let newRole = role.replace('_', ' ');
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions/' + userId, {
-        method: 'put',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions/' + userId,
+        getFetchParams('put', appConfig.apiToken, {
             'auth_role': {'id': role}
         })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        MainActions.addToast(name + ' ' + 'has been added as a ' + newRole + ' to this project');
-        ProjectActions.addProjectMemberSuccess(id)
-    })
-        .catch(function (ex) {
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast(name + ' ' + 'has been added as a ' + newRole + ' to this project');
+            ProjectActions.addProjectMemberSuccess(id)
+        }).catch((ex) => {
             MainActions.addToast('Could not add member to this project or member does not exist');
             ProjectActions.handleErrors(ex)
         });
 };
 
 ProjectActions.deleteProjectMember.preEmit = (id, userId, userName) => {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions/' + userId, {
-        method: 'delete',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-    }).then(function (json) {
-        MainActions.addToast(userName + ' ' + 'has been removed from this project');
-        ProjectActions.deleteProjectMemberSuccess(id, userId);
-    })
-        .catch(function (ex) {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions/' + userId,
+        getFetchParams('delete', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+        }).then((json) => {
+            MainActions.addToast(userName + ' ' + 'has been removed from this project');
+            ProjectActions.deleteProjectMemberSuccess(id, userId);
+        }).catch((ex) => {
             MainActions.addToast('Unable to remove ' + userName + ' from this project');
             ProjectActions.handleErrors(ex)
         });
 };
 
-ProjectActions.getDownloadUrl.preEmit = function (id, kind) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + kind + id + '/url', {
-        method: 'get',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        }
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        ProjectActions.getDownloadUrlSuccess(json)
-    }).catch(function (ex) {
-        ProjectActions.handleErrors(ex)
-    })
+ProjectActions.getDownloadUrl.preEmit = (id, kind) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + kind + id + '/url',
+        getFetchParams('get', appConfig.apiToken))
+        .then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            ProjectActions.getDownloadUrlSuccess(json)
+        }).catch((ex) => {
+            ProjectActions.handleErrors(ex)
+        })
 };
 
-ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKind, label, fileId, tags) {
+ProjectActions.startUpload.preEmit = (projId, blob, parentId, parentKind, label, fileId, tags) => {
     let chunkNum = 0,
         fileName = blob.name,
         contentType = blob.type,
@@ -1186,6 +1162,7 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
         blob: blob,
         parentId: parentId,
         parentKind: parentKind,
+        projectId: projId,
         uploadProgress: 0,
         chunks: []
     };
@@ -1209,48 +1186,38 @@ ProjectActions.startUpload.preEmit = function (projId, blob, parentId, parentKin
     }
     fileReader.onload = function (event, files) {
         // create project upload
-        fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.PROJECT + projId + '/' + Path.UPLOAD, {
-            method: 'post',
-            headers: {
-                'Authorization': appConfig.apiToken,
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
+        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + projId + '/' + Path.UPLOAD,
+            getFetchParams('post', appConfig.apiToken, {
                 'name': fileName,
                 'content_type': contentType,
                 'size': SIZE
             })
-        }).then(checkResponse).then(function (response) {
-            return response.json()
-        }).then(function (json) {
-            let uploadObj = json;
-            if (!uploadObj || !uploadObj.id) throw "Problem, no upload created";
-            ProjectActions.startUploadSuccess(uploadObj.id, details);
-        }).catch(function (ex) {
-            ProjectActions.handleErrors(ex)
-        })
+        ).then(checkResponse).then((response) => {
+                return response.json()
+            }).then((json) => {
+                let uploadObj = json;
+                if (!uploadObj || !uploadObj.id) throw "Problem, no upload created";
+                ProjectActions.startUploadSuccess(uploadObj.id, details);
+            }).catch((ex) => {
+                ProjectActions.handleErrors(ex)
+            })
     };
     fileReader.onerror = function (e) {
-        ProjectActions.handleErrors();
+        ProjectActions.handleErrors(e.target.error);
         console.log("error", e);
         console.log(e.target.error.message);
     };
     fileReader.readAsArrayBuffer(slicedFile);
 };
 
-ProjectActions.getChunkUrl.preEmit = function (uploadId, chunkBlob, chunkNum, size, parentId, parentKind, fileName, chunkUpdates) {
+ProjectActions.getChunkUrl.preEmit = (uploadId, chunkBlob, chunkNum, size, parentId, parentKind, fileName, chunkUpdates) => {
     var fileReader = new FileReader();
     fileReader.onload = function (event) {
         var arrayBuffer = event.target.result;
         var wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
         var md5crc = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
-        fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.UPLOAD + uploadId + '/chunks', {
-            method: 'put',
-            headers: {
-                'Authorization': appConfig.apiToken,
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
+        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.UPLOAD + uploadId + '/chunks',
+            getFetchParams('put', appConfig.apiToken, {
                 "number": chunkNum,
                 "size": chunkBlob.size,
                 'hash': {
@@ -1258,20 +1225,19 @@ ProjectActions.getChunkUrl.preEmit = function (uploadId, chunkBlob, chunkNum, si
                     'algorithm': 'MD5'
                 }
             })
-
-        }).then(checkResponse).then(function (response) {
-            return response.json()
-        }).then(function (json) {
-            let chunkObj = json;
-            if (chunkObj && chunkObj.url && chunkObj.host) {
-                // upload chunks
-                uploadChunk(uploadId, chunkObj.host + chunkObj.url, chunkBlob, size, parentId, parentKind, chunkNum, fileName, chunkUpdates)
-            } else {
-                throw 'Unexpected response';
-            }
-        }).catch(function (ex) {
-            ProjectActions.updateAndProcessChunks(uploadId, chunkNum, {status: StatusEnum.STATUS_RETRY});
-        });
+        ).then(checkResponse).then((response) => {
+                return response.json()
+            }).then((json) => {
+                let chunkObj = json;
+                if (chunkObj && chunkObj.url && chunkObj.host) {
+                    // upload chunks
+                    uploadChunk(uploadId, chunkObj.host + chunkObj.url, chunkBlob, size, parentId, parentKind, chunkNum, fileName, chunkUpdates)
+                } else {
+                    throw 'Unexpected response';
+                }
+            }).catch((ex) => {
+                ProjectActions.updateAndProcessChunks(uploadId, chunkNum, {status: StatusEnum.STATUS_RETRY});
+            });
     };
     fileReader.readAsArrayBuffer(chunkBlob);
 };
@@ -1304,40 +1270,30 @@ function uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKi
     xhr.send(chunkBlob);
 }
 
-ProjectActions.allChunksUploaded.preEmit = function (uploadId, parentId, parentKind, fileName, label, fileId, hash) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.UPLOAD + uploadId + '/complete', {
-        method: 'put',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
+ProjectActions.allChunksUploaded.preEmit = (uploadId, parentId, parentKind, fileName, label, fileId, hash, projectId) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.UPLOAD + uploadId + '/complete',
+        getFetchParams('put', appConfig.apiToken, {
             'hash': {
                 'value': hash,
                 'algorithm': 'md5'
             }
         })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        if (fileId == null) {
-            ProjectActions.addFile(uploadId, parentId, parentKind, fileName, label);
-        } else {
-            ProjectActions.addFileVersion(uploadId, label, fileId);
-        }
-    }).catch(function (ex) {
-        ProjectActions.uploadError(uploadId, fileName);
-    })
+    ).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            if (fileId == null) {
+                ProjectActions.addFile(uploadId, parentId, parentKind, fileName, label);
+            } else {
+                ProjectActions.addFileVersion(uploadId, label, fileId);
+            }
+        }).catch((ex) => {
+            ProjectActions.uploadError(uploadId, fileName, projectId);
+        })
 };
 
-ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind, fileName) {
-    fetch(urlGen.routes.baseUrl + urlGen.routes.apiPrefix + Path.FILE, {
-        method: 'post',
-        headers: {
-            'Authorization': appConfig.apiToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
+ProjectActions.addFile.preEmit = (uploadId, parentId, parentKind, fileName) => {
+    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE,
+        getFetchParams('post', appConfig.apiToken, {
             'parent': {
                 'kind': parentKind,
                 'id': parentId
@@ -1345,20 +1301,19 @@ ProjectActions.addFile.preEmit = function (uploadId, parentId, parentKind, fileN
             'upload': {
                 'id': uploadId
             }
+        })).then(checkResponse).then((response) => {
+            return response.json()
+        }).then((json) => {
+            MainActions.addToast(fileName + ' uploaded successfully');
+            ProjectActions.addFileSuccess(parentId, parentKind, uploadId, json.id)
+        }).catch((ex) => {
+            MainActions.addToast('Failed to upload ' + fileName + '!');
+            ProjectActions.handleErrors(ex)
         })
-    }).then(checkResponse).then(function (response) {
-        return response.json()
-    }).then(function (json) {
-        MainActions.addToast(fileName + ' uploaded successfully');
-        ProjectActions.addFileSuccess(parentId, parentKind, uploadId, json.id)
-    }).catch(function (ex) {
-        MainActions.addToast('Failed to upload ' + fileName + '!');
-        ProjectActions.handleErrors(ex)
-    })
 };
 
 // File Hashing
-ProjectActions.hashFile.preEmit = function (file, id) {
+ProjectActions.hashFile.preEmit = (file, id) => {
     if(file.blob.size < 5242880 * 10) {
         function calculateMd5(blob, id) {
             let reader = new FileReader();
@@ -1459,7 +1414,22 @@ ProjectActions.hashFile.preEmit = function (file, id) {
         };
         worker.postMessage({type: "create"});
     }
+};
 
+ProjectActions.setSelectedEntity.preEmit = (id, kind) => {
+    if(id === null) {
+        ProjectActions.setSelectedEntitySuccess(null);
+    } else {
+        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + kind + '/' + id,
+            getFetchParams('get', appConfig.apiToken))
+            .then(checkResponse).then((response) => {
+                return response.json()
+            }).then((json) => {
+                ProjectActions.setSelectedEntitySuccess(json)
+            }).catch((ex) => {
+                ProjectActions.handleErrors(ex)
+            });
+    }
 };
 
 function checkResponse(response) {

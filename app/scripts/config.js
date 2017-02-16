@@ -1,8 +1,8 @@
 let appConfig = {
-    serviceId: DDS_PORTAL_CONFIG.serviceId,
+    serviceId: null,
     baseUrl: DDS_PORTAL_CONFIG.baseUrl,
-    authServiceUri: DDS_PORTAL_CONFIG.authServiceUri,
-    authServiceName:  DDS_PORTAL_CONFIG.authServiceName,
+    authServiceUri: null,
+    authServiceName:  null,
     securityState: DDS_PORTAL_CONFIG.securityState,
     apiToken: null,
     isLoggedIn: null,

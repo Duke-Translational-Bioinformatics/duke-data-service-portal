@@ -1,6 +1,7 @@
 import React from 'react';
 import BaseUtils from '../../../util/baseUtils.js';
-import Card from 'material-ui/lib/card/card';
+import Card from 'material-ui/Card';
+import FontIcon from 'material-ui/FontIcon';
 
 class AccountOverview extends React.Component {
 
@@ -11,21 +12,21 @@ class AccountOverview extends React.Component {
 
         return (
             <Card className="account-overview content mdl-color-text--grey-800"
-                  style={{marginTop: this.props.windowWidth > 680 ? 117 : 30,padding: 20,textAlign: 'center'}}>
+                  style={{padding: 20,textAlign: 'center'}}>
                 <div style={styles.cardSquare}
                      className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
                     <h4>{numProjects + ' Projects'}</h4>
-                    <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>content_paste</i>
+                    <FontIcon className="material-icons" style={styles.icon}>content_paste</FontIcon>
                 </div>
                 <div style={styles.cardSquare}
                      className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
                     <h4>{numFiles + ' Files' }</h4>
-                    <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>description</i>
+                    <FontIcon className="material-icons" style={styles.icon}>description</FontIcon>
                 </div>
                 <div style={styles.cardSquare}
                      className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
                     <h4>{BaseUtils.bytesToSize(bytes)}</h4>
-                    <i className="material-icons mdl-color-text--grey-700" style={styles.icon}>save</i>
+                    <FontIcon className="material-icons" style={styles.icon}>save</FontIcon>
                 </div>
             </Card>
         );
@@ -40,7 +41,8 @@ var styles = {
     },
     icon: {
         fontSize: 52,
-        verticalAlign: 'center'
+        verticalAlign: 'center',
+        color: '#616161'
     }
 };
 

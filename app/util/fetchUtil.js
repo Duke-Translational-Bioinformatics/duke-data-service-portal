@@ -9,13 +9,13 @@ export function checkStatus(response, MainActions) {
     }
 }
 
-export function getAuthenticatedFetchParams(method, apiToken, body) {
+export function getFetchParams(method, apiToken, body) {
     let obj = {
         method: method,
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + apiToken
+            'Authorization': apiToken
         }
     };
     if(body) obj.body = JSON.stringify(body);

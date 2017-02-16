@@ -1,13 +1,13 @@
 import React from 'react';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-import Card from 'material-ui/lib/card/card';
-import DeleteIcon from 'material-ui/lib/svg-icons/action/delete';
-import Dialog from 'material-ui/lib/dialog';
-import FlatButton from 'material-ui/lib/flat-button';
-import GetAppIcon from 'material-ui/lib/svg-icons/action/get-app';
-import IconButton from 'material-ui/lib/icon-button';
-import LocalOffer from 'material-ui/lib/svg-icons/maps/local-offer';
+import Card from 'material-ui/Card';
+import DeleteIcon from 'material-ui/svg-icons/action/delete';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import GetAppIcon from 'material-ui/svg-icons/action/get-app';
+import IconButton from 'material-ui/IconButton';
+import LocalOffer from 'material-ui/svg-icons/maps/local-offer';
 
 class BatchOps extends React.Component {
 
@@ -33,6 +33,7 @@ class BatchOps extends React.Component {
         }else{
             dlMsg = "Are you sure you want to download "+this.props.filesChecked.length+" file?"
         }
+        let downloadIcon = this.props.filesChecked.length ? <IconButton onTouchTap={() => this.openDownloadModal()} style={styles.downloadBtn}><GetAppIcon color={'#EC407A'}/></IconButton> : null;
         let dltIcon = null;
         let tagIcon = null;
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
@@ -48,7 +49,6 @@ class BatchOps extends React.Component {
                     <LocalOffer color={'#EC407A'}/>
                 </IconButton>;
         }
-
         const deleteActions = [
             <FlatButton
                 label="Cancel"
@@ -92,9 +92,7 @@ class BatchOps extends React.Component {
                     { tagIcon }
                 </div>
                 <div style={styles.iconBtn} title="Download files">
-                    <IconButton onTouchTap={() => this.openDownloadModal()} style={styles.downloadBtn}>
-                        <GetAppIcon color={'#EC407A'}/>
-                    </IconButton>
+                    { downloadIcon }
                 </div>
                 <Dialog
                     style={styles.dialogStyles}
@@ -132,7 +130,7 @@ class BatchOps extends React.Component {
         let folders = this.props.foldersChecked ? this.props.foldersChecked : null;
         for (let i = 0; i < files.length; i++) {
             ProjectActions.getDownloadUrl(files[i], kind);
-            document.getElementById(files[i]).checked = false;
+            if(!!this.refs[files[i]]) this.refs[files[i]].checked = false;
         }
         this.setState({downloadOpen: false});
     }
@@ -155,7 +153,7 @@ class BatchOps extends React.Component {
     openDownloadModal() {
         let folders = this.props.foldersChecked ? this.props.foldersChecked : null;
         for (let i = 0; i < folders.length; i++) {
-            document.getElementById(folders[i]).checked = false;
+            if(!!this.refs[folders[i]]) this.refs[folders[i]].checked = false;
         }
         this.setState({downloadOpen: true});
     }
@@ -174,18 +172,12 @@ class BatchOps extends React.Component {
         let fileInput = document.getElementsByClassName('fileChkBoxes');
         let folderInput = document.getElementsByClassName('folderChkBoxes');
         for (let i = 0; fileInput[i]; ++i) {
-            if (fileInput[i].checked) {
-                filesChecked.push(fileInput[i].value);
-            }
+            if (fileInput[i].checked) filesChecked.push(fileInput[i].value);
         }
         for (let i = 0; folderInput[i]; ++i) {
-            if (folderInput[i].checked) {
-                foldersChecked.push(folderInput[i].value);
-            }
+            if (folderInput[i].checked) foldersChecked.push(folderInput[i].value);
         }
-        // Process files/folders
         ProjectActions.handleBatch(filesChecked, foldersChecked);
-        // If nothing is selected, change state and hide options
         if (!checkedBoxes.length) ProjectActions.showBatchOptions();
         this.setState({
             deleteOpen: false,

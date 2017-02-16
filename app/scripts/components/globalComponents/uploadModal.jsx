@@ -1,8 +1,8 @@
 import React from 'react';
 import ProjectActions from '../../actions/projectActions';
 import Tooltip from '../../../util/tooltip.js';
-import FlatButton from 'material-ui/lib/flat-button';
-import Dialog from 'material-ui/lib/dialog';
+import FlatButton from 'material-ui/FlatButton';
+import Dialog from 'material-ui/Dialog';
 
 class UploadModal extends React.Component {
     constructor() {

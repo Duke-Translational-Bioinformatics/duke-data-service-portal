@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom'
 import Router from 'react-router';
 import routes from './routes';
-
+require('../util/polyfills.js');
 require('es6-promise').polyfill();
 
 //Needed for onTouchTap
@@ -12,11 +12,4 @@ require('es6-promise').polyfill();
 var injectTapEventPlugin = require("react-tap-event-plugin");
 injectTapEventPlugin();
 
-let appRouter = Router.create({
-    routes: routes,
-    location: Router.HashLocation
-});
-
-appRouter.run((Handler, state) => {
-    ReactDOM.render(<Handler routerPath={state.path} appRouter={appRouter}/>, document.body)
-});
+ReactDOM.render(routes, document.body);

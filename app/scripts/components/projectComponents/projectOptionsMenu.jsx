@@ -1,14 +1,14 @@
 import React from 'react';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
-import AutoComplete from 'material-ui/lib/auto-complete';
-import TextField from 'material-ui/lib/text-field';
-import Dialog from 'material-ui/lib/dialog';
-import FlatButton from 'material-ui/lib/flat-button';
-import IconMenu from 'material-ui/lib/menus/icon-menu';
-import MenuItem from 'material-ui/lib/menus/menu-item';
-import IconButton from 'material-ui/lib/icon-button';
-import SelectField from 'material-ui/lib/select-field';
+import AutoComplete from 'material-ui/AutoComplete';
+import TextField from 'material-ui/TextField';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
+import IconButton from 'material-ui/IconButton';
+import SelectField from 'material-ui/SelectField';
 
 class ProjectOptionsMenu extends React.Component {
 
@@ -17,8 +17,8 @@ class ProjectOptionsMenu extends React.Component {
             deleteOpen: false,
             editOpen: false,
             errorText: null,
-            floatingErrorText: 'This field is required',
-            floatingErrorText2: 'This field is required',
+            floatingErrorText: '',
+            floatingErrorText2: '',
             floatingErrorText3: 'Enter the project name exactly to delete',
             memberOpen: false,
             users: ProjectStore.users,
@@ -70,6 +70,7 @@ class ProjectOptionsMenu extends React.Component {
             <div>
                 <Dialog
                     style={styles.dialogStyles}
+                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Are you sure you want to delete this project?"
                     autoDetectWindowHeight={true}
                     actions={deleteActions}
@@ -81,13 +82,14 @@ class ProjectOptionsMenu extends React.Component {
                         style={styles.textStyles}
                         errorText={this.state.floatingErrorText3}
                         floatingLabelText="Enter the project name exactly"
-                        id="projName"
+                        ref={(input) => this.projName = input}
                         type="text"
                         multiLine={true}
                         onChange={this.handleFloatingErrorInputChange3.bind(this)}/> <br/>
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
+                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Update Project"
                     autoDetectWindowHeight={true}
                     actions={editActions}
@@ -96,25 +98,21 @@ class ProjectOptionsMenu extends React.Component {
                     <form action="#" id="newProjectForm">
                         <TextField
                             style={styles.textStyles}
-                            autoFocus={true}
-                            onFocus={this.handleFloatingErrorInputChange.bind(this)}
                             hintText="Project Name"
                             defaultValue={prName}
                             errorText={this.state.floatingErrorText}
                             floatingLabelText="Project Name"
-                            id="projectNameText"
+                            ref={(input) => this.projectNameText = input}
                             type="text"
                             multiLine={true}
                             onChange={this.handleFloatingErrorInputChange.bind(this)}/> <br/>
                         <TextField
                             style={styles.textStyles}
-                            autoFocus={true}
-                            onFocus={this.handleFloatingErrorInputChange2.bind(this)}
                             hintText="Project Description"
                             defaultValue={desc}
                             errorText={this.state.floatingErrorText2}
                             floatingLabelText="Project Description"
-                            id="projectDescriptionText"
+                            ref={(input) => this.projectDescriptionText = input}
                             type="text"
                             multiLine={true}
                             onChange={this.handleFloatingErrorInputChange2.bind(this)}
@@ -123,6 +121,7 @@ class ProjectOptionsMenu extends React.Component {
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
+                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Add a Member"
                     autoDetectWindowHeight={true}
                     actions={memberActions}
@@ -130,11 +129,13 @@ class ProjectOptionsMenu extends React.Component {
                     open={this.state.memberOpen}>
                     <form action="#" id="newMemberForm">
                         <AutoComplete
-                            id="fullName"
+                            style={{textAlign: 'left'}}
+                            ref={(input) => this.fullName = input}
                             floatingLabelText="Name"
                             filter={AutoComplete.caseInsensitiveFilter}
                             dataSource={names}
                             errorText={this.state.floatingErrorText}
+                            maxSearchResults={7}
                             onUpdateInput={this.handleUpdateInput.bind(this)}/><br/>
                         <SelectField value={this.state.value}
                                      onChange={this.handleSelectValueChange.bind(this, 'value')}
@@ -151,7 +152,7 @@ class ProjectOptionsMenu extends React.Component {
                         </SelectField><br/>
                     </form>
                 </Dialog>
-                <IconMenu iconButtonElement={<IconButton iconClassName="material-icons">more_vert</IconButton>}
+                <IconMenu iconButtonElement={<IconButton iconClassName="material-icons" style={styles.openIcon}>more_vert</IconButton>}
                           anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                           targetOrigin={{horizontal: 'right', vertical: 'top'}}>
                     <MenuItem primaryText="Delete Project" leftIcon={<i className="material-icons">delete</i>} onTouchTap={this.handleTouchTapDelete.bind(this)}/>
@@ -164,19 +165,23 @@ class ProjectOptionsMenu extends React.Component {
 
     handleTouchTapDelete() {
         this.setState({deleteOpen: true});
+        setTimeout(()=>this.projName.select(), 300);
     }
 
     handleTouchTapEdit() {
-        this.setState({editOpen: true});    }
+        this.setState({editOpen: true});
+        setTimeout(()=>this.projectNameText.select(), 300);
+    }
 
     handleTouchTapMembers() {
         this.setState({memberOpen: true});
+        setTimeout(()=>this.fullName.focus(), 300);
     }
 
     handleDeleteButton() {
         let id = this.props.params.id;
         let prName = this.props.project ? this.props.project.name : null;
-        if(document.getElementById('projName').value != prName){
+        if(this.projName.getValue() != prName){
             this.setState({
                 floatingErrorText3: 'Enter the project name exactly to delete'
             });
@@ -184,23 +189,19 @@ class ProjectOptionsMenu extends React.Component {
         }else{
             ProjectActions.deleteProject(id);
             this.setState({deleteOpen: false});
-            setTimeout(()=>this.props.appRouter.transitionTo('/home'),500)
+            setTimeout(()=>this.props.router.push('/'),500)
         }
     }
 
     handleUpdateButton() {
         let id = this.props.params.id;
-        let name = document.getElementById('projectNameText').value;
-        let desc = document.getElementById('projectDescriptionText').value;
+        let name = this.projectNameText.getValue();
+        let desc = this.projectDescriptionText.getValue();
         if (this.state.floatingErrorText != '' && this.state.floatingErrorText2 != '') {
             return null
         } else {
             ProjectActions.editProject(id, name, desc);
-            this.setState({
-                editOpen: false,
-                floatingErrorText: 'This field is required.',
-                floatingErrorText2: 'This field is required'
-            });
+            this.setState({editOpen: false});
         }
     };
 
@@ -212,26 +213,23 @@ class ProjectOptionsMenu extends React.Component {
     };
 
     handleUpdateInput (text) {
-        // Add 500ms lag to autocomplete so that it only makes a call after user is done typing
         let timeout = this.state.timeout;
-        let textInput = document.getElementById('fullName');
-        textInput.onkeyup = () => {
-            clearTimeout(this.state.timeout);
-            this.setState({
-                timeout: setTimeout(() => {
-                    if (!textInput.value.indexOf(' ') <= 0) {
-                        ProjectActions.getUserName(text);
-                        this.setState({
-                            floatingErrorText: document.getElementById('fullName').value ? '' : 'This field is required'
-                        });
-                    }
-                }, 500)
-            })
-        };
+        clearTimeout(this.state.timeout);
+        this.setState({
+            timeout: setTimeout(() => {
+                if (text.indexOf(' ') <= 0) {
+                    ProjectActions.getUserName(text);
+                    this.setState({
+                        floatingErrorText: text ? '' : 'This field is required'
+                    });
+                }
+            }, 500)
+        })
+
     }
 
     handleMemberButton(currentUser) {
-        let  fullName = document.getElementById("fullName").value;
+        let  fullName = this.fullName.state.searchText;
         let role = null;
         switch(this.state.value){
             case 0:
@@ -267,8 +265,6 @@ class ProjectOptionsMenu extends React.Component {
             ProjectActions.getUserId(fullName, id, role);
             this.setState({
                 memberOpen: false,
-                floatingErrorText: 'This field is required.',
-                floatingErrorText2: 'This field is required.',
                 value: null
             });
         }
@@ -298,8 +294,6 @@ class ProjectOptionsMenu extends React.Component {
             deleteOpen: false,
             editOpen: false,
             errorText: null,
-            floatingErrorText: 'This field is required.',
-            floatingErrorText2: 'This field is required',
             floatingErrorText3: 'Enter the project name exactly to delete',
             memberOpen: false,
             value: null
@@ -327,6 +321,9 @@ var styles = {
     msg: {
         textAlign: 'left',
         marginLeft: 30
+    },
+    openIcon: {
+        marginBottom: 12
     },
     warning: {
         fontSize: 48,

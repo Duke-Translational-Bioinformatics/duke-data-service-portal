@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-//import vis from 'vis';
 import {graphOptions, graphColors} from '../../graphConfig';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
@@ -9,25 +8,24 @@ import ProvenanceDetails from '../globalComponents/provenanceDetails.jsx';
 import ProvenanceFilePicker from '../globalComponents/provenanceFilePicker.jsx';
 import FileVersionsList from '../fileComponents/fileVersionsList.jsx';
 import BaseUtils from '../../../util/baseUtils.js';
-import AutoComplete from 'material-ui/lib/auto-complete';
-import BorderColor from 'material-ui/lib/svg-icons/editor/border-color';
-import Cancel from 'material-ui/lib/svg-icons/navigation/cancel';
-import CircularProgress from 'material-ui/lib/circular-progress';
-import Dialog from 'material-ui/lib/dialog';
-import Divider from 'material-ui/lib/divider';
-import FlatButton from 'material-ui/lib/flat-button';
-import Fullscreen from 'material-ui/lib/svg-icons/navigation/fullscreen';
-import FullscreenExit from 'material-ui/lib/svg-icons/navigation/fullscreen-exit';
-import Help from 'material-ui/lib/svg-icons/action/help';
-import IconButton from 'material-ui/lib/icon-button';
-import LeftNav from 'material-ui/lib/left-nav';
-import MenuItem from 'material-ui/lib/menus/menu-item';
-import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
-import Paper from 'material-ui/lib/paper';
-import RaisedButton from 'material-ui/lib/raised-button';
-import SelectField from 'material-ui/lib/select-field';
-import TextField from 'material-ui/lib/text-field';
-import urlGen from '../../../util/urlGen.js';
+import AutoComplete from 'material-ui/AutoComplete';
+import BorderColor from 'material-ui/svg-icons/editor/border-color';
+import Cancel from 'material-ui/svg-icons/navigation/cancel';
+import CircularProgress from 'material-ui/CircularProgress';
+import Dialog from 'material-ui/Dialog';
+import Divider from 'material-ui/Divider';
+import FlatButton from 'material-ui/FlatButton';
+import Fullscreen from 'material-ui/svg-icons/navigation/fullscreen';
+import FullscreenExit from 'material-ui/svg-icons/navigation/fullscreen-exit';
+import Help from 'material-ui/svg-icons/action/help';
+import IconButton from 'material-ui/IconButton';
+import Drawer from 'material-ui/Drawer';
+import MenuItem from 'material-ui/MenuItem';
+import NavigationClose from 'material-ui/svg-icons/navigation/close';
+import Paper from 'material-ui/Paper';
+import RaisedButton from 'material-ui/RaisedButton';
+import SelectField from 'material-ui/SelectField';
+import TextField from 'material-ui/TextField';
 
 class Provenance extends React.Component {
     /**
@@ -39,7 +37,6 @@ class Provenance extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            addFileNode: null,
             doubleClicked: false,
             errorText: null,
             floatingErrorText: 'This field is required.',
@@ -49,7 +46,7 @@ class Provenance extends React.Component {
             projectId: 0,
             relationMode: false,
             value: null,
-            width: window.innerWidth,
+            width: window.innerWidth
         };
         this.handleResize = this.handleResize.bind(this);
     }
@@ -57,7 +54,7 @@ class Provenance extends React.Component {
     componentDidMount() {
         // Listen for resize changes when rotating device
         window.addEventListener('resize', this.handleResize);
-        ProjectActions.loadProjects();
+        ProjectActions.getProjects();
         ProjectActions.getActivities();
         if(this.props.provNodes && this.props.provNodes.length > 0) {
             let edges = this.props.provEdges && this.props.provEdges.length > 0 ? this.props.provEdges : [];
@@ -290,25 +287,27 @@ class Provenance extends React.Component {
                              id="selectRelation"
                              onChange={this.handleSelectValueChange.bind(this, 'value')}
                              floatingLabelText="Select Relation Type"
-                             floatingLabelStyle={{color: '#235F9C'}}
+                             floatingLabelStyle={styles.selectStyles.floatingLabel}
                              errorText={this.state.errorText}
                              errorStyle={styles.textStyles}
-                             labelStyle={{paddingRight: 0, color: '#757575'}}
+                             labelStyle={styles.selectStyles.label}
+                             iconStyle={styles.selectStyles.icon}
                              style={styles.selectStyles}>
-                    <MenuItem style={styles.menuItemStyle} value={0} primaryText='used'/>
+                    <MenuItem value={0} primaryText='used'/>
                 </SelectField>:
                 <SelectField value={this.state.value}
                              id="selectRelation"
                              onChange={this.handleSelectValueChange.bind(this, 'value')}
                              floatingLabelText="Select Relation Type"
-                             floatingLabelStyle={{color: '#235F9C'}}
+                             floatingLabelStyle={styles.selectStyles.floatingLabel}
                              errorText={this.state.errorText}
                              errorStyle={styles.textStyles}
-                             labelStyle={{paddingRight: 0, color: '#235F9C' }}
+                             labelStyle={styles.selectStyles.label}
+                             iconStyle={styles.selectStyles.icon}
                              style={styles.selectStyles}>
-                    <MenuItem style={styles.menuItemStyle} value={0} primaryText='used'/>
-                    <MenuItem style={styles.menuItemStyle} value={1} primaryText='was generated by'/>
-                    <MenuItem style={styles.menuItemStyle} value={2} primaryText='was derived from'/>
+                    <MenuItem value={0} primaryText='used'/>
+                    <MenuItem value={1} primaryText='was generated by'/>
+                    <MenuItem value={2} primaryText='was derived from'/>
                 </SelectField>;
         }
         let rmFileBtn = this.props.removeFileFromProvBtn ? 'block' : 'none';
@@ -336,6 +335,7 @@ class Provenance extends React.Component {
             }
         }
         let width = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.width : window.innerWidth;
+        let dialogWidth = width < 680 ? {width: '100%'} : {};
         const dltRelationActions = [
             <FlatButton
                 label="Cancel"
@@ -379,13 +379,10 @@ class Provenance extends React.Component {
 
         return (
             <div>
-                <LeftNav disableSwipeToOpen={true} width={width} openRight={true} open={this.props.toggleProv}>
-                    <LeftNav width={220} openRight={true} open={this.props.toggleProvEdit}>
+                <Drawer disableSwipeToOpen={true} width={width} openSecondary={true} open={this.props.toggleProv}>
+                    <Drawer width={220} openSecondary={true} open={this.props.toggleProvEdit}>
                         <div style={styles.provEditor}>
-                            <IconButton style={{position: 'absolute',
-                                                top: width > 680 ? 88 : 98,
-                                                left: 2,
-                                                zIndex: 9999}}
+                            <IconButton style={styles.closeEditorIcon}
                                         onTouchTap={() => this.toggleEditor()}>
                                 <NavigationClose />
                             </IconButton>
@@ -398,22 +395,22 @@ class Provenance extends React.Component {
                                 labelStyle={{fontWeight: 200}}
                                 primary={true}
                                 disabled={!!this.state.relationMode}
-                                style={{zIndex: 9999, margin: 10, width: '80%'}}
+                                style={styles.btnStyle}
                                 onTouchTap={() => this.addRelationMode()}/>
                             {this.state.relationMode ? relationTypeSelect : null}
                             {this.state.relationMode ?
                                 <RaisedButton
                                     label="Cancel"
                                     labelStyle={{color: '#f44336'}}
-                                    style={{margin: 10, width: '80%'}}
+                                    style={styles.btnStyle}
                                     onTouchTap={() => this.toggleEdgeMode()}/>
                                 : null}
                             {this.props.addEdgeMode && this.state.relationMode ?
                             <span style={styles.provEditor.expandGraphInstructions}>Instructions
                                 <IconButton tooltip={relationInstructions}
                                             tooltipPosition="bottom-center"
-                                            iconStyle={{height: 20, width: 20}}
-                                            style={{verticalAlign: 8, zIndex: 9999}}>
+                                            iconStyle={styles.infoIcon.iconStyle}
+                                            style={styles.infoIcon}>
                                     <Help color={'#BDBDBD'}/>
                                 </IconButton>
                             </span> : null}
@@ -426,8 +423,8 @@ class Provenance extends React.Component {
                             <span style={styles.provEditor.expandGraphInstructions}>Expand Graph
                                 <IconButton tooltip={<span>Double click on a node<br/>to expand and<br/>explore the graph</span>}
                                             tooltipPosition="bottom-center"
-                                            iconStyle={{height: 20, width: 20}}
-                                            style={styles.infoIcon}>
+                                            iconStyle={styles.infoIcon2.iconStyle}
+                                            style={styles.infoIcon2}>
                                     <Help color={'#BDBDBD'}/>
                                 </IconButton>
                             </span><br/>
@@ -435,7 +432,7 @@ class Provenance extends React.Component {
                         </div>
                         <Dialog
                             style={styles.dialogStyles}
-                            contentStyle={width < 680 ? {width: '100%'} : {}}
+                            contentStyle={dialogWidth}
                             title="This entity is already on the graph, please choose a different one."
                             autoDetectWindowHeight={true}
                             actions={nodeWarningActions}
@@ -445,7 +442,7 @@ class Provenance extends React.Component {
                         </Dialog>
                         <Dialog
                             style={styles.dialogStyles}
-                            contentStyle={width < 680 ? {width: '100%'} : {}}
+                            contentStyle={dialogWidth}
                             title="Are you sure you want to delete this relation?"
                             autoDetectWindowHeight={true}
                             actions={dltRelationActions}
@@ -455,7 +452,7 @@ class Provenance extends React.Component {
                         </Dialog>
                         <Dialog
                             style={styles.dialogStyles}
-                            contentStyle={width < 680 ? {width: '100%'} : {}}
+                            contentStyle={dialogWidth}
                             title="Can't create relation"
                             autoDetectWindowHeight={true}
                             actions={relationWarningActions}
@@ -470,7 +467,7 @@ class Provenance extends React.Component {
                         </Dialog>
                         <Dialog
                             style={styles.dialogStyles}
-                            contentStyle={width < 680 ? {width: '100%'} : {}}
+                            contentStyle={dialogWidth}
                             title="Please confirm that 'was derived from' relation"
                             autoDetectWindowHeight={true}
                             actions={derivedRelActions}
@@ -480,19 +477,13 @@ class Provenance extends React.Component {
                             <h6>Are you sure that the file <b>{this.props.relFrom && this.props.relFrom !== null ? this.props.relFrom.label+' ' : ''}</b>
                                 was derived from the file <b>{this.props.relTo && this.props.relTo !== null ? this.props.relTo.label+' ' : ''}</b>?</h6>
                         </Dialog>
-                    </LeftNav>
+                    </Drawer>
                     <IconButton tooltip="Edit Graph"
-                                style={{position: 'absolute',
-                                        top: width > 680 ? 90 : 100,
-                                        right: 10,
-                                        zIndex: 200}}
+                                style={styles.openEditorIcon}
                                 onTouchTap={() => this.toggleEditor()}>
                         <BorderColor color="#424242" />
                     </IconButton>
-                    <IconButton style={{position: 'absolute',
-                                        top: width > 680 ? 88 : 98,
-                                        left: 10,
-                                        zIndex: 9999}}
+                    <IconButton style={styles.closeEditorIcon}
                                 onTouchTap={() => this.toggleProv()}>
                         <NavigationClose />
                     </IconButton>
@@ -501,8 +492,8 @@ class Provenance extends React.Component {
                         <span style={styles.provEditor.title.span1}>{fileName}</span>
                         <span style={styles.provEditor.title.span2}>{'Version '+ fileVersion}</span>
                     </h6>
-                    {this.props.graphLoading ?
-                        <CircularProgress size={1.5} style={styles.graphLoader}/>
+                    {this.props.drawerLoading ?
+                        <CircularProgress size={80} thickness={5} style={styles.graphLoader}/>
                         : null}
                     <div id="graphContainer" ref="graphContainer"
                          className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800"
@@ -512,7 +503,7 @@ class Provenance extends React.Component {
                                  height: this.state.height,
                                  float: 'left'}}>
                     </div>
-                </LeftNav>
+                </Drawer>
             </div>
         );
     }
@@ -590,23 +581,12 @@ class Provenance extends React.Component {
     toggleEditor() {
         ProjectActions.toggleProvEditor();
     }
-
-    useFileVersion(id, name, version, node) {
-        document.getElementById('searchText').value = name +'- Version: '+ version;
-        this.state.addFileNode = node;
-    }
 }
 
 var styles = {
-    cancelBtn: {
-        height: 18,
-        width: 18,
-        marginBottom: 4
-    },
-    deleteFile: {
-        float: 'right',
-        position: 'relative',
-        margin: '12px 8px 0px 0px'
+    btnStyle: {
+        margin: 10,
+        width: '80%'
     },
     dialogStyles: {
         textAlign: 'center',
@@ -625,8 +605,32 @@ var styles = {
         textAlign: 'center',
         color: '#235F9C'
     },
+    closeEditorIcon: {
+        position: 'absolute',
+        top: 88,
+        left: 10,
+        zIndex: 9999
+    },
+    closeGraphIcon: {
+        position: 'absolute',
+        top: 88,
+        left: 2,
+        zIndex: 9999
+    },
     infoIcon: {
-        verticalAlign: 8
+        verticalAlign: 8,
+        zIndex: 9999,
+        iconStyle: {
+            height: 20,
+            width: 20
+        }
+    },
+    infoIcon2: {
+        verticalAlign: 8,
+        iconStyle: {
+            height: 20,
+            width: 20
+        }
     },
     listBlock: {
         margin: 0
@@ -642,8 +646,11 @@ var styles = {
     listItem: {
         padding: '0px 5px 0px 5px'
     },
-    menuItemStyle: {
-        width: 170
+    openEditorIcon: {
+        position: 'absolute',
+        top: 90,
+        right: 10,
+        zIndex: 200
     },
     provEditor:{
         display: 'flex',
@@ -698,7 +705,17 @@ var styles = {
         maxWidth: '90%',
         minWidth: 160,
         textAlign: 'left',
-        color: '#757575'
+        color: '#757575',
+        floatingLabel: {
+            color: '#235F9C'
+        },
+        icon: {
+            right: -10
+        },
+        label: {
+            paddingRight: 0,
+            color: '#235F9C'
+        }
     },
     textStyles: {
         textAlign: 'left',
