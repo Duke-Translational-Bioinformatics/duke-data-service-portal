@@ -35,8 +35,6 @@ class VersionDetails extends React.Component {
         let label = this.props.entityObj && this.props.entityObj.label ? this.props.entityObj.label : null;
         let projectName = this.props.entityObj && this.props.entityObj.ancestors ? this.props.entityObj.ancestors[0].name : null;
         let crdOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.created_on : null;
-        let x = crdOn !== null ? new Date(crdOn) : '';
-        let createdOn = x.toString();
         let createdBy = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.created_by.full_name : null;
         let lastUpdatedOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.last_updated_on : null;
         let lastUpdatedBy = this.props.entityObj && this.props.entityObj.audit.last_updated_by ? this.props.entityObj.audit.last_updated_by.full_name : null;
@@ -88,7 +86,7 @@ class VersionDetails extends React.Component {
                                 <li className="list-group-title">Created On</li>
                                 <li className="item-content">
                                     <div className="item-inner">
-                                        <div>{ createdOn }</div>
+                                        <div>{ BaseUtils.formatDate(crdOn) }</div>
                                     </div>
                                 </li>
                             </ul>
@@ -138,7 +136,7 @@ class VersionDetails extends React.Component {
                                 <li className="list-group-title">Last Updated On</li>
                                 <li className="item-content">
                                     <div className="item-inner">
-                                        <div>{ lastUpdatedOn === null ? 'N/A' : new Date(lastUpdatedOn).toString() }</div>
+                                        <div>{ lastUpdatedOn === null ? 'N/A' : BaseUtils.formatDate(lastUpdatedOn)}</div>
                                     </div>
                                 </li>
                             </ul>
