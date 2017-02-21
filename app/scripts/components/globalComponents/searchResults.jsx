@@ -56,7 +56,7 @@ class SearchResults extends React.Component {
                                 </div>
                                 <div className="item-subtitle mdl-color-text--grey-600">Created
                                     by { results.audit.created_by.full_name }</div>
-                                <div className="item-subtitle mdl-color-text--grey-600">{results.audit.last_updated_on !== null ? 'Last updated on ' + new Date(results.audit.last_updated_on).toDateString() + ' by ' :
+                                <div className="item-subtitle mdl-color-text--grey-600">{results.audit.last_updated_on !== null ? 'Last updated on ' +BaseUtils.formatDate(results.audit.last_updated_on)+ ' by ' :
                                     <br />}
                                     { results.audit.last_updated_by !== null ? results.audit.last_updated_by.full_name : null}</div>
                             </div>
@@ -76,7 +76,7 @@ class SearchResults extends React.Component {
                                          style={styles.title}>{results.name.length > 82 ? results.name.substring(0, 82) + '...' : results.name}</div>
                                 </div>
                                 <div className="item-subtitle mdl-color-text--grey-600">{BaseUtils.bytesToSize(results.current_version.upload.size) + ' - '}version {results.current_version.version}</div>
-                                <div className="item-subtitle mdl-color-text--grey-600">{results.audit.last_updated_on !== null ? 'Last updated on ' + new Date(results.audit.last_updated_on).toDateString() + ' by ' :
+                                <div className="item-subtitle mdl-color-text--grey-600">{results.audit.last_updated_on !== null ? 'Last updated on ' +BaseUtils.formatDate(results.audit.last_updated_on)+ ' by ' :
                                     <br />}
                                     { results.audit.last_updated_by !== null ? results.audit.last_updated_by.full_name : null}</div>
                             </div>

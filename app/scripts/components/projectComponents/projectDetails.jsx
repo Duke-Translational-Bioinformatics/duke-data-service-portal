@@ -5,7 +5,7 @@ import ProjectOptionsMenu from './projectOptionsMenu.jsx';
 import Details from './details.jsx';
 import UploadManager from '../globalComponents/uploadManager.jsx';
 import {UrlGen} from '../../../util/urlEnum';
-import baseUtils from '../../../util/baseUtils.js';
+import BaseUtils from '../../../util/baseUtils.js';
 import FlatButton from 'material-ui/FlatButton';
 import Card from 'material-ui/Card';
 
@@ -22,8 +22,6 @@ class ProjectDetails extends React.Component {
         let createdBy = this.props.project && this.props.project.audit ? this.props.project.audit.created_by.full_name : null;
         let projectName = this.props.project ? this.props.project.name : null;
         let crdOn = this.props.project && this.props.project.audit ? this.props.project.audit.created_on : null;
-        let x = crdOn !== null ? new Date(crdOn) : '';
-        let createdOn = x.toString();
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
         let uploadMdl = null;
         let optionsMenu = null;
@@ -51,13 +49,11 @@ class ProjectDetails extends React.Component {
                     </div>
                     <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.details}>
                         <span className="mdl-color-text--grey-900"
-                                 style={styles.span}>Created By:</span>
-                        <span className="mdl-color-text--grey-900">{ createdBy }</span>
+                                 style={styles.span}>Created By: {' '+ createdBy }</span>
                     </div>
                     <div className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.details2}>
                         <span className="mdl-color-text--grey-900"
-                                 style={styles.span}>Created On:</span>
-                        <span>{ createdOn }</span>
+                                 style={styles.span}>Created On: {' '+ BaseUtils.formatDate(crdOn) }</span>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.detailsButton}>
                         <FlatButton
