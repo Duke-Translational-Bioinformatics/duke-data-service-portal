@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 import ProjectActions from '../../actions/projectActions';
 import AddProjectModal from '../projectComponents/addProjectModal.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
+import BaseUtils from '../../../util/baseUtils.js';
 import {UrlGen} from '../../../util/urlEnum';
 import {Card, CardTitle, CardText} from 'material-ui/Card';
 import FontIcon from 'material-ui/FontIcon';
@@ -20,7 +21,7 @@ class ProjectList extends React.Component {
                 <Card key={ project.id } className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.card}>
                     <FontIcon className="material-icons" style={styles.icon}>content_paste</FontIcon>
                     <a href={UrlGen.routes.project(project.id)} className="external">
-                        <CardTitle title={project.name} subtitle={'ID: ' + project.id} titleColor="#424242" style={styles.cardTitle}/>
+                        <CardTitle title={project.name} subtitle={'Created On: ' + BaseUtils.formatDate(project.audit.created_on)} titleColor="#424242" style={styles.cardTitle}/>
                     </a>
                     <CardText>
                         <span className="mdl-color-text--grey-900">Description:</span>{ project.description.length > 300 ? ' ' + project.description.substring(0,300)+'...' : ' ' + project.description }

@@ -34,11 +34,12 @@ class Header extends React.Component {
                 </div>
                 <div className="center" style={styles.navBar.centerDiv}></div>
                 <div className="right">
-                    <FontIcon className="material-icons" style={styles.searchIcon} onTouchTap={()=>this.showSearch()}>search</FontIcon>
+                    {/*<FontIcon className="material-icons" style={styles.searchIcon}
+                     onTouchTap={()=>this.showSearch()}>search</FontIcon>*/}
                     <CurrentUser {...this.props} {...this.state}/>
                 </div>
             </div>
-            {this.state.showSearch ? <Search {...this.props} {...this.state}/> : null}
+            {/*this.state.showSearch ? <Search {...this.props} {...this.state}/> : null*/}
         </div>;
 
         if(!this.props.appConfig.apiToken) {
