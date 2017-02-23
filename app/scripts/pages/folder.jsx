@@ -13,6 +13,7 @@ class Folder extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            currentUser: ProjectStore.currentUser,
             listItems: ProjectStore.listItems,
             responseHeaders: ProjectStore.responseHeaders,
             filesChecked: ProjectStore.filesChecked,

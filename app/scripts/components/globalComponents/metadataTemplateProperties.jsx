@@ -6,10 +6,6 @@ import BaseUtils from '../../../util/baseUtils'
 
 class MetadataTemplateProperties extends React.Component {
 
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         let currentUser = this.props.currentUser && this.props.currentUser !== null ? this.props.currentUser : null;
         let properties = this.props.templateProperties && this.props.templateProperties.length !== 0 ? this.props.templateProperties.map((obj)=>{

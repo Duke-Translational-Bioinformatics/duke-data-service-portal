@@ -7,7 +7,8 @@ import RaisedButton from 'material-ui/RaisedButton';
 
 class AddProjectModal extends React.Component {
 
-    constructor() {
+    constructor(props) {
+        super(props);
         this.state = {
             open: false,
             floatingErrorText: 'This field is required',

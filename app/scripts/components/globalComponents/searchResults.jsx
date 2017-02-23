@@ -12,7 +12,8 @@ import {UrlGen} from '../../../util/urlEnum';
 
 class SearchResults extends React.Component {
 
-    constructor() {
+    constructor(props) {
+        super(props);
         this.state = { // Temporary pagination until the services get properly updated to return paginated results
             page: 0
         }

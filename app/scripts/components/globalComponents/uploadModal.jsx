@@ -5,7 +5,9 @@ import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
 
 class UploadModal extends React.Component {
-    constructor() {
+
+    constructor(props) {
+        super(props);
         this.state = {
             open: false
         }

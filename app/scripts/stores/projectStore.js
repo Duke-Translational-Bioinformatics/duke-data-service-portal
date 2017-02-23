@@ -1,14 +1,104 @@
 import Reflux from 'reflux';
+import { observable, computed, autorun, action } from 'mobx';
 import ProjectActions from '../actions/projectActions';
 import MainActions from '../actions/mainActions';
-import MainStore from '../stores/mainStore';
+import mainStore from '../stores/mainStore';
 import BaseUtils from '../../util/baseUtils.js';
 import { StatusEnum, Path } from '../enum';
 import {graphOptions, graphColors} from '../graphConfig';
 
-var ProjectStore = Reflux.createStore({
-    init() {
-        this.listenToMany(ProjectActions);
+export class ProjectStore {
+        @observable activities
+        @observable addEdgeMode
+        @observable agents
+        @observable agentKey
+        @observable agentApiToken
+        @observable autoCompleteLoading
+        @observable audit
+        @observable batchFiles
+        @observable batchFolders
+        @observable listItems
+        @observable currentUser
+        @observable destination
+        @observable destinationKind
+        @observable device
+        @observable dltRelationsBtn
+        @observable entityObj
+        @observable failedUploads
+        @observable filesChecked
+        @observable filesToUpload
+        @observable filesRejectedForUpload
+        @observable fileHashes
+        @observable foldersChecked
+        @observable fileVersions
+        @observable drawerLoading
+        @observable includeKinds
+        @observable includeProjects
+        @observable itemsSelected
+        @observable loading
+        @observable metaDataTemplate
+        @observable metaProps
+        @observable metaTemplates
+        @observable modal
+        @observable moveItemList
+        @observable moveToObj
+        @observable objectTags
+        @observable openMetadataManager
+        @observable openTagManager
+        @observable openUploadManager
+        @observable parent
+        @observable position
+        @observable projects
+        @observable project
+        @observable projPermissions
+        @observable projectMembers
+        @observable metaObjProps
+        @observable provEditorModal
+        @observable provFileVersions
+        @observable provEdges
+        @observable provNodes
+        @observable relFrom
+        @observable relTo
+        @observable relMsg
+        @observable removeFileFromProvBtn
+        @observable responseHeaders
+        @observable scale
+        @observable screenSize
+        @observable searchFilesList
+        @observable searchFilters
+        @observable searchResults
+        @observable searchResultsFiles
+        @observable searchResultsFolders
+        @observable searchResultsProjects
+        @observable searchValue
+        @observable selectedEntity
+        @observable selectedNode
+        @observable selectedEdge
+        @observable showFilters
+        @observable showPropertyCreator
+        @observable showProvAlert
+        @observable showProvCtrlBtns
+        @observable showProvDetails
+        @observable showTemplateCreator
+        @observable showTemplateDetails
+        @observable showUserInfoPanel
+        @observable showBatchOps
+        @observable showSearch
+        @observable tagLabels
+        @observable tagsToAdd
+        @observable templateProperties
+        @observable toggleModal
+        @observable toggleProv
+        @observable toggleProvEdit
+        @observable updatedGraphItem
+        @observable uploadCount
+        @observable uploads
+        @observable usage
+        @observable users
+        @observable userKey
+        @observable versionModal
+
+    constructor() {
         this.activities = [];
         this.addEdgeMode = false;
         this.agents = [];
@@ -36,6 +126,7 @@ var ProjectStore = Reflux.createStore({
         this.includeKinds = [];
         this.includeProjects = [];
         this.itemsSelected = null;
+        this.loading = false;
         this.metaDataTemplate = null;
         this.metaProps = [];
         this.metaTemplates = [];
@@ -93,60 +184,46 @@ var ProjectStore = Reflux.createStore({
         this.updatedGraphItem = [];
         this.uploadCount = [];
         this.uploads = {};
+        this.usage = null;
         this.users = [];
         this.userKey = {};
         this.versionModal = false;
-    },
+    }
+
+    setLoadingState() {
+        this.loading = !this.loading
+    }
 
     toggleUserInfoPanel() {
         this.showUserInfoPanel = !this.showUserInfoPanel;
-        this.trigger({
-            showUserInfoPanel: this.showUserInfoPanel
-        })
-    },
+    }
 
     setIncludedSearchProjects(includeProjects) {
         this.includeProjects = includeProjects;
-        this.trigger({
-            includeProjects: this.includeProjects
-        });
         this.setSearchFilters();
-    },
+    }
 
     setSearchFilters() {
         this.searchFilters = [];
         this.includeProjects.forEach((projectId)=>{
             this.searchFilters.push({"match":{"project.id": projectId}})
         });
-        this.trigger({
-            searchFilters: this.searchFilters
-        });
         ProjectActions.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
-    },
+    }
 
     setIncludedSearchKinds(includeKinds) {
         this.includeKinds = includeKinds;
         ProjectActions.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
-        this.trigger({
-            includeKinds: this.includeKinds
-        })
-    },
+    }
 
     toggleSearchFilters() {
         this.showFilters = !this.showFilters;
-        this.trigger({
-            showFilters: this.showFilters
-        })
-    },
+    }
 
     searchObjects(value) {
         this.searchValue = value;
         this.loading = true;
-        this.trigger({
-            loading: this.loading,
-            searchValue: this.searchValue
-        })
-    },
+    }
 
     searchObjectsSuccess(results) {
         this.loading = false;
@@ -161,41 +238,22 @@ var ProjectStore = Reflux.createStore({
             return {name: obj.ancestors[0].name, id: obj.ancestors[0].id};
         });
         this.searchResultsProjects = BaseUtils.removeDuplicates(p, 'id');
-        this.trigger({
-            loading: this.loading,
-            searchResults: this.searchResults,
-            searchResultsFiles: this.searchResultsFiles,
-            searchResultsFolders: this.searchResultsFolders,
-            searchResultsProjects: this.searchResultsProjects
-        })
-    },
+    }
 
     toggleSearch() {
         this.searchValue = null;
         this.showSearch = !this.showSearch;
-        this.trigger({
-            searchValue: this.searchValue,
-            showSearch: this.showSearch
-        })
-    },
+    }
 
     getMoveItemList() {
         this.moveItemList = [];
         this.loading = true;
-        this.trigger({
-            loading: this.loading,
-            moveItemList: this.moveItemList
-        })
-    },
+    }
 
     getMoveItemListSuccess(results) {
         this.moveItemList = results;
         this.loading = false;
-        this.trigger({
-            loading: this.loading,
-            moveItemList: this.moveItemList
-        })
-    },
+    }
 
     getObjectMetadataSuccess(results) {
         this.objectMetadata = results;
@@ -204,179 +262,103 @@ var ProjectStore = Reflux.createStore({
                 return {key: prop.template_property.key, id: prop.template_property.id, value: prop.value};
             })
         });
-        this.trigger({
-            objectMetadata: this.objectMetadata,
-            metaObjProps: this.metaObjProps
-        })
-    },
+    }
 
     createMetaPropsList(metaProps) {
         this.metaProps = metaProps;
-        this.trigger({
-            metaProps: this.metaProps
-        })
-    },
+    }
 
     createMetadataObject() {
         this.drawerLoading = true;
-        this.trigger({
-            drawerLoading: this.drawerLoading
-        })
-    },
+    }
 
     createMetadataObjectSuccess(id, kind) {
         this.drawerLoading = false;
         this.showBatchOps = false;
         this.showTemplateDetails = false;
         ProjectActions.getObjectMetadata(id,kind);
-        this.trigger({
-            drawerLoading: this.drawerLoading,
-            showBatchOps: this.showBatchOps,
-            showTemplateDetails: this.showTemplateDetails
-        })
-    },
+    }
 
     showMetadataTemplateList() {
         this.showTemplateDetails = false;
-        this.trigger({
-            showTemplateDetails: this.showTemplateDetails
-        })
-    },
+    }
 
     deleteMetadataPropertySuccess(id) {
         this.templateProperties = BaseUtils.removeObjByKey(this.templateProperties, {key: 'id', value: id});
-        this.trigger({
-            templateProperties: this.templateProperties
-        })
-    },
+    }
 
     getMetadataTemplateProperties() {
         this.drawerLoading = true;
-        this.trigger({
-            drawerLoading: this.drawerLoading
-        })
-    },
+    }
 
     getMetadataTemplatePropertiesSuccess(properties) {
         this.drawerLoading = false;
         this.templateProperties = properties;
-        this.trigger({
-            drawerLoading: this.drawerLoading,
-            templateProperties: this.templateProperties
-        })
-    },
+    }
 
     createMetadataProperty() {
         this.drawerLoading = true;
-        this.trigger({
-            drawerLoading: this.drawerLoading
-        })
-    },
+    }
 
     createMetadataPropertySuccess(property) {
         this.drawerLoading = false;
         this.templateProperties.push(property);
-        this.trigger({
-            drawerLoading: this.drawerLoading,
-            templateProperties: this.templateProperties
-        })
-    },
+    }
 
     showMetaDataTemplateDetails() {
         this.showPropertyCreator = false;
         this.showTemplateCreator = false;
         this.showTemplateDetails = true;
-        this.trigger({
-            showPropertyCreator: this.showPropertyCreator,
-            showTemplateCreator: this.showTemplateCreator,
-            showTemplateDetails: this.showTemplateDetails
-        })
-    },
+    }
 
     showTemplatePropManager() {
         this.showPropertyCreator = true;
         this.showTemplateCreator = false;
         this.showTemplateDetails = false;
-        this.trigger({
-            showPropertyCreator: this.showPropertyCreator,
-            showTemplateCreator: this.showTemplateCreator,
-            showTemplateDetails: this.showTemplateDetails
-        })
-    },
+    }
 
     deleteTemplateSuccess() {
         ProjectActions.toggleMetadataManager();
         ProjectActions.loadMetadataTemplates('');
-    },
+    }
 
     updateMetadataTemplate() {
         this.drawerLoading = true;
-        this.trigger({
-            drawerLoading: this.drawerLoading
-        })
-    },
+    }
 
     createMetadataTemplate() {
         this.drawerLoading = true;
         this.templateProperties = [];
-        this.trigger({
-            drawerLoading: this.drawerLoading,
-            templateProperties: this.templateProperties
-        })
-    },
+    }
 
     createMetadataTemplateSuccess(template) {
         this.drawerLoading = false;
         this.metaTemplates.unshift(template);
-        this.trigger({
-            drawerLoading: this.drawerLoading,
-            metaTemplates: this.metaTemplates
-        })
-    },
+    }
 
     toggleMetadataManager() {
         this.openMetadataManager = !this.openMetadataManager;
         this.showPropertyCreator = false;
         this.showTemplateCreator = true;
         this.showTemplateDetails = false;
-        this.trigger({
-            openMetadataManager: this.openMetadataManager,
-            showPropertyCreator: this.showPropertyCreator,
-            showTemplateCreator: this.showTemplateCreator,
-            showTemplateDetails: this.showTemplateDetails
-        })
-    },
+    }
 
     getMetadataTemplateDetails() {
         this.drawerLoading = true;
         this.openMetadataManager = !this.openMetadataManager;
-        this.trigger({
-            drawerLoading: this.drawerLoading,
-            openMetadataManager: this.openMetadataManager
-        })
-    },
+    }
 
     getMetadataTemplateDetailsSuccess(template) {
         this.drawerLoading = false;
         this.metaDataTemplate = template;
         this.showTemplateCreator = false;
         this.showTemplateDetails = true;
-        this.trigger({
-            drawerLoading: this.drawerLoading,
-            metadataTemplate: this.metaDataTemplate,
-            showTemplateCreator: this.showTemplateCreator,
-            showTemplateDetails: this.showTemplateDetails
-        })
-    },
+    }
 
     loadMetadataTemplates() {
         if(this.metaTemplates.length) this.metaTemplates = [];
         this.loading = true;
-        this.trigger({
-            loading: this.loading,
-            metaTemplates: this.metaTemplates
-        })
-    },
+    }
 
     loadMetadataTemplatesSuccess(templates) {
         this.loading = false;
@@ -385,60 +367,38 @@ var ProjectStore = Reflux.createStore({
             b = new Date(b.audit.created_on);
             return a>b ? -1 : a<b ? 1 : 0;
         });
-        this.trigger({
-            loading: this.loading,
-            metaTemplates: this.metaTemplates
-        })
-    },
+    }
 
     saveGraphZoomState(scale, position) {
         this.scale = scale;
         this.position = position;
-        this.trigger({
-            scale: this.scale,
-            position: this.position
-        });
-    },
+    }
 
     openProvEditorModal(id) {
-        this.trigger({
-            provEditorModal: {open: true, id: id}
-        });
-    },
+        this.provEditorModal = {open: true, id: id}
+    }
 
     closeProvEditorModal(id) {
-        this.trigger({
-            provEditorModal: {open: false, id: id}
-        });
-    },
+        this.provEditorModal = {open: false, id: id}
+    }
 
     switchRelationFromTo(from, to){
         this.openConfirmRel = true;
         this.relFrom = to;
         this.relTo = from;
-        this.trigger({
-            relFrom: this.relFrom,
-            relTo: this.relTo,
-            openConfirmRel: this.openConfirmRel
-        });
-    },
+    }
 
     confirmDerivedFromRel(from, to) {
         this.relFrom = from;
         this.relTo = to;
-        this.trigger({
-            relFrom: this.relFrom,
-            relTo: this.relTo,
-            provEditorModal: {open: true, id: 'confirmRel'}
-        });
-    },
+        this.provEditorModal = {open: true, id: 'confirmRel'}
+    }
 
     startAddRelation(kind, from, to) {
         ProjectActions.buildRelationBody(kind, from, to);
-        this.trigger({
-            provEditorModal: {open: false, id: 'confirmRel'}
-        });
-    },
+        this.provEditorModal = {open: false, id: 'confirmRel'}
+
+    }
 
     getFromAndToNodes(data, relationKind, nodes) {
         let from = null;
@@ -454,34 +414,24 @@ var ProjectStore = Reflux.createStore({
             }
         });
         if (!node1.properties.hasOwnProperty('kind') || !node2.properties.hasOwnProperty('kind')) {
-            this.trigger({
-                provEditorModal: {open: true, id: 'relWarning'},
-                relMsg: 'invalidRelMsg'
-            });
+            this.provEditorModal = {open: true, id: 'relWarning'};
+            this.relMsg = 'invalidRelMsg';
         }
         if (relationKind !== 'was_derived_from') {
             if (node1.properties.kind === 'dds-activity' && node1.properties.audit.created_by.id !== MainStore.currentUser.id) {
-                this.trigger({
-                    provEditorModal: {open: true, id: 'relWarning'},
-                    relMsg: 'permissionError'
-                });
+                this.provEditorModal = {open: true, id: 'relWarning'};
+                this.relMsg = 'permissionError';
             } else if (node2.properties.kind === 'dds-activity' && node2.properties.audit.created_by.id !== MainStore.currentUser.id){
-                this.trigger({
-                    provEditorModal: {open: true, id: 'relWarning'},
-                    relMsg: 'permissionError'
-                });
+                this.provEditorModal = {open: true, id: 'relWarning'};
+                this.relMsg = 'permissionError';
             } else {
                 if (node1.properties.kind === 'dds-file-version' && node2.properties.kind === 'dds-file-version') {
-                    this.trigger({
-                        provEditorModal: {open: true, id: 'relWarning'},
-                        relMsg: 'wasDerivedFrom'
-                    });
+                    this.provEditorModal = {open: true, id: 'relWarning'};
+                    this.relMsg = 'wasDerivedFrom';
                 }
                 if (node1.properties.kind === 'dds-activity' && node2.properties.kind === 'dds-activity') {
-                    this.trigger({
-                        provEditorModal: {open: true, id: 'relWarning'},
-                        relMsg: 'actToActMsg'
-                    });
+                    this.provEditorModal = {open: true, id: 'relWarning'};
+                    this.relMsg = 'actToActMsg';
                 }
                 if (node1.properties.kind !== node2.properties.kind) {
                     if (relationKind === 'used') {
@@ -500,17 +450,15 @@ var ProjectStore = Reflux.createStore({
         } else {
             if (node1.properties.kind === 'dds-activity' || node2.properties.kind === 'dds-activity') {
                 // Send error modal to user explaining rules of was_derived_from relations
-                this.trigger({
-                    provEditorModal: {open: true, id: 'relWarning'},
-                    relMsg: 'notFileToFile'
-                });
+                this.provEditorModal = {open: true, id: 'relWarning'};
+                this.relMsg = 'notFileToFile';
             } else {
                 from = node1;
                 to = node2;
                 ProjectStore.confirmDerivedFromRel(from, to);
             }
         }
-    },
+    }
 
     buildRelationBody(kind, from, to) {
         let body = {};
@@ -549,7 +497,7 @@ var ProjectStore = Reflux.createStore({
             };
         }
         ProjectActions.addProvRelation(kind, body);
-    },
+    }
 
     addProvRelationSuccess(data) { //Update dataset with new relation
         let rel = [];
@@ -572,11 +520,8 @@ var ProjectStore = Reflux.createStore({
         });
         let edges = this.provEdges;
         edges.push(this.updatedGraphItem[0]);
-        this.trigger({
-            updatedGraphItem: this.updatedGraphItem,
-            provEdges: edges
-        })
-    },
+        this.provEdges = edges;
+    }
 
     addFileToGraph(node) {
         let n = [];
@@ -612,12 +557,8 @@ var ProjectStore = Reflux.createStore({
         });
         let nodes = this.provNodes;
         nodes.push(this.updatedGraphItem[0]);
-        this.trigger({
-            updatedGraphItem: this.updatedGraphItem,
-            provNodes: nodes
-        })
-
-    },
+        this.provNodes = nodes;
+    }
 
     addProvActivitySuccess(node) {
         let act = [];
@@ -637,11 +578,8 @@ var ProjectStore = Reflux.createStore({
         });
         let nodes = this.provNodes;
         nodes.push(this.updatedGraphItem[0]);
-        this.trigger({
-            updatedGraphItem: this.updatedGraphItem,
-            provNodes: nodes
-        })
-    },
+        this.provNodes = nodes;
+    }
 
     editProvActivitySuccess(node) {
         let act = [];
@@ -664,19 +602,15 @@ var ProjectStore = Reflux.createStore({
         nodes.push(this.updatedGraphItem[0]);
         this.provNodes = nodes;
         this.showProvCtrlBtns = false;
-        this.trigger({
-            updatedGraphItem: this.updatedGraphItem,
-            provNodes: this.provNodes,
-            showProvCtrlBtns: this.showProvCtrlBtns
-        })
-    },
+        this.provNodes = nodes;
+    }
 
     getActivitiesSuccess(activities) {
         this.activities = activities;
         this.trigger({
             activities: this.activities
         })
-    },
+    }
 
     deleteProvItemSuccess(data) {
         let item = [];
@@ -697,7 +631,7 @@ var ProjectStore = Reflux.createStore({
             showProvCtrlBtns: this.showProvCtrlBtns
         })
 
-    },
+    }
 
     toggleAddEdgeMode(value) {
         if (value == null) {
@@ -708,7 +642,7 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             addEdgeMode: this.addEdgeMode
         })
-    },
+    }
 
     toggleProvView() {
         this.toggleProv = !this.toggleProv;
@@ -721,42 +655,42 @@ var ProjectStore = Reflux.createStore({
             provEdges: this.provEdges,
             provNodes: this.provNodes
         })
-    },
+    }
 
     toggleProvEditor() {
         this.toggleProvEdit = !this.toggleProvEdit;
         this.trigger({
             toggleProvEdit: this.toggleProvEdit
         })
-    },
+    }
 
     toggleProvNodeDetails() {
         this.showProvDetails = !this.showProvDetails;
         this.trigger({
             showProvDetails: this.showProvDetails
         })
-    },
+    }
 
     toggleGraphLoading() {
         this.drawerLoading = false;
         this.trigger({
             drawerLoading: this.drawerLoading
         })
-    },
+    }
 
     getWasGeneratedByNode() {
         this.drawerLoading = true;
         this.trigger({
             drawerLoading: this.drawerLoading
         })
-    },
+    }
 
     getProvenance() {
         this.drawerLoading = true;
         this.trigger({
             drawerLoading: this.drawerLoading
         })
-    },
+    }
 
     getProvenanceSuccess(prov, prevGraph) {
         let edges = prov.relationships.filter((edge) => {
@@ -846,40 +780,38 @@ var ProjectStore = Reflux.createStore({
             showProvDetails: false,
             dltRelationsBtn: false
         })
-    },
+    }
 
     getScreenSize(height, width) {
         this.screenSize.height = height;
         this.screenSize.width = width;
-        this.trigger({
-            screenSize: this.screenSize
-        })
-    },
+        return this.screenSize;
+    }
 
     toggleUploadManager() {
         this.openUploadManager = !this.openUploadManager;
         this.trigger({
             openUploadManager: this.openUploadManager
         })
-    },
+    }
 
     toggleTagManager() {
         this.openTagManager = !this.openTagManager;
         this.trigger({
             openTagManager: this.openTagManager
         })
-    },
+    }
 
     defineTagsToAdd(tags) {
         this.tagsToAdd = tags;
         this.trigger({
             tagsToAdd: this.tagsToAdd
         })
-    },
+    }
 
     addNewTagSuccess(fileId) {
         ProjectActions.getTags(fileId, 'dds-file');
-    },
+    }
 
     appendTagsSuccess(fileId) {
         ProjectActions.getTags(fileId, 'dds-file');
@@ -887,46 +819,43 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             showBatchOps: this.showBatchOps
         })
-    },
+    }
 
     deleteTagSuccess(fileId) {
         ProjectActions.getTags(fileId, 'dds-file');
-    },
+    }
 
     getTagAutoCompleteListSuccess(list) {
         this.tagAutoCompleteList = list.map((item) => {return item.label});
         this.trigger({
             tagAutoCompleteList: this.tagAutoCompleteList
         })
-    },
+    }
 
     getTagLabelsSuccess(labels) {
         this.tagLabels = labels;
         this.trigger({
             tagLabels: this.tagLabels
         })
-    },
+    }
 
     getTagsSuccess(tags) {
         this.objectTags = tags;
         this.trigger({
             objectTags: this.objectTags
         })
-    },
+    }
 
     getDeviceType(device) {
         this.device = device;
-        this.trigger({
-            device: this.device
-        })
-    },
+    }
 
     searchFiles() {
         this.autoCompleteLoading = true;
         this.trigger({
             autoCompleteLoading: this.autoCompleteLoading
         })
-    },
+    }
 
     searchFilesSuccess(results) {
         this.autoCompleteLoading = false;
@@ -937,14 +866,14 @@ var ProjectStore = Reflux.createStore({
             searchFilesList: this.searchFilesList,
             autoCompleteLoading: this.autoCompleteLoading
         })
-    },
+    }
 
     clearSearchFilesData() {
         this.searchFilesList = [];
         this.trigger({
             searchFilesList: this.searchFilesList
         })
-    },
+    }
 
     showRemoveFileFromProvBtn() { //To remove unused files from graph (not currently in use)
         this.removeFileFromProvBtn = !this.removeFileFromProvBtn;
@@ -955,7 +884,7 @@ var ProjectStore = Reflux.createStore({
             removeFileFromProvBtn: this.removeFileFromProvBtn,
             showProvCtrlBtns: this.showProvCtrlBtns
         })
-    },
+    }
 
     showProvControlBtns() {
         this.showProvCtrlBtns = !this.showProvCtrlBtns;
@@ -966,7 +895,7 @@ var ProjectStore = Reflux.createStore({
             removeFileFromProvBtn: this.removeFileFromProvBtn,
             showProvCtrlBtns: this.showProvCtrlBtns
         })
-    },
+    }
 
     showDeleteRelationsBtn(edges, nodes) {
         if (edges !== null && this.dltRelationsBtn && nodes !== null) {
@@ -984,7 +913,7 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             dltRelationsBtn: this.dltRelationsBtn
         })
-    },
+    }
 
     selectNodesAndEdges(edgeData, nodeData) {
         this.selectedEdge = edgeData[0];
@@ -993,14 +922,14 @@ var ProjectStore = Reflux.createStore({
             selectedNode: this.selectedNode,
             selectedEdge: this.selectedEdge
         })
-    },
+    }
 
     hideProvAlert() {
         this.showProvAlert = false;
         this.trigger({
             showProvAlert: this.showProvAlert
         })
-    },
+    }
 
     getFileVersions(id, prov) {
         if(!prov) {
@@ -1009,7 +938,7 @@ var ProjectStore = Reflux.createStore({
                 loading: this.loading
             })
         }
-    },
+    }
 
     getFileVersionsSuccess(results, prov) {
         this.loading = false;
@@ -1023,7 +952,7 @@ var ProjectStore = Reflux.createStore({
             provFileVersions: this.provFileVersions,
             loading: this.loading
         })
-    },
+    }
 
     clearProvFileVersions() {
         if(this.provFileVersions.length) {
@@ -1032,7 +961,7 @@ var ProjectStore = Reflux.createStore({
                 provFileVersions: this.provFileVersions
             })
         }
-    },
+    }
 
     addFileVersionSuccess(id, uploadId) {
         this.showProvAlert = true;
@@ -1046,28 +975,28 @@ var ProjectStore = Reflux.createStore({
             showProvAlert: this.showProvAlert,
             uploads: this.uploads
         })
-    },
+    }
 
     deleteVersion() {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     deleteVersionSuccess() {
         this.loading = false;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     editVersion() {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     editVersionSuccess(id) {
         this.loading = false;
@@ -1076,42 +1005,42 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     openModal() {
         this.modal = true;
         this.trigger({
             modal: this.modal
         })
-    },
+    }
 
     closeModal() {
         this.modal = false;
         this.trigger({
             modal: this.modal
         })
-    },
+    }
 
     openVersionModal() {
         this.versionModal = true;
         this.trigger({
             versionModal: this.versionModal
         })
-    },
+    }
 
     closeVersionModal() {
         this.versionModal = false;
         this.trigger({
             versionModal: this.versionModal
         })
-    },
+    }
 
     loadAgents () {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     loadAgentsSuccess (results) {
         this.agents = results;
@@ -1120,14 +1049,14 @@ var ProjectStore = Reflux.createStore({
             agents: this.agents,
             loading: this.loading
         })
-    },
+    }
 
     addAgent () {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     addAgentSuccess () {
         this.loading = false;
@@ -1135,14 +1064,14 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     editAgent(id) {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     editAgentSuccess(id) {
         let kind = 'software_agents';
@@ -1151,14 +1080,14 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     deleteAgent() {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     deleteAgentSuccess() {
         this.loading = false;
@@ -1166,14 +1095,14 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     createAgentKey() {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     createAgentKeySuccess(json) {
         this.agentKey = json;
@@ -1182,14 +1111,14 @@ var ProjectStore = Reflux.createStore({
             agentKey: this.agentKey,
             loading: this.loading
         })
-    },
+    }
 
     getAgentKey() {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     getAgentKeySuccess(json) {
         this.agentKey = json;
@@ -1198,14 +1127,14 @@ var ProjectStore = Reflux.createStore({
             agentKey: this.agentKey,
             loading: this.loading
         })
-    },
+    }
 
     getAgentApiToken() {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     getAgentApiTokenSuccess(json) {
         this.agentApiToken = json;
@@ -1216,14 +1145,14 @@ var ProjectStore = Reflux.createStore({
             loading: this.loading
         })
 
-    },
+    }
 
     clearApiToken() {
         this.agentApiToken = {};
         this.trigger({
             agentApiToken: this.agentApiToken
         })
-    },
+    }
 
     selectMoveLocation (id, kind){
         this.destination = id;
@@ -1232,14 +1161,14 @@ var ProjectStore = Reflux.createStore({
             destination: this.destination,
             destinationKind: this.destinationKind
         })
-    },
+    }
 
     showBatchOptions () {
         this.showBatchOps = false;
         this.trigger({
             showBatchOps: this.showBatchOps
         })
-    },
+    }
 
     setBatchItems(batchDeleteFiles, batchDeleteFolders) {
         this.batchFiles = batchDeleteFiles;
@@ -1248,7 +1177,7 @@ var ProjectStore = Reflux.createStore({
             batchFiles: this.batchFiles,
             batchFolders: this.batchFolders
         })
-    },
+    }
 
     batchDeleteItems(parentId, parentKind) {
         let files = this.batchFiles;
@@ -1259,7 +1188,7 @@ var ProjectStore = Reflux.createStore({
         for (let i = 0; i < folders.length; i++) {
             ProjectActions.deleteFolder(folders[i], parentId, parentKind);
         }
-    },
+    }
 
     handleBatch (files, folders) {
         this.filesChecked = files;
@@ -1272,7 +1201,7 @@ var ProjectStore = Reflux.createStore({
             itemsSelected: this.itemsSelected,
             showBatchOps: this.showBatchOps
         })
-    },
+    }
 
     clearSelectedItems() {
         this.filesChecked = [];
@@ -1281,17 +1210,13 @@ var ProjectStore = Reflux.createStore({
             filesChecked: this.filesChecked,
             foldersChecked: this.foldersChecked
         })
-    },
+    }
 
     handleErrors (error) {
-        MainActions.displayErrorModals(error);
+        mainStore.displayErrorModals(error);
         this.loading = false;
         this.drawerLoading = false;
-        this.trigger({
-            drawerLoading: this.drawerLoading,
-            loading: this.loading
-        })
-    },
+    }
 
     getUserSuccess (json, id) {
         this.currentUser = json;
@@ -1299,7 +1224,7 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             currentUser: this.currentUser
         });
-    },
+    }
 
     getPermissionsSuccess (json) {
         let id = json.auth_role.id;
@@ -1311,57 +1236,45 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             projPermissions: this.projPermissions
         });
-    },
+    }
 
     getUserKeySuccess (json) {
         this.userKey = json;
         this.trigger({
             userKey: this.userKey
         });
-    },
+    }
 
     createUserKeySuccess (json) {
         this.userKey = json;
         this.trigger({
             userKey: this.userKey
         });
-    },
+    }
 
     deleteUserKeySuccess () {
         this.userKey = {};
         this.trigger({
             userKey: this.userKey
         });
-    },
+    }
 
-    getProjects() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    },
-
-    getProjectsSuccess(results, headers, page) {
+    @action getProjectsSuccess(results, headers, page) {
         if(page <= 1) {
             this.projects = results;
         } else {
             this.projects = [...this.projects, ...results];
         }
         this.responseHeaders = headers;
-        this.loading = false;
-        this.trigger({
-            projects: this.projects,
-            loading: this.loading,
-            responseHeaders: this.responseHeaders
-        })
-    },
+        this.setLoadingState();
+    }
 
     showDetails() {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     showDetailsSuccess(json) {
         this.project = json;
@@ -1370,7 +1283,7 @@ var ProjectStore = Reflux.createStore({
             project: this.project,
             loading: this.loading
         })
-    },
+    }
 
     deleteItemSuccess(id, parentKind) {
         this.batchFolders.splice(0, 1);
@@ -1392,29 +1305,19 @@ var ProjectStore = Reflux.createStore({
             loading: this.loading,
             showBatchOps: this.showBatchOps
         })
-    },
+    }
 
-    addProject() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    },
-
-    addProjectSuccess() {
-        ProjectActions.getProjects();
-        this.loading = false;
-        this.trigger({
-            loading: this.loading
-        })
-    },
+    addProjectSuccess(json) {
+        //ProjectActions.getProjects();
+        this.projects = [json, ...this.projects];
+    }
 
     deleteProject() {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     deleteProjectSuccess() {
         ProjectActions.getProjects();
@@ -1423,14 +1326,14 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     editProject(id) {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     editProjectSuccess(id) {
         ProjectActions.showDetails(id);
@@ -1438,14 +1341,14 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     getChildren() {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     getChildrenSuccess(results, headers, page) {
         if(page <= 1) {
@@ -1460,14 +1363,14 @@ var ProjectStore = Reflux.createStore({
             responseHeaders: this.responseHeaders,
             loading: this.loading
         })
-    },
+    }
 
     addFolder() {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     addFolderSuccess(json) {
         this.listItems = [json, ...this.listItems];
@@ -1476,21 +1379,21 @@ var ProjectStore = Reflux.createStore({
             listItems: this.listItems,
             loading: this.loading
         })
-    },
+    }
 
     deleteFolder() {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     moveItem() {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     moveItemSuccess(id) {
         if(BaseUtils.objectPropInArray(this.listItems, 'id', id)) {
@@ -1501,14 +1404,14 @@ var ProjectStore = Reflux.createStore({
             listItems: this.listItems,
             loading: this.loading
         })
-    },
+    }
 
     addFile() {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     addFileSuccess(parentId, parentKind, uploadId, fileId) {
         if (this.uploads[uploadId].tags.length) {
@@ -1529,7 +1432,7 @@ var ProjectStore = Reflux.createStore({
             loading: this.loading,
             uploads: this.uploads
         })
-    },
+    }
 
 
     deleteFile() {
@@ -1537,14 +1440,14 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     editItem() {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     editItemSuccess(id, json, objectKind) {
         let kind = objectKind === 'dds-file' ? 'files' : 'folders';
@@ -1558,14 +1461,14 @@ var ProjectStore = Reflux.createStore({
             listItems: this.listItems,
             loading: this.loading
         })
-    },
+    }
 
     getEntity() {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     getEntitySuccess(json, requester) {
         if(this.projPermissions === null && (json.kind === 'dds-file' || json.kind === 'dds-folder')) ProjectActions.getUser(json.project.id);
@@ -1583,14 +1486,14 @@ var ProjectStore = Reflux.createStore({
             parent: this.parent,
             loading: this.loading
         })
-    },
+    }
 
     getProjectMembers() {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     getProjectMembersSuccess(results) {
         this.loading = false;
@@ -1599,21 +1502,21 @@ var ProjectStore = Reflux.createStore({
             projectMembers: this.projectMembers,
             loading: this.loading
         })
-    },
+    }
 
     getUserNameSuccess(results) {
         this.users = results.map((users) => {return users.full_name});
         this.trigger({
             users: this.users
         });
-    },
+    }
 
     getUserId() {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     getUserIdSuccess(results, id, role) {
         let userInfo = results.map((result) => {
@@ -1629,14 +1532,14 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     addProjectMember() {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     addProjectMemberSuccess(id) {
         ProjectActions.getProjectMembers(id);
@@ -1644,14 +1547,14 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     deleteProjectMember() {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     deleteProjectMemberSuccess(id) {
         ProjectActions.getProjectMembers(id);
@@ -1659,14 +1562,14 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     getDownloadUrl() {
         this.loading = true;
         this.trigger({
             loading: this.loading
         })
-    },
+    }
 
     getDownloadUrlSuccess(json) {
         if (this.itemsSelected) this.itemsSelected = this.itemsSelected - 1;
@@ -1685,23 +1588,11 @@ var ProjectStore = Reflux.createStore({
             itemsSelected: this.itemsSelected,
             showBatchOps: this.showBatchOps
         })
-    },
-
-    getUsageDetails() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    },
+    }
 
     getUsageDetailsSuccess(json) {
         this.usage = json;
-        this.loading = false;
-        this.trigger({
-            usage: this.usage,
-            loading: this.loading
-        })
-    },
+    }
 
     processFilesToUpload(files, rejectedFiles) {
         this.filesToUpload = files;
@@ -1710,14 +1601,14 @@ var ProjectStore = Reflux.createStore({
             filesToUpload: this.filesToUpload,
             filesRejectedForUpload: this.filesRejectedForUpload
         })
-    },
+    }
 
     startUpload() {
         this.loading = true;
         this.trigger({
             uploading: this.loading
         })
-    },
+    }
 
     startUploadSuccess(uploadId, details) {
         this.uploads[uploadId] = details;
@@ -1734,7 +1625,7 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             uploads: this.uploads
         })
-    },
+    }
 
     updateChunkProgress(uploadId, chunkNum, progress) {
         if (!uploadId && !this.uploads[uploadId]) {
@@ -1761,7 +1652,7 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             uploads: this.uploads
         });
-    },
+    }
 
     updateAndProcessChunks(uploadId, chunkNum, chunkUpdates) {
         if (!uploadId || !this.uploads[uploadId]) {
@@ -1800,7 +1691,7 @@ var ProjectStore = Reflux.createStore({
         window.onbeforeunload = function (e) { // If done, set to false so no warning is sent.
             let preventLeave = false;
         };
-    },
+    }
 
     uploadError(uploadId, fileName, projectId) {
         if (this.uploads.hasOwnProperty(uploadId)) {
@@ -1811,31 +1702,31 @@ var ProjectStore = Reflux.createStore({
                 projectId: projectId
             });
             delete this.uploads[uploadId];
-            MainActions.failedUpload(this.failedUploads);
+            mainStore.failedUpload(this.failedUploads);
         }
         this.trigger({
             uploads: this.uploads,
             failedUploads: this.failedUploads
         })
-    },
+    }
 
     cancelUpload(uploadId, name) {
         if(this.uploads.hasOwnProperty(uploadId)) {
             delete this.uploads[uploadId];
         }
-        MainActions.addToast('Canceled upload of '+name);
+        mainStore.addToast('Canceled upload of '+name);
         this.trigger({
             uploads: this.uploads
         })
-    },
+    }
 
     removeFailedUploads() {
         this.failedUploads = [];
-        MainActions.removeFailedUploads(this.failedUploads);
+        mainStore.removeFailedUploads(this.failedUploads);
         this.trigger({
             failedUploads: this.failedUploads
         })
-    },
+    }
 
     checkForHash(uploadId, parentId, parentKind, name, label, fileId, projectId) {
         let hash = this.fileHashes.find((fileHash)=>{ //Array.find method not supported in IE. See polyfills.js
@@ -1846,14 +1737,14 @@ var ProjectStore = Reflux.createStore({
         }else{
             ProjectActions.allChunksUploaded(uploadId, parentId, parentKind, name, label, fileId, hash.hash, projectId);
         }
-    },
+    }
 
     postHash(hash) {
         let fileHashes = this.fileHashes.push(hash);
         this.trigger({
             fileHashes: fileHashes
         })
-    },
+    }
 
     toggleModals(id) {
         this.toggleModal.open = !this.toggleModal.open;
@@ -1861,7 +1752,7 @@ var ProjectStore = Reflux.createStore({
         this.trigger({
             toggleModal: this.toggleModal
         });
-    },
+    }
 
     setSelectedEntitySuccess(entity) {
         this.selectedEntity = entity;
@@ -1869,6 +1760,8 @@ var ProjectStore = Reflux.createStore({
             selectedEntity: this.selectedEntity
         })
     }
-});
+}
 
-export default ProjectStore;
+const projectStore = new ProjectStore();
+
+export default projectStore;

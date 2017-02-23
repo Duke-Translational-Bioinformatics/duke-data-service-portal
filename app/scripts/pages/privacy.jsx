@@ -3,10 +3,6 @@ import Card from 'material-ui/Card';
 
 class Privacy extends React.Component {
 
-    constructor(props) {
-        super(props);
-    }
-
     render() {
 
         return (

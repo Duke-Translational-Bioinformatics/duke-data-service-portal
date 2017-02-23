@@ -13,7 +13,8 @@ import TextField from 'material-ui/TextField';
 
 class FolderOptions extends React.Component {
 
-    constructor() {
+    constructor(props) {
+        super(props);
         this.state = {
             floatingErrorText: ''
         }

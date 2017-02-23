@@ -1,14 +1,17 @@
 import React from 'react';
+import { observer } from 'mobx-react';
 import BaseUtils from '../../../util/baseUtils.js';
 import Card from 'material-ui/Card';
 import FontIcon from 'material-ui/FontIcon';
 
+@observer
 class AccountOverview extends React.Component {
 
     render() {
-        let numProjects = this.props.usage ? this.props.usage.project_count : '';
-        let numFiles = this.props.usage ? this.props.usage.file_count : '';
-        let bytes = this.props.usage ? this.props.usage.storage_bytes : '';
+        let usage = this.props.projectStore.usage ? this.props.projectStore.usage : null;
+        let numProjects = usage && usage !== null ? usage.project_count : '';
+        let numFiles = usage && usage !== null ? usage.file_count : '';
+        let bytes = usage && usage !== null ? usage.storage_bytes : '';
 
         return (
             <Card className="account-overview content mdl-color-text--grey-800"

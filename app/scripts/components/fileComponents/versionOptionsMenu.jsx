@@ -10,7 +10,8 @@ import MenuItem from 'material-ui/MenuItem';
 
 class VersionsOptionsMenu extends React.Component {
 
-    constructor() {
+    constructor(props) {
+        super(props);
         this.state = {
             deleteOpen: false,
             editOpen: false,

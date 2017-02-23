@@ -1,38 +1,35 @@
 import React from 'react';
+import { observer, inject } from 'mobx-react';
 import ProjectList from '../components/projectComponents/projectList.jsx';
 import AccountOverview from '../components/globalComponents/accountOverview.jsx';
-import ProjectStore from '../stores/projectStore';
+//import ProjectStore from '../stores/projectStore';
 import ProjectActions from '../actions/projectActions';
-import MainStore from '../stores/mainStore';
+import mainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions';
 import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
 
+@inject('mainStore', 'projectStore') @observer
 class Home extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            appConfig: MainStore.appConfig,
-            projects: ProjectStore.projects,
-            loading: false,
-            modalOpen: MainStore.modalOpen === undefined ? true : MainStore.modalOpen,
-            responseHeaders: ProjectStore.responseHeaders,
-            screenSize: ProjectStore.screenSize
+            appConfig: this.props.mainStore.appConfig,
+            modalOpen: this.props.mainStore.modalOpen === undefined ? true : this.props.mainStore.modalOpen,
+            responseHeaders: this.props.projectStore.responseHeaders,
+            screenSize: this.props.projectStore.screenSize
         };
     }
 
     componentDidMount() {
-        this.unsubscribe = ProjectStore.listen(state => this.setState(state));
         if(this.state.appConfig.apiToken) {
             ProjectActions.getProjects();
             ProjectActions.getUsageDetails();
-            MainActions.removeLoginCookie();
+            mainStore.removeLoginCookie();
         }
-    }
+        console.log(this.props.projectStore)
 
-    componentWillUnmount() {
-        this.unsubscribe();
     }
 
     render() {
@@ -84,7 +81,7 @@ class Home extends React.Component {
     }
 
     handleDeclineButton() {
-        MainStore.handleLogout();
+        mainStore.handleLogout();
     }
 }
 

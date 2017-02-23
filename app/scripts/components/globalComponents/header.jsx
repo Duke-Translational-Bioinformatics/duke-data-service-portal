@@ -18,11 +18,11 @@ class Header extends React.Component {
     }
 
     componentDidMount() {
-        this.unsubscribe = ProjectStore.listen(state => this.setState(state));
+        //this.unsubscribe = ProjectStore.listen(state => this.setState(state));
     }
 
     componentWillUnmount() {
-        this.unsubscribe();
+        //this.unsubscribe();
     }
 
     render() {

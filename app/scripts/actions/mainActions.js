@@ -1,89 +1,66 @@
-import Reflux from 'reflux';
 import appConfig from '../config';
 import ProjectActions from '../actions/projectActions';
+import projectStore from '../stores/projectStore';
+import mainStore from '../stores/mainStore';
 import {UrlGen, Path} from '../../util/urlEnum';
 import { checkStatus, getFetchParams } from '../../util/fetchUtil';
 
-var MainActions = Reflux.createActions([
-    'getAuthProviders',
-    'getAuthProvidersSuccess',
-    'getApiToken',
-    'getApiTokenSuccess',
-    'getApiTokenError',
-    'clearErrors',
-    'displayErrorModals',
-    'failedUpload',
-    'setApiToken',
-    'getCurrentUser',
-    'getCurrentUserSuccess',
-    'getCurrentUserError',
-    'isLoggedInHandler',
-    'addToast',
-    'removeToast',
-    'closePhiModal',
-    'handleLogout',
-    'removeLoginCookie',
-    'removeFailedUploads',
-    'removeErrorModal'
-]);
+const mainActions = {
 
-MainActions.getAuthProviders.preEmit = (appConfig) => {
-    fetch(DDS_PORTAL_CONFIG.baseUrl+UrlGen.routes.apiPrefix+'auth_providers', {
-        method: 'get',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    }).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        if (json.results) {
-            MainActions.getAuthProvidersSuccess(json.results);
-        } else {
-            throw "An error has occurred while trying to authenticate";
-        }
-    }).catch((ex) => {
-        ProjectActions.handleErrors(ex);
-    });
-};
-
-MainActions.getApiToken.preEmit = (appConfig, accessToken) => {
-    fetch(appConfig.baseUrl+UrlGen.routes.apiPrefix+Path.ACCESS_TOKEN+accessToken+'&authentication_service_id='+appConfig.serviceId, {
-        method: 'get',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    }).then(checkResponse).then((response) => {
-        return response.json()
-    }).then((json) => {
-        if (json.api_token) {
-            MainActions.getApiTokenSuccess(json.api_token);
-        } else {
-            throw "An error has occurred while trying to authenticate";
-        }
-    }).catch((ex) => {
-        MainActions.getApiTokenError(ex);
-        ProjectActions.handleErrors(ex);
-    });
-};
-
-MainActions.getCurrentUser.preEmit = () => {
-    fetch(UrlGen.routes.baseUrl+UrlGen.routes.apiPrefix+Path.CURRENT_USER,
-        getFetchParams('get', appConfig.apiToken))
-        .then(checkResponse).then((response) => {
+    getAuthProviders(appConfig) {
+        fetch(DDS_PORTAL_CONFIG.baseUrl + UrlGen.routes.apiPrefix + 'auth_providers', {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then(checkStatus).then((response) => {
             return response.json()
         }).then((json) => {
-            MainActions.getCurrentUserSuccess(json);
-        })
-        .catch((ex) => {
-            MainActions.getCurrentUserError(ex);
-            ProjectActions.handleErrors(ex);
+            if (json.results) {
+                mainStore.getAuthProvidersSuccess(json.results);
+            } else {
+                throw "An error has occurred while trying to authenticate";
+            }
+        }).catch((ex) => {
+            projectStore.handleErrors(ex);
         });
+    },
+
+    getApiToken(appConfig, accessToken) {
+        fetch(appConfig.baseUrl + UrlGen.routes.apiPrefix + Path.ACCESS_TOKEN + accessToken + '&authentication_service_id=' + appConfig.serviceId, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then(checkStatus).then((response) => {
+            return response.json()
+        }).then((json) => {
+            if (json.api_token) {
+                mainStore.getApiTokenSuccess(json.api_token);
+            } else {
+                throw "An error has occurred while trying to authenticate";
+            }
+        }).catch((ex) => {
+            mainStore.getError(ex);
+            projectStore.handleErrors(ex);
+        });
+    },
+
+    getCurrentUser() {
+        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER,
+            getFetchParams('get', mainStore.appConfig.apiToken))
+            .then(checkStatus).then((response) => {
+                return response.json()
+            }).then((json) => {
+                mainStore.getCurrentUserSuccess(json);
+            })
+            .catch((ex) => {
+                mainStore.getError(ex);
+                projectStore.handleErrors(ex);
+            });
+    }
 };
 
-function checkResponse(response) {
-    return checkStatus(response, MainActions);
-}
-
-export default MainActions;
+export default mainActions;

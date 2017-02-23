@@ -11,7 +11,8 @@ import IconButton from 'material-ui/IconButton';
 
 class AgentOptionsMenu extends React.Component {
 
-    constructor() {
+    constructor(props) {
+        super(props);
         this.state = {
             apiTokenOpen: false,
             deleteOpen: false,

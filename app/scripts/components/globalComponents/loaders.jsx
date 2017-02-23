@@ -1,4 +1,5 @@
 import React from 'react'
+import { observer } from 'mobx-react';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import LinearProgress from 'material-ui/LinearProgress';
@@ -7,9 +8,9 @@ class Loaders extends React.Component {
 
     render() {
         let uploading = null;
-        if (this.props.uploads) {
-            uploading = Object.keys(this.props.uploads).map(uploadId => {
-                let upload = this.props.uploads[uploadId];
+        if (this.props.projectStore.uploads) {
+            uploading = Object.keys(this.props.projectStore.uploads).map(uploadId => {
+                let upload = this.props.projectStore.uploads[uploadId];
                 return <div key={'pgrs'+uploadId}>
                     <LinearProgress mode="determinate" color={'#EC407A'} style={styles.uploader} value={upload.uploadProgress} max={100} min={0}/>
                     <i className="material-icons" style={styles.deleteIcon} onTouchTap={()=>this.cancelUpload(uploadId, upload.name)}>cancel</i>
@@ -19,9 +20,9 @@ class Loaders extends React.Component {
                 </div>;
             });
         }
-        let loading = this.props.loading ?
+        let loading = this.props.projectStore.loading ?
         <LinearProgress mode="indeterminate" color={'#EC407A'} style={styles.uploader}/> : '';
-        if (this.props.uploads && Object.keys(this.props.uploads).length != 0) {
+        if (this.props.projectStore.uploads && Object.keys(this.props.projectStore.uploads).length != 0) {
             return (
                 <div>
                     {uploading}

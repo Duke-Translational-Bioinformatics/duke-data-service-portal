@@ -9,7 +9,8 @@ import FlatButton from 'material-ui/FlatButton';
 
 class FileOptions extends React.Component {
 
-    constructor() {
+    constructor(props) {
+        super(props);
         this.state = {
             floatingErrorText: ''
         }

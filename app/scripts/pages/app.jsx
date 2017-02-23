@@ -1,13 +1,14 @@
 import React from 'react';
+import { observer, inject } from 'mobx-react';
 import Header from '../components/globalComponents/header.jsx';
 import Footer from '../components/globalComponents/footer.jsx';
 import LeftMenu from '../components/globalComponents/leftMenu.jsx';
 import RetryUploads from '../components/globalComponents/retryUploads.jsx';
 import Search from '../components/globalComponents/search.jsx';
-import MainStore from '../stores/mainStore';
+import mainStore from '../stores/mainStore';
 import MainActions from '../actions/mainActions';
 import ProjectActions from '../actions/projectActions';
-import ProjectStore from '../stores/projectStore';
+import projectStore from '../stores/projectStore';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -22,20 +23,26 @@ let zIndex = {
     }
 };
 
+@inject('mainStore', 'projectStore') @observer
 class App extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {
-            appConfig: MainStore.appConfig,
-            currentUser: MainStore.currentUser,
+            appConfig: mainStore.appConfig,
+            currentUser: mainStore.currentUser,
             windowWidth: window.innerWidth,
-            error: MainStore.error,
+            error: mainStore.error,
             errorModal: true,
-            errorModals: MainStore.errorModals,
-            failedUploads: MainStore.failedUploads
+            errorModals: mainStore.errorModals,
+            failedUploads: mainStore.failedUploads
         };
         this.handleResize = this.handleResize.bind(this);
     }
+
+    static childContextTypes = {
+        muiTheme: React.PropTypes.object,
+    };
 
     getChildContext() {
         return {
@@ -45,9 +52,9 @@ class App extends React.Component {
 
     componentDidMount() {
         MainActions.getAuthProviders();
-        ProjectActions.getScreenSize(window.innerHeight, window.innerWidth);
+        projectStore.getScreenSize(window.innerHeight, window.innerWidth);
         window.addEventListener('resize', this.handleResize);
-        this.unsubscribe = MainStore.listen(state => this.setState(state));
+        //this.unsubscribe = MainStore.listen(state => this.setState(state));
         this.showToasts();
         let app = new Framework7();
         new Framework7().addView('.view-main', {dynamicNavbar: true});
@@ -56,7 +63,7 @@ class App extends React.Component {
             ipad: app.device.ipad,
             iphone: app.device.iphone
         };
-        ProjectActions.getDeviceType(device);
+        projectStore.getDeviceType(device);
         if (this.state.appConfig.apiToken) {
             MainActions.getCurrentUser();
             ProjectActions.loadMetadataTemplates(null);
@@ -66,7 +73,7 @@ class App extends React.Component {
 
     componentWillUnmount() {
         window.removeEventListener('resize', this.handleResize);
-        this.unsubscribe();
+        //this.unsubscribe();
         new Framework7().closePanel();
     }
 
@@ -94,7 +101,7 @@ class App extends React.Component {
     checkError() {
         if (this.state.error && this.state.error.response){
             if(this.state.error.response === 404) {
-                MainActions.clearErrors();
+                mainStore.clearErrors();
                 setTimeout(()=>this.props.router.push('/404'),1000);
             }
             this.state.error.response != 404 ? console.log(this.state.error.msg) : null;
@@ -103,7 +110,7 @@ class App extends React.Component {
 
     handleResize(e) {
         this.setState({windowWidth: window.innerWidth});
-        ProjectActions.getScreenSize(window.innerHeight, window.innerWidth);
+        projectStore.getScreenSize(window.innerHeight, window.innerWidth);
     }
 
     createLoginUrl() {
@@ -121,8 +128,8 @@ class App extends React.Component {
                 }, 10000);
             }
         }
-        if (this.state.toasts) {
-            toasts = this.state.toasts.map(obj => {
+        if (this.props.mainStore.toasts) {
+            toasts = this.props.mainStore.toasts.map(obj => {
                 return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} open={true}/>
             });
         }
@@ -180,15 +187,15 @@ class App extends React.Component {
     }
 
     closeErrorModal(refId) {
-        MainActions.removeErrorModal(refId);
+        mainStore.removeErrorModal(refId);
         this.setState({errorModal: false});
         setTimeout(() => this.setState({errorModal: true}), 500);
     }
 
     showToasts() {
-        if (this.state.toasts) {
-            this.state.toasts.map(obj => {
-                setTimeout(() => MainActions.removeToast(obj.ref), 2500);
+        if (this.props.mainStore.toasts) {
+            this.props.mainStore.toasts.map(obj => {
+                setTimeout(() => mainStore.removeToast(obj.ref), 2500);
             });
         }
     }
@@ -218,10 +225,6 @@ var styles = {
         textAlign: 'center',
         color: '#F44336'
     }
-};
-
-App.childContextTypes = {
-    muiTheme: React.PropTypes.object
 };
 
 export default App;

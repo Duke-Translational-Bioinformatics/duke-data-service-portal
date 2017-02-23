@@ -8,7 +8,8 @@ import TextField from 'material-ui/TextField';
 
 class AddFolderModal extends React.Component {
 
-    constructor() {
+    constructor(props) {
+        super(props);
         this.state = {
             floatingErrorText: ''
         }

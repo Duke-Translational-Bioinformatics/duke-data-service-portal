@@ -12,7 +12,8 @@ import SelectField from 'material-ui/SelectField';
 
 class ProjectOptionsMenu extends React.Component {
 
-    constructor() {
+    constructor(props) {
+        super(props);
         this.state = {
             deleteOpen: false,
             editOpen: false,

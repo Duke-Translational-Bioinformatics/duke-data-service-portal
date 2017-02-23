@@ -11,7 +11,8 @@ import LocalOffer from 'material-ui/svg-icons/maps/local-offer';
 
 class BatchOps extends React.Component {
 
-    constructor() {
+    constructor(props) {
+        super(props);
         this.state = {
             deleteOpen: false,
             downloadOpen: false

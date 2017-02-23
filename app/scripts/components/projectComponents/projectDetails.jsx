@@ -11,7 +11,8 @@ import Card from 'material-ui/Card';
 
 class ProjectDetails extends React.Component {
 
-    constructor() {
+    constructor(props) {
+        super(props);
         this.state = {
             showDetails: false
         }

@@ -8,7 +8,8 @@ import SelectField from 'material-ui/SelectField';
 
 class Details extends React.Component {
 
-    constructor() {
+    constructor(props) {
+        super(props);
         this.state = {
             deleteModal: false,
             errorText: null,
