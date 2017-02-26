@@ -1,6 +1,6 @@
 import React from 'react';
+import { observer } from 'mobx-react';
 import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
 import BaseUtils from '../../../util/baseUtils.js';
 import {UrlGen, Path} from '../../../util/urlEnum';
 import BatchOps from '../../components/globalComponents/batchOps.jsx';
@@ -11,17 +11,19 @@ import Loaders from '../../components/globalComponents/loaders.jsx';
 import FontIcon from 'material-ui/FontIcon';
 import RaisedButton from 'material-ui/RaisedButton';
 
+@observer
 class ListItems extends React.Component {
 
     render() {
-        if(!this.props.showBatchOps) this.uncheck();
+        const {listItems, loading, projPermissions, responseHeaders, screenSize, showBatchOps, uploads} = this.props.projectStore;
+        if(!showBatchOps) this.uncheck();
         let chkBx = <div className="item-media"></div>;
-        let headers = this.props.responseHeaders && this.props.responseHeaders !== null ? this.props.responseHeaders : null;
+        let headers = responseHeaders && responseHeaders !== null ? responseHeaders : null;
         let nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
         let totalChildren = headers !== null && !!headers['x-total'] ? headers['x-total'][0] : null;
         let type = 'hidden';
         let newFolderModal = null;
-        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
+        let prjPrm = projPermissions && projPermissions !== undefined ? projPermissions : null;
         if (prjPrm !== null) {
             newFolderModal = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <AddFolderModal {...this.props}/>;
             if (prjPrm !== 'viewOnly' && prjPrm !== 'flUpload') {
@@ -31,7 +33,7 @@ class ListItems extends React.Component {
                 </div>
             }
         }
-        let children = this.props.listItems ? this.props.listItems.map((children) => {
+        let children = listItems ? listItems.map((children) => {
             let fileOptionsMenu = this.props.screenSize && this.props.screenSize.width >= 680 ? <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, 'files')}/> : null;
             let folderOptionsMenu = this.props.screenSize && this.props.screenSize.width >= 680 ? <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, 'folders')}/> : null;
             if (children.kind === 'dds-folder') {
@@ -100,30 +102,30 @@ class ListItems extends React.Component {
         return (
             <div className="list-container" ref={(c) => this.listContainer = c}>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
-                    {!this.props.showBatchOps ? <div className="mdl-cell mdl-cell--12-col">
+                    {!showBatchOps ? <div className="mdl-cell mdl-cell--12-col">
                         { newFolderModal }
                     </div> : null}
                     <div className="mdl-cell mdl-cell--12-col" style={styles.batchOpsWrapper}>
-                        { this.props.showBatchOps ? <BatchOps {...this.props} {...this.state}/> : null }
+                        { showBatchOps ? <BatchOps {...this.props} {...this.state}/> : null }
                     </div>
                 </div>
-                { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
+                { uploads || loading ? <Loaders {...this.props}/> : null }
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     <div className="list-block list-block-search searchbar-found media-list">
                         <ul>
                             { children }
                         </ul>
                     </div>
-                    {this.props.listItems.length < totalChildren && totalChildren > 25 ?
+                    {listItems.length < totalChildren && totalChildren > 25 ?
                         <div className="mdl-cell mdl-cell--12-col">
                             <RaisedButton
-                                label={this.props.loading ? "Loading..." : "Load More"}
+                                label={loading ? "Loading..." : "Load More"}
                                 secondary={true}
-                                disabled={this.props.loading ? true : false}
+                                disabled={loading ? true : false}
                                 onTouchTap={()=>this.loadMore(nextPage)}
                                 fullWidth={true}
-                                style={this.props.loading ? {backgroundColor: '#69A3DD'} : {}}
-                                labelStyle={this.props.loading ? {color: '#235F9C'} : {fontWeight: '100'}}/>
+                                style={loading ? {backgroundColor: '#69A3DD'} : {}}
+                                labelStyle={loading ? {color: '#235F9C'} : {fontWeight: '100'}}/>
                         </div> : null}
                 </div>
             </div>

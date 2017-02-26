@@ -1,6 +1,7 @@
 import React from 'react';
 import { Router, Route, IndexRoute, Redirect, hashHistory } from 'react-router';
 import { Provider } from 'mobx-react';
+import authStore from './stores/authStore';
 import mainStore from './stores/mainStore';
 import projectStore from './stores/projectStore';
 import App from './pages/app.jsx';
@@ -18,7 +19,7 @@ import Results from './pages/results.jsx';
 import Version from './pages/version.jsx';
 import NotFound from './pages/notFound.jsx';
 
-const stores = { mainStore, projectStore };
+const stores = { authStore, mainStore, projectStore };
 
 const routes = (
     <Provider {...stores}>

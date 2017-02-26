@@ -1,6 +1,7 @@
 import React from 'react';
+import { observer, inject } from 'mobx-react';
 import ProjectActions from '../actions/projectActions';
-import ProjectStore from '../stores/projectStore';
+import projectStore from '../stores/projectStore';
 import ListItems from '../components/globalComponents/listItems.jsx';
 import ProjectDetails from '../components/projectComponents/projectDetails.jsx';
 import FileOptions from '../components/fileComponents/fileOptions.jsx';
@@ -9,45 +10,46 @@ import TagManager from '../components/globalComponents/tagManager.jsx'
 import VersionUpload from '../components/fileComponents/versionUpload.jsx';
 import {Path} from '../../util/urlEnum';
 
+@inject('mainStore', 'projectStore') @observer
 class Project extends React.Component {
 
     constructor(props) {
         super(props);
         this.props = props;
-        this.state = {
-            listItems: ProjectStore.listItems,
-            responseHeaders: ProjectStore.responseHeaders,
-            currentUser: ProjectStore.currentUser,
-            drawerLoading: ProjectStore.drawerLoading,
-            filesChecked: ProjectStore.filesChecked,
-            filesToUpload: ProjectStore.filesToUpload,
-            filesRejectedForUpload: ProjectStore.filesRejectedForUpload,
-            foldersChecked: ProjectStore.foldersChecked,
-            loading: false,
-            metaObjProps: ProjectStore.metaObjProps,
-            moveItemList: ProjectStore.moveItemList,
-            moveToObj: ProjectStore.moveToObj,
-            objectTags: ProjectStore.objectTags,
-            openTagManager: ProjectStore.openTagManager,
-            openUploadManager: ProjectStore.openUploadManager,
-            projects: ProjectStore.projects,
-            project: ProjectStore.project,
-            screenSize: ProjectStore.screenSize,
-            searchValue: ProjectStore.searchValue,
-            selectedEntity: ProjectStore.selectedEntity,
-            tagAutoCompleteList: ProjectStore.tagAutoCompleteList,
-            tagLabels: ProjectStore.tagLabels,
-            tagsToAdd: ProjectStore.tagsToAdd,
-            toggleModal: ProjectStore.toggleModal,
-            uploads: ProjectStore.uploads,
-            users: ProjectStore.users
-        };
+        //this.state = {
+        //    listItems: projectStore.listItems,
+        //    responseHeaders: projectStore.responseHeaders,
+        //    currentUser: projectStore.currentUser,
+        //    drawerLoading: projectStore.drawerLoading,
+        //    filesChecked: projectStore.filesChecked,
+        //    filesToUpload: projectStore.filesToUpload,
+        //    filesRejectedForUpload: projectStore.filesRejectedForUpload,
+        //    foldersChecked: projectStore.foldersChecked,
+        //    loading: false,
+        //    metaObjProps: projectStore.metaObjProps,
+        //    moveItemList: projectStore.moveItemList,
+        //    moveToObj: projectStore.moveToObj,
+        //    objectTags: projectStore.objectTags,
+        //    openTagManager: projectStore.openTagManager,
+        //    openUploadManager: projectStore.openUploadManager,
+        //    projects: projectStore.projects,
+        //    project: projectStore.project,
+        //    screenSize: projectStore.screenSize,
+        //    searchValue: projectStore.searchValue,
+        //    selectedEntity: projectStore.selectedEntity,
+        //    tagAutoCompleteList: projectStore.tagAutoCompleteList,
+        //    tagLabels: projectStore.tagLabels,
+        //    tagsToAdd: projectStore.tagsToAdd,
+        //    toggleModal: projectStore.toggleModal,
+        //    uploads: projectStore.uploads,
+        //    users: projectStore.users
+        //};
     }
 
     componentDidMount() {
         let id = this.props.params.id;
-        this.unsubscribe = ProjectStore.listen(state => this.setState(state));
-        if(ProjectStore.openTagManager) ProjectActions.toggleTagManager();
+        //this.unsubscribe = projectStore.listen(state => this.setState(state));
+        if(projectStore.openTagManager) ProjectActions.toggleTagManager();
         ProjectActions.getChildren(id, Path.PROJECT);
         ProjectActions.showDetails(id);
         ProjectActions.getProjectMembers(id);
@@ -64,7 +66,7 @@ class Project extends React.Component {
     }
 
     componentWillUnmount() {
-        this.unsubscribe();
+        //this.unsubscribe();
     }
 
     render() {

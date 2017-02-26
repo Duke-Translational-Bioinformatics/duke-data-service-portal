@@ -1,4 +1,5 @@
 import React from 'react';
+import { observer } from 'mobx-react';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
 import {Kind, Path} from '../../../util/urlEnum';
@@ -7,6 +8,7 @@ import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 
+@observer
 class FileOptions extends React.Component {
 
     constructor(props) {
@@ -17,12 +19,17 @@ class FileOptions extends React.Component {
     }
 
     render() {
-        let dltOpen = this.props.toggleModal && this.props.toggleModal.id === 'dltFile' ? this.props.toggleModal.open : false;
-        let editOpen = this.props.toggleModal && this.props.toggleModal.id === 'editFile' ? this.props.toggleModal.open : false;
-        let moveOpen = this.props.toggleModal && this.props.toggleModal.id === 'moveItem' ? this.props.toggleModal.open : false;
-        let fileName = this.props.selectedEntity !== null ? this.props.selectedEntity.name : null;
-        if(fileName === null) fileName = this.props.entityObj && this.props.entityObj !== null ? this.props.entityObj.name : null;
-        let dialogWidth = this.props.screenSize.width < 580 ? {width: '100%'} : {};
+        const {entityObj, selectedEntity, toggleModal} = this.props.projectStore;
+        const {screenSize} = this.props.mainStore;
+        let dltOpen = toggleModal && toggleModal.id === 'dltFile' ? toggleModal.open : false;
+        let editOpen = toggleModal && toggleModal.id === 'editFile' ? toggleModal.open : false;
+        let moveOpen = toggleModal && toggleModal.id === 'moveItem' ? toggleModal.open : false;
+        let id = selectedEntity !== null ? selectedEntity.id : entityObj !== null ? entityObj.id : null;
+        let parentId = selectedEntity !== null ? selectedEntity.parent.id : entityObj !== null ? entityObj.parent.id : null;
+        let parentKind = selectedEntity !== null ? selectedEntity.parent.kind : entityObj !== null ? entityObj.parent.kind : null;
+        let fileName = selectedEntity !== null ? selectedEntity.name : null;
+        if(fileName === null) fileName = entityObj && entityObj !== null ? entityObj.name : null;
+        let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         const deleteActions = [
             <FlatButton
                 label="CANCEL"
@@ -32,7 +39,7 @@ class FileOptions extends React.Component {
                 label="DELETE"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={() => this.handleDeleteButton()}/>
+                onTouchTap={() => this.handleDeleteButton(id, parentId, parentKind)}/>
         ];
         const editActions = [
             <FlatButton
@@ -43,7 +50,7 @@ class FileOptions extends React.Component {
                 label="UPDATE"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={() => this.handleUpdateButton()}/>
+                onTouchTap={() => this.handleUpdateButton(id)}/>
         ];
         const moveActions = [
             <FlatButton
@@ -97,7 +104,7 @@ class FileOptions extends React.Component {
                     autoDetectWindowHeight={true}
                     actions={moveActions}
                     open={moveOpen}
-                    onRequestClose={() => this.handleCloseMoveModal()}>
+                    onRequestClose={() => this.handleCloseMoveModal(id)}>
                     <MoveItemModal {...this.props}/>
                 </Dialog>
             </div>
@@ -108,19 +115,14 @@ class FileOptions extends React.Component {
         ProjectActions.toggleModals(id);
     }
 
-    handleDeleteButton() {
-        let id = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.entityObj.id;
-        let parentId = this.props.selectedEntity !== null ? this.props.selectedEntity.parent.id : this.props.entityObj.parent.id;
-        let parentKind = this.props.selectedEntity !== null ? this.props.selectedEntity.parent.kind :  this.props.entityObj.parent.kind;
-        let urlPath = '';
-        parentKind === 'dds-project' ? urlPath = '/project/' : urlPath = '/folder/';
+    handleDeleteButton(id, parentId, parentKind) {
+        let urlPath = parentKind === 'dds-project' ? '/project/' : '/folder/';
         ProjectActions.deleteFile(id, parentId, parentKind);
         this.handleClose('dltFile');
         setTimeout(()=>this.props.router.push(urlPath + parentId), 500)
     }
 
-    handleUpdateButton() {
-        let id = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.entityObj.id;
+    handleUpdateButton(id) {
         let fileName = this.fileNameText.getValue();
         if (this.state.floatingErrorText != '') {
             return null
@@ -130,8 +132,7 @@ class FileOptions extends React.Component {
         }
     }
 
-    handleCloseMoveModal() {
-        let id = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.entityObj.id;
+    handleCloseMoveModal(id) {
         let kind = 'files';
         ProjectActions.getEntity(id, kind);
         ProjectActions.toggleModals('moveItem');

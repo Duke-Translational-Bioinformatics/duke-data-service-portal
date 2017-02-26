@@ -1,6 +1,7 @@
 import Reflux from 'reflux';
 import MainActions from '../actions/mainActions';
 import mainStore from '../stores/mainStore';
+import authStore from '../stores/authStore';
 import projectStore from '../stores/projectStore';
 import { UrlGen, Kind, Path } from '../../util/urlEnum';
 import appConfig from '../config';
@@ -12,7 +13,7 @@ const ProjectActions = {
     searchObjects(value, includeKinds, includeProjects) {
         if (includeKinds === null || !includeKinds.length) includeKinds = ['dds-file', 'dds-folder'];
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + '/search',
-            getFetchParams('post', mainStore.appConfig.apiToken, {
+            getFetchParams('post', authStore.appConfig.apiToken, {
                 "include_kinds": includeKinds,
                 "search_query": {
                     "query": {
@@ -51,7 +52,7 @@ const ProjectActions = {
 
     getMoveItemList(id, path) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + Path.CHILDREN,
-            getFetchParams('get', mainStore.appConfig.apiToken)
+            getFetchParams('get', authStore.appConfig.apiToken)
         ).then(checkStatus).then((response) => {
                 return response.json()
             }).then((json) => {
@@ -63,7 +64,7 @@ const ProjectActions = {
 
     getObjectMetadata(id, kind) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.META + kind + "/" + id,
-            getFetchParams('get', mainStore.appConfig.apiToken))
+            getFetchParams('get', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
                 return response.json()
             }).then((json) => {
@@ -75,7 +76,7 @@ const ProjectActions = {
 
     createMetadataObject(kind, fileId, templateId, properties) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.META + kind + "/" + fileId + "/" + templateId,
-            getFetchParams('post', mainStore.appConfig.apiToken, {
+            getFetchParams('post', authStore.appConfig.apiToken, {
                     "properties": properties
                 }
             )
@@ -96,7 +97,7 @@ const ProjectActions = {
 
     updateMetadataObject(kind, fileId, templateId, properties) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.META + kind + "/" + fileId + "/" + templateId,
-            getFetchParams('put', mainStore.appConfig.apiToken, {
+            getFetchParams('put', authStore.appConfig.apiToken, {
                 "properties": properties
             })
         ).then(checkStatus).then((response) => {
@@ -112,7 +113,7 @@ const ProjectActions = {
 
     deleteMetadataProperty(id, label) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATE_PROPERTIES + id,
-            getFetchParams('delete', mainStore.appConfig.apiToken))
+            getFetchParams('delete', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
             }).then((json) => {
                 mainStore.addToast('The ' + label + ' property has been deleted');
@@ -125,7 +126,7 @@ const ProjectActions = {
 
     getMetadataTemplateProperties(id) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id + Path.PROPERTIES,
-            getFetchParams('get', mainStore.appConfig.apiToken))
+            getFetchParams('get', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
                 return response.json()
             }).then((json) => {
@@ -137,7 +138,7 @@ const ProjectActions = {
 
     createMetadataProperty(id, name, label, desc, type) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id + Path.PROPERTIES,
-            getFetchParams('post', mainStore.appConfig.apiToken, {
+            getFetchParams('post', authStore.appConfig.apiToken, {
                 "key": name,
                 "label": label,
                 "description": desc,
@@ -156,7 +157,7 @@ const ProjectActions = {
 
     deleteTemplate(id, label) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id,
-            getFetchParams('delete', mainStore.appConfig.apiToken))
+            getFetchParams('delete', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
             }).then((json) => {
                 mainStore.addToast('The ' + label + ' template has been deleted');
@@ -169,7 +170,7 @@ const ProjectActions = {
 
     updateMetadataTemplate(id, name, label, desc) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id,
-            getFetchParams('put', mainStore.appConfig.apiToken, {
+            getFetchParams('put', authStore.appConfig.apiToken, {
                 "name": name,
                 "label": label,
                 "description": desc
@@ -189,7 +190,7 @@ const ProjectActions = {
 
     createMetadataTemplate(name, label, desc) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES,
-            getFetchParams('post', mainStore.appConfig.apiToken, {
+            getFetchParams('post', authStore.appConfig.apiToken, {
                 "name": name,
                 "label": label,
                 "description": desc
@@ -208,7 +209,7 @@ const ProjectActions = {
 
     getMetadataTemplateDetails(id) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id,
-            getFetchParams('get', mainStore.appConfig.apiToken))
+            getFetchParams('get', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
                 return response.json()
             }).then((json) => {
@@ -221,7 +222,7 @@ const ProjectActions = {
     loadMetadataTemplates(value) {
         let searchQuery = value !== null ? '?name_contains=' + value : '';
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + searchQuery,
-            getFetchParams('get', mainStore.appConfig.apiToken))
+            getFetchParams('get', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
                 return response.json()
             }).then((json) => {
@@ -233,7 +234,7 @@ const ProjectActions = {
 
     addProvRelation(kind, body) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'relations/' + kind,
-            getFetchParams('post', mainStore.appConfig.apiToken, body)
+            getFetchParams('post', authStore.appConfig.apiToken, body)
         ).then(checkStatus).then((response) => {
                 return response.json()
             }).then((json) => {
@@ -249,7 +250,7 @@ const ProjectActions = {
         let kind = data.hasOwnProperty('from') ? 'relations/' : 'activities/';
         let msg = kind === 'activities/' ? data.label : data.type;
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + kind + data.id,
-            getFetchParams('delete', mainStore.appConfig.apiToken))
+            getFetchParams('delete', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
             }).then((json) => {
                 mainStore.addToast(msg + ' deleted');
@@ -262,7 +263,7 @@ const ProjectActions = {
 
     addProvActivity(name, desc) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.ACTIVITIES,
-            getFetchParams('post', mainStore.appConfig.apiToken, {
+            getFetchParams('post', authStore.appConfig.apiToken, {
                 "name": name,
                 "description": desc
             })
@@ -279,7 +280,7 @@ const ProjectActions = {
 
     editProvActivity(id, name, desc, prevName) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.ACTIVITIES + id,
-            getFetchParams('put', mainStore.appConfig.apiToken, {
+            getFetchParams('put', authStore.appConfig.apiToken, {
                 "name": name,
                 "description": desc
             })
@@ -299,7 +300,7 @@ const ProjectActions = {
 
     getActivities() {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.ACTIVITIES,
-            getFetchParams('get', mainStore.appConfig.apiToken))
+            getFetchParams('get', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
                 return response.json()
             }).then((json) => {
@@ -311,7 +312,7 @@ const ProjectActions = {
 
     getProvenance(id, kind, prevGraph) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'search/provenance?max_hops=1',
-            getFetchParams('post', mainStore.appConfig.apiToken, {
+            getFetchParams('post', authStore.appConfig.apiToken, {
                 'start_node': {
                     kind: kind,
                     id: id
@@ -328,7 +329,7 @@ const ProjectActions = {
 
     getWasGeneratedByNode(id, kind, prevGraph) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'search/provenance/origin',
-            getFetchParams('post', mainStore.appConfig.apiToken, {
+            getFetchParams('post', authStore.appConfig.apiToken, {
                 'file_versions': [{
                     id: id
                 }]
@@ -344,7 +345,7 @@ const ProjectActions = {
 
     searchFiles(text, id) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/children?name_contains=' + text,
-            getFetchParams('get', mainStore.appConfig.apiToken))
+            getFetchParams('get', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
                 return response.json()
             }).then((json) => {
@@ -356,7 +357,7 @@ const ProjectActions = {
 
     addNewTag(id, kind, tag) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TAGS + kind + '/' + id,
-            getFetchParams('post', mainStore.appConfig.apiToken, {
+            getFetchParams('post', authStore.appConfig.apiToken, {
                 'label': tag
             })
         ).then(checkStatus).then((response) => {
@@ -375,7 +376,7 @@ const ProjectActions = {
             return tag.label
         });
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TAGS + kind + '/' + id + '/append',
-            getFetchParams('post', mainStore.appConfig.apiToken, {
+            getFetchParams('post', authStore.appConfig.apiToken, {
                 tags
             })
         ).then(checkStatus).then((response) => {
@@ -391,7 +392,7 @@ const ProjectActions = {
 
     deleteTag(id, label, fileId) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TAGS + id,
-            getFetchParams('delete', mainStore.appConfig.apiToken))
+            getFetchParams('delete', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
             }).then(() => {
                 mainStore.addToast(label + ' tag deleted!');
@@ -404,7 +405,7 @@ const ProjectActions = {
 
     getTagLabels() {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'tags/labels/?object_kind=dds-file',
-            getFetchParams('get', mainStore.appConfig.apiToken))
+            getFetchParams('get', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
                 return response.json()
             }).then((json) => {
@@ -418,7 +419,7 @@ const ProjectActions = {
     getTagAutoCompleteList(text) {
         let query = text === null ? '' : '&label_contains=' + text;
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'tags/labels/?object_kind=dds-file' + query,
-            getFetchParams('get', mainStore.appConfig.apiToken))
+            getFetchParams('get', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
                 return response.json()
             }).then((json) => {
@@ -430,7 +431,7 @@ const ProjectActions = {
 
     getTags(id, kind) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TAGS + kind + '/' + id,
-            getFetchParams('get', mainStore.appConfig.apiToken))
+            getFetchParams('get', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
                 return response.json()
             }).then((json) => {
@@ -442,7 +443,7 @@ const ProjectActions = {
 
     getFileVersions(id, prov) { // prov = boolean used for file selection in prov editor
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE + id + '/versions',
-            getFetchParams('get', mainStore.appConfig.apiToken))
+            getFetchParams('get', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
                 return response.json()
             }).then((json) => {
@@ -454,7 +455,7 @@ const ProjectActions = {
 
     addFileVersion(uploadId, label, fileId) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE + fileId,
-            getFetchParams('put', mainStore.appConfig.apiToken, {
+            getFetchParams('put', authStore.appConfig.apiToken, {
                 'upload': {
                     'id': uploadId
                 },
@@ -474,7 +475,7 @@ const ProjectActions = {
 
     deleteVersion(id) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE_VERSION + id,
-            getFetchParams('delete', mainStore.appConfig.apiToken))
+            getFetchParams('delete', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
             }).then(() => {
                 mainStore.addToast('Version Deleted!');
@@ -487,7 +488,7 @@ const ProjectActions = {
 
     editVersion(id, label) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE_VERSION + id,
-            getFetchParams('put', mainStore.appConfig.apiToken, {
+            getFetchParams('put', authStore.appConfig.apiToken, {
                 "label": label
             })
         ).then(checkStatus).then((response) => {
@@ -503,7 +504,7 @@ const ProjectActions = {
 
     addAgent(name, desc, repo) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT,
-            getFetchParams('post', mainStore.appConfig.apiToken, {
+            getFetchParams('post', authStore.appConfig.apiToken, {
                 "name": name,
                 "description": desc,
                 "repo_url": repo
@@ -521,7 +522,7 @@ const ProjectActions = {
 
     editAgent(id, name, desc, repo) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + id,
-            getFetchParams('put', mainStore.appConfig.apiToken, {
+            getFetchParams('put', authStore.appConfig.apiToken, {
                 "name": name,
                 "description": desc,
                 "repo_url": repo
@@ -539,7 +540,7 @@ const ProjectActions = {
 
     deleteAgent(id) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + id,
-            getFetchParams('delete', mainStore.appConfig.apiToken))
+            getFetchParams('delete', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
             }).then((json) => {
                 mainStore.addToast('Software Agent Deleted');
@@ -552,7 +553,7 @@ const ProjectActions = {
 
     loadAgents() {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT,
-            getFetchParams('get', mainStore.appConfig.apiToken))
+            getFetchParams('get', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
                 return response.json()
             }).then((json) => {
@@ -564,7 +565,7 @@ const ProjectActions = {
 
     createAgentKey(id) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + id + '/api_key',
-            getFetchParams('put', mainStore.appConfig.apiToken)
+            getFetchParams('put', authStore.appConfig.apiToken)
         ).then(checkStatus).then((response) => {
                 return response.json()
             }).then((json) => {
@@ -578,7 +579,7 @@ const ProjectActions = {
 
     getAgentKey(id) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + id + '/api_key',
-            getFetchParams('get', mainStore.appConfig.apiToken))
+            getFetchParams('get', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
                 return response.json()
             }).then((json) => {
@@ -590,7 +591,7 @@ const ProjectActions = {
 
     getAgentApiToken(agentKey, userKey) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + 'api_token',
-            getFetchParams('post', mainStore.appConfig.apiToken, {
+            getFetchParams('post', authStore.appConfig.apiToken, {
                 'agent_key': agentKey,
                 'user_key': userKey
             })
@@ -606,7 +607,7 @@ const ProjectActions = {
 
     getUser(id) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'current_user',
-            getFetchParams('get', mainStore.appConfig.apiToken))
+            getFetchParams('get', authStore.appConfig.apiToken))
             .then((response) => {
                 return response.json()
             }).then((json) => {
@@ -618,7 +619,7 @@ const ProjectActions = {
 
     getPermissions(id, userId) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions/' + userId,
-            getFetchParams('get', mainStore.appConfig.apiToken))
+            getFetchParams('get', authStore.appConfig.apiToken))
             .then((response) => {
                 return response.json()
             }).then((json) => {
@@ -630,7 +631,7 @@ const ProjectActions = {
 
     getUserKey() {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'api_key',
-            getFetchParams('get', mainStore.appConfig.apiToken))
+            getFetchParams('get', authStore.appConfig.apiToken))
             .then((response) => {
                 return response.json()
             }).then((json) => {
@@ -643,7 +644,7 @@ const ProjectActions = {
 
     createUserKey(id) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'api_key',
-            getFetchParams('put', mainStore.appConfig.apiToken)
+            getFetchParams('put', authStore.appConfig.apiToken)
         ).then(checkStatus).then((response) => {
                 return response.json()
             }).then((json) => {
@@ -657,7 +658,7 @@ const ProjectActions = {
 
     deleteUserKey() {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'api_key',
-            getFetchParams('delete', mainStore.appConfig.apiToken))
+            getFetchParams('delete', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
             }).then((json) => {
                 mainStore.addToast('User key deleted');
@@ -670,7 +671,7 @@ const ProjectActions = {
 
     getUsageDetails() {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'usage',
-            getFetchParams('get', mainStore.appConfig.apiToken))
+            getFetchParams('get', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
                 return response.json()
             }).then((json) => {
@@ -684,7 +685,7 @@ const ProjectActions = {
         projectStore.setLoadingState();
         if (page == null) page = 1;
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + "?page=" + page + "&per_page=25",
-            getFetchParams('get', mainStore.appConfig.apiToken))
+            getFetchParams('get', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
                 const results = response.json();
                 const headers = response.headers;
@@ -700,7 +701,7 @@ const ProjectActions = {
 
     showDetails(id) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id,
-            getFetchParams('get', mainStore.appConfig.apiToken))
+            getFetchParams('get', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
                 return response.json()
             }).then((json) => {
@@ -713,7 +714,7 @@ const ProjectActions = {
     addProject(name, desc) {
         projectStore.setLoadingState();
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT,
-            getFetchParams('post', mainStore.appConfig.apiToken, {
+            getFetchParams('post', authStore.appConfig.apiToken, {
                 "name": name,
                 "description": desc
             })
@@ -722,17 +723,15 @@ const ProjectActions = {
             }).then((json) => {
                 mainStore.addToast('Project Added');
                 projectStore.addProjectSuccess(json)
-                //projectStore.setLoadingState();
             }).catch((ex) => {
                 mainStore.addToast('Failed to add new project');
                 projectStore.handleErrors(ex)
             })
-        projectStore.setLoadingState();
     },
 
     deleteProject(id) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id,
-            getFetchParams('delete', mainStore.appConfig.apiToken))
+            getFetchParams('delete', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
             }).then((json) => {
                 mainStore.addToast('Project Deleted');
@@ -745,7 +744,7 @@ const ProjectActions = {
 
     editProject(id, name, desc) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id,
-            getFetchParams('put', mainStore.appConfig.apiToken, {
+            getFetchParams('put', authStore.appConfig.apiToken, {
                 "name": name,
                 "description": desc
             })
@@ -763,7 +762,7 @@ const ProjectActions = {
     getChildren(id, path, page) {
         if (page == null) page = 1;
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + Path.CHILDREN + "?page=" + page + "&per_page=25",
-            getFetchParams('get', mainStore.appConfig.apiToken)
+            getFetchParams('get', authStore.appConfig.apiToken)
         ).then(checkStatus).then((response) => {
                 const results = response.json();
                 const headers = response.headers;
@@ -779,7 +778,7 @@ const ProjectActions = {
 
     addFolder(id, parentKind, name) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FOLDER,
-            getFetchParams('post', mainStore.appConfig.apiToken, {
+            getFetchParams('post', authStore.appConfig.apiToken, {
                 "name": name,
                 "parent": {
                     "kind": parentKind,
@@ -799,7 +798,7 @@ const ProjectActions = {
 
     deleteFolder(id, parentId, parentKind) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FOLDER + id,
-            getFetchParams('delete', mainStore.appConfig.apiToken))
+            getFetchParams('delete', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
             }).then(() => {
                 mainStore.addToast('Folder(s) Deleted!');
@@ -814,7 +813,7 @@ const ProjectActions = {
         let path = kind === Kind.DDS_FILE ? Path.FILE : Path.FOLDER;
         let type = kind === Kind.DDS_FILE ? 'File' : 'Folder';
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + '/move',
-            getFetchParams('put', mainStore.appConfig.apiToken, {
+            getFetchParams('put', authStore.appConfig.apiToken, {
                 "parent": {
                     "kind": destinationKind,
                     "id": destination
@@ -833,7 +832,7 @@ const ProjectActions = {
 
     deleteFile(id, parentId, parentKind) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE + id,
-            getFetchParams('delete', mainStore.appConfig.apiToken))
+            getFetchParams('delete', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
             }).then(() => {
                 mainStore.addToast('File(s) Deleted!');
@@ -846,7 +845,7 @@ const ProjectActions = {
 
     editItem(id, name, path, kind) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + '/rename',
-            getFetchParams('put', mainStore.appConfig.apiToken, {
+            getFetchParams('put', authStore.appConfig.apiToken, {
                 "name": name
             })
         ).then(checkStatus).then((response) => {
@@ -862,7 +861,7 @@ const ProjectActions = {
 
     getEntity(id, kind, requester) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + kind + '/' + id,
-            getFetchParams('get', mainStore.appConfig.apiToken))
+            getFetchParams('get', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
                 return response.json()
             }).then((json) => {
@@ -874,7 +873,7 @@ const ProjectActions = {
 
     getProjectMembers(id) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions',
-            getFetchParams('get', mainStore.appConfig.apiToken))
+            getFetchParams('get', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
                 return response.json()
             }).then((json) => {
@@ -886,7 +885,7 @@ const ProjectActions = {
 
     getUserName(text) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + text + '&page=1&per_page=500',
-            getFetchParams('get', mainStore.appConfig.apiToken))
+            getFetchParams('get', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
                 return response.json()
             }).then((json) => {
@@ -898,7 +897,7 @@ const ProjectActions = {
 
     getUserId(fullName, id, role) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + fullName,
-            getFetchParams('get', mainStore.appConfig.apiToken))
+            getFetchParams('get', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
                 return response.json()
             }).then((json) => {
@@ -911,7 +910,7 @@ const ProjectActions = {
     addProjectMember(id, userId, role, name) {
         let newRole = role.replace('_', ' ');
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions/' + userId,
-            getFetchParams('put', mainStore.appConfig.apiToken, {
+            getFetchParams('put', authStore.appConfig.apiToken, {
                 'auth_role': {'id': role}
             })
         ).then(checkStatus).then((response) => {
@@ -927,7 +926,7 @@ const ProjectActions = {
 
     deleteProjectMember(id, userId, userName) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions/' + userId,
-            getFetchParams('delete', mainStore.appConfig.apiToken))
+            getFetchParams('delete', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
             }).then((json) => {
                 mainStore.addToast(userName + ' ' + 'has been removed from this project');
@@ -940,7 +939,7 @@ const ProjectActions = {
 
     getDownloadUrl(id, kind) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + kind + id + '/url',
-            getFetchParams('get', mainStore.appConfig.apiToken))
+            getFetchParams('get', authStore.appConfig.apiToken))
             .then(checkStatus).then((response) => {
                 return response.json()
             }).then((json) => {
@@ -998,7 +997,7 @@ const ProjectActions = {
         fileReader.onload = function (event, files) {
             // create project upload
             fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + projId + '/' + Path.UPLOAD,
-                getFetchParams('post', mainStore.appConfig.apiToken, {
+                getFetchParams('post', authStore.appConfig.apiToken, {
                     'name': fileName,
                     'content_type': contentType,
                     'size': SIZE
@@ -1056,7 +1055,7 @@ const ProjectActions = {
             var wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
             var md5crc = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
             fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.UPLOAD + uploadId + '/chunks',
-                getFetchParams('put', mainStore.appConfig.apiToken, {
+                getFetchParams('put', authStore.appConfig.apiToken, {
                     "number": chunkNum,
                     "size": chunkBlob.size,
                     'hash': {
@@ -1083,7 +1082,7 @@ const ProjectActions = {
 
     allChunksUploaded(uploadId, parentId, parentKind, fileName, label, fileId, hash, projectId) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.UPLOAD + uploadId + '/complete',
-            getFetchParams('put', mainStore.appConfig.apiToken, {
+            getFetchParams('put', authStore.appConfig.apiToken, {
                 'hash': {
                     'value': hash,
                     'algorithm': 'md5'
@@ -1104,7 +1103,7 @@ const ProjectActions = {
 
     addFile(uploadId, parentId, parentKind, fileName) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE,
-            getFetchParams('post', mainStore.appConfig.apiToken, {
+            getFetchParams('post', authStore.appConfig.apiToken, {
                 'parent': {
                     'kind': parentKind,
                     'id': parentId
@@ -1233,7 +1232,7 @@ const ProjectActions = {
             projectStore.setSelectedEntitySuccess(null);
         } else {
             fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + kind + '/' + id,
-                getFetchParams('get', mainStore.appConfig.apiToken))
+                getFetchParams('get', authStore.appConfig.apiToken))
                 .then(checkStatus).then((response) => {
                     return response.json()
                 }).then((json) => {

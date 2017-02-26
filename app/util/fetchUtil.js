@@ -15,7 +15,7 @@ export function getFetchParams(method, apiToken, body) {
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Authorization': apiToken
+            'Authorization': apiToken ? apiToken : ''
         }
     };
     if(body) obj.body = JSON.stringify(body);

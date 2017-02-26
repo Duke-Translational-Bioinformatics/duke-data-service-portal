@@ -21,7 +21,6 @@ export class ProjectStore {
         @observable currentUser
         @observable destination
         @observable destinationKind
-        @observable device
         @observable dltRelationsBtn
         @observable entityObj
         @observable failedUploads
@@ -63,7 +62,7 @@ export class ProjectStore {
         @observable removeFileFromProvBtn
         @observable responseHeaders
         @observable scale
-        @observable screenSize
+        //@observable screenSize
         @observable searchFilesList
         @observable searchFilters
         @observable searchResults
@@ -112,7 +111,7 @@ export class ProjectStore {
         this.currentUser = {};
         this.destination = null;
         this.destinationKind = null;
-        this.device = {};
+        //this.device = {};
         this.dltRelationsBtn = false;
         this.entityObj = null;
         this.failedUploads = [];
@@ -154,7 +153,6 @@ export class ProjectStore {
         this.removeFileFromProvBtn = false;
         this.responseHeaders = {};
         this.scale = null;
-        this.screenSize = {};
         this.searchFilesList = [];
         this.searchFilters = [];
         this.searchResults = [];
@@ -782,12 +780,6 @@ export class ProjectStore {
         })
     }
 
-    getScreenSize(height, width) {
-        this.screenSize.height = height;
-        this.screenSize.width = width;
-        return this.screenSize;
-    }
-
     toggleUploadManager() {
         this.openUploadManager = !this.openUploadManager;
         this.trigger({
@@ -844,10 +836,6 @@ export class ProjectStore {
         this.trigger({
             objectTags: this.objectTags
         })
-    }
-
-    getDeviceType(device) {
-        this.device = device;
     }
 
     searchFiles() {
@@ -1308,8 +1296,8 @@ export class ProjectStore {
     }
 
     addProjectSuccess(json) {
-        //ProjectActions.getProjects();
         this.projects = [json, ...this.projects];
+        this.setLoadingState();
     }
 
     deleteProject() {

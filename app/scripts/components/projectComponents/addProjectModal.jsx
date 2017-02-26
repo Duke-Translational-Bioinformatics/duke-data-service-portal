@@ -1,10 +1,12 @@
 import React from 'react';
+import { observer } from 'mobx-react';
 import ProjectActions from '../../actions/projectActions';
 import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 
+@observer
 class AddProjectModal extends React.Component {
 
     constructor(props) {
@@ -17,7 +19,7 @@ class AddProjectModal extends React.Component {
     }
 
     render() {
-
+        const {screenSize} = this.props.mainStore;
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -39,7 +41,7 @@ class AddProjectModal extends React.Component {
                     onTouchTap={this.handleTouchTap.bind(this)} />
                 <Dialog
                     style={styles.dialogStyles}
-                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
+                    contentStyle={screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Add New Project"
                     autoDetectWindowHeight={true}
                     actions={actions}

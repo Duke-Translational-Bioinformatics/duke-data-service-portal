@@ -1,8 +1,8 @@
 import React from 'react';
-import MainStore from '../../stores/mainStore';
-import MainActions from '../../actions/mainActions';
+import { observer } from 'mobx-react';
 import {UrlGen} from '../../../util/urlEnum';
 
+@observer
 class LeftMenu extends React.Component {
 
     render() {
@@ -59,7 +59,7 @@ class LeftMenu extends React.Component {
     }
 
     handleTouchTap() {
-        MainStore.handleLogout()
+        this.props.authStore.handleLogout()
     }
 
     closeLeftNav() {

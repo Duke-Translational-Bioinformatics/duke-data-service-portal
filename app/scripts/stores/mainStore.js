@@ -1,86 +1,63 @@
 import Reflux from 'reflux';
-import { observable, computed, autorun, action } from 'mobx';
-import MainActions from '../actions/mainActions';
-import ProjectActions from '../actions/projectActions';
-import ProjectStore from '../stores/projectStore';
-import BaseUtils from '../../util/baseUtils.js';
-import {UrlGen, Path} from '../../util/urlEnum';
-import { checkStatus, getFetchParams } from '../../util/fetchUtil';
-import appConfig from '../config';
+import { observable, computed, action } from 'mobx';
 import cookie from 'react-cookie';
 
 export class MainStore {
-    @observable appConfig
-    @observable authServiceLoading
-    @observable currentUser
+    @observable device
     @observable error
     @observable errorModals
     @observable failedUploads
-    @observable toasts
     @observable modalOpen
+    @observable screenSize
+    @observable toasts
 
     constructor() {
-        this.appConfig = appConfig;
-        this.authServiceLoading = false;
-        this.currentUser = {};
+        this.device = {};
         this.error = null;
         this.errorModals = [];
         this.failedUploads = [];
-        this.toasts = [];
-        this.appConfig.apiToken = cookie.load('apiToken');
-        this.appConfig.isLoggedIn = cookie.load('isLoggedIn');
         this.modalOpen = cookie.load('modalOpen');
+        this.screenSize = {};
+        this.toasts = [];
     }
 
-    getError = (error) => {
-        this.error = error && error.message ? error.message : 'An error occurred.';
+    displayErrorModals(error) {
+        let err = error && error.message ? {
+            msg: error.message,
+            response: error.response ? error.response.status : null
+        } : null;
+        if (err.response === null) {
+            this.errorModals.push({
+                msg: error.message,
+                response: 'Folders can not be uploaded',
+                ref: 'modal' + Math.floor(Math.random() * 10000)
+            });
+        } else {
+            if (error && error.response.status !== 404) {
+                this.errorModals.push({
+                    msg: error.response.status === 403 ? error.message + ': You don\'t have permissions to view or change' +
+                    ' this resource' : error.message,
+                    response: error.response.status,
+                    ref: 'modal' + Math.floor(Math.random() * 10000)
+                });
+            }
+        }
+        this.error = err;
     }
 
-    @action getCurrentUserSuccess(user) {
-        this.currentUser = user;
+    getDeviceType(device) {
+        this.device = device;
     }
 
-    @action getAuthProvidersSuccess(providers) {
-        let url = providers.reduce((prev, curr) => { return (!curr.is_deprecated) ? curr : prev; }, null);
-        this.appConfig.authServiceUri = url.login_initiation_url;
-        this.appConfig.authServiceName = url.name;
-        this.appConfig.serviceId = url.service_id;
+    getScreenSize(height, width) {
+        this.screenSize.height = height;
+        this.screenSize.width = width;
     }
 
-    @action getApiTokenSuccess(apiToken) {
-        this.appConfig.apiToken = apiToken;
-        this.setApiToken(apiToken);
-        this.authServiceLoading = false;
-    }
-
-    setApiToken = (apiToken) => {
-        let expiresAt = new Date(Date.now() + (60 * 60 * 2 * 1000));
-        this.appConfig.apiToken = apiToken;
-        cookie.save('apiToken', this.appConfig.apiToken, {expires: expiresAt});
-        this.getCurrentUser();
-    }
-
-    isLoggedInHandler() { //Todo: probably don't need this with Mobx. This was a hack to get around the
-    // multiple extraneous renders caused by Reflux wierdness
-        let expiresAt = new Date(Date.now() + (60 * 1000));
-        this.appConfig.isLoggedIn = true;
-        cookie.save('isLoggedIn', this.appConfig.isLoggedIn, {expires: expiresAt});
-        this.modalOpen = mainStore.modalOpen;
-        this.authServiceLoading = true;
-    }
-
-    removeLoginCookie() {
-        this.appConfig.isLoggedIn = null;
-        cookie.remove('isLoggedIn');
-    }
-
-    handleLogout () {
-        this.appConfig.apiToken = null;
-        cookie.remove('apiToken');
-        this.appConfig.isLoggedIn = null;
-        cookie.remove('isLoggedIn');
-        localStorage.removeItem('redirectTo');
-        location.reload();
+    handleErrors(error) {
+        this.displayErrorModals(error);
+        this.loading = false;
+        this.drawerLoading = false;
     }
 
     addToast(msg) {
@@ -111,27 +88,6 @@ export class MainStore {
 
     removeFailedUploads() {
         this.failedUploads = [];
-    }
-
-    displayErrorModals(error) {
-        let err = error && error.message ? {msg: error.message, response: error.response ? error.response.status : null} : null;
-        if(err.response === null) {
-            this.errorModals.push({
-                msg: error.message,
-                response: 'Folders can not be uploaded',
-                ref: 'modal' + Math.floor(Math.random() * 10000)
-            });
-        } else {
-            if (error && error.response.status !== 404) {
-                this.errorModals.push({
-                    msg: error.response.status === 403 ? error.message + ': You don\'t have permissions to view or change' +
-                    ' this resource' : error.message,
-                    response: error.response.status,
-                    ref: 'modal' + Math.floor(Math.random() * 10000)
-                });
-            }
-        }
-        this.error = err;
     }
 
     clearErrors(error) {

@@ -1,6 +1,6 @@
 import React from 'react';
+import { observer } from 'mobx-react';
 import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
 import MoveItemModal from '../globalComponents/moveItemModal.jsx';
 import {Kind, Path} from '../../../util/urlEnum';
 import Dialog from 'material-ui/Dialog';
@@ -11,6 +11,7 @@ import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
 
+@observer
 class FolderOptions extends React.Component {
 
     constructor(props) {
@@ -21,12 +22,17 @@ class FolderOptions extends React.Component {
     }
 
     render() {
-        let dltOpen = this.props.toggleModal && this.props.toggleModal.id === 'dltFolder' ? this.props.toggleModal.open : false;
-        let editOpen = this.props.toggleModal && this.props.toggleModal.id === 'editFolder' ? this.props.toggleModal.open : false;
-        let moveOpen = this.props.toggleModal && this.props.toggleModal.id === 'moveFolder' ? this.props.toggleModal.open : false;
-        let dialogWidth = this.props.screenSize.width < 580 ? {width: '100%'} : {};
-        let fName = this.props.selectedEntity !== null ? this.props.selectedEntity.name : null;
-        if(fName === null) fName = this.props.entityObj && this.props.entityObj !== null ? this.props.entityObj.name : null;
+        const {entityObj, selectedEntity, toggleModal} = this.props.projectStore;
+        const {screenSize} = this.props.mainStore;
+        let dltOpen = toggleModal && toggleModal.id === 'dltFile' ? toggleModal.open : false;
+        let editOpen = toggleModal && toggleModal.id === 'editFile' ? toggleModal.open : false;
+        let moveOpen = toggleModal && toggleModal.id === 'moveItem' ? toggleModal.open : false;
+        let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
+        let id = selectedEntity !== null ? selectedEntity.id : entityObj !== null ? entityObj.id : null;
+        let parentId = selectedEntity !== null ? selectedEntity.parent.id : entityObj !== null ? entityObj.parent.id : null;
+        let parentKind = selectedEntity !== null ? selectedEntity.parent.kind : entityObj !== null ? entityObj.parent.kind : null;
+        let fName = selectedEntity !== null ? selectedEntity.name : null;
+        if(fName === null) fName = entityObj && entityObj !== null ? entityObj.name : null;
         const deleteActions = [
             <FlatButton
                 label="CANCEL"
@@ -36,7 +42,7 @@ class FolderOptions extends React.Component {
                 label="DELETE"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={()=>this.handleDeleteButton()}/>
+                onTouchTap={()=>this.handleDeleteButton(id, parentId, parentKind)}/>
         ];
         const editActions = [
             <FlatButton
@@ -47,7 +53,7 @@ class FolderOptions extends React.Component {
                 label="UPDATE"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={()=>this.handleUpdateButton()}/>
+                onTouchTap={()=>this.handleUpdateButton(id)}/>
         ];
         const moveActions = [
             <FlatButton
@@ -107,19 +113,14 @@ class FolderOptions extends React.Component {
         );
     }
 
-    handleDeleteButton() {
-        let id = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.entityObj.id;
-        let parentId = this.props.selectedEntity !== null ? this.props.selectedEntity.parent.id : this.props.entityObj.parent.id;
-        let parentKind = this.props.selectedEntity !== null ? this.props.selectedEntity.parent.kind : this.props.entityObj.parent.kind;
+    handleDeleteButton(id, parentId, parentKind) {
         let urlPath = parentKind === 'dds-project' ? '/project/' : '/folder/';
         ProjectActions.deleteFolder(id, parentId, parentKind);
         ProjectActions.toggleModals('dltFolder');
         setTimeout(()=>this.props.router.push(urlPath + parentId), 500)
     }
 
-    handleUpdateButton() {
-        let id = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.entityObj.id;
-        let parentId = this.props.selectedEntity !== null ? this.props.selectedEntity.parent.id : this.props.entityObj.parent.id;
+    handleUpdateButton(id) {
         let name = this.folderNameText.getValue();
         if (this.state.floatingErrorText) {
             return null

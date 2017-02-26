@@ -6,6 +6,7 @@ import LinearProgress from 'material-ui/LinearProgress';
 
 class Loaders extends React.Component {
 
+    @observer
     render() {
         let uploading = null;
         if (this.props.projectStore.uploads) {
