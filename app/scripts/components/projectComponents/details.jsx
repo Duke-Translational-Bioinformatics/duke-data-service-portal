@@ -1,6 +1,7 @@
 import React from 'react';
 import ProjectActions from '../../actions/projectActions';
 import ProjectStore from '../../stores/projectStore';
+import BaseUtils from '../../../util/baseUtils.js';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import MenuItem from 'material-ui/MenuItem';
@@ -50,8 +51,6 @@ class Details extends React.Component {
         let projectId =  this.props.project ? this.props.project.id : null;
         let lastUpdatedBy = this.props.project && this.props.project.audit.last_updated_by !== null ? this.props.project.audit.last_updated_by.full_name : 'n/a';
         let lstUpdtOn = this.props.project && this.props.project.audit.last_updated_on !== null ? this.props.project.audit.last_updated_on : null;
-        let x = new Date(lstUpdtOn);
-        let lastUpdatedOn = x.toString();
         let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
         let users = this.props.projectMembers ? this.props.projectMembers : null;
 
@@ -127,7 +126,7 @@ class Details extends React.Component {
                         <li className="item-divider">Last Updated On</li>
                         <li className="item-content">
                             <div className="item-inner">
-                                <div className="item-title">{ lastUpdatedOn }</div>
+                                <div className="item-title">{ BaseUtils.formatDate(lstUpdtOn) }</div>
                             </div>
                         </li>
                         <li className="item-divider">Description</li>

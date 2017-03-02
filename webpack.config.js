@@ -1,3 +1,5 @@
+var webpack = require('webpack');
+
 module.exports.getConfig = function (type) {
 
     var isDev = type === 'development';
@@ -21,7 +23,17 @@ module.exports.getConfig = function (type) {
                     loader: 'style-loader!css-loader!less-loader'
                 }
             ]
-        }
+        },
+        plugins: [
+            new webpack.DefinePlugin({
+                'process.env': {
+                    'NODE_ENV': JSON.stringify('production')
+                }
+            }),
+            new webpack.optimize.DedupePlugin(), //dedupe similar code
+            new webpack.optimize.UglifyJsPlugin(), //minify everything
+            new webpack.optimize.AggressiveMergingPlugin() //merge chunks
+        ]
     };
 
     if (isDev) {

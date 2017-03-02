@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 
 let BaseUtils = {
         bytesToSize(bytes){
@@ -128,6 +129,11 @@ let BaseUtils = {
                 uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random)).toString(16);
             }
             return uuid;
+        },
+
+        formatDate(date) {
+            date !== null ? date = moment(date).format("MMMM Do, YYYY") : '';
+            return date;
         }
 };
 

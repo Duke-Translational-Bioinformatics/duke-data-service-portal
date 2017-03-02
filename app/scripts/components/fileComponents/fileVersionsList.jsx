@@ -1,5 +1,6 @@
 import React from 'react';
 import ProjectActions from '../../actions/projectActions';
+import BaseUtils from '../../../util/baseUtils.js';
 import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
@@ -14,11 +15,9 @@ class FileVersionsList extends React.Component {
         if (this.props.fileVersions && this.props.fileVersions != undefined) {
             versions = this.props.fileVersions.map((version) => {
                 if (!version.is_deleted) {
-                    let x = new Date(version.audit.created_on);
-                    let createdOn = x.toString();
                     return <span key={version.id + Math.random()}>
                             <ListItem primaryText={'Version: ' + version.version}
-                                      secondaryText={<p><span>{version.label}</span><br/> Created on: {' ' + createdOn}</p>}
+                                      secondaryText={<p><span>{version.label}</span><br/> Created on: {' ' + BaseUtils.formatDate(version.audit.created_on)}</p>}
                                       secondaryTextLines={2}
                                       style={styles.listItem}
                                       onTouchTap={() => this.goTo(version.id)}/>
@@ -42,7 +41,6 @@ class FileVersionsList extends React.Component {
                     contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
                     title="File Versions"
                     autoDetectWindowHeight={true}
-                    autoScrollBodyContent={true}
                     actions={actions}
                     open={open}
                     onRequestClose={this.handleClose.bind(this)}>
