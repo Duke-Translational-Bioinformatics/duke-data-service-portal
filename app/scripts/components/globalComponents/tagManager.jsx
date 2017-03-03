@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 const { object, bool, array, string } = PropTypes;
 import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../../util/baseUtils';
 import MetadataObjectCreator from '../globalComponents/metadataObjectCreator.jsx';
 import MetadataPropertyManager from '../globalComponents/metadataPropertyManager.jsx';
@@ -35,22 +35,21 @@ class TagManager extends React.Component {
     }
 
     componentDidMount() {
-        if (window.performance && this.props.projectStore.openTagManager) { // If page refreshed, close drawer
+        if (window.performance && mainStore.openTagManager) { // If page refreshed, close drawer
             if (performance.navigation.type == 1) {
                 this.toggleTagManager();
             }
         }
     }
 
-    componentDidUpdate(prevProps) {
-        if(prevProps.projectStore.openTagManager !== this.props.projectStore.openTagManager) {
-            if(this.props.projectStore.openTagManager) this.autocomplete.focus();
-        }
+    componentDidUpdate(prevProps) {// Todo: Check into using prevProps on stores
+        //if(prevProps.mainStore.openTagManager !== mainStore.openTagManager) {
+            if(mainStore.openTagManager) this.autocomplete.focus();
+        //}
     }
 
     render() {
-        const {drawerLoading, entityObj, filesChecked, selectedEntity, showTemplateDetails, tagAutoCompleteList, tagLabels, tagsToAdd, toggleModal} = this.props.projectStore;
-        const {screenSize} = this.props.mainStore;
+        const {drawerLoading, entityObj, filesChecked, screenSize, selectedEntity, showTemplateDetails, tagAutoCompleteList, tagLabels, tagsToAdd, toggleModal} = mainStore;
         let autoCompleteData = tagAutoCompleteList && tagAutoCompleteList.length > 0 ? tagAutoCompleteList : [];
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let id = selectedEntity !== null ? selectedEntity.id : this.props.params.id;
@@ -175,8 +174,8 @@ class TagManager extends React.Component {
     }
 
     activeTab() {
-        if(this.props.projectStore.tagsToAdd.length) ProjectActions.toggleModals('discardTags');
-        if(!this.props.projectStore.metaTemplates) ProjectActions.loadMetadataTemplates('');
+        if(mainStore.tagsToAdd.length) ProjectActions.toggleModals('discardTags');
+        if(!mainStore.metaTemplates) ProjectActions.loadMetadataTemplates('');
     }
 
     addTagToCloud(label) {
@@ -185,7 +184,7 @@ class TagManager extends React.Component {
             this.autocomplete.focus();
         };
         if(label && !label.indexOf(' ') <= 0) {
-            let tags = this.props.projectStore.tagsToAdd;
+            let tags = mainStore.tagsToAdd;
             if (tags.some((el) => { return el.label === label.trim(); })) {
                 this.setState({floatingErrorText: label + ' tag is already in the list'});
                 setTimeout(()=>{
@@ -224,7 +223,7 @@ class TagManager extends React.Component {
 
     deleteTag(id, label) {
         let fileId = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.params.id;
-        let tags = this.props.projectStore.tagsToAdd;
+        let tags = mainStore.tagsToAdd;
         tags = tags.filter(( obj ) => {
             return obj.label !== label;
         });

@@ -1,6 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import ProjectActions from '../../actions/projectActions';
+import mainStore from '../../stores/mainStore';
 import MoveItemModal from '../globalComponents/moveItemModal.jsx';
 import {Kind, Path} from '../../../util/urlEnum';
 import Dialog from 'material-ui/Dialog';
@@ -22,8 +23,7 @@ class FolderOptions extends React.Component {
     }
 
     render() {
-        const {entityObj, selectedEntity, toggleModal} = this.props.projectStore;
-        const {screenSize} = this.props.mainStore;
+        const {entityObj, screenSize, selectedEntity, toggleModal} = mainStore;
         let dltOpen = toggleModal && toggleModal.id === 'dltFile' ? toggleModal.open : false;
         let editOpen = toggleModal && toggleModal.id === 'editFile' ? toggleModal.open : false;
         let moveOpen = toggleModal && toggleModal.id === 'moveItem' ? toggleModal.open : false;

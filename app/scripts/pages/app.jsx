@@ -3,7 +3,6 @@ import { observer, inject } from 'mobx-react';
 import authStore from '../stores/authStore';
 import mainStore from '../stores/mainStore';
 import ProjectActions from '../actions/projectActions';
-import projectStore from '../stores/projectStore';
 import Header from '../components/globalComponents/header.jsx';
 import Footer from '../components/globalComponents/footer.jsx';
 import LeftMenu from '../components/globalComponents/leftMenu.jsx';
@@ -23,7 +22,7 @@ let zIndex = {
     }
 };
 
-@inject('authStore', 'mainStore', 'projectStore') @observer
+@observer
 class App extends React.Component {
 
     constructor(props) {

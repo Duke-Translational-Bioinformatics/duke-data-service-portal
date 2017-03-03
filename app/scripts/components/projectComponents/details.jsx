@@ -1,12 +1,14 @@
 import React from 'react';
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import authStore from '../../stores/authStore';
 import BaseUtils from '../../../util/baseUtils.js';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import MenuItem from 'material-ui/MenuItem';
 import SelectField from 'material-ui/SelectField';
 
+@observer
 class Details extends React.Component {
 
     constructor(props) {
@@ -22,6 +24,8 @@ class Details extends React.Component {
     }
 
     render() {
+        const {project, projectMembers, projPermissions, screenSize} = mainStore;
+        const {currentUser} = authStore;
         const deleteActions = [
             <FlatButton
                 label="CANCEL"
@@ -45,15 +49,15 @@ class Details extends React.Component {
                 onTouchTap={() => this.handleMemberButton()} />
         ];
 
-        let createdById = this.props.project && this.props.project.audit ? this.props.project.audit.created_by.id : null;
-        let currentUserId = this.props.currentUser ? this.props.currentUser.id : null;
-        let description = this.props.project ? this.props.project.description : null;
-        let dialogWidth = this.props.screenSize.width < 580 ? {width: '100%'} : {};
-        let projectId =  this.props.project ? this.props.project.id : null;
-        let lastUpdatedBy = this.props.project && this.props.project.audit.last_updated_by !== null ? this.props.project.audit.last_updated_by.full_name : 'n/a';
-        let lstUpdtOn = this.props.project && this.props.project.audit.last_updated_on !== null ? this.props.project.audit.last_updated_on : null;
-        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
-        let users = this.props.projectMembers ? this.props.projectMembers : null;
+        let createdById = project && project.audit ? project.audit.created_by.id : null;
+        let currentUserId = currentUser ? currentUser.id : null;
+        let description = project ? project.description : null;
+        let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
+        let projectId =  project ? project.id : null;
+        let lastUpdatedBy = project && project.audit.last_updated_by !== null ? project.audit.last_updated_by.full_name : 'n/a';
+        let lstUpdtOn = project && project.audit.last_updated_on !== null ? project.audit.last_updated_on : null;
+        let prjPrm = projPermissions && projPermissions !== null ?projPermissions : null;
+        let users = projectMembers ? projectMembers : null;
 
         let members = users.map((users)=> {
             return <li key={users.user.id}>
@@ -112,6 +116,12 @@ class Details extends React.Component {
                 </Dialog>
                 <div className="list-block">
                     <ul>
+                        <li className="item-divider">Description</li>
+                        <li className="item-content">
+                            <div className="item-inner">
+                                <div>{ description }</div>
+                            </div>
+                        </li>
                         <li className="item-divider">Project ID</li>
                         <li className="item-content">
                             <div className="item-inner">
@@ -128,12 +138,6 @@ class Details extends React.Component {
                         <li className="item-content">
                             <div className="item-inner">
                                 <div className="item-title">{ BaseUtils.formatDate(lstUpdtOn) }</div>
-                            </div>
-                        </li>
-                        <li className="item-divider">Description</li>
-                        <li className="item-content">
-                            <div className="item-inner">
-                                <div>{ description }</div>
                             </div>
                         </li>
                     </ul>
@@ -176,7 +180,7 @@ class Details extends React.Component {
         let id = this.props.params.id;
         let name = this.state.userName;
         let userId = this.state.userId;
-        ProjectActions.deleteProjectMember(id, userId, name);
+        mainStore.deleteProjectMember(id, userId, name);
         this.setState({
             deleteModal: false,
             userId: null,
@@ -207,7 +211,7 @@ class Details extends React.Component {
                 break;
         }
         if(this.state.value !== null) {
-            ProjectActions.addProjectMember(id, userId, role, name);
+            mainStore.addProjectMember(id, userId, role, name);
             this.setState({
                 memberModal: false,
                 value: null

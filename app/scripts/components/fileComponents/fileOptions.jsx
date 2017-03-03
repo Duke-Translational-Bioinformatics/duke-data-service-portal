@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import mainStore from '../../stores/mainStore';
 import {Kind, Path} from '../../../util/urlEnum';
 import MoveItemModal from '../globalComponents/moveItemModal.jsx';
 import TextField from 'material-ui/TextField';
@@ -19,8 +19,7 @@ class FileOptions extends React.Component {
     }
 
     render() {
-        const {entityObj, selectedEntity, toggleModal} = this.props.projectStore;
-        const {screenSize} = this.props.mainStore;
+        const {entityObj, screenSize, selectedEntity, toggleModal} = mainStore;
         let dltOpen = toggleModal && toggleModal.id === 'dltFile' ? toggleModal.open : false;
         let editOpen = toggleModal && toggleModal.id === 'editFile' ? toggleModal.open : false;
         let moveOpen = toggleModal && toggleModal.id === 'moveItem' ? toggleModal.open : false;

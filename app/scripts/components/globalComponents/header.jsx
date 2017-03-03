@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import authStore from '../../stores/authStore';
-import ProjectStore from '../../stores/projectStore';
+import projectStore from '../../stores/projectStore';
 import MainActions from '../../actions/mainActions';
 import ProjectActions from '../../actions/projectActions';
 import CurrentUser from '../globalComponents/currentUser.jsx';
@@ -12,8 +12,8 @@ import FontIcon from 'material-ui/FontIcon';
 class Header extends React.Component {
 
     render() {
-        const {appConfig} = this.props.authStore;
-        const {showSearch} = this.props.projectStore;
+        const {appConfig} = authStore;
+        const {showSearch} = projectStore;
         let header = <div className="navbar" style={styles.navBar}>
             <div className="navbar-inner" style={{display: showSearch ? 'none' : '', height: 106}}>
                 <div className="left" style={styles.navBar.leftDiv}>

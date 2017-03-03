@@ -1,11 +1,13 @@
 import Reflux from 'reflux';
 import { observable, computed, autorun, action } from 'mobx';
 import ProjectActions from '../actions/projectActions';
-import MainActions from '../actions/mainActions';
 import mainStore from '../stores/mainStore';
+import authStore from '../stores/authStore';
 import BaseUtils from '../../util/baseUtils.js';
-import { StatusEnum, Path } from '../enum';
+import { StatusEnum } from '../enum';
+import { UrlGen, Kind, Path } from '../../util/urlEnum';
 import {graphOptions, graphColors} from '../graphConfig';
+import { checkStatus, getFetchParams } from '../../util/fetchUtil';
 
 export class ProjectStore {
         @observable activities
@@ -17,7 +19,6 @@ export class ProjectStore {
         @observable audit
         @observable batchFiles
         @observable batchFolders
-        @observable listItems
         @observable currentUser
         @observable destination
         @observable destinationKind
@@ -34,6 +35,7 @@ export class ProjectStore {
         @observable includeKinds
         @observable includeProjects
         @observable itemsSelected
+        @observable listItems
         @observable loading
         @observable metaDataTemplate
         @observable metaProps
@@ -62,7 +64,6 @@ export class ProjectStore {
         @observable removeFileFromProvBtn
         @observable responseHeaders
         @observable scale
-        //@observable screenSize
         @observable searchFilesList
         @observable searchFilters
         @observable searchResults
@@ -107,11 +108,9 @@ export class ProjectStore {
         this.audit = {};
         this.batchFiles = [];
         this.batchFolders = [];
-        this.listItems = [];
         this.currentUser = {};
         this.destination = null;
         this.destinationKind = null;
-        //this.device = {};
         this.dltRelationsBtn = false;
         this.entityObj = null;
         this.failedUploads = [];
@@ -125,6 +124,7 @@ export class ProjectStore {
         this.includeKinds = [];
         this.includeProjects = [];
         this.itemsSelected = null;
+        this.listItems = [];
         this.loading = false;
         this.metaDataTemplate = null;
         this.metaProps = [];
@@ -186,6 +186,10 @@ export class ProjectStore {
         this.users = [];
         this.userKey = {};
         this.versionModal = false;
+    }
+
+    checkResponse(response) {
+        return checkStatus(response, authStore);
     }
 
     setLoadingState() {
@@ -780,26 +784,26 @@ export class ProjectStore {
         })
     }
 
-    toggleUploadManager() {
-        this.openUploadManager = !this.openUploadManager;
-        this.trigger({
-            openUploadManager: this.openUploadManager
-        })
-    }
+    //toggleUploadManager() {
+    //    this.openUploadManager = !this.openUploadManager;
+    //    this.trigger({
+    //        openUploadManager: this.openUploadManager
+    //    })
+    //}
 
-    toggleTagManager() {
-        this.openTagManager = !this.openTagManager;
-        this.trigger({
-            openTagManager: this.openTagManager
-        })
-    }
+    //toggleTagManager() {
+    //    this.openTagManager = !this.openTagManager;
+    //    this.trigger({
+    //        openTagManager: this.openTagManager
+    //    })
+    //}
 
-    defineTagsToAdd(tags) {
-        this.tagsToAdd = tags;
-        this.trigger({
-            tagsToAdd: this.tagsToAdd
-        })
-    }
+    //defineTagsToAdd(tags) {
+    //    this.tagsToAdd = tags;
+    //    this.trigger({
+    //        tagsToAdd: this.tagsToAdd
+    //    })
+    //}
 
     addNewTagSuccess(fileId) {
         ProjectActions.getTags(fileId, 'dds-file');
@@ -817,26 +821,26 @@ export class ProjectStore {
         ProjectActions.getTags(fileId, 'dds-file');
     }
 
-    getTagAutoCompleteListSuccess(list) {
-        this.tagAutoCompleteList = list.map((item) => {return item.label});
-        this.trigger({
-            tagAutoCompleteList: this.tagAutoCompleteList
-        })
-    }
+    //getTagAutoCompleteListSuccess(list) {
+    //    this.tagAutoCompleteList = list.map((item) => {return item.label});
+    //    this.trigger({
+    //        tagAutoCompleteList: this.tagAutoCompleteList
+    //    })
+    //}
 
-    getTagLabelsSuccess(labels) {
-        this.tagLabels = labels;
-        this.trigger({
-            tagLabels: this.tagLabels
-        })
-    }
+    //getTagLabelsSuccess(labels) {
+    //    this.tagLabels = labels;
+    //    //this.trigger({
+    //    //    tagLabels: this.tagLabels
+    //    //})
+    //}
 
-    getTagsSuccess(tags) {
-        this.objectTags = tags;
-        this.trigger({
-            objectTags: this.objectTags
-        })
-    }
+    //getTagsSuccess(tags) {
+    //    this.objectTags = tags;
+    //    this.trigger({
+    //        objectTags: this.objectTags
+    //    })
+    //}
 
     searchFiles() {
         this.autoCompleteLoading = true;
@@ -951,19 +955,19 @@ export class ProjectStore {
         }
     }
 
-    addFileVersionSuccess(id, uploadId) {
-        this.showProvAlert = true;
-        let kind = 'files/';
-        ProjectActions.getEntity(id, kind);
-        ProjectActions.getFileVersions(id);
-        if (this.uploads.hasOwnProperty(uploadId)) {
-            delete this.uploads[uploadId];
-        }
-        this.trigger({
-            showProvAlert: this.showProvAlert,
-            uploads: this.uploads
-        })
-    }
+    //addFileVersionSuccess(id, uploadId) {
+    //    this.showProvAlert = true;
+    //    let kind = 'files/';
+    //    ProjectActions.getEntity(id, kind);
+    //    ProjectActions.getFileVersions(id);
+    //    if (this.uploads.hasOwnProperty(uploadId)) {
+    //        delete this.uploads[uploadId];
+    //    }
+    //    this.trigger({
+    //        showProvAlert: this.showProvAlert,
+    //        uploads: this.uploads
+    //    })
+    //}
 
     deleteVersion() {
         this.loading = true;
@@ -1151,12 +1155,12 @@ export class ProjectStore {
         })
     }
 
-    showBatchOptions () {
-        this.showBatchOps = false;
-        this.trigger({
-            showBatchOps: this.showBatchOps
-        })
-    }
+    //showBatchOptions () {
+    //    this.showBatchOps = false;
+    //    this.trigger({
+    //        showBatchOps: this.showBatchOps
+    //    })
+    //}
 
     setBatchItems(batchDeleteFiles, batchDeleteFolders) {
         this.batchFiles = batchDeleteFiles;
@@ -1178,40 +1182,36 @@ export class ProjectStore {
         }
     }
 
-    handleBatch (files, folders) {
-        this.filesChecked = files;
-        this.foldersChecked = folders;
-        this.itemsSelected = files.length + folders.length;
-        this.showBatchOps = true;
-        this.trigger({
-            filesChecked: this.filesChecked,
-            foldersChecked: this.foldersChecked,
-            itemsSelected: this.itemsSelected,
-            showBatchOps: this.showBatchOps
-        })
-    }
+    //handleBatch (files, folders) {
+    //    this.filesChecked = files;
+    //    this.foldersChecked = folders;
+    //    this.itemsSelected = files.length + folders.length;
+    //    this.showBatchOps = true;
+    //    this.trigger({
+    //        filesChecked: this.filesChecked,
+    //        foldersChecked: this.foldersChecked,
+    //        itemsSelected: this.itemsSelected,
+    //        showBatchOps: this.showBatchOps
+    //    })
+    //}
 
-    clearSelectedItems() {
-        this.filesChecked = [];
-        this.foldersChecked = [];
-        this.trigger({
-            filesChecked: this.filesChecked,
-            foldersChecked: this.foldersChecked
-        })
-    }
+    //clearSelectedItems() {
+    //    this.filesChecked = [];
+    //    this.foldersChecked = [];
+    //}
 
-    handleErrors (error) {
-        mainStore.displayErrorModals(error);
-        this.loading = false;
-        this.drawerLoading = false;
-    }
+    //handleErrors (error) {
+    //    mainStore.displayErrorModals(error);
+    //    this.loading = false;
+    //    this.drawerLoading = false;
+    //}
 
     getUserSuccess (json, id) {
         this.currentUser = json;
         if(id) ProjectActions.getPermissions(id, json.id);
-        this.trigger({
-            currentUser: this.currentUser
-        });
+        //this.trigger({
+        //    currentUser: this.currentUser
+        //});
     }
 
     getPermissionsSuccess (json) {
@@ -1257,21 +1257,15 @@ export class ProjectStore {
         this.setLoadingState();
     }
 
-    showDetails() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    }
 
-    showDetailsSuccess(json) {
-        this.project = json;
-        this.loading = false;
-        this.trigger({
-            project: this.project,
-            loading: this.loading
-        })
-    }
+    //showDetailsSuccess(json) {
+    //    this.project = json;
+    //    this.loading = false;
+    //    this.trigger({
+    //        project: this.project,
+    //        loading: this.loading
+    //    })
+    //}
 
     deleteItemSuccess(id, parentKind) {
         this.batchFolders.splice(0, 1);
@@ -1295,10 +1289,10 @@ export class ProjectStore {
         })
     }
 
-    addProjectSuccess(json) {
-        this.projects = [json, ...this.projects];
-        this.setLoadingState();
-    }
+    //addProjectSuccess(json) {
+    //    this.projects = [json, ...this.projects];
+    //    this.setLoadingState();
+    //}
 
     deleteProject() {
         this.loading = true;
@@ -1307,67 +1301,70 @@ export class ProjectStore {
         })
     }
 
-    deleteProjectSuccess() {
-        ProjectActions.getProjects();
-        ProjectActions.getUsageDetails();
-        this.loading = false;
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //deleteProjectSuccess() {
+    //    ProjectActions.getProjects();
+    //    ProjectActions.getUsageDetails();
+    //    this.loading = false;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
-    editProject(id) {
+    //editProject(id) {
+    //    this.loading = true;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
+
+    //editProjectSuccess(id) {
+    //    ProjectActions.showDetails(id);
+    //    this.loading = false;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
+
+
+    getChildren(id, path, page) {
         this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
+        if (page == null) page = 1;
+        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + Path.CHILDREN + "?page=" + page + "&per_page=25",
+            getFetchParams('get', authStore.appConfig.apiToken)
+        ).then(this.checkResponse).then((response) => {
+                const results = response.json();
+                const headers = response.headers;
+                return Promise.all([results, headers]);
+            }).then((json) => {
+                let results = json[0].results;
+                let headers = json[1].map;
+                if(page <= 1) {
+                    this.listItems = results;
+                } else {
+                    this.listItems = [...this.listItems, ...results];
+                }
+                this.responseHeaders = headers;
+                this.loading = false;
+            }).catch((ex) => {
+                projectStore.handleErrors(ex)
+            })
     }
 
-    editProjectSuccess(id) {
-        ProjectActions.showDetails(id);
-        this.loading = false;
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //addFolder() {
+    //    this.loading = true;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
-    getChildren() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    }
-
-    getChildrenSuccess(results, headers, page) {
-        if(page <= 1) {
-            this.listItems = results;
-        } else {
-            this.listItems = [...this.listItems, ...results];
-        }
-        this.responseHeaders = headers;
-        this.loading = false;
-        this.trigger({
-            listItems: this.listItems,
-            responseHeaders: this.responseHeaders,
-            loading: this.loading
-        })
-    }
-
-    addFolder() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    }
-
-    addFolderSuccess(json) {
-        this.listItems = [json, ...this.listItems];
-        this.loading = false;
-        this.trigger({
-            listItems: this.listItems,
-            loading: this.loading
-        })
-    }
+    //addFolderSuccess(json) {
+    //    this.listItems = [json, ...this.listItems];
+    //    this.loading = false;
+    //    this.trigger({
+    //        listItems: this.listItems,
+    //        loading: this.loading
+    //    })
+    //}
 
     deleteFolder() {
         this.loading = true;
@@ -1394,33 +1391,33 @@ export class ProjectStore {
         })
     }
 
-    addFile() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //addFile() {
+    //    this.loading = true;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
-    addFileSuccess(parentId, parentKind, uploadId, fileId) {
-        if (this.uploads[uploadId].tags.length) {
-            ProjectActions.appendTags(fileId, 'dds-file', this.uploads[uploadId].tags);
-        }
-        if(Object.keys(this.uploads).length === 1) {
-            if (parentKind === 'dds-project') {
-                ProjectActions.getChildren(parentId, 'projects/');
-            } else {
-                ProjectActions.getChildren(parentId, 'folders/');
-            }
-        }
-        if(this.uploads.hasOwnProperty(uploadId)) {
-            delete this.uploads[uploadId];
-        }
-        this.loading = false;
-        this.trigger({
-            loading: this.loading,
-            uploads: this.uploads
-        })
-    }
+    //addFileSuccess(parentId, parentKind, uploadId, fileId) {
+    //    if (this.uploads[uploadId].tags.length) {
+    //        ProjectActions.appendTags(fileId, 'dds-file', this.uploads[uploadId].tags);
+    //    }
+    //    if(Object.keys(this.uploads).length === 1) {
+    //        if (parentKind === 'dds-project') {
+    //            ProjectActions.getChildren(parentId, 'projects/');
+    //        } else {
+    //            ProjectActions.getChildren(parentId, 'folders/');
+    //        }
+    //    }
+    //    if(this.uploads.hasOwnProperty(uploadId)) {
+    //        delete this.uploads[uploadId];
+    //    }
+    //    this.loading = false;
+    //    this.trigger({
+    //        loading: this.loading,
+    //        uploads: this.uploads
+    //    })
+    //}
 
 
     deleteFile() {
@@ -1476,278 +1473,278 @@ export class ProjectStore {
         })
     }
 
-    getProjectMembers() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //getProjectMembers() {
+    //    this.loading = true;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
+    //
+    //getProjectMembersSuccess(results) {
+    //    //this.loading = false;
+    //    this.projectMembers = results;
+    //    //this.trigger({
+    //    //    projectMembers: this.projectMembers,
+    //    //    loading: this.loading
+    //    //})
+    //}
 
-    getProjectMembersSuccess(results) {
-        this.loading = false;
-        this.projectMembers = results;
-        this.trigger({
-            projectMembers: this.projectMembers,
-            loading: this.loading
-        })
-    }
+    //getUserNameSuccess(results) {
+    //    this.users = results.map((users) => {return users.full_name});
+    //    this.trigger({
+    //        users: this.users
+    //    });
+    //}
+    //
+    //getUserId() {
+    //    this.loading = true;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
-    getUserNameSuccess(results) {
-        this.users = results.map((users) => {return users.full_name});
-        this.trigger({
-            users: this.users
-        });
-    }
+    //getUserIdSuccess(results, id, role) {
+    //    let userInfo = results.map((result) => {
+    //        return result.id
+    //    });
+    //    let getName = results.map((result) => {
+    //        return result.full_name
+    //    });
+    //    let userId = userInfo.toString();
+    //    let name = getName.toString();
+    //    ProjectActions.addProjectMember(id, userId, role, name);
+    //    this.loading = false;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
-    getUserId() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //addProjectMember() {
+    //    this.loading = true;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
-    getUserIdSuccess(results, id, role) {
-        let userInfo = results.map((result) => {
-            return result.id
-        });
-        let getName = results.map((result) => {
-            return result.full_name
-        });
-        let userId = userInfo.toString();
-        let name = getName.toString();
-        ProjectActions.addProjectMember(id, userId, role, name);
-        this.loading = false;
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //addProjectMemberSuccess(id) {
+    //    ProjectActions.getProjectMembers(id);
+    //    this.loading = false;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
-    addProjectMember() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //deleteProjectMember() {
+    //    this.loading = true;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
-    addProjectMemberSuccess(id) {
-        ProjectActions.getProjectMembers(id);
-        this.loading = false;
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //deleteProjectMemberSuccess(id) {
+    //    ProjectActions.getProjectMembers(id);
+    //    this.loading = false;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
-    deleteProjectMember() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //getDownloadUrl() {
+    //    this.loading = true;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
-    deleteProjectMemberSuccess(id) {
-        ProjectActions.getProjectMembers(id);
-        this.loading = false;
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //getDownloadUrlSuccess(json) {
+    //    if (this.itemsSelected) this.itemsSelected = this.itemsSelected - 1;
+    //    !this.itemsSelected || !this.itemsSelected.length ? this.showBatchOps = false : this.showBatchOps;
+    //    let host = json.host;
+    //    let url = json.url;
+    //    var win = window.open(host + url, '_blank');
+    //    if (win) {
+    //        win.focus();
+    //    } else { // if browser blocks popups use location.href instead
+    //        window.location.href = host + url;
+    //    }
+    //    this.loading = false;
+    //    this.trigger({
+    //        loading: this.loading,
+    //        itemsSelected: this.itemsSelected,
+    //        showBatchOps: this.showBatchOps
+    //    })
+    //}
 
-    getDownloadUrl() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //getUsageDetailsSuccess(json) {
+    //    this.usage = json;
+    //}
 
-    getDownloadUrlSuccess(json) {
-        if (this.itemsSelected) this.itemsSelected = this.itemsSelected - 1;
-        !this.itemsSelected || !this.itemsSelected.length ? this.showBatchOps = false : this.showBatchOps;
-        let host = json.host;
-        let url = json.url;
-        var win = window.open(host + url, '_blank');
-        if (win) {
-            win.focus();
-        } else { // if browser blocks popups use location.href instead
-            window.location.href = host + url;
-        }
-        this.loading = false;
-        this.trigger({
-            loading: this.loading,
-            itemsSelected: this.itemsSelected,
-            showBatchOps: this.showBatchOps
-        })
-    }
+    //processFilesToUpload(files, rejectedFiles) {
+    //    this.filesToUpload = files;
+    //    this.filesRejectedForUpload = rejectedFiles;
+    //    this.trigger({
+    //        filesToUpload: this.filesToUpload,
+    //        filesRejectedForUpload: this.filesRejectedForUpload
+    //    })
+    //}
 
-    getUsageDetailsSuccess(json) {
-        this.usage = json;
-    }
+    //startUpload() {
+    //    this.loading = true;
+    //    this.trigger({
+    //        uploading: this.loading
+    //    })
+    //}
 
-    processFilesToUpload(files, rejectedFiles) {
-        this.filesToUpload = files;
-        this.filesRejectedForUpload = rejectedFiles;
-        this.trigger({
-            filesToUpload: this.filesToUpload,
-            filesRejectedForUpload: this.filesRejectedForUpload
-        })
-    }
+    //startUploadSuccess(uploadId, details) {
+    //    this.uploads[uploadId] = details;
+    //    ProjectActions.hashFile(this.uploads[uploadId], uploadId);
+    //    ProjectActions.updateAndProcessChunks(uploadId, null, null);
+    //    window.onbeforeunload = function (e) {// If uploading files and user navigates away from page, send them warning
+    //        let preventLeave = true;
+    //        if (preventLeave) {
+    //            return "If you refresh the page or close your browser, files being uploaded will be lost and you" +
+    //                " will have to start again. Are" +
+    //                " you sure you want to do this?";
+    //        }
+    //    };
+    //    this.trigger({
+    //        uploads: this.uploads
+    //    })
+    //}
 
-    startUpload() {
-        this.loading = true;
-        this.trigger({
-            uploading: this.loading
-        })
-    }
+    //updateChunkProgress(uploadId, chunkNum, progress) {
+    //    if (!uploadId && !this.uploads[uploadId]) {
+    //        return;
+    //    }
+    //    let upload = this.uploads[uploadId];
+    //    let chunks = this.uploads[uploadId] ? this.uploads[uploadId].chunks : '';
+    //    if (chunkNum !== null) {
+    //        for (let i = 0; i < chunks.length; i++) {
+    //            // find chunk to update
+    //            if (chunks[i].number === chunkNum) {
+    //                // update progress of chunk in bytes
+    //                if (progress) chunks[i].chunkUpdates.progress = progress;
+    //                break;
+    //            }
+    //        }
+    //    }
+    //    // calculate % uploaded
+    //    let bytesUploaded = 0;
+    //    if (chunks) {
+    //        chunks.map(chunk => bytesUploaded += chunk.chunkUpdates.progress);
+    //        upload.uploadProgress = upload.size > 0 ? (bytesUploaded / upload.size) * 100 : 0;
+    //    }
+    //    this.trigger({
+    //        uploads: this.uploads
+    //    });
+    //}
+    //
+    //updateAndProcessChunks(uploadId, chunkNum, chunkUpdates) {
+    //    if (!uploadId || !this.uploads[uploadId]) {
+    //        return;
+    //    }
+    //    let upload = this.uploads[uploadId];
+    //    let chunks = this.uploads[uploadId] ? this.uploads[uploadId].chunks : '';
+    //    if (chunkNum !== null) {
+    //        for (let i = 0; i < chunks.length; i++) {
+    //            // find chunk to update
+    //            if (chunks[i].number === chunkNum) {
+    //                //update status
+    //                if (chunkUpdates.status !== undefined) chunks[i].chunkUpdates.status = chunkUpdates.status;
+    //                if (chunks[i].chunkUpdates.status === StatusEnum.STATUS_RETRY && chunks[i].retry > StatusEnum.MAX_RETRY) {
+    //                    chunks[i].chunkUpdates.status = StatusEnum.STATUS_FAILED;
+    //                    ProjectStore.uploadError(uploadId, chunks[i].number);
+    //                    return;
+    //                }
+    //                if (chunks[i].chunkUpdates.status === StatusEnum.STATUS_RETRY) chunks[i].retry++;
+    //                break;
+    //            }
+    //        }
+    //    }
+    //    // Decide what action to do next
+    //    let allDone = true;
+    //    for (let i = 0; i < chunks.length; i++) {
+    //        let chunk = chunks[i];
+    //        if (chunk.chunkUpdates.status === StatusEnum.STATUS_WAITING_FOR_UPLOAD || chunk.chunkUpdates.status === StatusEnum.STATUS_RETRY) {
+    //            chunk.chunkUpdates.status = StatusEnum.STATUS_UPLOADING;
+    //            ProjectActions.getChunkUrl(uploadId, upload.blob.slice(chunk.start, chunk.end), chunk.number, upload.size, upload.parentId, upload.parentKind, upload.name, chunk.chunkUpdates);
+    //            return;
+    //        }
+    //        if (chunk.chunkUpdates.status !== StatusEnum.STATUS_SUCCESS) allDone = false;
+    //    }
+    //    if (allDone === true) ProjectActions.checkForHash(uploadId, upload.parentId, upload.parentKind, upload.name, upload.label, upload.fileId, upload.projectId);
+    //    window.onbeforeunload = function (e) { // If done, set to false so no warning is sent.
+    //        let preventLeave = false;
+    //    };
+    //}
 
-    startUploadSuccess(uploadId, details) {
-        this.uploads[uploadId] = details;
-        ProjectActions.hashFile(this.uploads[uploadId], uploadId);
-        ProjectActions.updateAndProcessChunks(uploadId, null, null);
-        window.onbeforeunload = function (e) {// If uploading files and user navigates away from page, send them warning
-            let preventLeave = true;
-            if (preventLeave) {
-                return "If you refresh the page or close your browser, files being uploaded will be lost and you" +
-                    " will have to start again. Are" +
-                    " you sure you want to do this?";
-            }
-        };
-        this.trigger({
-            uploads: this.uploads
-        })
-    }
+    //uploadError(uploadId, fileName, projectId) {
+    //    if (this.uploads.hasOwnProperty(uploadId)) {
+    //        this.failedUploads.push({
+    //            upload: this.uploads[uploadId],
+    //            fileName: fileName,
+    //            id: uploadId,
+    //            projectId: projectId
+    //        });
+    //        delete this.uploads[uploadId];
+    //        mainStore.failedUpload(this.failedUploads);
+    //    }
+    //    this.trigger({
+    //        uploads: this.uploads,
+    //        failedUploads: this.failedUploads
+    //    })
+    //}
 
-    updateChunkProgress(uploadId, chunkNum, progress) {
-        if (!uploadId && !this.uploads[uploadId]) {
-            return;
-        }
-        let upload = this.uploads[uploadId];
-        let chunks = this.uploads[uploadId] ? this.uploads[uploadId].chunks : '';
-        if (chunkNum !== null) {
-            for (let i = 0; i < chunks.length; i++) {
-                // find chunk to update
-                if (chunks[i].number === chunkNum) {
-                    // update progress of chunk in bytes
-                    if (progress) chunks[i].chunkUpdates.progress = progress;
-                    break;
-                }
-            }
-        }
-        // calculate % uploaded
-        let bytesUploaded = 0;
-        if (chunks) {
-            chunks.map(chunk => bytesUploaded += chunk.chunkUpdates.progress);
-            upload.uploadProgress = upload.size > 0 ? (bytesUploaded / upload.size) * 100 : 0;
-        }
-        this.trigger({
-            uploads: this.uploads
-        });
-    }
+    //cancelUpload(uploadId, name) {
+    //    if(this.uploads.hasOwnProperty(uploadId)) {
+    //        delete this.uploads[uploadId];
+    //    }
+    //    mainStore.addToast('Canceled upload of '+name);
+    //    this.trigger({
+    //        uploads: this.uploads
+    //    })
+    //}
 
-    updateAndProcessChunks(uploadId, chunkNum, chunkUpdates) {
-        if (!uploadId || !this.uploads[uploadId]) {
-            return;
-        }
-        let upload = this.uploads[uploadId];
-        let chunks = this.uploads[uploadId] ? this.uploads[uploadId].chunks : '';
-        if (chunkNum !== null) {
-            for (let i = 0; i < chunks.length; i++) {
-                // find chunk to update
-                if (chunks[i].number === chunkNum) {
-                    //update status
-                    if (chunkUpdates.status !== undefined) chunks[i].chunkUpdates.status = chunkUpdates.status;
-                    if (chunks[i].chunkUpdates.status === StatusEnum.STATUS_RETRY && chunks[i].retry > StatusEnum.MAX_RETRY) {
-                        chunks[i].chunkUpdates.status = StatusEnum.STATUS_FAILED;
-                        ProjectStore.uploadError(uploadId, chunks[i].number);
-                        return;
-                    }
-                    if (chunks[i].chunkUpdates.status === StatusEnum.STATUS_RETRY) chunks[i].retry++;
-                    break;
-                }
-            }
-        }
-        // Decide what action to do next
-        let allDone = true;
-        for (let i = 0; i < chunks.length; i++) {
-            let chunk = chunks[i];
-            if (chunk.chunkUpdates.status === StatusEnum.STATUS_WAITING_FOR_UPLOAD || chunk.chunkUpdates.status === StatusEnum.STATUS_RETRY) {
-                chunk.chunkUpdates.status = StatusEnum.STATUS_UPLOADING;
-                ProjectActions.getChunkUrl(uploadId, upload.blob.slice(chunk.start, chunk.end), chunk.number, upload.size, upload.parentId, upload.parentKind, upload.name, chunk.chunkUpdates);
-                return;
-            }
-            if (chunk.chunkUpdates.status !== StatusEnum.STATUS_SUCCESS) allDone = false;
-        }
-        if (allDone === true) ProjectActions.checkForHash(uploadId, upload.parentId, upload.parentKind, upload.name, upload.label, upload.fileId, upload.projectId);
-        window.onbeforeunload = function (e) { // If done, set to false so no warning is sent.
-            let preventLeave = false;
-        };
-    }
+    //removeFailedUploads() {
+    //    this.failedUploads = [];
+    //    mainStore.removeFailedUploads(this.failedUploads);
+    //    this.trigger({
+    //        failedUploads: this.failedUploads
+    //    })
+    //}
 
-    uploadError(uploadId, fileName, projectId) {
-        if (this.uploads.hasOwnProperty(uploadId)) {
-            this.failedUploads.push({
-                upload: this.uploads[uploadId],
-                fileName: fileName,
-                id: uploadId,
-                projectId: projectId
-            });
-            delete this.uploads[uploadId];
-            mainStore.failedUpload(this.failedUploads);
-        }
-        this.trigger({
-            uploads: this.uploads,
-            failedUploads: this.failedUploads
-        })
-    }
+    //checkForHash(uploadId, parentId, parentKind, name, label, fileId, projectId) {
+    //    let hash = this.fileHashes.find((fileHash)=>{ //Array.find method not supported in IE. See polyfills.js
+    //        return fileHash.id === uploadId;
+    //    });
+    //    if(!hash) {
+    //        ProjectActions.updateAndProcessChunks(uploadId, null, null);
+    //    }else{
+    //        ProjectActions.allChunksUploaded(uploadId, parentId, parentKind, name, label, fileId, hash.hash, projectId);
+    //    }
+    //}
 
-    cancelUpload(uploadId, name) {
-        if(this.uploads.hasOwnProperty(uploadId)) {
-            delete this.uploads[uploadId];
-        }
-        mainStore.addToast('Canceled upload of '+name);
-        this.trigger({
-            uploads: this.uploads
-        })
-    }
+    //postHash(hash) {
+    //    let fileHashes = this.fileHashes.push(hash);
+    //    this.trigger({
+    //        fileHashes: fileHashes
+    //    })
+    //}
 
-    removeFailedUploads() {
-        this.failedUploads = [];
-        mainStore.removeFailedUploads(this.failedUploads);
-        this.trigger({
-            failedUploads: this.failedUploads
-        })
-    }
+    //toggleModals(id) {
+    //    this.toggleModal.open = !this.toggleModal.open;
+    //    this.toggleModal.id = id;
+    //    this.trigger({
+    //        toggleModal: this.toggleModal
+    //    });
+    //}
 
-    checkForHash(uploadId, parentId, parentKind, name, label, fileId, projectId) {
-        let hash = this.fileHashes.find((fileHash)=>{ //Array.find method not supported in IE. See polyfills.js
-            return fileHash.id === uploadId;
-        });
-        if(!hash) {
-            ProjectActions.updateAndProcessChunks(uploadId, null, null);
-        }else{
-            ProjectActions.allChunksUploaded(uploadId, parentId, parentKind, name, label, fileId, hash.hash, projectId);
-        }
-    }
-
-    postHash(hash) {
-        let fileHashes = this.fileHashes.push(hash);
-        this.trigger({
-            fileHashes: fileHashes
-        })
-    }
-
-    toggleModals(id) {
-        this.toggleModal.open = !this.toggleModal.open;
-        this.toggleModal.id = id;
-        this.trigger({
-            toggleModal: this.toggleModal
-        });
-    }
-
-    setSelectedEntitySuccess(entity) {
-        this.selectedEntity = entity;
-        this.trigger({
-            selectedEntity: this.selectedEntity
-        })
-    }
+    //setSelectedEntitySuccess(entity) {
+    //    this.selectedEntity = entity;
+    //    this.trigger({
+    //        selectedEntity: this.selectedEntity
+    //    })
+    //}
 }
 
 const projectStore = new ProjectStore();

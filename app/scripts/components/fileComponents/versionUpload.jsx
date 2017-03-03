@@ -1,13 +1,22 @@
 import React from 'react';
-import ProjectActions from '../../actions/projectActions';
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
 import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 
+@observer
 class VersionUpload extends React.Component {
 
     render() {
-        let open = this.props.toggleModal && this.props.toggleModal.id === 'newVersionModal' ? this.props.toggleModal.open : false;
+        const {entityObj, toggleModal, screenSize, selectedEntity} = mainStore;
+        let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
+        let open = toggleModal && toggleModal.id === 'newVersionModal' ? toggleModal.open : false;
+        let fileId = selectedEntity !== null ? selectedEntity.id : entityObj !== null ? entityObj.id : null;
+        let parentId = selectedEntity !== null ?  selectedEntity.parent.id : entityObj !== null ? entityObj.parent.id : null;
+        let projectId = entityObj ? entityObj.ancestors[0].id : selectedEntity !== null ? selectedEntity.ancestors[0].id : null;
+        let parentKind = entityObj ? entityObj.parent.kind : selectedEntity !== null ? selectedEntity.parent.kind : null;
+
         let standardActions = [
             <FlatButton
                 label="Cancel"
@@ -16,13 +25,13 @@ class VersionUpload extends React.Component {
             <FlatButton
                 label="Submit"
                 secondary={true}
-                onTouchTap={() => this.handleUploadButton()} />
+                onTouchTap={() => this.handleUploadButton(fileId, parentId, projectId, parentKind)} />
         ];
         return (
             <div style={styles.fileUpload}>
                 <Dialog
                     style={styles.dialogStyles}
-                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
+                    contentStyle={dialogWidth}
                     title='Upload New Version'
                     autoDetectWindowHeight={true}
                     actions={standardActions}
@@ -49,19 +58,19 @@ class VersionUpload extends React.Component {
         );
     }
 
-    handleUploadButton() {
+    handleUploadButton(fileId, ParentId, projectId, parentKind) {
         if (this.fileInput.value) {
-            let projId = '';
-            let parentKind = '';
-            let fileId = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.entityObj.id;
-            let parentId = this.props.selectedEntity !== null ?  this.props.selectedEntity.parent.id : this.props.entityObj.parent.id;
+            //let projId = '';
+            //let parentKind = '';
+            //let fileId = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.entityObj.id;
+            //let parentId = this.props.selectedEntity !== null ?  this.props.selectedEntity.parent.id : this.props.entityObj.parent.id;
             let fileList = this.fileInput.files;
             for (var i = 0; i < fileList.length; i++) {
                 let blob = fileList[i];
                 let label = this.labelText.value;
-                projId = this.props.entityObj ? this.props.entityObj.ancestors[0].id : this.props.selectedEntity.ancestors[0].id;
-                parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : this.props.selectedEntity.parent.kind;
-                ProjectActions.startUpload(projId, blob, parentId, parentKind, label, fileId);
+                //projId = this.props.entityObj ? this.props.entityObj.ancestors[0].id : this.props.selectedEntity.ancestors[0].id;
+                //parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : this.props.selectedEntity.parent.kind;
+                ProjectActions.startUpload(projectId, blob, parentId, parentKind, label, fileId);
                 ProjectActions.toggleModals('newVersionModal');
             }
         } else {

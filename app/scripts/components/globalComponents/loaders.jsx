@@ -1,17 +1,21 @@
 import React from 'react'
-import { observer } from 'mobx-react';
+import { observer,  map } from 'mobx-react';
 import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import mainStore from '../../stores/mainStore';
 import LinearProgress from 'material-ui/LinearProgress';
 
 class Loaders extends React.Component {
 
+    componentDidUpdate() {
+        console.log(mainStore.uploads)
+    }
+
     @observer
     render() {
         let uploading = null;
-        if (this.props.projectStore.uploads) {
-            uploading = Object.keys(this.props.projectStore.uploads).map(uploadId => {
-                let upload = this.props.projectStore.uploads[uploadId];
+        if (mainStore.uploads) {
+            uploading = mainStore.uploads.entries().map(uploadId => {
+                let upload = uploadId[1];
                 return <div key={'pgrs'+uploadId}>
                     <LinearProgress mode="determinate" color={'#EC407A'} style={styles.uploader} value={upload.uploadProgress} max={100} min={0}/>
                     <i className="material-icons" style={styles.deleteIcon} onTouchTap={()=>this.cancelUpload(uploadId, upload.name)}>cancel</i>
@@ -21,9 +25,9 @@ class Loaders extends React.Component {
                 </div>;
             });
         }
-        let loading = this.props.projectStore.loading ?
+        let loading = mainStore.loading ?
         <LinearProgress mode="indeterminate" color={'#EC407A'} style={styles.uploader}/> : '';
-        if (this.props.projectStore.uploads && Object.keys(this.props.projectStore.uploads).length != 0) {
+        if (mainStore.uploads && Object.keys(mainStore.uploads).length != 0) {
             return (
                 <div>
                     {uploading}
@@ -38,7 +42,7 @@ class Loaders extends React.Component {
         }
     }
     cancelUpload(uploadId, name) {
-        ProjectActions.cancelUpload(uploadId, name);
+        mainStore.cancelUpload(uploadId, name);
     }
 }
 var styles = {
@@ -53,7 +57,8 @@ var styles = {
     uploader: {
         width: '95%',
         margin: '0 auto',
-        marginRight: 24
+        marginRight: 24,
+        backgroundColor: "#235F9C"
     },
     uploadText: {
         fontSize: 13,

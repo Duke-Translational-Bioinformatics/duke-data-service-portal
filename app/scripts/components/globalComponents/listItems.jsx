@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import ProjectActions from '../../actions/projectActions';
+import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../../util/baseUtils.js';
 import {UrlGen, Path} from '../../../util/urlEnum';
 import BatchOps from '../../components/globalComponents/batchOps.jsx';
@@ -11,19 +11,21 @@ import Loaders from '../../components/globalComponents/loaders.jsx';
 import FontIcon from 'material-ui/FontIcon';
 import RaisedButton from 'material-ui/RaisedButton';
 
+import DevTools from 'mobx-react-devtools';
+
 @observer
 class ListItems extends React.Component {
 
     render() {
-        const {listItems, loading, projPermissions, responseHeaders, screenSize, showBatchOps, uploads} = this.props.projectStore;
-        if(!showBatchOps) this.uncheck();
+        const {filesChecked, foldersChecked, listItems, loading, projPermissions, responseHeaders, screenSize, showBatchOps, uploads} = mainStore;
+        if(!showBatchOps) this.uncheck(filesChecked, foldersChecked);
         let chkBx = <div className="item-media"></div>;
         let headers = responseHeaders && responseHeaders !== null ? responseHeaders : null;
         let nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
         let totalChildren = headers !== null && !!headers['x-total'] ? headers['x-total'][0] : null;
         let type = 'hidden';
         let newFolderModal = null;
-        let prjPrm = projPermissions && projPermissions !== undefined ? projPermissions : null;
+        let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         if (prjPrm !== null) {
             newFolderModal = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <AddFolderModal {...this.props}/>;
             if (prjPrm !== 'viewOnly' && prjPrm !== 'flUpload') {
@@ -33,9 +35,9 @@ class ListItems extends React.Component {
                 </div>
             }
         }
-        let children = listItems ? listItems.map((children) => {
-            let fileOptionsMenu = this.props.screenSize && this.props.screenSize.width >= 680 ? <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, 'files')}/> : null;
-            let folderOptionsMenu = this.props.screenSize && this.props.screenSize.width >= 680 ? <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, 'folders')}/> : null;
+        let children = listItems && listItems.length ? listItems.map((children) => {
+            let fileOptionsMenu = screenSize && screenSize.width >= 680 ? <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, 'files')}/> : null;
+            let folderOptionsMenu = screenSize && screenSize.width >= 680 ? <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, 'folders')}/> : null;
             if (children.kind === 'dds-folder') {
                 return (
                     <li key={ children.id } className="hover">
@@ -115,6 +117,7 @@ class ListItems extends React.Component {
                         <ul>
                             { children }
                         </ul>
+                        <DevTools/>
                     </div>
                     {listItems.length < totalChildren && totalChildren > 25 ?
                         <div className="mdl-cell mdl-cell--12-col">
@@ -152,36 +155,34 @@ class ListItems extends React.Component {
         for (let i = 0; folderInput[i]; ++i) {
             if (folderInput[i].checked) foldersChecked.push(folderInput[i].value);
         }
-        ProjectActions.handleBatch(filesChecked, foldersChecked);
-        if (!checkedBoxes.length) ProjectActions.showBatchOptions();
+        mainStore.handleBatch(filesChecked, foldersChecked);
+        if (!checkedBoxes.length) mainStore.showBatchOptions();
     }
 
     handleDownload(id) {
         let kind = Path.FILE;
-        ProjectActions.getDownloadUrl(id, kind);
+        mainStore.getDownloadUrl(id, kind);
     }
 
     loadMore(page) {
         let id = this.props.params.id;
-        let kind = this.props.entityObj ? Path.FOLDER : Path.PROJECT;
-        ProjectActions.getChildren(id, kind, page);
+        let kind = mainStore.entityObj ? Path.FOLDER : Path.PROJECT;
+        mainStore.getChildren(id, kind, page);
     }
 
     setSelectedEntity(id, kind) {
-        ProjectActions.setSelectedEntity(id, kind);
+        mainStore.setSelectedEntity(id, kind);
     }
 
-    uncheck() {
-        let files = this.props.filesChecked ? this.props.filesChecked : null;
-        let folders = this.props.foldersChecked ? this.props.foldersChecked : null;
-        if(folders !== null) {
-            for (let i = 0; i < folders.length; i++) {
-                if(!!this.refs[folders[i]]) this.refs[folders[i]].checked = false;
+    uncheck(filesChecked, foldersChecked) {
+        if(foldersChecked !== null) {
+            for (let i = 0; i < foldersChecked.length; i++) {
+                if(!!this.refs[foldersChecked[i]]) this.refs[foldersChecked[i]].checked = false;
             }
         }
-        if(files !== null) {
-            for (let i = 0; i < files.length; i++) {
-                if(!!this.refs[files[i]]) this.refs[files[i]].checked = false;
+        if(filesChecked !== null) {
+            for (let i = 0; i < filesChecked.length; i++) {
+                if(!!this.refs[filesChecked[i]]) this.refs[filesChecked[i]].checked = false;
             }
         }
     }

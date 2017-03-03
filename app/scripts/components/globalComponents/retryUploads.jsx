@@ -1,7 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import projectStore from '../../stores/projectStore';
+import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../../util/baseUtils.js';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -13,15 +14,15 @@ class RetryUploads extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            retryUploads: this.props.failedUploads,
+            retryUploads: projectStore.failedUploads,
             retryUploadModal: true,
             warningText: {}
         };
     }
 
     render() {
-        const {failedUploads} = this.props.projectStore;
-        const {screenSize} = this.props.mainStore;
+        const {failedUploads} = projectStore;
+        const {screenSize} = mainStore;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let failed = failedUploads && failedUploads.length ? failedUploads.map((obj, i) => {
             return <TableRow key={i} selected={this.state.selected}>
@@ -99,7 +100,7 @@ class RetryUploads extends React.Component {
     }
 
     selectTableRow(rows) {
-        let failedUploads = this.props.projectStore.failedUploads;
+        let failedUploads = projectStore.failedUploads;
         if (rows === 'all') {
             this.setState({retryUploads: failedUploads});
         }

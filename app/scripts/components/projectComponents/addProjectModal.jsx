@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import ProjectActions from '../../actions/projectActions';
+import mainStore from '../../stores/mainStore';
 import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
@@ -19,7 +19,7 @@ class AddProjectModal extends React.Component {
     }
 
     render() {
-        const {screenSize} = this.props.mainStore;
+        const {screenSize} = mainStore;
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -84,7 +84,7 @@ class AddProjectModal extends React.Component {
         } else {
             let name = this.projectNameText.getValue();
             let desc = this.projectDescriptionText.getValue();
-            ProjectActions.addProject(name, desc);
+            mainStore.addProject(name, desc);
             this.setState({
                 open: false,
                 floatingErrorText: 'This field is required.',

@@ -1,5 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import authStore from '../../stores/authStore';
+import projectStore from '../../stores/projectStore';
 import Divider from 'material-ui/Divider';
 import FontIcon from 'material-ui/FontIcon';
 import {Popover, PopoverAnimationVertical} from 'material-ui/Popover';
@@ -8,8 +11,8 @@ import {Popover, PopoverAnimationVertical} from 'material-ui/Popover';
 class CurrentUser extends React.Component {
 
     render() {
-        const {appConfig, currentUser} = this.props.authStore;
-        const {showUserInfoPanel} = this.props.projectStore;
+        const {appConfig, currentUser} = authStore;
+        const {showUserInfoPanel} = projectStore;
         if (!appConfig.apiToken) {
             return null
         }
@@ -44,11 +47,11 @@ class CurrentUser extends React.Component {
 
     handleLogout() {
         this.props.router.push('/login');
-        this.props.authStore.handleLogout()
+        authStore.handleLogout()
     }
 
     showUserInfoPanel(){
-        this.props.projectStore.toggleUserInfoPanel();
+        projectStore.toggleUserInfoPanel();
     }
 }
 

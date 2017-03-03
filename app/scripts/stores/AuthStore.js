@@ -19,6 +19,10 @@ export class AuthStore {
         this.appConfig.isLoggedIn = cookie.load('isLoggedIn');
     }
 
+    checkResponse(response) {
+        return checkStatus(response, this);
+    }
+
     setLoadingStatus() {
         this.authServiceLoading = !this.authServiceLoading
     }

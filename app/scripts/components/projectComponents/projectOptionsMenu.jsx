@@ -1,6 +1,6 @@
 import React from 'react';
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
 import AutoComplete from 'material-ui/AutoComplete';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
@@ -10,6 +10,7 @@ import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import SelectField from 'material-ui/SelectField';
 
+@observer
 class ProjectOptionsMenu extends React.Component {
 
     constructor(props) {
@@ -22,16 +23,18 @@ class ProjectOptionsMenu extends React.Component {
             floatingErrorText2: '',
             floatingErrorText3: 'Enter the project name exactly to delete',
             memberOpen: false,
-            users: ProjectStore.users,
             value: null
         }
     }
 
     render() {
-        let currentUser = this.props.currentUser ? this.props.currentUser.full_name : null;
-        let names = this.props.users && this.props.users.length ? this.props.users : [];
-        let prName = this.props.project ? this.props.project.name : null;
-        let desc = this.props.project ? this.props.project.description : null;
+        const {currentUser, project, screenSize, users} = mainStore;
+        let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
+        let userName = currentUser ? currentUser.full_name : null;
+        let names = users && users.length ? users : [];
+        let prName = project ? project.name : null;
+        let desc = project ? project.description : null;
+        let id = this.props.params.id;
 
         let deleteActions = [
             <FlatButton
@@ -42,7 +45,7 @@ class ProjectOptionsMenu extends React.Component {
                 label="DELETE"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={() => this.handleDeleteButton()} />
+                onTouchTap={() => this.handleDeleteButton(id, prName)} />
         ];
         let editActions = [
             <FlatButton
@@ -53,7 +56,7 @@ class ProjectOptionsMenu extends React.Component {
                 label="UPDATE"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={() => this.handleUpdateButton()} />
+                onTouchTap={() => this.handleUpdateButton(id)} />
         ];
         let memberActions = [
             <FlatButton
@@ -64,14 +67,14 @@ class ProjectOptionsMenu extends React.Component {
                 label="ADD"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={() => this.handleMemberButton(currentUser)} />
+                onTouchTap={() => this.handleMemberButton(userName)} />
         ];
 
         return (
             <div>
                 <Dialog
                     style={styles.dialogStyles}
-                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
+                    contentStyle={dialogWidth}
                     title="Are you sure you want to delete this project?"
                     autoDetectWindowHeight={true}
                     actions={deleteActions}
@@ -90,7 +93,7 @@ class ProjectOptionsMenu extends React.Component {
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
-                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
+                    contentStyle={dialogWidth}
                     title="Update Project"
                     autoDetectWindowHeight={true}
                     actions={editActions}
@@ -122,7 +125,7 @@ class ProjectOptionsMenu extends React.Component {
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
-                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
+                    contentStyle={dialogWidth}
                     title="Add a Member"
                     autoDetectWindowHeight={true}
                     actions={memberActions}
@@ -179,29 +182,26 @@ class ProjectOptionsMenu extends React.Component {
         setTimeout(()=>this.fullName.focus(), 300);
     }
 
-    handleDeleteButton() {
-        let id = this.props.params.id;
-        let prName = this.props.project ? this.props.project.name : null;
+    handleDeleteButton(id, prName) {
         if(this.projName.getValue() != prName){
             this.setState({
                 floatingErrorText3: 'Enter the project name exactly to delete'
             });
             return null
         }else{
-            ProjectActions.deleteProject(id);
+            mainStore.deleteProject(id);
             this.setState({deleteOpen: false});
             setTimeout(()=>this.props.router.push('/'),500)
         }
     }
 
-    handleUpdateButton() {
-        let id = this.props.params.id;
+    handleUpdateButton(id) {
         let name = this.projectNameText.getValue();
         let desc = this.projectDescriptionText.getValue();
         if (this.state.floatingErrorText != '' && this.state.floatingErrorText2 != '') {
             return null
         } else {
-            ProjectActions.editProject(id, name, desc);
+            mainStore.editProject(id, name, desc);
             this.setState({editOpen: false});
         }
     };
@@ -219,7 +219,7 @@ class ProjectOptionsMenu extends React.Component {
         this.setState({
             timeout: setTimeout(() => {
                 if (text.indexOf(' ') <= 0) {
-                    ProjectActions.getUserName(text);
+                    mainStore.getUserName(text);
                     this.setState({
                         floatingErrorText: text ? '' : 'This field is required'
                     });
@@ -229,7 +229,7 @@ class ProjectOptionsMenu extends React.Component {
 
     }
 
-    handleMemberButton(currentUser) {
+    handleMemberButton(userName) {
         let  fullName = this.fullName.state.searchText;
         let role = null;
         switch(this.state.value){
@@ -256,14 +256,14 @@ class ProjectOptionsMenu extends React.Component {
             });
             return null
         }
-        if(currentUser === fullName){
+        if(userName === fullName){
             this.setState({
                 floatingErrorText: "You can't add yourself or change your role"
             });
             return null
         }
         else {
-            ProjectActions.getUserId(fullName, id, role);
+            mainStore.getUserId(fullName, id, role);
             this.setState({
                 memberOpen: false,
                 value: null
@@ -284,7 +284,7 @@ class ProjectOptionsMenu extends React.Component {
     };
 
     handleFloatingErrorInputChange3(e) {
-        let prName = this.props.project ? this.props.project.name : null;
+        let prName = mainStore.project ? mainStore.project.name : null;
         this.setState({
             floatingErrorText3: e.target.value === prName ? '' : 'Enter the project name exactly to delete'
         });

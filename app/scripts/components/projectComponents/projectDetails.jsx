@@ -1,6 +1,6 @@
 import React from 'react';
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
 import ProjectOptionsMenu from './projectOptionsMenu.jsx';
 import Details from './details.jsx';
 import UploadManager from '../globalComponents/uploadManager.jsx';
@@ -9,6 +9,7 @@ import BaseUtils from '../../../util/baseUtils.js';
 import FlatButton from 'material-ui/FlatButton';
 import Card from 'material-ui/Card';
 
+@observer
 class ProjectDetails extends React.Component {
 
     constructor(props) {
@@ -19,11 +20,12 @@ class ProjectDetails extends React.Component {
     }
 
     render() {
+        const {project, projPermissions} = mainStore;
         let id = this.props.params.id;
-        let createdBy = this.props.project && this.props.project.audit ? this.props.project.audit.created_by.full_name : null;
-        let projectName = this.props.project ? this.props.project.name : null;
-        let crdOn = this.props.project && this.props.project.audit ? this.props.project.audit.created_on : null;
-        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
+        let createdBy = project && project.audit ? project.audit.created_by.full_name : null;
+        let crdOn = project && project.audit ? project.audit.created_on : null;
+        let projectName = project ? project.name : null;
+        let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         let uploadMdl = null;
         let optionsMenu = null;
         if (prjPrm !== null) {

@@ -1,28 +1,25 @@
 import React from 'react';
 import { observer, inject } from 'mobx-react';
-import ProjectActions from '../actions/projectActions';
 import authStore from '../stores/authStore';
 import mainStore from '../stores/mainStore';
 import ProjectList from '../components/projectComponents/projectList.jsx';
 import AccountOverview from '../components/globalComponents/accountOverview.jsx';
-//import ProjectStore from '../stores/projectStore';
-import MainActions from '../actions/mainActions';
 import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
 
-@inject('mainStore', 'projectStore') @observer
+@observer
 class Home extends React.Component {
 
     componentDidMount() {
         if(authStore.appConfig.apiToken) {
-            ProjectActions.getProjects();
-            ProjectActions.getUsageDetails();
+            mainStore.getProjects();
+            mainStore.getUsageDetails();
             authStore.removeLoginCookie();
         }
     }
 
     render() {
-        const {modalOpen, screenSize} = this.props.mainStore;
+        const {modalOpen, screenSize} = mainStore;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let standardActions = [
             <FlatButton
@@ -70,7 +67,7 @@ class Home extends React.Component {
     }
 
     handleDeclineButton() {
-        mainStore.handleLogout();
+        authStore.handleLogout();
     }
 }
 

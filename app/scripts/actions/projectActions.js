@@ -371,24 +371,24 @@ const ProjectActions = {
             })
     },
 
-    appendTags(id, kind, tags) {
-        let msg = tags.map((tag)=> {
-            return tag.label
-        });
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TAGS + kind + '/' + id + '/append',
-            getFetchParams('post', authStore.appConfig.apiToken, {
-                tags
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                mainStore.addToast('Added ' + msg + ' as tags to all selected files.');
-                projectStore.appendTagsSuccess(id);
-            }).catch((ex) => {
-                mainStore.addToast('Failed to add tags');
-                projectStore.handleErrors(ex)
-            })
-    },
+    //appendTags(id, kind, tags) {
+    //    let msg = tags.map((tag)=> {
+    //        return tag.label
+    //    });
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TAGS + kind + '/' + id + '/append',
+    //        getFetchParams('post', authStore.appConfig.apiToken, {
+    //            tags
+    //        })
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            mainStore.addToast('Added ' + msg + ' as tags to all selected files.');
+    //            projectStore.appendTagsSuccess(id);
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to add tags');
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
     deleteTag(id, label, fileId) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TAGS + id,
@@ -403,31 +403,31 @@ const ProjectActions = {
             });
     },
 
-    getTagLabels() {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'tags/labels/?object_kind=dds-file',
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.getTagLabelsSuccess(json.results)
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            })
-    },
+    //getTagLabels() {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'tags/labels/?object_kind=dds-file',
+    //        getFetchParams('get', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            //projectStore.getTagLabelsSuccess(json.results)
+    //        }).catch((ex) => {
+    //            //projectStore.handleErrors(ex)
+    //        })
+    //},
 
 
-    getTagAutoCompleteList(text) {
-        let query = text === null ? '' : '&label_contains=' + text;
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'tags/labels/?object_kind=dds-file' + query,
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.getTagAutoCompleteListSuccess(json.results)
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            })
-    },
+    //getTagAutoCompleteList(text) {
+    //    let query = text === null ? '' : '&label_contains=' + text;
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'tags/labels/?object_kind=dds-file' + query,
+    //        getFetchParams('get', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.getTagAutoCompleteListSuccess(json.results)
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
     getTags(id, kind) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TAGS + kind + '/' + id,
@@ -453,25 +453,25 @@ const ProjectActions = {
             })
     },
 
-    addFileVersion(uploadId, label, fileId) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE + fileId,
-            getFetchParams('put', authStore.appConfig.apiToken, {
-                'upload': {
-                    'id': uploadId
-                },
-                'label': label
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                mainStore.addToast('Created New File Version!');
-                projectStore.addFileVersionSuccess(fileId, uploadId)
-            }).catch((ex) => {
-                mainStore.addToast('Failed to Create New Version');
-                projectStore.uploadError(uploadId, label);
-                projectStore.handleErrors(ex);
-            });
-    },
+    //addFileVersion(uploadId, label, fileId) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE + fileId,
+    //        getFetchParams('put', authStore.appConfig.apiToken, {
+    //            'upload': {
+    //                'id': uploadId
+    //            },
+    //            'label': label
+    //        })
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            mainStore.addToast('Created New File Version!');
+    //            projectStore.addFileVersionSuccess(fileId, uploadId)
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to Create New Version');
+    //            projectStore.uploadError(uploadId, label);
+    //            projectStore.handleErrors(ex);
+    //        });
+    //},
 
     deleteVersion(id) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE_VERSION + id,
@@ -669,17 +669,17 @@ const ProjectActions = {
             });
     },
 
-    getUsageDetails() {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'usage',
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.getUsageDetailsSuccess(json)
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            })
-    },
+    //getUsageDetails() {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'usage',
+    //        getFetchParams('get', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.getUsageDetailsSuccess(json)
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
     getProjects(page) {
         projectStore.setLoadingState();
@@ -699,17 +699,17 @@ const ProjectActions = {
             })
     },
 
-    showDetails(id) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id,
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.showDetailsSuccess(json)
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            })
-    },
+    //showDetails(id) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id,
+    //        getFetchParams('get', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.showDetailsSuccess(json)
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
     addProject(name, desc) {
         projectStore.setLoadingState();
@@ -729,35 +729,35 @@ const ProjectActions = {
             })
     },
 
-    deleteProject(id) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id,
-            getFetchParams('delete', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-            }).then((json) => {
-                mainStore.addToast('Project Deleted');
-                projectStore.deleteProjectSuccess(json)
-            }).catch((ex) => {
-                mainStore.addToast('Project Delete Failed');
-                projectStore.handleErrors(ex)
-            });
-    },
+    //deleteProject(id) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id,
+    //        getFetchParams('delete', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //        }).then((json) => {
+    //            mainStore.addToast('Project Deleted');
+    //            projectStore.deleteProjectSuccess(json)
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Project Delete Failed');
+    //            projectStore.handleErrors(ex)
+    //        });
+    //},
 
-    editProject(id, name, desc) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id,
-            getFetchParams('put', authStore.appConfig.apiToken, {
-                "name": name,
-                "description": desc
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                mainStore.addToast('Project Updated');
-                projectStore.editProjectSuccess(id)
-            }).catch((ex) => {
-                mainStore.addToast('Project Update Failed');
-                projectStore.handleErrors(ex)
-            });
-    },
+    //editProject(id, name, desc) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id,
+    //        getFetchParams('put', authStore.appConfig.apiToken, {
+    //            "name": name,
+    //            "description": desc
+    //        })
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            mainStore.addToast('Project Updated');
+    //            projectStore.editProjectSuccess(id)
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Project Update Failed');
+    //            projectStore.handleErrors(ex)
+    //        });
+    //},
 
     getChildren(id, path, page) {
         if (page == null) page = 1;
@@ -776,25 +776,25 @@ const ProjectActions = {
             })
     },
 
-    addFolder(id, parentKind, name) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FOLDER,
-            getFetchParams('post', authStore.appConfig.apiToken, {
-                "name": name,
-                "parent": {
-                    "kind": parentKind,
-                    "id": id
-                }
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                mainStore.addToast('Folder Added');
-                projectStore.addFolderSuccess(json);
-            }).catch((ex) => {
-                mainStore.addToast('Failed to Add a New Folder');
-                projectStore.handleErrors(ex)
-            })
-    },
+    //addFolder(id, parentKind, name) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FOLDER,
+    //        getFetchParams('post', authStore.appConfig.apiToken, {
+    //            "name": name,
+    //            "parent": {
+    //                "kind": parentKind,
+    //                "id": id
+    //            }
+    //        })
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            mainStore.addToast('Folder Added');
+    //            projectStore.addFolderSuccess(json);
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to Add a New Folder');
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
     deleteFolder(id, parentId, parentKind) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FOLDER + id,
@@ -871,377 +871,377 @@ const ProjectActions = {
             });
     },
 
-    getProjectMembers(id) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions',
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.getProjectMembersSuccess(json.results)
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            });
-    },
+    //getProjectMembers(id) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions',
+    //        getFetchParams('get', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.getProjectMembersSuccess(json.results)
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        });
+    //},
 
-    getUserName(text) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + text + '&page=1&per_page=500',
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.getUserNameSuccess(json.results)
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            });
-    },
+    //getUserName(text) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + text + '&page=1&per_page=500',
+    //        getFetchParams('get', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.getUserNameSuccess(json.results)
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        });
+    //},
 
-    getUserId(fullName, id, role) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + fullName,
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.getUserIdSuccess(json.results, id, role)
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            });
-    },
+    //getUserId(fullName, id, role) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'users?' + 'full_name_contains=' + fullName,
+    //        getFetchParams('get', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.getUserIdSuccess(json.results, id, role)
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        });
+    //},
 
-    addProjectMember(id, userId, role, name) {
-        let newRole = role.replace('_', ' ');
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions/' + userId,
-            getFetchParams('put', authStore.appConfig.apiToken, {
-                'auth_role': {'id': role}
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                mainStore.addToast(name + ' ' + 'has been added as a ' + newRole + ' to this project');
-                projectStore.addProjectMemberSuccess(id)
-            }).catch((ex) => {
-                mainStore.addToast('Could not add member to this project or member does not exist');
-                projectStore.handleErrors(ex)
-            });
-    },
+    //addProjectMember(id, userId, role, name) {
+    //    let newRole = role.replace('_', ' ');
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions/' + userId,
+    //        getFetchParams('put', authStore.appConfig.apiToken, {
+    //            'auth_role': {'id': role}
+    //        })
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            mainStore.addToast(name + ' ' + 'has been added as a ' + newRole + ' to this project');
+    //            projectStore.addProjectMemberSuccess(id)
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Could not add member to this project or member does not exist');
+    //            projectStore.handleErrors(ex)
+    //        });
+    //},
 
-    deleteProjectMember(id, userId, userName) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions/' + userId,
-            getFetchParams('delete', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-            }).then((json) => {
-                mainStore.addToast(userName + ' ' + 'has been removed from this project');
-                projectStore.deleteProjectMemberSuccess(id, userId);
-            }).catch((ex) => {
-                mainStore.addToast('Unable to remove ' + userName + ' from this project');
-                projectStore.handleErrors(ex)
-            });
-    },
+    //deleteProjectMember(id, userId, userName) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions/' + userId,
+    //        getFetchParams('delete', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //        }).then((json) => {
+    //            mainStore.addToast(userName + ' ' + 'has been removed from this project');
+    //            projectStore.deleteProjectMemberSuccess(id, userId);
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Unable to remove ' + userName + ' from this project');
+    //            projectStore.handleErrors(ex)
+    //        });
+    //},
 
-    getDownloadUrl(id, kind) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + kind + id + '/url',
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.getDownloadUrlSuccess(json)
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            })
-    },
+    //getDownloadUrl(id, kind) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + kind + id + '/url',
+    //        getFetchParams('get', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.getDownloadUrlSuccess(json)
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
-    startUpload(projId, blob, parentId, parentKind, label, fileId, tags) {
-        let chunkNum = 0,
-            fileName = blob.name,
-            contentType = blob.type,
-            slicedFile = null,
-            BYTES_PER_CHUNK, SIZE, NUM_CHUNKS, start, end;
-        BYTES_PER_CHUNK = 5242880 * 10;
-        SIZE = blob.size;
-        NUM_CHUNKS = Math.max(Math.ceil(SIZE / BYTES_PER_CHUNK), 1);
-        start = 0;
-        end = BYTES_PER_CHUNK;
+    //startUpload(projId, blob, parentId, parentKind, label, fileId, tags) {
+    //    let chunkNum = 0,
+    //        fileName = blob.name,
+    //        contentType = blob.type,
+    //        slicedFile = null,
+    //        BYTES_PER_CHUNK, SIZE, NUM_CHUNKS, start, end;
+    //    BYTES_PER_CHUNK = 5242880 * 10;
+    //    SIZE = blob.size;
+    //    NUM_CHUNKS = Math.max(Math.ceil(SIZE / BYTES_PER_CHUNK), 1);
+    //    start = 0;
+    //    end = BYTES_PER_CHUNK;
+    //
+    //    var fileReader = new FileReader();
+    //
+    //    let details = {
+    //        name: fileName,
+    //        label: label,
+    //        tags: tags,
+    //        fileId: fileId,
+    //        size: SIZE,
+    //        blob: blob,
+    //        parentId: parentId,
+    //        parentKind: parentKind,
+    //        projectId: projId,
+    //        uploadProgress: 0,
+    //        chunks: []
+    //    };
+    //    // describe chunk details
+    //    while (start <= SIZE) {
+    //        slicedFile = blob.slice(start, end);
+    //        details.chunks.push({
+    //            number: chunkNum,
+    //            start: start,
+    //            end: end,
+    //            chunkUpdates: {
+    //                status: null,
+    //                progress: 0
+    //            },
+    //            retry: 0
+    //        });
+    //        // increment to next chunk
+    //        start = end;
+    //        end = start + BYTES_PER_CHUNK;
+    //        chunkNum++;
+    //    }
+    //    fileReader.onload = function (event, files) {
+    //        // create project upload
+    //        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + projId + '/' + Path.UPLOAD,
+    //            getFetchParams('post', authStore.appConfig.apiToken, {
+    //                'name': fileName,
+    //                'content_type': contentType,
+    //                'size': SIZE
+    //            })
+    //        ).then(checkStatus).then((response) => {
+    //                return response.json()
+    //            }).then((json) => {
+    //                let uploadObj = json;
+    //                if (!uploadObj || !uploadObj.id) throw "Problem, no upload created";
+    //                projectStore.startUploadSuccess(uploadObj.id, details);
+    //            }).catch((ex) => {
+    //                projectStore.handleErrors(ex)
+    //            })
+    //    };
+    //    fileReader.onerror = function (e) {
+    //        projectStore.handleErrors(e.target.error);
+    //        console.log("error", e);
+    //        console.log(e.target.error.message);
+    //    };
+    //    fileReader.readAsArrayBuffer(slicedFile);
+    //},
 
-        var fileReader = new FileReader();
+    //uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKind, chunkNum, fileName, chunkUpdates) {
+    //    window.addEventListener('offline', function () {
+    //        projectStore.uploadError(uploadId, fileName)
+    //    });
+    //    var xhr = new XMLHttpRequest();
+    //    xhr.upload.onprogress = uploadProgress;
+    //    function uploadProgress(e) {
+    //        if (e.lengthComputable) {
+    //            projectStore.updateChunkProgress(uploadId, chunkNum, e.loaded / e.total * (chunkBlob.size));
+    //        }
+    //    }
+    //
+    //    xhr.onload = onComplete;
+    //    function onComplete() {
+    //        let status = null;
+    //        if (xhr.status >= 200 && xhr.status < 300) {
+    //            chunkUpdates.status = StatusEnum.STATUS_SUCCESS;
+    //        }
+    //        else {
+    //            chunkUpdates.status = StatusEnum.STATUS_RETRY;
+    //        }
+    //        projectStore.updateAndProcessChunks(uploadId, chunkNum, {status: chunkUpdates.status});
+    //    }
+    //
+    //    xhr.open('PUT', presignedUrl, true);
+    //    xhr.send(chunkBlob);
+    //},
+    //
+    //getChunkUrl(uploadId, chunkBlob, chunkNum, size, parentId, parentKind, fileName, chunkUpdates) {
+    //    var fileReader = new FileReader();
+    //    fileReader.onload = function (event) {
+    //        var arrayBuffer = event.target.result;
+    //        var wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
+    //        var md5crc = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
+    //        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.UPLOAD + uploadId + '/chunks',
+    //            getFetchParams('put', authStore.appConfig.apiToken, {
+    //                "number": chunkNum,
+    //                "size": chunkBlob.size,
+    //                'hash': {
+    //                    'value': md5crc,
+    //                    'algorithm': 'MD5'
+    //                }
+    //            })
+    //        ).then(checkStatus).then((response) => {
+    //                return response.json()
+    //            }).then((json) => {
+    //                let chunkObj = json;
+    //                if (chunkObj && chunkObj.url && chunkObj.host) {
+    //                    // upload chunks
+    //                    this.uploadChunk(uploadId, chunkObj.host + chunkObj.url, chunkBlob, size, parentId, parentKind, chunkNum, fileName, chunkUpdates)
+    //                } else {
+    //                    throw 'Unexpected response';
+    //                }
+    //            }).catch((ex) => {
+    //                projectStore.updateAndProcessChunks(uploadId, chunkNum, {status: StatusEnum.STATUS_RETRY});
+    //            });
+    //    };
+    //    fileReader.readAsArrayBuffer(chunkBlob);
+    //},
+    //
+    //allChunksUploaded(uploadId, parentId, parentKind, fileName, label, fileId, hash, projectId) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.UPLOAD + uploadId + '/complete',
+    //        getFetchParams('put', authStore.appConfig.apiToken, {
+    //            'hash': {
+    //                'value': hash,
+    //                'algorithm': 'md5'
+    //            }
+    //        })
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            if (fileId == null) {
+    //                projectStore.addFile(uploadId, parentId, parentKind, fileName, label);
+    //            } else {
+    //                projectStore.addFileVersion(uploadId, label, fileId);
+    //            }
+    //        }).catch((ex) => {
+    //            projectStore.uploadError(uploadId, fileName, projectId);
+    //        })
+    //},
 
-        let details = {
-            name: fileName,
-            label: label,
-            tags: tags,
-            fileId: fileId,
-            size: SIZE,
-            blob: blob,
-            parentId: parentId,
-            parentKind: parentKind,
-            projectId: projId,
-            uploadProgress: 0,
-            chunks: []
-        };
-        // describe chunk details
-        while (start <= SIZE) {
-            slicedFile = blob.slice(start, end);
-            details.chunks.push({
-                number: chunkNum,
-                start: start,
-                end: end,
-                chunkUpdates: {
-                    status: null,
-                    progress: 0
-                },
-                retry: 0
-            });
-            // increment to next chunk
-            start = end;
-            end = start + BYTES_PER_CHUNK;
-            chunkNum++;
-        }
-        fileReader.onload = function (event, files) {
-            // create project upload
-            fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + projId + '/' + Path.UPLOAD,
-                getFetchParams('post', authStore.appConfig.apiToken, {
-                    'name': fileName,
-                    'content_type': contentType,
-                    'size': SIZE
-                })
-            ).then(checkStatus).then((response) => {
-                    return response.json()
-                }).then((json) => {
-                    let uploadObj = json;
-                    if (!uploadObj || !uploadObj.id) throw "Problem, no upload created";
-                    projectStore.startUploadSuccess(uploadObj.id, details);
-                }).catch((ex) => {
-                    projectStore.handleErrors(ex)
-                })
-        };
-        fileReader.onerror = function (e) {
-            projectStore.handleErrors(e.target.error);
-            console.log("error", e);
-            console.log(e.target.error.message);
-        };
-        fileReader.readAsArrayBuffer(slicedFile);
-    },
+    //addFile(uploadId, parentId, parentKind, fileName) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE,
+    //        getFetchParams('post', authStore.appConfig.apiToken, {
+    //            'parent': {
+    //                'kind': parentKind,
+    //                'id': parentId
+    //            },
+    //            'upload': {
+    //                'id': uploadId
+    //            }
+    //        })).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            mainStore.addToast(fileName + ' uploaded successfully');
+    //            projectStore.addFileSuccess(parentId, parentKind, uploadId, json.id)
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to upload ' + fileName + '!');
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
-    uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKind, chunkNum, fileName, chunkUpdates) {
-        window.addEventListener('offline', function () {
-            projectStore.uploadError(uploadId, fileName)
-        });
-        var xhr = new XMLHttpRequest();
-        xhr.upload.onprogress = uploadProgress;
-        function uploadProgress(e) {
-            if (e.lengthComputable) {
-                projectStore.updateChunkProgress(uploadId, chunkNum, e.loaded / e.total * (chunkBlob.size));
-            }
-        }
+////File Hashing
+//    hashFile(file, id) {
+//        if (file.blob.size < 5242880 * 10) {
+//            function calculateMd5(blob, id) {
+//                let reader = new FileReader();
+//                reader.readAsArrayBuffer(blob);
+//                reader.onloadend = function () {
+//                    let wordArray = CryptoJS.lib.WordArray.create(reader.result),
+//                        hash = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
+//                    projectStore.postHash({id: id, hash: hash});
+//                };
+//            }
+//
+//            calculateMd5(file.blob, id);
+//        } else {
+//            function series(tasks, done) {
+//                if (!tasks || tasks.length === 0) {
+//                    done();
+//                } else {
+//                    tasks[0](function () {
+//                        series(tasks.slice(1), done);
+//                    });
+//                }
+//            }
+//
+//            function webWorkerOnMessage(e) {
+//                function arrayBufferToWordArray(ab) {
+//                    let i8a = new Uint8Array(ab);
+//                    let a = [];
+//                    for (let i = 0; i < i8a.length; i += 4) {
+//                        a.push(i8a[i] << 24 | i8a[i + 1] << 16 | i8a[i + 2] << 8 | i8a[i + 3]);
+//                    }
+//                    return CryptoJS.lib.WordArray.create(a, i8a.length);
+//                }
+//
+//                if (e.data.type === "create") {
+//                    md5 = CryptoJS.algo.MD5.create();
+//                    postMessage({type: "create"});
+//                } else if (e.data.type === "update") {
+//                    md5.update(arrayBufferToWordArray(e.data.chunk));
+//                    postMessage({type: "update"});
+//                } else if (e.data.type === "finish") {
+//                    postMessage({type: "finish", id: e.data.id, hash: "" + md5.finalize()});
+//                }
+//            }
+//
+//// URL.createObjectURL
+//            window.URL = window.URL || window.webkitURL;
+//
+//// "Server response"
+//            let assetPath = location.protocol + '//' + location.host + '/lib/md5.js';
+//            let response =
+//                "importScripts(" + "'" + assetPath + "'" + ");" +
+//                "var md5, cryptoType;" +
+//                "self.onmessage = " + webWorkerOnMessage.toString();
+//
+//            let blob;
+//            try {
+//                blob = new Blob([response], {type: 'application/javascript'});
+//            } catch (e) { // Backwards-compatibility
+//                window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
+//                blob = new BlobBuilder();
+//                blob.append(response);
+//                blob = blob.getBlob();
+//            }
+//
+//            let worker = new Worker(URL.createObjectURL(blob));
+//            let chunksize = 5242880;
+//            let f = file.blob; // FileList object
+//            let i = 0,
+//                chunks = Math.ceil(f.size / chunksize),
+//                chunkTasks = [],
+//                startTime = (new Date()).getTime();
+//            worker.onmessage = function (e) {
+//                // create callback
+//                for (let j = 0; j < chunks; j++) {
+//                    (function (j, f) {
+//                        chunkTasks.push(function (next) {
+//                            let blob = f.slice(j * chunksize, Math.min((j + 1) * chunksize, f.size));
+//                            let reader = new FileReader();
+//
+//                            reader.onload = function (e) {
+//                                let chunk = e.target.result;
+//                                worker.onmessage = function (e) {
+//                                    // update callback
+//                                    next();
+//                                };
+//                                worker.postMessage({type: "update", chunk: chunk});
+//                            };
+//                            reader.readAsArrayBuffer(blob);
+//                        });
+//                    })(j, f);
+//                }
+//                series(chunkTasks, function () {
+//                    worker.onmessage = function (e) {
+//                        // finish callback
+//                        projectStore.postHash({id: e.data.id, hash: e.data.hash});
+//                    };
+//                    worker.postMessage({type: "finish", id: id});
+//                });
+//            };
+//            worker.postMessage({type: "create"});
+//        }
+//    },
 
-        xhr.onload = onComplete;
-        function onComplete() {
-            let status = null;
-            if (xhr.status >= 200 && xhr.status < 300) {
-                chunkUpdates.status = StatusEnum.STATUS_SUCCESS;
-            }
-            else {
-                chunkUpdates.status = StatusEnum.STATUS_RETRY;
-            }
-            projectStore.updateAndProcessChunks(uploadId, chunkNum, {status: chunkUpdates.status});
-        }
-
-        xhr.open('PUT', presignedUrl, true);
-        xhr.send(chunkBlob);
-    },
-
-    getChunkUrl(uploadId, chunkBlob, chunkNum, size, parentId, parentKind, fileName, chunkUpdates) {
-        var fileReader = new FileReader();
-        fileReader.onload = function (event) {
-            var arrayBuffer = event.target.result;
-            var wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
-            var md5crc = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
-            fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.UPLOAD + uploadId + '/chunks',
-                getFetchParams('put', authStore.appConfig.apiToken, {
-                    "number": chunkNum,
-                    "size": chunkBlob.size,
-                    'hash': {
-                        'value': md5crc,
-                        'algorithm': 'MD5'
-                    }
-                })
-            ).then(checkStatus).then((response) => {
-                    return response.json()
-                }).then((json) => {
-                    let chunkObj = json;
-                    if (chunkObj && chunkObj.url && chunkObj.host) {
-                        // upload chunks
-                        this.uploadChunk(uploadId, chunkObj.host + chunkObj.url, chunkBlob, size, parentId, parentKind, chunkNum, fileName, chunkUpdates)
-                    } else {
-                        throw 'Unexpected response';
-                    }
-                }).catch((ex) => {
-                    projectStore.updateAndProcessChunks(uploadId, chunkNum, {status: StatusEnum.STATUS_RETRY});
-                });
-        };
-        fileReader.readAsArrayBuffer(chunkBlob);
-    },
-
-    allChunksUploaded(uploadId, parentId, parentKind, fileName, label, fileId, hash, projectId) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.UPLOAD + uploadId + '/complete',
-            getFetchParams('put', authStore.appConfig.apiToken, {
-                'hash': {
-                    'value': hash,
-                    'algorithm': 'md5'
-                }
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                if (fileId == null) {
-                    projectStore.addFile(uploadId, parentId, parentKind, fileName, label);
-                } else {
-                    projectStore.addFileVersion(uploadId, label, fileId);
-                }
-            }).catch((ex) => {
-                projectStore.uploadError(uploadId, fileName, projectId);
-            })
-    },
-
-    addFile(uploadId, parentId, parentKind, fileName) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE,
-            getFetchParams('post', authStore.appConfig.apiToken, {
-                'parent': {
-                    'kind': parentKind,
-                    'id': parentId
-                },
-                'upload': {
-                    'id': uploadId
-                }
-            })).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                mainStore.addToast(fileName + ' uploaded successfully');
-                projectStore.addFileSuccess(parentId, parentKind, uploadId, json.id)
-            }).catch((ex) => {
-                mainStore.addToast('Failed to upload ' + fileName + '!');
-                projectStore.handleErrors(ex)
-            })
-    },
-
-// File Hashing
-    hashFile(file, id) {
-        if (file.blob.size < 5242880 * 10) {
-            function calculateMd5(blob, id) {
-                let reader = new FileReader();
-                reader.readAsArrayBuffer(blob);
-                reader.onloadend = function () {
-                    let wordArray = CryptoJS.lib.WordArray.create(reader.result),
-                        hash = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
-                    projectStore.postHash({id: id, hash: hash});
-                };
-            }
-
-            calculateMd5(file.blob, id);
-        } else {
-            function series(tasks, done) {
-                if (!tasks || tasks.length === 0) {
-                    done();
-                } else {
-                    tasks[0](function () {
-                        series(tasks.slice(1), done);
-                    });
-                }
-            }
-
-            function webWorkerOnMessage(e) {
-                function arrayBufferToWordArray(ab) {
-                    let i8a = new Uint8Array(ab);
-                    let a = [];
-                    for (let i = 0; i < i8a.length; i += 4) {
-                        a.push(i8a[i] << 24 | i8a[i + 1] << 16 | i8a[i + 2] << 8 | i8a[i + 3]);
-                    }
-                    return CryptoJS.lib.WordArray.create(a, i8a.length);
-                }
-
-                if (e.data.type === "create") {
-                    md5 = CryptoJS.algo.MD5.create();
-                    postMessage({type: "create"});
-                } else if (e.data.type === "update") {
-                    md5.update(arrayBufferToWordArray(e.data.chunk));
-                    postMessage({type: "update"});
-                } else if (e.data.type === "finish") {
-                    postMessage({type: "finish", id: e.data.id, hash: "" + md5.finalize()});
-                }
-            }
-
-// URL.createObjectURL
-            window.URL = window.URL || window.webkitURL;
-
-// "Server response"
-            let assetPath = location.protocol + '//' + location.host + '/lib/md5.js';
-            let response =
-                "importScripts(" + "'" + assetPath + "'" + ");" +
-                "var md5, cryptoType;" +
-                "self.onmessage = " + webWorkerOnMessage.toString();
-
-            let blob;
-            try {
-                blob = new Blob([response], {type: 'application/javascript'});
-            } catch (e) { // Backwards-compatibility
-                window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
-                blob = new BlobBuilder();
-                blob.append(response);
-                blob = blob.getBlob();
-            }
-
-            let worker = new Worker(URL.createObjectURL(blob));
-            let chunksize = 5242880;
-            let f = file.blob; // FileList object
-            let i = 0,
-                chunks = Math.ceil(f.size / chunksize),
-                chunkTasks = [],
-                startTime = (new Date()).getTime();
-            worker.onmessage = function (e) {
-                // create callback
-                for (let j = 0; j < chunks; j++) {
-                    (function (j, f) {
-                        chunkTasks.push(function (next) {
-                            let blob = f.slice(j * chunksize, Math.min((j + 1) * chunksize, f.size));
-                            let reader = new FileReader();
-
-                            reader.onload = function (e) {
-                                let chunk = e.target.result;
-                                worker.onmessage = function (e) {
-                                    // update callback
-                                    next();
-                                };
-                                worker.postMessage({type: "update", chunk: chunk});
-                            };
-                            reader.readAsArrayBuffer(blob);
-                        });
-                    })(j, f);
-                }
-                series(chunkTasks, function () {
-                    worker.onmessage = function (e) {
-                        // finish callback
-                        projectStore.postHash({id: e.data.id, hash: e.data.hash});
-                    };
-                    worker.postMessage({type: "finish", id: id});
-                });
-            };
-            worker.postMessage({type: "create"});
-        }
-    },
-
-    setSelectedEntity(id, kind) {
-        if (id === null) {
-            projectStore.setSelectedEntitySuccess(null);
-        } else {
-            fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + kind + '/' + id,
-                getFetchParams('get', authStore.appConfig.apiToken))
-                .then(checkStatus).then((response) => {
-                    return response.json()
-                }).then((json) => {
-                    projectStore.setSelectedEntitySuccess(json)
-                }).catch((ex) => {
-                    projectStore.handleErrors(ex)
-                });
-        }
-    },
+    //setSelectedEntity(id, kind) {
+    //    if (id === null) {
+    //        projectStore.setSelectedEntitySuccess(null);
+    //    } else {
+    //        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + kind + '/' + id,
+    //            getFetchParams('get', authStore.appConfig.apiToken))
+    //            .then(checkStatus).then((response) => {
+    //                return response.json()
+    //            }).then((json) => {
+    //                projectStore.setSelectedEntitySuccess(json)
+    //            }).catch((ex) => {
+    //                projectStore.handleErrors(ex)
+    //            });
+    //    }
+    //},
 };
 
 export default ProjectActions;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import ProjectActions from '../../actions/projectActions';
+import mainStore from '../../stores/mainStore';
 import AddProjectModal from '../projectComponents/addProjectModal.jsx';
 import Loaders from '../globalComponents/loaders.jsx';
 import BaseUtils from '../../../util/baseUtils.js';
@@ -13,7 +13,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 class ProjectList extends React.Component {
 
     render() {
-        const {loading, projects, responseHeaders} = this.props.projectStore;
+        const {loading, projects, responseHeaders} = mainStore;
         let headers = responseHeaders && responseHeaders !== null ? responseHeaders : null;
         let nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
         let totalProjects = headers !== null && !!headers['x-total'] ? headers['x-total'][0] : null;
@@ -56,7 +56,7 @@ class ProjectList extends React.Component {
     }
 
     loadMore(page) {
-        ProjectActions.getProjects(page);
+        mainStore.getProjects(page);
     }
 }
 
