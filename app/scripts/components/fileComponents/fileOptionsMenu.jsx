@@ -1,6 +1,7 @@
 import React from 'react';
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import provenanceStore from '../../stores/provenanceStore';
 import {Kind, Path} from '../../../util/urlEnum';
 import FileOptions from '../fileComponents/fileOptions.jsx';
 import MoveItemModal from '../globalComponents/moveItemModal.jsx';
@@ -11,11 +12,15 @@ import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 
+@observer
 class FileOptionsMenu extends React.Component {
 
     render() {
+        const {entityObj, projPermissions, selectedEntity} = mainStore;
+        let id = selectedEntity !== null ? selectedEntity.id : entityObj !== null ? entityObj.id : null;
+        let versionId = selectedEntity !== null && selectedEntity.current_version ? selectedEntity.current_version.id : entityObj !== null && entityObj.current_version ? entityObj.current_version.id : null;
         let path = this.props.location.pathname.split('/').splice([1], 1).toString();
-        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
+        let prjPrm = projPermissions && projPermissions !== undefined ? projPermissions : null;
         let menu = null;
         if (prjPrm !== null) {
             if(prjPrm === 'viewOnly' || prjPrm === 'flDownload'){
@@ -24,7 +29,7 @@ class FileOptionsMenu extends React.Component {
                             anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                             targetOrigin={{horizontal: 'right', vertical: 'top'}}>
                             {prjPrm !== 'viewOnly' ? <MenuItem primaryText="Download File" leftIcon={<i className="material-icons">file_download</i>} onTouchTap={() => this.handleDownload()}/> : null}
-                            <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>} onTouchTap={() => this.toggleProv()}/>
+                            <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>} onTouchTap={() => this.toggleProv(id, versionId)}/>
                 </IconMenu>;
             }
             if(prjPrm === 'flUpload'){
@@ -33,7 +38,7 @@ class FileOptionsMenu extends React.Component {
                             anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                             targetOrigin={{horizontal: 'right', vertical: 'top'}}>
                             <MenuItem primaryText="Upload New Version" leftIcon={<i className="material-icons">file_upload</i>} onTouchTap={() => this.toggleModal('newVersionModal')}/>
-                            <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>} onTouchTap={() => this.toggleProv()}/>
+                            <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>} onTouchTap={() => this.toggleProv(id, versionId)}/>
                 </IconMenu>;
             }
             if(prjPrm === 'prjCrud' || prjPrm === 'flCrud'){
@@ -41,13 +46,13 @@ class FileOptionsMenu extends React.Component {
                             iconButtonElement={<IconButton iconClassName="material-icons" onTouchTap={this.props.clickHandler}>more_vert</IconButton>}
                             anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                             targetOrigin={{horizontal: 'right', vertical: 'top'}}>
-                            <MenuItem primaryText="Download File" leftIcon={<i className="material-icons">file_download</i>} onTouchTap={() => this.handleDownload()}/>
+                            <MenuItem primaryText="Download File" leftIcon={<i className="material-icons">file_download</i>} onTouchTap={() => this.handleDownload(id)}/>
                             <MenuItem primaryText="Delete File" leftIcon={<i className="material-icons">delete</i>} onTouchTap={() => this.toggleModal('dltFile')}/>
                             <MenuItem primaryText="Edit File Name" leftIcon={<i className="material-icons">mode_edit</i>} onTouchTap={() => this.toggleModal('editFile')}/>
-                            <MenuItem primaryText="Add Tags" leftIcon={<i className="material-icons">local_offer</i>} onTouchTap={() => this.openTagManager()}/>
-                            <MenuItem primaryText="Move File" leftIcon={<i className="material-icons">low_priority</i>} onTouchTap={() => this.moveFile()}/>
+                            <MenuItem primaryText="Add Tags" leftIcon={<i className="material-icons">local_offer</i>} onTouchTap={() => this.openTagManager(id)}/>
+                            <MenuItem primaryText="Move File" leftIcon={<i className="material-icons">low_priority</i>} onTouchTap={() => this.moveFile(id)}/>
                             <MenuItem primaryText="Upload New Version" leftIcon={<i className="material-icons">file_upload</i>} onTouchTap={() => this.toggleModal('newVersionModal')}/>
-                            <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>} onTouchTap={() => this.toggleProv()}/>
+                            <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>} onTouchTap={() => this.toggleProv(id, versionId)}/>
                 </IconMenu>;
             }
         }
@@ -59,41 +64,29 @@ class FileOptionsMenu extends React.Component {
     };
 
 
-    handleDownload() {
-        let id = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.entityObj.id;
-        let kind = Path.FILE;
-        ProjectActions.getDownloadUrl(id, kind);
+    handleDownload(id) {
+        mainStore.getDownloadUrl(id, Path.FILE);
     }
 
-    moveFile() {
-        // Get current file object to access ancestors. Set parent in store.
-        let id = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.entityObj.id;
-        let kind = 'files';
+    moveFile(id) {
         let requester = 'optionsMenu';
-        ProjectActions.getEntity(id, kind, requester);
-        ProjectActions.toggleModals('moveItem');
-    }
-
-    openVersionModal() {
-        ProjectActions.openVersionModal();
+        mainStore.getEntity(id, Path.FILE, requester);
+        mainStore.toggleModals('moveItem');
     }
 
     toggleModal(id) {
-        ProjectActions.toggleModals(id);
+        mainStore.toggleModals(id);
     }
 
-    toggleProv() {
-        let fileId = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.entityObj.id;
-        let versionId = this.props.selectedEntity !== null ? this.props.selectedEntity.current_version.id : this.props.entityObj.current_version.id;
-        ProjectActions.getWasGeneratedByNode(versionId);
-        ProjectActions.toggleProvView();
-        this.props.router.push('/file/'+fileId);
+    toggleProv(id, versionId) {
+        provenanceStore.getWasGeneratedByNode(versionId);
+        provenanceStore.toggleProvView();
+        this.props.router.push('/file/'+id);
     }
 
-    openTagManager() {
-        let id = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.entityObj.id;
-        ProjectActions.getObjectMetadata(id, Kind.DDS_FILE);
-        ProjectActions.toggleTagManager();
+    openTagManager(id) {
+        mainStore.getObjectMetadata(id, Kind.DDS_FILE);
+        mainStore.toggleTagManager();
     }
 }
 

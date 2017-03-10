@@ -82,7 +82,6 @@ export class ProjectStore {
         @observable showTemplateCreator
         @observable showTemplateDetails
         @observable showUserInfoPanel
-        @observable showBatchOps
         @observable showSearch
         @observable tagLabels
         @observable tagsToAdd
@@ -257,14 +256,14 @@ export class ProjectStore {
         this.loading = false;
     }
 
-    getObjectMetadataSuccess(results) {
-        this.objectMetadata = results;
-        this.metaObjProps = results.map((prop)=>{
-            return prop.properties.map((prop)=>{
-                return {key: prop.template_property.key, id: prop.template_property.id, value: prop.value};
-            })
-        });
-    }
+    //getObjectMetadataSuccess(results) {
+    //    this.objectMetadata = results;
+    //    this.metaObjProps = results.map((prop)=>{
+    //        return prop.properties.map((prop)=>{
+    //            return {key: prop.template_property.key, id: prop.template_property.id, value: prop.value};
+    //        })
+    //    });
+    //}
 
     createMetaPropsList(metaProps) {
         this.metaProps = metaProps;
@@ -371,196 +370,196 @@ export class ProjectStore {
         });
     }
 
-    saveGraphZoomState(scale, position) {
-        this.scale = scale;
-        this.position = position;
-    }
+    //saveGraphZoomState(scale, position) {
+    //    this.scale = scale;
+    //    this.position = position;
+    //}
 
-    openProvEditorModal(id) {
-        this.provEditorModal = {open: true, id: id}
-    }
+    //openProvEditorModal(id) {
+    //    this.provEditorModal = {open: true, id: id}
+    //}
+    //
+    //closeProvEditorModal(id) {
+    //    this.provEditorModal = {open: false, id: id}
+    //}
 
-    closeProvEditorModal(id) {
-        this.provEditorModal = {open: false, id: id}
-    }
+    //switchRelationFromTo(from, to){
+    //    this.openConfirmRel = true;
+    //    this.relFrom = to;
+    //    this.relTo = from;
+    //}
 
-    switchRelationFromTo(from, to){
-        this.openConfirmRel = true;
-        this.relFrom = to;
-        this.relTo = from;
-    }
+    //confirmDerivedFromRel(from, to) {
+    //    this.relFrom = from;
+    //    this.relTo = to;
+    //    this.provEditorModal = {open: true, id: 'confirmRel'}
+    //}
 
-    confirmDerivedFromRel(from, to) {
-        this.relFrom = from;
-        this.relTo = to;
-        this.provEditorModal = {open: true, id: 'confirmRel'}
-    }
+    //startAddRelation(kind, from, to) {
+    //    ProjectActions.buildRelationBody(kind, from, to);
+    //    this.provEditorModal = {open: false, id: 'confirmRel'}
+    //
+    //}
 
-    startAddRelation(kind, from, to) {
-        ProjectActions.buildRelationBody(kind, from, to);
-        this.provEditorModal = {open: false, id: 'confirmRel'}
+    //getFromAndToNodes(data, relationKind, nodes) {
+    //    let from = null;
+    //    let to = null;
+    //    let node1 = null;
+    //    let node2 = null;
+    //    nodes.forEach((node) => {
+    //        if (data.from === node.id) {
+    //            node1 = node;
+    //        }
+    //        if (data.to === node.id) {
+    //            node2 = node;
+    //        }
+    //    });
+    //    if (!node1.properties.hasOwnProperty('kind') || !node2.properties.hasOwnProperty('kind')) {
+    //        this.provEditorModal = {open: true, id: 'relWarning'};
+    //        this.relMsg = 'invalidRelMsg';
+    //    }
+    //    if (relationKind !== 'was_derived_from') {
+    //        if (node1.properties.kind === 'dds-activity' && node1.properties.audit.created_by.id !== MainStore.currentUser.id) {
+    //            this.provEditorModal = {open: true, id: 'relWarning'};
+    //            this.relMsg = 'permissionError';
+    //        } else if (node2.properties.kind === 'dds-activity' && node2.properties.audit.created_by.id !== MainStore.currentUser.id){
+    //            this.provEditorModal = {open: true, id: 'relWarning'};
+    //            this.relMsg = 'permissionError';
+    //        } else {
+    //            if (node1.properties.kind === 'dds-file-version' && node2.properties.kind === 'dds-file-version') {
+    //                this.provEditorModal = {open: true, id: 'relWarning'};
+    //                this.relMsg = 'wasDerivedFrom';
+    //            }
+    //            if (node1.properties.kind === 'dds-activity' && node2.properties.kind === 'dds-activity') {
+    //                this.provEditorModal = {open: true, id: 'relWarning'};
+    //                this.relMsg = 'actToActMsg';
+    //            }
+    //            if (node1.properties.kind !== node2.properties.kind) {
+    //                if (relationKind === 'used') {
+    //                    from = node1.properties.kind === 'dds-activity' ? node1 : node2;
+    //                    to = node1.properties.kind === 'dds-activity' ? node2 : node1;
+    //                }
+    //                if (relationKind === 'was_generated_by') {
+    //                    from = node1.properties.kind === 'dds-activity' ? node2 : node1;
+    //                    to = node1.properties.kind === 'dds-activity' ? node1 : node2;
+    //                }
+    //                if (node1.properties.hasOwnProperty('kind') && node2.properties.hasOwnProperty('kind')){
+    //                    ProjectActions.startAddRelation(relationKind, from, to);
+    //                }
+    //            }
+    //        }
+    //    } else {
+    //        if (node1.properties.kind === 'dds-activity' || node2.properties.kind === 'dds-activity') {
+    //            // Send error modal to user explaining rules of was_derived_from relations
+    //            this.provEditorModal = {open: true, id: 'relWarning'};
+    //            this.relMsg = 'notFileToFile';
+    //        } else {
+    //            from = node1;
+    //            to = node2;
+    //            ProjectStore.confirmDerivedFromRel(from, to);
+    //        }
+    //    }
+    //}
 
-    }
+    //buildRelationBody(kind, from, to) {
+    //    let body = {};
+    //    if (kind === 'used') {
+    //        body = {
+    //            'activity': {
+    //                'id': from.id
+    //            },
+    //            'entity': {
+    //                'kind': 'dds-file-version',
+    //                'id': to.id
+    //            }
+    //        };
+    //    }
+    //    if (kind === 'was_generated_by') {
+    //        body = {
+    //            'entity': {
+    //                'kind': 'dds-file-version',
+    //                'id': from.id
+    //            },
+    //            'activity': {
+    //                'id': to.id
+    //            }
+    //        };
+    //    }
+    //    if (kind === 'was_derived_from') {
+    //        body = {
+    //            'generated_entity': {
+    //                'kind': 'dds-file-version',
+    //                'id': from.id
+    //            },
+    //            'used_entity': {
+    //                'kind': 'dds-file-version',
+    //                'id': to.id
+    //            }
+    //        };
+    //    }
+    //    ProjectActions.addProvRelation(kind, body);
+    //}
 
-    getFromAndToNodes(data, relationKind, nodes) {
-        let from = null;
-        let to = null;
-        let node1 = null;
-        let node2 = null;
-        nodes.forEach((node) => {
-            if (data.from === node.id) {
-                node1 = node;
-            }
-            if (data.to === node.id) {
-                node2 = node;
-            }
-        });
-        if (!node1.properties.hasOwnProperty('kind') || !node2.properties.hasOwnProperty('kind')) {
-            this.provEditorModal = {open: true, id: 'relWarning'};
-            this.relMsg = 'invalidRelMsg';
-        }
-        if (relationKind !== 'was_derived_from') {
-            if (node1.properties.kind === 'dds-activity' && node1.properties.audit.created_by.id !== MainStore.currentUser.id) {
-                this.provEditorModal = {open: true, id: 'relWarning'};
-                this.relMsg = 'permissionError';
-            } else if (node2.properties.kind === 'dds-activity' && node2.properties.audit.created_by.id !== MainStore.currentUser.id){
-                this.provEditorModal = {open: true, id: 'relWarning'};
-                this.relMsg = 'permissionError';
-            } else {
-                if (node1.properties.kind === 'dds-file-version' && node2.properties.kind === 'dds-file-version') {
-                    this.provEditorModal = {open: true, id: 'relWarning'};
-                    this.relMsg = 'wasDerivedFrom';
-                }
-                if (node1.properties.kind === 'dds-activity' && node2.properties.kind === 'dds-activity') {
-                    this.provEditorModal = {open: true, id: 'relWarning'};
-                    this.relMsg = 'actToActMsg';
-                }
-                if (node1.properties.kind !== node2.properties.kind) {
-                    if (relationKind === 'used') {
-                        from = node1.properties.kind === 'dds-activity' ? node1 : node2;
-                        to = node1.properties.kind === 'dds-activity' ? node2 : node1;
-                    }
-                    if (relationKind === 'was_generated_by') {
-                        from = node1.properties.kind === 'dds-activity' ? node2 : node1;
-                        to = node1.properties.kind === 'dds-activity' ? node1 : node2;
-                    }
-                    if (node1.properties.hasOwnProperty('kind') && node2.properties.hasOwnProperty('kind')){
-                        ProjectActions.startAddRelation(relationKind, from, to);
-                    }
-                }
-            }
-        } else {
-            if (node1.properties.kind === 'dds-activity' || node2.properties.kind === 'dds-activity') {
-                // Send error modal to user explaining rules of was_derived_from relations
-                this.provEditorModal = {open: true, id: 'relWarning'};
-                this.relMsg = 'notFileToFile';
-            } else {
-                from = node1;
-                to = node2;
-                ProjectStore.confirmDerivedFromRel(from, to);
-            }
-        }
-    }
+    //addProvRelationSuccess(data) { //Update dataset with new relation
+    //    let rel = [];
+    //    rel.push(data);
+    //    this.updatedGraphItem = rel.map((edge) => {//Update dataset in client
+    //        let color = edge.kind === 'dds-used_prov_relation' ? graphColors.edges.used : graphColors.edges.generated;
+    //        return {
+    //            id: edge.id,
+    //            from: edge.from.id,
+    //            to: edge.to.id,
+    //            type: edge.kind,
+    //            color: color,
+    //            arrows: 'to',
+    //            properties: {
+    //                audit: edge.audit
+    //            },
+    //            title: '<div style="color: #616161"><span>'
+    //            + edge.kind + '</span></div>'
+    //        };
+    //    });
+    //    let edges = this.provEdges;
+    //    edges.push(this.updatedGraphItem[0]);
+    //    this.provEdges = edges;
+    //}
 
-    buildRelationBody(kind, from, to) {
-        let body = {};
-        if (kind === 'used') {
-            body = {
-                'activity': {
-                    'id': from.id
-                },
-                'entity': {
-                    'kind': 'dds-file-version',
-                    'id': to.id
-                }
-            };
-        }
-        if (kind === 'was_generated_by') {
-            body = {
-                'entity': {
-                    'kind': 'dds-file-version',
-                    'id': from.id
-                },
-                'activity': {
-                    'id': to.id
-                }
-            };
-        }
-        if (kind === 'was_derived_from') {
-            body = {
-                'generated_entity': {
-                    'kind': 'dds-file-version',
-                    'id': from.id
-                },
-                'used_entity': {
-                    'kind': 'dds-file-version',
-                    'id': to.id
-                }
-            };
-        }
-        ProjectActions.addProvRelation(kind, body);
-    }
-
-    addProvRelationSuccess(data) { //Update dataset with new relation
-        let rel = [];
-        rel.push(data);
-        this.updatedGraphItem = rel.map((edge) => {//Update dataset in client
-            let color = edge.kind === 'dds-used_prov_relation' ? graphColors.edges.used : graphColors.edges.generated;
-            return {
-                id: edge.id,
-                from: edge.from.id,
-                to: edge.to.id,
-                type: edge.kind,
-                color: color,
-                arrows: 'to',
-                properties: {
-                    audit: edge.audit
-                },
-                title: '<div style="color: #616161"><span>'
-                + edge.kind + '</span></div>'
-            };
-        });
-        let edges = this.provEdges;
-        edges.push(this.updatedGraphItem[0]);
-        this.provEdges = edges;
-    }
-
-    addFileToGraph(node) {
-        let n = [];
-        n.push(node);
-        this.updatedGraphItem = n.map((node) => {//Update dataset in client
-            if(node.current_version) {
-                node.kind = 'dds-file-version';
-                let label = node.current_version.label !== null ? node.current_version.label : "";
-                return {
-                    id: node.current_version.id,
-                    label: node.name + '\nVersion: ' + node.current_version.version,
-                    labels: node.current_version.label,
-                    properties: node,
-                    color: graphColors.fileVersion,
-                    title: '<div style="margin: 10px; color: #616161"><span>'
-                    + node.name + '</span><br/><span>Version: '
-                    + node.current_version.version + '</span><br/><span>'
-                    + label + '</span></div>'
-                };
-            }else{
-                return {
-                    id: node.id,
-                    label: node.file.name + '\nVersion: ' + node.version,
-                    labels: 'FileVersion',
-                    properties: node,
-                    color: graphColors.fileVersion,
-                    title: '<div style="margin: 10px; color: #616161"><span>'
-                    + node.file.name + '</span><br/><span>Version: '
-                    + node.version + '</span><br/><span>'
-                    + 'FileVersion' + '</span></div>'
-                };
-            }
-        });
-        let nodes = this.provNodes;
-        nodes.push(this.updatedGraphItem[0]);
-        this.provNodes = nodes;
-    }
+    //addFileToGraph(node) {
+    //    let n = [];
+    //    n.push(node);
+    //    this.updatedGraphItem = n.map((node) => {//Update dataset in client
+    //        if(node.current_version) {
+    //            node.kind = 'dds-file-version';
+    //            let label = node.current_version.label !== null ? node.current_version.label : "";
+    //            return {
+    //                id: node.current_version.id,
+    //                label: node.name + '\nVersion: ' + node.current_version.version,
+    //                labels: node.current_version.label,
+    //                properties: node,
+    //                color: graphColors.fileVersion,
+    //                title: '<div style="margin: 10px; color: #616161"><span>'
+    //                + node.name + '</span><br/><span>Version: '
+    //                + node.current_version.version + '</span><br/><span>'
+    //                + label + '</span></div>'
+    //            };
+    //        }else{
+    //            return {
+    //                id: node.id,
+    //                label: node.file.name + '\nVersion: ' + node.version,
+    //                labels: 'FileVersion',
+    //                properties: node,
+    //                color: graphColors.fileVersion,
+    //                title: '<div style="margin: 10px; color: #616161"><span>'
+    //                + node.file.name + '</span><br/><span>Version: '
+    //                + node.version + '</span><br/><span>'
+    //                + 'FileVersion' + '</span></div>'
+    //            };
+    //        }
+    //    });
+    //    let nodes = this.provNodes;
+    //    nodes.push(this.updatedGraphItem[0]);
+    //    this.provNodes = nodes;
+    //}
 
     addProvActivitySuccess(node) {
         let act = [];
@@ -583,206 +582,206 @@ export class ProjectStore {
         this.provNodes = nodes;
     }
 
-    editProvActivitySuccess(node) {
-        let act = [];
-        let nodes = this.provNodes;
-        nodes = BaseUtils.removeObjByKey(nodes, {key: 'id', value: node.id});
-        act.push(node);
-        this.updatedGraphItem = act.map((node) => {//Update dataset in client
-            return {
-                id: node.id,
-                label: 'Activity: \n'+node.name,
-                shape: 'box',
-                color: graphColors.activity,
-                properties: node,
-                title: '<div style="margin: 10px; color: #616161"><span>'
-                +'Name: '+node.name + '</span><br/>' +
-                '<span>'+'Created By: '+node.audit.created_by.full_name+'</span><br/>' +
-                '<span>'+'Started On: '+node.started_on+'</span></div>'
-            };
-        });
-        nodes.push(this.updatedGraphItem[0]);
-        this.provNodes = nodes;
-        this.showProvCtrlBtns = false;
-        this.provNodes = nodes;
-    }
+    //editProvActivitySuccess(node) {
+    //    let act = [];
+    //    let nodes = this.provNodes;
+    //    nodes = BaseUtils.removeObjByKey(nodes, {key: 'id', value: node.id});
+    //    act.push(node);
+    //    this.updatedGraphItem = act.map((node) => {//Update dataset in client
+    //        return {
+    //            id: node.id,
+    //            label: 'Activity: \n'+node.name,
+    //            shape: 'box',
+    //            color: graphColors.activity,
+    //            properties: node,
+    //            title: '<div style="margin: 10px; color: #616161"><span>'
+    //            +'Name: '+node.name + '</span><br/>' +
+    //            '<span>'+'Created By: '+node.audit.created_by.full_name+'</span><br/>' +
+    //            '<span>'+'Started On: '+node.started_on+'</span></div>'
+    //        };
+    //    });
+    //    nodes.push(this.updatedGraphItem[0]);
+    //    this.provNodes = nodes;
+    //    this.showProvCtrlBtns = false;
+    //    this.provNodes = nodes;
+    //}
 
-    getActivitiesSuccess(activities) {
-        this.activities = activities;
-        this.trigger({
-            activities: this.activities
-        })
-    }
+    //getActivitiesSuccess(activities) {
+    //    this.activities = activities;
+    //    this.trigger({
+    //        activities: this.activities
+    //    })
+    //}
 
-    deleteProvItemSuccess(data) {
-        let item = [];
-        item.push(data);
-        let edges = this.provEdges;
-        let nodes = this.provNodes;
-        this.showProvCtrlBtns = false;
-        if(data.hasOwnProperty('from')){
-            edges = BaseUtils.removeObjByKey(edges, {key: 'id', value: data.id});
-        } else {
-            nodes = BaseUtils.removeObjByKey(nodes, {key: 'id', value: data.id});
-            ProjectActions.getActivities();
-        }
-        this.trigger({
-            updatedGraphItem: item,
-            provEdges: edges,
-            provNodes: nodes,
-            showProvCtrlBtns: this.showProvCtrlBtns
-        })
+    //deleteProvItemSuccess(data) {
+    //    let item = [];
+    //    item.push(data);
+    //    let edges = this.provEdges;
+    //    let nodes = this.provNodes;
+    //    this.showProvCtrlBtns = false;
+    //    if(data.hasOwnProperty('from')){
+    //        edges = BaseUtils.removeObjByKey(edges, {key: 'id', value: data.id});
+    //    } else {
+    //        nodes = BaseUtils.removeObjByKey(nodes, {key: 'id', value: data.id});
+    //        ProjectActions.getActivities();
+    //    }
+    //    this.trigger({
+    //        updatedGraphItem: item,
+    //        provEdges: edges,
+    //        provNodes: nodes,
+    //        showProvCtrlBtns: this.showProvCtrlBtns
+    //    })
+    //
+    //}
 
-    }
+    //toggleAddEdgeMode(value) {
+    //    if (value == null) {
+    //        this.addEdgeMode = false;
+    //    } else {
+    //        this.addEdgeMode = true;
+    //    }
+    //    this.trigger({
+    //        addEdgeMode: this.addEdgeMode
+    //    })
+    //}
 
-    toggleAddEdgeMode(value) {
-        if (value == null) {
-            this.addEdgeMode = false;
-        } else {
-            this.addEdgeMode = true;
-        }
-        this.trigger({
-            addEdgeMode: this.addEdgeMode
-        })
-    }
+    //toggleProvView() {
+    //    this.toggleProv = !this.toggleProv;
+    //    if(this.toggleProv !== true) { //clear old graph on close of provenance view
+    //        this.provEdges = [];
+    //        this.provNodes = [];
+    //    }
+    //    this.trigger({
+    //        toggleProv: this.toggleProv,
+    //        provEdges: this.provEdges,
+    //        provNodes: this.provNodes
+    //    })
+    //}
 
-    toggleProvView() {
-        this.toggleProv = !this.toggleProv;
-        if(this.toggleProv !== true) { //clear old graph on close of provenance view
-            this.provEdges = [];
-            this.provNodes = [];
-        }
-        this.trigger({
-            toggleProv: this.toggleProv,
-            provEdges: this.provEdges,
-            provNodes: this.provNodes
-        })
-    }
+    //toggleProvEditor() {
+    //    this.toggleProvEdit = !this.toggleProvEdit;
+    //    this.trigger({
+    //        toggleProvEdit: this.toggleProvEdit
+    //    })
+    //}
 
-    toggleProvEditor() {
-        this.toggleProvEdit = !this.toggleProvEdit;
-        this.trigger({
-            toggleProvEdit: this.toggleProvEdit
-        })
-    }
+    //toggleProvNodeDetails() {
+    //    this.showProvDetails = !this.showProvDetails;
+    //    this.trigger({
+    //        showProvDetails: this.showProvDetails
+    //    })
+    //}
 
-    toggleProvNodeDetails() {
-        this.showProvDetails = !this.showProvDetails;
-        this.trigger({
-            showProvDetails: this.showProvDetails
-        })
-    }
+    //toggleGraphLoading() {
+    //    this.drawerLoading = false;
+    //    this.trigger({
+    //        drawerLoading: this.drawerLoading
+    //    })
+    //}
 
-    toggleGraphLoading() {
-        this.drawerLoading = false;
-        this.trigger({
-            drawerLoading: this.drawerLoading
-        })
-    }
+    //getWasGeneratedByNode() {
+    //    this.drawerLoading = true;
+    //    this.trigger({
+    //        drawerLoading: this.drawerLoading
+    //    })
+    //}
 
-    getWasGeneratedByNode() {
-        this.drawerLoading = true;
-        this.trigger({
-            drawerLoading: this.drawerLoading
-        })
-    }
+    //getProvenance() {
+    //    this.drawerLoading = true;
+    //    this.trigger({
+    //        drawerLoading: this.drawerLoading
+    //    })
+    //}
 
-    getProvenance() {
-        this.drawerLoading = true;
-        this.trigger({
-            drawerLoading: this.drawerLoading
-        })
-    }
-
-    getProvenanceSuccess(prov, prevGraph) {
-        let edges = prov.relationships.filter((edge) => {
-            if (edge.properties.audit.deleted_on === null && edge.type !== 'WasAttributedTo') {
-                return edge;
-            }
-        });
-        let nodes = prov.nodes.filter((node) => {
-            if (!node.properties.is_deleted && node.properties.hasOwnProperty('kind')) {
-                return node;
-            }
-        });
-        this.provEdges = edges.map((edge) => {
-            if (edge.properties.audit.deleted_by === null) {
-                let color = edge.type === 'Used' ? graphColors.edges.used : graphColors.edges.generated;
-                return {
-                    id: edge.id,
-                    to: edge.end_node,
-                    from: edge.start_node,
-                    type: edge.type,
-                    properties: edge.properties,
-                    color: color,
-                    arrows: 'to',
-                    title: '<div style="color: #616161"><span>'
-                    + edge.type + '</span></div>'
-                };
-            }
-        });
-        this.provNodes = nodes.map((node) => {
-            if(node.properties.hasOwnProperty('audit')) {
-                if (node.properties.kind === 'dds-activity') {
-                    return {
-                        id: node.id,
-                        label: 'Activity: \n' + node.properties.name,
-                        labels: node.labels.toString(),
-                        properties: node.properties,
-                        shape: 'box',
-                        color: graphColors.activity,
-                        title: '<div style="margin: 10px; color: #616161"><span>'
-                        + 'Name: ' + node.properties.name + '</span><br/>' +
-                        '<span>' + 'Created By: ' + node.properties.audit.created_by.full_name + '</span><br/>' +
-                        '<span>' + 'Started On: ' + node.properties.started_on + '</span></div>'
-                    }
-                }
-                if (node.properties.kind === 'dds-file-version') {
-                    let label = node.properties.label !== null ? node.properties.label : "";
-                    return {
-                        id: node.id,
-                        label: node.properties.file.name + '\nVersion: ' + node.properties.version,
-                        labels: node.labels.toString(),
-                        properties: node.properties,
-                        color: graphColors.fileVersion,
-                        title: '<div style="margin: 10px; color: #616161"><span>'
-                        + node.properties.file.name + '</span><br/><span>Version: '
-                        + node.properties.version + '</span><br/><span>'
-                        + label + '</span></div>'
-                    }
-                }
-            } else {
-                return {
-                    id: node.id,
-                    label: node.properties.kind,
-                    labels: node.labels.toString(),
-                    properties: node.properties,
-                    color: graphColors.noPermissions,
-                    title: '<div style="margin: 10px; color: #616161"><span>'
-                    + 'You do not have permission to view this file.' + '</span></div>'
-                }
-            }
-        });
-        if(prevGraph !== null && typeof prevGraph === 'object') {
-            let prevNodes = prevGraph.nodes;
-            let prevEdges = prevGraph.edges;
-            for(let i=0; i<prevNodes.length; i++) {
-                this.provNodes.push(prevNodes[i]);
-            }
-            for(let i=0; i<prevEdges.length; i++) {
-                this.provEdges.push(prevEdges[i]);
-            }
-            this.provNodes = this.provNodes.filter((node, index, self) => self.findIndex((t) => {return t.id === node.id}) === index);
-            this.provEdges = this.provEdges.filter((edge, index, self) => self.findIndex((t) => {return t.id === edge.id}) === index);
-        }
-        this.trigger({
-            provEdges: this.provEdges,
-            provNodes: this.provNodes,
-            showProvCtrlBtns: false,
-            showProvDetails: false,
-            dltRelationsBtn: false
-        })
-    }
+    //getProvenanceSuccess(prov, prevGraph) {
+    //    let edges = prov.relationships.filter((edge) => {
+    //        if (edge.properties.audit.deleted_on === null && edge.type !== 'WasAttributedTo') {
+    //            return edge;
+    //        }
+    //    });
+    //    let nodes = prov.nodes.filter((node) => {
+    //        if (!node.properties.is_deleted && node.properties.hasOwnProperty('kind')) {
+    //            return node;
+    //        }
+    //    });
+    //    this.provEdges = edges.map((edge) => {
+    //        if (edge.properties.audit.deleted_by === null) {
+    //            let color = edge.type === 'Used' ? graphColors.edges.used : graphColors.edges.generated;
+    //            return {
+    //                id: edge.id,
+    //                to: edge.end_node,
+    //                from: edge.start_node,
+    //                type: edge.type,
+    //                properties: edge.properties,
+    //                color: color,
+    //                arrows: 'to',
+    //                title: '<div style="color: #616161"><span>'
+    //                + edge.type + '</span></div>'
+    //            };
+    //        }
+    //    });
+    //    this.provNodes = nodes.map((node) => {
+    //        if(node.properties.hasOwnProperty('audit')) {
+    //            if (node.properties.kind === 'dds-activity') {
+    //                return {
+    //                    id: node.id,
+    //                    label: 'Activity: \n' + node.properties.name,
+    //                    labels: node.labels.toString(),
+    //                    properties: node.properties,
+    //                    shape: 'box',
+    //                    color: graphColors.activity,
+    //                    title: '<div style="margin: 10px; color: #616161"><span>'
+    //                    + 'Name: ' + node.properties.name + '</span><br/>' +
+    //                    '<span>' + 'Created By: ' + node.properties.audit.created_by.full_name + '</span><br/>' +
+    //                    '<span>' + 'Started On: ' + node.properties.started_on + '</span></div>'
+    //                }
+    //            }
+    //            if (node.properties.kind === 'dds-file-version') {
+    //                let label = node.properties.label !== null ? node.properties.label : "";
+    //                return {
+    //                    id: node.id,
+    //                    label: node.properties.file.name + '\nVersion: ' + node.properties.version,
+    //                    labels: node.labels.toString(),
+    //                    properties: node.properties,
+    //                    color: graphColors.fileVersion,
+    //                    title: '<div style="margin: 10px; color: #616161"><span>'
+    //                    + node.properties.file.name + '</span><br/><span>Version: '
+    //                    + node.properties.version + '</span><br/><span>'
+    //                    + label + '</span></div>'
+    //                }
+    //            }
+    //        } else {
+    //            return {
+    //                id: node.id,
+    //                label: node.properties.kind,
+    //                labels: node.labels.toString(),
+    //                properties: node.properties,
+    //                color: graphColors.noPermissions,
+    //                title: '<div style="margin: 10px; color: #616161"><span>'
+    //                + 'You do not have permission to view this file.' + '</span></div>'
+    //            }
+    //        }
+    //    });
+    //    if(prevGraph !== null && typeof prevGraph === 'object') {
+    //        let prevNodes = prevGraph.nodes;
+    //        let prevEdges = prevGraph.edges;
+    //        for(let i=0; i<prevNodes.length; i++) {
+    //            this.provNodes.push(prevNodes[i]);
+    //        }
+    //        for(let i=0; i<prevEdges.length; i++) {
+    //            this.provEdges.push(prevEdges[i]);
+    //        }
+    //        this.provNodes = this.provNodes.filter((node, index, self) => self.findIndex((t) => {return t.id === node.id}) === index);
+    //        this.provEdges = this.provEdges.filter((edge, index, self) => self.findIndex((t) => {return t.id === edge.id}) === index);
+    //    }
+    //    this.trigger({
+    //        provEdges: this.provEdges,
+    //        provNodes: this.provNodes,
+    //        showProvCtrlBtns: false,
+    //        showProvDetails: false,
+    //        dltRelationsBtn: false
+    //    })
+    //}
 
     //toggleUploadManager() {
     //    this.openUploadManager = !this.openUploadManager;
@@ -804,22 +803,22 @@ export class ProjectStore {
     //        tagsToAdd: this.tagsToAdd
     //    })
     //}
+    //
+    //addNewTagSuccess(fileId) {
+    //    ProjectActions.getTags(fileId, 'dds-file');
+    //}
 
-    addNewTagSuccess(fileId) {
-        ProjectActions.getTags(fileId, 'dds-file');
-    }
+    //appendTagsSuccess(fileId) {
+    //    ProjectActions.getTags(fileId, 'dds-file');
+    //    this.showBatchOps = false;
+    //    this.trigger({
+    //        showBatchOps: this.showBatchOps
+    //    })
+    //}
 
-    appendTagsSuccess(fileId) {
-        ProjectActions.getTags(fileId, 'dds-file');
-        this.showBatchOps = false;
-        this.trigger({
-            showBatchOps: this.showBatchOps
-        })
-    }
-
-    deleteTagSuccess(fileId) {
-        ProjectActions.getTags(fileId, 'dds-file');
-    }
+    //deleteTagSuccess(fileId) {
+    //    ProjectActions.getTags(fileId, 'dds-file');
+    //}
 
     //getTagAutoCompleteListSuccess(list) {
     //    this.tagAutoCompleteList = list.map((item) => {return item.label});
@@ -842,118 +841,118 @@ export class ProjectStore {
     //    })
     //}
 
-    searchFiles() {
-        this.autoCompleteLoading = true;
-        this.trigger({
-            autoCompleteLoading: this.autoCompleteLoading
-        })
-    }
+    //searchFiles() {
+    //    this.autoCompleteLoading = true;
+    //    this.trigger({
+    //        autoCompleteLoading: this.autoCompleteLoading
+    //    })
+    //}
+    //
+    //searchFilesSuccess(results) {
+    //    this.autoCompleteLoading = false;
+    //    this.searchFilesList = results.filter((file)=>{
+    //        if(file.kind === 'dds-file') return file.name;
+    //    });
+    //    this.trigger({
+    //        searchFilesList: this.searchFilesList,
+    //        autoCompleteLoading: this.autoCompleteLoading
+    //    })
+    //}
 
-    searchFilesSuccess(results) {
-        this.autoCompleteLoading = false;
-        this.searchFilesList = results.filter((file)=>{
-            if(file.kind === 'dds-file') return file.name;
-        });
-        this.trigger({
-            searchFilesList: this.searchFilesList,
-            autoCompleteLoading: this.autoCompleteLoading
-        })
-    }
+    //clearSearchFilesData() {
+    //    this.searchFilesList = [];
+    //    this.trigger({
+    //        searchFilesList: this.searchFilesList
+    //    })
+    //}
 
-    clearSearchFilesData() {
-        this.searchFilesList = [];
-        this.trigger({
-            searchFilesList: this.searchFilesList
-        })
-    }
+    //showRemoveFileFromProvBtn() { //To remove unused files from graph (not currently in use)
+    //    this.removeFileFromProvBtn = !this.removeFileFromProvBtn;
+    //    if(this.showProvCtrlBtns) this.showProvCtrlBtns = !this.showProvCtrlBtns;
+    //    if(this.dltRelationsBtn) this.dltRelationsBtn = !this.dltRelationsBtn;
+    //    this.trigger({
+    //        dltRelationsBtn: this.dltRelationsBtn,
+    //        removeFileFromProvBtn: this.removeFileFromProvBtn,
+    //        showProvCtrlBtns: this.showProvCtrlBtns
+    //    })
+    //}
 
-    showRemoveFileFromProvBtn() { //To remove unused files from graph (not currently in use)
-        this.removeFileFromProvBtn = !this.removeFileFromProvBtn;
-        if(this.showProvCtrlBtns) this.showProvCtrlBtns = !this.showProvCtrlBtns;
-        if(this.dltRelationsBtn) this.dltRelationsBtn = !this.dltRelationsBtn;
-        this.trigger({
-            dltRelationsBtn: this.dltRelationsBtn,
-            removeFileFromProvBtn: this.removeFileFromProvBtn,
-            showProvCtrlBtns: this.showProvCtrlBtns
-        })
-    }
+    //showProvControlBtns() {
+    //    this.showProvCtrlBtns = !this.showProvCtrlBtns;
+    //    if(this.removeFileFromProvBtn) this.removeFileFromProvBtn = !this.removeFileFromProvBtn;
+    //    if(this.dltRelationsBtn) this.dltRelationsBtn = !this.dltRelationsBtn;
+    //    this.trigger({
+    //        dltRelationsBtn: this.dltRelationsBtn,
+    //        removeFileFromProvBtn: this.removeFileFromProvBtn,
+    //        showProvCtrlBtns: this.showProvCtrlBtns
+    //    })
+    //}
 
-    showProvControlBtns() {
-        this.showProvCtrlBtns = !this.showProvCtrlBtns;
-        if(this.removeFileFromProvBtn) this.removeFileFromProvBtn = !this.removeFileFromProvBtn;
-        if(this.dltRelationsBtn) this.dltRelationsBtn = !this.dltRelationsBtn;
-        this.trigger({
-            dltRelationsBtn: this.dltRelationsBtn,
-            removeFileFromProvBtn: this.removeFileFromProvBtn,
-            showProvCtrlBtns: this.showProvCtrlBtns
-        })
-    }
+    //showDeleteRelationsBtn(edges, nodes) {
+    //    if (edges !== null && this.dltRelationsBtn && nodes !== null) {
+    //        this.dltRelationsBtn = !this.dltRelationsBtn;
+    //    } else {
+    //        if (edges !== null && this.dltRelationsBtn) {
+    //            this.dltRelationsBtn = true;
+    //        } else {
+    //            this.dltRelationsBtn = !this.dltRelationsBtn;
+    //        }
+    //        if (this.showProvCtrlBtns && this.dltRelationsBtn) {
+    //            this.dltRelationsBtn = !this.dltRelationsBtn;
+    //        }
+    //    }
+    //    this.trigger({
+    //        dltRelationsBtn: this.dltRelationsBtn
+    //    })
+    //}
 
-    showDeleteRelationsBtn(edges, nodes) {
-        if (edges !== null && this.dltRelationsBtn && nodes !== null) {
-            this.dltRelationsBtn = !this.dltRelationsBtn;
-        } else {
-            if (edges !== null && this.dltRelationsBtn) {
-                this.dltRelationsBtn = true;
-            } else {
-                this.dltRelationsBtn = !this.dltRelationsBtn;
-            }
-            if (this.showProvCtrlBtns && this.dltRelationsBtn) {
-                this.dltRelationsBtn = !this.dltRelationsBtn;
-            }
-        }
-        this.trigger({
-            dltRelationsBtn: this.dltRelationsBtn
-        })
-    }
+    //selectNodesAndEdges(edgeData, nodeData) {
+    //    this.selectedEdge = edgeData[0];
+    //    this.selectedNode = nodeData;
+    //    this.trigger({
+    //        selectedNode: this.selectedNode,
+    //        selectedEdge: this.selectedEdge
+    //    })
+    //}
 
-    selectNodesAndEdges(edgeData, nodeData) {
-        this.selectedEdge = edgeData[0];
-        this.selectedNode = nodeData;
-        this.trigger({
-            selectedNode: this.selectedNode,
-            selectedEdge: this.selectedEdge
-        })
-    }
+    //hideProvAlert() {
+    //    this.showProvAlert = false;
+    //    this.trigger({
+    //        showProvAlert: this.showProvAlert
+    //    })
+    //}
 
-    hideProvAlert() {
-        this.showProvAlert = false;
-        this.trigger({
-            showProvAlert: this.showProvAlert
-        })
-    }
+    //getFileVersions(id, prov) {
+    //    if(!prov) {
+    //        this.loading = true;
+    //        this.trigger({
+    //            loading: this.loading
+    //        })
+    //    }
+    //}
+    //
+    //getFileVersionsSuccess(results, prov) {
+    //    this.loading = false;
+    //    if(prov) {
+    //        this.provFileVersions = results
+    //    } else {
+    //        this.fileVersions = results;
+    //    }
+    //    this.trigger({
+    //        fileVersions: this.fileVersions,
+    //        provFileVersions: this.provFileVersions,
+    //        loading: this.loading
+    //    })
+    //}
 
-    getFileVersions(id, prov) {
-        if(!prov) {
-            this.loading = true;
-            this.trigger({
-                loading: this.loading
-            })
-        }
-    }
-
-    getFileVersionsSuccess(results, prov) {
-        this.loading = false;
-        if(prov) {
-            this.provFileVersions = results
-        } else {
-            this.fileVersions = results;
-        }
-        this.trigger({
-            fileVersions: this.fileVersions,
-            provFileVersions: this.provFileVersions,
-            loading: this.loading
-        })
-    }
-
-    clearProvFileVersions() {
-        if(this.provFileVersions.length) {
-            this.provFileVersions = [];
-            this.trigger({
-                provFileVersions: this.provFileVersions
-            })
-        }
-    }
+    //clearProvFileVersions() {
+    //    if(this.provFileVersions.length) {
+    //        this.provFileVersions = [];
+    //        this.trigger({
+    //            provFileVersions: this.provFileVersions
+    //        })
+    //    }
+    //}
 
     //addFileVersionSuccess(id, uploadId) {
     //    this.showProvAlert = true;
@@ -1146,14 +1145,14 @@ export class ProjectStore {
         })
     }
 
-    selectMoveLocation (id, kind){
-        this.destination = id;
-        this.destinationKind = kind;
-        this.trigger({
-            destination: this.destination,
-            destinationKind: this.destinationKind
-        })
-    }
+    //selectMoveLocation (id, kind){
+    //    this.destination = id;
+    //    this.destinationKind = kind;
+    //    this.trigger({
+    //        destination: this.destination,
+    //        destinationKind: this.destinationKind
+    //    })
+    //}
 
     //showBatchOptions () {
     //    this.showBatchOps = false;
@@ -1162,25 +1161,25 @@ export class ProjectStore {
     //    })
     //}
 
-    setBatchItems(batchDeleteFiles, batchDeleteFolders) {
-        this.batchFiles = batchDeleteFiles;
-        this.batchFolders = batchDeleteFolders;
-        this.trigger({
-            batchFiles: this.batchFiles,
-            batchFolders: this.batchFolders
-        })
-    }
+    //setBatchItems(batchDeleteFiles, batchDeleteFolders) {
+    //    this.batchFiles = batchDeleteFiles;
+    //    this.batchFolders = batchDeleteFolders;
+    //    this.trigger({
+    //        batchFiles: this.batchFiles,
+    //        batchFolders: this.batchFolders
+    //    })
+    //}
 
-    batchDeleteItems(parentId, parentKind) {
-        let files = this.batchFiles;
-        let folders = this.batchFolders;
-        for (let i = 0; i < files.length; i++) {
-            ProjectActions.deleteFile(files[i], parentId, parentKind);
-        }
-        for (let i = 0; i < folders.length; i++) {
-            ProjectActions.deleteFolder(folders[i], parentId, parentKind);
-        }
-    }
+    //batchDeleteItems(parentId, parentKind) {
+    //    let files = this.batchFiles;
+    //    let folders = this.batchFolders;
+    //    for (let i = 0; i < files.length; i++) {
+    //        ProjectActions.deleteFile(files[i], parentId, parentKind);
+    //    }
+    //    for (let i = 0; i < folders.length; i++) {
+    //        ProjectActions.deleteFolder(folders[i], parentId, parentKind);
+    //    }
+    //}
 
     //handleBatch (files, folders) {
     //    this.filesChecked = files;
@@ -1267,39 +1266,39 @@ export class ProjectStore {
     //    })
     //}
 
-    deleteItemSuccess(id, parentKind) {
-        this.batchFolders.splice(0, 1);
-        this.batchFiles.splice(0, 1);
-        if(this.batchFolders.length || this.batchFiles.length) {
-            return
-        } else {
-            if (parentKind === 'dds-project') {
-                ProjectActions.getChildren(id, 'projects/');
-            } else {
-                ProjectActions.getChildren(id, 'folders/');
-            }
-        }
-        this.loading = false;
-        this.showBatchOps = false;
-        this.trigger({
-            batchFiles: this.batchFiles,
-            batchFolders: this.batchFolders,
-            loading: this.loading,
-            showBatchOps: this.showBatchOps
-        })
-    }
+    //deleteItemSuccess(id, parentKind) {
+    //    this.batchFolders.splice(0, 1);
+    //    this.batchFiles.splice(0, 1);
+    //    if(this.batchFolders.length || this.batchFiles.length) {
+    //        return
+    //    } else {
+    //        if (parentKind === 'dds-project') {
+    //            ProjectActions.getChildren(id, 'projects/');
+    //        } else {
+    //            ProjectActions.getChildren(id, 'folders/');
+    //        }
+    //    }
+    //    this.loading = false;
+    //    this.showBatchOps = false;
+    //    this.trigger({
+    //        batchFiles: this.batchFiles,
+    //        batchFolders: this.batchFolders,
+    //        loading: this.loading,
+    //        showBatchOps: this.showBatchOps
+    //    })
+    //}
 
     //addProjectSuccess(json) {
     //    this.projects = [json, ...this.projects];
     //    this.setLoadingState();
     //}
 
-    deleteProject() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //deleteProject() {
+    //    this.loading = true;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
     //deleteProjectSuccess() {
     //    ProjectActions.getProjects();
@@ -1366,30 +1365,30 @@ export class ProjectStore {
     //    })
     //}
 
-    deleteFolder() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    }
-
-    moveItem() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    }
-
-    moveItemSuccess(id) {
-        if(BaseUtils.objectPropInArray(this.listItems, 'id', id)) {
-            this.listItems = BaseUtils.removeObjByKey(this.listItems, {key: 'id', value: id});
-        }
-        this.loading = false;
-        this.trigger({
-            listItems: this.listItems,
-            loading: this.loading
-        })
-    }
+    //deleteFolder() {
+    //    this.loading = true;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
+    //
+    //moveItem() {
+    //    this.loading = true;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
+    //
+    //moveItemSuccess(id) {
+    //    if(BaseUtils.objectPropInArray(this.listItems, 'id', id)) {
+    //        this.listItems = BaseUtils.removeObjByKey(this.listItems, {key: 'id', value: id});
+    //    }
+    //    this.loading = false;
+    //    this.trigger({
+    //        listItems: this.listItems,
+    //        loading: this.loading
+    //    })
+    //}
 
     //addFile() {
     //    this.loading = true;
@@ -1419,41 +1418,41 @@ export class ProjectStore {
     //    })
     //}
 
+    //
+    //deleteFile() {
+    //    this.loading = true;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
+    //
+    //editItem() {
+    //    this.loading = true;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
-    deleteFile() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //editItemSuccess(id, json, objectKind) {
+    //    let kind = objectKind === 'dds-file' ? 'files' : 'folders';
+    //    ProjectActions.getEntity(id, kind);
+    //    if(BaseUtils.objectPropInArray(this.listItems, 'id', id)) {
+    //        this.listItems = BaseUtils.removeObjByKey(this.listItems, {key: 'id', value: id});
+    //        this.listItems.unshift(json);
+    //    }
+    //    this.loading = false;
+    //    this.trigger({
+    //        listItems: this.listItems,
+    //        loading: this.loading
+    //    })
+    //}
 
-    editItem() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    }
-
-    editItemSuccess(id, json, objectKind) {
-        let kind = objectKind === 'dds-file' ? 'files' : 'folders';
-        ProjectActions.getEntity(id, kind);
-        if(BaseUtils.objectPropInArray(this.listItems, 'id', id)) {
-            this.listItems = BaseUtils.removeObjByKey(this.listItems, {key: 'id', value: id});
-            this.listItems.unshift(json);
-        }
-        this.loading = false;
-        this.trigger({
-            listItems: this.listItems,
-            loading: this.loading
-        })
-    }
-
-    getEntity() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //getEntity() {
+    //    this.loading = true;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
     getEntitySuccess(json, requester) {
         if(this.projPermissions === null && (json.kind === 'dds-file' || json.kind === 'dds-folder')) ProjectActions.getUser(json.project.id);

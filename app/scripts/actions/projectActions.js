@@ -50,29 +50,29 @@ const ProjectActions = {
             })
     },
 
-    getMoveItemList(id, path) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + Path.CHILDREN,
-            getFetchParams('get', authStore.appConfig.apiToken)
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.getMoveItemListSuccess(json.results)
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            })
-    },
+    //getMoveItemList(id, path) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + Path.CHILDREN,
+    //        getFetchParams('get', authStore.appConfig.apiToken)
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.getMoveItemListSuccess(json.results)
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
-    getObjectMetadata(id, kind) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.META + kind + "/" + id,
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.getObjectMetadataSuccess(json.results);
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            })
-    },
+    //getObjectMetadata(id, kind) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.META + kind + "/" + id,
+    //        getFetchParams('get', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.getObjectMetadataSuccess(json.results);
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
     createMetadataObject(kind, fileId, templateId, properties) {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.META + kind + "/" + fileId + "/" + templateId,
@@ -232,144 +232,144 @@ const ProjectActions = {
             })
     },
 
-    addProvRelation(kind, body) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'relations/' + kind,
-            getFetchParams('post', authStore.appConfig.apiToken, body)
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                mainStore.addToast('New relation Added');
-                projectStore.addProvRelationSuccess(json);
-            }).catch((ex) => {
-                mainStore.addToast('Failed to add new relation');
-                projectStore.handleErrors(ex)
-            })
-    },
+    //addProvRelation(kind, body) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'relations/' + kind,
+    //        getFetchParams('post', authStore.appConfig.apiToken, body)
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            mainStore.addToast('New relation Added');
+    //            projectStore.addProvRelationSuccess(json);
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to add new relation');
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
-    deleteProvItem(data, id) {
-        let kind = data.hasOwnProperty('from') ? 'relations/' : 'activities/';
-        let msg = kind === 'activities/' ? data.label : data.type;
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + kind + data.id,
-            getFetchParams('delete', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-            }).then((json) => {
-                mainStore.addToast(msg + ' deleted');
-                projectStore.deleteProvItemSuccess(data);
-            }).catch((ex) => {
-                mainStore.addToast('Failed to delete ' + msg);
-                projectStore.handleErrors(ex)
-            });
-    },
+    //deleteProvItem(data, id) {
+    //    let kind = data.hasOwnProperty('from') ? 'relations/' : 'activities/';
+    //    let msg = kind === 'activities/' ? data.label : data.type;
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + kind + data.id,
+    //        getFetchParams('delete', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //        }).then((json) => {
+    //            mainStore.addToast(msg + ' deleted');
+    //            projectStore.deleteProvItemSuccess(data);
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to delete ' + msg);
+    //            projectStore.handleErrors(ex)
+    //        });
+    //},
 
-    addProvActivity(name, desc) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.ACTIVITIES,
-            getFetchParams('post', authStore.appConfig.apiToken, {
-                "name": name,
-                "description": desc
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                mainStore.addToast('New Activity Added');
-                projectStore.addProvActivitySuccess(json);
-            }).catch((ex) => {
-                mainStore.addToast('Failed to add new actvity');
-                projectStore.handleErrors(ex)
-            })
-    },
+    //addProvActivity(name, desc) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.ACTIVITIES,
+    //        getFetchParams('post', authStore.appConfig.apiToken, {
+    //            "name": name,
+    //            "description": desc
+    //        })
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            mainStore.addToast('New Activity Added');
+    //            projectStore.addProvActivitySuccess(json);
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to add new actvity');
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
-    editProvActivity(id, name, desc, prevName) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.ACTIVITIES + id,
-            getFetchParams('put', authStore.appConfig.apiToken, {
-                "name": name,
-                "description": desc
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                if (name !== prevName) {
-                    mainStore.addToast(prevName + ' name was changed to ' + name);
-                } else {
-                    mainStore.addToast(prevName + ' was edited');
-                }
-                projectStore.editProvActivitySuccess(json);
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            })
-    },
+    //editProvActivity(id, name, desc, prevName) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.ACTIVITIES + id,
+    //        getFetchParams('put', authStore.appConfig.apiToken, {
+    //            "name": name,
+    //            "description": desc
+    //        })
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            if (name !== prevName) {
+    //                mainStore.addToast(prevName + ' name was changed to ' + name);
+    //            } else {
+    //                mainStore.addToast(prevName + ' was edited');
+    //            }
+    //            projectStore.editProvActivitySuccess(json);
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
-    getActivities() {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.ACTIVITIES,
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.getActivitiesSuccess(json.results)
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            })
-    },
+    //getActivities() {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.ACTIVITIES,
+    //        getFetchParams('get', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.getActivitiesSuccess(json.results)
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
-    getProvenance(id, kind, prevGraph) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'search/provenance?max_hops=1',
-            getFetchParams('post', authStore.appConfig.apiToken, {
-                'start_node': {
-                    kind: kind,
-                    id: id
-                }
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.getProvenanceSuccess(json.graph, prevGraph);
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            })
-    },
+    //getProvenance(id, kind, prevGraph) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'search/provenance?max_hops=1',
+    //        getFetchParams('post', authStore.appConfig.apiToken, {
+    //            'start_node': {
+    //                kind: kind,
+    //                id: id
+    //            }
+    //        })
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.getProvenanceSuccess(json.graph, prevGraph);
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
-    getWasGeneratedByNode(id, kind, prevGraph) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'search/provenance/origin',
-            getFetchParams('post', authStore.appConfig.apiToken, {
-                'file_versions': [{
-                    id: id
-                }]
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.getProvenanceSuccess(json.graph, prevGraph);
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            })
-    },
+    //getFromAndToNodes(id, kind, prevGraph) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'search/provenance/origin',
+    //        getFetchParams('post', authStore.appConfig.apiToken, {
+    //            'file_versions': [{
+    //                id: id
+    //            }]
+    //        })
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.getProvenanceSuccess(json.graph, prevGraph);
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
-    searchFiles(text, id) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/children?name_contains=' + text,
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.searchFilesSuccess(json.results);
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            })
-    },
+    //searchFiles(text, id) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/children?name_contains=' + text,
+    //        getFetchParams('get', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.searchFilesSuccess(json.results);
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
-    addNewTag(id, kind, tag) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TAGS + kind + '/' + id,
-            getFetchParams('post', authStore.appConfig.apiToken, {
-                'label': tag
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                mainStore.addToast('Added ' + json.label + ' tag');
-                projectStore.addNewTagSuccess(id);
-            }).catch((ex) => {
-                mainStore.addToast('Failed to add new tag');
-                projectStore.handleErrors(ex)
-            })
-    },
+    //addNewTag(id, kind, tag) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TAGS + kind + '/' + id,
+    //        getFetchParams('post', authStore.appConfig.apiToken, {
+    //            'label': tag
+    //        })
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            mainStore.addToast('Added ' + json.label + ' tag');
+    //            projectStore.addNewTagSuccess(id);
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to add new tag');
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
     //appendTags(id, kind, tags) {
     //    let msg = tags.map((tag)=> {
@@ -390,18 +390,18 @@ const ProjectActions = {
     //        })
     //},
 
-    deleteTag(id, label, fileId) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TAGS + id,
-            getFetchParams('delete', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-            }).then(() => {
-                mainStore.addToast(label + ' tag deleted!');
-                projectStore.deleteTagSuccess(fileId)
-            }).catch((ex) => {
-                mainStore.addToast('Failed to delete ' + label);
-                projectStore.handleErrors(ex)
-            });
-    },
+    //deleteTag(id, label, fileId) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TAGS + id,
+    //        getFetchParams('delete', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //        }).then(() => {
+    //            mainStore.addToast(label + ' tag deleted!');
+    //            projectStore.deleteTagSuccess(fileId)
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to delete ' + label);
+    //            projectStore.handleErrors(ex)
+    //        });
+    //},
 
     //getTagLabels() {
     //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'tags/labels/?object_kind=dds-file',
@@ -441,17 +441,17 @@ const ProjectActions = {
             })
     },
 
-    getFileVersions(id, prov) { // prov = boolean used for file selection in prov editor
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE + id + '/versions',
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.getFileVersionsSuccess(json.results, prov)
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            })
-    },
+    //getFileVersions(id, prov) { // prov = boolean used for file selection in prov editor
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE + id + '/versions',
+    //        getFetchParams('get', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.getFileVersionsSuccess(json.results, prov)
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
     //addFileVersion(uploadId, label, fileId) {
     //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE + fileId,
@@ -796,80 +796,80 @@ const ProjectActions = {
     //        })
     //},
 
-    deleteFolder(id, parentId, parentKind) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FOLDER + id,
-            getFetchParams('delete', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-            }).then(() => {
-                mainStore.addToast('Folder(s) Deleted!');
-                projectStore.deleteItemSuccess(parentId, parentKind)
-            }).catch((ex) => {
-                mainStore.addToast('Folder Deleted Failed!');
-                projectStore.handleErrors(ex)
-            });
-    },
+    //deleteFolder(id, parentId, parentKind) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FOLDER + id,
+    //        getFetchParams('delete', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //        }).then(() => {
+    //            mainStore.addToast('Folder(s) Deleted!');
+    //            projectStore.deleteItemSuccess(parentId, parentKind)
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Folder Deleted Failed!');
+    //            projectStore.handleErrors(ex)
+    //        });
+    //},
 
-    moveItem(id, kind, destination, destinationKind) {
-        let path = kind === Kind.DDS_FILE ? Path.FILE : Path.FOLDER;
-        let type = kind === Kind.DDS_FILE ? 'File' : 'Folder';
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + '/move',
-            getFetchParams('put', authStore.appConfig.apiToken, {
-                "parent": {
-                    "kind": destinationKind,
-                    "id": destination
-                }
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                mainStore.addToast(type + ' moved successfully');
-                projectStore.moveItemSuccess(id);
-            }).catch((ex) => {
-                mainStore.addToast('Failed to move ' + type + ' to new location');
-                projectStore.handleErrors(ex)
-            })
-    },
+    //moveItem(id, kind, destination, destinationKind) {
+    //    let path = kind === Kind.DDS_FILE ? Path.FILE : Path.FOLDER;
+    //    let type = kind === Kind.DDS_FILE ? 'File' : 'Folder';
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + '/move',
+    //        getFetchParams('put', authStore.appConfig.apiToken, {
+    //            "parent": {
+    //                "kind": destinationKind,
+    //                "id": destination
+    //            }
+    //        })
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            mainStore.addToast(type + ' moved successfully');
+    //            projectStore.moveItemSuccess(id);
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to move ' + type + ' to new location');
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
-    deleteFile(id, parentId, parentKind) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE + id,
-            getFetchParams('delete', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-            }).then(() => {
-                mainStore.addToast('File(s) Deleted!');
-                projectStore.deleteItemSuccess(parentId, parentKind)
-            }).catch((ex) => {
-                mainStore.addToast('Failed to Delete File!');
-                projectStore.handleErrors(ex)
-            });
-    },
+    //deleteFile(id, parentId, parentKind) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE + id,
+    //        getFetchParams('delete', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //        }).then(() => {
+    //            mainStore.addToast('File(s) Deleted!');
+    //            projectStore.deleteItemSuccess(parentId, parentKind)
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to Delete File!');
+    //            projectStore.handleErrors(ex)
+    //        });
+    //},
 
-    editItem(id, name, path, kind) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + '/rename',
-            getFetchParams('put', authStore.appConfig.apiToken, {
-                "name": name
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                mainStore.addToast('Item name updated to ' + name);
-                projectStore.editItemSuccess(id, json, kind)
-            }).catch((ex) => {
-                mainStore.addToast('Failed to update item');
-                projectStore.handleErrors(ex)
-            });
-    },
+    //editItem(id, name, path, kind) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + '/rename',
+    //        getFetchParams('put', authStore.appConfig.apiToken, {
+    //            "name": name
+    //        })
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            mainStore.addToast('Item name updated to ' + name);
+    //            projectStore.editItemSuccess(id, json, kind)
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to update item');
+    //            projectStore.handleErrors(ex)
+    //        });
+    //},
 
-    getEntity(id, kind, requester) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + kind + '/' + id,
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.getEntitySuccess(json, requester)
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            });
-    },
+    //getEntity(id, kind, requester) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + kind + '/' + id,
+    //        getFetchParams('get', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.getEntitySuccess(json, requester)
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        });
+    //},
 
     //getProjectMembers(id) {
     //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions',

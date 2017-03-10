@@ -1,5 +1,7 @@
 import React from 'react'
-import ProjectActions from '../../actions/projectActions';
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import {Path, Kind} from '../../../util/urlEnum';
 import FolderOptionsMenu from './folderOptionsMenu.jsx';
 import UploadModal from '../globalComponents/uploadModal.jsx';
 import UploadManager from '../globalComponents/uploadManager.jsx';
@@ -7,17 +9,18 @@ import BaseUtils from '../../../util/baseUtils';
 import Card from 'material-ui/Card';
 import FontIcon from 'material-ui/FontIcon';
 
+@observer
 class FolderPath extends React.Component {
     
     render() {
+        const {entityObj, projPermissions} = mainStore;
         let id = this.props.params.id;
-        let entityObj = this.props.entityObj ? this.props.entityObj : null;
-        let projectName = this.props.entityObj && this.props.entityObj.ancestors ? this.props.entityObj.ancestors[0].name : null;
-        let ancestors = this.props.entityObj ? this.props.entityObj.ancestors : null;
-        let parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : null;
-        let parentId = this.props.entityObj ? this.props.entityObj.parent.id : null;
-        let name = this.props.entityObj ? this.props.entityObj.name : '';
-        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
+        let projectName = entityObj && entityObj.ancestors ? entityObj.ancestors[0].name : null;
+        let ancestors = entityObj ? entityObj.ancestors : null;
+        let parentKind = entityObj ? entityObj.parent.kind : null;
+        let parentId = entityObj ? entityObj.parent.id : null;
+        let name = entityObj ? entityObj.name : '';
+        let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         
         let uploadMdl = null;
         let optionsMenu = null;
@@ -57,8 +60,7 @@ class FolderPath extends React.Component {
 
     setSelectedEntity() {
         let id = this.props.params.id;
-        let kind = 'folders';
-        ProjectActions.setSelectedEntity(id, kind);
+        mainStore.setSelectedEntity(id, Path.FOLDER);
     }
 }
 

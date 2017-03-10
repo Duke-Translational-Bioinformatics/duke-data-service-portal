@@ -58,20 +58,14 @@ class VersionUpload extends React.Component {
         );
     }
 
-    handleUploadButton(fileId, ParentId, projectId, parentKind) {
+    handleUploadButton(fileId, parentId, projectId, parentKind) {
         if (this.fileInput.value) {
-            //let projId = '';
-            //let parentKind = '';
-            //let fileId = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.entityObj.id;
-            //let parentId = this.props.selectedEntity !== null ?  this.props.selectedEntity.parent.id : this.props.entityObj.parent.id;
             let fileList = this.fileInput.files;
             for (var i = 0; i < fileList.length; i++) {
                 let blob = fileList[i];
-                let label = this.labelText.value;
-                //projId = this.props.entityObj ? this.props.entityObj.ancestors[0].id : this.props.selectedEntity.ancestors[0].id;
-                //parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : this.props.selectedEntity.parent.kind;
-                ProjectActions.startUpload(projectId, blob, parentId, parentKind, label, fileId);
-                ProjectActions.toggleModals('newVersionModal');
+                let label = this.labelText.getValue();
+                mainStore.startUpload(projectId, blob, parentId, parentKind, label, fileId);
+                mainStore.toggleModals('newVersionModal');
             }
         } else {
             return null
@@ -89,7 +83,7 @@ class VersionUpload extends React.Component {
     }
 
     handleClose() {
-        ProjectActions.toggleModals('newVersionModal');
+        mainStore.toggleModals('newVersionModal');
     }
 }
 

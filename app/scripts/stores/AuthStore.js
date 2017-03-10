@@ -1,4 +1,4 @@
-import Reflux from 'reflux';
+import React from 'react';
 import mainStore from '../stores/mainStore';
 import { observable, computed, action } from 'mobx';
 import { UrlGen, Path } from '../../util/urlEnum';
@@ -19,17 +19,13 @@ export class AuthStore {
         this.appConfig.isLoggedIn = cookie.load('isLoggedIn');
     }
 
-    checkResponse(response) {
-        return checkStatus(response, this);
-    }
-
     setLoadingStatus() {
         this.authServiceLoading = !this.authServiceLoading
     }
 
     @action getAuthProviders() {
         fetch(DDS_PORTAL_CONFIG.baseUrl + UrlGen.routes.apiPrefix + 'auth_providers', getFetchParams('get'))
-            .then(checkStatus)
+            .then(mainStore.checkResponse)
             .then((response) => {return response.json()})
             .then((json) => {
                 if (json.results) {
@@ -47,7 +43,7 @@ export class AuthStore {
 
     @action getApiToken(accessToken) {
         fetch(this.appConfig.baseUrl + UrlGen.routes.apiPrefix + Path.ACCESS_TOKEN + accessToken + '&authentication_service_id=' + this.appConfig.serviceId, getFetchParams('get'))
-            .then(checkStatus)
+            .then(mainStore.checkResponse)
             .then((response) => {return response.json()})
             .then((json) => {
                 if (json.api_token) {
@@ -63,7 +59,7 @@ export class AuthStore {
     @action getCurrentUser() {
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER,
             getFetchParams('get', authStore.appConfig.apiToken))
-            .then(checkStatus)
+            .then(mainStore.checkResponse)
             .then((response) => { return response.json() })
             .then(json => this.currentUser = json)
             .catch(ex => mainStore.handleErrors(ex));

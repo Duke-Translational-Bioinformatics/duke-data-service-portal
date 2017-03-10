@@ -66,8 +66,24 @@ class App extends React.Component {
     }
 
     componentWillMount() {
+        //if(authStore.appConfig.apiToken && !Object.keys(authStore.currentUser).length) authStore.getCurrentUser();
+        //if(!authStore.appConfig.apiToken && !authStore.appConfig.isLoggedIn && this.props.location.pathname !== '/login') {
+        //    if (location.hash !== '' && location.hash !== '#/login' && location.hash !== '#/public_privacy') {
+        //        let redUrl = location.href;
+        //        if (typeof(Storage) !== 'undefined') {
+        //            localStorage.setItem('redirectTo', redUrl);
+        //        } else {
+        //            this.props.router.push('/login')
+        //        }
+        //    }
+        //    let routeTo = this.props.location.pathname === '/public_privacy' ? '/public_privacy' : '/login';
+        //    this.props.router.push(routeTo);
+        //}
+    }
+
+    componentDidUpdate(prevProps, prevState) {
         if(authStore.appConfig.apiToken && !Object.keys(authStore.currentUser).length) authStore.getCurrentUser();
-        if (!authStore.appConfig.apiToken && !authStore.appConfig.isLoggedIn && this.props.location.pathname !== '/login') {
+        if(!authStore.appConfig.apiToken && !authStore.appConfig.isLoggedIn && this.props.location.pathname !== '/login') {
             if (location.hash !== '' && location.hash !== '#/login' && location.hash !== '#/public_privacy') {
                 let redUrl = location.href;
                 if (typeof(Storage) !== 'undefined') {
@@ -79,10 +95,6 @@ class App extends React.Component {
             let routeTo = this.props.location.pathname === '/public_privacy' ? '/public_privacy' : '/login';
             this.props.router.push(routeTo);
         }
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        if(authStore.appConfig.apiToken && !Object.keys(authStore.currentUser).length) authStore.getCurrentUser();
         this.showToasts();
         this.checkError();
     }
@@ -136,7 +148,7 @@ class App extends React.Component {
                                title="An Error Occurred"
                                actions={actions}
                                modal={false}
-                               open={mainStore.errorModal}
+                               open={true}
                                onRequestClose={() => this.closeErrorModal(obj.ref)}
                                style={styles.dialogStyles}>
                     <i className="material-icons" style={styles.warning}>warning</i>

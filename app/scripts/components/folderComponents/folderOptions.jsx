@@ -1,9 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import ProjectActions from '../../actions/projectActions';
 import mainStore from '../../stores/mainStore';
 import MoveItemModal from '../globalComponents/moveItemModal.jsx';
-import {Kind, Path} from '../../../util/urlEnum';
+import { Path } from '../../../util/urlEnum';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
@@ -24,9 +23,6 @@ class FolderOptions extends React.Component {
 
     render() {
         const {entityObj, screenSize, selectedEntity, toggleModal} = mainStore;
-        let dltOpen = toggleModal && toggleModal.id === 'dltFile' ? toggleModal.open : false;
-        let editOpen = toggleModal && toggleModal.id === 'editFile' ? toggleModal.open : false;
-        let moveOpen = toggleModal && toggleModal.id === 'moveItem' ? toggleModal.open : false;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let id = selectedEntity !== null ? selectedEntity.id : entityObj !== null ? entityObj.id : null;
         let parentId = selectedEntity !== null ? selectedEntity.parent.id : entityObj !== null ? entityObj.parent.id : null;
@@ -70,7 +66,7 @@ class FolderOptions extends React.Component {
                     autoDetectWindowHeight={true}
                     actions={deleteActions}
                     onRequestClose={()=>this.toggleModal('dltFolder')}
-                    open={dltOpen}>
+                    open={toggleModal && toggleModal.id === 'dltFolder' ? toggleModal.open : false}>
                     <i className="material-icons" style={styles.warning}>warning</i>
                     <p style={styles.msg}>Deleting this folder will also delete any folders or files contained inside of
                         this folder.</p>
@@ -82,7 +78,7 @@ class FolderOptions extends React.Component {
                     autoDetectWindowHeight={true}
                     actions={editActions}
                     onRequestClose={()=>this.toggleModal('editFolder')}
-                    open={editOpen}>
+                    open={toggleModal && toggleModal.id === 'editFolder' ? toggleModal.open : false}>
                     <form action="#" id="newFolderForm">
                         <TextField
                             style={styles.textStyles}
@@ -105,7 +101,7 @@ class FolderOptions extends React.Component {
                     title="Select Destination"
                     autoDetectWindowHeight={true}
                     actions={moveActions}
-                    open={moveOpen}
+                    open={toggleModal && toggleModal.id === 'moveFolder' ? toggleModal.open : false}
                     onRequestClose={()=>this.handleCloseMoveModal()}>
                     <MoveItemModal {...this.props}/>
                 </Dialog>
@@ -115,8 +111,8 @@ class FolderOptions extends React.Component {
 
     handleDeleteButton(id, parentId, parentKind) {
         let urlPath = parentKind === 'dds-project' ? '/project/' : '/folder/';
-        ProjectActions.deleteFolder(id, parentId, parentKind);
-        ProjectActions.toggleModals('dltFolder');
+        mainStore.deleteFolder(id, parentId, parentKind);
+        mainStore.toggleModals('dltFolder');
         setTimeout(()=>this.props.router.push(urlPath + parentId), 500)
     }
 
@@ -125,23 +121,21 @@ class FolderOptions extends React.Component {
         if (this.state.floatingErrorText) {
             return null
         } else {
-            ProjectActions.editItem(id, name, Path.FOLDER, Kind.DDS_FOLDER);
-            ProjectActions.toggleModals('editFolder');
+            mainStore.editItem(id, name, Path.FOLDER);
+            mainStore.toggleModals('editFolder');
         }
     }
 
     handleCloseMoveModal() {
-        ProjectActions.toggleModals('moveItem');
+        mainStore.toggleModals('moveItem');
     }
 
     selectText() {
-        setTimeout(()=>{
-            this.folderNameText.select();
-        }, 100);
+        setTimeout(()=> this.folderNameText.select(), 100);
     }
 
     toggleModal(id) {
-        ProjectActions.toggleModals(id);
+        mainStore.toggleModals(id);
     }
 
     validateText(e) {

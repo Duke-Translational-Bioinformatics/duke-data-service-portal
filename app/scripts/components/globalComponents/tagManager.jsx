@@ -42,14 +42,12 @@ class TagManager extends React.Component {
         }
     }
 
-    componentDidUpdate(prevProps) {// Todo: Check into using prevProps on stores
-        //if(prevProps.mainStore.openTagManager !== mainStore.openTagManager) {
-            if(mainStore.openTagManager) this.autocomplete.focus();
-        //}
+    componentDidUpdate(prevProps) {
+        if(mainStore.openTagManager) this.autocomplete.focus();
     }
 
     render() {
-        const {drawerLoading, entityObj, filesChecked, screenSize, selectedEntity, showTemplateDetails, tagAutoCompleteList, tagLabels, tagsToAdd, toggleModal} = mainStore;
+        const {drawerLoading, entityObj, filesChecked, openTagManager, screenSize, selectedEntity, showTemplateDetails, tagAutoCompleteList, tagLabels, tagsToAdd, toggleModal} = mainStore;
         let autoCompleteData = tagAutoCompleteList && tagAutoCompleteList.length > 0 ? tagAutoCompleteList : [];
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let id = selectedEntity !== null ? selectedEntity.id : this.props.params.id;
@@ -85,7 +83,7 @@ class TagManager extends React.Component {
 
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                <Drawer docked={false} disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openSecondary={true} open={this.props.openTagManager}>
+                <Drawer docked={false} disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openSecondary={true} open={openTagManager}>
                     <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800"
                          style={styles.drawer}>
                         <IconButton style={styles.toggleBtn}
@@ -150,8 +148,8 @@ class TagManager extends React.Component {
                                 </div>
                             </Tab>
                             <Tab label="Advanced" style={styles.tabStyles} onActive={() => this.activeTab()}>
-                                {this.props.drawerLoading ? <CircularProgress size={80} thickness={5} style={styles.drawerLoader}/> : <span>
-                                    {this.props.showTemplateDetails ? <MetadataObjectCreator {...this.props}/> : <MetadataTemplateList {...this.props}/>}
+                                {drawerLoading ? <CircularProgress size={80} thickness={5} style={styles.drawerLoader}/> : <span>
+                                    {showTemplateDetails ? <MetadataObjectCreator {...this.props}/> : <MetadataTemplateList {...this.props}/>}
                                 </span>}
                             </Tab>
                         </Tabs>
@@ -193,7 +191,7 @@ class TagManager extends React.Component {
                 }, 2000)
             } else {
                 tags.push({label: label.trim()});
-                ProjectActions.defineTagsToAdd(tags);
+                mainStore.defineTagsToAdd(tags);
                 setTimeout(()=>clearText(), 500);
                 this.setState({floatingErrorText: ''})
             }
@@ -204,13 +202,13 @@ class TagManager extends React.Component {
         if(!tagsToAdd.length) {
             this.setState({floatingErrorText: 'You must add tags to the list. Type a tag name and press enter.'});
         } else {
-            if (filesChecked > 0) {
+            if (filesChecked.length > 0) {
                 for (let i = 0; i < filesChecked.length; i++) {
-                    ProjectActions.appendTags(filesChecked[i], 'dds-file', tagsToAdd);
-                    if(!!this.refs[filesChecked[i]]) this.refs[filesChecked[i]].checked = false;
+                    mainStore.appendTags(filesChecked[i], 'dds-file', tagsToAdd);
                 }
+                mainStore.handleBatch([],[]);
             } else {
-                ProjectActions.appendTags(id, 'dds-file', tagsToAdd);
+                mainStore.appendTags(id, 'dds-file', tagsToAdd);
             }
             if(toggleModal && toggleModal.id === 'discardTags') {
                 this.discardTags();
@@ -222,21 +220,21 @@ class TagManager extends React.Component {
     }
 
     deleteTag(id, label) {
-        let fileId = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.params.id;
+        let fileId = mainStore.selectedEntity !== null ? mainStore.selectedEntity.id : this.props.params.id;
         let tags = mainStore.tagsToAdd;
         tags = tags.filter(( obj ) => {
             return obj.label !== label;
         });
-        ProjectActions.defineTagsToAdd(tags);
+        mainStore.defineTagsToAdd(tags);
     }
 
     discardTags() {
-        ProjectActions.defineTagsToAdd([]);
-        ProjectActions.toggleModals('discardTags');
+        mainStore.defineTagsToAdd([]);
+        mainStore.toggleModals('discardTags');
     }
 
     handleClose() {
-        ProjectActions.toggleModals();
+        mainStore.toggleModals();
     };
 
     handleUpdateInput (text) {
@@ -247,15 +245,15 @@ class TagManager extends React.Component {
             timeout: setTimeout(() => {
                 let value = text;
                 if (!value.indexOf(' ') <= 0) {
-                    ProjectActions.getTagAutoCompleteList(value);
+                    mainStore.getTagAutoCompleteList(value);
                 }
             }, 500)
         });
     }
 
     toggleTagManager() {
-        ProjectActions.toggleTagManager();
-        ProjectActions.defineTagsToAdd([]);
+        mainStore.toggleTagManager();
+        mainStore.defineTagsToAdd([]);
         if(this.autocomplete.state.searchText !== '') this.autocomplete.setState({searchText:''});
     }
 }

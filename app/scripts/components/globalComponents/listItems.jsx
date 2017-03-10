@@ -2,7 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../../util/baseUtils.js';
-import {UrlGen, Path} from '../../../util/urlEnum';
+import {UrlGen, Path, Kind} from '../../../util/urlEnum';
 import BatchOps from '../../components/globalComponents/batchOps.jsx';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
 import FileOptionsMenu from '../../components/fileComponents/fileOptionsMenu.jsx';
@@ -11,29 +11,30 @@ import Loaders from '../../components/globalComponents/loaders.jsx';
 import FontIcon from 'material-ui/FontIcon';
 import RaisedButton from 'material-ui/RaisedButton';
 
-import DevTools from 'mobx-react-devtools';
+import Checkbox from 'material-ui/Checkbox';
 
 @observer
 class ListItems extends React.Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            checked: false
+        }
+    }
+
     render() {
-        const {filesChecked, foldersChecked, listItems, loading, projPermissions, responseHeaders, screenSize, showBatchOps, uploads} = mainStore;
-        if(!showBatchOps) this.uncheck(filesChecked, foldersChecked);
-        let chkBx = <div className="item-media"></div>;
+        const {filesChecked, foldersChecked, listItems, loading, projPermissions, responseHeaders, screenSize, uploads} = mainStore;
+        let showBatchOps = filesChecked.length || foldersChecked.length ? true : false;
         let headers = responseHeaders && responseHeaders !== null ? responseHeaders : null;
         let nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
         let totalChildren = headers !== null && !!headers['x-total'] ? headers['x-total'][0] : null;
-        let type = 'hidden';
         let newFolderModal = null;
+        let showChecks = null;
         let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         if (prjPrm !== null) {
             newFolderModal = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <AddFolderModal {...this.props}/>;
-            if (prjPrm !== 'viewOnly' && prjPrm !== 'flUpload') {
-                type = 'checkbox';
-                chkBx = <div className="item-media">
-                    <i className="icon icon-form-checkbox" style={styles.checkBox}></i>
-                </div>
-            }
+            showChecks = !!(prjPrm !== 'viewOnly' && prjPrm !== 'flUpload');
         }
         let children = listItems && listItems.length ? listItems.map((children) => {
             let fileOptionsMenu = screenSize && screenSize.width >= 680 ? <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, 'files')}/> : null;
@@ -41,25 +42,19 @@ class ListItems extends React.Component {
             if (children.kind === 'dds-folder') {
                 return (
                     <li key={ children.id } className="hover">
-                        { prjPrm !== 'viewOnly' ?
+                        {prjPrm !== 'viewOnly' ?
                             <span style={styles.menuIcon}>
                                 { folderOptionsMenu }
                             </span> : null}
                         <a href={UrlGen.routes.folder(children.id)}
                            className="item-content external">
-                            <label className="label-checkbox item-content" style={styles.checkboxLabel}
-                                   onClick={e => this.change()}>
-                                <input className="folderChkBoxes" type="checkbox" name="chkboxName" value={children.id}
-                                       ref={children.id}/>
-                                { chkBx }
-                            </label>
+                            {showChecks ? <Checkbox  iconStyle={styles.checkIcon} style={screenSize.width > 580 ? {width: 48} : {width: 24}} onCheck={e => this.handleChange(children.id, Kind.DDS_FOLDER)}/> : null}
                             <div className="item-media">
                                 <FontIcon className="material-icons" style={styles.icon}>folder</FontIcon>
                             </div>
                             <div className="item-inner">
                                 <div className="item-title-row">
-                                    <div className="item-title mdl-color-text--grey-800"
-                                         style={styles.title}>{children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}</div>
+                                    <div className="item-title mdl-color-text--grey-800" style={styles.title}>{children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}</div>
                                 </div>
                                 <div className="item-subtitle mdl-color-text--grey-600">Created by { children.audit.created_by.full_name }</div>
                                 <div className="item-subtitle mdl-color-text--grey-600">{children.audit.last_updated_on !== null ? 'Last updated on '+BaseUtils.formatDate(children.audit.last_updated_on)+ ' by ': <br />}
@@ -77,19 +72,13 @@ class ListItems extends React.Component {
                             </span> : null }
                         <a href={UrlGen.routes.file(children.id)}
                            className="item-content external">
-                            <label className="label-checkbox item-content" style={styles.checkboxLabel}
-                                   onClick={e => this.change()}>
-                                <input className="fileChkBoxes" type="checkbox" name="chkboxName" value={children.id}
-                                       ref={children.id}/>
-                                { chkBx }
-                            </label>
+                            {showChecks ? <Checkbox iconStyle={styles.checkIcon} style={screenSize.width > 580 ? {width: 48} : {width: 24}} checked={mainStore.filesChecked.includes(children.id)} ref={children.id} onCheck={e => this.handleChange(children.id, Kind.DDS_FILE)}/> : null}
                             <div className="item-media">
                                 <FontIcon className="material-icons" style={styles.icon}>description</FontIcon>
                             </div>
                             <div className="item-inner">
                                 <div className="item-title-row">
-                                    <div className="item-title mdl-color-text--grey-800"
-                                         style={styles.title}>{children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}</div>
+                                    <div className="item-title mdl-color-text--grey-800" style={styles.title}>{children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}</div>
                                 </div>
                                 <div className="item-subtitle mdl-color-text--grey-600">{BaseUtils.bytesToSize(children.current_version.upload.size)+' - '}version {children.current_version.version}</div>
                                 <div className="item-subtitle mdl-color-text--grey-600">{children.audit.last_updated_on !== null ? 'Last updated on '+BaseUtils.formatDate(children.audit.last_updated_on)+ ' by ': <br />}
@@ -108,7 +97,7 @@ class ListItems extends React.Component {
                         { newFolderModal }
                     </div> : null}
                     <div className="mdl-cell mdl-cell--12-col" style={styles.batchOpsWrapper}>
-                        { showBatchOps ? <BatchOps {...this.props} {...this.state}/> : null }
+                        { showBatchOps ? <BatchOps {...this.props}/> : null }
                     </div>
                 </div>
                 { uploads || loading ? <Loaders {...this.props}/> : null }
@@ -117,7 +106,6 @@ class ListItems extends React.Component {
                         <ul>
                             { children }
                         </ul>
-                        <DevTools/>
                     </div>
                     {listItems.length < totalChildren && totalChildren > 25 ?
                         <div className="mdl-cell mdl-cell--12-col">
@@ -135,28 +123,27 @@ class ListItems extends React.Component {
         );
     }
 
-    change() {
-        // clicking on F7 input[checkbox] does not fire onChange in iOS or Android. Instead, set onClick to label
-        // and wait for F7 to change the form before getting the form values. sheesh
-        setTimeout(() => {
-            this.handleChange()
-        }, 100);
+    getSelectedItems(items, id) {
+        if(items.includes(id)) {
+            items = items.filter(val => val !== id);
+        } else {
+            items = [...items, id]
+        }
+        return items;
     }
 
-    handleChange() {
-        let checkedBoxes = document.querySelectorAll('input[name=chkboxName]:checked');
-        let filesChecked = [];
-        let foldersChecked = [];
-        let fileInput = document.getElementsByClassName('fileChkBoxes');
-        let folderInput = document.getElementsByClassName('folderChkBoxes');
-        for (let i = 0; fileInput[i]; ++i) {
-            if (fileInput[i].checked) filesChecked.push(fileInput[i].value);
+
+
+    handleChange(id, kind) {
+        let files = mainStore.filesChecked;
+        let folders = mainStore.foldersChecked;
+        if(kind === 'dds-file') {
+            files = this.getSelectedItems(files, id);
         }
-        for (let i = 0; folderInput[i]; ++i) {
-            if (folderInput[i].checked) foldersChecked.push(folderInput[i].value);
+        if(kind === 'dds-folder') {
+            folders = this.getSelectedItems(folders, id);
         }
-        mainStore.handleBatch(filesChecked, foldersChecked);
-        if (!checkedBoxes.length) mainStore.showBatchOptions();
+        mainStore.handleBatch(files, folders);
     }
 
     handleDownload(id) {
@@ -173,19 +160,6 @@ class ListItems extends React.Component {
     setSelectedEntity(id, kind) {
         mainStore.setSelectedEntity(id, kind);
     }
-
-    uncheck(filesChecked, foldersChecked) {
-        if(foldersChecked !== null) {
-            for (let i = 0; i < foldersChecked.length; i++) {
-                if(!!this.refs[foldersChecked[i]]) this.refs[foldersChecked[i]].checked = false;
-            }
-        }
-        if(filesChecked !== null) {
-            for (let i = 0; i < filesChecked.length; i++) {
-                if(!!this.refs[filesChecked[i]]) this.refs[filesChecked[i]].checked = false;
-            }
-        }
-    }
 }
 
 ListItems.contextTypes = {
@@ -196,13 +170,9 @@ var styles = {
     batchOpsWrapper: {
         marginBottom: 0
     },
-    checkBox: {
-        width: 16,
-        height: 16
-    },
-    checkboxLabel: {
-        borderRadius: 35,
-        paddingRight: 20
+    checkIcon: {
+        width: 22,
+        height: 22
     },
     menuIcon: {
         position: 'absolute',

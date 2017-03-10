@@ -1,13 +1,17 @@
 import React from 'react';
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import {Kind, Path} from '../../../util/urlEnum';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 
+@observer
 class FolderOptionsMenu extends React.Component {
 
     render() {
+        const {entityObj, selectedEntity} = mainStore;
+        let id = selectedEntity !== null ? selectedEntity.id : entityObj !== null ? entityObj.id : null;
         return (
             <div>
                 <IconMenu
@@ -16,22 +20,20 @@ class FolderOptionsMenu extends React.Component {
                     targetOrigin={{horizontal: 'right', vertical: 'top'}}>
                     <MenuItem primaryText="Delete Folder" leftIcon={<i className="material-icons">delete</i>} onTouchTap={() => this.toggleModal('dltFolder')}/>
                     <MenuItem primaryText="Edit Folder Name" leftIcon={<i className="material-icons">mode_edit</i>} onTouchTap={() => this.toggleModal('editFolder')}/>
-                    <MenuItem primaryText="Move Folder" leftIcon={<i className="material-icons">low_priority</i>} onTouchTap={() => this.moveFolder()}/>
+                    <MenuItem primaryText="Move Folder" leftIcon={<i className="material-icons">low_priority</i>} onTouchTap={() => this.moveFolder(id)}/>
                 </IconMenu>
             </div>
         );
     }
 
-    moveFolder() {
-        let id = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.entityObj.id;
-        let kind = 'folders';
-        let requester = 'optionsMenu'; // Use this to only set parent in store once.
-        ProjectActions.getEntity(id, kind, requester);
-        ProjectActions.toggleModals('moveFolder');
+    moveFolder(id) {
+        let requester = 'optionsMenu';
+        mainStore.getEntity(id, Path.FOLDER, requester);
+        mainStore.toggleModals('moveFolder');
     }
 
     toggleModal(id) {
-        ProjectActions.toggleModals(id);
+        mainStore.toggleModals(id);
     }
 }
 

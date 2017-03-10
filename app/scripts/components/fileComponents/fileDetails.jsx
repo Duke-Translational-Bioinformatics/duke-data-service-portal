@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
 import {Kind, Path} from '../../../util/urlEnum';
 import CustomMetadata from './customMetadata.jsx';
 import FileOptionsMenu from './fileOptionsMenu.jsx';
@@ -18,13 +18,15 @@ import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 
+@observer
 class FileDetails extends React.Component {
 
     render() {
-        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
+        const {entityObj, fileVersions, loading, objectMetadata, projPermissions, screenSize, showProvAlert, uploads} = mainStore;
+        let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         let dlButton = null;
         let optionsMenu = null;
-        let id = this.props.entityObj && this.props.entityObj.current_version.id ? this.props.entityObj.current_version.id : null;
+        let id = entityObj && entityObj.current_version.id ? entityObj.current_version.id : null;
         if (prjPrm !== null) {
             dlButton = prjPrm === 'viewOnly' || prjPrm === 'flUpload' ? null :
                 <button
@@ -37,26 +39,26 @@ class FileDetails extends React.Component {
                 </button>;
             optionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity()}/>;
         }
-        let ancestors = this.props.entityObj ? this.props.entityObj.ancestors : null;
-        let parentKind = this.props.entityObj ? this.props.entityObj.parent.kind : null;
-        let parentId = this.props.entityObj ? this.props.entityObj.parent.id : null;
-        let name = this.props.entityObj ? this.props.entityObj.name : '';
-        let label = this.props.entityObj && this.props.entityObj.current_version.label ? this.props.entityObj.current_version.label : null;
-        let projectName = this.props.entityObj && this.props.entityObj.ancestors ? this.props.entityObj.ancestors[0].name : null;
-        let crdOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.created_on : null;
-        let createdBy = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.created_by.full_name : null;
-        let lastUpdatedOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.last_updated_on : null;
-        let lastUpdatedBy = this.props.entityObj && this.props.entityObj.audit.last_updated_by ? this.props.entityObj.audit.last_updated_by.full_name : null;
-        let storage =  this.props.entityObj && this.props.entityObj.current_version.upload ? this.props.entityObj.current_version.upload.storage_provider.description : null;
-        let bytes = this.props.entityObj && this.props.entityObj.current_version.upload ? this.props.entityObj.current_version.upload.size : null;
-        let hash = this.props.entityObj && this.props.entityObj.current_version.upload.hashes.length ? this.props.entityObj.current_version.upload.hashes[0].algorithm +': '+ this.props.entityObj.current_version.upload.hashes[0].value : null;
-        let currentVersion = this.props.entityObj && this.props.entityObj.current_version.version ? this.props.entityObj.current_version.version : null;
+        let ancestors = entityObj ? entityObj.ancestors : null;
+        let parentKind = entityObj ? entityObj.parent.kind : null;
+        let parentId = entityObj ? entityObj.parent.id : null;
+        let name = entityObj ? entityObj.name : '';
+        let label = entityObj && entityObj.current_version.label ? entityObj.current_version.label : null;
+        let projectName = entityObj && entityObj.ancestors ? entityObj.ancestors[0].name : null;
+        let crdOn = entityObj && entityObj.audit ? entityObj.audit.created_on : null;
+        let createdBy = entityObj && entityObj.audit ? entityObj.audit.created_by.full_name : null;
+        let lastUpdatedOn = entityObj && entityObj.audit ? entityObj.audit.last_updated_on : null;
+        let lastUpdatedBy = entityObj && entityObj.audit.last_updated_by ? entityObj.audit.last_updated_by.full_name : null;
+        let storage =  entityObj && entityObj.current_version.upload ? entityObj.current_version.upload.storage_provider.description : null;
+        let bytes = entityObj && entityObj.current_version.upload ? entityObj.current_version.upload.size : null;
+        let hash = entityObj && entityObj.current_version.upload.hashes.length ? entityObj.current_version.upload.hashes[0].algorithm +': '+ entityObj.current_version.upload.hashes[0].value : null;
+        let currentVersion = entityObj && entityObj.current_version.version ? entityObj.current_version.version : null;
         let versionsButton = null;
         let versions = null;
         let versionCount = [];
-        let width = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.width : window.innerWidth;
+        let width = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.width : window.innerWidth;
         let path = ancestors !== null ? BaseUtils.getFilePath(ancestors) : '';
-        let provAlert = this.props.showProvAlert ? <Paper style={styles.provAlert} zDepth={1}>
+        let provAlert = showProvAlert ? <Paper style={styles.provAlert} zDepth={1}>
             <div style={styles.provAlert.wrapper}>Would you like to add provenance for this file?</div>
             <IconButton style={styles.button} onTouchTap={() => this.dismissAlert()}>
                 <NavigationClose color="#E8F5E9"/>
@@ -70,8 +72,8 @@ class FileDetails extends React.Component {
                 />
         </Paper> : '';
 
-        if(this.props.fileVersions && this.props.fileVersions != undefined && this.props.fileVersions.length > 1) {
-            versions = this.props.fileVersions.map((version) => {
+        if(fileVersions && fileVersions != null && fileVersions.length > 1) {
+            versions = fileVersions.map((version) => {
                 return version.is_deleted;
             });
             for (let i = 0; i < versions.length; i++) {
@@ -79,12 +81,11 @@ class FileDetails extends React.Component {
                     versionCount.push(versions[i]);
                     if (versionCount.length > 1) {
                         versionsButton = <RaisedButton
-                            label="FILE VERSIONS"
-                            secondary={true}
-                            style={styles.button}
-                            labelStyle={{fontWeight: 100}}
-                            onTouchTap={() => this.openModal()}
-                            />
+                                            label="FILE VERSIONS"
+                                            secondary={true}
+                                            style={styles.button}
+                                            labelStyle={{fontWeight: 100}}
+                                            onTouchTap={() => this.openModal('fileVersions')} />
                     }
                 }
             }
@@ -127,7 +128,7 @@ class FileDetails extends React.Component {
                 <FileVersionsList {...this.props}/>
                 <VersionUpload {...this.props}/>
                 <div style={styles.uploadProg}>
-                    { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
+                    { uploads || loading ? <Loaders {...this.props}/> : null }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     { provAlert }
@@ -229,37 +230,35 @@ class FileDetails extends React.Component {
         return (
             <div>
                 {file}
-                {this.props.objectMetadata && this.props.objectMetadata.length ? <CustomMetadata {...this.props}/> : null}
+                {objectMetadata && objectMetadata.length ? <CustomMetadata {...this.props}/> : null}
             </div>
         )
     }
 
     dismissAlert(){
-        ProjectActions.hideProvAlert();
+        mainStore.hideProvAlert();
     }
 
     handleDownload(){
         let id = this.props.params.id;
-        let kind = Path.FILE;
-        ProjectActions.getDownloadUrl(id, kind);
+        mainStore.getDownloadUrl(id, Path.FILE);
     }
 
-    openModal() {
-        ProjectActions.openModal()
+    openModal(id) {
+        mainStore.toggleModals(id)
     }
 
     openProv() {
-        let versionId = this.props.entityObj.current_version.id;
-        ProjectActions.getWasGeneratedByNode(versionId);
-        ProjectActions.toggleProvView();
-        ProjectActions.toggleProvEditor();
-        ProjectActions.hideProvAlert();
+        let versionId = mainStore.entityObj.current_version.id;
+        mainStore.getWasGeneratedByNode(versionId);
+        mainStore.toggleProvView();
+        mainStore.toggleProvEditor();
+        mainStore.hideProvAlert();
     }
 
     setSelectedEntity() {
         let id = this.props.params.id;
-        let kind = 'files';
-        ProjectActions.setSelectedEntity(id, kind);
+        mainStore.setSelectedEntity(id, Path.FILE);
     }
 }
 

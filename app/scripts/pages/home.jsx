@@ -1,5 +1,5 @@
 import React from 'react';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import authStore from '../stores/authStore';
 import mainStore from '../stores/mainStore';
 import ProjectList from '../components/projectComponents/projectList.jsx';

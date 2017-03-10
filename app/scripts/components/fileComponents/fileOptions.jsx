@@ -1,8 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import ProjectActions from '../../actions/projectActions';
 import mainStore from '../../stores/mainStore';
-import {Kind, Path} from '../../../util/urlEnum';
+import { Path } from '../../../util/urlEnum';
 import MoveItemModal from '../globalComponents/moveItemModal.jsx';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
@@ -111,12 +110,12 @@ class FileOptions extends React.Component {
     };
 
     toggleModal(id) {
-        ProjectActions.toggleModals(id);
+        mainStore.toggleModals(id);
     }
 
     handleDeleteButton(id, parentId, parentKind) {
         let urlPath = parentKind === 'dds-project' ? '/project/' : '/folder/';
-        ProjectActions.deleteFile(id, parentId, parentKind);
+        mainStore.deleteFile(id, parentId, parentKind);
         this.handleClose('dltFile');
         setTimeout(()=>this.props.router.push(urlPath + parentId), 500)
     }
@@ -126,19 +125,18 @@ class FileOptions extends React.Component {
         if (this.state.floatingErrorText != '') {
             return null
         } else {
-            ProjectActions.editItem(id, fileName, Path.FILE, Kind.DDS_FILE);
+            mainStore.editItem(id, fileName, Path.FILE);
             this.handleClose('editFile');
         }
     }
 
     handleCloseMoveModal(id) {
-        let kind = 'files';
-        ProjectActions.getEntity(id, kind);
-        ProjectActions.toggleModals('moveItem');
+        mainStore.getEntity(id, Path.FILE);
+        mainStore.toggleModals('moveItem');
     }
 
     handleClose(id) {
-        ProjectActions.toggleModals(id);
+        mainStore.toggleModals(id);
     }
 
     selectText() {

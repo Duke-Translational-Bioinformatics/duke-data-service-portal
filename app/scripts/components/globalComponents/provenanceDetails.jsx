@@ -1,14 +1,18 @@
 import React, { PropTypes } from 'react';
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import provenanceStore from '../../stores/provenanceStore';
 import BaseUtils from '../../../util/baseUtils.js';
 import {UrlGen} from '../../../util/urlEnum';
 
+@observer
 class ProvenanceDetails extends React.Component {
 
     render() {
+        const { onClickProvNode } = provenanceStore;
+        const { entityObj } = mainStore;
         let details = null;
-        if (this.props.node && this.props.node.properties.hasOwnProperty('audit')) {
+        if (onClickProvNode && onClickProvNode.properties.hasOwnProperty('audit')) {
             function createdOnDate(created) {
                 let x = new Date(created);
                 let createdOn = x.toString();
@@ -16,23 +20,23 @@ class ProvenanceDetails extends React.Component {
             }
             let id = this.props.params.id;
             let versionId = null;
-            let activityName = this.props.node !== null && this.props.node.properties.kind === 'dds-activity' ? this.props.node.properties.name : null;
-            let activityDescription = this.props.node !== null && this.props.node.properties.kind === 'dds-activity' ? this.props.node.properties.description : null;
-            let fileName = this.props.node !== null && this.props.node.properties.file ? this.props.node.properties.file.name : null;
-            if (fileName === null && this.props.node !== null && this.props.node.properties.current_version) fileName = this.props.node.properties.name;
-            let fileId = this.props.node !== null && this.props.node.properties.file ? this.props.node.properties.file.id : null;
-            if (fileId === null && this.props.node !== null && this.props.node.properties.current_version) versionId = this.props.node.properties.current_version.id;
+            let activityName = onClickProvNode !== null && onClickProvNode.properties.kind === 'dds-activity' ? onClickProvNode.properties.name : null;
+            let activityDescription = onClickProvNode !== null && onClickProvNode.properties.kind === 'dds-activity' ? onClickProvNode.properties.description : null;
+            let fileName = onClickProvNode !== null && onClickProvNode.properties.file ? onClickProvNode.properties.file.name : null;
+            if (fileName === null && onClickProvNode !== null && onClickProvNode.properties.current_version) fileName = onClickProvNode.properties.name;
+            let fileId = onClickProvNode !== null && onClickProvNode.properties.file ? onClickProvNode.properties.file.id : null;
+            if (fileId === null && onClickProvNode !== null && onClickProvNode.properties.current_version) versionId = onClickProvNode.properties.current_version.id;
             let projectName = this.props.entityObj && this.props.entityObj.ancestors ? this.props.entityObj.ancestors[0].name : null;
-            let crdOn = this.props.node !== null && this.props.node.properties.audit ? this.props.node.properties.audit.created_on : null;
+            let crdOn = onClickProvNode !== null && onClickProvNode.properties.audit ? onClickProvNode.properties.audit.created_on : null;
             let createdOn = createdOnDate(crdOn);
-            let createdBy = this.props.node !== null && this.props.node.properties.audit ? this.props.node.properties.audit.created_by.full_name : null;
-            let lastUpdatedOn = this.props.node !== null && this.props.node.properties.audit ? this.props.node.properties.audit.last_updated_on : null;
-            let lastUpdatedBy = this.props.node !== null && this.props.node.properties.audit.last_updated_by ? this.props.node.properties.audit.last_updated_by.full_name : null;
+            let createdBy = onClickProvNode !== null && onClickProvNode.properties.audit ? onClickProvNode.properties.audit.created_by.full_name : null;
+            let lastUpdatedOn = onClickProvNode !== null && onClickProvNode.properties.audit ? onClickProvNode.properties.audit.last_updated_on : null;
+            let lastUpdatedBy = onClickProvNode !== null && onClickProvNode.properties.audit.last_updated_by ? onClickProvNode.properties.audit.last_updated_by.full_name : null;
             let storage = null;
-            if (this.props.node !== null && this.props.node.properties.kind !== 'dds-activity') {
-                storage = this.props.node.properties && this.props.node.properties.upload ?
-                    this.props.node.properties.upload.storage_provider.description :
-                    this.props.node.properties.current_version.upload.storage_provider.description;
+            if (onClickProvNode !== null && onClickProvNode.properties.kind !== 'dds-activity') {
+                storage = onClickProvNode.properties && onClickProvNode.properties.upload ?
+                    onClickProvNode.properties.upload.storage_provider.description :
+                    onClickProvNode.properties.current_version.upload.storage_provider.description;
             }
             let fileLink = null;
             if (fileName !== null) {
@@ -45,8 +49,8 @@ class ProvenanceDetails extends React.Component {
             }
             if (fileId === id || versionId === id) fileLink =
                 <span className="mdl-color-text--grey-600">{fileName}</span>;
-            let bytes = this.props.node !== null && this.props.node.properties.upload ? this.props.node.properties.upload.size : null;
-            if (bytes === null && this.props.node !== null && this.props.node.properties.kind !== 'dds-activity') bytes = this.props.node.properties.current_version.upload.size;
+            let bytes = onClickProvNode !== null && onClickProvNode.properties.upload ? onClickProvNode.properties.upload.size : null;
+            if (bytes === null && onClickProvNode !== null && onClickProvNode.properties.kind !== 'dds-activity') bytes = onClickProvNode.properties.current_version.upload.size;
             details = <div className="mdl-cell mdl-cell--12-col" style={styles.details}>
                 <h6 style={styles.listHeader}>
                     {fileName !== null ? fileLink : activityName}
@@ -124,8 +128,8 @@ class ProvenanceDetails extends React.Component {
     }
 
     toggleProv() {
-        if(this.props.toggleProvEdit && this.props.toggleProv) ProjectActions.toggleProvEditor();
-        ProjectActions.toggleProvView();
+        if(provenanceStore.toggleProvEdit && provenanceStore.toggleProv) provenanceStore.toggleProvEditor();
+        provenanceStore.toggleProvView();
     }
 }
 

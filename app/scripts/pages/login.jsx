@@ -1,28 +1,23 @@
 import React from 'react';
 import { observer, inject } from 'mobx-react';
 import Header from '../components/globalComponents/header.jsx';
-//import MainActions from '../actions/mainActions.js';
-//import mainStore from '../stores/mainStore.js';
+import authStore from '../stores/authStore.js';
+import mainStore from '../stores/mainStore.js';
 import CircularProgress from 'material-ui/CircularProgress';
 import LinearProgress from 'material-ui/LinearProgress';
 import RaisedButton from 'material-ui/RaisedButton';
 import {UrlGen} from '../../util/urlEnum';
 
-@inject('authStore', 'mainStore') @observer
+@observer
 class Login extends React.Component {
 
-    constructor(props) {
-        super(props);
-        this.authStore = this.props.authStore;
-    }
-
     componentDidMount() {
-        if(this.props.location.pathname !== '/404' && this.authStore.appConfig.apiToken ) this.props.router.push('/');
+        if(this.props.location.pathname !== '/404' && authStore.appConfig.apiToken ) this.props.router.push('/');
     }
 
     componentDidUpdate(prevProps) {
-        if(prevProps.location.pathname !== '/login' && !this.authStore.authServiceLoading) this.authStore.setLoadingStatus();
-        if(this.authStore.appConfig.apiToken) {
+        if(prevProps.location.pathname !== '/login' && !authStore.authServiceLoading) authStore.setLoadingStatus();
+        if(authStore.appConfig.apiToken) {
             if (localStorage.getItem('redirectTo') !== null) {
                 let redUrl = localStorage.getItem('redirectTo');
                 document.location.replace(redUrl);
@@ -33,13 +28,13 @@ class Login extends React.Component {
     }
 
     createLoginUrl = () => {
-        return this.authStore.appConfig.authServiceUri+'&state='+this.authStore.appConfig.serviceId+'&redirect_uri='+window.location.href;
+        return authStore.appConfig.authServiceUri+'&state='+authStore.appConfig.serviceId+'&redirect_uri='+window.location.href;
     }
-s
+
     render() {
         let content = '';
-        const {error} = this.props.mainStore;
-        const {appConfig, authServiceLoading} = this.props.authStore;
+        const {error} = mainStore;
+        const {appConfig, authServiceLoading} = authStore;
         if (!appConfig.apiToken) {
             let url = window.location.hash.split('&');
             let accessToken = url[0].split('=')[1];
@@ -63,7 +58,7 @@ s
                     </div>
                 </div>
             );
-            if (accessToken && appConfig.serviceId !== null) this.authStore.getApiToken(accessToken);
+            if (accessToken && appConfig.serviceId !== null) authStore.getApiToken(accessToken);
             if (error !== null) content = error
         }
         return (
@@ -76,7 +71,7 @@ s
     }
 
     handleLoginBtn() {
-        this.authStore.isLoggedInHandler();
+        authStore.isLoggedInHandler();
     }
 }
 
