@@ -5,7 +5,6 @@ import {graphOptions, graphColors} from '../../graphConfig';
 import authStore from '../../stores/authStore';
 import mainStore from '../../stores/mainStore';
 import provenanceStore from '../../stores/provenanceStore';
-import ProjectActions from '../../actions/projectActions';//Todo: Remove this!!!!!!!!!!
 import ProvenanceActivityManager from '../globalComponents/provenanceActivityManager.jsx';
 import ProvenanceDetails from '../globalComponents/provenanceDetails.jsx';
 import ProvenanceFilePicker from '../globalComponents/provenanceFilePicker.jsx';

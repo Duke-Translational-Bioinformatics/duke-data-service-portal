@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore'
+import authStore from '../../stores/authStore'
 import MainActions from '../../actions/mainActions';
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
 import AddAgentModal from '../../components/globalComponents/addAgentModal.jsx';
 import CircularProgress from 'material-ui/CircularProgress';
 import Dialog from 'material-ui/Dialog';
@@ -19,6 +20,7 @@ import Close from 'material-ui/svg-icons/navigation/close';
 import TextField from 'material-ui/TextField';
 import Toggle from 'material-ui/Toggle';
 
+@observer
 class MetadataTemplateList extends React.Component {
 
     constructor(props) {
@@ -32,12 +34,13 @@ class MetadataTemplateList extends React.Component {
     }
 
     render() {
-        let currentUser = this.props.currentUser && this.props.currentUser !== null ? this.props.currentUser : null;
+        const { metaTemplates, loading } = mainStore;
+        const { currentUser } = authStore;
         let route = this.props.location.pathname.split('/').splice([1], 1).toString();
         let showSearch = this.state.searchMode ? 'block' : 'none';
         let switchColor = this.state.toggleSwitch ? {track: {backgroundColor: '#235F9C'}, thumb: {backgroundColor: '#003366'}} :
             {track: {backgroundColor: '#BDBDBD'}, thumb: {backgroundColor: '#9E9E9E'}};
-        let templateList = this.props.metaTemplates && this.props.metaTemplates !== null && currentUser !== null ? this.props.metaTemplates.map((obj) => {
+        let templateList = metaTemplates && metaTemplates !== null && currentUser !== null ? metaTemplates.map((obj) => {
             if(this.state.toggleSwitch){
                 return (
                     <li key={ obj.id } className="hover" style={styles.listItem}>
@@ -135,8 +138,8 @@ class MetadataTemplateList extends React.Component {
                     </div>
                 </div>
                 <div className="mdl-cell mdl-cell--12-col" style={styles.loading}>
-                    {this.props.loading && route === 'metadata' ? <Loaders {...this.props}/> : null}
-                    {this.props.loading && route !== 'metadata' ? <CircularProgress size={80} thickness={5} style={styles.drawerLoader}/> : null}
+                    {loading && route === 'metadata' ? <Loaders {...this.props}/> : null}
+                    {loading && route !== 'metadata' ? <CircularProgress size={80} thickness={5} style={styles.drawerLoader}/> : null}
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     <div className="list-block media-list">
@@ -161,7 +164,7 @@ class MetadataTemplateList extends React.Component {
         this.setState({timeout: setTimeout(() => {
             let value = searchInput.getValue();
             if (!value.indexOf(' ') <= 0) {
-                ProjectActions.loadMetadataTemplates(value);
+                mainStore.loadMetadataTemplates(value);
             }
         }, 600)
         });
@@ -169,7 +172,7 @@ class MetadataTemplateList extends React.Component {
 
 
     openMetadataManager() {
-        ProjectActions.toggleMetadataManager();
+        mainStore.toggleMetadataManager();
     }
 
     toggleSearch(close) {
@@ -180,7 +183,7 @@ class MetadataTemplateList extends React.Component {
                 if (this.state.searchValue !== ('' || 'search')) this.setState({searchValue: ''});
             }, 100);
         } else {
-            ProjectActions.loadMetadataTemplates(null);
+            mainStore.loadMetadataTemplates(null);
         }
         this.setState({searchMode: !this.state.searchMode});
     }
@@ -190,12 +193,12 @@ class MetadataTemplateList extends React.Component {
     }
 
     viewTemplate(id) {
-        ProjectActions.getMetadataTemplateDetails(id);
-        ProjectActions.getMetadataTemplateProperties(id);
+        mainStore.getMetadataTemplateDetails(id);
+        mainStore.getMetadataTemplateProperties(id);
     }
 
     handleClose() {
-        ProjectActions.closeModal();
+        mainStore.closeModal();
     }
 }
 

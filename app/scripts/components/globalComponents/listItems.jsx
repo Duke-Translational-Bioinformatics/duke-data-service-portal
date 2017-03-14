@@ -37,8 +37,8 @@ class ListItems extends React.Component {
             showChecks = !!(prjPrm !== 'viewOnly' && prjPrm !== 'flUpload');
         }
         let children = listItems && listItems.length ? listItems.map((children) => {
-            let fileOptionsMenu = screenSize && screenSize.width >= 680 ? <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, 'files')}/> : null;
-            let folderOptionsMenu = screenSize && screenSize.width >= 680 ? <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, 'folders')}/> : null;
+            let fileOptionsMenu = screenSize && screenSize.width >= 680 ? <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, Path.FILE)}/> : null;
+            let folderOptionsMenu = screenSize && screenSize.width >= 680 ? <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, Path.FOLDER)}/> : null;
             if (children.kind === 'dds-folder') {
                 return (
                     <li key={ children.id } className="hover">
@@ -132,8 +132,6 @@ class ListItems extends React.Component {
         return items;
     }
 
-
-
     handleChange(id, kind) {
         let files = mainStore.filesChecked;
         let folders = mainStore.foldersChecked;
@@ -157,8 +155,8 @@ class ListItems extends React.Component {
         mainStore.getChildren(id, kind, page);
     }
 
-    setSelectedEntity(id, kind) {
-        mainStore.setSelectedEntity(id, kind);
+    setSelectedEntity(id, path) {
+        mainStore.setSelectedEntity(id, path);
     }
 }
 

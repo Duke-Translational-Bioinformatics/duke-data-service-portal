@@ -1,6 +1,5 @@
 import React from 'react';
 import { observable, computed, action, map } from 'mobx';
-import cookie from 'react-cookie';
 import authStore from '../stores/authStore';
 import mainStore from '../stores/mainStore';
 import BaseUtils from '../../util/baseUtils.js';

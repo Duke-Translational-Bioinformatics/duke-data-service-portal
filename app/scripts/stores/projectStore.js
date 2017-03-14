@@ -561,26 +561,26 @@ export class ProjectStore {
     //    this.provNodes = nodes;
     //}
 
-    addProvActivitySuccess(node) {
-        let act = [];
-        act.push(node);
-        this.updatedGraphItem = act.map((node) => {//Update dataset in client
-            return {
-                id: node.id,
-                label: 'Activity: \n'+node.name,
-                shape: 'box',
-                color: graphColors.activity,
-                properties: node,
-                title: '<div style="margin: 10px; color: #616161"><span>'
-                +'Name: '+node.name + '</span><br/>' +
-                '<span>'+'Created By: '+node.audit.created_by.full_name+'</span><br/>' +
-                '<span>'+'Started On: '+node.started_on+'</span></div>'
-            };
-        });
-        let nodes = this.provNodes;
-        nodes.push(this.updatedGraphItem[0]);
-        this.provNodes = nodes;
-    }
+    //addProvActivitySuccess(node) {
+    //    let act = [];
+    //    act.push(node);
+    //    this.updatedGraphItem = act.map((node) => {//Update dataset in client
+    //        return {
+    //            id: node.id,
+    //            label: 'Activity: \n'+node.name,
+    //            shape: 'box',
+    //            color: graphColors.activity,
+    //            properties: node,
+    //            title: '<div style="margin: 10px; color: #616161"><span>'
+    //            +'Name: '+node.name + '</span><br/>' +
+    //            '<span>'+'Created By: '+node.audit.created_by.full_name+'</span><br/>' +
+    //            '<span>'+'Started On: '+node.started_on+'</span></div>'
+    //        };
+    //    });
+    //    let nodes = this.provNodes;
+    //    nodes.push(this.updatedGraphItem[0]);
+    //    this.provNodes = nodes;
+    //}
 
     //editProvActivitySuccess(node) {
     //    let act = [];
@@ -968,35 +968,35 @@ export class ProjectStore {
     //    })
     //}
 
-    deleteVersion() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //deleteVersion() {
+    //    this.loading = true;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
-    deleteVersionSuccess() {
-        this.loading = false;
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //deleteVersionSuccess() {
+    //    this.loading = false;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
-    editVersion() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //editVersion() {
+    //    this.loading = true;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
-    editVersionSuccess(id) {
-        this.loading = false;
-        let kind = 'file_versions';
-        ProjectActions.getEntity(id, kind);
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //editVersionSuccess(id) {
+    //    this.loading = false;
+    //    let kind = 'file_versions';
+    //    ProjectActions.getEntity(id, kind);
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
     openModal() {
         this.modal = true;
@@ -1026,106 +1026,106 @@ export class ProjectStore {
         })
     }
 
-    loadAgents () {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //loadAgents () {
+    //    this.loading = true;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
+    //
+    //loadAgentsSuccess (results) {
+    //    this.agents = results;
+    //    this.loading = false;
+    //    this.trigger({
+    //        agents: this.agents,
+    //        loading: this.loading
+    //    })
+    //}
 
-    loadAgentsSuccess (results) {
-        this.agents = results;
-        this.loading = false;
-        this.trigger({
-            agents: this.agents,
-            loading: this.loading
-        })
-    }
+    //addAgent () {
+    //    this.loading = true;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
-    addAgent () {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //addAgentSuccess () {
+    //    this.loading = false;
+    //    ProjectActions.loadAgents();
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
-    addAgentSuccess () {
-        this.loading = false;
-        ProjectActions.loadAgents();
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //editAgent(id) {
+    //    this.loading = true;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
-    editAgent(id) {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //editAgentSuccess(id) {
+    //    let kind = 'software_agents';
+    //    this.loading = false;
+    //    ProjectActions.getEntity(id, kind);
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
-    editAgentSuccess(id) {
-        let kind = 'software_agents';
-        this.loading = false;
-        ProjectActions.getEntity(id, kind);
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //deleteAgent() {
+    //    this.loading = true;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
-    deleteAgent() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //deleteAgentSuccess() {
+    //    this.loading = false;
+    //    ProjectActions.loadAgents();
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
-    deleteAgentSuccess() {
-        this.loading = false;
-        ProjectActions.loadAgents();
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //createAgentKey() {
+    //    this.loading = true;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
-    createAgentKey() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //createAgentKeySuccess(json) {
+    //    this.agentKey = json;
+    //    this.loading = false;
+    //    this.trigger({
+    //        agentKey: this.agentKey,
+    //        loading: this.loading
+    //    })
+    //}
 
-    createAgentKeySuccess(json) {
-        this.agentKey = json;
-        this.loading = false;
-        this.trigger({
-            agentKey: this.agentKey,
-            loading: this.loading
-        })
-    }
+    //getAgentKey() {
+    //    this.loading = true;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
-    getAgentKey() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //getAgentKeySuccess(json) {
+    //    this.agentKey = json;
+    //    this.loading = false;
+    //    this.trigger({
+    //        agentKey: this.agentKey,
+    //        loading: this.loading
+    //    })
+    //}
 
-    getAgentKeySuccess(json) {
-        this.agentKey = json;
-        this.loading = false;
-        this.trigger({
-            agentKey: this.agentKey,
-            loading: this.loading
-        })
-    }
-
-    getAgentApiToken() {
-        this.loading = true;
-        this.trigger({
-            loading: this.loading
-        })
-    }
+    //getAgentApiToken() {
+    //    this.loading = true;
+    //    this.trigger({
+    //        loading: this.loading
+    //    })
+    //}
 
     getAgentApiTokenSuccess(json) {
         this.agentApiToken = json;
@@ -1138,12 +1138,12 @@ export class ProjectStore {
 
     }
 
-    clearApiToken() {
-        this.agentApiToken = {};
-        this.trigger({
-            agentApiToken: this.agentApiToken
-        })
-    }
+    //clearApiToken() {
+    //    this.agentApiToken = {};
+    //    this.trigger({
+    //        agentApiToken: this.agentApiToken
+    //    })
+    //}
 
     //selectMoveLocation (id, kind){
     //    this.destination = id;
@@ -1225,26 +1225,26 @@ export class ProjectStore {
         });
     }
 
-    getUserKeySuccess (json) {
-        this.userKey = json;
-        this.trigger({
-            userKey: this.userKey
-        });
-    }
+    //getUserKeySuccess (json) {
+    //    this.userKey = json;
+    //    this.trigger({
+    //        userKey: this.userKey
+    //    });
+    //}
 
-    createUserKeySuccess (json) {
-        this.userKey = json;
-        this.trigger({
-            userKey: this.userKey
-        });
-    }
-
-    deleteUserKeySuccess () {
-        this.userKey = {};
-        this.trigger({
-            userKey: this.userKey
-        });
-    }
+    //createUserKeySuccess (json) {
+    //    this.userKey = json;
+    //    this.trigger({
+    //        userKey: this.userKey
+    //    });
+    //}
+    //
+    //deleteUserKeySuccess () {
+    //    this.userKey = {};
+    //    this.trigger({
+    //        userKey: this.userKey
+    //    });
+    //}
 
     @action getProjectsSuccess(results, headers, page) {
         if(page <= 1) {

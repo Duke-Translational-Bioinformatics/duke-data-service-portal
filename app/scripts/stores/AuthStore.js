@@ -10,11 +10,13 @@ export class AuthStore {
     @observable appConfig
     @observable authServiceLoading
     @observable currentUser
+    @observable userKey
 
     constructor() {
         this.appConfig = appConfig;
         this.authServiceLoading = false;
         this.currentUser = {};
+        this.userKey = {};
         this.appConfig.apiToken = cookie.load('apiToken');
         this.appConfig.isLoggedIn = cookie.load('isLoggedIn');
     }
@@ -63,6 +65,46 @@ export class AuthStore {
             .then((response) => { return response.json() })
             .then(json => this.currentUser = json)
             .catch(ex => mainStore.handleErrors(ex));
+    }
+
+    @action getUserKey() {
+        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'api_key',
+            getFetchParams('get', authStore.appConfig.apiToken))
+            .then((response) => {
+                return response.json()
+            }).then((json) => {
+                this.userKey = json;
+            })
+            .catch((ex) => {
+                mainStore.handleErrors(ex)
+            });
+    }
+
+    @action createUserKey(id) {
+        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'api_key',
+            getFetchParams('put', authStore.appConfig.apiToken)
+        ).then(checkStatus).then((response) => {
+                return response.json()
+            }).then((json) => {
+                mainStore.addToast('User Key created successfully');
+                this.userKey = json;
+            }).catch((ex) => {
+                mainStore.addToast('Failed to create new User key');
+                mainStore.handleErrors(ex)
+            })
+    }
+
+    @action deleteUserKey() {
+        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'api_key',
+            getFetchParams('delete', authStore.appConfig.apiToken))
+            .then(checkStatus).then((response) => {
+            }).then((json) => {
+                mainStore.addToast('User key deleted');
+                this.userKey = {};
+            }).catch((ex) => {
+                mainStore.addToast('Failed to delete user key');
+                mainStore.handleErrors(ex)
+            });
     }
 
     isLoggedInHandler() {

@@ -26,14 +26,6 @@ class Project extends React.Component {
         mainStore.getUser(id);
     }
 
-    componentDidUpdate(prevProps) {
-        let id = this.props.params.id;
-        //mainStore.getPermissions(id, authStore.currentUser.id);
-        //if(prevProps.mainStore.objectTags !== this.props.mainStore.objectTags) {
-        //    mainStore.getTags(id, Kind.DDS_FILE);
-        //}
-    }
-
     render() {
         return (
             <div>

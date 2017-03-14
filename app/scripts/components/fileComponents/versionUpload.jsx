@@ -13,9 +13,9 @@ class VersionUpload extends React.Component {
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let open = toggleModal && toggleModal.id === 'newVersionModal' ? toggleModal.open : false;
         let fileId = selectedEntity !== null ? selectedEntity.id : entityObj !== null ? entityObj.id : null;
-        let parentId = selectedEntity !== null ?  selectedEntity.parent.id : entityObj !== null ? entityObj.parent.id : null;
-        let projectId = entityObj ? entityObj.ancestors[0].id : selectedEntity !== null ? selectedEntity.ancestors[0].id : null;
-        let parentKind = entityObj ? entityObj.parent.kind : selectedEntity !== null ? selectedEntity.parent.kind : null;
+        let parentId = selectedEntity !== null ?  selectedEntity.parent.id : entityObj !== null && entityObj.parent ? entityObj.parent.id : null;
+        let projectId = entityObj && entityObj.ancestors ? entityObj.ancestors[0].id : selectedEntity !== null ? selectedEntity.ancestors[0].id : null;
+        let parentKind = entityObj && entityObj.parent ? entityObj.parent.kind : selectedEntity !== null ? selectedEntity.parent.kind : null;
 
         let standardActions = [
             <FlatButton

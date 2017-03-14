@@ -1,40 +1,25 @@
 import React from 'react'
-import ProjectActions from '../actions/projectActions';
-import ProjectStore from '../stores/projectStore';
+import { observer } from 'mobx-react';
+import agentStore from '../stores/agentStore';
+import authStore from '../stores/authStore';
 import AgentList from '../components/globalComponents/agentList.jsx';
 
+@observer
 class Agents extends React.Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            agents: ProjectStore.agents,
-            currentUser: ProjectStore.currentUser,
-            loading: false,
-            screenSize: ProjectStore.screenSize,
-            toggleModal: ProjectStore.toggleModal
-        };
-    }
-
     componentDidMount() {
-        this.unsubscribe = ProjectStore.listen(state => this.setState(state));
         this._loadAgents();
     }
 
-    componentWillUnmount() {
-        this.unsubscribe();
-    }
-
     _loadAgents() {
-        ProjectActions.getUser();
-        ProjectActions.getUserKey();
-        ProjectActions.loadAgents();
+        authStore.getUserKey();
+        agentStore.loadAgents();
     }
 
     render() {
         return (
             <div>
-                <AgentList {...this.props} {...this.state} />
+                <AgentList {...this.props} />
             </div>
         );
     }

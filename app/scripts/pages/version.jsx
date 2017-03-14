@@ -1,13 +1,15 @@
 import React from 'react'
 import { observer } from 'mobx-react';
 import mainStore from '../stores/mainStore';
+import { Path } from '../../util/urlEnum';
+import provenanceStore from '../stores/provenanceStore';
 import Provenance from '../components/globalComponents/provenance.jsx';
 import VersionDetails from '../components/fileComponents/versionDetails.jsx';
 
 @observer
 class Version extends React.Component {
 
-    componentDidMount() {
+    componentWillMount() {
         this._loadVersion();
     }
 
@@ -17,15 +19,10 @@ class Version extends React.Component {
         }
     }
 
-    componentWillUnmount() {
-        this.unsubscribe();
-    }
-
     _loadVersion() {
         let id = this.props.params.id;
-        let kind = 'file_versions';
-        mainStore.getEntity(id, kind);
-        mainStore.getWasGeneratedByNode(id);
+        mainStore.getEntity(id, Path.FILE_VERSION);
+        provenanceStore.getWasGeneratedByNode(id);
     }
 
     render() {

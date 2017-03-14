@@ -1,7 +1,8 @@
 import React from 'react';
-import MainActions from '../../actions/mainActions';
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import agentStore from '../../stores/agentStore';
+import authStore from '../../stores/authStore';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -9,76 +10,110 @@ import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 
+@observer
 class AgentOptionsMenu extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            apiTokenOpen: false,
-            deleteOpen: false,
-            deleteKeyWarn: false,
-            disabled: false,
-            editOpen: false,
             floatingErrorText: '',
-            floatingErrorText2: 'Enter the agent name exactly to delete',
-            apiKeyOpen: false,
-            newApiKeyOpen: false,
-            userKeyOpen: false,
-            newUserKeyOpen: false
+            floatingErrorText2: 'Enter the agent name exactly to delete'
         }
     }
 
     render() {
+        const { agentApiToken, agentKey, agents } = agentStore;
+        const { currentUser, userKey } = authStore;
+        const { entityObj, screenSize, toggleModal, users } = mainStore;
+
+        let apiToken = agentApiToken ? agentApiToken.api_token : null;
+        let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
+        let msg = Object.keys(agentApiToken).length === 0 ?
+            <span style={styles.apiMsg}>You must have a valid user key, please create one by selecting 'USER SECRET KEY' in the drop down menu.</span> :
+            <span style={styles.apiMsg2}>This API token will expire in 2 hours.</span>;
+        let agKey = agentKey ? agentKey.key : null;
+        let agentName = entityObj ? entityObj.name : null;
+        let desc = entityObj ? entityObj.description : null;
+        let repoUrl = entityObj ? entityObj.repo_url : null;
+        let usrKey = userKey && userKey.key ? userKey.key : null;
+        if(userKey && !userKey.key) {
+            usrKey = 'No user key found. You must create a new one.';
+        }
+
         let deleteActions = [
             <FlatButton
                 label="CANCEL"
                 secondary={true}
-                onTouchTap={() => this.handleClose()} />,
+                onTouchTap={() => this.toggleModal('deleteOpen')} />,
             <FlatButton
                 label="DELETE"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={this.handleDeleteButton.bind(this)} />
+                onTouchTap={() => this.handleDeleteButton(agentName)} />
         ];
 
         let deleteKeyActions = [
             <FlatButton
                 label="CANCEL"
                 secondary={true}
-                onTouchTap={() => this.handleClose()} />,
+                onTouchTap={() => this.toggleModal('deleteKeyWarn')} />,
             <FlatButton
                 label="DELETE"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={this.handleDeleteKeyButton.bind(this)} />
+                onTouchTap={() => this.handleDeleteKeyButton()} />
         ];
 
         let editActions = [
             <FlatButton
                 label="CANCEL"
                 secondary={true}
-                onTouchTap={() => this.handleClose()} />,
+                onTouchTap={() => this.toggleModal('editOpen')} />,
             <FlatButton
                 label="UPDATE"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={this.handleUpdateButton.bind(this)} />
+                onTouchTap={() => this.handleUpdateButton()} />
         ];
 
         let keyActions = [
             <FlatButton
                 label="CANCEL"
                 secondary={true}
-                onTouchTap={() => this.handleClose()} />,
+                onTouchTap={() => this.toggleModal('apiKey')} />,
             <FlatButton
                 label="COPY KEY TO CLIPBOARD"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={this.handleCopyButton.bind(this)} />,
+                onTouchTap={() => this.handleCopyButton('apiKey')} />,
             <FlatButton
                 label="CREATE NEW KEY"
                 secondary={true}
-                onTouchTap={this.handleApiButton.bind(this)} />
+                onTouchTap={() => this.handleApiButton()} />
+        ];
+
+        let newUserKeyActions = [
+            <FlatButton
+                label="OKAY"
+                secondary={true}
+                keyboardFocused={true}
+                onTouchTap={() => this.toggleModal('newUserKey')} />,
+            <FlatButton
+                label="COPY KEY TO CLIPBOARD"
+                secondary={true}
+                onTouchTap={() => this.handleCopyButton('newUserKey')} />
+        ];
+
+        let newApiTokenActions = [
+            <FlatButton
+                label="OKAY"
+                secondary={true}
+                keyboardFocused={true}
+                onTouchTap={() => this.toggleModal('apiToken')} />,
+            <FlatButton
+                label="COPY KEY TO CLIPBOARD"
+                secondary={true}
+                onTouchTap={() => this.handleCopyButton('apiToken')} />
         ];
 
         let newKeyActions = [
@@ -86,64 +121,49 @@ class AgentOptionsMenu extends React.Component {
                 label="OKAY"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={() => this.handleClose()} />,
+                onTouchTap={() => this.toggleModal('newApiKeyOpen')} />,
             <FlatButton
                 label="COPY KEY TO CLIPBOARD"
                 secondary={true}
-                onTouchTap={this.handleCopyButton.bind(this)} />
+                onTouchTap={() => this.handleCopyButton('newApiKeyOpen')} />
         ];
 
         let userKeyActions = [
             <FlatButton
                 label="CANCEL"
                 secondary={true}
-                onTouchTap={() => this.handleClose()} />,
+                onTouchTap={() => this.toggleModal('userKey')} />,
             <FlatButton
                 label="COPY KEY TO CLIPBOARD"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={this.handleCopyButton.bind(this)} />,
+                onTouchTap={() => this.handleCopyButton('userKey')} />,
             <FlatButton
                 label="CREATE NEW KEY"
                 secondary={true}
-                onTouchTap={this.handleUserKeyButton.bind(this)} />,
+                onTouchTap={() => this.handleUserKeyButton()} />,
             <FlatButton
                 label="DELETE USER KEY"
                 hoverColor={'#FFCDD2'}
                 labelStyle={{color: '#F44336'}}
                 secondary={true}
-                onTouchTap={this.handleDeleteKeyWarn.bind(this)} />
+                onTouchTap={() => this.handleDeleteKeyWarn()} />
         ];
 
-        if(this.props.userKey && this.props.userKey.error){
+        if(userKey && userKey.error){
             userKeyActions = [
                 <FlatButton
                     label="CANCEL"
                     secondary={true}
-                    onTouchTap={() => this.handleClose()} />,
+                    onTouchTap={() => this.toggleModal('userKey')} />,
                 <FlatButton
                     label="CREATE NEW KEY"
                     secondary={true}
                     keyboardFocused={true}
-                    onTouchTap={this.handleUserKeyButton.bind(this)} />
+                    onTouchTap={() => this.handleUserKeyButton()} />
             ];
         }
 
-        let apiToken = this.props.agentApiToken ? this.props.agentApiToken.api_token : null;
-        let dialogWidth = this.props.screenSize.width < 580 ? {width: '100%'} : {};
-        let msg = Object.keys(ProjectStore.agentApiToken).length === 0 ?
-            <span style={styles.apiMsg}>You must have a valid user key, please create one by selecting 'USER SECRET KEY' in the drop down menu.</span> :
-            <span style={styles.apiMsg2}>This API token will expire in 2 hours.</span>;
-        let open = this.props.modal ? this.props.modal : false;
-        let names = this.props.users && this.props.users.length ? this.props.users : [];
-        let agentKey = this.props.agentKey ? this.props.agentKey.key : null;
-        let agentName = this.props.entityObj ? this.props.entityObj.name : null;
-        let desc = this.props.entityObj ? this.props.entityObj.description : null;
-        let repoUrl = this.props.entityObj ? this.props.entityObj.repo_url : null;
-        let userKey = this.props.userKey && this.props.userKey.key ? this.props.userKey.key : null;
-        if(this.props.userKey && !this.props.userKey.key) {
-            userKey = 'No user key found. You must create a new one.';
-        }
         return (
             <div>
                 <Dialog
@@ -152,11 +172,12 @@ class AgentOptionsMenu extends React.Component {
                     title="Are you sure you want to delete this software agent?"
                     autoDetectWindowHeight={true}
                     actions={deleteActions}
-                    onRequestClose={() => this.handleClose()}
-                    open={this.state.deleteOpen}>
+                    onRequestClose={() => this.toggleModal('deleteOpen')}
+                    open={toggleModal && toggleModal.id === 'deleteOpen' ? toggleModal.open : false}>
                     <i className="material-icons" style={styles.warning}>warning</i>
                     <p style={styles.msg}>Deleting this software agent will affect any programs or processes using this agent. As a failsafe, you must enter the agent name exactly in the form below before you can delete this agent.</p>
                     <TextField
+                        autoFocus={true}
                         style={styles.textStyles}
                         errorText={this.state.floatingErrorText2}
                         floatingLabelText="Enter the agent name exactly"
@@ -171,18 +192,18 @@ class AgentOptionsMenu extends React.Component {
                     title="Update Software Agent Details"
                     autoDetectWindowHeight={true}
                     actions={editActions}
-                    onRequestClose={() => this.handleClose()}
-                    open={this.state.editOpen}>
+                    onRequestClose={() => this.toggleModal('editOpen')}
+                    open={toggleModal && toggleModal.id === 'editOpen' ? toggleModal.open : false}>
                     <form action="#" id="newAgentForm">
                         <TextField
                             style={styles.textStyles}
                             autoFocus={true}
-                            onFocus={() => this.selectText()}
                             hintText="Software Agent Name"
                             defaultValue={agentName}
                             errorText={this.state.floatingErrorText}
                             floatingLabelText="Software Agent Name"
                             ref={(input) => this.agentNameText = input}
+                            onFocus={() => this.selectText()}
                             type="text"
                             multiLine={true}
                             onChange={(e) => this.validateText(e)}/> <br/>
@@ -212,16 +233,17 @@ class AgentOptionsMenu extends React.Component {
                     title="Agent Secret Key"
                     autoDetectWindowHeight={true}
                     actions={keyActions}
-                    onRequestClose={() => this.handleClose()}
-                    open={this.state.apiKeyOpen}>
+                    onRequestClose={() => this.toggleModal('apiKey')}
+                    open={toggleModal && toggleModal.id === 'apiKey' ? toggleModal.open : false}>
                     <i className="material-icons" style={styles.warning}>vpn_key</i>
                     <h6 style={styles.msg}>This is your current agent secret key. You can use the current key or create a new key. Changing this key will affect any programs or processes using this key.</h6>
                     <form action="#" id="apiKeyForm">
                         <TextField
                             textareaStyle={styles.textArea}
                             style={styles.keyModal}
-                            defaultValue={agentKey}
-                            floatingLabelText="Current Api Key"
+                            defaultValue={agKey}
+                            floatingLabelText="Current Agent Secret Key"
+                            id="apiKey"
                             ref={(input) => this.apiKeyText = input}
                             type="text"
                             multiLine={true}
@@ -234,15 +256,16 @@ class AgentOptionsMenu extends React.Component {
                     title="Your New Agent Secret Key"
                     autoDetectWindowHeight={true}
                     actions={newKeyActions}
-                    onRequestClose={() => this.handleClose()}
-                    open={this.state.newApiKeyOpen}>
+                    onRequestClose={() => this.toggleModal()}
+                    open={toggleModal && toggleModal.id === 'newApiKeyOpen' ? toggleModal.open : false}>
                     <h6 style={styles.dialogHeading}>Here's your new agent secret key. Your old key is no longer valid.</h6>
                     <form action="#" id="apiKeyForm">
                         <TextField
                             textareaStyle={styles.textArea}
                             style={styles.keyModal}
-                            defaultValue={agentKey}
-                            floatingLabelText="Current Agent Secret Key"
+                            defaultValue={agKey}
+                            floatingLabelText="New Agent Secret Key"
+                            id="newApiKeyOpen"
                             ref={(input) => this.secretKeyText = input}
                             type="text"
                             multiLine={true}
@@ -255,17 +278,18 @@ class AgentOptionsMenu extends React.Component {
                     title="User Secret Key"
                     autoDetectWindowHeight={true}
                     actions={userKeyActions}
-                    onRequestClose={() => this.handleClose()}
-                    open={this.state.userKeyOpen}>
+                    onRequestClose={() => this.toggleModal('userKey')}
+                    open={toggleModal && toggleModal.id === 'userKey' ? toggleModal.open : false}>
                     <i className="material-icons" style={styles.warning}>vpn_key</i>
                     <h6 style={styles.msg}>This is your secret key. You can use the current key, create a new key or delete your key. Changing or deleting your user key will make your current key invalid.</h6>
                     <form action="#" id="userKeyForm">
                         <TextField
                             textareaStyle={styles.textArea}
                             style={styles.keyModal}
-                            disabled={this.props.userKey && !this.props.userKey.key ? true : false}
-                            defaultValue={userKey}
+                            disabled={userKey && !userKey.key ? true : false}
+                            defaultValue={userKey.key}
                             floatingLabelText="Current User Secret Key"
+                            id="userKey"
                             ref={(input) => this.currentUserKeyText = input}
                             type="text"
                             multiLine={true}
@@ -277,16 +301,17 @@ class AgentOptionsMenu extends React.Component {
                     contentStyle={dialogWidth}
                     title="Your New User Key"
                     autoDetectWindowHeight={true}
-                    actions={newKeyActions}
-                    onRequestClose={() => this.handleClose()}
-                    open={this.state.newUserKeyOpen}>
+                    actions={newUserKeyActions}
+                    onRequestClose={() => this.toggleModal('newUserKey')}
+                    open={toggleModal && toggleModal.id === 'newUserKey' ? toggleModal.open : false}>
                     <h6 style={styles.dialogHeading}>Here's your new user key. Your old key is no longer valid.</h6>
                     <form action="#" id="userKeyForm">
                         <TextField
                             textareaStyle={styles.textArea}
                             style={styles.keyModal}
-                            defaultValue={userKey}
+                            defaultValue={userKey.key}
                             floatingLabelText="Current User Key"
+                            id="newUserKey"
                             ref={(input) => this.newUserKeyText = input}
                             type="text"
                             multiLine={true}
@@ -298,9 +323,9 @@ class AgentOptionsMenu extends React.Component {
                     contentStyle={dialogWidth}
                     title="Your API Token"
                     autoDetectWindowHeight={true}
-                    actions={newKeyActions}
-                    onRequestClose={() => this.handleClose()}
-                    open={open}>
+                    actions={newApiTokenActions}
+                    onRequestClose={() => this.toggleModal('apiToken')}
+                    open={toggleModal && toggleModal.id === 'apiToken' ? toggleModal.open : false}>
                     <h6 style={styles.dialogHeading}>{ msg }</h6>
                     <form action="#" id="apiTokenForm">
                         <TextField
@@ -308,7 +333,7 @@ class AgentOptionsMenu extends React.Component {
                             style={styles.keyModal}
                             defaultValue={apiToken}
                             floatingLabelText="API Token"
-                            id="apiTokenText"
+                            id="apiToken"
                             ref={(input) => this.apiTokenText = input}
                             type="text"
                             multiLine={true}
@@ -321,73 +346,65 @@ class AgentOptionsMenu extends React.Component {
                     title="Are you sure you want to delete this user key?"
                     actions={deleteKeyActions}
                     modal={true}
-                    open={this.state.deleteKeyWarn}>
+                    open={toggleModal && toggleModal.id === 'deleteKeyWarn' ? toggleModal.open : false}>
                     <i className="material-icons" style={styles.warning}>warning</i>
                 </Dialog>
                 <IconMenu iconButtonElement={<IconButton iconClassName="material-icons">more_vert</IconButton>}
                           anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                           targetOrigin={{horizontal: 'right', vertical: 'top'}}>
-                    <MenuItem primaryText="Delete Agent" leftIcon={<i className="material-icons">delete</i>} onTouchTap={this.handleTouchTapDelete.bind(this)}/>
-                    <MenuItem primaryText="Edit Agent Details" leftIcon={<i className="material-icons">mode_edit</i>} onTouchTap={this.handleTouchTapEdit.bind(this)}/>
-                    <MenuItem primaryText="Agent Secret Key" leftIcon={<i className="material-icons">vpn_key</i>} onTouchTap={this.openApiKeyModal.bind(this)}/>
-                    <MenuItem primaryText="User Secret Key" leftIcon={<i className="material-icons">vpn_key</i>} onTouchTap={this.handleTouchTapUserKey.bind(this)}/>
-                    <MenuItem primaryText="API Token" leftIcon={<i className="material-icons">stars</i>} onTouchTap={this.handleTouchTapApiToken.bind(this)}/>
+                    <MenuItem primaryText="Delete Agent" leftIcon={<i className="material-icons">delete</i>} onTouchTap={() => this.toggleModal('deleteOpen')}/>
+                    <MenuItem primaryText="Edit Agent Details" leftIcon={<i className="material-icons">mode_edit</i>} onTouchTap={() => this.toggleModal('editOpen')}/>
+                    <MenuItem primaryText="Agent Secret Key" leftIcon={<i className="material-icons">vpn_key</i>} onTouchTap={() => this.openApiKeyModal()}/>
+                    <MenuItem primaryText="User Secret Key" leftIcon={<i className="material-icons">vpn_key</i>} onTouchTap={() => this.handleTouchTapUserKey()}/>
+                    <MenuItem primaryText="API Token" leftIcon={<i className="material-icons">stars</i>} onTouchTap={() => this.handleTouchTapApiToken(agKey, usrKey)}/>
                 </IconMenu>
             </div>
         );
     }
 
-    handleTouchTapDelete() {
-        this.setState({deleteOpen: true});
+    toggleModal(id) {
+        mainStore.toggleModals(id);
     }
 
     handleDeleteKeyWarn() {
-        this.setState({
-            deleteKeyWarn: true,
-            userKeyOpen: false
-        });
-    }
-
-    handleTouchTapEdit() {
-        this.setState({editOpen: true});
+        this.toggleModal('userKey');
+        this.toggleModal('deleteKeyWarn');
     }
 
     openApiKeyModal() {
-        this.setState({apiKeyOpen: true});
+        mainStore.toggleModals('apiKey');
         setTimeout(() => this.apiKeyText.select(), 300);
     }
 
-    handleTouchTapApiToken() {
-        let agentKey = this.props.agentKey ? this.props.agentKey.key : false;
-        let userKey = this.props.userKey && this.props.userKey.key ? this.props.userKey.key : false;
-        if (!userKey || !agentKey){
-            ProjectActions.openModal();
+    handleTouchTapApiToken(agentKey, userKey) {
+        if (!agentStore.agentApiToken.api_token){
+            agentStore.getAgentApiToken(agentKey, userKey);
+            setTimeout(() => mainStore.toggleModals('apiToken'), 800);
         } else {
-            setTimeout(() => ProjectActions.getAgentApiToken(agentKey, userKey), 800);
+            mainStore.toggleModals('apiToken');
         }
     }
 
     handleTouchTapUserKey() {
-        this.setState({userKeyOpen: true});
+        this.toggleModal('userKey');
         setTimeout(() => this.currentUserKeyText.select(), 300);
     }
 
-    handleDeleteButton() {
+    handleDeleteButton(agentName) {
         let id = this.props.params.id;
-        let agentName = this.props.entityObj ? this.props.entityObj.name : null;
         if(this.agentName.getValue() != agentName){
             this.setState({floatingErrorText2: 'Enter the software agent name exactly to delete'});
             return null
         } else {
-            ProjectActions.deleteAgent(id);
-            this.setState({deleteOpen: false});
+            agentStore.deleteAgent(id);
+            this.toggleModal('deleteOpen');
             setTimeout(()=>this.props.router.push('/agents'),300)
         }
     }
 
     handleDeleteKeyButton() {
-        ProjectActions.deleteUserKey();
-        this.setState({deleteKeyWarn: false});
+        authStore.deleteUserKey();
+        this.toggleModal('deleteKeyWarn');
     }
 
     handleUpdateButton() {
@@ -395,72 +412,50 @@ class AgentOptionsMenu extends React.Component {
         let name = this.agentNameText.getValue();
         let desc = this.agentDescriptionText.getValue();
         let repo = this.agentRepoText.getValue();
-        if (!/^https?:\/\//i.test(repo)) { //TODO: Make this regex more robust//////////////////
-            repo = 'http://' + repo;
+        if (!/^https?:\/\//i.test(repo)) {
+            repo = repo !== '' ? 'http://' + repo : null;
         }
         if (!this.agentNameText.getValue()) {
             return null
         } else {
-            ProjectActions.editAgent(id, name, desc, repo);
-            this.setState({editOpen: false});
+            agentStore.editAgent(id, name, desc, repo);
+            this.toggleModal('editOpen');
         }
     }
 
     handleApiButton() {
         let id = this.props.params.id;
-        ProjectActions.createAgentKey(id);
-        this.setState({apiKeyOpen: false});
+        agentStore.createAgentKey(id);
+        this.toggleModal('apiKeyOpen');
         setTimeout(() => {
-            this.setState({newApiKeyOpen: true});
+            this.toggleModal('newApiKeyOpen');
             this.secretKeyText.select() }, 700
         );
     }
 
     handleUserKeyButton() {
-        ProjectActions.createUserKey();
-        this.setState({userKeyOpen: false});
+        authStore.createUserKey();
+        this.toggleModal('userKey');
         setTimeout(() => {
-            this.setState({newUserKeyOpen: true});
+            this.toggleModal('newUserKey');
             this.newUserKeyText.select() }, 800
         );
     }
 
-    handleCopyButton() {
-        let copyTextArea = document.querySelector('#apiTokenText');
+    handleCopyButton(id) {
+        let copyTextArea = document.querySelector('#'+id);
         copyTextArea.select();
         var successful = document.execCommand('copy');
         var msg = successful ? 'successful' : 'unsuccessful';
         if(msg === 'successful') {
-            MainActions.addToast('Key copied to clipboard!');
-            this.setState({
-                apiKeyOpen: false,
-                newApiKeyOpen: false,
-                userKeyOpen: false,
-                newUserKeyOpen: false
-            });
+            mainStore.addToast('Key copied to clipboard!');
+            this.toggleModal(id)
         }
         if(msg === 'unsuccessful'){
-            MainActions.addToast('Failed copying key to clipboard!');
+            mainStore.addToast('Failed copying key to clipboard!');
             alert("Automatic copying to clipboard is not supported by Safari browsers: Manually copy the key by" +
                 " using CMD+C,");
         }
-    }
-
-    handleClose() {
-        ProjectActions.closeModal();
-        ProjectActions.clearApiToken();
-        this.setState({
-            deleteOpen: false,
-            editOpen: false,
-            apiKeyOpen: false,
-            apiTokenOpen: false,
-            newApiKeyOpen: false,
-            userKeyOpen: false,
-            newUserKeyOpen: false,
-            deleteKeyWarn: false,
-            floatingErrorText: '',
-            floatingErrorText2: 'Enter the agent name exactly to delete'
-        });
     }
 
     selectText() {
@@ -474,7 +469,7 @@ class AgentOptionsMenu extends React.Component {
     }
 
     validateText2(e) {
-        let agentName = this.props.entityObj ? this.props.entityObj.name  : null;
+        let agentName = mainStore.entityObj ? mainStore.entityObj.name  : null;
         this.setState({
             floatingErrorText2: e.target.value === agentName ? '' : 'Enter the agent name exactly to delete'
         });
@@ -489,18 +484,10 @@ var styles = {
     apiMsg2: {
         textAlign: 'center'
     },
-    addProject: {
-        float: 'right',
-        position: 'relative',
-        margin: '12px 8px 0px 0px'
-    },
     keyModal: {
         width: 300,
         textAlign: 'left',
         fontFamily: 'monospace'
-    },
-    selectStyle: {
-        textAlign: 'left'
     },
     dialogHeading: {
         textAlign: 'center'

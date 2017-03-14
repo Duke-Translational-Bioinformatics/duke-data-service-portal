@@ -429,17 +429,17 @@ const ProjectActions = {
     //        })
     //},
 
-    getTags(id, kind) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TAGS + kind + '/' + id,
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.getTagsSuccess(json.results)
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            })
-    },
+    //getTags(id, kind) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TAGS + kind + '/' + id,
+    //        getFetchParams('get', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.getTagsSuccess(json.results)
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
     //getFileVersions(id, prov) { // prov = boolean used for file selection in prov editor
     //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE + id + '/versions',
@@ -473,201 +473,201 @@ const ProjectActions = {
     //        });
     //},
 
-    deleteVersion(id) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE_VERSION + id,
-            getFetchParams('delete', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-            }).then(() => {
-                mainStore.addToast('Version Deleted!');
-                projectStore.deleteVersionSuccess()
-            }).catch((ex) => {
-                mainStore.addToast('Failed to Delete Version!');
-                projectStore.handleErrors(ex)
-            });
-    },
+    //deleteVersion(id) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE_VERSION + id,
+    //        getFetchParams('delete', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //        }).then(() => {
+    //            mainStore.addToast('Version Deleted!');
+    //            projectStore.deleteVersionSuccess()
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to Delete Version!');
+    //            projectStore.handleErrors(ex)
+    //        });
+    //},
 
-    editVersion(id, label) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE_VERSION + id,
-            getFetchParams('put', authStore.appConfig.apiToken, {
-                "label": label
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                mainStore.addToast('Label Updated!');
-                projectStore.editVersionSuccess(id)
-            }).catch((ex) => {
-                mainStore.addToast('Failed to Update Label');
-                projectStore.handleErrors(ex)
-            });
-    },
+    //editVersion(id, label) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE_VERSION + id,
+    //        getFetchParams('put', authStore.appConfig.apiToken, {
+    //            "label": label
+    //        })
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            mainStore.addToast('Label Updated!');
+    //            projectStore.editVersionSuccess(id)
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to Update Label');
+    //            projectStore.handleErrors(ex)
+    //        });
+    //},
 
-    addAgent(name, desc, repo) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT,
-            getFetchParams('post', authStore.appConfig.apiToken, {
-                "name": name,
-                "description": desc,
-                "repo_url": repo
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                mainStore.addToast('New software agent added');
-                projectStore.addAgentSuccess()
-            }).catch((ex) => {
-                mainStore.addToast('Failed to add new software agent');
-                projectStore.handleErrors(ex)
-            })
-    },
+    //addAgent(name, desc, repo) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT,
+    //        getFetchParams('post', authStore.appConfig.apiToken, {
+    //            "name": name,
+    //            "description": desc,
+    //            "repo_url": repo
+    //        })
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            mainStore.addToast('New software agent added');
+    //            projectStore.addAgentSuccess()
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to add new software agent');
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
-    editAgent(id, name, desc, repo) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + id,
-            getFetchParams('put', authStore.appConfig.apiToken, {
-                "name": name,
-                "description": desc,
-                "repo_url": repo
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                mainStore.addToast('Software Agent Updated');
-                projectStore.editAgentSuccess(id)
-            }).catch((ex) => {
-                mainStore.addToast('Software Agent Update Failed');
-                projectStore.handleErrors(ex)
-            });
-    },
+    //editAgent(id, name, desc, repo) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + id,
+    //        getFetchParams('put', authStore.appConfig.apiToken, {
+    //            "name": name,
+    //            "description": desc,
+    //            "repo_url": repo
+    //        })
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            mainStore.addToast('Software Agent Updated');
+    //            projectStore.editAgentSuccess(id)
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Software Agent Update Failed');
+    //            projectStore.handleErrors(ex)
+    //        });
+    //},
 
-    deleteAgent(id) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + id,
-            getFetchParams('delete', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-            }).then((json) => {
-                mainStore.addToast('Software Agent Deleted');
-                projectStore.deleteAgentSuccess(json)
-            }).catch((ex) => {
-                mainStore.addToast('Failed to delete software agent');
-                projectStore.handleErrors(ex)
-            });
-    },
+    //deleteAgent(id) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + id,
+    //        getFetchParams('delete', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //        }).then((json) => {
+    //            mainStore.addToast('Software Agent Deleted');
+    //            projectStore.deleteAgentSuccess(json)
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to delete software agent');
+    //            projectStore.handleErrors(ex)
+    //        });
+    //},
 
-    loadAgents() {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT,
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.loadAgentsSuccess(json.results)
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            })
-    },
+    //loadAgents() {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT,
+    //        getFetchParams('get', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.loadAgentsSuccess(json.results)
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
-    createAgentKey(id) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + id + '/api_key',
-            getFetchParams('put', authStore.appConfig.apiToken)
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                mainStore.addToast('API Key created successfully');
-                projectStore.createAgentKeySuccess(json);
-            }).catch((ex) => {
-                mainStore.addToast('Failed to create new API key');
-                projectStore.handleErrors(ex)
-            })
-    },
+    //createAgentKey(id) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + id + '/api_key',
+    //        getFetchParams('put', authStore.appConfig.apiToken)
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            mainStore.addToast('API Key created successfully');
+    //            projectStore.createAgentKeySuccess(json);
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to create new API key');
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
-    getAgentKey(id) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + id + '/api_key',
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.getAgentKeySuccess(json)
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            });
-    },
+    //getAgentKey(id) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + id + '/api_key',
+    //        getFetchParams('get', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.getAgentKeySuccess(json)
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        });
+    //},
 
-    getAgentApiToken(agentKey, userKey) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + 'api_token',
-            getFetchParams('post', authStore.appConfig.apiToken, {
-                'agent_key': agentKey,
-                'user_key': userKey
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.getAgentApiTokenSuccess(json)
-            }).catch((ex) => {
-                mainStore.addToast('Failed to generate an API token');
-                projectStore.handleErrors(ex)
-            })
-    },
+    //getAgentApiToken(agentKey, userKey) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + 'api_token',
+    //        getFetchParams('post', authStore.appConfig.apiToken, {
+    //            'agent_key': agentKey,
+    //            'user_key': userKey
+    //        })
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.getAgentApiTokenSuccess(json)
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to generate an API token');
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
+    //
+    //getUser(id) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'current_user',
+    //        getFetchParams('get', authStore.appConfig.apiToken))
+    //        .then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.getUserSuccess(json, id)
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        });
+    //},
+    //
+    //getPermissions(id, userId) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions/' + userId,
+    //        getFetchParams('get', authStore.appConfig.apiToken))
+    //        .then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.getPermissionsSuccess(json)
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        });
+    //},
 
-    getUser(id) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'current_user',
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.getUserSuccess(json, id)
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            });
-    },
+    //getUserKey() {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'api_key',
+    //        getFetchParams('get', authStore.appConfig.apiToken))
+    //        .then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.getUserKeySuccess(json)
+    //        })
+    //        .catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        });
+    //},
 
-    getPermissions(id, userId) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id + '/permissions/' + userId,
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.getPermissionsSuccess(json)
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            });
-    },
+    //createUserKey(id) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'api_key',
+    //        getFetchParams('put', authStore.appConfig.apiToken)
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            mainStore.addToast('User Key created successfully');
+    //            projectStore.createUserKeySuccess(json);
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to create new User key');
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
-    getUserKey() {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'api_key',
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.getUserKeySuccess(json)
-            })
-            .catch((ex) => {
-                projectStore.handleErrors(ex)
-            });
-    },
-
-    createUserKey(id) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'api_key',
-            getFetchParams('put', authStore.appConfig.apiToken)
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                mainStore.addToast('User Key created successfully');
-                projectStore.createUserKeySuccess(json);
-            }).catch((ex) => {
-                mainStore.addToast('Failed to create new User key');
-                projectStore.handleErrors(ex)
-            })
-    },
-
-    deleteUserKey() {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'api_key',
-            getFetchParams('delete', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-            }).then((json) => {
-                mainStore.addToast('User key deleted');
-                projectStore.deleteUserKeySuccess(json)
-            }).catch((ex) => {
-                mainStore.addToast('Failed to delete user key');
-                projectStore.handleErrors(ex)
-            });
-    },
+    //deleteUserKey() {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'api_key',
+    //        getFetchParams('delete', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //        }).then((json) => {
+    //            mainStore.addToast('User key deleted');
+    //            projectStore.deleteUserKeySuccess(json)
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to delete user key');
+    //            projectStore.handleErrors(ex)
+    //        });
+    //},
 
     //getUsageDetails() {
     //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'usage',
@@ -681,23 +681,23 @@ const ProjectActions = {
     //        })
     //},
 
-    getProjects(page) {
-        projectStore.setLoadingState();
-        if (page == null) page = 1;
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + "?page=" + page + "&per_page=25",
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-                const results = response.json();
-                const headers = response.headers;
-                return Promise.all([results, headers]);
-            }).then((json) => {
-                let results = json[0].results;
-                let headers = json[1].map;
-                projectStore.getProjectsSuccess(results, headers, page)
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            })
-    },
+    //getProjects(page) {
+    //    projectStore.setLoadingState();
+    //    if (page == null) page = 1;
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + "?page=" + page + "&per_page=25",
+    //        getFetchParams('get', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //            const results = response.json();
+    //            const headers = response.headers;
+    //            return Promise.all([results, headers]);
+    //        }).then((json) => {
+    //            let results = json[0].results;
+    //            let headers = json[1].map;
+    //            projectStore.getProjectsSuccess(results, headers, page)
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
     //showDetails(id) {
     //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id,
@@ -710,24 +710,24 @@ const ProjectActions = {
     //            projectStore.handleErrors(ex)
     //        })
     //},
-
-    addProject(name, desc) {
-        projectStore.setLoadingState();
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT,
-            getFetchParams('post', authStore.appConfig.apiToken, {
-                "name": name,
-                "description": desc
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                mainStore.addToast('Project Added');
-                projectStore.addProjectSuccess(json)
-            }).catch((ex) => {
-                mainStore.addToast('Failed to add new project');
-                projectStore.handleErrors(ex)
-            })
-    },
+    //
+    //addProject(name, desc) {
+    //    projectStore.setLoadingState();
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT,
+    //        getFetchParams('post', authStore.appConfig.apiToken, {
+    //            "name": name,
+    //            "description": desc
+    //        })
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            mainStore.addToast('Project Added');
+    //            projectStore.addProjectSuccess(json)
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to add new project');
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
     //deleteProject(id) {
     //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.PROJECT + id,
@@ -759,22 +759,22 @@ const ProjectActions = {
     //        });
     //},
 
-    getChildren(id, path, page) {
-        if (page == null) page = 1;
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + Path.CHILDREN + "?page=" + page + "&per_page=25",
-            getFetchParams('get', authStore.appConfig.apiToken)
-        ).then(checkStatus).then((response) => {
-                const results = response.json();
-                const headers = response.headers;
-                return Promise.all([results, headers]);
-            }).then((json) => {
-                let results = json[0].results;
-                let headers = json[1].map;
-                projectStore.getChildrenSuccess(results, headers, page)
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            })
-    },
+    //getChildren(id, path, page) {
+    //    if (page == null) page = 1;
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + Path.CHILDREN + "?page=" + page + "&per_page=25",
+    //        getFetchParams('get', authStore.appConfig.apiToken)
+    //    ).then(checkStatus).then((response) => {
+    //            const results = response.json();
+    //            const headers = response.headers;
+    //            return Promise.all([results, headers]);
+    //        }).then((json) => {
+    //            let results = json[0].results;
+    //            let headers = json[1].map;
+    //            projectStore.getChildrenSuccess(results, headers, page)
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
     //addFolder(id, parentKind, name) {
     //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FOLDER,

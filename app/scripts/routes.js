@@ -1,6 +1,5 @@
 import React from 'react';
 import { Router, Route, IndexRoute, Redirect, hashHistory } from 'react-router';
-import { Provider } from 'mobx-react';
 import authStore from './stores/authStore';
 import mainStore from './stores/mainStore';
 import projectStore from './stores/projectStore';
@@ -19,10 +18,7 @@ import Results from './pages/results.jsx';
 import Version from './pages/version.jsx';
 import NotFound from './pages/notFound.jsx';
 
-const stores = { authStore, mainStore, projectStore };
-
 const routes = (
-    <Provider {...stores}>
     <Router history={ hashHistory }>
         <Route path="/" component={ App } >
             <IndexRoute component={Home}/>
@@ -43,7 +39,6 @@ const routes = (
             <Route path="/(:access_token)" component={ Login } />
         </Route>
     </Router>
-    </Provider>
 );
 
 export default routes;

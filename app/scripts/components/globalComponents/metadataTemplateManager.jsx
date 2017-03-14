@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
 import MetadataPropertyManager from '../globalComponents/metadataPropertyManager.jsx';
 import MetadataTemplateCreator from '../globalComponents/metadataTemplateCreator.jsx';
 import MetadataTemplateOptions from '../globalComponents/metadataTemplateOptions.jsx';
@@ -11,10 +11,11 @@ import IconButton from 'material-ui/IconButton';
 import Drawer from 'material-ui/Drawer';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
 
+@observer
 class MetadataTemplateManager extends React.Component {
 
     componentDidMount() {
-        if (window.performance && this.props.openMetadataManager) { // If page refreshed, close drawer
+        if (window.performance && mainStore.openMetadataManager) { // If page refreshed, close drawer
             if (performance.navigation.type == 1) {
                 this.toggleMetadataManager();
             }
@@ -22,10 +23,11 @@ class MetadataTemplateManager extends React.Component {
     }
 
     render() {
-        let width = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.width : window.innerWidth;
+        const { drawerLoading, openMetadataManager, screenSize, showPropertyCreator, showTemplateCreator, showTemplateDetails } = mainStore;
+        let width = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.width : window.innerWidth;
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                <Drawer disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openSecondary={true} open={this.props.openMetadataManager}>
+                <Drawer disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openSecondary={true} open={openMetadataManager}>
                     <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800"
                          style={{marginTop: 85}}>
                         <IconButton style={styles.toggleBtn}
@@ -33,10 +35,10 @@ class MetadataTemplateManager extends React.Component {
                             <NavigationClose />
                         </IconButton>
                     </div>
-                    {this.props.drawerLoading ? <CircularProgress size={80} thickness={5} style={styles.drawerLoader}/> : <span>
-                        {this.props.showTemplateCreator ? <MetadataTemplateCreator {...this.props}/> : null}
-                        {this.props.showTemplateDetails ? <MetadataTemplateOptions {...this.props}/> : null}
-                        {this.props.showPropertyCreator ? <MetadataPropertyManager {...this.props}/> : null}
+                    {drawerLoading ? <CircularProgress size={80} thickness={5} style={styles.drawerLoader}/> : <span>
+                        {showTemplateCreator ? <MetadataTemplateCreator {...this.props}/> : null}
+                        {showTemplateDetails ? <MetadataTemplateOptions {...this.props}/> : null}
+                        {showPropertyCreator ? <MetadataPropertyManager {...this.props}/> : null}
                     </span>}
                 </Drawer>
             </div>
@@ -44,7 +46,7 @@ class MetadataTemplateManager extends React.Component {
     }
 
     toggleMetadataManager() {
-        ProjectActions.toggleMetadataManager();
+        mainStore.toggleMetadataManager();
     }
 }
 

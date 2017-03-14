@@ -19,12 +19,9 @@ class FileOptions extends React.Component {
 
     render() {
         const {entityObj, screenSize, selectedEntity, toggleModal} = mainStore;
-        let dltOpen = toggleModal && toggleModal.id === 'dltFile' ? toggleModal.open : false;
-        let editOpen = toggleModal && toggleModal.id === 'editFile' ? toggleModal.open : false;
-        let moveOpen = toggleModal && toggleModal.id === 'moveItem' ? toggleModal.open : false;
         let id = selectedEntity !== null ? selectedEntity.id : entityObj !== null ? entityObj.id : null;
-        let parentId = selectedEntity !== null ? selectedEntity.parent.id : entityObj !== null ? entityObj.parent.id : null;
-        let parentKind = selectedEntity !== null ? selectedEntity.parent.kind : entityObj !== null ? entityObj.parent.kind : null;
+        let parentId = selectedEntity !== null ? selectedEntity.parent.id : entityObj !== null && entityObj.parent ? entityObj.parent.id : null;
+        let parentKind = selectedEntity !== null ? selectedEntity.parent.kind : entityObj !== null && entityObj.parent ? entityObj.parent.kind : null;
         let fileName = selectedEntity !== null ? selectedEntity.name : null;
         if(fileName === null) fileName = entityObj && entityObj !== null ? entityObj.name : null;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
@@ -66,7 +63,7 @@ class FileOptions extends React.Component {
                     autoDetectWindowHeight={true}
                     actions={deleteActions}
                     onRequestClose={() => this.handleClose()}
-                    open={dltOpen}>
+                    open={toggleModal && toggleModal.id === 'dltFile' ? toggleModal.open : false}>
                     <i className="material-icons" style={styles.warning}>warning</i>
                     <p style={{textAlign: 'left'}}>You will lose access to any versions associated with this file. If you want to delete just one version of this file,
                         please navigate to the version you want to delete by clicking on the file versions button.</p>
@@ -78,7 +75,7 @@ class FileOptions extends React.Component {
                     autoDetectWindowHeight={true}
                     actions={editActions}
                     onRequestClose={() => this.handleClose()}
-                    open={editOpen}>
+                    open={toggleModal && toggleModal.id === 'editFile' ? toggleModal.open : false}>
                     <form action="#" id="editFileForm">
                         <TextField
                             style={styles.textStyles}
@@ -101,7 +98,7 @@ class FileOptions extends React.Component {
                     title="Select Destination"
                     autoDetectWindowHeight={true}
                     actions={moveActions}
-                    open={moveOpen}
+                    open={toggleModal && toggleModal.id === 'moveItem' ? toggleModal.open : false}
                     onRequestClose={() => this.handleCloseMoveModal(id)}>
                     <MoveItemModal {...this.props}/>
                 </Dialog>

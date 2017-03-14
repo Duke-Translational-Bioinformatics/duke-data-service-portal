@@ -1,21 +1,24 @@
 import React from 'react';
-import ProjectActions from '../../actions/projectActions';
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import agentStore from '../../stores/agentStore';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 
+@observer
 class AddAgentModal extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            open: false,
             floatingErrorText: ''
         }
     }
 
     render() {
+        const { screenSize, toggleModal } = mainStore;
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -27,8 +30,6 @@ class AddAgentModal extends React.Component {
                 keyboardFocused={true}
                 onTouchTap={() => this.addAgent()} />
         ];
-        let modalWidth = this.props.screenSize.width < 580 ? {width: '100%'} : {};
-        let open = this.props.toggleModal && this.props.toggleModal.id === 'addAgent' ? this.props.toggleModal.open : false;
         return (
             <div>
                 <RaisedButton
@@ -38,11 +39,11 @@ class AddAgentModal extends React.Component {
                     onTouchTap={() => this.toggleModal()} />
                 <Dialog
                     style={styles.dialogStyles}
-                    contentStyle={modalWidth}
+                    contentStyle={screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Add New Software Agent"
                     autoDetectWindowHeight={true}
                     actions={actions}
-                    open={open}
+                    open={toggleModal && toggleModal.id === 'addAgent' ? toggleModal.open : false}
                     onRequestClose={() => this.toggleModal()}>
                     <form action="#" id="newAgentForm">
                         <TextField
@@ -80,20 +81,19 @@ class AddAgentModal extends React.Component {
     addAgent() {
         if (this.state.floatingErrorText) {
             return null
-        }
-        else {
+        } else {
             let name = this.agentNameText.getValue();
             let desc = this.agentDescriptionText.getValue();
             let repo = this.agentRepoText.getValue();
             if (!/^https?:\/\//i.test(repo)) repo = 'https://' + repo;
-            ProjectActions.addAgent(name, desc, repo);
+            agentStore.addAgent(name, desc, repo);
             this.toggleModal();
         }
     }
 
     toggleModal() {
         setTimeout(() => { this.agentNameText.select() }, 300);
-        ProjectActions.toggleModals('addAgent')
+        mainStore.toggleModals('addAgent')
     }
 
     validateText(e) {

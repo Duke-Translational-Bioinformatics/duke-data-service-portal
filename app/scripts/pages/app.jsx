@@ -1,8 +1,7 @@
 import React from 'react';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import authStore from '../stores/authStore';
 import mainStore from '../stores/mainStore';
-import ProjectActions from '../actions/projectActions';
 import Header from '../components/globalComponents/header.jsx';
 import Footer from '../components/globalComponents/footer.jsx';
 import LeftMenu from '../components/globalComponents/leftMenu.jsx';
@@ -55,7 +54,7 @@ class App extends React.Component {
         mainStore.getDeviceType(device);
         if (authStore.appConfig.apiToken) {
             authStore.getCurrentUser();
-            ProjectActions.loadMetadataTemplates(null);
+            mainStore.loadMetadataTemplates(null);
         }
         this.checkError();
     }
@@ -65,7 +64,7 @@ class App extends React.Component {
         new Framework7().closePanel();
     }
 
-    componentWillMount() {
+    componentWillMount() { // Todo: Fix this!!!!!!!!!!!!!!!!!!!!!!!!!
         //if(authStore.appConfig.apiToken && !Object.keys(authStore.currentUser).length) authStore.getCurrentUser();
         //if(!authStore.appConfig.apiToken && !authStore.appConfig.isLoggedIn && this.props.location.pathname !== '/login') {
         //    if (location.hash !== '' && location.hash !== '#/login' && location.hash !== '#/public_privacy') {
