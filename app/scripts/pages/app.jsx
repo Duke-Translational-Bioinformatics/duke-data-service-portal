@@ -52,9 +52,10 @@ class App extends React.Component {
             iphone: app.device.iphone
         };
         mainStore.getDeviceType(device);
-        if (authStore.appConfig.apiToken) {
+        if(authStore.appConfig.apiToken) {
             authStore.getCurrentUser();
             mainStore.loadMetadataTemplates(null);
+            authStore.removeLoginCookie();
         }
         this.checkError();
     }
@@ -64,36 +65,17 @@ class App extends React.Component {
         new Framework7().closePanel();
     }
 
-    componentWillMount() { // Todo: Fix this!!!!!!!!!!!!!!!!!!!!!!!!!
-        //if(authStore.appConfig.apiToken && !Object.keys(authStore.currentUser).length) authStore.getCurrentUser();
-        //if(!authStore.appConfig.apiToken && !authStore.appConfig.isLoggedIn && this.props.location.pathname !== '/login') {
-        //    if (location.hash !== '' && location.hash !== '#/login' && location.hash !== '#/public_privacy') {
-        //        let redUrl = location.href;
-        //        if (typeof(Storage) !== 'undefined') {
-        //            localStorage.setItem('redirectTo', redUrl);
-        //        } else {
-        //            this.props.router.push('/login')
-        //        }
-        //    }
-        //    let routeTo = this.props.location.pathname === '/public_privacy' ? '/public_privacy' : '/login';
-        //    this.props.router.push(routeTo);
-        //}
+    componentWillMount() {
+        if(!authStore.appConfig.apiToken && !authStore.appConfig.isLoggedIn && this.props.location.pathname !== '/login') {
+            if (location.hash !== '' && location.hash !== '#/login' && location.hash !== '#/public_privacy') {
+                if(!authStore.redirectUrl) authStore.setRedirectUrl(location.href);
+                this.props.router.push('/login');
+            }
+        }
     }
 
     componentDidUpdate(prevProps, prevState) {
         if(authStore.appConfig.apiToken && !Object.keys(authStore.currentUser).length) authStore.getCurrentUser();
-        if(!authStore.appConfig.apiToken && !authStore.appConfig.isLoggedIn && this.props.location.pathname !== '/login') {
-            if (location.hash !== '' && location.hash !== '#/login' && location.hash !== '#/public_privacy') {
-                let redUrl = location.href;
-                if (typeof(Storage) !== 'undefined') {
-                    localStorage.setItem('redirectTo', redUrl);
-                } else {
-                    this.props.router.push('/login');
-                }
-            }
-            let routeTo = this.props.location.pathname === '/public_privacy' ? '/public_privacy' : '/login';
-            this.props.router.push(routeTo);
-        }
         this.showToasts();
         this.checkError();
     }
@@ -122,13 +104,6 @@ class App extends React.Component {
         const {errorModals, screenSize, toasts} = mainStore;
         const {appConfig} = authStore;
         let dialogs, tsts = null;
-        if (appConfig.apiToken) {
-            if (localStorage.getItem('redirectTo') !== null) {
-                setTimeout(() => {
-                    localStorage.removeItem('redirectTo');
-                }, 10000);
-            }
-        }
         if (toasts) {
             tsts = toasts.map(obj => {
                 return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} open={true}/>

@@ -14,7 +14,6 @@ class Home extends React.Component {
         if(authStore.appConfig.apiToken) {
             mainStore.getProjects();
             mainStore.getUsageDetails();
-            authStore.removeLoginCookie();
         } else {
             this.props.router.push('/login');
         }

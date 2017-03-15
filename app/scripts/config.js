@@ -6,6 +6,7 @@ let appConfig = {
     securityState: DDS_PORTAL_CONFIG.securityState,
     apiToken: null,
     isLoggedIn: null,
+    redirectUrl: null,
     currentUser: null
 };
 

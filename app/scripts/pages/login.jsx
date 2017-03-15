@@ -14,14 +14,14 @@ class Login extends React.Component {
 
     componentDidMount() {
         if(this.props.location.pathname !== '/404' && authStore.appConfig.apiToken ) this.props.router.push('/');
+        if(authStore.authServiceLoading) authStore.setLoadingStatus();
     }
 
     componentDidUpdate(prevProps) {
-        if(prevProps.location.pathname !== '/login' && !authStore.authServiceLoading) authStore.setLoadingStatus();
+        if(prevProps.location.pathname.substr(0, 13) === '/access_token' && !authStore.authServiceLoading) authStore.setLoadingStatus();
         if(authStore.appConfig.apiToken) {
-            if (localStorage.getItem('redirectTo') !== null) {
-                let redUrl = localStorage.getItem('redirectTo');
-                document.location.replace(redUrl);
+            if (authStore.appConfig.redirectUrl) {
+                document.location.replace(authStore.appConfig.redirectUrl);
             } else {
                 this.props.router.push('/');
             }

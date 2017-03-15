@@ -11,18 +11,26 @@ export class AuthStore {
     @observable authServiceLoading
     @observable currentUser
     @observable userKey
+    @observable redirectUrl
 
     constructor() {
         this.appConfig = appConfig;
         this.authServiceLoading = false;
         this.currentUser = {};
         this.userKey = {};
+        this.appConfig.redirectUrl = cookie.load('redirectUrl');
         this.appConfig.apiToken = cookie.load('apiToken');
         this.appConfig.isLoggedIn = cookie.load('isLoggedIn');
     }
 
     setLoadingStatus() {
         this.authServiceLoading = !this.authServiceLoading
+    }
+
+    setRedirectUrl(url) {
+        this.appConfig.redirectUrl = url;
+        let expiresAt = new Date(Date.now() + (60 * 60 * 1000));
+        cookie.save('redirectUrl', this.appConfig.redirectUrl, {expires: expiresAt});
     }
 
     @action getAuthProviders() {
@@ -119,12 +127,15 @@ export class AuthStore {
         cookie.remove('isLoggedIn');
     }
 
-    handleLogout() {
+    handleLogout(status) {
         this.appConfig.apiToken = null;
         cookie.remove('apiToken');
         this.appConfig.isLoggedIn = null;
         cookie.remove('isLoggedIn');
-        localStorage.removeItem('redirectTo');
+        if(status !== 401) {
+            this.appConfig.redirectUrl = null;
+            cookie.remove('redirectUrl');
+        }
         location.reload();
     }
 }
