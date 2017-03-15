@@ -49,7 +49,7 @@ class ListItems extends React.Component {
                             </span> : null}
                         <a href={UrlGen.routes.folder(children.id)}
                            className="item-content external">
-                            {showChecks ? <Checkbox  iconStyle={styles.checkIcon} style={screenSize.width > 580 ? {width: 48} : {width: 24}} onCheck={e => this.handleChange(children.id, Kind.DDS_FOLDER)}/> : null}
+                            {showChecks ? <Checkbox  iconStyle={styles.checkIcon} style={screenSize.width > 580 ? {width: 48} : {width: 24}} checked={mainStore.foldersChecked.includes(children.id)} onCheck={e => this.handleChange(children.id, Kind.DDS_FOLDER)}/> : null}
                             <div className="item-media">
                                 <FontIcon className="material-icons" style={styles.icon}>folder</FontIcon>
                             </div>
