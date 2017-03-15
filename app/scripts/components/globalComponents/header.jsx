@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import authStore from '../../stores/authStore';
-import projectStore from '../../stores/projectStore';
-import MainActions from '../../actions/mainActions';
-import ProjectActions from '../../actions/projectActions';
+import mainStore from '../../stores/mainStore';
 import CurrentUser from '../globalComponents/currentUser.jsx';
 import Search from '../globalComponents/search.jsx';
 import FontIcon from 'material-ui/FontIcon';
@@ -12,8 +11,8 @@ import FontIcon from 'material-ui/FontIcon';
 class Header extends React.Component {
 
     render() {
-        const {appConfig} = authStore;
-        const {showSearch} = projectStore;
+        const { appConfig } = authStore;
+        const { showSearch } = mainStore;
         let header = <div className="navbar" style={styles.navBar}>
             <div className="navbar-inner" style={{display: showSearch ? 'none' : '', height: 106}}>
                 <div className="left" style={styles.navBar.leftDiv}>
@@ -22,12 +21,12 @@ class Header extends React.Component {
                 </div>
                 <div className="center" style={styles.navBar.centerDiv}></div>
                 <div className="right">
-                    {/*<FontIcon className="material-icons" style={styles.searchIcon}
-                     onTouchTap={()=>this.showSearch()}>search</FontIcon>*/}
+                   <FontIcon className="material-icons" style={styles.searchIcon}
+                     onTouchTap={()=>this.showSearch()}>search</FontIcon>
                     <CurrentUser {...this.props} />
                 </div>
             </div>
-            {/*showSearch ? <Search {...this.props} /> : null*/}
+            {showSearch ? <Search {...this.props} /> : null}
         </div>;
 
         if(!appConfig.apiToken) {
@@ -38,7 +37,7 @@ class Header extends React.Component {
     }
 
     showSearch() {
-        ProjectActions.toggleSearch();
+        mainStore.toggleSearch();
     }
 }
 
@@ -88,6 +87,11 @@ var styles = {
         right: 0,
         width: 200
     }
+};
+
+Header.propTypes = {
+    showSearch: bool,
+    appConfig: object
 };
 
 export default Header;

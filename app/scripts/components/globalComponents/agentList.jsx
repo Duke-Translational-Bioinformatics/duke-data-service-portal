@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import agentStore from '../../stores/agentStore';
@@ -155,10 +156,6 @@ class AgentList extends React.Component {
     };
 }
 
-AgentList.contextTypes = {
-    muiTheme: React.PropTypes.object
-};
-
 var styles = {
     apiMsg: {
         textAlign: 'center',
@@ -207,10 +204,21 @@ var styles = {
     }
 };
 
+AgentList.contextTypes = {
+    muiTheme: React.PropTypes.object
+};
+
 AgentList.propTypes = {
-    loading: React.PropTypes.bool,
-    agents: React.PropTypes.array,
-    error: React.PropTypes.object
+    loading: bool,
+    agents: array,
+    agentApiToken: object,
+    agentKey: object,
+    userKey: object,
+    currentUser: object,
+    entityObj: object,
+    screenSize: object,
+    toggleModal: object,
+    uploads: object
 };
 
 export default AgentList;

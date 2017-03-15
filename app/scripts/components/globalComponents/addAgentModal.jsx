@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import agentStore from '../../stores/agentStore';
@@ -123,8 +124,8 @@ AddAgentModal.contextTypes = {
 };
 
 AddAgentModal.propTypes = {
-    toggleModal: React.PropTypes.object,
-    screenSize: React.PropTypes.object
+    toggleModal: object,
+    screenSize: object
 };
 
 export default AddAgentModal;

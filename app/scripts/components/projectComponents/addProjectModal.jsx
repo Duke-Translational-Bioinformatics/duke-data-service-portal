@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import FlatButton from 'material-ui/FlatButton';
@@ -19,7 +20,7 @@ class AddProjectModal extends React.Component {
     }
 
     render() {
-        const {screenSize} = mainStore;
+        const { screenSize } = mainStore;
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -128,7 +129,11 @@ var styles = {
 };
 
 AddProjectModal.contextTypes = {
-    muiTheme: React.PropTypes.object
+    muiTheme: object
+};
+
+AddProjectModal.propTypes = {
+    screenSize: object
 };
 
 export default AddProjectModal;

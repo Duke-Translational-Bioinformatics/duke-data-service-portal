@@ -417,6 +417,7 @@ export class ProvenanceStore {
         nodes.push(this.updatedGraphItem[0]);
         this.shouldRenderGraph();
         this.provNodes = nodes;
+        mainStore.addToast(json.name+' was added to the graph');
     }
 
     @action editProvActivity(id, name, desc, prevName) {
@@ -464,6 +465,7 @@ export class ProvenanceStore {
         n.push(node);
         this.updatedGraphItem = n.map((node) => {//Update dataset in client
             if(node.current_version) {
+                mainStore.addToast(node.name+' was added to the graph');
                 node.kind = 'dds-file-version';
                 let label = node.current_version.label !== null ? node.current_version.label : "";
                 return {
@@ -478,6 +480,7 @@ export class ProvenanceStore {
                     + label + '</span></div>'
                 };
             }else{
+                mainStore.addToast(node.file.name+' was added to the graph');
                 return {
                     id: node.id,
                     label: node.file.name + '\nVersion: ' + node.version,
@@ -598,6 +601,10 @@ export class ProvenanceStore {
         this.provEditorModal = {open: false, id: id}
     }
 
+    displayProvAlert() {
+        this.showProvAlert = true;
+    }
+
     hideProvAlert() {
         this.showProvAlert = false;
     }
@@ -617,10 +624,6 @@ export class ProvenanceStore {
 
     setOnClickProvNode(node) {
         this.onClickProvNode = node;
-    }
-
-    hideButtonsOnDblClk = ()=> {
-        this.isDoubleClick();
     }
 
     setDropdownSelectValue(value) {

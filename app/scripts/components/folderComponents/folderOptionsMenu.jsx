@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import {Kind, Path} from '../../../util/urlEnum';
@@ -36,5 +37,10 @@ class FolderOptionsMenu extends React.Component {
         mainStore.toggleModals(id);
     }
 }
+
+FolderOptionsMenu.propTypes = {
+    entityObj: object,
+    selectedEntity: object
+};
 
 export default FolderOptionsMenu;

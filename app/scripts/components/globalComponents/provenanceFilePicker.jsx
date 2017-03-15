@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import ReactDOM from 'react-dom';
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -229,6 +230,18 @@ var styles = {
     versionListWrapper: {
         textAlign: 'left'
     }
+};
+
+ProvenanceFilePicker.propTypes = {
+    entityObj: object,
+    onClickProvNode: object,
+    projPermissions: object,
+    provEditorModal: object,
+    screenSize: object,
+    autoCompleteLoading: bool,
+    projects: array,
+    searchFilesList: array,
+    provFileVersions: array
 };
 
 export default ProvenanceFilePicker;

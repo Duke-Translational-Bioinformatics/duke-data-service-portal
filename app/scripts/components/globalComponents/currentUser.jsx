@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import authStore from '../../stores/authStore';
-import projectStore from '../../stores/projectStore';
 import Divider from 'material-ui/Divider';
 import FontIcon from 'material-ui/FontIcon';
 import {Popover, PopoverAnimationVertical} from 'material-ui/Popover';
@@ -11,8 +11,8 @@ import {Popover, PopoverAnimationVertical} from 'material-ui/Popover';
 class CurrentUser extends React.Component {
 
     render() {
-        const {appConfig, currentUser} = authStore;
-        const {showUserInfoPanel} = projectStore;
+        const { appConfig, currentUser } = authStore;
+        const { showUserInfoPanel } = mainStore;
         if (!appConfig.apiToken) {
             return null
         }
@@ -51,7 +51,7 @@ class CurrentUser extends React.Component {
     }
 
     showUserInfoPanel(){
-        projectStore.toggleUserInfoPanel();
+        mainStore.toggleUserInfoPanel();
     }
 }
 
@@ -90,12 +90,13 @@ var styles = {
 };
 
 CurrentUser.contextTypes = {
-    muiTheme: React.PropTypes.object
+    muiTheme: object
 };
 
 CurrentUser.propTypes = {
-    currentUser: React.PropTypes.object,
-    showUserInfoPanel: React.PropTypes.bool
+    appConfig: object,
+    currentUser: object,
+    showUserInfoPanel: bool
 };
 
 export default CurrentUser;

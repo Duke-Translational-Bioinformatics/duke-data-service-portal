@@ -15,6 +15,8 @@ class Home extends React.Component {
             mainStore.getProjects();
             mainStore.getUsageDetails();
             authStore.removeLoginCookie();
+        } else {
+            this.props.router.push('/login');
         }
     }
 

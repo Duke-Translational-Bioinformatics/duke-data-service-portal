@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import {Kind, Path} from '../../../util/urlEnum';
 import Card from 'material-ui/Card';
-import DeleteIcon from 'material-ui/svg-icons/action/delete';
+import DeleteForeverIcon from 'material-ui/svg-icons/action/delete-forever';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import GetAppIcon from 'material-ui/svg-icons/action/get-app';
@@ -14,7 +15,7 @@ import LocalOffer from 'material-ui/svg-icons/maps/local-offer';
 class BatchOps extends React.Component {
 
     render() {
-        const {entityObj, filesChecked, foldersChecked, itemsSelected, project, projPermissions, toggleModal} = mainStore;
+        const { entityObj, filesChecked, foldersChecked, itemsSelected, project, projPermissions, toggleModal } = mainStore;
         let dlMsg = '';
         let msg = '';
         let dltIcon = null;
@@ -37,7 +38,7 @@ class BatchOps extends React.Component {
         if (prjPrm !== null) {
             dltIcon = prjPrm === 'flDownload' ? null :
                 <IconButton onTouchTap={() => this.openModal('dlt')} style={styles.deleteBtn}>
-                    <DeleteIcon color={'#EC407A'}/>
+                    <DeleteForeverIcon color={'#EC407A'}/>
                 </IconButton>;
         }
         if (prjPrm !== null) {
@@ -199,6 +200,16 @@ let styles = {
 
 BatchOps.contextTypes = {
     muiTheme: React.PropTypes.object
+};
+
+BatchOps.propTypes = {
+    entityObj: object,
+    project: object,
+    projPermissions: object,
+    toggleModal: object,
+    filesChecked: array,
+    foldersChecked: array,
+    itemsSelected: string
 };
 
 export default BatchOps;

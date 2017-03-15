@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import ProjectActions from '../../actions/projectActions';
 import mainStore from '../../stores/mainStore';
@@ -62,6 +63,11 @@ var styles = {
         textAlign: 'left',
         marginLeft: 41
     }
+};
+
+Loaders.propTypes = {
+    uploads: object,
+    loading: bool
 };
 
 export default Loaders;

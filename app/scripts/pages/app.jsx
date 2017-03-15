@@ -88,7 +88,7 @@ class App extends React.Component {
                 if (typeof(Storage) !== 'undefined') {
                     localStorage.setItem('redirectTo', redUrl);
                 } else {
-                    this.props.router.push('/login')
+                    this.props.router.push('/login');
                 }
             }
             let routeTo = this.props.location.pathname === '/public_privacy' ? '/public_privacy' : '/login';
@@ -104,7 +104,7 @@ class App extends React.Component {
                 mainStore.clearErrors();
                 setTimeout(()=>this.props.router.push('/404'),1000);
             }
-            mainStore.error.response != 404 ? console.log(mainStore.error.msg) : null;
+            mainStore.error.response !== 404 ? console.log(mainStore.error.msg) : null;
         }
     }
 
@@ -167,7 +167,6 @@ class App extends React.Component {
                         <Header {...this.props} {...this.state}/>
                         <div className="pages navbar-through toolbar-through">
                             <div data-page="index" className="page">
-                                {Object.keys(screenSize).length !== 0 && screenSize.width < 680 ? !appConfig.apiToken ? '' : <Search {...this.props} {...this.state} /> : null}
                                 <div className="searchbar-overlay"></div>
                                 <div className="page-content">
                                     {this.props.children}

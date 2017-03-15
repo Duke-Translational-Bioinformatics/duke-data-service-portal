@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import authStore from '../../stores/authStore';
@@ -24,8 +25,8 @@ class Details extends React.Component {
     }
 
     render() {
-        const {project, projectMembers, projPermissions, screenSize} = mainStore;
-        const {currentUser} = authStore;
+        const { project, projectMembers, projPermissions, screenSize } = mainStore;
+        const { currentUser } = authStore;
         const deleteActions = [
             <FlatButton
                 label="CANCEL"
@@ -268,13 +269,15 @@ var styles = {
 };
 
 Details.contextTypes = {
-    muiTheme: React.PropTypes.object
+    muiTheme: object
 };
 
 Details.propTypes = {
-    project: React.PropTypes.object,
-    projectMembers: React.PropTypes.array,
-    currentUser: React.PropTypes.object,
+    project: object,
+    projectMembers: array,
+    currentUser: object,
+    screenSize: object,
+    projPermissions: string,
 };
 
 export default Details;

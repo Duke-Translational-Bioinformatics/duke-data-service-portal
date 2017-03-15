@@ -10,45 +10,45 @@ import { checkStatus, getFetchParams } from '../../util/fetchUtil';
 
 const ProjectActions = {
 
-    searchObjects(value, includeKinds, includeProjects) {
-        if (includeKinds === null || !includeKinds.length) includeKinds = ['dds-file', 'dds-folder'];
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + '/search',
-            getFetchParams('post', authStore.appConfig.apiToken, {
-                "include_kinds": includeKinds,
-                "search_query": {
-                    "query": {
-                        "bool": {
-                            "must": {
-                                "multi_match": {
-                                    "query": value,
-                                    "type": "phrase_prefix",
-                                    "fields": [
-                                        "label",
-                                        "meta",
-                                        "name",
-                                        "tags.*"
-                                    ]
-                                }
-                            },
-                            "filter": {
-                                "bool": {
-                                    "must_not": {"match": {"is_deleted": true}},
-                                    "should": includeProjects
-                                }
-                            }
-                        }
-                    },
-                    size: 1000
-                }
-            }))
-            .then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.searchObjectsSuccess(json.results);
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            })
-    },
+    //searchObjects(value, includeKinds, includeProjects) {
+    //    if (includeKinds === null || !includeKinds.length) includeKinds = ['dds-file', 'dds-folder'];
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + '/search',
+    //        getFetchParams('post', authStore.appConfig.apiToken, {
+    //            "include_kinds": includeKinds,
+    //            "search_query": {
+    //                "query": {
+    //                    "bool": {
+    //                        "must": {
+    //                            "multi_match": {
+    //                                "query": value,
+    //                                "type": "phrase_prefix",
+    //                                "fields": [
+    //                                    "label",
+    //                                    "meta",
+    //                                    "name",
+    //                                    "tags.*"
+    //                                ]
+    //                            }
+    //                        },
+    //                        "filter": {
+    //                            "bool": {
+    //                                "must_not": {"match": {"is_deleted": true}},
+    //                                "should": includeProjects
+    //                            }
+    //                        }
+    //                    }
+    //                },
+    //                size: 1000
+    //            }
+    //        }))
+    //        .then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.searchObjectsSuccess(json.results);
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
     //getMoveItemList(id, path) {
     //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + Path.CHILDREN,
@@ -74,163 +74,163 @@ const ProjectActions = {
     //        })
     //},
 
-    createMetadataObject(kind, fileId, templateId, properties) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.META + kind + "/" + fileId + "/" + templateId,
-            getFetchParams('post', authStore.appConfig.apiToken, {
-                    "properties": properties
-                }
-            )
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                mainStore.addToast('A new metadata object was created.');
-                projectStore.createMetadataObjectSuccess(fileId, kind);
-            }).catch((ex) => {
-                if (ex.response.status === 409) {
-                    projectStore.updateMetadataObject(kind, fileId, templateId, properties);
-                } else {
-                    mainStore.addToast('Failed to add new metadata object');
-                    projectStore.handleErrors(ex)
-                }
-            })
-    },
+    //createMetadataObject(kind, fileId, templateId, properties) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.META + kind + "/" + fileId + "/" + templateId,
+    //        getFetchParams('post', authStore.appConfig.apiToken, {
+    //                "properties": properties
+    //            }
+    //        )
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            mainStore.addToast('A new metadata object was created.');
+    //            projectStore.createMetadataObjectSuccess(fileId, kind);
+    //        }).catch((ex) => {
+    //            if (ex.response.status === 409) {
+    //                projectStore.updateMetadataObject(kind, fileId, templateId, properties);
+    //            } else {
+    //                mainStore.addToast('Failed to add new metadata object');
+    //                projectStore.handleErrors(ex)
+    //            }
+    //        })
+    //},
 
-    updateMetadataObject(kind, fileId, templateId, properties) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.META + kind + "/" + fileId + "/" + templateId,
-            getFetchParams('put', authStore.appConfig.apiToken, {
-                "properties": properties
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                mainStore.addToast('This metadata object was updated.');
-                projectStore.createMetadataObjectSuccess(fileId, kind);
-            }).catch((ex) => {
-                mainStore.addToast('Failed to update metadata object');
-                projectStore.handleErrors(ex)
-            })
-    },
+    //updateMetadataObject(kind, fileId, templateId, properties) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.META + kind + "/" + fileId + "/" + templateId,
+    //        getFetchParams('put', authStore.appConfig.apiToken, {
+    //            "properties": properties
+    //        })
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            mainStore.addToast('This metadata object was updated.');
+    //            projectStore.createMetadataObjectSuccess(fileId, kind);
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to update metadata object');
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
-    deleteMetadataProperty(id, label) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATE_PROPERTIES + id,
-            getFetchParams('delete', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-            }).then((json) => {
-                mainStore.addToast('The ' + label + ' property has been deleted');
-                projectStore.deleteMetadataPropertySuccess(id);
-            }).catch((ex) => {
-                mainStore.addToast('Failed to delete ' + label);
-                projectStore.handleErrors(ex)
-            });
-    },
+    //deleteMetadataProperty(id, label) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATE_PROPERTIES + id,
+    //        getFetchParams('delete', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //        }).then((json) => {
+    //            mainStore.addToast('The ' + label + ' property has been deleted');
+    //            projectStore.deleteMetadataPropertySuccess(id);
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to delete ' + label);
+    //            projectStore.handleErrors(ex)
+    //        });
+    //},
 
-    getMetadataTemplateProperties(id) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id + Path.PROPERTIES,
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.getMetadataTemplatePropertiesSuccess(json.results)
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            })
-    },
+    //getMetadataTemplateProperties(id) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id + Path.PROPERTIES,
+    //        getFetchParams('get', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.getMetadataTemplatePropertiesSuccess(json.results)
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
-    createMetadataProperty(id, name, label, desc, type) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id + Path.PROPERTIES,
-            getFetchParams('post', authStore.appConfig.apiToken, {
-                "key": name,
-                "label": label,
-                "description": desc,
-                "type": type
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                mainStore.addToast('A new template property called ' + label + ' was added');
-                projectStore.createMetadataPropertySuccess(json);
-            }).catch((ex) => {
-                mainStore.addToast('Failed to add new template property');
-                projectStore.handleErrors(ex)
-            })
-    },
+    //createMetadataProperty(id, name, label, desc, type) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id + Path.PROPERTIES,
+    //        getFetchParams('post', authStore.appConfig.apiToken, {
+    //            "key": name,
+    //            "label": label,
+    //            "description": desc,
+    //            "type": type
+    //        })
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            mainStore.addToast('A new template property called ' + label + ' was added');
+    //            projectStore.createMetadataPropertySuccess(json);
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to add new template property');
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
-    deleteTemplate(id, label) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id,
-            getFetchParams('delete', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-            }).then((json) => {
-                mainStore.addToast('The ' + label + ' template has been deleted');
-                projectStore.deleteTemplateSuccess();
-            }).catch((ex) => {
-                mainStore.addToast('Failed to delete ' + label);
-                projectStore.handleErrors(ex)
-            });
-    },
+    //deleteTemplate(id, label) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id,
+    //        getFetchParams('delete', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //        }).then((json) => {
+    //            mainStore.addToast('The ' + label + ' template has been deleted');
+    //            projectStore.deleteTemplateSuccess();
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to delete ' + label);
+    //            projectStore.handleErrors(ex)
+    //        });
+    //},
 
-    updateMetadataTemplate(id, name, label, desc) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id,
-            getFetchParams('put', authStore.appConfig.apiToken, {
-                "name": name,
-                "label": label,
-                "description": desc
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                mainStore.addToast(label + ' has been updated.');
-                projectStore.getMetadataTemplateDetailsSuccess(json);
-                projectStore.loadMetadataTemplates('');
-            }).catch((ex) => {
-                mainStore.addToast('Failed to update ' + label);
-                projectStore.handleErrors(ex)
-            })
-    },
+    //updateMetadataTemplate(id, name, label, desc) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id,
+    //        getFetchParams('put', authStore.appConfig.apiToken, {
+    //            "name": name,
+    //            "label": label,
+    //            "description": desc
+    //        })
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            mainStore.addToast(label + ' has been updated.');
+    //            projectStore.getMetadataTemplateDetailsSuccess(json);
+    //            projectStore.loadMetadataTemplates('');
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to update ' + label);
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
 
-    createMetadataTemplate(name, label, desc) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES,
-            getFetchParams('post', authStore.appConfig.apiToken, {
-                "name": name,
-                "label": label,
-                "description": desc
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                mainStore.addToast('A new template called ' + label + ' was added');
-                projectStore.getMetadataTemplateDetailsSuccess(json);
-                projectStore.createMetadataTemplateSuccess(json);
-            }).catch((ex) => {
-                mainStore.addToast('Failed to add new template');
-                projectStore.handleErrors(ex)
-            })
-    },
+    //createMetadataTemplate(name, label, desc) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES,
+    //        getFetchParams('post', authStore.appConfig.apiToken, {
+    //            "name": name,
+    //            "label": label,
+    //            "description": desc
+    //        })
+    //    ).then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            mainStore.addToast('A new template called ' + label + ' was added');
+    //            projectStore.getMetadataTemplateDetailsSuccess(json);
+    //            projectStore.createMetadataTemplateSuccess(json);
+    //        }).catch((ex) => {
+    //            mainStore.addToast('Failed to add new template');
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
-    getMetadataTemplateDetails(id) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id,
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.getMetadataTemplateDetailsSuccess(json)
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            })
-    },
-
-    loadMetadataTemplates(value) {
-        let searchQuery = value !== null ? '?name_contains=' + value : '';
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + searchQuery,
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
-                projectStore.loadMetadataTemplatesSuccess(json.results)
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            })
-    },
+    //getMetadataTemplateDetails(id) {
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id,
+    //        getFetchParams('get', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.getMetadataTemplateDetailsSuccess(json)
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
+    //
+    //loadMetadataTemplates(value) {
+    //    let searchQuery = value !== null ? '?name_contains=' + value : '';
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + searchQuery,
+    //        getFetchParams('get', authStore.appConfig.apiToken))
+    //        .then(checkStatus).then((response) => {
+    //            return response.json()
+    //        }).then((json) => {
+    //            projectStore.loadMetadataTemplatesSuccess(json.results)
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        })
+    //},
 
     //addProvRelation(kind, body) {
     //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'relations/' + kind,

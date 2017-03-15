@@ -20,6 +20,7 @@ export class MainStore {
     @observable destination
     @observable destinationKind
     @observable device
+    @observable drawerLoading
     @observable entityObj
     @observable error
     @observable errorModals
@@ -35,7 +36,7 @@ export class MainStore {
     @observable itemsSelected
     @observable listItems
     @observable loading
-    @observable metaDataTemplate
+    @observable metadataTemplate
     @observable metaProps
     @observable metaTemplates
     @observable modal
@@ -43,6 +44,7 @@ export class MainStore {
     @observable moveItemList
     @observable moveItemLoading
     @observable moveToObj
+    @observable objectMetadata
     @observable objectTags
     @observable openMetadataManager
     @observable openTagManager
@@ -93,6 +95,7 @@ export class MainStore {
         this.device = {};
         this.destination = null;
         this.destinationKind = null;
+        this.drawerLoading = false;
         this.entityObj = null;
         this.error = null;
         this.errorModals = [];
@@ -108,7 +111,7 @@ export class MainStore {
         this.itemsSelected = null;
         this.listItems = [];
         this.loading = false;
-        this.metaDataTemplate = null;
+        this.metadataTemplate = {};
         this.metaProps = [];
         this.metaTemplates = [];
         this.modal = false;
@@ -116,6 +119,7 @@ export class MainStore {
         this.moveItemList = [];
         this.moveItemLoading = false;
         this.moveToObj = {};
+        this.objectMetadata = [];
         this.objectTags = [];
         this.openMetadataManager = false;
         this.openTagManager = false;
@@ -1053,7 +1057,7 @@ export class MainStore {
     }
 
     addFileVersionSuccess(id, uploadId) {
-        this.showProvAlert = true;
+        provenanceStore.displayProvAlert();
         this.getEntity(id, Path.FILE);
         this.getFileVersions(id);
         if (this.uploads.has(uploadId)) this.uploads.delete(uploadId);
@@ -1200,7 +1204,7 @@ export class MainStore {
         let searchQuery = value !== null ? '?name_contains=' + value : '';
         fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + searchQuery,
             getFetchParams('get', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
+            .then(this.checkResponse).then((response) => {
                 return response.json()
             }).then((json) => {
                 this.metaTemplates = json.results.sort((a, b) => {
@@ -1214,6 +1218,284 @@ export class MainStore {
             })
     }
 
+    @action createMetadataTemplate(name, label, desc) {
+        this.drawerLoading = true;
+        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES,
+            getFetchParams('post', authStore.appConfig.apiToken, {
+                "name": name,
+                "label": label,
+                "description": desc
+            })
+        ).then(this.checkResponse).then((response) => {
+                return response.json()
+            }).then((json) => {
+                this.addToast('A new template called ' + label + ' was added');
+                this.metadataTemplate = json;
+                this.metaTemplates.unshift(json);
+                this.showTemplateCreator = false;
+                this.showTemplateDetails = true;
+                this.drawerLoading = false;
+            }).catch((ex) => {
+                this.addToast('Failed to add new template');
+                this.handleErrors(ex)
+            })
+    }
+
+    @action getMetadataTemplateDetails(id) {
+        this.drawerLoading = true;
+        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id,
+            getFetchParams('get', authStore.appConfig.apiToken))
+            .then(this.checkResponse).then((response) => {
+                return response.json()
+            }).then((json) => {
+                this.openMetadataManager = !this.openMetadataManager;
+                this.metadataTemplate = json;
+                this.showTemplateCreator = false;
+                this.showTemplateDetails = true;
+                this.drawerLoading = false;
+            }).catch((ex) => {
+                this.handleErrors(ex)
+            })
+    }
+
+    @action getMetadataTemplateProperties(id) {
+        this.drawerLoading = true;
+        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id + Path.PROPERTIES,
+            getFetchParams('get', authStore.appConfig.apiToken))
+            .then(this.checkResponse).then((response) => {
+                return response.json()
+            }).then((json) => {
+                this.templateProperties = json.results;
+                this.drawerLoading = false;
+            }).catch((ex) => {
+                this.handleErrors(ex)
+            })
+    }
+
+    @action updateMetadataTemplate(id, name, label, desc) {
+        this.drawerLoading = true;
+        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id,
+            getFetchParams('put', authStore.appConfig.apiToken, {
+                "name": name,
+                "label": label,
+                "description": desc
+            })
+        ).then(this.checkResponse).then((response) => {
+                return response.json()
+            }).then((json) => {
+                this.addToast(label + ' has been updated.');
+                this.openMetadataManager = !this.openMetadataManager;
+                this.metadataTemplate = json;
+                this.showTemplateCreator = false;
+                this.showTemplateDetails = true;
+                this.drawerLoading = false;
+                this.loadMetadataTemplates('');
+            }).catch((ex) => {
+                this.addToast('Failed to update ' + label);
+                this.handleErrors(ex)
+            })
+    }
+
+    @action deleteTemplate(id, label) {
+        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id,
+            getFetchParams('delete', authStore.appConfig.apiToken))
+            .then(this.checkResponse).then((response) => {
+            }).then((json) => {
+                this.addToast('The ' + label + ' template has been deleted');
+                this.toggleMetadataManager();
+                this.loadMetadataTemplates('');
+            }).catch((ex) => {
+                this.addToast('Failed to delete ' + label);
+                this.handleErrors(ex)
+            });
+    }
+
+    @action deleteMetadataProperty(id, label) {
+        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATE_PROPERTIES + id,
+            getFetchParams('delete', authStore.appConfig.apiToken))
+            .then(this.checkResponse).then((response) => {
+            }).then((json) => {
+                this.addToast('The ' + label + ' property has been deleted');
+                this.templateProperties = BaseUtils.removeObjByKey(this.templateProperties.slice(), {key: 'id', value: id});
+            }).catch((ex) => {
+                this.addToast('Failed to delete ' + label);
+                this.handleErrors(ex)
+            });
+    }
+
+    @action createMetadataObject(kind, fileId, templateId, properties) {
+        this.drawerLoading = true;
+        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.META + kind + "/" + fileId + "/" + templateId,
+            getFetchParams('post', authStore.appConfig.apiToken, {
+                    "properties": properties
+                }
+            )
+        ).then(this.checkResponse).then((response) => {
+                return response.json()
+            }).then((json) => {
+                this.addToast('A new metadata object was created.');
+                this.createMetadataObjectSuccess(fileId, kind);
+            }).catch((ex) => {
+                if (ex.response.status === 409) {
+                    this.updateMetadataObject(kind, fileId, templateId, properties);
+                } else {
+                    this.addToast('Failed to add new metadata object');
+                    this.handleErrors(ex)
+                }
+            })
+    }
+
+    @action updateMetadataObject(kind, fileId, templateId, properties) {
+        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.META + kind + "/" + fileId + "/" + templateId,
+            getFetchParams('put', authStore.appConfig.apiToken, {
+                "properties": properties
+            })
+        ).then(this.checkResponse).then((response) => {
+                return response.json()
+            }).then((json) => {
+                this.addToast('This metadata object was updated.');
+                this.createMetadataObjectSuccess(fileId, kind);
+            }).catch((ex) => {
+                this.addToast('Failed to update metadata object');
+                this.handleErrors(ex)
+            })
+    }
+
+    @action createMetadataProperty(id, name, label, desc, type) {
+        this.drawerLoading = true;
+        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.TEMPLATES + id + Path.PROPERTIES,
+            getFetchParams('post', authStore.appConfig.apiToken, {
+                "key": name,
+                "label": label,
+                "description": desc,
+                "type": type
+            })
+        ).then(this.checkResponse).then((response) => {
+                return response.json()
+            }).then((json) => {
+                this.addToast('A new template property called ' + label + ' was added');
+                this.templateProperties.push(json);
+                this.drawerLoading = false;
+            }).catch((ex) => {
+                this.addToast('Failed to add new template property');
+                this.handleErrors(ex)
+            })
+    }
+    createMetadataObjectSuccess(id, kind) {
+        this.drawerLoading = false;
+        this.showBatchOps = false;
+        this.showTemplateDetails = false;
+        this.getObjectMetadata(id,kind);
+    }
+
+    createMetaPropsList(metaProps) {
+        this.metaProps = metaProps;
+    }
+
+    showTemplatePropManager() {
+        this.showPropertyCreator = true;
+        this.showTemplateCreator = false;
+        this.showTemplateDetails = false;
+    }
+
+    showMetadataTemplateList() {
+        this.showTemplateDetails = false;
+    }
+
+    toggleMetadataManager() {
+        if(this.templateProperties.length) this.templateProperties = [];
+        this.openMetadataManager = !this.openMetadataManager;
+        this.showPropertyCreator = false;
+        this.showTemplateCreator = true;
+        this.showTemplateDetails = false;
+    }
+
+    showMetaDataTemplateDetails() {
+        this.showPropertyCreator = false;
+        this.showTemplateCreator = false;
+        this.showTemplateDetails = true;
+    }
+
+    @action searchObjects(value, includeKinds, includeProjects) {
+        this.searchValue = value;
+        this.loading = true;
+        if (includeKinds === null || !includeKinds.length) includeKinds = ['dds-file', 'dds-folder'];
+        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + '/search',
+            getFetchParams('post', authStore.appConfig.apiToken, {
+                "include_kinds": includeKinds,
+                "search_query": {
+                    "query": {
+                        "bool": {
+                            "must": {
+                                "multi_match": {
+                                    "query": value,
+                                    "type": "phrase_prefix",
+                                    "fields": [
+                                        "label",
+                                        "meta",
+                                        "name",
+                                        "tags.*"
+                                    ]
+                                }
+                            },
+                            "filter": {
+                                "bool": {
+                                    "must_not": {"match": {"is_deleted": true}},
+                                    "should": includeProjects
+                                }
+                            }
+                        }
+                    },
+                    size: 1000
+                }
+            }))
+            .then(this.checkResponse).then((response) => {
+                return response.json()
+            }).then((json) => {
+                this.searchResults = json.results;
+                this.searchResultsFiles = json.results.filter((obj)=>{
+                    return obj.kind === 'dds-file';
+                });
+                this.searchResultsFolders = json.results.filter((obj)=>{
+                    return obj.kind === 'dds-folder';
+                });
+                let p = json.results.map((obj) => {
+                    return {name: obj.ancestors[0].name, id: obj.ancestors[0].id};
+                });
+                this.searchResultsProjects = BaseUtils.removeDuplicates(p, 'id');
+                this.loading = false;
+            }).catch((ex) => {
+                this.handleErrors(ex)
+            })
+    }
+
+    toggleSearch() {
+        this.searchValue = null;
+        this.showSearch = !this.showSearch;
+    }
+
+    toggleSearchFilters() {
+        this.showFilters = !this.showFilters;
+    }
+
+    setIncludedSearchKinds(includeKinds) {
+        this.includeKinds = includeKinds;
+        this.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
+    }
+
+    setIncludedSearchProjects(includeProjects) {
+        this.includeProjects = includeProjects;
+        this.setSearchFilters();
+    }
+
+    setSearchFilters() {
+        this.searchFilters = [];
+        this.includeProjects.forEach((projectId)=>{
+            this.searchFilters.push({"match":{"project.id": projectId}})
+        });
+        this.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
+    }
+
     clearSearchFilesData() {
         this.searchFilesList = [];
     }
@@ -1224,11 +1506,7 @@ export class MainStore {
     }
 
     displayErrorModals(error) {
-        let err = error && error.message ? this.errorModals.push({
-            msg: error.message,
-            response: error.response ? error.response.status : null
-        }) : null;
-        if (err.response === null) {
+        if (error.response === null) {
             this.errorModals.push({
                 msg: error.message,
                 response: 'Folders can not be uploaded',
@@ -1248,7 +1526,6 @@ export class MainStore {
                 setTimeout(()=>window.location.href = window.location.protocol + "//" + window.location.host + "/#/login", 1000);
             }
         }
-        this.error = err;
     }
 
     getDeviceType(device) {
@@ -1262,8 +1539,10 @@ export class MainStore {
 
     handleErrors(error) {
         this.displayErrorModals(error);
+        this.error = error;
         this.loading = false;
-        provenanceStore.drawerLoading = false;
+        this.drawerLoading = false;
+        provenanceStore.drawerLoading = false; // Todo: Change this. Should toggle drawer loading in prov store
     }
 
     addToast(msg) {
@@ -1312,6 +1591,10 @@ export class MainStore {
 
     toggleLoading() {
         this.loading = !this.loading
+    }
+
+    toggleUserInfoPanel() {
+        this.showUserInfoPanel = !this.showUserInfoPanel;
     }
 }
 

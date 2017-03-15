@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import AutoComplete from 'material-ui/AutoComplete';
@@ -28,7 +29,7 @@ class ProjectOptionsMenu extends React.Component {
     }
 
     render() {
-        const {currentUser, project, screenSize, users} = mainStore;
+        const { currentUser, project, screenSize, users } = mainStore;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let userName = currentUser ? currentUser.full_name : null;
         let names = users && users.length ? users : [];
@@ -301,6 +302,7 @@ class ProjectOptionsMenu extends React.Component {
         });
     };
 }
+
 var styles = {
     addProject: {
         float: 'right',
@@ -331,6 +333,17 @@ var styles = {
         textAlign: 'center',
         color: '#F44336'
     }
+};
+
+ProjectOptionsMenu.contextTypes = {
+    muiTheme: object
+};
+
+ProjectOptionsMenu.propTypes = {
+    screenSize: object,
+    project: object,
+    currentUser: object,
+    users: array,
 };
 
 export default ProjectOptionsMenu;

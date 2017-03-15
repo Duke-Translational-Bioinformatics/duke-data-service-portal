@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
+import provenanceStore from '../../stores/provenanceStore';
 import {Kind, Path} from '../../../util/urlEnum';
 import CustomMetadata from './customMetadata.jsx';
 import FileOptionsMenu from './fileOptionsMenu.jsx';
@@ -22,7 +23,8 @@ import RaisedButton from 'material-ui/RaisedButton';
 class FileDetails extends React.Component {
 
     render() {
-        const {entityObj, fileVersions, loading, objectMetadata, projPermissions, screenSize, showProvAlert, uploads} = mainStore;
+        const {entityObj, fileVersions, loading, objectMetadata, projPermissions, screenSize, uploads} = mainStore;
+        const { showProvAlert } = provenanceStore;
         let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         let dlButton = null;
         let optionsMenu = null;
@@ -236,7 +238,7 @@ class FileDetails extends React.Component {
     }
 
     dismissAlert(){
-        mainStore.hideProvAlert();
+        provenanceStore.hideProvAlert();
     }
 
     handleDownload(){
@@ -250,10 +252,10 @@ class FileDetails extends React.Component {
 
     openProv() {
         let versionId = mainStore.entityObj.current_version.id;
-        mainStore.getWasGeneratedByNode(versionId);
-        mainStore.toggleProvView();
-        mainStore.toggleProvEditor();
-        mainStore.hideProvAlert();
+        provenanceStore.getWasGeneratedByNode(versionId);
+        provenanceStore.toggleProvView();
+        provenanceStore.toggleProvEditor();
+        provenanceStore.hideProvAlert();
     }
 
     setSelectedEntity() {
@@ -350,8 +352,13 @@ FileDetails.contextTypes = {
 
 FileDetails.propTypes = {
     loading: bool,
-    details: array,
-    error: object
+    showProvAlert: bool,
+    fileVersions: array,
+    objectMetadata: array,
+    uploads: array,
+    entityObj: object,
+    screenSize: object,
+    projPermissions: string
 };
 
 export default FileDetails;

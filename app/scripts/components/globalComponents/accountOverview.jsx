@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../../util/baseUtils.js';
@@ -9,7 +10,7 @@ import FontIcon from 'material-ui/FontIcon';
 class AccountOverview extends React.Component {
 
     render() {
-        const {usage} = mainStore;
+        const { usage } = mainStore;
         let numProjects = usage && usage !== null ? usage.project_count : '';
         let numFiles = usage && usage !== null ? usage.file_count : '';
         let bytes = usage && usage !== null ? usage.storage_bytes : 0;
@@ -51,7 +52,7 @@ var styles = {
 };
 
 AccountOverview.propTypes = {
-    usage: React.PropTypes.object
+    usage: object
 };
 
 AccountOverview.contextTypes = {

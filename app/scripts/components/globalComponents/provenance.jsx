@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import ReactDOM from 'react-dom';
 import { observer, inject } from 'mobx-react';
 import {graphOptions, graphColors} from '../../graphConfig';
@@ -42,10 +43,6 @@ class Provenance extends React.Component {
         this.state = {
             errorText: null,
             floatingErrorText: 'This field is required.',
-            //height: window.innerHeight,
-            //node: null,
-            //projectId: 0,
-            //value: null
         };
         this.handleResize = this.handleResize.bind(this);
     }
@@ -618,6 +615,33 @@ var styles = {
         textAlign: 'center',
         color: '#F44336'
     }
+};
+
+Provenance.propTypes = {
+    currentUser: object,
+    entityObj: object,
+    selectedNode: object,
+    screenSize: object,
+    provEditorModal: object,
+    projPermissions: object,
+    selectedEdge: object,
+    relFrom: object,
+    relTo: object,
+    showProvCtrlBtns: bool,
+    showProvDetails: bool,
+    toggleProv: bool,
+    toggleProvEdit: bool,
+    addEdgeMode: bool,
+    dltRelationsBtn: bool,
+    doubleClicked: bool,
+    drawerLoading: bool,
+    relationMode: bool,
+    removeFileFromProvBtn: bool,
+    provEdges: array,
+    provNodes: array,
+    fileVersions: array,
+    dropdownSelectValue: string,
+    relMsg: string
 };
 
 export default Provenance;

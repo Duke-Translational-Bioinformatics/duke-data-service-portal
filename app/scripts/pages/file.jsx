@@ -1,7 +1,6 @@
 import React from 'react'
 import { observer } from 'mobx-react';
 import mainStore from '../stores/mainStore';
-import provenanceStore from '../stores/provenanceStore';
 import { Kind, Path } from '../../util/urlEnum';
 import FileDetails from '../components/fileComponents/fileDetails.jsx';
 import FileOptions from '../components/fileComponents/fileOptions.jsx';
@@ -19,9 +18,6 @@ class File extends React.Component {
         if(prevProps.params.id !== this.props.params.id) {
             this._loadFile();
         }
-        //if(prevProps.objectTags !== this.props.objectTags) {
-        //    mainStore.getTags(id, Kind.DDS_FILE);
-        //}
     }
 
     _loadFile() {
@@ -37,7 +33,7 @@ class File extends React.Component {
     render() {
         return (
             <div>
-                <Provenance {...this.props} {...this.state}/>
+                <Provenance {...this.props} />
                 <FileDetails {...this.props} />
                 <FileOptions {...this.props} />
                 <TagManager {...this.props} />

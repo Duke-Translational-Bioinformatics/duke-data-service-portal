@@ -13,7 +13,7 @@ import LocalOffer from 'material-ui/svg-icons/maps/local-offer';
 class TagCloud extends React.Component {
 
     render() {
-        const {objectTags, projPermissions} = mainStore;
+        const { objectTags, projPermissions } = mainStore;
         let addTagButton = null;
         let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         if(prjPrm !== 'viewOnly' && prjPrm !== 'flDownload') {
@@ -67,9 +67,8 @@ TagCloud.contextTypes = {
 };
 
 TagCloud.propTypes = {
-    loading: bool,
-    details: array,
-    error: object
+    projPermissions: string,
+    objectTags: array
 };
 
 export default TagCloud;

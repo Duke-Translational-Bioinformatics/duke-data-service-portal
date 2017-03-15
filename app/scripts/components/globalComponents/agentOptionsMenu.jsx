@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import agentStore from '../../stores/agentStore';
@@ -24,7 +25,7 @@ class AgentOptionsMenu extends React.Component {
     render() {
         const { agentApiToken, agentKey, agents } = agentStore;
         const { currentUser, userKey } = authStore;
-        const { entityObj, screenSize, toggleModal, users } = mainStore;
+        const { entityObj, screenSize, toggleModal } = mainStore;
 
         let apiToken = agentApiToken ? agentApiToken.api_token : null;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
@@ -513,6 +514,21 @@ var styles = {
         textAlign: 'center',
         color: '#F44336'
     }
+};
+
+AgentOptionsMenu.contextTypes = {
+    muiTheme: object
+};
+
+AgentOptionsMenu.propTypes = {
+    agents: array,
+    agentApiToken: object,
+    agentKey: object,
+    userKey: object,
+    currentUser: object,
+    entityObj: object,
+    screenSize: object,
+    toggleModal: object
 };
 
 export default AgentOptionsMenu;

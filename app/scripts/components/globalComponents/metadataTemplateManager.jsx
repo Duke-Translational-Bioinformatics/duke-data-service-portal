@@ -69,11 +69,11 @@ MetadataTemplateManager.contextTypes = {
 };
 
 MetadataTemplateManager.propTypes = {
-    drawerLoading: React.PropTypes.bool,
-    screenSize: React.PropTypes.object,
-    showPropertyCreator: React.PropTypes.bool,
-    showTemplateCreator: React.PropTypes.bool,
-    showTemplateDetails: React.PropTypes.bool
+    drawerLoading: bool,
+    screenSize: object,
+    showPropertyCreator: bool,
+    showTemplateCreator: bool,
+    showTemplateDetails: bool
 };
 
 export default MetadataTemplateManager;

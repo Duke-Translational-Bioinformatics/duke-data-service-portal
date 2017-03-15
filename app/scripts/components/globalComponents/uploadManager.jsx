@@ -2,7 +2,6 @@ import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 const { object, bool, array, string } = PropTypes;
 import Dropzone from 'react-dropzone';
-import ProjectActions from '../../actions/projectActions';
 import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../../util/baseUtils';
 import AddCircle from 'material-ui/svg-icons/content/add-circle';
@@ -376,9 +375,15 @@ UploadManager.contextTypes = {
 };
 
 UploadManager.propTypes = {
-    loading: React.PropTypes.bool,
-    details: array,
-    error: object
+    openUploadManager: bool,
+    entityObj: object,
+    screenSize: object,
+    selectedEntity: object,
+    tagLabels: array,
+    tagAutoCompleteList: array,
+    tagsToAdd: array,
+    filesRejectedForUpload: array,
+    filesToUpload: array
 };
 
 export default UploadManager;

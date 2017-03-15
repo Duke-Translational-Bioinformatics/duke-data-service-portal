@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
-import { observer } from 'mobx-react';
 const { object, bool, array, string } = PropTypes;
-import ProjectActions from '../../actions/projectActions';
+import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../../util/baseUtils';
 import MetadataObjectCreator from '../globalComponents/metadataObjectCreator.jsx';
@@ -65,7 +64,7 @@ class TagManager extends React.Component {
                 label="ADD TAGS"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={() => this.addTagsToFiles()} />
+                onTouchTap={() => this.addTagsToFiles(filesChecked, id, tagsToAdd, toggleModal)} />
         ];
         let tags = tagsToAdd && tagsToAdd.length > 0 ? tagsToAdd.map((tag)=>{
             return (<div key={BaseUtils.generateUniqueKey()} className="chip">
@@ -172,8 +171,8 @@ class TagManager extends React.Component {
     }
 
     activeTab() {
-        if(mainStore.tagsToAdd.length) ProjectActions.toggleModals('discardTags');
-        if(!mainStore.metaTemplates) ProjectActions.loadMetadataTemplates('');
+        if(mainStore.tagsToAdd.length) mainStore.toggleModals('discardTags');
+        if(!mainStore.metaTemplates.length) mainStore.loadMetadataTemplates('');
     }
 
     addTagToCloud(label) {
@@ -374,6 +373,19 @@ var styles = {
         flexDirection: 'column',
         paddingLeft: 5
     }
+};
+
+TagManager.propTypes = {
+    drawerLoading: bool,
+    openTagManager: bool,
+    showTemplateDetails: bool,
+    screenSize: object,
+    entityObj: object,
+    selectedEntity: object,
+    toggleModal: object,
+    tagAutoCompleteList: array,
+    tagLabels: array,
+    tagsToAdd: array,
 };
 
 TagManager.contextTypes = {

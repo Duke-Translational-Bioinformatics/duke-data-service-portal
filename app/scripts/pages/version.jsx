@@ -1,8 +1,8 @@
 import React from 'react'
 import { observer } from 'mobx-react';
 import mainStore from '../stores/mainStore';
-import { Path } from '../../util/urlEnum';
 import provenanceStore from '../stores/provenanceStore';
+import { Path } from '../../util/urlEnum';
 import Provenance from '../components/globalComponents/provenance.jsx';
 import VersionDetails from '../components/fileComponents/versionDetails.jsx';
 

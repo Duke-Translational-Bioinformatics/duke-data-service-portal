@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
-import ProjectActions from '../../actions/projectActions';
-import projectStore from '../../stores/projectStore';
 import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../../util/baseUtils.js';
 import Dialog from 'material-ui/Dialog';
@@ -14,15 +13,14 @@ class RetryUploads extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            retryUploads: projectStore.failedUploads,
+            retryUploads: mainStore.failedUploads.slice(),
             retryUploadModal: true,
             warningText: {}
         };
     }
 
     render() {
-        const {failedUploads} = projectStore;
-        const {screenSize} = mainStore;
+        const { failedUploads, screenSize } = mainStore;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let failed = failedUploads && failedUploads.length ? failedUploads.map((obj, i) => {
             return <TableRow key={i} selected={this.state.selected}>
@@ -76,7 +74,7 @@ class RetryUploads extends React.Component {
     }
 
     handleClose() {
-        ProjectActions.removeFailedUploads();
+        mainStore.removeFailedUploads();
         this.setState({retryUploadModal: false});
         setTimeout(() => this.setState({retryUploadModal: true, warningText: {}}), 500);
     }
@@ -89,9 +87,9 @@ class RetryUploads extends React.Component {
                 let parentKind = this.state.retryUploads[i].upload.parentKind;
                 let projId = this.state.retryUploads[i].upload.projectId;
                 let tags = this.state.retryUploads[i].upload.tags;
-                ProjectActions.startUpload(projId, blob, parentId, parentKind, null, null, tags);
+                mainStore.startUpload(projId, blob, parentId, parentKind, null, null, tags);
             }
-            ProjectActions.removeFailedUploads();
+            mainStore.removeFailedUploads();
             this.setState({retryUploadModal: false});
             setTimeout(() => this.setState({retryUploadModal: true, retryUploads: []}), 1500);
         } else {
@@ -100,7 +98,7 @@ class RetryUploads extends React.Component {
     }
 
     selectTableRow(rows) {
-        let failedUploads = projectStore.failedUploads;
+        let failedUploads = mainStore.failedUploads;
         if (rows === 'all') {
             this.setState({retryUploads: failedUploads});
         }
@@ -145,6 +143,11 @@ var styles = {
         textAlign: 'center',
         color: '#F44336'
     }
+};
+
+RetryUploads.propTypes = {
+    screenSize: object,
+    failedUploads: array
 };
 
 export default RetryUploads;

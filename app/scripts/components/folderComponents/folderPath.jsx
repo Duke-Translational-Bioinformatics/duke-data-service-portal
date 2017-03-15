@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import {Path, Kind} from '../../../util/urlEnum';
 import FolderOptionsMenu from './folderOptionsMenu.jsx';
-import UploadModal from '../globalComponents/uploadModal.jsx';
 import UploadManager from '../globalComponents/uploadManager.jsx';
 import BaseUtils from '../../../util/baseUtils';
 import Card from 'material-ui/Card';
@@ -100,6 +100,11 @@ var styles = {
         marginTop: 32,
         marginRight: -5
     }
+};
+
+FolderPath.propTypes = {
+    entityObj: object,
+    projPermissions: object
 };
 
 export default FolderPath;

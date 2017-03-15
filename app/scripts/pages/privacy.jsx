@@ -66,6 +66,7 @@ class Privacy extends React.Component {
             </Card>
         );
     }
+
     goBack() {
         window.history.back();
     }

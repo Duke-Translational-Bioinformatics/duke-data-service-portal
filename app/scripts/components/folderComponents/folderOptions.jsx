@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import MoveItemModal from '../globalComponents/moveItemModal.jsx';
@@ -22,7 +23,7 @@ class FolderOptions extends React.Component {
     }
 
     render() {
-        const {entityObj, screenSize, selectedEntity, toggleModal} = mainStore;
+        const { entityObj, screenSize, selectedEntity, toggleModal } = mainStore;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let id = selectedEntity !== null ? selectedEntity.id : entityObj !== null ? entityObj.id : null;
         let parentId = selectedEntity !== null ? selectedEntity.parent.id : entityObj !== null ? entityObj.parent.id : null;
@@ -165,6 +166,13 @@ var styles = {
         textAlign: 'center',
         color: '#F44336'
     }
+};
+
+FolderOptions.propTypes = {
+    entityObj: object,
+    toggleModal: object,
+    screenSize: object,
+    selectedEntity: object
 };
 
 export default FolderOptions;

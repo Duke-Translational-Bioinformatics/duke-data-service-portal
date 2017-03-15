@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import provenanceStore from '../../stores/provenanceStore';
@@ -16,7 +17,7 @@ import MenuItem from 'material-ui/MenuItem';
 class FileOptionsMenu extends React.Component {
 
     render() {
-        const {entityObj, projPermissions, selectedEntity} = mainStore;
+        const { entityObj, projPermissions, selectedEntity } = mainStore;
         let id = selectedEntity !== null ? selectedEntity.id : entityObj !== null ? entityObj.id : null;
         let versionId = selectedEntity !== null && selectedEntity.current_version ? selectedEntity.current_version.id : entityObj !== null && entityObj.current_version ? entityObj.current_version.id : null;
         let path = this.props.location.pathname.split('/').splice([1], 1).toString();
@@ -89,5 +90,11 @@ class FileOptionsMenu extends React.Component {
         mainStore.toggleTagManager();
     }
 }
+
+FileOptionsMenu.propTypes = {
+    projPermissions: object,
+    selectedEntity: object,
+    entityObj: object
+};
 
 export default FileOptionsMenu;

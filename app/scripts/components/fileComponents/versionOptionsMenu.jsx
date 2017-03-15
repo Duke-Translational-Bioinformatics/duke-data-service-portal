@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import provenanceStore from '../../stores/provenanceStore';
@@ -184,6 +185,13 @@ var styles = {
         textAlign: 'center',
         color: '#F44336'
     }
+};
+
+VersionsOptionsMenu.propTypes = {
+    entityObj: object,
+    toggleModal: object,
+    screenSize: object,
+    projPermissions: string
 };
 
 export default VersionsOptionsMenu;

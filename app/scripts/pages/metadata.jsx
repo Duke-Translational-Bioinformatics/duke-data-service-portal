@@ -13,10 +13,6 @@ class Metadata extends React.Component {
         this._loadMetadata();
     }
 
-    componentWillUnmount() {
-        this.unsubscribe();
-    }
-
     _loadMetadata() {
         authStore.getCurrentUser();
         mainStore.loadMetadataTemplates(null);

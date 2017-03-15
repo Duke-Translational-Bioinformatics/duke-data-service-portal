@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import FlatButton from 'material-ui/FlatButton';
@@ -18,7 +19,7 @@ class AddFolderModal extends React.Component {
     }
 
     render() {
-        const {entityObj, screenSize, toggleModal} = mainStore;
+        const { entityObj, screenSize, toggleModal } = mainStore;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let open = toggleModal && toggleModal.id === 'addFolder' ? toggleModal.open : false;
 
@@ -115,7 +116,9 @@ AddFolderModal.contextTypes = {
 };
 
 AddFolderModal.propTypes = {
-    toggleModal: React.PropTypes.object
+    entityObj: object,
+    toggleModal: object,
+    screenSize: object
 };
 
 export default AddFolderModal;

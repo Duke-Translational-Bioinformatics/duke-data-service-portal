@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import FlatButton from 'material-ui/FlatButton';
@@ -9,7 +10,7 @@ import TextField from 'material-ui/TextField';
 class VersionUpload extends React.Component {
 
     render() {
-        const {entityObj, toggleModal, screenSize, selectedEntity} = mainStore;
+        const { entityObj, toggleModal, screenSize, selectedEntity } = mainStore;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let open = toggleModal && toggleModal.id === 'newVersionModal' ? toggleModal.open : false;
         let fileId = selectedEntity !== null ? selectedEntity.id : entityObj !== null ? entityObj.id : null;
@@ -127,6 +128,13 @@ var styles = {
 
 VersionUpload.contextTypes = {
     muiTheme: React.PropTypes.object
+};
+
+VersionUpload.propTypes = {
+    entityObj: object,
+    toggleModal: object,
+    screenSize: object,
+    selectedEntity: object
 };
 
 export default VersionUpload;

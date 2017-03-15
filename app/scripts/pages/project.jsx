@@ -1,9 +1,6 @@
 import React from 'react';
 import { observer, inject } from 'mobx-react';
-import ProjectActions from '../actions/projectActions';
-import projectStore from '../stores/projectStore';
 import mainStore from '../stores/mainStore';
-import authStore from '../stores/authStore';
 import ListItems from '../components/globalComponents/listItems.jsx';
 import ProjectDetails from '../components/projectComponents/projectDetails.jsx';
 import FileOptions from '../components/fileComponents/fileOptions.jsx';

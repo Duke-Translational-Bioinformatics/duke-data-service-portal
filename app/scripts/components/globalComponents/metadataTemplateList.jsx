@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import ReactDOM from 'react-dom';
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore'
 import authStore from '../../stores/authStore'
-import MainActions from '../../actions/mainActions';
 import AddAgentModal from '../../components/globalComponents/addAgentModal.jsx';
 import CircularProgress from 'material-ui/CircularProgress';
 import Dialog from 'material-ui/Dialog';
@@ -31,6 +31,7 @@ class MetadataTemplateList extends React.Component {
             timeout: null,
             toggleSwitch: false
         };
+        this.search = _.debounce(this.search ,600);
     }
 
     render() {
@@ -133,7 +134,7 @@ class MetadataTemplateList extends React.Component {
                                 underlineStyle={styles.textField.underline}
                                 underlineFocusStyle={styles.textField.underline}
                                 onChange={this.handleChange.bind(this)}
-                                onKeyUp={() => this.onSearchChange()}/>
+                                onKeyUp={() => this.search()}/>
                         </Paper>
                     </div>
                 </div>
@@ -156,20 +157,12 @@ class MetadataTemplateList extends React.Component {
         this.setState({searchValue: e.target.value});
     }
 
-    onSearchChange() {
-        let searchInput = this.refs.searchInput;
-        let timeout = this.state.timeout;
-        let value = searchInput.getValue();
-        clearTimeout(timeout);
-        this.setState({timeout: setTimeout(() => {
-            let value = searchInput.getValue();
-            if (!value.indexOf(' ') <= 0) {
-                mainStore.loadMetadataTemplates(value);
-            }
-        }, 600)
-        });
+    search() {
+        let value = this.refs.searchInput.getValue();
+        if (!value.indexOf(' ') <= 0) {
+            mainStore.loadMetadataTemplates(value);
+        }
     }
-
 
     openMetadataManager() {
         mainStore.toggleMetadataManager();
@@ -195,10 +188,6 @@ class MetadataTemplateList extends React.Component {
     viewTemplate(id) {
         mainStore.getMetadataTemplateDetails(id);
         mainStore.getMetadataTemplateProperties(id);
-    }
-
-    handleClose() {
-        mainStore.closeModal();
     }
 }
 
@@ -282,9 +271,9 @@ var styles = {
 };
 
 MetadataTemplateList.propTypes = {
-    metaTemplates: React.PropTypes.array,
-    currentUser: React.PropTypes.object,
-    screenSize: React.PropTypes.object
+    metaTemplates: array,
+    currentUser: object,
+    loading: bool
 };
 
 export default MetadataTemplateList;

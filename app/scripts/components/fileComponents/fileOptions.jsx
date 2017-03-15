@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import { Path } from '../../../util/urlEnum';
@@ -18,7 +19,7 @@ class FileOptions extends React.Component {
     }
 
     render() {
-        const {entityObj, screenSize, selectedEntity, toggleModal} = mainStore;
+        const { entityObj, screenSize, selectedEntity, toggleModal } = mainStore;
         let id = selectedEntity !== null ? selectedEntity.id : entityObj !== null ? entityObj.id : null;
         let parentId = selectedEntity !== null ? selectedEntity.parent.id : entityObj !== null && entityObj.parent ? entityObj.parent.id : null;
         let parentKind = selectedEntity !== null ? selectedEntity.parent.kind : entityObj !== null && entityObj.parent ? entityObj.parent.kind : null;
@@ -167,5 +168,13 @@ var styles = {
         color: '#F44336'
     }
 };
+
+FileOptions.propTypes = {
+    screenSize: object,
+    entityObj: object,
+    selectedEntity: object,
+    toggleModal: object
+};
+
 
 export default FileOptions;

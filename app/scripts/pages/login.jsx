@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer, inject } from 'mobx-react';
 import Header from '../components/globalComponents/header.jsx';
 import authStore from '../stores/authStore.js';
@@ -29,7 +30,7 @@ class Login extends React.Component {
 
     createLoginUrl = () => {
         return authStore.appConfig.authServiceUri+'&state='+authStore.appConfig.serviceId+'&redirect_uri='+window.location.href;
-    }
+    };
 
     render() {
         let content = '';
@@ -93,6 +94,12 @@ var styles = {
         fontSize: 16,
         verticalAlign: -2
     }
+};
+
+Login.propTypes = {
+    error: object,
+    appConfig: object,
+    authServiceLoading: bool
 };
 
 export default Login;

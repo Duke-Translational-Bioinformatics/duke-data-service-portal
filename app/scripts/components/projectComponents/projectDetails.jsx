@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import ProjectOptionsMenu from './projectOptionsMenu.jsx';
@@ -20,7 +21,7 @@ class ProjectDetails extends React.Component {
     }
 
     render() {
-        const {project, projPermissions} = mainStore;
+        const { project, projPermissions } = mainStore;
         let id = this.props.params.id;
         let createdBy = project && project.audit ? project.audit.created_by.full_name : null;
         let crdOn = project && project.audit ? project.audit.created_on : null;
@@ -144,11 +145,12 @@ var styles = {
 };
 
 ProjectDetails.contextTypes = {
-    muiTheme: React.PropTypes.object
+    muiTheme: object
 };
 
 ProjectDetails.propTypes = {
-    project: React.PropTypes.object
+    project: object,
+    projPermissions: string
 };
 
 export default ProjectDetails;

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
-import ProjectActions from '../../actions/projectActions';
 import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../../util/baseUtils.js';
 import FlatButton from 'material-ui/FlatButton';
@@ -12,7 +12,7 @@ import {List, ListItem} from 'material-ui/List';
 class FileVersionsList extends React.Component {
 
     render() {
-        const {fileVersions, screenSize, toggleModal} = mainStore;
+        const { fileVersions, screenSize, toggleModal } = mainStore;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let versions = null;
         if (fileVersions && fileVersions != null) {
@@ -88,6 +88,12 @@ var styles = {
 
 FileVersionsList.contextTypes = {
     muiTheme: React.PropTypes.object
+};
+
+FileVersionsList.propTypes = {
+    fileVersions: array,
+    screenSize: object,
+    toggleModal: object
 };
 
 export default FileVersionsList;

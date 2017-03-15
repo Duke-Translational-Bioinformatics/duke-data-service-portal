@@ -1,11 +1,14 @@
 import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
-import ProjectStore from '../../stores/projectStore';
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
 import Card from 'material-ui/Card';
 
-const CustomMetadata = () => {
+
+const CustomMetadata = observer(() => {
+    const {objectMetadata} = mainStore;
     let metadataItems = [];
-    metadataItems = ProjectStore.objectMetadata && ProjectStore.objectMetadata !== null ? ProjectStore.objectMetadata.map((obj)=>{
+    metadataItems = objectMetadata && objectMetadata.length ? objectMetadata.map((obj)=>{
         let properties = obj.properties.map((prop)=>{
             return <span key={prop.template_property.id}>
                     <li className="list-group-title">{prop.template_property.key}</li>
@@ -38,7 +41,7 @@ const CustomMetadata = () => {
             {customMetadata}
         </div>
     )
-};
+});
 
 var styles = {
     card: {
@@ -63,7 +66,7 @@ CustomMetadata.contextTypes = {
 };
 
 CustomMetadata.propTypes = {
-    objectMetadata: React.PropTypes.array
+    objectMetadata: array
 };
 
 export default CustomMetadata;

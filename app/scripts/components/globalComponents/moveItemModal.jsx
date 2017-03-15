@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import {Kind, Path} from '../../../util/urlEnum';
@@ -23,7 +24,7 @@ let MoveItemModal = observer(React.createClass({
     },
 
     render(){
-        const {entityObj, moveItemLoading, moveToObj, moveItemList, selectedEntity} = mainStore;
+        const { entityObj, moveItemLoading, moveToObj, moveItemList, selectedEntity } = mainStore;
         let ancestors = [];
         let children = [];
         let projectChildren = [];
@@ -255,5 +256,13 @@ var styles = {
         textAlign: 'center'
     }
 };
+
+MoveItemModal.propTypes = {
+    entityObj: object,
+    selectedEntity: object,
+    moveItemList: array,
+    moveToObj: object,
+    moveItemLoading: bool
+}
 
 export default MoveItemModal;

@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import AddProjectModal from '../projectComponents/addProjectModal.jsx';
@@ -13,7 +14,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 class ProjectList extends React.Component {
 
     render() {
-        const {loading, projects, responseHeaders} = mainStore;
+        const { loading, projects, responseHeaders } = mainStore;
         let headers = responseHeaders && responseHeaders !== null ? responseHeaders : null;
         let nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
         let totalProjects = headers !== null && !!headers['x-total'] ? headers['x-total'][0] : null;
@@ -90,13 +91,13 @@ var styles = {
 };
 
 ProjectList.contextTypes = {
-    muiTheme: React.PropTypes.object
+    muiTheme: object
 };
 
 ProjectList.propTypes = {
-    loading: React.PropTypes.bool,
-    projects: React.PropTypes.array,
-    error: React.PropTypes.object
+    loading: bool,
+    projects: array,
+    responseHeaders: object
 };
 
 export default ProjectList;

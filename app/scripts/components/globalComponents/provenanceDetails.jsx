@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import provenanceStore from '../../stores/provenanceStore';
@@ -26,7 +27,7 @@ class ProvenanceDetails extends React.Component {
             if (fileName === null && onClickProvNode !== null && onClickProvNode.properties.current_version) fileName = onClickProvNode.properties.name;
             let fileId = onClickProvNode !== null && onClickProvNode.properties.file ? onClickProvNode.properties.file.id : null;
             if (fileId === null && onClickProvNode !== null && onClickProvNode.properties.current_version) versionId = onClickProvNode.properties.current_version.id;
-            let projectName = this.props.entityObj && this.props.entityObj.ancestors ? this.props.entityObj.ancestors[0].name : null;
+            let projectName = entityObj && entityObj.ancestors ? entityObj.ancestors[0].name : null;
             let crdOn = onClickProvNode !== null && onClickProvNode.properties.audit ? onClickProvNode.properties.audit.created_on : null;
             let createdOn = createdOnDate(crdOn);
             let createdBy = onClickProvNode !== null && onClickProvNode.properties.audit ? onClickProvNode.properties.audit.created_by.full_name : null;
@@ -161,6 +162,11 @@ var styles = {
 
 ProvenanceDetails.contextTypes = {
     muiTheme: React.PropTypes.object
+};
+
+ProvenanceDetails.propTypes = {
+    entityObj: object,
+    onClickProvNode: object
 };
 
 export default ProvenanceDetails;

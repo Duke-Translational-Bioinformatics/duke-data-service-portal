@@ -1,6 +1,7 @@
-import React from 'react';
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../../util/baseUtils.js';
 import Loaders from '../globalComponents/loaders.jsx';
 import SearchFilters from '../globalComponents/searchFilters.jsx';
@@ -10,6 +11,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Paper from 'material-ui/Paper';
 import {UrlGen} from '../../../util/urlEnum';
 
+@observer
 class SearchResults extends React.Component {
 
     constructor(props) {
@@ -20,28 +22,29 @@ class SearchResults extends React.Component {
     }
 
     render() {
-        let results = this.props.searchResults.length ? this.props.searchResults : [];
-        let searchValue = this.props.searchValue !== null ? 'for ' +'"'+this.props.searchValue+'"' : '';
-        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
+        const { projPermissions, searchResults, searchValue, searchResultsFolders, searchResultsFiles, searchResultsProjects, showFilters, uploads, loading } = mainStore;
+        let results = searchResults.length ? searchResults : [];
+        let srchValue = searchValue !== null ? 'for ' +'"'+searchValue+'"' : '';
+        let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         if (results.length > 20) {
             switch (this.state.page) {
                 case 0:
-                    results = this.props.searchResults.slice(0, 20);
+                    results = searchResults.slice(0, 20);
                     break;
                 case 1:
-                    results = this.props.searchResults.slice(0, 40);
+                    results = searchResults.slice(0, 40);
                     break;
                 case 2:
-                    results = this.props.searchResults.slice(0, 60);
+                    results = searchResults.slice(0, 60);
                     break;
                 case 3:
-                    results = this.props.searchResults;
+                    results = searchResults;
                     break;
             }
         } else {
-            results = this.props.searchResults;
+            results = searchResults;
         }
-        let searchResults = results.map((results) => {
+        let srchResults = results.map((results) => {
             if (results.kind === 'dds-folder') {
                 return (
                     <li key={ results.id } className="hover">
@@ -86,14 +89,14 @@ class SearchResults extends React.Component {
                 );
             }
         });
-        let pageResults = this.props.searchResults.length > searchResults.length ? searchResults.length+' out of '+this.props.searchResults.length : searchResults.length;
+        let pageResults = searchResults.length > searchResults.length ? searchResults.length+' out of '+searchResults.length : searchResults.length;
         return (
-            <div className="search-results-container" style={{marginLeft: this.props.showFilters ? '23%' : ''}}>
+            <div className="search-results-container" style={{marginLeft: showFilters ? '23%' : ''}}>
                  <SearchFilters {...this.props} />
                  <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
                     <div style={styles.searchTextWrapper}>
-                        {<div style={styles.searchText}>Showing{" "+pageResults+" "}results{' '+searchValue}</div>}
-                        {this.props.searchResultsFolders.length && this.props.searchResultsFiles.length || this.props.searchResultsProjects.length ? <IconButton
+                        {<div style={styles.searchText}>Showing{" "+pageResults+" "}results{' '+srchValue}</div>}
+                        {searchResultsFolders.length && searchResultsFiles.length || searchResultsProjects.length ? <IconButton
                             iconClassName="material-icons"
                             tooltip="filter results"
                             style={{float: 'right'}}
@@ -103,14 +106,14 @@ class SearchResults extends React.Component {
                         </IconButton> : null}
                     </div>
                 </div>
-                { this.props.uploads || this.props.loading ? <Loaders {...this.props}/> : null }
+                { uploads || loading ? <Loaders {...this.props}/> : null }
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     <div className="list-block list-block-search searchbar-found media-list">
                         <ul>
-                            {searchResults}
+                            {srchResults}
                         </ul>
                     </div>
-                    {this.props.searchResults.length > 25 && this.props.searchResults.length > results.length && this.state.page < 3 ?
+                    {searchResults.length > 25 && searchResults.length > results.length && this.state.page < 3 ?
                         <div className="mdl-cell mdl-cell--12-col">
                             <RaisedButton
                                 label="Load More"
@@ -129,17 +132,13 @@ class SearchResults extends React.Component {
     }
 
     toggleFilters() {
-        ProjectActions.toggleSearchFilters();
+        mainStore.toggleSearchFilters();
     }
 
     toggleSearch() {
-        if(this.props.showSearch) ProjectActions.toggleSearch();
+        if(mainStore.showSearch) mainStore.toggleSearch();
     }
 }
-
-SearchResults.contextTypes = {
-    muiTheme: React.PropTypes.object
-};
 
 var styles = {
     searchTextWrapper: {
@@ -162,16 +161,21 @@ var styles = {
     }
 };
 
+SearchResults.contextTypes = {
+    muiTheme: object
+};
+
 SearchResults.propTypes = {
-    error: React.PropTypes.object,
-    loading: React.PropTypes.bool,
-    results: React.PropTypes.array,
-    searchResults: React.PropTypes.array,
-    searchResultsFolders: React.PropTypes.array,
-    searchResultsFiles: React.PropTypes.array,
-    searchResultsProjects: React.PropTypes.array,
-    searchValue: React.PropTypes.string,
-    showFilters: React.PropTypes.bool
+    uploads: object,
+    loading: bool,
+    results: array,
+    searchResults: array,
+    searchResultsFolders: array,
+    searchResultsFiles: array,
+    searchResultsProjects: array,
+    searchValue: string,
+    projPermissions: string,
+    showFilters: bool
 };
 
 export default SearchResults;

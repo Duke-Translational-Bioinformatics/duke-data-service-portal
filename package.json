@@ -45,9 +45,9 @@
   },
   "dependencies": {
     "babel-core": "^6.22.1",
+    "babel-jest": "^4.0.0",
     "babel-loader": "^6.0.0",
     "babel-polyfill": "^6.0.0",
-    "babel-jest": "^4.0.0",
     "del": "^1.1.1",
     "ejs": "^2.4.1",
     "es6-promise": "^3.0.2",
@@ -69,6 +69,7 @@
     "helmet": "^3.4.0",
     "heroku-ssl-redirect": "0.0.3",
     "history": "^3.0.0",
+    "lodash": "^4.17.4",
     "material-ui": "^0.16.7",
     "mobx": "^3.1.0",
     "mobx-react": "^4.1.0",

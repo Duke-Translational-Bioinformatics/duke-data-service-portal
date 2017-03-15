@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../../util/baseUtils.js';
@@ -24,7 +25,7 @@ class ListItems extends React.Component {
     }
 
     render() {
-        const {filesChecked, foldersChecked, listItems, loading, projPermissions, responseHeaders, screenSize, uploads} = mainStore;
+        const { filesChecked, foldersChecked, listItems, loading, projPermissions, responseHeaders, screenSize, uploads } = mainStore;
         let showBatchOps = filesChecked.length || foldersChecked.length ? true : false;
         let headers = responseHeaders && responseHeaders !== null ? responseHeaders : null;
         let nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
@@ -193,13 +194,15 @@ var styles = {
 };
 
 ListItems.propTypes = {
-    filesChecked: React.PropTypes.array,
-    foldersChecked: React.PropTypes.array,
-    entityObj: React.PropTypes.object,
-    responseHeaders: React.PropTypes.object,
-    loading: React.PropTypes.bool,
-    uploading: React.PropTypes.bool,
-    error: React.PropTypes.object
+    filesChecked: array,
+    foldersChecked: array,
+    listItems: array,
+    entityObj: object,
+    projPermissions: object,
+    responseHeaders: object,
+    screenSize: object,
+    uploads: object,
+    loading: bool
 };
 
 export default ListItems;

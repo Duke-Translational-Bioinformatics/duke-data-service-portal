@@ -187,74 +187,74 @@ export class ProjectStore {
         this.versionModal = false;
     }
 
-    checkResponse(response) {
-        return checkStatus(response, authStore);
-    }
+    //checkResponse(response) {
+    //    return checkStatus(response, authStore);
+    //}
+    //
+    //setLoadingState() {
+    //    this.loading = !this.loading
+    //}
+    //
+    //toggleUserInfoPanel() {
+    //    this.showUserInfoPanel = !this.showUserInfoPanel;
+    //}
 
-    setLoadingState() {
-        this.loading = !this.loading
-    }
+    //setIncludedSearchProjects(includeProjects) {
+    //    this.includeProjects = includeProjects;
+    //    this.setSearchFilters();
+    //}
 
-    toggleUserInfoPanel() {
-        this.showUserInfoPanel = !this.showUserInfoPanel;
-    }
+    //setSearchFilters() {
+    //    this.searchFilters = [];
+    //    this.includeProjects.forEach((projectId)=>{
+    //        this.searchFilters.push({"match":{"project.id": projectId}})
+    //    });
+    //    ProjectActions.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
+    //}
 
-    setIncludedSearchProjects(includeProjects) {
-        this.includeProjects = includeProjects;
-        this.setSearchFilters();
-    }
+    //setIncludedSearchKinds(includeKinds) {
+    //    this.includeKinds = includeKinds;
+    //    ProjectActions.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
+    //}
 
-    setSearchFilters() {
-        this.searchFilters = [];
-        this.includeProjects.forEach((projectId)=>{
-            this.searchFilters.push({"match":{"project.id": projectId}})
-        });
-        ProjectActions.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
-    }
+    //toggleSearchFilters() {
+    //    this.showFilters = !this.showFilters;
+    //}
 
-    setIncludedSearchKinds(includeKinds) {
-        this.includeKinds = includeKinds;
-        ProjectActions.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
-    }
+    //searchObjects(value) {
+    //    this.searchValue = value;
+    //    this.loading = true;
+    //}
 
-    toggleSearchFilters() {
-        this.showFilters = !this.showFilters;
-    }
+    //searchObjectsSuccess(results) {
+    //    this.loading = false;
+    //    this.searchResults = results;
+    //    this.searchResultsFiles = results.filter((obj)=>{
+    //        return obj.kind === 'dds-file';
+    //    });
+    //    this.searchResultsFolders = results.filter((obj)=>{
+    //        return obj.kind === 'dds-folder';
+    //    });
+    //    let p = results.map((obj) => {
+    //        return {name: obj.ancestors[0].name, id: obj.ancestors[0].id};
+    //    });
+    //    this.searchResultsProjects = BaseUtils.removeDuplicates(p, 'id');
+    //}
 
-    searchObjects(value) {
-        this.searchValue = value;
-        this.loading = true;
-    }
+    //toggleSearch() {
+    //    this.searchValue = null;
+    //    this.showSearch = !this.showSearch;
+    //}
 
-    searchObjectsSuccess(results) {
-        this.loading = false;
-        this.searchResults = results;
-        this.searchResultsFiles = results.filter((obj)=>{
-            return obj.kind === 'dds-file';
-        });
-        this.searchResultsFolders = results.filter((obj)=>{
-            return obj.kind === 'dds-folder';
-        });
-        let p = results.map((obj) => {
-            return {name: obj.ancestors[0].name, id: obj.ancestors[0].id};
-        });
-        this.searchResultsProjects = BaseUtils.removeDuplicates(p, 'id');
-    }
-
-    toggleSearch() {
-        this.searchValue = null;
-        this.showSearch = !this.showSearch;
-    }
-
-    getMoveItemList() {
-        this.moveItemList = [];
-        this.loading = true;
-    }
-
-    getMoveItemListSuccess(results) {
-        this.moveItemList = results;
-        this.loading = false;
-    }
+    //getMoveItemList() {
+    //    this.moveItemList = [];
+    //    this.loading = true;
+    //}
+    //
+    //getMoveItemListSuccess(results) {
+    //    this.moveItemList = results;
+    //    this.loading = false;
+    //}
 
     //getObjectMetadataSuccess(results) {
     //    this.objectMetadata = results;
@@ -265,110 +265,110 @@ export class ProjectStore {
     //    });
     //}
 
-    createMetaPropsList(metaProps) {
-        this.metaProps = metaProps;
-    }
+    //createMetaPropsList(metaProps) {
+    //    this.metaProps = metaProps;
+    //}
 
-    createMetadataObject() {
-        this.drawerLoading = true;
-    }
+    //createMetadataObject() {
+    //    this.drawerLoading = true;
+    //}
 
-    createMetadataObjectSuccess(id, kind) {
-        this.drawerLoading = false;
-        this.showBatchOps = false;
-        this.showTemplateDetails = false;
-        ProjectActions.getObjectMetadata(id,kind);
-    }
+    //createMetadataObjectSuccess(id, kind) {
+    //    this.drawerLoading = false;
+    //    this.showBatchOps = false;
+    //    this.showTemplateDetails = false;
+    //    ProjectActions.getObjectMetadata(id,kind);
+    //}
 
-    showMetadataTemplateList() {
-        this.showTemplateDetails = false;
-    }
+    //showMetadataTemplateList() {
+    //    this.showTemplateDetails = false;
+    //}
 
-    deleteMetadataPropertySuccess(id) {
-        this.templateProperties = BaseUtils.removeObjByKey(this.templateProperties, {key: 'id', value: id});
-    }
+    //deleteMetadataPropertySuccess(id) {
+    //    //this.templateProperties = BaseUtils.removeObjByKey(this.templateProperties, {key: 'id', value: id});
+    //}
+    //
+    //getMetadataTemplateProperties() {
+    //    this.drawerLoading = true;
+    //}
 
-    getMetadataTemplateProperties() {
-        this.drawerLoading = true;
-    }
+    //getMetadataTemplatePropertiesSuccess(properties) {
+    //    this.drawerLoading = false;
+    //    this.templateProperties = properties;
+    //}
 
-    getMetadataTemplatePropertiesSuccess(properties) {
-        this.drawerLoading = false;
-        this.templateProperties = properties;
-    }
+    //createMetadataProperty() {
+    //    this.drawerLoading = true;
+    //}
 
-    createMetadataProperty() {
-        this.drawerLoading = true;
-    }
+    //createMetadataPropertySuccess(property) {
+    //    this.drawerLoading = false;
+    //    this.templateProperties.push(property);
+    //}
 
-    createMetadataPropertySuccess(property) {
-        this.drawerLoading = false;
-        this.templateProperties.push(property);
-    }
+    //showMetaDataTemplateDetails() {
+    //    this.showPropertyCreator = false;
+    //    this.showTemplateCreator = false;
+    //    this.showTemplateDetails = true;
+    //}
 
-    showMetaDataTemplateDetails() {
-        this.showPropertyCreator = false;
-        this.showTemplateCreator = false;
-        this.showTemplateDetails = true;
-    }
+    //showTemplatePropManager() {
+    //    this.showPropertyCreator = true;
+    //    this.showTemplateCreator = false;
+    //    this.showTemplateDetails = false;
+    //}
 
-    showTemplatePropManager() {
-        this.showPropertyCreator = true;
-        this.showTemplateCreator = false;
-        this.showTemplateDetails = false;
-    }
+    //deleteTemplateSuccess() {
+    //    ProjectActions.toggleMetadataManager();
+    //    ProjectActions.loadMetadataTemplates('');
+    //}
 
-    deleteTemplateSuccess() {
-        ProjectActions.toggleMetadataManager();
-        ProjectActions.loadMetadataTemplates('');
-    }
+    //updateMetadataTemplate() {
+    //    this.drawerLoading = true;
+    //}
+    //
+    //createMetadataTemplate() {
+    //    this.drawerLoading = true;
+    //    this.templateProperties = [];
+    //}
 
-    updateMetadataTemplate() {
-        this.drawerLoading = true;
-    }
+    //createMetadataTemplateSuccess(template) {
+    //    this.drawerLoading = false;
+    //    this.metaTemplates.unshift(template);
+    //}
+    //
+    //toggleMetadataManager() {
+    //    this.openMetadataManager = !this.openMetadataManager;
+    //    this.showPropertyCreator = false;
+    //    this.showTemplateCreator = true;
+    //    this.showTemplateDetails = false;
+    //}
 
-    createMetadataTemplate() {
-        this.drawerLoading = true;
-        this.templateProperties = [];
-    }
+    //getMetadataTemplateDetails() {
+    //    this.drawerLoading = true;
+    //    this.openMetadataManager = !this.openMetadataManager;
+    //}
 
-    createMetadataTemplateSuccess(template) {
-        this.drawerLoading = false;
-        this.metaTemplates.unshift(template);
-    }
+    //getMetadataTemplateDetailsSuccess(template) {
+    //    this.drawerLoading = false;
+    //    this.metaDataTemplate = template;
+    //    this.showTemplateCreator = false;
+    //    this.showTemplateDetails = true;
+    //}
 
-    toggleMetadataManager() {
-        this.openMetadataManager = !this.openMetadataManager;
-        this.showPropertyCreator = false;
-        this.showTemplateCreator = true;
-        this.showTemplateDetails = false;
-    }
-
-    getMetadataTemplateDetails() {
-        this.drawerLoading = true;
-        this.openMetadataManager = !this.openMetadataManager;
-    }
-
-    getMetadataTemplateDetailsSuccess(template) {
-        this.drawerLoading = false;
-        this.metaDataTemplate = template;
-        this.showTemplateCreator = false;
-        this.showTemplateDetails = true;
-    }
-
-    loadMetadataTemplates() {
-        if(this.metaTemplates.length) this.metaTemplates = [];
-        this.loading = true;
-    }
-
-    loadMetadataTemplatesSuccess(templates) {
-        this.loading = false;
-        this.metaTemplates = templates.sort((a, b) => {
-            a = new Date(a.audit.created_on);
-            b = new Date(b.audit.created_on);
-            return a>b ? -1 : a<b ? 1 : 0;
-        });
-    }
+    //loadMetadataTemplates() {
+    //    if(this.metaTemplates.length) this.metaTemplates = [];
+    //    this.loading = true;
+    //}
+    //
+    //loadMetadataTemplatesSuccess(templates) {
+    //    this.loading = false;
+    //    this.metaTemplates = templates.sort((a, b) => {
+    //        a = new Date(a.audit.created_on);
+    //        b = new Date(b.audit.created_on);
+    //        return a>b ? -1 : a<b ? 1 : 0;
+    //    });
+    //}
 
     //saveGraphZoomState(scale, position) {
     //    this.scale = scale;
@@ -998,33 +998,33 @@ export class ProjectStore {
     //    })
     //}
 
-    openModal() {
-        this.modal = true;
-        this.trigger({
-            modal: this.modal
-        })
-    }
-
-    closeModal() {
-        this.modal = false;
-        this.trigger({
-            modal: this.modal
-        })
-    }
-
-    openVersionModal() {
-        this.versionModal = true;
-        this.trigger({
-            versionModal: this.versionModal
-        })
-    }
-
-    closeVersionModal() {
-        this.versionModal = false;
-        this.trigger({
-            versionModal: this.versionModal
-        })
-    }
+    //openModal() {
+    //    this.modal = true;
+    //    this.trigger({
+    //        modal: this.modal
+    //    })
+    //}
+    //
+    //closeModal() {
+    //    this.modal = false;
+    //    this.trigger({
+    //        modal: this.modal
+    //    })
+    //}
+    //
+    //openVersionModal() {
+    //    this.versionModal = true;
+    //    this.trigger({
+    //        versionModal: this.versionModal
+    //    })
+    //}
+    //
+    //closeVersionModal() {
+    //    this.versionModal = false;
+    //    this.trigger({
+    //        versionModal: this.versionModal
+    //    })
+    //}
 
     //loadAgents () {
     //    this.loading = true;
@@ -1126,17 +1126,17 @@ export class ProjectStore {
     //        loading: this.loading
     //    })
     //}
-
-    getAgentApiTokenSuccess(json) {
-        this.agentApiToken = json;
-        this.loading = false;
-        ProjectActions.openModal();
-        this.trigger({
-            agentApiToken: this.agentApiToken,
-            loading: this.loading
-        })
-
-    }
+    //
+    //getAgentApiTokenSuccess(json) {
+    //    this.agentApiToken = json;
+    //    this.loading = false;
+    //    ProjectActions.openModal();
+    //    this.trigger({
+    //        agentApiToken: this.agentApiToken,
+    //        loading: this.loading
+    //    })
+    //
+    //}
 
     //clearApiToken() {
     //    this.agentApiToken = {};
@@ -1205,25 +1205,25 @@ export class ProjectStore {
     //    this.drawerLoading = false;
     //}
 
-    getUserSuccess (json, id) {
-        this.currentUser = json;
-        if(id) ProjectActions.getPermissions(id, json.id);
-        //this.trigger({
-        //    currentUser: this.currentUser
-        //});
-    }
+    //getUserSuccess (json, id) {
+    //    this.currentUser = json;
+    //    if(id) ProjectActions.getPermissions(id, json.id);
+    //    //this.trigger({
+    //    //    currentUser: this.currentUser
+    //    //});
+    //}
 
-    getPermissionsSuccess (json) {
-        let id = json.auth_role.id;
-        if (id === 'project_viewer') this.projPermissions = 'viewOnly';
-        if (id === 'project_admin' || id === 'system_admin') this.projPermissions = 'prjCrud';
-        if (id === 'file_editor') this.projPermissions = 'flCrud';
-        if (id === 'file_uploader') this.projPermissions = 'flUpload';
-        if (id === 'file_downloader') this.projPermissions = 'flDownload';
-        this.trigger({
-            projPermissions: this.projPermissions
-        });
-    }
+    //getPermissionsSuccess (json) {
+    //    let id = json.auth_role.id;
+    //    if (id === 'project_viewer') this.projPermissions = 'viewOnly';
+    //    if (id === 'project_admin' || id === 'system_admin') this.projPermissions = 'prjCrud';
+    //    if (id === 'file_editor') this.projPermissions = 'flCrud';
+    //    if (id === 'file_uploader') this.projPermissions = 'flUpload';
+    //    if (id === 'file_downloader') this.projPermissions = 'flDownload';
+    //    this.trigger({
+    //        projPermissions: this.projPermissions
+    //    });
+    //}
 
     //getUserKeySuccess (json) {
     //    this.userKey = json;
@@ -1246,15 +1246,15 @@ export class ProjectStore {
     //    });
     //}
 
-    @action getProjectsSuccess(results, headers, page) {
-        if(page <= 1) {
-            this.projects = results;
-        } else {
-            this.projects = [...this.projects, ...results];
-        }
-        this.responseHeaders = headers;
-        this.setLoadingState();
-    }
+    //@action getProjectsSuccess(results, headers, page) {
+    //    if(page <= 1) {
+    //        this.projects = results;
+    //    } else {
+    //        this.projects = [...this.projects, ...results];
+    //    }
+    //    this.responseHeaders = headers;
+    //    this.setLoadingState();
+    //}
 
 
     //showDetailsSuccess(json) {
@@ -1325,29 +1325,29 @@ export class ProjectStore {
     //}
 
 
-    getChildren(id, path, page) {
-        this.loading = true;
-        if (page == null) page = 1;
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + Path.CHILDREN + "?page=" + page + "&per_page=25",
-            getFetchParams('get', authStore.appConfig.apiToken)
-        ).then(this.checkResponse).then((response) => {
-                const results = response.json();
-                const headers = response.headers;
-                return Promise.all([results, headers]);
-            }).then((json) => {
-                let results = json[0].results;
-                let headers = json[1].map;
-                if(page <= 1) {
-                    this.listItems = results;
-                } else {
-                    this.listItems = [...this.listItems, ...results];
-                }
-                this.responseHeaders = headers;
-                this.loading = false;
-            }).catch((ex) => {
-                projectStore.handleErrors(ex)
-            })
-    }
+    //getChildren(id, path, page) {
+    //    this.loading = true;
+    //    if (page == null) page = 1;
+    //    fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + path + id + Path.CHILDREN + "?page=" + page + "&per_page=25",
+    //        getFetchParams('get', authStore.appConfig.apiToken)
+    //    ).then(this.checkResponse).then((response) => {
+    //            const results = response.json();
+    //            const headers = response.headers;
+    //            return Promise.all([results, headers]);
+    //        }).then((json) => {
+    //            let results = json[0].results;
+    //            let headers = json[1].map;
+    //            if(page <= 1) {
+    //                this.listItems = results;
+    //            } else {
+    //                this.listItems = [...this.listItems, ...results];
+    //            }
+    //            this.responseHeaders = headers;
+    //            this.loading = false;
+    //        }).catch((ex) => {
+    //            projectStore.handleErrors(ex)
+    //        })
+    //}
 
     //addFolder() {
     //    this.loading = true;
@@ -1453,24 +1453,24 @@ export class ProjectStore {
     //        loading: this.loading
     //    })
     //}
-
-    getEntitySuccess(json, requester) {
-        if(this.projPermissions === null && (json.kind === 'dds-file' || json.kind === 'dds-folder')) ProjectActions.getUser(json.project.id);
-        if(this.projPermissions === null && json.kind === 'dds-file-version') ProjectActions.getUser(json.file.project.id);
-        if (requester === undefined) this.entityObj = json;
-        if (requester === 'moveItemModal') this.moveToObj = json;
-        if (requester === 'optionsMenu') {
-            this.parent = json.parent;
-            this.moveToObj = json;
-        }
-        this.loading = false;
-        this.trigger({
-            entityObj: this.entityObj,
-            moveToObj: this.moveToObj,
-            parent: this.parent,
-            loading: this.loading
-        })
-    }
+    //
+    //getEntitySuccess(json, requester) {
+    //    if(this.projPermissions === null && (json.kind === 'dds-file' || json.kind === 'dds-folder')) ProjectActions.getUser(json.project.id);
+    //    if(this.projPermissions === null && json.kind === 'dds-file-version') ProjectActions.getUser(json.file.project.id);
+    //    if (requester === undefined) this.entityObj = json;
+    //    if (requester === 'moveItemModal') this.moveToObj = json;
+    //    if (requester === 'optionsMenu') {
+    //        this.parent = json.parent;
+    //        this.moveToObj = json;
+    //    }
+    //    this.loading = false;
+    //    this.trigger({
+    //        entityObj: this.entityObj,
+    //        moveToObj: this.moveToObj,
+    //        parent: this.parent,
+    //        loading: this.loading
+    //    })
+    //}
 
     //getProjectMembers() {
     //    this.loading = true;

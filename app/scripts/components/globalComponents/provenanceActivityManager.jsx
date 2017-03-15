@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import ReactDOM from 'react-dom';
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -328,6 +329,14 @@ var styles = {
         textAlign: 'center',
         color: '#F44336'
     }
+};
+
+ProvenanceActivityManager.propTypes = {
+    selectedNode: object,
+    provEditorModal: object,
+    screenSize: object,
+    showProvCtrlBtns: bool,
+    activities: array
 };
 
 export default ProvenanceActivityManager;
