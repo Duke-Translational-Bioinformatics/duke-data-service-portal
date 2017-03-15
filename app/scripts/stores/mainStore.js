@@ -388,7 +388,7 @@ export class MainStore {
                 if(BaseUtils.objectPropInArray(this.listItems.slice(), 'id', id)) {
                     this.listItems = this.listItems.filter(obj => obj.id !== id);
                     this.listItems.unshift(json);
-                } else {
+                } else if(this.entityObj.id === id) {
                     this.entityObj = json;
                 }
                 this.loading = false;
@@ -1088,7 +1088,7 @@ export class MainStore {
         }
     }
 
-    uploadError(uploadId, fileName, projectId) { //Todo: Use Map() here to make it observable!!!!!!!!!!!!!!!!!!!!!!!!
+    uploadError(uploadId, fileName, projectId) {
         if (this.uploads.has(uploadId)) {
             this.failedUploads.push({
                 upload: this.uploads.get(uploadId),

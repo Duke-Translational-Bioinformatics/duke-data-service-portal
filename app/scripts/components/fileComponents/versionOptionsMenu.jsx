@@ -3,7 +3,6 @@ const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import provenanceStore from '../../stores/provenanceStore';
-import ProjectStore from '../../stores/projectStore';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';

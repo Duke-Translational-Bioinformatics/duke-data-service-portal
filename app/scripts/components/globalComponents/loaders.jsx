@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
-import ProjectActions from '../../actions/projectActions';
 import mainStore from '../../stores/mainStore';
 import LinearProgress from 'material-ui/LinearProgress';
 

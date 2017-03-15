@@ -161,7 +161,7 @@ export class ProvenanceStore {
                         title: '<div style="margin: 10px; color: #616161"><span>'
                         + 'Name: ' + node.properties.name + '</span><br/>' +
                         '<span>' + 'Created By: ' + node.properties.audit.created_by.full_name + '</span><br/>' +
-                        '<span>' + 'Started On: ' + node.properties.started_on + '</span></div>'
+                        '<span>' + 'Started On: ' + BaseUtils.formatLongDate(node.properties.started_on) + '</span></div>'
                     }
                 }
                 if (node.properties.kind === 'dds-file-version') {
@@ -410,7 +410,7 @@ export class ProvenanceStore {
                 title: '<div style="margin: 10px; color: #616161"><span>'
                 +'Name: '+json.name + '</span><br/>' +
                 '<span>'+'Created By: '+json.audit.created_by.full_name+'</span><br/>' +
-                '<span>'+'Started On: '+json.started_on+'</span></div>'
+                '<span>'+'Started On: '+BaseUtils.formatLongDate(json.started_on)+'</span></div>'
             };
         });
         let nodes = this.provNodes.slice();
@@ -448,7 +448,7 @@ export class ProvenanceStore {
                         title: '<div style="margin: 10px; color: #616161"><span>'
                         +'Name: '+json.name + '</span><br/>' +
                         '<span>'+'Created By: '+json.audit.created_by.full_name+'</span><br/>' +
-                        '<span>'+'Started On: '+json.started_on+'</span></div>'
+                        '<span>'+'Started On: '+BaseUtils.formatLongDate(json.started_on)+'</span></div>'
                     };
                 });
                 nodes.push(this.updatedGraphItem[0]);

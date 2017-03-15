@@ -2,8 +2,6 @@ import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
 import Close from 'material-ui/svg-icons/navigation/close';
 import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';

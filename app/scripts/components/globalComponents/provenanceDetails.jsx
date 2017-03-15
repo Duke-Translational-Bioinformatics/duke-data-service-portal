@@ -14,11 +14,6 @@ class ProvenanceDetails extends React.Component {
         const { entityObj } = mainStore;
         let details = null;
         if (onClickProvNode && onClickProvNode.properties.hasOwnProperty('audit')) {
-            function createdOnDate(created) {
-                let x = new Date(created);
-                let createdOn = x.toString();
-                return createdOn;
-            }
             let id = this.props.params.id;
             let versionId = null;
             let activityName = onClickProvNode !== null && onClickProvNode.properties.kind === 'dds-activity' ? onClickProvNode.properties.name : null;
@@ -29,7 +24,7 @@ class ProvenanceDetails extends React.Component {
             if (fileId === null && onClickProvNode !== null && onClickProvNode.properties.current_version) versionId = onClickProvNode.properties.current_version.id;
             let projectName = entityObj && entityObj.ancestors ? entityObj.ancestors[0].name : null;
             let crdOn = onClickProvNode !== null && onClickProvNode.properties.audit ? onClickProvNode.properties.audit.created_on : null;
-            let createdOn = createdOnDate(crdOn);
+            let createdOn = BaseUtils.formatDate(crdOn);
             let createdBy = onClickProvNode !== null && onClickProvNode.properties.audit ? onClickProvNode.properties.audit.created_by.full_name : null;
             let lastUpdatedOn = onClickProvNode !== null && onClickProvNode.properties.audit ? onClickProvNode.properties.audit.last_updated_on : null;
             let lastUpdatedBy = onClickProvNode !== null && onClickProvNode.properties.audit.last_updated_by ? onClickProvNode.properties.audit.last_updated_by.full_name : null;
