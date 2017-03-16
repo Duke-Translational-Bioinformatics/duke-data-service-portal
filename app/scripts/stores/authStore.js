@@ -40,7 +40,7 @@ export class AuthStore {
             .then((json) => {
                 if (json.results) {
                     let url = json.results.reduce((prev, curr) => {
-                        return (!curr.is_deprecated) ? curr : prev;
+                        return (curr.is_default) ? curr : prev;
                     }, null);
                     this.appConfig.authServiceUri = url.login_initiation_url;
                     this.appConfig.authServiceName = url.name;
