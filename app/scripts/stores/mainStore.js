@@ -485,7 +485,7 @@ export class MainStore {
                 return response.json()
             }).then((json) => {
                 this.objectMetadata = json.results;
-                this.metaObjProps = json.results.map((prop) => { //TODO: Make sure this is observable Map
+                this.metaObjProps = json.results.map((prop) => {
                     return prop.properties.map((prop) => {
                         return {key: prop.template_property.key, id: prop.template_property.id, value: prop.value};
                     })
@@ -1542,7 +1542,7 @@ export class MainStore {
         this.error = error;
         this.loading = false;
         this.drawerLoading = false;
-        provenanceStore.drawerLoading = false; // Todo: Change this. Should toggle drawer loading in prov store
+        provenanceStore.toggleGraphLoading();
     }
 
     addToast(msg) {
