@@ -1,8 +1,9 @@
 import React from 'react';
 import mainStore from '../stores/mainStore';
 import { observable, computed, action } from 'mobx';
-import { UrlGen, Path } from '../../util/urlEnum';
-import { checkStatus, getFetchParams } from '../../util/fetchUtil';
+import transportLayer from '../transportLayer';
+import { UrlGen, Path } from '../util/urlEnum';
+import { checkStatus, getFetchParams } from '../util/fetchUtil';
 import appConfig from '../config';
 import cookie from 'react-cookie';
 
@@ -23,20 +24,20 @@ export class AuthStore {
         this.appConfig.isLoggedIn = cookie.load('isLoggedIn');
     }
 
-    setLoadingStatus() {
+    @action setLoadingStatus() {
         this.authServiceLoading = !this.authServiceLoading
     }
 
-    setRedirectUrl(url) {
+    @action setRedirectUrl(url) {
         this.appConfig.redirectUrl = url;
         let expiresAt = new Date(Date.now() + (60 * 60 * 1000));
         cookie.save('redirectUrl', this.appConfig.redirectUrl, {expires: expiresAt});
     }
 
     @action getAuthProviders() {
-        fetch(DDS_PORTAL_CONFIG.baseUrl + UrlGen.routes.apiPrefix + 'auth_providers', getFetchParams('get'))
+        transportLayer.getAuthProviders()
             .then(mainStore.checkResponse)
-            .then((response) => {return response.json()})
+            .then(response => response.json())
             .then((json) => {
                 if (json.results) {
                     let url = json.results.reduce((prev, curr) => {
@@ -52,9 +53,9 @@ export class AuthStore {
     }
 
     @action getApiToken(accessToken) {
-        fetch(this.appConfig.baseUrl + UrlGen.routes.apiPrefix + Path.ACCESS_TOKEN + accessToken + '&authentication_service_id=' + this.appConfig.serviceId, getFetchParams('get'))
+        transportLayer.getApiToken(accessToken, this.appConfig)
             .then(mainStore.checkResponse)
-            .then((response) => {return response.json()})
+            .then(response => response.json())
             .then((json) => {
                 if (json.api_token) {
                     let expiresAt = new Date(Date.now() + (60 * 60 * 2 * 1000));
@@ -67,33 +68,26 @@ export class AuthStore {
     }
 
     @action getCurrentUser() {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER,
-            getFetchParams('get', authStore.appConfig.apiToken))
+        transportLayer.getCurrentUser()
             .then(mainStore.checkResponse)
-            .then((response) => { return response.json() })
+            .then(response => response.json())
             .then(json => this.currentUser = json)
             .catch(ex => mainStore.handleErrors(ex));
     }
 
     @action getUserKey() {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'api_key',
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then((response) => {
-                return response.json()
-            }).then((json) => {
-                this.userKey = json;
-            })
-            .catch((ex) => {
-                mainStore.handleErrors(ex)
-            });
+        transportLayer.getUserKey()
+            .then(mainStore.checkResponse)
+            .then(response => response.json())
+            .then((json) => this.userKey = json)
+            .catch(ex =>mainStore.handleErrors(ex))
     }
 
-    @action createUserKey(id) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'api_key',
-            getFetchParams('put', authStore.appConfig.apiToken)
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
+    @action createUserKey() {
+        transportLayer.createUserKey()
+            .then(mainStore.checkResponse)
+            .then(response => response.json())
+            .then((json) => {
                 mainStore.addToast('User Key created successfully');
                 this.userKey = json;
             }).catch((ex) => {
@@ -103,10 +97,10 @@ export class AuthStore {
     }
 
     @action deleteUserKey() {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.CURRENT_USER + 'api_key',
-            getFetchParams('delete', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-            }).then((json) => {
+        transportLayer.deleteUserKey()
+            .then(mainStore.checkResponse)
+            .then(response => {})
+            .then((json) => {
                 mainStore.addToast('User key deleted');
                 this.userKey = {};
             }).catch((ex) => {
@@ -115,19 +109,19 @@ export class AuthStore {
             });
     }
 
-    isLoggedInHandler() {
+    @action isLoggedInHandler() {
         let expiresAt = new Date(Date.now() + (60 * 1000));
         this.appConfig.isLoggedIn = true;
         cookie.save('isLoggedIn', this.appConfig.isLoggedIn, {expires: expiresAt});
         this.authServiceLoading = true;
     }
 
-    removeLoginCookie() {
+    @action removeLoginCookie() {
         this.appConfig.isLoggedIn = null;
         cookie.remove('isLoggedIn');
     }
 
-    handleLogout(status) {
+    @action handleLogout(status) {
         this.appConfig.apiToken = null;
         cookie.remove('apiToken');
         this.appConfig.isLoggedIn = null;

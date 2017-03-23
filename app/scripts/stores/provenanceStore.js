@@ -1,12 +1,13 @@
 import React from 'react';
 import { observable, computed, action, map } from 'mobx';
+import transportLayer from '../transportLayer';
 import authStore from '../stores/authStore';
 import mainStore from '../stores/mainStore';
-import BaseUtils from '../../util/baseUtils.js';
+import BaseUtils from '../util/baseUtils.js';
 import { StatusEnum } from '../enum';
-import { UrlGen, Kind, Path } from '../../util/urlEnum';
+import { UrlGen, Kind, Path } from '../util/urlEnum';
 import {graphOptions, graphColors} from '../graphConfig';
-import { checkStatus, getFetchParams } from '../../util/fetchUtil';
+import { checkStatus, getFetchParams } from '../util/fetchUtil';
 
 export class ProvenanceStore {
 
@@ -75,53 +76,35 @@ export class ProvenanceStore {
     }
 
     @action getActivities() {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.ACTIVITIES,
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
+        transportLayer.getActivities(authStore.appConfig.apiToken)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => {
                 this.activities = json.results;
-            }).catch((ex) => {
-                mainStore.handleErrors(ex)
-            })
+            }).catch(ex =>mainStore.handleErrors(ex))
     }
 
-    @action getWasGeneratedByNode(id, kind, prevGraph) {
+    @action getWasGeneratedByNode(id, prevGraph) {
         this.drawerLoading = true;
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'search/provenance/origin',
-            getFetchParams('post', authStore.appConfig.apiToken, {
-                'file_versions': [{
-                    id: id
-                }]
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
+        transportLayer.getWasGeneratedByNode(id)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => {
                 this.getProvenanceSuccess(json.graph, prevGraph);
-            }).catch((ex) => {
-                mainStore.handleErrors(ex)
-            })
+            }).catch(ex =>mainStore.handleErrors(ex))
     }
 
     @action getProvenance(id, kind, prevGraph) {
         this.drawerLoading = true;
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'search/provenance?max_hops=1',
-            getFetchParams('post', authStore.appConfig.apiToken, {
-                'start_node': {
-                    kind: kind,
-                    id: id
-                }
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
+        transportLayer.getProvenance(id, kind)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => {
                 this.getProvenanceSuccess(json.graph, prevGraph);
-            }).catch((ex) => {
-                mainStore.handleErrors(ex)
-            })
+            }).catch(ex =>mainStore.handleErrors(ex))
     }
 
-    getProvenanceSuccess(prov, prevGraph) {
+    @action getProvenanceSuccess(prov, prevGraph) {
         let edges = prov.relationships.filter((edge) => {
             if (edge.properties.audit.deleted_on === null && edge.type !== 'WasAttributedTo') {
                 return edge;
@@ -209,7 +192,7 @@ export class ProvenanceStore {
         this.dltRelationsBtn = false;
     }
 
-    getFromAndToNodes(data, relationKind, nodes) {
+    @action getFromAndToNodes(data, relationKind, nodes) {
         let from = null;
         let to = null;
         let node1 = null;
@@ -269,19 +252,19 @@ export class ProvenanceStore {
         }
     }
 
-    confirmDerivedFromRel(from, to) {
+    @action confirmDerivedFromRel(from, to) {
         this.relFrom = from;
         this.relTo = to;
         this.provEditorModal = {open: true, id: 'confirmRel'}
     }
 
-    startAddRelation(kind, from, to) {
+    @action startAddRelation(kind, from, to) {
         this.buildRelationBody(kind, from, to);
         this.provEditorModal = {open: false, id: 'confirmRel'}
 
     }
 
-    buildRelationBody(kind, from, to) {
+    @action buildRelationBody(kind, from, to) {
         let body = {};
         if (kind === 'used') {
             body = {
@@ -321,11 +304,10 @@ export class ProvenanceStore {
     }
 
     @action addProvRelation(kind, body) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + 'relations/' + kind,
-            getFetchParams('post', authStore.appConfig.apiToken, body)
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
+        transportLayer.addProvRelation(kind, body)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => {
                 mainStore.addToast('New relation Added');
                 let rel = [];
                 rel.push(json);
@@ -358,10 +340,10 @@ export class ProvenanceStore {
     @action deleteProvItem(data, id) {
         let kind = data.hasOwnProperty('from') ? 'relations/' : 'activities/';
         let msg = kind === 'activities/' ? data.label : data.type;
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + kind + data.id,
-            getFetchParams('delete', authStore.appConfig.apiToken))
-            .then(checkStatus).then((response) => {
-            }).then((json) => {
+        transportLayer.deleteProvItem(data.id, kind)
+            .then(this.checkResponse)
+            .then((response) => {})
+            .then((json) => {
                 mainStore.addToast(msg + ' deleted');
                 let item = [];
                 item.push(data);
@@ -381,14 +363,10 @@ export class ProvenanceStore {
     }
 
     @action addProvActivity(name, desc) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.ACTIVITIES,
-            getFetchParams('post', authStore.appConfig.apiToken, {
-                "name": name,
-                "description": desc
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
+        transportLayer.addProvActivity(name, desc)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => {
                 mainStore.addToast('New Activity Added');
                 this.addProvActivitySuccess(json);
             }).catch((ex) => {
@@ -397,7 +375,7 @@ export class ProvenanceStore {
             })
     }
 
-    addProvActivitySuccess(json) {
+    @action addProvActivitySuccess(json) {
         let act = [];
         act.push(json);
         this.updatedGraphItem = act.map((json) => {//Update dataset in client
@@ -421,14 +399,10 @@ export class ProvenanceStore {
     }
 
     @action editProvActivity(id, name, desc, prevName) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.ACTIVITIES + id,
-            getFetchParams('put', authStore.appConfig.apiToken, {
-                "name": name,
-                "description": desc
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
+        transportLayer.editProvActivity(id, name, desc)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => {
                 if (name !== prevName) {
                     mainStore.addToast(prevName + ' name was changed to ' + name);
                 } else {
@@ -455,12 +429,10 @@ export class ProvenanceStore {
                 this.shouldRenderGraph();
                 this.provNodes = nodes;
                 this.showProvCtrlBtns = false;
-            }).catch((ex) => {
-                mainStore.handleErrors(ex)
-            })
+            }).catch(ex =>mainStore.handleErrors(ex))
     }
 
-    addFileToGraph(node) {
+    @action addFileToGraph(node) {
         let n = [];
         n.push(node);
         this.updatedGraphItem = n.map((node) => {//Update dataset in client
@@ -500,35 +472,35 @@ export class ProvenanceStore {
         this.provNodes = nodes;
     }
 
-    switchRelationFromTo(from, to){
+    @action switchRelationFromTo(from, to){
         this.openConfirmRel = true;
         this.relFrom = to;
         this.relTo = from;
     }
 
-    saveGraphZoomState(scale, position) {
+    @action saveGraphZoomState(scale, position) {
         this.scale = scale;
         this.position = position;
     }
 
-    selectNodesAndEdges(edgeData, nodeData) {
+    @action selectNodesAndEdges(edgeData, nodeData) {
         this.selectedEdge = edgeData[0];
         this.selectedNode = nodeData;
     }
 
-    showProvControlBtns() {
+    @action showProvControlBtns() {
         this.showProvCtrlBtns = !this.showProvCtrlBtns;
         if(this.removeFileFromProvBtn) this.removeFileFromProvBtn = !this.removeFileFromProvBtn;
         if(this.dltRelationsBtn) this.dltRelationsBtn = !this.dltRelationsBtn;
     }
 
-    showRemoveFileFromProvBtn() { //To remove unused files from graph (not currently in use)
+    @action showRemoveFileFromProvBtn() { //To remove unused files from graph (not currently in use)
         this.removeFileFromProvBtn = !this.removeFileFromProvBtn;
         if(this.showProvCtrlBtns) this.showProvCtrlBtns = !this.showProvCtrlBtns;
         if(this.dltRelationsBtn) this.dltRelationsBtn = !this.dltRelationsBtn;
     }
 
-    showDeleteRelationsBtn(edges, nodes) {
+    @action showDeleteRelationsBtn(edges, nodes) {
         if (edges !== null && this.dltRelationsBtn && nodes !== null) {
             this.dltRelationsBtn = !this.dltRelationsBtn;
         } else {
@@ -544,28 +516,27 @@ export class ProvenanceStore {
     }
 
     @action getProvFileVersions(id) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.FILE + id + '/versions',
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then(this.checkResponse).then((response) => {
-                return response.json()
-            }).then((json) => {
+        transportLayer.getProvFileVersions(id)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => {
                 this.provFileVersions = json.results
             }).catch((ex) => {
                 mainStore.handleErrors(ex)
             })
     }
 
-    createGraph(graph) {
+    @action createGraph(graph) {
         this.network = graph;
     }
 
-    clearProvFileVersions() {
+    @action clearProvFileVersions() {
         if(this.provFileVersions.length) {
             this.provFileVersions = [];
         }
     }
 
-    toggleAddEdgeMode(value) {
+    @action toggleAddEdgeMode(value) {
         if (value == null) {
             this.addEdgeMode = false;
         } else {
@@ -573,11 +544,11 @@ export class ProvenanceStore {
         }
     }
 
-    toggleProvNodeDetails() {
+    @action toggleProvNodeDetails() {
         this.showProvDetails = !this.showProvDetails;
     }
 
-    toggleProvView() {
+    @action toggleProvView() {
         this.toggleProv = !this.toggleProv;
         if(this.toggleProv !== true) { //clear old graph on close of provenance view
             this.provEdges = [];
@@ -585,48 +556,48 @@ export class ProvenanceStore {
         }
     }
 
-    toggleProvEditor() {
+    @action toggleProvEditor() {
         this.toggleProvEdit = !this.toggleProvEdit;
     }
 
-    toggleGraphLoading() {
+    @action toggleGraphLoading() {
         this.drawerLoading = false;
     }
 
-    openProvEditorModal(id) {
+    @action openProvEditorModal(id) {
         this.provEditorModal = {open: true, id: id}
     }
 
-    closeProvEditorModal(id) {
+    @action closeProvEditorModal(id) {
         this.provEditorModal = {open: false, id: id}
     }
 
-    displayProvAlert() {
+    @action displayProvAlert() {
         this.showProvAlert = true;
     }
 
-    hideProvAlert() {
+    @action hideProvAlert() {
         this.showProvAlert = false;
     }
 
-    isDoubleClick() {
+    @action isDoubleClick() {
         this.doubleClicked = true;
         setTimeout(()=> this.doubleClicked = false, 300)
     }
 
-    toggleRelationMode() {
+    @action toggleRelationMode() {
         this.relationMode = !this.relationMode
     }
 
-    shouldRenderGraph() {
+    @action shouldRenderGraph() {
         this.renderGraph = !this.renderGraph;
     }
 
-    setOnClickProvNode(node) {
+    @action setOnClickProvNode(node) {
         this.onClickProvNode = node;
     }
 
-    setDropdownSelectValue(value) {
+    @action setDropdownSelectValue(value) {
         this.dropdownSelectValue = value;
     }
 
@@ -648,7 +619,7 @@ export class ProvenanceStore {
                 let id = this.onClickProvNode.properties.current_version ? this.onClickProvNode.properties.current_version.id : this.onClickProvNode.properties.id;
                 let kind = this.onClickProvNode.properties.kind === 'dds-activity' ? 'dds-activity' : 'dds-file-version';
                 nodeData.properties.kind === 'dds-activity' ?  this.getProvenance(id, kind, prevGraph) :
-                    this.getWasGeneratedByNode(id, kind, prevGraph);
+                    this.getWasGeneratedByNode(id, prevGraph);
             }
         }
     }
@@ -714,7 +685,7 @@ export class ProvenanceStore {
         }
     }
 
-    onAddEdgeMode(data, callback) {
+    @action onAddEdgeMode(data, callback) {
         let nodes = this.provNodes.slice();
         let relationKind = null;
         if(data.from == data.to) {

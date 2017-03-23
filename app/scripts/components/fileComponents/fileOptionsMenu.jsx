@@ -3,7 +3,7 @@ const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import provenanceStore from '../../stores/provenanceStore';
-import {Kind, Path} from '../../../util/urlEnum';
+import {Kind, Path} from '../../util/urlEnum';
 import FileOptions from '../fileComponents/fileOptions.jsx';
 import MoveItemModal from '../globalComponents/moveItemModal.jsx';
 import TextField from 'material-ui/TextField';

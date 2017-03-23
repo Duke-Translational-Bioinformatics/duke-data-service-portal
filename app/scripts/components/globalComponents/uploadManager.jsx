@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 const { object, bool, array, string } = PropTypes;
 import Dropzone from 'react-dropzone';
 import mainStore from '../../stores/mainStore';
-import BaseUtils from '../../../util/baseUtils';
+import BaseUtils from '../../util/baseUtils';
 import AddCircle from 'material-ui/svg-icons/content/add-circle';
 import AutoComplete from 'material-ui/AutoComplete';
 import IconButton from 'material-ui/IconButton';

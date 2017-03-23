@@ -6,7 +6,7 @@ import agentStore from '../stores/agentStore';
 import authStore from '../stores/authStore';
 import AgentOptionsMenu from '../components/globalComponents/agentOptionsMenu.jsx';
 import Loaders from '../components/globalComponents/loaders.jsx';
-import {UrlGen, Path} from '../../util/urlEnum';
+import {UrlGen, Path} from '../util/urlEnum';
 import Card from 'material-ui/Card';
 
 @observer

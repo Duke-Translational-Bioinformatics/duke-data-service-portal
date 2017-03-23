@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
-import Tooltip from '../../../util/tooltip.js';
+import Tooltip from '../../util/tooltip.js';
 import IconButton from 'material-ui/IconButton';
 import LocalOffer from 'material-ui/svg-icons/maps/local-offer';
 

@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
-import {Kind, Path} from '../../../util/urlEnum';
+import {Kind, Path} from '../../util/urlEnum';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';

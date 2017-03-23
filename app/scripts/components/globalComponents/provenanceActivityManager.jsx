@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import provenanceStore from '../../stores/provenanceStore';
 import AutoComplete from 'material-ui/AutoComplete';
-import BaseUtils from '../../../util/baseUtils.js';
+import BaseUtils from '../../util/baseUtils.js';
 import Checkbox from 'material-ui/Checkbox';
 import CircularProgress from 'material-ui/CircularProgress';
 import Dialog from 'material-ui/Dialog';

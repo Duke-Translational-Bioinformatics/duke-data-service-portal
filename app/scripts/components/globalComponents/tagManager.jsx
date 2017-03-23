@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
-import BaseUtils from '../../../util/baseUtils';
+import BaseUtils from '../../util/baseUtils';
 import MetadataObjectCreator from '../globalComponents/metadataObjectCreator.jsx';
 import MetadataPropertyManager from '../globalComponents/metadataPropertyManager.jsx';
 import MetadataTemplateCreator from '../globalComponents/metadataTemplateCreator.jsx';

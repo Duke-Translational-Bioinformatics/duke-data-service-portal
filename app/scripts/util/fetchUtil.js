@@ -1,4 +1,4 @@
-import authStore from '../scripts/stores/authStore';
+import authStore from '../stores/authStore';
 
 export function checkStatus(response) {
     if (response.status >= 200 && response.status < 300) {

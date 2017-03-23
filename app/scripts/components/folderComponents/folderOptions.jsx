@@ -3,7 +3,7 @@ const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import MoveItemModal from '../globalComponents/moveItemModal.jsx';
-import { Path } from '../../../util/urlEnum';
+import { Path } from '../../util/urlEnum';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';

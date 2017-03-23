@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import authStore from '../../stores/authStore';
 import MetadataTemplateProperties from '../globalComponents/metadataTemplateProperties.jsx';
-import BaseUtils from '../../../util/baseUtils'
+import BaseUtils from '../../util/baseUtils'
 import AddCircle from 'material-ui/svg-icons/content/add-circle';
 import IconButton from 'material-ui/IconButton';
 import MenuItem from 'material-ui/MenuItem';

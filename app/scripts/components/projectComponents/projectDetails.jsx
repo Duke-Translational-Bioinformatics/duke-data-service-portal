@@ -5,8 +5,8 @@ import mainStore from '../../stores/mainStore';
 import ProjectOptionsMenu from './projectOptionsMenu.jsx';
 import Details from './details.jsx';
 import UploadManager from '../globalComponents/uploadManager.jsx';
-import {UrlGen} from '../../../util/urlEnum';
-import BaseUtils from '../../../util/baseUtils.js';
+import {UrlGen} from '../../util/urlEnum';
+import BaseUtils from '../../util/baseUtils.js';
 import FlatButton from 'material-ui/FlatButton';
 import Card from 'material-ui/Card';
 

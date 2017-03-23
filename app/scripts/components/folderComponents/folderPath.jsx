@@ -2,10 +2,10 @@ import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
-import {Path, Kind} from '../../../util/urlEnum';
+import {Path, Kind} from '../../util/urlEnum';
 import FolderOptionsMenu from './folderOptionsMenu.jsx';
 import UploadManager from '../globalComponents/uploadManager.jsx';
-import BaseUtils from '../../../util/baseUtils';
+import BaseUtils from '../../util/baseUtils';
 import Card from 'material-ui/Card';
 import FontIcon from 'material-ui/FontIcon';
 

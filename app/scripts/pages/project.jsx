@@ -7,7 +7,7 @@ import FileOptions from '../components/fileComponents/fileOptions.jsx';
 import FolderOptions from '../components/folderComponents/folderOptions.jsx';
 import TagManager from '../components/globalComponents/tagManager.jsx'
 import VersionUpload from '../components/fileComponents/versionUpload.jsx';
-import { Path, Kind } from '../../util/urlEnum';
+import { Path, Kind } from '../util/urlEnum';
 
 @observer
 class Project extends React.Component {

@@ -3,8 +3,8 @@ const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import provenanceStore from '../../stores/provenanceStore';
-import BaseUtils from '../../../util/baseUtils.js';
-import {UrlGen} from '../../../util/urlEnum';
+import BaseUtils from '../../util/baseUtils.js';
+import {UrlGen} from '../../util/urlEnum';
 
 @observer
 class ProvenanceDetails extends React.Component {
@@ -38,8 +38,7 @@ class ProvenanceDetails extends React.Component {
             if (fileName !== null) {
                 fileLink = <a href={fileId !== null ?
                 UrlGen.routes.file(fileId) :
-                UrlGen.routes.version(versionId)} className="external mdl-color-text--grey-600"
-                              onTouchTap={() => this.toggleProv()}>
+                UrlGen.routes.version(versionId)} className="external link" onTouchTap={() => this.toggleProv()}>
                     {fileName}
                 </a>
             }

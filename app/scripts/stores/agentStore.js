@@ -1,10 +1,11 @@
 import React from 'react';
 import { observable, computed, action, map } from 'mobx';
+import transportLayer from '../transportLayer';
 import authStore from '../stores/authStore';
 import mainStore from '../stores/mainStore';
-import BaseUtils from '../../util/baseUtils.js';
-import { UrlGen, Kind, Path } from '../../util/urlEnum';
-import { checkStatus, getFetchParams } from '../../util/fetchUtil';
+import BaseUtils from '../util/baseUtils.js';
+import { UrlGen, Kind, Path } from '../util/urlEnum';
+import { checkStatus, getFetchParams } from '../util/fetchUtil';
 
 export class AgentStore {
 
@@ -23,11 +24,10 @@ export class AgentStore {
     }
 
     @action createAgentKey(id) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + id + '/api_key',
-            getFetchParams('put', authStore.appConfig.apiToken)
-        ).then(this.checkResponse).then((response) => {
-                return response.json()
-            }).then((json) => {
+        transportLayer.createAgentKey(id)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => {
                 mainStore.addToast('API Key created successfully');
                 this.agentKey = json
             }).catch((ex) => {
@@ -37,32 +37,24 @@ export class AgentStore {
     }
 
     @action getAgentKey(id) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + id + '/api_key',
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then(this.checkResponse).then((response) => {
-                return response.json()
-            }).then((json) => {
+        transportLayer.getAgentKey(id)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => {
                 this.agentKey = json;
                 let formData = new FormData();
                 formData.append('agent_key', this.agentKey.key);
                 formData.append('user_key', authStore.userKey.key);
                 if(this.agentKey.key && authStore.userKey.key) this.getAgentApiToken(this.agentKey.key, authStore.userKey.key, formData);
-            }).catch((ex) => {
-                mainStore.handleErrors(ex)
-            });
+            }).catch(ex =>mainStore.handleErrors(ex))
     }
 
     @action getAgentApiToken(agentKey, userKey) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + 'api_token',
-            getFetchParams('post', authStore.appConfig.apiToken, {
-                'agent_key': agentKey,
-                'user_key': userKey
-            })
-        ).then(this.checkResponse).then((response) => {
-                return response.json()
-            }).then((json) => {
-                this.agentApiToken = json;
-            }).catch((ex) => {
+        transportLayer.getAgentApiToken(agentKey, userKey)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => this.agentApiToken = json)
+            .catch((ex) => {
                 mainStore.addToast('Failed to generate an API token');
                 mainStore.handleErrors(ex)
             })
@@ -70,28 +62,20 @@ export class AgentStore {
 
     @action loadAgents() {
         mainStore.toggleLoading();
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT,
-            getFetchParams('get', authStore.appConfig.apiToken))
-            .then(this.checkResponse).then((response) => {
-                return response.json()
-            }).then((json) => {
+        transportLayer.loadAgents()
+            .then(this.checkResponse)
+            .then(response => response.json())
+                .then((json) => {
                 this.agents = json.results;
-                mainStore.toggleLoading();
-            }).catch((ex) => {
-                mainStore.handleErrors(ex)
-            })
+                if(mainStore.loading) mainStore.toggleLoading();
+            }).catch(ex =>mainStore.handleErrors(ex))
     }
 
     @action addAgent(name, desc, repo) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT,
-            getFetchParams('post', authStore.appConfig.apiToken, {
-                "name": name,
-                "description": desc,
-                "repo_url": repo
-            })
-        ).then(this.checkResponse).then((response) => {
-                return response.json()
-            }).then((json) => {
+        transportLayer.addAgent(name, desc, repo)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => {
                 mainStore.addToast('New software agent added');
                 this.agents = [json, ...this.agents];
             }).catch((ex) => {
@@ -101,15 +85,10 @@ export class AgentStore {
     }
 
     @action editAgent(id, name, desc, repo) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + id,
-            getFetchParams('put', authStore.appConfig.apiToken, {
-                "name": name,
-                "description": desc,
-                "repo_url": repo
-            })
-        ).then(checkStatus).then((response) => {
-                return response.json()
-            }).then((json) => {
+        transportLayer.editAgent(id, name, desc, repo)
+            .then(checkStatus)
+            .then(response => response.json())
+            .then((json) => {
                 mainStore.addToast('Software Agent Updated');
                 mainStore.getEntity(id, Path.AGENT);
             }).catch((ex) => {
@@ -119,18 +98,19 @@ export class AgentStore {
     }
 
     @action deleteAgent(id) {
-        fetch(UrlGen.routes.baseUrl + UrlGen.routes.apiPrefix + Path.AGENT + id,
-            getFetchParams('delete', authStore.appConfig.apiToken))
-            .then(this.checkResponse).then((response) => {
-            }).then((json) => {
+        transportLayer.deleteAgent(id)
+            .then(this.checkResponse)
+            .then(response => {})
+            .then((json) => {
                 mainStore.addToast('Software Agent Deleted');
+                this.agents = BaseUtils.removeObjByKey(this.agents, {key: 'id', value: id})
             }).catch((ex) => {
                 mainStore.addToast('Failed to delete software agent');
                 mainStore.handleErrors(ex)
             });
     }
 
-    clearApiToken() {
+    @action clearApiToken() {
         this.agentApiToken = {};
     }
 

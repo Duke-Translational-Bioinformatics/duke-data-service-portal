@@ -3,7 +3,7 @@ const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import authStore from '../../stores/authStore';
-import BaseUtils from '../../../util/baseUtils'
+import BaseUtils from '../../util/baseUtils'
 
 @observer
 class MetadataTemplateProperties extends React.Component {

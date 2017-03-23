@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
-import { Path } from '../../../util/urlEnum';
+import { Path } from '../../util/urlEnum';
 import MoveItemModal from '../globalComponents/moveItemModal.jsx';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';

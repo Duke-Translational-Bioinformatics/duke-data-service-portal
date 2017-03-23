@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import authStore from '../../stores/authStore';
-import {UrlGen} from '../../../util/urlEnum';
+import {UrlGen} from '../../util/urlEnum';
 
 @observer
 class LeftMenu extends React.Component {

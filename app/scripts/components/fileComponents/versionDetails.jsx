@@ -5,9 +5,9 @@ import authStore from '../../stores/authStore';
 import mainStore from '../../stores/mainStore';
 import VersionOptionsMenu from './versionOptionsMenu.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
-import {UrlGen, Path} from '../../../util/urlEnum';
-import Tooltip from '../../../util/tooltip.js';
-import BaseUtils from '../../../util/baseUtils.js';
+import {UrlGen, Path} from '../../util/urlEnum';
+import Tooltip from '../../util/tooltip.js';
+import BaseUtils from '../../util/baseUtils.js';
 import Card from 'material-ui/Card';
 
 @observer

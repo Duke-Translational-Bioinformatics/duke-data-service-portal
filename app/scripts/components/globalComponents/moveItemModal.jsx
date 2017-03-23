@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
-import {Kind, Path} from '../../../util/urlEnum';
+import {Kind, Path} from '../../util/urlEnum';
 import {List, ListItem} from 'material-ui/List';
 import Archive from 'material-ui/svg-icons/content/archive.js';
 import CircularProgress from 'material-ui/CircularProgress';

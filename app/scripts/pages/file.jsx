@@ -1,7 +1,7 @@
 import React from 'react'
 import { observer } from 'mobx-react';
 import mainStore from '../stores/mainStore';
-import { Kind, Path } from '../../util/urlEnum';
+import { Kind, Path } from '../util/urlEnum';
 import FileDetails from '../components/fileComponents/fileDetails.jsx';
 import FileOptions from '../components/fileComponents/fileOptions.jsx';
 import Provenance from '../components/globalComponents/provenance.jsx';

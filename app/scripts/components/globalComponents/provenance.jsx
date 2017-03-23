@@ -10,7 +10,7 @@ import ProvenanceActivityManager from '../globalComponents/provenanceActivityMan
 import ProvenanceDetails from '../globalComponents/provenanceDetails.jsx';
 import ProvenanceFilePicker from '../globalComponents/provenanceFilePicker.jsx';
 import FileVersionsList from '../fileComponents/fileVersionsList.jsx';
-import BaseUtils from '../../../util/baseUtils.js';
+import BaseUtils from '../../util/baseUtils.js';
 import AutoComplete from 'material-ui/AutoComplete';
 import BorderColor from 'material-ui/svg-icons/editor/border-color';
 import Cancel from 'material-ui/svg-icons/navigation/cancel';

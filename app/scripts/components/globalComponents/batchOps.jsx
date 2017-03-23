@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
-import {Kind, Path} from '../../../util/urlEnum';
+import {Kind, Path} from '../../util/urlEnum';
 import Card from 'material-ui/Card';
 import DeleteForeverIcon from 'material-ui/svg-icons/action/delete-forever';
 import Dialog from 'material-ui/Dialog';

@@ -6,7 +6,7 @@ import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
-import { Kind } from '../../../util/urlEnum';
+import { Kind } from '../../util/urlEnum';
 
 @observer
 class AddFolderModal extends React.Component {

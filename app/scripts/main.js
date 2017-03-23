@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import Router from 'react-router';
 import routes from './routes';
 import _  from 'lodash';
-require('../util/polyfills.js');
+require('./util/polyfills.js');
 require('es6-promise').polyfill();
 
 //Needed for onTouchTap

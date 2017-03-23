@@ -5,7 +5,7 @@ import mainStore from '../../stores/mainStore';
 import agentStore from '../../stores/agentStore';
 import authStore from '../../stores/authStore';
 import AddAgentModal from '../../components/globalComponents/addAgentModal.jsx';
-import {UrlGen} from '../../../util/urlEnum.js';
+import {UrlGen} from '../../util/urlEnum.js';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';

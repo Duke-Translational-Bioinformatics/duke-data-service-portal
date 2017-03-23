@@ -7,7 +7,7 @@ import mainStore from '../stores/mainStore.js';
 import CircularProgress from 'material-ui/CircularProgress';
 import LinearProgress from 'material-ui/LinearProgress';
 import RaisedButton from 'material-ui/RaisedButton';
-import {UrlGen} from '../../util/urlEnum';
+import {UrlGen} from '../util/urlEnum';
 
 @observer
 class Login extends React.Component {
