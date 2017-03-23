@@ -21,6 +21,7 @@ class Version extends React.Component {
 
     _loadVersion() {
         let id = this.props.params.id;
+        mainStore.setSelectedEntity(null, null);
         mainStore.getEntity(id, Path.FILE_VERSION);
         provenanceStore.getWasGeneratedByNode(id);
     }

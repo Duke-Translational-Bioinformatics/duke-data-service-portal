@@ -74,7 +74,7 @@ class AddFolderModal extends React.Component {
     addFolder(entityObj) {
         let id = this.props.params.id;
         let name = this.folderNameText.getValue();
-        let parentKind = !entityObj ? Kind.DDS_PROJECT : Kind.DDS_FOLDER;
+        let parentKind = this.props.router.location.pathname.includes('project') ? Kind.DDS_PROJECT : Kind.DDS_FOLDER;
         if (this.state.floatingErrorText) {
             return null
         } else {

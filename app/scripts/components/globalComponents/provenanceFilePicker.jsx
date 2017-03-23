@@ -53,12 +53,12 @@ class ProvenanceFilePicker extends React.Component {
                                  onTouchTap={() => this.handleProjectSelect(project.id, project.name)}/>
             }
         }) : null;
-        let provFileVersionsList = provFileVersions.map((node)=>{
-            return <li key={node.id}
-                       id={node.id}
-                       onTouchTap={() => this.useFileVersion(node.file.name, node.version, node)}>
-                Version: {node.version}
-            </li>
+        let provFileVersionsList = provFileVersions.map((node) => {
+            if(!node.is_deleted) {
+                return <li key={node.id} id={node.id} onTouchTap={() => this.useFileVersion(node.file.name, node.version, node)}>
+                        Version: {node.version}
+                    </li>;
+            }
         });
         const addFileNodeActions = [
             <FlatButton
@@ -69,8 +69,7 @@ class ProvenanceFilePicker extends React.Component {
                 label="Submit"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={() => this.addFileToGraph()}
-                />
+                onTouchTap={() => this.addFileToGraph()}/>
         ];
 
         return (
@@ -115,7 +114,7 @@ class ProvenanceFilePicker extends React.Component {
                         onNewRequest={(value, e) => this.chooseFileVersion(value, e)}
                         onUpdateInput={this.handleUpdateInput.bind(this)}/>
                     {autoCompleteLoading ? <CircularProgress size={60} thickness={5} style={styles.autoCompleteProgress}/> : null}
-                    {provFileVersions.length > 1 ?
+                    {provFileVersionsList.length ?
                         <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.versionListWrapper}>
                             <h7>Would you like to use a different version of this file?</h7>
                             <ul id='fileVersionUl'>

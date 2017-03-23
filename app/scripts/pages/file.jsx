@@ -22,6 +22,7 @@ class File extends React.Component {
 
     _loadFile() {
         let id = this.props.params.id;
+        mainStore.setSelectedEntity(null, null);
         mainStore.getEntity(id, Path.FILE);
         mainStore.getFileVersions(id);
         mainStore.getObjectMetadata(id, Kind.DDS_FILE);

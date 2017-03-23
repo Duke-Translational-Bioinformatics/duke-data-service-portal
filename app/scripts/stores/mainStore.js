@@ -1119,7 +1119,6 @@ export class MainStore {
             .then(response => response.json())
             .then((json) => {
                 this.addToast(label + ' has been updated.');
-                this.openMetadataManager = !this.openMetadataManager;
                 this.metadataTemplate = json;
                 this.showTemplateCreator = false;
                 this.showTemplateDetails = true;

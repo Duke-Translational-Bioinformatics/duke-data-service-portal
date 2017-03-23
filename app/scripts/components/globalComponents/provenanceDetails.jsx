@@ -23,8 +23,7 @@ class ProvenanceDetails extends React.Component {
             let fileId = onClickProvNode !== null && onClickProvNode.properties.file ? onClickProvNode.properties.file.id : null;
             if (fileId === null && onClickProvNode !== null && onClickProvNode.properties.current_version) versionId = onClickProvNode.properties.current_version.id;
             let projectName = entityObj && entityObj.ancestors ? entityObj.ancestors[0].name : null;
-            let crdOn = onClickProvNode !== null && onClickProvNode.properties.audit ? onClickProvNode.properties.audit.created_on : null;
-            let createdOn = BaseUtils.formatDate(crdOn);
+            let createdOn = onClickProvNode !== null && onClickProvNode.properties.audit ? onClickProvNode.properties.audit.created_on : null;
             let createdBy = onClickProvNode !== null && onClickProvNode.properties.audit ? onClickProvNode.properties.audit.created_by.full_name : null;
             let lastUpdatedOn = onClickProvNode !== null && onClickProvNode.properties.audit ? onClickProvNode.properties.audit.last_updated_on : null;
             let lastUpdatedBy = onClickProvNode !== null && onClickProvNode.properties.audit.last_updated_by ? onClickProvNode.properties.audit.last_updated_by.full_name : null;
@@ -77,7 +76,7 @@ class ProvenanceDetails extends React.Component {
                             <li className="list-group-title" style={styles.listGroupTitle}>Created On</li>
                             <li className="item-content" style={styles.listItem}>
                                 <div className="item-inner">
-                                    <div>{createdOn}</div>
+                                    <div>{BaseUtils.formatDate(createdOn)}</div>
                                 </div>
                             </li>
                         </ul>
@@ -87,7 +86,7 @@ class ProvenanceDetails extends React.Component {
                             <li className="list-group-title" style={styles.listGroupTitle}>Last Updated</li>
                             <li className="item-content" style={styles.listItem}>
                                 <div className="item-inner">
-                                    <div>{'Last Updated By ' + lastUpdatedBy + ' on ' + lastUpdatedOn}</div>
+                                    <div>{'Last Updated By ' + lastUpdatedBy + ' on ' + BaseUtils.formatDate(lastUpdatedOn)}</div>
                                 </div>
                             </li>
                         </ul>
