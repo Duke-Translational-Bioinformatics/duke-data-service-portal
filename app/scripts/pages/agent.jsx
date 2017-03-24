@@ -1,58 +1,47 @@
 import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
-import ProjectActions from '../actions/projectActions';
-import ProjectStore from '../stores/projectStore';
+import { observer } from 'mobx-react';
+import mainStore from '../stores/mainStore';
+import agentStore from '../stores/agentStore';
+import authStore from '../stores/authStore';
 import AgentOptionsMenu from '../components/globalComponents/agentOptionsMenu.jsx';
 import Loaders from '../components/globalComponents/loaders.jsx';
-import {UrlGen} from '../../util/urlEnum';
+import {UrlGen, Path} from '../util/urlEnum';
 import Card from 'material-ui/Card';
 
+@observer
 class Agent extends React.Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            agent: ProjectStore.agent,
-            loading: false,
-            screenSize: ProjectStore.screenSize,
-            toggleModal: ProjectStore.toggleModal
-        };
-    }
-
     componentDidMount() {
+        this._loadAgent();
+    }
+
+    _loadAgent() {
         let id = this.props.params.id;
-        this.unsubscribe = ProjectStore.listen(state => this.setState(state));
-        this._loadAgent(id);
-    }
-
-    componentWillUnmount() {
-        this.unsubscribe();
-    }
-
-    _loadAgent(id) {
-        let kind = 'software_agents';
-        ProjectActions.getEntity(id, kind);
-        ProjectActions.getAgentKey(id);
-        ProjectActions.getUserKey();
+        mainStore.getEntity(id, Path.AGENT);
+        agentStore.getAgentKey(id);
+        authStore.getUserKey();
     }
 
     render() {
-        let agentKey = this.state.agentKey ? this.state.agentKey.key : null;
-        let id = this.state.entityObj ? this.state.entityObj.id : null;
-        let name = this.state.entityObj ? this.state.entityObj.name : null;
-        let description = this.state.entityObj ? this.state.entityObj.description : null;
-        let crdOn = this.state.entityObj && this.state.entityObj.audit ? this.state.entityObj.audit.created_on : null;
+        const { agentKey } = agentStore;
+        const { entityObj } = mainStore;
+        let key = agentKey ? agentKey.key : null;
+        let id = entityObj ? entityObj.id : null;
+        let name = entityObj ? entityObj.name : null;
+        let description = entityObj ? entityObj.description : null;
+        let crdOn = entityObj && entityObj.audit ? entityObj.audit.created_on : null;
         let x = new Date(crdOn);
         let createdOn = x.toString();
-        let createdBy = this.state.entityObj && this.state.entityObj.audit ? this.state.entityObj.audit.created_by.full_name : null;
-        let lastUpdatedOn = this.state.entityObj && this.state.entityObj.audit ? this.state.entityObj.audit.last_updated_on : null;
-        let lastUpdatedBy = this.state.entityObj && this.state.entityObj.audit.last_updated_by ? this.state.entityObj.audit.last_updated_by.full_name : null;
-        let repoUrl = this.state.entityObj ? this.state.entityObj.repo_url : null;
+        let createdBy = entityObj && entityObj.audit ? entityObj.audit.created_by.full_name : null;
+        let lastUpdatedOn = entityObj && entityObj.audit ? entityObj.audit.last_updated_on : null;
+        let lastUpdatedBy = entityObj && entityObj.audit.last_updated_by ? entityObj.audit.last_updated_by.full_name : null;
+        let repoUrl = entityObj ? entityObj.repo_url : null;
         let agent = <Card className="project-container mdl-color--white content mdl-color-text--grey-800"
                           style={{marginBottom: 30, overflow: 'visible', padding: '10px 0px 10px 0px'}}>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <div style={styles.menuIcon}>
-                    <AgentOptionsMenu {...this.props} {...this.state}/>
+                    <AgentOptionsMenu {...this.props}/>
                 </div>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
                     <a href={UrlGen.routes.agents() }
@@ -72,7 +61,7 @@ class Agent extends React.Component {
                             <li className="item-divider">Software Agent API Key</li>
                             <li className="item-content">
                                 <div className="item-inner">
-                                    <div>{ agentKey }</div>
+                                    <div>{ key }</div>
                                 </div>
                             </li>
                             <li className="item-divider">Software Agent ID</li>
@@ -140,13 +129,6 @@ var styles = {
         overflow: 'visible',
         padding: '10px 0px 10px 0px'
     },
-    floatingButton: {
-        position: 'absolute',
-        top: -20,
-        right: '2%',
-        zIndex: '2',
-        color: '#ffffff'
-    },
     icon: {
         fontSize: 28,
         marginRight: 8,
@@ -173,9 +155,8 @@ Agent.contextTypes = {
 };
 
 Agent.propTypes = {
-    loading: bool,
-    details: array,
-    error: object
+    entityObj: object,
+    agentKey: object
 };
 
 export default Agent;

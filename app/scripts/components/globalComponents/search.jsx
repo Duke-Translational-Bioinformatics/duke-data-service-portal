@@ -1,32 +1,35 @@
-import React from 'react';
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
 import Close from 'material-ui/svg-icons/navigation/close';
 import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 
+@observer
 class Search extends React.Component {
 
     componentDidMount() {
         if (this.refs.searchInput) { // Check if searchInput is in DOM and focus
             let search = this.refs.searchInput ? this.refs.searchInput : null;
-            if(this.props.showSearch && search !== null) search.focus();
+            if(mainStore.showSearch && search !== null) search.focus();
         }
     }
 
     render() {
-        return (this.props.showSearch ? <Paper style={styles.searchBar} zDepth={2}>
+        const { screenSize, showSearch, searchValue } = mainStore;
+        return (showSearch ? <Paper style={styles.searchBar} zDepth={2}>
             <i className="material-icons"
                style={styles.searchBar.searchIcon}
                onTouchTap={()=>this.showSearch()}>arrow_back</i>
             <TextField
                 ref="searchInput"
                 hintText="Search"
-                defaultValue={this.props.searchValue ? this.props.searchValue : null}
+                defaultValue={searchValue ? searchValue : null}
                 hintStyle={styles.searchBar.hintText}
                 onKeyDown={(e)=>this.search(e)}
-                style={{width: '90%',position: 'absolute',top: '20%', left: this.props.screenSize.width < 680 ? '11%' : '8%'}}
+                style={{width: '90%',position: 'absolute',top: '20%', left: screenSize.width < 680 ? '11%' : '8%'}}
                 underlineStyle={styles.searchBar.textFieldUnderline}
                 underlineFocusStyle={styles.searchBar.textFieldUnderline} />
             <i className="material-icons"
@@ -37,22 +40,22 @@ class Search extends React.Component {
     }
 
     search(e) {
-        let includeKinds = this.props.includeKinds;
-        let includeProjects = this.props.includeProjects;
+        let includeKinds = mainStore.includeKinds;
+        let includeProjects = mainStore.includeProjects;
         let searchInput = this.refs.searchInput;
         if(e.keyCode === 13) {
             let value = searchInput.getValue();
-            ProjectActions.searchObjects(value, includeKinds, includeProjects);
+            mainStore.searchObjects(value, includeKinds, includeProjects);
             this.props.router.push('/results')
         }
     }
 
     showSearch() {
         if(this.props.location.pathname === '/results') this.props.router.goBack();
-        if(this.props.showFilters) ProjectActions.toggleSearchFilters();
-        if(this.props.includeKinds.length) ProjectActions.setIncludedSearchKinds([]);
-        if(this.props.includeProjects.length) ProjectActions.setIncludedSearchProjects([]);
-        ProjectActions.toggleSearch();
+        if(mainStore.showFilters) mainStore.toggleSearchFilters();
+        if(mainStore.includeKinds.length) mainStore.setIncludedSearchKinds([]);
+        if(mainStore.includeProjects.length) mainStore.setIncludedSearchProjects([]);
+        mainStore.toggleSearch();
     }
 }
 
@@ -85,8 +88,9 @@ Search.childContextTypes = {
 };
 
 Search.propTypes = {
-    searchValue: React.PropTypes.string,
-    showSearch: React.PropTypes.bool
+    searchValue: string,
+    showSearch: bool,
+    screenSize: object
 };
 
 export default Search;

@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
 import ReactDOM from 'react-dom';
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import provenanceStore from '../../stores/provenanceStore';
 import AutoComplete from 'material-ui/AutoComplete';
-import BaseUtils from '../../../util/baseUtils.js';
+import BaseUtils from '../../util/baseUtils.js';
 import Checkbox from 'material-ui/Checkbox';
 import CircularProgress from 'material-ui/CircularProgress';
 import Dialog from 'material-ui/Dialog';
@@ -14,6 +16,7 @@ import {Tabs, Tab} from 'material-ui/Tabs';
 import TextField from 'material-ui/TextField';
 import Toggle from 'material-ui/Toggle';
 
+@observer
 class ProvenanceActivityManager extends React.Component {
 
     constructor(props) {
@@ -30,13 +33,17 @@ class ProvenanceActivityManager extends React.Component {
     }
 
     render() {
-        let autoCompleteData = this.props.activities && this.props.activities.length ? this.props.activities.map((activity)=>{
+        const { activities, provEditorModal, selectedNode, showProvCtrlBtns } = provenanceStore;
+        const { screenSize } = mainStore;
+        let autoCompleteData = activities && activities.length ? activities.map((activity)=>{
             return {text: activity.name, value: activity.name, id: activity.id, node: activity}
         }) : [];
-        let addAct = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'addAct' ? this.props.provEditorModal.open : false;
-        let dltAct = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'dltAct' ? this.props.provEditorModal.open : false;
-        let editAct = this.props.provEditorModal.id !== null && this.props.provEditorModal.id === 'editAct' ? this.props.provEditorModal.open : false;
-        let showBtns = this.props.showProvCtrlBtns ? 'block' : 'none';
+        let addAct = provEditorModal.id !== null && provEditorModal.id === 'addAct' ? provEditorModal.open : false;
+        let dltAct = provEditorModal.id !== null && provEditorModal.id === 'dltAct' ? provEditorModal.open : false;
+        let editAct = provEditorModal.id !== null && provEditorModal.id === 'editAct' ? provEditorModal.open : false;
+        let dialogWidth = screenSize.width < 680 ? {width: '100%'} : {};
+        let showBtns = showProvCtrlBtns ? 'block' : 'none';
+
         const addActivityActions = [
             <FlatButton
                 label="Cancel"
@@ -70,7 +77,7 @@ class ProvenanceActivityManager extends React.Component {
                 label="Delete"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={() => this.deleteActivity(this.props.selectedNode)}
+                onTouchTap={() => this.deleteActivity(selectedNode)}
                 />
         ];
 
@@ -85,23 +92,23 @@ class ProvenanceActivityManager extends React.Component {
                     onTouchTap={() => this.openModal('addAct')}/>
                 {!this.props.doubleClicked ?
                     <span>
-                <RaisedButton
-                    label="Edit Activity"
-                    primary={true}
-                    labelStyle={styles.btn.label}
-                    style={{zIndex: 9999, margin: '10px 0px 10px 0px', minWidth: 168, width: '100%', display: showBtns}}
-                    onTouchTap={() => this.openModal('editAct')}/>
-                <RaisedButton
-                    label="Delete Activity"
-                    primary={true}
-                    labelStyle={styles.btn.label}
-                    style={{zIndex: 9999, margin: '20px 0px 10px 0px', minWidth: 168, width: '100%', display: showBtns}}
-                    onTouchTap={() => this.openModal('dltAct')}/>
+                        <RaisedButton
+                            label="Edit Activity"
+                            primary={true}
+                            labelStyle={styles.btn.label}
+                            style={{zIndex: 9999, margin: '10px 0px 10px 0px', minWidth: 168, width: '100%', display: showBtns}}
+                            onTouchTap={() => this.openModal('editAct')}/>
+                        <RaisedButton
+                            label="Delete Activity"
+                            primary={true}
+                            labelStyle={styles.btn.label}
+                            style={{zIndex: 9999, margin: '20px 0px 10px 0px', minWidth: 168, width: '100%', display: showBtns}}
+                            onTouchTap={() => this.openModal('dltAct')}/>
                 </span>
                     : null}
                 <Dialog
                     style={styles.dialogStyles}
-                    contentStyle={this.props.width < 680 ? {width: '100%'} : {}}
+                    contentStyle={dialogWidth}
                     autoDetectWindowHeight={true}
                     actions={addActivityActions}
                     open={addAct}
@@ -149,7 +156,7 @@ class ProvenanceActivityManager extends React.Component {
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
-                    contentStyle={this.props.width < 680 ? {width: '100%'} : {}}
+                    contentStyle={dialogWidth}
                     title="Are you sure you want to delete this activity?"
                     autoDetectWindowHeight={true}
                     actions={dltActivityActions}
@@ -159,7 +166,7 @@ class ProvenanceActivityManager extends React.Component {
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
-                    contentStyle={this.props.width < 680 ? {width: '100%'} : {}}
+                    contentStyle={dialogWidth}
                     title="Edit Activity"
                     autoDetectWindowHeight={true}
                     actions={editActions}
@@ -169,7 +176,7 @@ class ProvenanceActivityManager extends React.Component {
                         <TextField
                             autoFocus={true}
                             style={styles.textStyles}
-                            defaultValue={this.props.selectedNode.properties ? this.props.selectedNode.properties.name : this.props.selectedNode.label}
+                            defaultValue={selectedNode.properties ? selectedNode.properties.name : selectedNode.label}
                             hintText="Activity Name"
                             errorText={this.state.floatingErrorText}
                             floatingLabelText="Activity Name"
@@ -180,7 +187,7 @@ class ProvenanceActivityManager extends React.Component {
                         <TextField
                             disabled={false}
                             style={styles.textStyles}
-                            defaultValue={this.props.selectedNode.properties ? this.props.selectedNode.properties.description : null}
+                            defaultValue={selectedNode.properties ? selectedNode.properties.description : null}
                             hintText="Activity Description"
                             floatingLabelText="Activity Description"
                             ref={(input) => this.editActivityDescText = input}
@@ -193,16 +200,16 @@ class ProvenanceActivityManager extends React.Component {
     }
 
     addNewActivity() {
-        let graphNodes = this.props.provNodes;
+        let graphNodes = provenanceStore.provNodes.slice();
         if(this.state.activityNode) {
             let node = this.state.activityNode;
             let id = node.id;
             if (!BaseUtils.objectPropInArray(graphNodes, 'id', id)) {
-                ProjectActions.addProvActivitySuccess(node);
-                ProjectActions.closeProvEditorModal('addAct');
+                provenanceStore.addProvActivitySuccess(node);
+                provenanceStore.closeProvEditorModal('addAct');
                 this.setState({activityNode: null});
             } else {
-                ProjectActions.openProvEditorModal('nodeWarning');
+                provenanceStore.openProvEditorModal('nodeWarning');
             }
         } else {
             if (this.state.floatingErrorText !== '') {
@@ -210,10 +217,10 @@ class ProvenanceActivityManager extends React.Component {
             } else {
                 let name = this.activityNameText.getValue();
                 let desc = this.activityDescText.getValue();
-                if (this.props.addEdgeMode) this.toggleEdgeMode();
-                //ProjectActions.saveGraphZoomState(this.state.network.getScale(), this.state.network.getViewPosition());
-                ProjectActions.addProvActivity(name, desc);
-                ProjectActions.closeProvEditorModal('addAct');
+                if (provenanceStore.addEdgeMode) this.toggleEdgeMode();
+                provenanceStore.saveGraphZoomState(provenanceStore.network.getScale(), provenanceStore.network.getViewPosition());
+                provenanceStore.addProvActivity(name, desc);
+                provenanceStore.closeProvEditorModal('addAct');
             }
         }
     }
@@ -226,33 +233,33 @@ class ProvenanceActivityManager extends React.Component {
     }
 
     editActivity() {
-        let id = this.props.selectedNode.id;
-        let actName = this.props.selectedNode.label;
+        let id = provenanceStore.selectedNode.id;
+        let actName = provenanceStore.selectedNode.label;
         if (this.state.floatingErrorText) {
             return null
         } else {
             let name = this.editActivityNameText.getValue();
             let desc = this.editActivityDescText.getValue();
-            if(this.props.addEdgeMode) this.toggleEdgeMode();
-            //ProjectActions.saveGraphZoomState(this.state.network.getScale(), this.state.network.getViewPosition());
-            ProjectActions.editProvActivity(id, name, desc, actName);
-            ProjectActions.closeProvEditorModal('editAct');
-            ProjectActions.showProvControlBtns();
+            if(provenanceStore.addEdgeMode) this.toggleEdgeMode();
+            provenanceStore.saveGraphZoomState(provenanceStore.network.getScale(), provenanceStore.network.getViewPosition());
+            provenanceStore.editProvActivity(id, name, desc, actName);
+            provenanceStore.closeProvEditorModal('editAct');
+            provenanceStore.showProvControlBtns();
         }
     }
 
     deleteActivity(node) {
         let id = this.props.params.id;
-        //ProjectActions.saveGraphZoomState(this.state.network.getScale(), this.state.network.getViewPosition());
-        ProjectActions.deleteProvItem(node, id);
-        ProjectActions.closeProvEditorModal('dltAct');
-        ProjectActions.showProvControlBtns();
-        ProjectActions.toggleProvNodeDetails();
+        provenanceStore.saveGraphZoomState(provenanceStore.network.getScale(), provenanceStore.network.getViewPosition());
+        provenanceStore.deleteProvItem(node, id);
+        provenanceStore.closeProvEditorModal('dltAct');
+        provenanceStore.showProvControlBtns();
+        provenanceStore.toggleProvNodeDetails();
     }
 
     handleClose(id) {
         this.setState({activityNode: null, floatingErrorText: 'This field is required.'});
-        ProjectActions.closeProvEditorModal(id);
+        provenanceStore.closeProvEditorModal(id);
     }
 
     handleFloatingError(e) {
@@ -262,7 +269,12 @@ class ProvenanceActivityManager extends React.Component {
     }
 
     openModal(id) {
-        ProjectActions.openProvEditorModal(id);
+        provenanceStore.saveGraphZoomState(provenanceStore.network.getScale(), provenanceStore.network.getViewPosition());
+        provenanceStore.openProvEditorModal(id);
+    }
+
+    toggleEdgeMode() {
+        provenanceStore.toggleAddEdgeMode();
     }
 
     toggleTab1() {
@@ -317,6 +329,14 @@ var styles = {
         textAlign: 'center',
         color: '#F44336'
     }
+};
+
+ProvenanceActivityManager.propTypes = {
+    selectedNode: object,
+    provEditorModal: object,
+    screenSize: object,
+    showProvCtrlBtns: bool,
+    activities: array
 };
 
 export default ProvenanceActivityManager;

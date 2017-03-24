@@ -1,11 +1,12 @@
 import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
-import BaseUtils from '../../../util/baseUtils'
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import BaseUtils from '../../util/baseUtils'
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 
+@observer
 class MetadataTemplateCreator extends React.Component {
 
     constructor(props) {
@@ -17,7 +18,8 @@ class MetadataTemplateCreator extends React.Component {
     }
 
     render() {
-        let width = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.width : window.innerWidth;
+        const { screenSize } = mainStore;
+        let width = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.width : window.innerWidth;
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.wrapper}>
                 <div className="mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" >
@@ -71,7 +73,7 @@ class MetadataTemplateCreator extends React.Component {
             });
         } else {
             if (name!== '' && label !== '') {
-                ProjectActions. createMetadataTemplate(name, label, desc);
+                mainStore. createMetadataTemplate(name, label, desc);
             }
         }
     }
@@ -97,7 +99,7 @@ class MetadataTemplateCreator extends React.Component {
     }
 
     toggleMetadataManager() {
-        ProjectActions.toggleMetadataManager();
+        mainStore.toggleMetadataManager();
         this.setState({
             errorText: 'This field is required.',
             errorText2: 'This field is required.'

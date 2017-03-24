@@ -1,20 +1,28 @@
-import React from 'react';
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
+import { Kind } from '../../util/urlEnum';
 
+@observer
 class AddFolderModal extends React.Component {
 
-    constructor() {
+    constructor(props) {
+        super(props);
         this.state = {
             floatingErrorText: ''
         }
     }
 
     render() {
+        const { entityObj, screenSize, toggleModal } = mainStore;
+        let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
+        let open = toggleModal && toggleModal.id === 'addFolder' ? toggleModal.open : false;
+
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -24,9 +32,9 @@ class AddFolderModal extends React.Component {
                 label="Submit"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={()=>this.addFolder()}/>
+                onTouchTap={()=>this.addFolder(entityObj)}/>
         ];
-        let open = this.props.toggleModal && this.props.toggleModal.id === 'addFolder' ? this.props.toggleModal.open : false;
+
         return (
             <div>
                 <RaisedButton
@@ -36,7 +44,7 @@ class AddFolderModal extends React.Component {
                     onTouchTap={()=>this.openModal()}/>
                 <Dialog
                     style={styles.dialogStyles}
-                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
+                    contentStyle={dialogWidth}
                     title="Add New Folder"
                     autoDetectWindowHeight={true}
                     actions={actions}
@@ -59,24 +67,24 @@ class AddFolderModal extends React.Component {
     }
 
     openModal() {
-        ProjectActions.toggleModals('addFolder');
-        setTimeout(()=>this.folderNameText.select(), 100);
+        mainStore.toggleModals('addFolder');
+        setTimeout(()=> this.folderNameText.select(), 300);
     }
 
-    addFolder() {
+    addFolder(entityObj) {
         let id = this.props.params.id;
         let name = this.folderNameText.getValue();
-        let parentKind = !this.props.entityObj ? 'dds-project' : 'dds-folder';
+        let parentKind = this.props.router.location.pathname.includes('project') ? Kind.DDS_PROJECT : Kind.DDS_FOLDER;
         if (this.state.floatingErrorText) {
             return null
         } else {
-            ProjectActions.addFolder(id, parentKind, name);
+            mainStore.addFolder(id, parentKind, name);
             this.closeModal();
         }
     }
 
     closeModal() {
-        ProjectActions.toggleModals('addFolder');
+        mainStore.toggleModals('addFolder');
     }
 
     validateText(e) {
@@ -108,7 +116,9 @@ AddFolderModal.contextTypes = {
 };
 
 AddFolderModal.propTypes = {
-    toggleModal: React.PropTypes.object
+    entityObj: object,
+    toggleModal: object,
+    screenSize: object
 };
 
 export default AddFolderModal;

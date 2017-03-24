@@ -1,18 +1,19 @@
 import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
-import BaseUtils from '../../../util/baseUtils'
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import BaseUtils from '../../util/baseUtils'
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 
+@observer
 class DeleteTemplateModal extends React.Component {
 
     render() {
-        let open = this.props.toggleModal && this.props.toggleModal.id === 'dltTemplate' ? this.props.toggleModal.open : false;
-        let templateId = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.id : null;
-        let templateLabel = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.label : null;
+        const { metadataTemplate, screenSize, toggleModal } = mainStore;
+        let templateId = metadataTemplate && metadataTemplate !== null ? metadataTemplate.id : null;
+        let templateLabel = metadataTemplate && metadataTemplate !== null ? metadataTemplate.label : null;
         const actions = [
             <FlatButton
                 label="CANCEL"
@@ -27,12 +28,12 @@ class DeleteTemplateModal extends React.Component {
         return (
             <Dialog
                 style={styles.dialogStyles}
-                contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
+                contentStyle={screenSize.width < 580 ? {width: '100%'} : {}}
                 title="Are you sure you want to delete this template?"
                 autoDetectWindowHeight={true}
                 actions={actions}
-                onRequestClose={this.handleClose.bind(this)}
-                open={open}>
+                onRequestClose={() => this.handleClose()}
+                open={toggleModal && toggleModal.id === 'dltTemplate' ? toggleModal.open : false}>
                 <i className="material-icons" style={styles.warning}>warning</i>
                 <p style={styles.msg}>If you are not the creator of {templateLabel}, or if it's currently associated with any files then {templateLabel} can not be deleted.</p>
             </Dialog>
@@ -40,12 +41,12 @@ class DeleteTemplateModal extends React.Component {
     }
 
     deleteTemplate(id,label) {
-            ProjectActions. deleteTemplate(id, label);
-            ProjectActions.toggleModals();
+            mainStore. deleteTemplate(id, label);
+            mainStore.toggleModals();
     };
 
     handleClose() {
-        ProjectActions.toggleModals();
+        mainStore.toggleModals();
     };
 }
 
@@ -71,8 +72,9 @@ DeleteTemplateModal.contextTypes = {
 };
 
 DeleteTemplateModal.propTypes = {
-    loading: React.PropTypes.bool,
-    error: React.PropTypes.object
+    metadataTemplate: object,
+    screenSize: object,
+    toggleModal: object
 };
 
 export default DeleteTemplateModal;

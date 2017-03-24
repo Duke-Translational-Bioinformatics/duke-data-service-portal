@@ -1,41 +1,21 @@
-import React from 'react'
-import ProjectActions from '../actions/projectActions';
-import ProjectStore from '../stores/projectStore';
+import React, { PropTypes } from 'react';
+import { observer } from 'mobx-react';
+import mainStore from '../stores/mainStore';
 import SearchResults from '../components/globalComponents/searchResults.jsx';
 
+@observer
 class Results extends React.Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            includeKinds: ProjectStore.includeKinds,
-            includeProjects: ProjectStore.includeProjects,
-            screenSize: ProjectStore.screenSize,
-            showFilters: ProjectStore.showFilters,
-            showSearch: ProjectStore.showSearch,
-            searchValue: ProjectStore.searchValue,
-            searchResults: ProjectStore.searchResults,
-            searchResultsFolders: ProjectStore.searchResultsFolders,
-            searchResultsFiles: ProjectStore.searchResultsFiles,
-            searchResultsProjects: ProjectStore.searchResultsProjects
-        };
-    }
-
     componentDidMount() {
-        this.unsubscribe = ProjectStore.listen(state => this.setState(state));
         setTimeout(()=>{
-            if(this.props.location.pathname === '/results' && !this.state.showSearch) ProjectActions.toggleSearch();
+            if(this.props.location.pathname === '/results' && !mainStore.showSearch) mainStore.toggleSearch();
         }, 500);
-    }
-
-    componentWillUnmount() {
-        this.unsubscribe();
     }
 
     render() {
         return (
             <div>
-                <SearchResults {...this.props} {...this.state}/>
+                <SearchResults {...this.props} />
             </div>
         );
     }

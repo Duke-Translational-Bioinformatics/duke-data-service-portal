@@ -1,6 +1,8 @@
-import React from 'react';
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import provenanceStore from '../../stores/provenanceStore';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -8,19 +10,27 @@ import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 
+@observer
 class VersionsOptionsMenu extends React.Component {
 
-    constructor() {
+    constructor(props) {
+        super(props);
         this.state = {
             deleteOpen: false,
             editOpen: false,
-            floatingErrorText: 'This field is required.'
+            floatingErrorText: ''
         }
     }
 
     render() {
-        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
+        const { entityObj, projPermissions, screenSize, toggleModal } = mainStore;
+        let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
+        let fileId = mainStore.entityObj && mainStore.entityObj.file ? mainStore.entityObj.file.id : null;
+        let id = this.props.params.id;
+        let labelText = entityObj ? entityObj.label : null;
         let menu = null;
+        let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
+        
         if (prjPrm !== null) {
             if(prjPrm === 'viewOnly' || prjPrm === 'flDownload'){
                 menu = <IconMenu
@@ -28,7 +38,7 @@ class VersionsOptionsMenu extends React.Component {
                             anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                             targetOrigin={{horizontal: 'right', vertical: 'top'}}>
                             <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
-                                         onTouchTap={() => this.openProv()}/>
+                                         onTouchTap={() => this.openProv(id, fileId)}/>
                 </IconMenu>;
             }
             if (prjPrm === 'flUpload') {
@@ -37,9 +47,9 @@ class VersionsOptionsMenu extends React.Component {
                             anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                             targetOrigin={{horizontal: 'right', vertical: 'top'}}>
                             <MenuItem primaryText="Edit Version Label" leftIcon={<i className="material-icons">mode_edit</i>}
-                                         onTouchTap={this.handleTouchTapEdit.bind(this)}/>
+                                         onTouchTap={() => this.toggleModal('editVersion')}/>
                             <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
-                                      onTouchTap={() => this.openProv()}/>
+                                      onTouchTap={() => this.openProv(id, fileId)}/>
                 </IconMenu>;
             }
             if (prjPrm === 'prjCrud' || prjPrm === 'flCrud') {
@@ -48,60 +58,60 @@ class VersionsOptionsMenu extends React.Component {
                             anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                             targetOrigin={{horizontal: 'right', vertical: 'top'}}>
                             <MenuItem primaryText="Delete Version" leftIcon={<i className="material-icons">delete</i>}
-                                      onTouchTap={this.handleTouchTapDelete.bind(this)}/>
+                                      onTouchTap={() => this.toggleModal('dltVersion')}/>
                             <MenuItem primaryText="Edit Version Label"
                                       leftIcon={<i className="material-icons">mode_edit</i>}
-                                      onTouchTap={this.handleTouchTapEdit.bind(this)}/>
+                                      onTouchTap={() => this.toggleModal('editVersion')}/>
                             <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
-                                   onTouchTap={() => this.openProv()}/>
+                                   onTouchTap={() => this.openProv(id, fileId)}/>
                 </IconMenu>;
             }
         }
+        
         const deleteActions = [
             <FlatButton
                 label="CANCEL"
                 secondary={true}
-                onTouchTap={this.handleClose.bind(this)}/>,
+                onTouchTap={() => this.toggleModal('dltVersion')}/>,
             <FlatButton
                 label="DELETE"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={this.handleDeleteButton.bind(this)}/>
+                onTouchTap={() => this.handleDeleteButton(id, fileId)}/>
         ];
+        
         const editActions = [
             <FlatButton
                 label="CANCEL"
                 secondary={true}
-                onTouchTap={this.handleClose.bind(this)}/>,
+                onTouchTap={() => this.toggleModal('editVersion')}/>,
             <FlatButton
                 label="UPDATE"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={this.handleUpdateButton.bind(this)}/>
+                onTouchTap={() => this.handleUpdateButton(id, fileId)}/>
         ];
-
-        let labelText = this.props.entityObj ? this.props.entityObj.label : null;
-
+        
         return (
             <div>
                 <Dialog
                     style={styles.dialogStyles}
-                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
+                    contentStyle={dialogWidth}
                     title="Are you sure you want to delete this file version?"
                     autoDetectWindowHeight={true}
                     actions={deleteActions}
-                    onRequestClose={this.handleClose.bind(this)}
-                    open={this.state.deleteOpen}>
+                    onRequestClose={() => this.toggleModal('dltVersion')}
+                    open={toggleModal && toggleModal.id === 'dltVersion' ? toggleModal.open : false}>
                     <i className="material-icons" style={styles.warning}>warning</i>
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
-                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
+                    contentStyle={dialogWidth}
                     title="Update Version Label"
                     autoDetectWindowHeight={true}
                     actions={editActions}
-                    onRequestClose={this.handleClose.bind(this)}
-                    open={this.state.editOpen}>
+                    onRequestClose={() => this.toggleModal('editVersion')}
+                    open={toggleModal && toggleModal.id === 'editVersion' ? toggleModal.open : false}>
                     <form action="#" id="editVersionForm">
                         <TextField
                             style={styles.textStyles}
@@ -122,51 +132,27 @@ class VersionsOptionsMenu extends React.Component {
         );
     }
 
-    handleTouchTapDelete() {
-        this.setState({deleteOpen: true})
-    }
-
-    handleTouchTapEdit() {
-        this.setState({editOpen: true})
-    }
-
-    handleDeleteButton() {
-        let id = this.props.params.id;
-        let parentId = this.props.entityObj ? this.props.entityObj.file.id : null;
-        ProjectActions.deleteVersion(id);
-        this.setState({deleteOpen: false});
-        setTimeout(()=>this.props.router.push('/file' + '/' + parentId), 500)
+    handleDeleteButton(id, fileId) {
+        mainStore.deleteVersion(id);
+        this.toggleModal('dltVersion');
+        setTimeout(()=>this.props.router.push('/file' + '/' + fileId), 500)
     }
 
 
-    handleUpdateButton() {
-        let id = this.props.params.id;
+    handleUpdateButton(id) {
         let label = this.versionLabelText.getValue();
         if (this.state.floatingErrorText != '') {
             return null
         } else {
-            ProjectActions.editVersion(id, label);
-            this.setState({
-                editOpen: false,
-                floatingErrorText: 'This field is required.'
-            });
+            mainStore.editVersionLabel(id, label);
+            this.toggleModal('editVersion');
         }
     }
 
-    handleClose() {
-        this.setState({
-            deleteOpen: false,
-            editOpen: false,
-            floatingErrorText: 'This field is required.'
-        });
-    }
-
-    openProv() {
-        let id = this.props.params.id;
-        let fileId = this.props.entityObj && this.props.entityObj.file ? this.props.entityObj.file.id : null;
-        if(!this.props.provNodes.length) ProjectActions.getWasGeneratedByNode(id);
-        ProjectActions.getFileVersions(fileId);
-        ProjectActions.toggleProvView();
+    openProv(id, fileId) {
+        if(!provenanceStore.provNodes.length) provenanceStore.getWasGeneratedByNode(id);
+        mainStore.getFileVersions(fileId);
+        provenanceStore.toggleProvView();
     }
 
     selectText() {
@@ -177,6 +163,10 @@ class VersionsOptionsMenu extends React.Component {
         this.setState({
             floatingErrorText: e.target.value ? '' : 'This field is required.'
         });
+    }
+
+    toggleModal(id) {
+        mainStore.toggleModals(id)
     }
 }
 var styles = {
@@ -194,6 +184,13 @@ var styles = {
         textAlign: 'center',
         color: '#F44336'
     }
+};
+
+VersionsOptionsMenu.propTypes = {
+    entityObj: object,
+    toggleModal: object,
+    screenSize: object,
+    projPermissions: string
 };
 
 export default VersionsOptionsMenu;

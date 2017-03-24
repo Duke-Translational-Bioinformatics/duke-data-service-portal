@@ -1,72 +1,36 @@
 import React from 'react'
-import ProjectActions from '../actions/projectActions';
-import ProjectStore from '../stores/projectStore';
+import { observer } from 'mobx-react';
+import mainStore from '../stores/mainStore';
+import provenanceStore from '../stores/provenanceStore';
+import { Path } from '../util/urlEnum';
 import Provenance from '../components/globalComponents/provenance.jsx';
 import VersionDetails from '../components/fileComponents/versionDetails.jsx';
 
+@observer
 class Version extends React.Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            addEdgeMode: ProjectStore.addEdgeMode,
-            autoCompleteLoading: ProjectStore.autoCompleteLoading,
-            dltRelationsBtn: ProjectStore.dltRelationsBtn,
-            fileVersions: ProjectStore.fileVersions,
-            relFrom: ProjectStore.relFrom,
-            loading: false,
-            moveModal: ProjectStore.moveModal,
-            moveErrorModal: ProjectStore.moveErrorModal,
-            position: ProjectStore.position,
-            projPermissions: ProjectStore.projPermissions,
-            provEdges: ProjectStore.provEdges,
-            provEditorModal: ProjectStore.provEditorModal,
-            provFileVersions: ProjectStore.provFileVersions,
-            provNodes: ProjectStore.provNodes,
-            relMsg: ProjectStore.relMsg,
-            toggleProv: ProjectStore.toggleProv,
-            toggleProvEdit: ProjectStore.toggleProvEdit,
-            relTo: ProjectStore.relTo,
-            scale: ProjectStore.scale,
-            screenSize: ProjectStore.screenSize,
-            searchFilesList: ProjectStore.searchFilesList,
-            selectedEdge: ProjectStore.selectedEdge,
-            selectedNode: ProjectStore.selectedNode,
-            showProvAlert: ProjectStore.showProvAlert,
-            showProvCtrlBtns: ProjectStore.showProvCtrlBtns,
-            showProvDetails: ProjectStore.showProvDetails,
-            updatedGraphItem: ProjectStore.updatedGraphItem
-        };
-    }
-
-    componentDidMount() {
-        let id = this.props.params.id;
-        this.unsubscribe = ProjectStore.listen(state => this.setState(state));
-        this._loadVersion(id);
+    componentWillMount() {
+        this._loadVersion();
     }
 
     componentDidUpdate(prevProps) {
-        let id = this.props.params.id;
         if(prevProps.params.id !== this.props.params.id) {
-            this._loadVersion(id);
+            this._loadVersion();
         }
     }
 
-    componentWillUnmount() {
-        this.unsubscribe();
-    }
-
-    _loadVersion(id) {
-        let kind = 'file_versions';
-        ProjectActions.getEntity(id, kind);
-        ProjectActions.getWasGeneratedByNode(id);
+    _loadVersion() {
+        let id = this.props.params.id;
+        mainStore.setSelectedEntity(null, null);
+        mainStore.getEntity(id, Path.FILE_VERSION);
+        provenanceStore.getWasGeneratedByNode(id);
     }
 
     render() {
         return (
             <div>
-                <Provenance {...this.props} {...this.state}/>
-                <VersionDetails {...this.props} {...this.state}/>
+                <Provenance {...this.props} />
+                <VersionDetails {...this.props} />
             </div>
         );
     }

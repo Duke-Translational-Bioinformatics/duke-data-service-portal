@@ -1,75 +1,66 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
+import { observer, inject } from 'mobx-react';
 import Header from '../components/globalComponents/header.jsx';
-import MainStore from '../stores/mainStore';
-import MainActions from '../actions/mainActions.js';
+import authStore from '../stores/authStore.js';
+import mainStore from '../stores/mainStore.js';
 import CircularProgress from 'material-ui/CircularProgress';
 import LinearProgress from 'material-ui/LinearProgress';
 import RaisedButton from 'material-ui/RaisedButton';
-import {UrlGen} from '../../util/urlEnum';
+import {UrlGen} from '../util/urlEnum';
 
+@observer
 class Login extends React.Component {
 
-    constructor() {
-        this.state = {
-            appConfig: MainStore.appConfig,
-            loading: false
+    componentDidMount() {
+        if(this.props.location.pathname !== '/404' && authStore.appConfig.apiToken ) this.props.router.push('/');
+        if(authStore.authServiceLoading) authStore.setLoadingStatus();
+    }
+
+    componentDidUpdate(prevProps) {
+        if(prevProps.location.pathname.substr(0, 13) === '/access_token' && !authStore.authServiceLoading) authStore.setLoadingStatus();
+        if(authStore.appConfig.apiToken) {
+            if (authStore.appConfig.redirectUrl) {
+                document.location.replace(authStore.appConfig.redirectUrl);
+            } else {
+                this.props.router.push('/');
+            }
         }
     }
 
-    componentDidMount() {
-        this.unsubscribe = MainStore.listen(state => this.setState(state));
-    }
-
-    componentWillUnmount() {
-        this.unsubscribe();
-    }
-
-    componentDidUpdate() {
-        if(this.props.location.pathname !== '/404' && this.state.appConfig.apiToken ) this.props.router.push('/');
-    }
-
-    createLoginUrl() {
-        return this.state.appConfig.authServiceUri+'&state='+this.state.appConfig.serviceId+'&redirect_uri='+window.location.href;
-    }
+    createLoginUrl = () => {
+        return authStore.appConfig.authServiceUri+'&state='+authStore.appConfig.serviceId+'&redirect_uri='+window.location.href;
+    };
 
     render() {
         let content = '';
-        if (!this.state.appConfig.apiToken) {
+        const {error} = mainStore;
+        const {appConfig, authServiceLoading} = authStore;
+        if (!appConfig.apiToken) {
+            let url = window.location.hash.split('&');
+            let accessToken = url[0].split('=')[1];
             content = (
                 <div className="mdl-cell mdl-cell--12-col mdl-shadow--2dp" style={styles.loginWrapper}>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--white">
                         <img src="images/dukeDSLogo.png" style={styles.logo}/>
                         <h2 style={{fontWeight: '100'}}>Duke Data Service</h2>
-                        {!this.state.loading ? <a href={this.createLoginUrl()} className="external">
-                            <RaisedButton label="Log In" labelStyle={{fontWeight: '400'}} labelColor={'#f9f9f9'}
-                                          backgroundColor={'#0680CD'} style={{marginBottom: 40, width: 150}}
-                                          onClick={() => this.handleLoginBtn()}>
+                        {!authServiceLoading ? <a href={this.createLoginUrl()} className="external">
+                            <RaisedButton
+                                label="Log In" labelStyle={{fontWeight: '400'}} labelColor={'#f9f9f9'}
+                                backgroundColor={'#0680CD'} style={{marginBottom: 40, width: 150}}
+                                onClick={() => this.handleLoginBtn()}>
                             </RaisedButton>
                         </a> : <CircularProgress size={70} thickness={5} color="#fff"/>}
                         <div className="mdl-cell mdl-cell--12-col mdl-color-text--white">
                             <a href={UrlGen.routes.publicPrivacy()} className="external mdl-color-text--white" style={{float: 'right', fontSize: 10, margin: -10}}>
-                                <i className="material-icons" style={{fontSize: 16, verticalAlign: -2}}>lock</i>Privacy Policy
+                                <i className="material-icons" style={styles.privacyIcon}>lock</i>Privacy Policy
                             </a>
                         </div>
                     </div>
                 </div>
             );
-            let url = window.location.hash.split('&');
-            let accessToken = url[0].split('=')[1];
-            if (this.state.error) {
-                content = this.state.error
-            }
-            else if (this.state.authServiceLoading) {
-                content = (<LinearProgress mode="indeterminate" color={'#EC407A'} style={styles.loader}/>);
-            }
-            else if (accessToken && this.state.appConfig.serviceId !== null) {
-                MainActions.getApiToken(this.state.appConfig, accessToken);
-            }
-        } else {
-            if (localStorage.getItem('redirectTo') !== null) {
-                let redUrl = localStorage.getItem('redirectTo');
-                document.location.replace(redUrl);
-            }
+            if (accessToken && appConfig.serviceId !== null) authStore.getApiToken(accessToken);
+            if (error !== null) content = error
         }
         return (
             <div>
@@ -79,11 +70,9 @@ class Login extends React.Component {
             </div>
         );
     }
+
     handleLoginBtn() {
-        MainActions.isLoggedInHandler();
-        this.setState({
-            loading: true
-        });
+        authStore.isLoggedInHandler();
     }
 }
 
@@ -101,10 +90,16 @@ var styles = {
     logo: {
         maxWidth: '26.333%'
     },
-    loader: {
-        margin: '0 auto',
-        width: '95%'
+    privacyIcon: {
+        fontSize: 16,
+        verticalAlign: -2
     }
+};
+
+Login.propTypes = {
+    error: object,
+    appConfig: object,
+    authServiceLoading: bool
 };
 
 export default Login;

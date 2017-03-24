@@ -1,17 +1,18 @@
 import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
-import { Link } from 'react-router';
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
-import Tooltip from '../../../util/tooltip.js';
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import Tooltip from '../../util/tooltip.js';
 import IconButton from 'material-ui/IconButton';
 import LocalOffer from 'material-ui/svg-icons/maps/local-offer';
 
+@observer
 class TagCloud extends React.Component {
 
     render() {
+        const { objectTags, projPermissions } = mainStore;
         let addTagButton = null;
-        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
+        let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         if(prjPrm !== 'viewOnly' && prjPrm !== 'flDownload') {
             addTagButton = <IconButton tooltip="Add new tags" tooltipPosition="bottom-right"
                                        style={styles.addTagButton}
@@ -20,7 +21,7 @@ class TagCloud extends React.Component {
                                 <LocalOffer color={'#EC407A'} />
                            </IconButton>
         }
-        let tags = this.props.objectTags.map((tag)=>{
+        let tags = objectTags.map((tag)=>{
             return (<div key={tag.id} ref={(tag) => this.id = tag} className="chip">
                 <span className="chip-text">{tag.label}</span>
                 <span className="closebtn"
@@ -40,11 +41,11 @@ class TagCloud extends React.Component {
     deleteTag(id, label) {
         let fileId = this.props.params.id;
         this.id.style.display = 'none';
-        ProjectActions.deleteTag(id, label, fileId);
+        mainStore.deleteTag(id, label, fileId);
     }
 
     openTagManager() {
-        ProjectActions.toggleTagManager();
+        mainStore.toggleTagManager();
     }
 }
 
@@ -63,9 +64,8 @@ TagCloud.contextTypes = {
 };
 
 TagCloud.propTypes = {
-    loading: bool,
-    details: array,
-    error: object
+    projPermissions: string,
+    objectTags: array
 };
 
 export default TagCloud;

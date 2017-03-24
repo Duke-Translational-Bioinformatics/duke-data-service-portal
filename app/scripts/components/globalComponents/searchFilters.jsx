@@ -1,7 +1,8 @@
-import React from 'react';
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
-import BaseUtils from '../../../util/baseUtils';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import BaseUtils from '../../util/baseUtils';
 import Checkbox from 'material-ui/Checkbox';
 import IconButton from 'material-ui/IconButton';
 import Drawer from 'material-ui/Drawer';
@@ -9,29 +10,31 @@ import RaisedButton from 'material-ui/RaisedButton';
 import {List, ListItem} from 'material-ui/List';
 import Divider from 'material-ui/Divider';
 
+@observer
 class SearchFilters extends React.Component {
 
+    constructor(props) {
+        super(props);
+        this.setIncludeKinds = _.debounce(this.setIncludeKinds ,100);
+        this.setIncludeProjects = _.debounce(this.setIncludeProjects ,100);
+    }
+
     componentDidUpdate(prevProps) {
-        if(prevProps.searchResults !== this.props.searchResults){
-            if(this.props.showFilters && (!this.props.searchResultsFiles.length && !this.props.searchResultsFolders.length || !this.props.searchResultsProjects.length)) this.toggleFilters();
-        }
+        if(mainStore.showFilters && (!mainStore.searchResultsFiles.length && !mainStore.searchResultsFolders.length || !mainStore.searchResultsProjects.length)) this.toggleFilters();
     }
 
     render() {
-        let results = this.props.searchResults;
-        let folders = this.props.searchResultsFolders;
-        let files = this.props.searchResultsFiles;
-        let includeKinds = this.props.includeKinds && this.props.includeKinds !== null ? this.props.includeKinds : [];
-        let uniqueProjects = this.props.searchResultsProjects;
-        let projectCount = results.reduce((sums,obj) => {
+        const { includeKinds, includeProjects, screenSize, searchResults, searchResultsFolders, searchResultsFiles, searchResultsProjects, searchValue, showFilters } = mainStore;
+        let includedKinds = includeKinds && includeKinds !== null ? includeKinds : [];
+        let projectCount = searchResults.reduce((sums,obj) => {
             sums[obj.ancestors[0].id] = (sums[obj.ancestors[0].id] || 0) + 1;
             return sums;
         },{});
-        let projects = uniqueProjects.map((obj) => {
+        let projects = searchResultsProjects.map((obj) => {
             let count = projectCount.hasOwnProperty(obj.id) ? projectCount[obj.id] : 0;
             return <span key={obj.id}>
                 <ListItem primaryText={obj.name + " ("+count+")"}
-                          leftCheckbox={<Checkbox style={styles.checkbox} checked={this.props.includeProjects.includes(obj.id)}/>}
+                          leftCheckbox={<Checkbox style={styles.checkbox} checked={includeProjects.includes(obj.id)}/>}
                           style={{textAlign: 'right'}}
                           onClick={() => this.setIncludeProjects(obj.id)}/>
             </span>
@@ -40,7 +43,7 @@ class SearchFilters extends React.Component {
 
         return (
             <div>
-                <Drawer open={this.props.showFilters} width={this.props.showFilters ? 320 : null} zDepth={1}>
+                <Drawer open={showFilters} width={showFilters ? 320 : null} zDepth={1}>
                     <div style={styles.spacer}></div>
                         <div style={styles.drawer}>
                             {projects.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
@@ -50,19 +53,19 @@ class SearchFilters extends React.Component {
                                     {projects}
                                 </List>
                             </div> : null}
-                            {files.length || folders.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
+                            {searchResultsFiles.length || searchResultsFolders.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
                                 <p style={styles.listHeader}>Type</p>
                                 <Divider style={styles.listDivider}/>
                                 <List>
-                                    {files.length ? <ListItem primaryText={"Files ("+files.length+")"}
-                                              leftCheckbox={<Checkbox style={styles.checkbox} checked={includeKinds.includes('dds-file')}/>}
+                                    {searchResultsFiles.length ? <ListItem primaryText={"Files ("+searchResultsFiles.length+")"}
+                                              leftCheckbox={<Checkbox style={styles.checkbox} checked={includedKinds.includes('dds-file')}/>}
                                               style={{textAlign: 'right'}} onClick={() => this.setIncludeKinds('dds-file')}/> : null}
-                                    {folders.length ? <ListItem primaryText={"Folders ("+folders.length+")"}
-                                              leftCheckbox={<Checkbox style={styles.checkbox} checked={includeKinds.includes('dds-folder')}/>}
+                                    {searchResultsFolders.length ? <ListItem primaryText={"Folders ("+searchResultsFolders.length+")"}
+                                              leftCheckbox={<Checkbox style={styles.checkbox} checked={includedKinds.includes('dds-folder')}/>}
                                               style={{textAlign: 'right'}} onClick={() => this.setIncludeKinds('dds-folder')}/> : null}
                                 </List>
                             </div> : null}
-                            {this.props.screenSize.width < 580 ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
+                            {screenSize.width < 580 ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
                                 <RaisedButton
                                     label="Hide Filters"
                                     labelStyle={styles.button.label}
@@ -70,13 +73,13 @@ class SearchFilters extends React.Component {
                                     secondary={true}
                                     onTouchTap={()=>this.toggleFilters()}/>
                             </div> : null}
-                            {this.props.includeKinds.length || this.props.includeProjects.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
+                            {includedKinds.length || includeProjects.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
                                 <RaisedButton
                                     label="Clear Filters"
                                     labelStyle={styles.button.label}
                                     style={styles.button}
                                     secondary={true}
-                                    onTouchTap={()=>this.clearFilters()}/>
+                                    onTouchTap={()=>this.clearFilters(includedKinds, includeProjects, searchValue)}/>
                             </div> : null}
                     </div>
                 </Drawer>
@@ -84,26 +87,25 @@ class SearchFilters extends React.Component {
         );
     }
 
-    clearFilters() {
-        let value = this.props.searchValue;
-        ProjectActions.searchObjects(value, null);
-        if(this.props.includeKinds.length) ProjectActions.setIncludedSearchKinds([]);
-        if(this.props.includeProjects.length) ProjectActions.setIncludedSearchProjects([]);
-        if(this.props.screenSize.width < 580) this.toggleFilters();
+    clearFilters(includedKinds, includeProjects, searchValue) {
+        mainStore.searchObjects(searchValue, null);
+        if(includedKinds.length) mainStore.setIncludedSearchKinds([]);
+        if(includeProjects.length) mainStore.setIncludedSearchProjects([]);
+        if(mainStore.screenSize.width < 580) this.toggleFilters();
     }
 
     setIncludeKinds(id) {
-        let includeKinds = BaseUtils.removeDuplicatesFromArray(this.props.includeKinds, id);
-        ProjectActions.setIncludedSearchKinds(includeKinds);
+        let includeKinds = BaseUtils.removeDuplicatesFromArray(mainStore.includeKinds.slice(), id);
+        mainStore.setIncludedSearchKinds(includeKinds);
     }
 
     setIncludeProjects(id) {
-        let includeProjects = BaseUtils.removeDuplicatesFromArray(this.props.includeProjects, id);
-        ProjectActions.setIncludedSearchProjects(includeProjects);
+        let includeProjects = BaseUtils.removeDuplicatesFromArray(mainStore.includeProjects.slice(), id);
+        mainStore.setIncludedSearchProjects(includeProjects);
     }
 
     toggleFilters() {
-        ProjectActions.toggleSearchFilters();
+        mainStore.toggleSearchFilters();
     }
 }
 
@@ -146,19 +148,19 @@ const styles = {
 };
 
 SearchFilters.contextTypes = {
-    muiTheme: React.PropTypes.object
+    muiTheme: object
 };
 
 SearchFilters.propTypes = {
-    includeKinds: React.PropTypes.array,
-    includeProjects: React.PropTypes.array,
-    screenSize: React.PropTypes.object,
-    searchResults: React.PropTypes.array,
-    searchResultsFolders: React.PropTypes.array,
-    searchResultsFiles: React.PropTypes.array,
-    searchResultsProjects: React.PropTypes.array,
-    searchValue: React.PropTypes.string,
-    showFilters: React.PropTypes.bool
+    includeKinds: array,
+    includeProjects: array,
+    screenSize: object,
+    searchResults: array,
+    searchResultsFolders: array,
+    searchResultsFiles: array,
+    searchResultsProjects: array,
+    searchValue: string,
+    showFilters: bool
 };
 
 export default SearchFilters;
