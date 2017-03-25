@@ -27,6 +27,7 @@
     "babel-preset-react": "^6.22.0",
     "babel-preset-stage-1": "^6.22.0",
     "browserify": "^7.0.3",
+    "gulp-babel": "^6.1.2",
     "jest-cli": "^0.4.0",
     "mobx-react-devtools": "^4.2.11",
     "object-assign": "^2.0.0",
