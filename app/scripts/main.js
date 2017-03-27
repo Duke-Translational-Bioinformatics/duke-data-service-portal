@@ -5,6 +5,7 @@ import routes from './routes';
 import _  from 'lodash';
 require('./util/polyfills.js');
 require('es6-promise').polyfill();
+require('babel-polyfill');
 
 //Needed for onTouchTap
 //Can go away when react 1.0 release
