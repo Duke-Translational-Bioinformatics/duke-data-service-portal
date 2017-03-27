@@ -47,6 +47,7 @@
   },
   "dependencies": {
     "babel-core": "^6.22.1",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "babel-jest": "^4.0.0",
     "babel-loader": "^6.0.0",
     "babel-polyfill": "^6.0.0",
