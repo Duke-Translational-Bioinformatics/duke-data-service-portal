@@ -28,7 +28,11 @@ var autoprefixerBrowsers = [
 
 gulp.task('scripts', function() {
   return gulp.src(webpackConfig.entry)
-      .pipe(babel())
+      .pipe(babel({"presets": [
+          "es2015",
+          "react",
+          "stage-2"
+      ]}))
       .pipe($.webpack(webpackConfig))
       .pipe(isProduction ? $.uglifyjs() : $.util.noop())
       .pipe(gulp.dest(dist + 'js/'))
