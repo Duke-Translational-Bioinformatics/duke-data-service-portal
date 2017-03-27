@@ -1,5 +1,4 @@
 var gulp = require('gulp');
-//var path = require('path');
 var $ = require('gulp-load-plugins')();
 var del = require('del');
 var babel = require('gulp-babel');
