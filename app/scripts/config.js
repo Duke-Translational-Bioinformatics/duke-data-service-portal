@@ -1,4 +1,5 @@
 let appConfig = {
+    authServiceId: null,
     serviceId: null,
     baseUrl: DDS_PORTAL_CONFIG.baseUrl,
     authServiceUri: null,

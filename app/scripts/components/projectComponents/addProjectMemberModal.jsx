@@ -24,15 +24,17 @@ class AddProjectMemberModal extends React.Component {
     }
 
     componentDidUpdate() {
-        setTimeout(()=>this.fullName.focus(), 300);
+        if(mainStore.toggleModal.open && mainStore.toggleModal.id === 'addMember') setTimeout(()=>this.fullName.focus(), 300);
     }
 
     render() {
         const { currentUser, screenSize, toggleModal, users } = mainStore;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let userName = currentUser ? currentUser.full_name : null;
-        let names = users && users.length ? users : [];
         let id = this.props.params.id;
+        let autoCompleteData = users.map((user)=>{
+            return {text: user.full_name, value: user.full_name, id: user.uid}
+        });
 
         let memberActions = [
             <FlatButton
@@ -57,15 +59,16 @@ class AddProjectMemberModal extends React.Component {
                     onRequestClose={() => this.toggleModal()}
                     open={toggleModal && toggleModal.id === 'addMember' ? toggleModal.open : false}>
                     <form action="#" id="newMemberForm">
-                        {mainStore.drawerLoading ? <CircularProgress size={60} thickness={5} style={styles.loading}/> : null}
+                        {mainStore.drawerLoading ? <CircularProgress size={50} thickness={4} style={styles.loading}/> : null}
                         <AutoComplete
                             style={{textAlign: 'left'}}
                             ref={(input) => this.fullName = input}
                             floatingLabelText="Name"
                             filter={AutoComplete.caseInsensitiveFilter}
-                            dataSource={names}
+                            dataSource={autoCompleteData}
                             errorText={this.state.floatingErrorText}
                             maxSearchResults={7}
+                            onNewRequest={(value, e) => this.chooseUser(value, e)}
                             onUpdateInput={() => this.search()}/><br/>
                         <SelectField value={this.state.value}
                                      onChange={this.handleSelectValueChange.bind(this, 'value')}
@@ -86,9 +89,10 @@ class AddProjectMemberModal extends React.Component {
         );
     }
 
-    handleTouchTapMembers() {
-        this.setState({memberOpen: true});
-        setTimeout(()=>this.fullName.focus(), 300);
+    chooseUser(value, e) {
+        if(e === -1) return false;
+        let id = value.id;
+        mainStore.registerNewUser(id);
     }
 
     handleSelectValueChange (event, index, value) {
@@ -106,20 +110,6 @@ class AddProjectMemberModal extends React.Component {
             this.setState({floatingErrorText: value ? '' : 'This field is required'});
         }
     }
-
-    //handleUpdateInput (text) {
-    //    let timeout = this.state.timeout;
-    //    clearTimeout(this.state.timeout);
-    //    this.setState({
-    //        timeout: setTimeout(() => {
-    //            if (text.indexOf(' ') <= 0) {
-    //                mainStore.getUserName(text);
-    //                this.setState({floatingErrorText: text ? '' : 'This field is required'});
-    //            }
-    //        }, 500)
-    //    })
-    //
-    //}
 
     handleMemberButton(userName, id) {
         let  fullName = this.fullName.state.searchText;
@@ -156,12 +146,6 @@ class AddProjectMemberModal extends React.Component {
         }
     };
 
-    handleFloatingErrorInputChange(e) {
-        this.setState({
-            floatingErrorText: e.target.value ? '' : 'This field is required'
-        });
-    };
-
     toggleModal() {
         mainStore.toggleModals('addMember');
         this.setState({
@@ -171,7 +155,7 @@ class AddProjectMemberModal extends React.Component {
     };
 }
 
-var styles = {
+const styles = {
     dialogStyles: {
         textAlign: 'center',
         fontColor: '#303F9F',
@@ -179,7 +163,7 @@ var styles = {
     },
     loading: {
         position: 'absolute',
-        margin: '0 auto',
+        margin: '-10px auto',
         left: 0,
         right: 0
     },
@@ -195,7 +179,6 @@ AddProjectMemberModal.contextTypes = {
 
 AddProjectMemberModal.propTypes = {
     screenSize: object,
-    project: object,
     currentUser: object,
     users: array,
 };
