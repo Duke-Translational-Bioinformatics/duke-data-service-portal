@@ -446,12 +446,28 @@ export class MainStore {
             }).catch(ex => this.handleErrors(ex))
     }
 
-    @action getUserName(text) {
-        transportLayer.getUserName(text)
+    @action getUserNameFromAuthProvider(text, id) {
+        this.drawerLoading = true;
+        transportLayer.getUserNameFromAuthProvider(text, id)
             .then(this.checkResponse)
             .then(response => response.json())
-            .then((json) => {this.users = json.results.map((users) => {return users.full_name})})
-            .catch((ex) => {this.handleErrors(ex)});
+            .then((json) => {
+                this.users = json.results;
+                this.drawerLoading = false;
+            }).catch(ex => this.handleErrors(ex));
+    }
+
+    @action registerNewUser(id) {
+        transportLayer.registerNewUser(id)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => {})
+            .catch((ex) => {
+                if (ex.response.status !== 409) {
+                    this.addToast('Failed to register this user with DDS');
+                    this.handleErrors(ex)
+                }
+            });
     }
 
     @action getUserId(fullName, id, role) {
@@ -465,7 +481,7 @@ export class MainStore {
                 let userId = userInfo.toString();
                 let name = getName.toString();
                 this.addProjectMember(id, userId, role, name);
-            }).catch((ex) => {this.handleErrors(ex)});
+            }).catch(ex => this.handleErrors(ex));
     }
 
     @action addProjectMember(id, userId, role, name) {

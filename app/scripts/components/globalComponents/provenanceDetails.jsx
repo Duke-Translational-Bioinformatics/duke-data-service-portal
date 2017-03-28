@@ -11,7 +11,6 @@ class ProvenanceDetails extends React.Component {
 
     render() {
         const { onClickProvNode } = provenanceStore;
-        const { entityObj } = mainStore;
         let details = null;
         if (onClickProvNode && onClickProvNode.properties.hasOwnProperty('audit')) {
             let id = this.props.params.id;
@@ -22,7 +21,6 @@ class ProvenanceDetails extends React.Component {
             if (fileName === null && onClickProvNode !== null && onClickProvNode.properties.current_version) fileName = onClickProvNode.properties.name;
             let fileId = onClickProvNode !== null && onClickProvNode.properties.file ? onClickProvNode.properties.file.id : null;
             if (fileId === null && onClickProvNode !== null && onClickProvNode.properties.current_version) versionId = onClickProvNode.properties.current_version.id;
-            let projectName = entityObj && entityObj.ancestors ? entityObj.ancestors[0].name : null;
             let createdOn = onClickProvNode !== null && onClickProvNode.properties.audit ? onClickProvNode.properties.audit.created_on : null;
             let createdBy = onClickProvNode !== null && onClickProvNode.properties.audit ? onClickProvNode.properties.audit.created_by.full_name : null;
             let lastUpdatedOn = onClickProvNode !== null && onClickProvNode.properties.audit ? onClickProvNode.properties.audit.last_updated_on : null;
@@ -35,21 +33,20 @@ class ProvenanceDetails extends React.Component {
             }
             let fileLink = null;
             if (fileName !== null) {
-                fileLink = <a href={fileId !== null ?
+                fileLink = <span><i className="material-icons" style={styles.linkIcon}>link</i><a href={fileId !== null ?
                 UrlGen.routes.file(fileId) :
                 UrlGen.routes.version(versionId)} className="external link" onTouchTap={() => this.toggleProv()}>
                     {fileName}
-                </a>
+                </a></span>
             }
             if (fileId === id || versionId === id) fileLink =
-                <span className="mdl-color-text--grey-600">{fileName}</span>;
+                <span className="mdl-color-text--grey-800">{fileName}</span>;
             let bytes = onClickProvNode !== null && onClickProvNode.properties.upload ? onClickProvNode.properties.upload.size : null;
             if (bytes === null && onClickProvNode !== null && onClickProvNode.properties.kind !== 'dds-activity') bytes = onClickProvNode.properties.current_version.upload.size;
             details = <div className="mdl-cell mdl-cell--12-col" style={styles.details}>
                 <h6 style={styles.listHeader}>
-                    {fileName !== null ? fileLink : activityName}
+                    {fileName !== null ? fileLink : <span className="mdl-color-text--grey-800">{activityName}</span>}
                 </h6>
-
                 <div className="list-block" style={styles.listBlock}>
                     {fileName !== null ? <div className="list-group">
                         <ul style={{position: 'static'}}>
@@ -134,6 +131,10 @@ var styles = {
         margin: 0,
         color:'#757575'
     },
+    linkIcon: {
+        verticalAlign: -6,
+        color: '#235F9C'
+    },
     listBlock: {
         margin: 0
     },
@@ -145,6 +146,7 @@ var styles = {
     listHeader: {
         margin: '20px 0px 5px 0px',
         maxWidth: 172,
+        minWidth: 172,
         wordWrap: 'break-word'
     },
     listItem: {
@@ -158,7 +160,6 @@ ProvenanceDetails.contextTypes = {
 };
 
 ProvenanceDetails.propTypes = {
-    entityObj: object,
     onClickProvNode: object
 };
 

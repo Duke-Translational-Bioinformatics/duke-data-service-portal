@@ -176,8 +176,11 @@ const transportLayer = {
     getObjectMetadata: (id, kind) => {
         return fetch(`${DDS_BASE_URI+apiPrefix+Path.META+kind}/${id}`, getFetchParams('get', authStore.appConfig.apiToken))
     },
-    getUserName: (text) => {
-        return fetch(`${DDS_BASE_URI+apiPrefix}users?full_name_contains=${text}&page=1&per_page=500`, getFetchParams('get', authStore.appConfig.apiToken))
+    getUserNameFromAuthProvider: (text, id) => {
+        return fetch(`${DDS_BASE_URI+apiPrefix+Path.AUTH_PROVIDERS+id}/affiliates?full_name_contains=${text}`, getFetchParams('get', authStore.appConfig.apiToken))
+    },
+    registerNewUser: (id) => {
+        return fetch(`${DDS_BASE_URI+apiPrefix+Path.AUTH_PROVIDERS+authStore.appConfig.authServiceId}/affiliates/${id}/dds_user`, getFetchParams('post', authStore.appConfig.apiToken))
     },
     getUserId: (fullName) => {
         return fetch(`${DDS_BASE_URI+apiPrefix}users?full_name_contains=${fullName}&page=1&per_page=500`, getFetchParams('get', authStore.appConfig.apiToken))

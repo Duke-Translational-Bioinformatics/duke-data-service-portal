@@ -19,6 +19,7 @@ export class AuthStore {
         this.authServiceLoading = false;
         this.currentUser = {};
         this.userKey = {};
+        this.appConfig.authServiceId = cookie.load('authServiceId');
         this.appConfig.redirectUrl = cookie.load('redirectUrl');
         this.appConfig.apiToken = cookie.load('apiToken');
         this.appConfig.isLoggedIn = cookie.load('isLoggedIn');
@@ -43,6 +44,9 @@ export class AuthStore {
                     let url = json.results.reduce((prev, curr) => {
                         return (curr.is_default) ? curr : prev;
                     }, null);
+                    let expiresAt = new Date(Date.now() + (60 * 60 * 2 * 1000));
+                    this.appConfig.authServiceId = url.id;
+                    cookie.save('authServiceId', this.appConfig.authServiceId, {expires: expiresAt});
                     this.appConfig.authServiceUri = url.login_initiation_url;
                     this.appConfig.authServiceName = url.name;
                     this.appConfig.serviceId = url.service_id;
