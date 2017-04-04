@@ -7,11 +7,9 @@ import transportLayer from '../transportLayer';
 import BaseUtils from '../util/baseUtils.js';
 import { StatusEnum } from '../enum';
 import { UrlGen, Kind, Path } from '../util/urlEnum';
-import { graphOptions, graphColors } from '../graphConfig';
 import { checkStatus, getFetchParams } from '../util/fetchUtil';
 
 export class MainStore {
-
     @observable agents
     @observable agentKey
     @observable agentApiToken
@@ -86,7 +84,6 @@ export class MainStore {
     @observable versionModal
 
     constructor() {
-
         this.agents = [];
         this.agentKey = {};
         this.agentApiToken = {};
@@ -229,7 +226,7 @@ export class MainStore {
             .then(response => response.json())
             .then((json) => {
                 this.addToast('Project Updated');
-                this.showDetails(id);
+                this.getProjectDetails(id);
             }).catch((ex) => {
                 this.addToast('Project Update Failed');
                 this.handleErrors(ex)
@@ -242,15 +239,14 @@ export class MainStore {
             .then(response => {})
             .then((json) => {
                 this.addToast('Project Deleted');
-
             }).catch((ex) => {
                 this.addToast('Project Delete Failed');
                 this.handleErrors(ex)
             });
     }
 
-    @action showDetails(id) {
-        transportLayer.showDetails(id)
+    @action getProjectDetails(id) {
+        transportLayer.getProjectDetails(id)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {

@@ -1,3 +1,5 @@
+import DDS_PORTAL_CONFIG from '../ddsPortalConfig';
+
 export const UrlGen = {
     routes: {
         authServiceUri: DDS_PORTAL_CONFIG.authServiceUri,

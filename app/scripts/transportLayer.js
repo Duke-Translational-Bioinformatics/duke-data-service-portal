@@ -1,3 +1,4 @@
+import DDS_PORTAL_CONFIG from './ddsPortalConfig';
 import { UrlGen, Path } from './util/urlEnum';
 import { getFetchParams } from './util/fetchUtil';
 import authStore from './stores/authStore';
@@ -121,7 +122,7 @@ const transportLayer = {
     deleteProject: (id) => {
         return fetch(DDS_BASE_URI+apiPrefix+Path.PROJECT+id, getFetchParams('delete', authStore.appConfig.apiToken))
     },
-    showDetails: (id) => {
+    getProjectDetails: (id) => {
         return fetch(DDS_BASE_URI+apiPrefix+Path.PROJECT+id, getFetchParams('get', authStore.appConfig.apiToken))
     },
     addFolder: (id, parentKind, name) => {

@@ -1,3 +1,5 @@
+import DDS_PORTAL_CONFIG from './ddsPortalConfig';
+
 let appConfig = {
     authServiceId: null,
     serviceId: null,
