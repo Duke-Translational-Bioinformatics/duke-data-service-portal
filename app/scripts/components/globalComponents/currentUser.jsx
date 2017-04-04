@@ -1,38 +1,40 @@
-import React from 'react';
-import MainActions from '../../actions/mainActions';
-import ProjectActions from '../../actions/projectActions';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import authStore from '../../stores/authStore';
 import Divider from 'material-ui/Divider';
 import FontIcon from 'material-ui/FontIcon';
 import {Popover, PopoverAnimationVertical} from 'material-ui/Popover';
 
+@observer
 class CurrentUser extends React.Component {
 
     render() {
-        if (!this.props.appConfig.apiToken) {
+        const { appConfig, currentUser } = authStore;
+        const { showUserInfoPanel } = mainStore;
+        if (!appConfig.apiToken) {
             return null
         }
-        else if (this.props.appConfig.apiToken) {
-            let fullName = this.props.currentUser ? this.props.currentUser.full_name : null;
-            let email = this.props.currentUser ? this.props.currentUser.email : null;
-            let userName = this.props.currentUser ? this.props.currentUser.username : null;
+        else if (appConfig.apiToken) {
             return (
                <span>
                    <a className="external" onTouchTap={() => this.showUserInfoPanel()} style={styles.userOptions} ref={(el)=> this.iconElement = el}>
                        <FontIcon className="material-icons" style={styles.icon}>account_box</FontIcon>
                    </a>
                <Popover
-                    open={this.props.showUserInfoPanel}
+                    open={showUserInfoPanel}
                     anchorEl={this.iconElement}
                     anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
                     targetOrigin={{horizontal: 'right', vertical: 'top'}}
                     onRequestClose={() => this.showUserInfoPanel()}
                     animation={PopoverAnimationVertical}>
                     <div style={styles.popoverList}>
-                        <p style={styles.userDisplay}>{fullName}</p>
+                        <p style={styles.userDisplay}>{currentUser.full_name}</p>
                         <Divider />
-                        <p style={styles.userDisplay}>User Name: {' ' + userName}</p>
+                        <p style={styles.userDisplay}>User Name: {' ' + currentUser.username}</p>
                         <Divider />
-                        <p style={styles.userDisplay}>Email: {' ' + email}</p>
+                        <p style={styles.userDisplay}>Email: {' ' + currentUser.email}</p>
                         <Divider />
                         <a href="#" className="mdl-color-text--grey-700 external" style={styles.userLogout} onTouchTap={() => this.handleLogout()}>Log Out</a>
                         <FontIcon className="material-icons" style={styles.userLogoutIcon} onTouchTap={() => this.handleLogout()}>exit_to_app</FontIcon>
@@ -45,11 +47,11 @@ class CurrentUser extends React.Component {
 
     handleLogout() {
         this.props.router.push('/login');
-        MainActions.handleLogout()
+        authStore.handleLogout()
     }
 
     showUserInfoPanel(){
-        ProjectActions.toggleUserInfoPanel();
+        mainStore.toggleUserInfoPanel();
     }
 }
 
@@ -88,12 +90,13 @@ var styles = {
 };
 
 CurrentUser.contextTypes = {
-    muiTheme: React.PropTypes.object
+    muiTheme: object
 };
 
 CurrentUser.propTypes = {
-    currentUser: React.PropTypes.object,
-    showUserInfoPanel: React.PropTypes.bool
+    appConfig: object,
+    currentUser: object,
+    showUserInfoPanel: bool
 };
 
 export default CurrentUser;

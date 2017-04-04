@@ -1,13 +1,17 @@
-import React from 'react';
-import ProjectActions from '../../actions/projectActions';
+import React, { PropTypes } from 'react';
+const { object } = PropTypes;
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
 import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 
+@observer
 class AddProjectModal extends React.Component {
 
-    constructor() {
+    constructor(props) {
+        super(props);
         this.state = {
             open: false,
             floatingErrorText: 'This field is required',
@@ -16,7 +20,7 @@ class AddProjectModal extends React.Component {
     }
 
     render() {
-
+        const { screenSize } = mainStore;
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -38,7 +42,7 @@ class AddProjectModal extends React.Component {
                     onTouchTap={this.handleTouchTap.bind(this)} />
                 <Dialog
                     style={styles.dialogStyles}
-                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
+                    contentStyle={screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Add New Project"
                     autoDetectWindowHeight={true}
                     actions={actions}
@@ -81,7 +85,7 @@ class AddProjectModal extends React.Component {
         } else {
             let name = this.projectNameText.getValue();
             let desc = this.projectDescriptionText.getValue();
-            ProjectActions.addProject(name, desc);
+            mainStore.addProject(name, desc);
             this.setState({
                 open: false,
                 floatingErrorText: 'This field is required.',
@@ -125,7 +129,11 @@ var styles = {
 };
 
 AddProjectModal.contextTypes = {
-    muiTheme: React.PropTypes.object
+    muiTheme: object
+};
+
+AddProjectModal.propTypes = {
+    screenSize: object
 };
 
 export default AddProjectModal;

@@ -1,27 +1,30 @@
-import React from 'react'
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
 import LinearProgress from 'material-ui/LinearProgress';
 
 class Loaders extends React.Component {
 
+    @observer
     render() {
         let uploading = null;
-        if (this.props.uploads) {
-            uploading = Object.keys(this.props.uploads).map(uploadId => {
-                let upload = this.props.uploads[uploadId];
+        if (mainStore.uploads) {
+            uploading = mainStore.uploads.entries().map(uploadId => {
+                let upload = uploadId[1];
+                let id = uploadId[0];
                 return <div key={'pgrs'+uploadId}>
                     <LinearProgress mode="determinate" color={'#EC407A'} style={styles.uploader} value={upload.uploadProgress} max={100} min={0}/>
-                    <i className="material-icons" style={styles.deleteIcon} onTouchTap={()=>this.cancelUpload(uploadId, upload.name)}>cancel</i>
+                    <i className="material-icons" style={styles.deleteIcon} onTouchTap={()=>this.cancelUpload(id, upload.name)}>cancel</i>
                     <div className="mdl-color-text--grey-600" style={styles.uploadText}>
-                        {upload.uploadProgress.toFixed(2) + '% of ' + upload.name } uploaded...
+                        {upload.uploadProgress == 0 ? 'Preparing to upload '+ upload.name : upload.uploadProgress.toFixed(2) + '% of ' + upload.name +' uploaded...'}
                     </div>
                 </div>;
             });
         }
-        let loading = this.props.loading ?
+        let loading = mainStore.loading ?
         <LinearProgress mode="indeterminate" color={'#EC407A'} style={styles.uploader}/> : '';
-        if (this.props.uploads && Object.keys(this.props.uploads).length != 0) {
+        if (mainStore.uploads && mainStore.uploads.size != 0) {
             return (
                 <div>
                     {uploading}
@@ -36,7 +39,7 @@ class Loaders extends React.Component {
         }
     }
     cancelUpload(uploadId, name) {
-        ProjectActions.cancelUpload(uploadId, name);
+        mainStore.cancelUpload(uploadId, name);
     }
 }
 var styles = {
@@ -51,13 +54,19 @@ var styles = {
     uploader: {
         width: '95%',
         margin: '0 auto',
-        marginRight: 24
+        marginRight: 24,
+        backgroundColor: "#235F9C"
     },
     uploadText: {
         fontSize: 13,
         textAlign: 'left',
         marginLeft: 41
     }
+};
+
+Loaders.propTypes = {
+    uploads: object,
+    loading: bool
 };
 
 export default Loaders;

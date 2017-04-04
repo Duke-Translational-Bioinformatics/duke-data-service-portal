@@ -1,6 +1,12 @@
 # Duke Data Service Portal
 
-This is a UI portal built for use with the [Duke Data Service API](https://github.com/Duke-Translational-Bioinformatics/duke-data-service/tree/master). It is based on [gulp](https://github.com/gulpjs/gulp), [stylus](https://github.com/LearnBoost/stylus) and [webpack](https://github.com/webpack/webpack). The internal data flow is handled with  [Reflux](https://github.com/spoike/refluxjs) and the routing is managed with the [React-Router](https://github.com/rackt/react-router). The UI is handled by [material-ui](http://material-ui.com/) and Material Design Lite.
+This is a UI web portal built for use with the [Duke Data Service API](https://github
+.com/Duke-Translational-Bioinformatics/duke-data-service/tree/master). It is based on [gulp](https://github
+.com/gulpjs/gulp), [stylus](https://github.com/LearnBoost/stylus) and [webpack](https://github.com/webpack/webpack).
+The internal data flow is handled with [MobX](https://mobx.js.org/refguide/api.html) and the routing is managed with
+ the
+ [React-Router](https://github.com/rackt/react-router). The UI is handled by [material-ui](http://material-ui.com/)
+ and a layout grid from Google Material Design Lite.
 
 ## Get the portal
 
@@ -56,9 +62,11 @@ The portal interfaces with the [Duke Data Service API](https://github
 
 Javascript entry file: `app/scripts/main.js` <br />
 
-**Reflux**
+**MobX**
 
-We are using Reflux, which is an implementation of the [Flux Architecture](http://facebook.github.io/flux/docs/overview.html). If you want to read more about Reflux, check out the readme of the [reflux git repo](https://github.com/spoike/refluxjs). 
+We are using MobX to manage application state. Mobx makes state management simple and scalable by transparently
+applying functional reactive programming (TFRP). If you want to read more about MobX, check out the readme of the
+[MobX git repo](https://github.com/mobxjs/mobx/blob/master/README.md) or the [MobX API documentation](https://mobx.js.org/refguide/api.html).
 
 **React-Router**
 

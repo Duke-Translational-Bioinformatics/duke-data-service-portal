@@ -1,9 +1,11 @@
 import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import authStore from '../../stores/authStore';
 import MetadataTemplateProperties from '../globalComponents/metadataTemplateProperties.jsx';
-import BaseUtils from '../../../util/baseUtils'
+import BaseUtils from '../../util/baseUtils';
+import {Kind, Path} from '../../util/urlEnum';
 import DatePicker from 'material-ui/DatePicker';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -11,6 +13,7 @@ import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColu
 import TextField from 'material-ui/TextField';
 import Theme from '../../theme/customTheme.js';
 
+@observer
 class MetadataObjectCreator extends React.Component {
     constructor(props) {
         super(props);
@@ -22,7 +25,7 @@ class MetadataObjectCreator extends React.Component {
     }
 
     render() {
-
+        const { entityObj, filesChecked, metaObjProps, metadataTemplate, templateProperties } = mainStore;
         function formatDate(date) {
             return (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
         }
@@ -42,14 +45,13 @@ class MetadataObjectCreator extends React.Component {
             );
         }
 
-        let currentUser = this.props.currentUser && this.props.currentUser !== null ? this.props.currentUser : null;
-        let name = this.props.entityObj && this.props.filesChecked < 1 ? this.props.entityObj.name : 'selected files';
-        let metaObjProps = this.props.metaObjProps && this.props.metaObjProps !== null ? this.props.metaObjProps : null;
-        let properties = this.props.templateProperties && this.props.templateProperties.length !== 0 ? this.props.templateProperties.map((obj)=>{
+        let name = entityObj && filesChecked < 1 ? entityObj.name : 'selected files';
+        let metaObjProperties = metaObjProps && metaObjProps !== null ? metaObjProps : null;
+        let properties = templateProperties && templateProperties.length !== 0 ? templateProperties.map((obj)=>{
             let type = BaseUtils.getTemplatePropertyType(obj.type);
-            let setValues = (metaObjProps) => {
+            let setValues = (metaObjProperties) => {
                 let value = '';
-                metaObjProps.forEach((prop)=> {
+                metaObjProperties.forEach((prop)=> {
                     return prop.forEach((p)=> {
                         if(p.id === obj.id && obj.type !== 'date') {
                             value = p.value;
@@ -70,7 +72,7 @@ class MetadataObjectCreator extends React.Component {
                                 fullWidth={true}
                                 id={obj.key}
                                 ref={obj.key}
-                                defaultValue={setValues(metaObjProps)}
+                                defaultValue={setValues(metaObjProperties)}
                                 title={type}
                                 style={styles.textField}
                                 underlineStyle={styles.textField.underline}
@@ -85,7 +87,7 @@ class MetadataObjectCreator extends React.Component {
                                 id={obj.key}
                                 ref={obj.key}
                                 formatDate={formatDate}
-                                value={this.state.dateValue[obj.key] ? this.state.dateValue[obj.key].value : setValues(metaObjProps)}
+                                value={this.state.dateValue[obj.key] ? this.state.dateValue[obj.key].value : setValues(metaObjProperties)}
                                 mode="portrait"
                                 onChange={(x, event) => this.addDateProperty(x, event, obj.key)}
                                 underlineStyle={styles.datePicker.underline}
@@ -95,11 +97,11 @@ class MetadataObjectCreator extends React.Component {
             )
         }) : null;
         let showWarning = this.state.noValueWarning ? 'block' : 'none';
-        let templateDesc = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.description : null;
-        let templateId = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.id : null;
-        let templateInfo = this.props.metadataTemplate && this.props.metadataTemplate !== null ? showTemplate(this.props.metadataTemplate) : null;
-        let templateLabel = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.label : null;
-        let templateName = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.name : null;
+        let templateDesc = metadataTemplate && metadataTemplate !== null ? metadataTemplate.description : null;
+        let templateId = metadataTemplate && metadataTemplate !== null ? metadataTemplate.id : null;
+        let templateInfo = metadataTemplate && metadataTemplate !== null ? showTemplate(metadataTemplate) : null;
+        let templateLabel = metadataTemplate && metadataTemplate !== null ? metadataTemplate.label : null;
+        let templateName = metadataTemplate && metadataTemplate !== null ? metadataTemplate.name : null;
 
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.wrapper}>
@@ -119,7 +121,7 @@ class MetadataObjectCreator extends React.Component {
                     {templateInfo}
                 </div>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.btnWrapper}>
-                    {this.props.templateProperties && this.props.templateProperties.length ?
+                    {templateProperties && templateProperties.length ?
                     <h5 className="mdl-color-text--grey-600" style={styles.heading}>
                         Properties
                     </h5> :
@@ -133,7 +135,7 @@ class MetadataObjectCreator extends React.Component {
                         }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.listWrapper}>
-                    {this.props.templateProperties && this.props.templateProperties.length ? <Table selectable={false}>
+                    {templateProperties && templateProperties.length ? <Table selectable={false}>
                         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                             <TableRow>
                                 <TableHeaderColumn style={styles.tableHead1}>Key</TableHeaderColumn>
@@ -156,7 +158,7 @@ class MetadataObjectCreator extends React.Component {
                                   labelStyle={styles.button.label}
                                   style={styles.button.cancel}
                                   onTouchTap={() => this.toggleTagManager()}/>
-                    {this.props.templateProperties && this.props.templateProperties.length ?
+                    {templateProperties && templateProperties.length ?
                     <RaisedButton label={'Apply'} secondary={true}
                                   labelStyle={styles.button.label}
                                   style={styles.button.apply}
@@ -171,17 +173,17 @@ class MetadataObjectCreator extends React.Component {
             return obj.key !== key;
         });
         metaProps.push({key: key, value: value});
-        ProjectActions.createMetaPropsList(metaProps);
+        mainStore.createMetaPropsList(metaProps);
     }
 
     addDateProperty(x, date, key) { // x is event which is always null. This is MUI behavior
-        let metaProps = ProjectStore.metaProps;
+        let metaProps = mainStore.metaProps.slice();
         let formattedDate = date.toISOString().split('T')[0];
         this.state.dateValue[key] = {value: date}; // Workaround for strange MUI defaultValue behavior. Changes value.
         this.setState({dateValue: this.state.dateValue});
         if(!BaseUtils.objectPropInArray(metaProps, 'key', key)) { //If not in array, add object
             metaProps.push({key: key, value: formattedDate});
-            ProjectActions.createMetaPropsList(metaProps);
+            mainStore.createMetaPropsList(metaProps);
         } else {
             if(BaseUtils.objectPropInArray(metaProps, 'key', key)) { //If in array, value changed, replace obj
                 this.replacePropertyValue(metaProps, key, formattedDate);
@@ -191,10 +193,10 @@ class MetadataObjectCreator extends React.Component {
 
     addToPropertyList(key) {
         let value = this.refs[key].getValue();
-        let metaProps = ProjectStore.metaProps;
+        let metaProps = mainStore.metaProps.slice();
         if(this.refs[key].getValue() !== '' && !BaseUtils.objectPropInArray(metaProps, 'key', key)) {
             metaProps.push({key: key, value: value});
-            ProjectActions.createMetaPropsList(metaProps);
+            mainStore.createMetaPropsList(metaProps);
         } else {
             if(BaseUtils.objectPropInArray(metaProps, 'key', key)) {
                 this.replacePropertyValue(metaProps, key, value);
@@ -203,20 +205,19 @@ class MetadataObjectCreator extends React.Component {
     }
 
     createMetadataObject(templateId) {
-        let kind = 'dds-file';
-        let files = this.props.filesChecked;
-        let fileId = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.params.id;
-        let metaProps = ProjectStore.metaProps;
+        let files = mainStore.filesChecked;
+        let fileId = mainStore.selectedEntity !== null ? mainStore.selectedEntity.id : this.props.params.id;
+        let metaProps = mainStore.metaProps.slice();
         let errors = this.state.errorText;
         if(Object.keys(errors).length === 0 && errors.constructor === Object) {
             if(metaProps.length) {
-                if (this.props.filesChecked.length > 0) {
+                if (mainStore.filesChecked.length > 0) {
                     for (let i = 0; i < files.length; i++) {
-                        ProjectActions.createMetadataObject(kind, files[i], templateId, metaProps);
-                        if(!!this.refs[files[i]]) this.refs[files[i]].checked = false;
+                        mainStore.createMetadataObject(Kind.DDS_FILE, files[i], templateId, metaProps);
                     }
+                    mainStore.handleBatch([], []);
                 } else {
-                    ProjectActions.createMetadataObject(kind, fileId, templateId, metaProps);
+                    mainStore.createMetadataObject(Kind.DDS_FILE, fileId, templateId, metaProps);
                 }
                 this.toggleTagManager();
             } else {
@@ -226,7 +227,7 @@ class MetadataObjectCreator extends React.Component {
     }
 
     goBack() {
-        ProjectActions.showMetadataTemplateList();
+        mainStore.showMetadataTemplateList();
     }
 
     handleInputValidation(e) {
@@ -245,19 +246,19 @@ class MetadataObjectCreator extends React.Component {
         if(!pass && type === 'text') this.state.errorText[id] = {type: type, text: 'must contain text'};
         this.setState({ errorText: this.state.errorText, noValueWarning: false});
         if(value === '') { // If value is deleted then remove property from metaProps
-            let metaProps = ProjectStore.metaProps;
+            let metaProps = mainStore.metaProps.slice();
             metaProps = metaProps.filter((obj) => {
                 return obj.key !== id;
             });
-            ProjectActions.createMetaPropsList(metaProps);
+            mainStore.createMetaPropsList(metaProps);
         }
     }
 
     toggleTagManager() {
-        ProjectActions.toggleTagManager();
-        ProjectActions.createMetaPropsList([]);
+        mainStore.toggleTagManager();
+        mainStore.createMetaPropsList([]);
         this.setState({dateValue:{}});
-        if(this.props.showTemplateDetails) ProjectActions.showMetadataTemplateList();
+        if(mainStore.showTemplateDetails) mainStore.showMetadataTemplateList();
     }
 }
 
@@ -375,12 +376,12 @@ MetadataObjectCreator.contextTypes = {
 };
 
 MetadataObjectCreator.propTypes = {
-    currentUser: React.PropTypes.object,
     entityObj: React.PropTypes.object,
     filesChecked: React.PropTypes.array,
+    metaObjProps: React.PropTypes.array,
     metaProps: React.PropTypes.array,
-    metaTemplates: React.PropTypes.array,
-    metadataTemplate: React.PropTypes.object
+    metadataTemplate: React.PropTypes.object,
+    templateProperties: React.PropTypes.object
 };
 
 export default MetadataObjectCreator;

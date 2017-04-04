@@ -1,28 +1,32 @@
-import React from 'react';
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
 import ProjectOptionsMenu from './projectOptionsMenu.jsx';
 import Details from './details.jsx';
 import UploadManager from '../globalComponents/uploadManager.jsx';
-import {UrlGen} from '../../../util/urlEnum';
-import BaseUtils from '../../../util/baseUtils.js';
+import {UrlGen} from '../../util/urlEnum';
+import BaseUtils from '../../util/baseUtils.js';
 import FlatButton from 'material-ui/FlatButton';
 import Card from 'material-ui/Card';
 
+@observer
 class ProjectDetails extends React.Component {
 
-    constructor() {
+    constructor(props) {
+        super(props);
         this.state = {
             showDetails: false
         }
     }
 
     render() {
+        const { project, projPermissions } = mainStore;
         let id = this.props.params.id;
-        let createdBy = this.props.project && this.props.project.audit ? this.props.project.audit.created_by.full_name : null;
-        let projectName = this.props.project ? this.props.project.name : null;
-        let crdOn = this.props.project && this.props.project.audit ? this.props.project.audit.created_on : null;
-        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
+        let createdBy = project && project.audit ? project.audit.created_by.full_name : null;
+        let crdOn = project && project.audit ? project.audit.created_on : null;
+        let projectName = project ? project.name : null;
+        let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         let uploadMdl = null;
         let optionsMenu = null;
         if (prjPrm !== null) {
@@ -141,11 +145,12 @@ var styles = {
 };
 
 ProjectDetails.contextTypes = {
-    muiTheme: React.PropTypes.object
+    muiTheme: object
 };
 
 ProjectDetails.propTypes = {
-    project: React.PropTypes.object
+    project: object,
+    projPermissions: string
 };
 
 export default ProjectDetails;

@@ -1,50 +1,48 @@
-import React from 'react';
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import {Kind, Path} from '../../util/urlEnum';
 import Card from 'material-ui/Card';
-import DeleteIcon from 'material-ui/svg-icons/action/delete';
+import DeleteForeverIcon from 'material-ui/svg-icons/action/delete-forever';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import GetAppIcon from 'material-ui/svg-icons/action/get-app';
 import IconButton from 'material-ui/IconButton';
 import LocalOffer from 'material-ui/svg-icons/maps/local-offer';
 
+@observer
 class BatchOps extends React.Component {
 
-    constructor() {
-        this.state = {
-            deleteOpen: false,
-            downloadOpen: false
-        }
-    }
-
     render() {
+        const { entityObj, filesChecked, foldersChecked, itemsSelected, project, projPermissions, toggleModal } = mainStore;
         let dlMsg = '';
         let msg = '';
-        if(this.props.filesChecked.length > 1 || this.props.foldersChecked.length > 1 || this.props.foldersChecked.length + this.props.filesChecked.length > 1){
+        let dltIcon = null;
+        let tagIcon = null;
+        if(filesChecked.length > 1 || foldersChecked.length > 1 || foldersChecked.length + filesChecked.length > 1){
             msg = "Are you sure you want to delete these items?";
         }else{
             msg= "Are you sure you want to delete this item?";
         }
-        if(!this.props.filesChecked.length){
+        if(!filesChecked.length){
             dlMsg = "If you want to download the contents of a folder, please open that folder and select the files to download"
-        }else if(this.props.filesChecked.length > 1){
-            dlMsg = "Are you sure you want to download "+this.props.filesChecked.length+" files?";
         }else{
-            dlMsg = "Are you sure you want to download "+this.props.filesChecked.length+" file?"
+            let f = filesChecked.length > 1  ? " files?" : " file?";
+            dlMsg = "Are you sure you want to download "+filesChecked.length+f;
         }
-        let downloadIcon = this.props.filesChecked.length ? <IconButton onTouchTap={() => this.openDownloadModal()} style={styles.downloadBtn}><GetAppIcon color={'#EC407A'}/></IconButton> : null;
-        let dltIcon = null;
-        let tagIcon = null;
-        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
+        let parentId = entityObj && entityObj.id ? entityObj.id : project.id;
+        let parentKind = entityObj && entityObj.kind === Kind.DDS_FOLDER ? entityObj.kind : Kind.DDS_PROJECT;
+        let downloadIcon = filesChecked.length ? <IconButton onTouchTap={() => this.openModal('dwnLoad')} style={styles.downloadBtn}><GetAppIcon color={'#EC407A'}/></IconButton> : null;
+        let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         if (prjPrm !== null) {
             dltIcon = prjPrm === 'flDownload' ? null :
-                <IconButton onTouchTap={() => this.openDeleteModal()} style={styles.deleteBtn}>
-                    <DeleteIcon color={'#EC407A'}/>
+                <IconButton onTouchTap={() => this.openModal('dlt')} style={styles.deleteBtn}>
+                    <DeleteForeverIcon color={'#EC407A'}/>
                 </IconButton>;
         }
         if (prjPrm !== null) {
-            tagIcon = prjPrm === 'flDownload' || !this.props.filesChecked.length ? null :
+            tagIcon = prjPrm === 'flDownload' || !filesChecked.length ? null :
                 <IconButton onTouchTap={() => this.openTagManager()} style={styles.tagBtn}>
                     <LocalOffer color={'#EC407A'}/>
                 </IconButton>;
@@ -53,27 +51,27 @@ class BatchOps extends React.Component {
             <FlatButton
                 label="Cancel"
                 secondary={true}
-                onTouchTap={() => this.handleClose()}/>,
+                onTouchTap={() => this.handleClose('dlt')}/>,
             <FlatButton
                 label="Delete"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={() => this.handleDelete()}/>
+                onTouchTap={() => this.handleDelete(parentId, parentKind)}/>
         ];
         let downloadActions = [];
-        if(!this.props.filesChecked.length){
+        if(!filesChecked.length){
             downloadActions = [
                 <FlatButton
                     label="Cancel"
                     secondary={true}
-                    onTouchTap={() => this.handleClose()}/>
+                    onTouchTap={() => this.handleClose('dwnLoad')}/>
             ]
         } else {
             downloadActions = [
                 <FlatButton
                     label="Cancel"
                     secondary={true}
-                    onTouchTap={() => this.handleClose()}/>,
+                    onTouchTap={() => this.handleClose('dwnLoad')}/>,
                 <FlatButton
                     label="Download"
                     secondary={true}
@@ -84,7 +82,7 @@ class BatchOps extends React.Component {
 
         return (
             <Card style={styles.card}>
-                <h6 style={styles.numSelected}>{this.props.itemsSelected}  selected</h6>
+                <h6 style={styles.numSelected}>{itemsSelected}  selected</h6>
                 <div style={styles.iconBtn} title="Delete selected items">
                     { dltIcon }
                 </div>
@@ -99,8 +97,8 @@ class BatchOps extends React.Component {
                     title={msg}
                     autoDetectWindowHeight={true}
                     actions={deleteActions}
-                    open={this.state.deleteOpen}
-                    onRequestClose={() => this.handleClose()}>
+                    open={toggleModal && toggleModal.id == 'dlt' ? toggleModal.open : false}
+                    onRequestClose={() => this.handleClose('dlt')}>
                     <i className="material-icons" style={styles.warning}>warning</i>
                 </Dialog>
                 <Dialog
@@ -108,8 +106,8 @@ class BatchOps extends React.Component {
                     title={dlMsg}
                     autoDetectWindowHeight={true}
                     actions={downloadActions}
-                    open={this.state.downloadOpen}
-                    onRequestClose={() => this.handleClose()}>
+                    open={toggleModal && toggleModal.id == 'dwnLoad' ? toggleModal.open : false}
+                    onRequestClose={() => this.handleClose('dwnLoad')}>
                     <i className="material-icons" style={styles.warning}>warning</i>
                     <p style={styles.textStyles}>If you want to download the contents of a folder, please open that folder and select the files to download.</p>
                 </Dialog>
@@ -117,72 +115,31 @@ class BatchOps extends React.Component {
         );
     }
 
-    handleDelete(){
-        let parentId = this.props.entityObj && this.props.entityObj.id ? this.props.entityObj.id : this.props.project.id;
-        let parentKind = this.props.entityObj && this.props.entityObj.kind === 'dds-folder' ? this.props.entityObj.kind : 'dds-project';
-        ProjectActions.batchDeleteItems(parentId, parentKind);
-        this.setState({deleteOpen: false});
+    handleDelete(parentId, parentKind){
+        mainStore.batchDeleteItems(parentId, parentKind);
+        this.handleClose('dlt');
     }
 
     handleDownload() {
         let kind = 'files/';
-        let files = this.props.filesChecked ? this.props.filesChecked : null;
-        let folders = this.props.foldersChecked ? this.props.foldersChecked : null;
+        let files = mainStore.filesChecked ? mainStore.filesChecked : null;
         for (let i = 0; i < files.length; i++) {
-            ProjectActions.getDownloadUrl(files[i], kind);
-            if(!!this.refs[files[i]]) this.refs[files[i]].checked = false;
+            mainStore.getDownloadUrl(files[i], kind);
         }
-        this.setState({downloadOpen: false});
+        mainStore.handleBatch([], []);
+        this.handleClose('dwnLoad');
     }
 
-    openDeleteModal() {
-        let batchDeleteFiles = [];
-        let batchDeleteFolders = [];
-        let files = this.props.filesChecked ? this.props.filesChecked : null;
-        let folders = this.props.foldersChecked ? this.props.foldersChecked : null;
-        for (let i = 0; i < files.length; i++) {
-            batchDeleteFiles.push(files[i]);
-        }
-        for (let i = 0; i < folders.length; i++) {
-            batchDeleteFolders.push(folders[i]);
-        }
-        ProjectActions.setBatchItems(batchDeleteFiles, batchDeleteFolders);
-        this.setState({deleteOpen: true});
-    }
-
-    openDownloadModal() {
-        let folders = this.props.foldersChecked ? this.props.foldersChecked : null;
-        for (let i = 0; i < folders.length; i++) {
-            if(!!this.refs[folders[i]]) this.refs[folders[i]].checked = false;
-        }
-        this.setState({downloadOpen: true});
+    openModal(id) {
+        mainStore.toggleModals(id);
     }
 
     openTagManager() {
-        ProjectActions.toggleTagManager();
+        mainStore.toggleTagManager();
     }
 
-    handleClose() {
-        let checked = null;
-        // See if checkboxes are selected
-        let checkedBoxes = document.querySelectorAll('input[name=chkboxName]:checked');
-        let filesChecked = [];
-        let foldersChecked = [];
-        // Create arrays of checked boxes
-        let fileInput = document.getElementsByClassName('fileChkBoxes');
-        let folderInput = document.getElementsByClassName('folderChkBoxes');
-        for (let i = 0; fileInput[i]; ++i) {
-            if (fileInput[i].checked) filesChecked.push(fileInput[i].value);
-        }
-        for (let i = 0; folderInput[i]; ++i) {
-            if (folderInput[i].checked) foldersChecked.push(folderInput[i].value);
-        }
-        ProjectActions.handleBatch(filesChecked, foldersChecked);
-        if (!checkedBoxes.length) ProjectActions.showBatchOptions();
-        this.setState({
-            deleteOpen: false,
-            downloadOpen: false
-        });
+    handleClose(id) {
+        mainStore.toggleModals(id);
     };
 }
 
@@ -243,6 +200,16 @@ let styles = {
 
 BatchOps.contextTypes = {
     muiTheme: React.PropTypes.object
+};
+
+BatchOps.propTypes = {
+    entityObj: object,
+    project: object,
+    projPermissions: object,
+    toggleModal: object,
+    filesChecked: array,
+    foldersChecked: array,
+    itemsSelected: string
 };
 
 export default BatchOps;

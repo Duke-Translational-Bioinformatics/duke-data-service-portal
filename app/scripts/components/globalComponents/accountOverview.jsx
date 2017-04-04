@@ -1,14 +1,19 @@
-import React from 'react';
-import BaseUtils from '../../../util/baseUtils.js';
+import React, { PropTypes } from 'react';
+const { object } = PropTypes;
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import BaseUtils from '../../util/baseUtils.js';
 import Card from 'material-ui/Card';
 import FontIcon from 'material-ui/FontIcon';
 
+@observer
 class AccountOverview extends React.Component {
 
     render() {
-        let numProjects = this.props.usage ? this.props.usage.project_count : '';
-        let numFiles = this.props.usage ? this.props.usage.file_count : '';
-        let bytes = this.props.usage ? this.props.usage.storage_bytes : '';
+        const { usage } = mainStore;
+        let numProjects = usage && usage !== null ? usage.project_count : '';
+        let numFiles = usage && usage !== null ? usage.file_count : '';
+        let bytes = usage && usage !== null ? usage.storage_bytes : 0;
 
         return (
             <Card className="account-overview content mdl-color-text--grey-800"
@@ -44,6 +49,10 @@ var styles = {
         verticalAlign: 'center',
         color: '#616161'
     }
+};
+
+AccountOverview.propTypes = {
+    usage: object
 };
 
 AccountOverview.contextTypes = {

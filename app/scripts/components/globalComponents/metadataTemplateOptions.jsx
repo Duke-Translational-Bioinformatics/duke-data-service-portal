@@ -1,7 +1,8 @@
 import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import authStore from '../../stores/authStore';
 import EditTemplateModal from '../globalComponents/editTemplateModal.jsx';
 import DeleteTemplateModal from '../globalComponents/deleteTemplateModal.jsx';
 import MetadataTemplateProperties from '../globalComponents/metadataTemplateProperties.jsx';
@@ -10,6 +11,7 @@ import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 
+@observer
 class MetadataTemplateOptions extends React.Component {
 
     render() {
@@ -27,18 +29,15 @@ class MetadataTemplateOptions extends React.Component {
                 </span>
             );
         }
-        let currentUser = this.props.currentUser && this.props.currentUser !== null ? this.props.currentUser : null;
-        let templateInfo = this.props.metadataTemplate && this.props.metadataTemplate !== null ? showTemplate(this.props.metadataTemplate) : null;
-        let templateCreator = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.audit.created_by.id : null;
-        let templateDesc = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.description : null;
-        let templateId = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.id : null;
-        let templateLabel = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.label : null;
-        let templateName = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.name : null;
-        let width = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.width : window.innerWidth;
+        const { metadataTemplate } = mainStore;
+        const { currentUser } = authStore;
+        let templateInfo = metadataTemplate && metadataTemplate !== null ? showTemplate(metadataTemplate) : null;
+        let templateCreator = metadataTemplate && metadataTemplate !== null ? metadataTemplate.audit.created_by.id : null;
+        let templateLabel = metadataTemplate && metadataTemplate !== null ? metadataTemplate.label : null;
 
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.wrapper}>
-                {this.props.currentUser.id === templateCreator ? <IconMenu iconButtonElement={<IconButton iconClassName="material-icons">more_vert</IconButton>}
+                {currentUser.id === templateCreator ? <IconMenu iconButtonElement={<IconButton iconClassName="material-icons">more_vert</IconButton>}
                           style={styles.menuIconBtn}
                           anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                           targetOrigin={{horizontal: 'right', vertical: 'top'}}>
@@ -54,7 +53,7 @@ class MetadataTemplateOptions extends React.Component {
                 </div>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.btnWrapper}>
                     <h5 className="mdl-color-text--grey-600" style={styles.heading}>Properties</h5>
-                    {templateCreator === currentUser.id ? <RaisedButton label={'Add Properties'} secondary={true}
+                    {currentUser.id === templateCreator ? <RaisedButton label={'Add Properties'} secondary={true}
                                   labelStyle={styles.btn.label}
                                   style={styles.btn}
                                   onTouchTap={() => this.createProperties()}/> : null}
@@ -69,19 +68,19 @@ class MetadataTemplateOptions extends React.Component {
     }
 
     createProperties() {
-        ProjectActions.showTemplatePropManager();
+        mainStore.showTemplatePropManager();
     }
 
     deleteTemplateModal() {
-        ProjectActions.toggleModals('dltTemplate');
+        mainStore.toggleModals('dltTemplate');
     }
 
     editTemplateModal() {
-        ProjectActions.toggleModals('editTemplate');
+        mainStore.toggleModals('editTemplate');
     }
 
     toggleMetadataManager() {
-        ProjectActions.toggleMetadataManager();
+        mainStore.toggleMetadataManager();
         this.setState({
             errorText: 'This field is required',
             errorText2: 'This field is required'

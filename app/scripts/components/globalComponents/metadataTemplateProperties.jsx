@@ -1,18 +1,17 @@
 import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
-import BaseUtils from '../../../util/baseUtils'
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import authStore from '../../stores/authStore';
+import BaseUtils from '../../util/baseUtils'
 
+@observer
 class MetadataTemplateProperties extends React.Component {
 
-    constructor(props) {
-        super(props);
-    }
-
     render() {
-        let currentUser = this.props.currentUser && this.props.currentUser !== null ? this.props.currentUser : null;
-        let properties = this.props.templateProperties && this.props.templateProperties.length !== 0 ? this.props.templateProperties.map((obj)=>{
+        const { templateProperties } = mainStore;
+        const { currentUser } = authStore;
+        let properties = templateProperties && templateProperties.length !== 0 ? templateProperties.map((obj)=>{
             let type = BaseUtils.getTemplatePropertyType(obj.type);
             return (
                 <span key={obj.id}>
@@ -24,7 +23,7 @@ class MetadataTemplateProperties extends React.Component {
                         </div>
                         <div className="item-after" style={styles.datatypeHeading}>{type}</div>
                         {currentUser.id === obj.audit.created_by.id ? <div className="item-after">
-                            <i className="material-icons" style={styles.deleteIcon} onTouchTap={()=>this.deleteProperty(obj.id, obj.label)}>cancel</i>
+                            <i className="material-icons" style={styles.deleteIcon} onTouchTap={()=>this.deleteProperty(obj.id, obj.label)}>delete_forever</i>
                         </div> : null}
                     </li>
                 </span>
@@ -44,7 +43,7 @@ class MetadataTemplateProperties extends React.Component {
     }
 
     deleteProperty(id, label) {
-        ProjectActions.deleteMetadataProperty(id, label);
+        mainStore.deleteMetadataProperty(id, label);
     }
 }
 
@@ -53,7 +52,7 @@ var styles = {
         paddingRight: 50
     },
     deleteIcon: {
-        fontSize: 18,
+        fontSize: 22,
         color: '#F44336',
         cursor: 'pointer'
     },

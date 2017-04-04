@@ -1,42 +1,27 @@
 import React from 'react';
+import { observer } from 'mobx-react';
+import authStore from '../stores/authStore';
+import mainStore from '../stores/mainStore';
 import ProjectList from '../components/projectComponents/projectList.jsx';
 import AccountOverview from '../components/globalComponents/accountOverview.jsx';
-import ProjectStore from '../stores/projectStore';
-import ProjectActions from '../actions/projectActions';
-import MainStore from '../stores/mainStore';
-import MainActions from '../actions/mainActions';
 import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
 
+@observer
 class Home extends React.Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            appConfig: MainStore.appConfig,
-            projects: ProjectStore.projects,
-            loading: false,
-            modalOpen: MainStore.modalOpen === undefined ? true : MainStore.modalOpen,
-            responseHeaders: ProjectStore.responseHeaders,
-            screenSize: ProjectStore.screenSize
-        };
-    }
-
     componentDidMount() {
-        this.unsubscribe = ProjectStore.listen(state => this.setState(state));
-        if(this.state.appConfig.apiToken) {
-            ProjectActions.getProjects();
-            ProjectActions.getUsageDetails();
-            MainActions.removeLoginCookie();
+        if(authStore.appConfig.apiToken) {
+            mainStore.getProjects();
+            mainStore.getUsageDetails();
+        } else {
+            this.props.router.push('/login');
         }
     }
 
-    componentWillUnmount() {
-        this.unsubscribe();
-    }
-
     render() {
-        let dialogWidth = this.state.screenSize.width < 580 ? {width: '100%'} : {};
+        const {modalOpen, screenSize} = mainStore;
+        let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let standardActions = [
             <FlatButton
                 label="Cancel"
@@ -54,7 +39,7 @@ class Home extends React.Component {
                 title="Terms of Use - Protected Health Information"
                 actions={standardActions}
                 autoDetectWindowHeight={true}
-                open={this.state.modalOpen}
+                open={modalOpen === undefined ? true : modalOpen}
                 modal={true}>
                 <div style={{height: '300px'}}>
                     <p style={styles.main}><b>The Health Insurance Portability and Accountability Act of 1996 (HIPAA)
@@ -71,20 +56,19 @@ class Home extends React.Component {
 
         return (
             <div>
-                <AccountOverview { ...this.state } { ...this.props } />
-                <ProjectList { ...this.state } { ...this.props } />
+                <AccountOverview { ...this.props } />
+                <ProjectList { ...this.props } />
                 {modal}
             </div>
         );
     }
 
     handleAcceptButton() {
-        MainActions.closePhiModal();
-        this.setState({modalOpen:false})
+        mainStore.closePhiModal();
     }
 
     handleDeclineButton() {
-        MainStore.handleLogout();
+        authStore.handleLogout();
     }
 }
 

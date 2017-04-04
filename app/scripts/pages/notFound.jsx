@@ -1,5 +1,4 @@
 import React from 'react'
-import MainActions from '../actions/mainActions';
 import RaisedButton from 'material-ui/RaisedButton';
 
 class NotFound extends React.Component {

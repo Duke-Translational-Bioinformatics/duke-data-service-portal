@@ -1,19 +1,22 @@
-import React from 'react';
-import ProjectActions from '../../actions/projectActions';
-import BaseUtils from '../../../util/baseUtils.js';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import BaseUtils from '../../util/baseUtils.js';
 import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
 import {List, ListItem} from 'material-ui/List';
 
-
+@observer
 class FileVersionsList extends React.Component {
 
     render() {
-        let open = this.props.modal ? this.props.modal : false;
+        const { fileVersions, screenSize, toggleModal } = mainStore;
+        let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let versions = null;
-        if (this.props.fileVersions && this.props.fileVersions != undefined) {
-            versions = this.props.fileVersions.map((version) => {
+        if (fileVersions && fileVersions != null) {
+            versions = fileVersions.map((version) => {
                 if (!version.is_deleted) {
                     return <span key={version.id + Math.random()}>
                             <ListItem primaryText={'Version: ' + version.version}
@@ -31,19 +34,19 @@ class FileVersionsList extends React.Component {
             <FlatButton
                 label="Cancel"
                 secondary={true}
-                onTouchTap={this.handleClose.bind(this)}/>
+                onTouchTap={() => this.handleClose()}/>
         ];
 
         return (
             <div>
                 <Dialog
                     style={styles.dialogStyles}
-                    contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
+                    contentStyle={dialogWidth}
                     title="File Versions"
                     autoDetectWindowHeight={true}
                     actions={actions}
-                    open={open}
-                    onRequestClose={this.handleClose.bind(this)}>
+                    open={toggleModal && toggleModal.id === 'fileVersions' ? toggleModal.open : false}
+                    onRequestClose={() => this.handleClose()}>
                     <List>
                         <Divider />
                         { versions }
@@ -55,11 +58,11 @@ class FileVersionsList extends React.Component {
 
     goTo(versionId) {
         this.props.router.push('/version/' + versionId)
-        ProjectActions.closeModal();
+        this.handleClose();
     }
 
     handleClose() {
-        ProjectActions.closeModal();
+        mainStore.toggleModals('fileVersions');
     }
 }
 
@@ -85,6 +88,12 @@ var styles = {
 
 FileVersionsList.contextTypes = {
     muiTheme: React.PropTypes.object
+};
+
+FileVersionsList.propTypes = {
+    fileVersions: array,
+    screenSize: object,
+    toggleModal: object
 };
 
 export default FileVersionsList;

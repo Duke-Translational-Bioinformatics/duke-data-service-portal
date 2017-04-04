@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
-import BaseUtils from '../../../util/baseUtils';
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import BaseUtils from '../../util/baseUtils';
 import MetadataObjectCreator from '../globalComponents/metadataObjectCreator.jsx';
 import MetadataPropertyManager from '../globalComponents/metadataPropertyManager.jsx';
 import MetadataTemplateCreator from '../globalComponents/metadataTemplateCreator.jsx';
@@ -21,6 +21,7 @@ import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import RaisedButton from 'material-ui/RaisedButton';
 import {Tabs, Tab} from 'material-ui/Tabs';
 
+@observer
 class TagManager extends React.Component {
 
     constructor(props) {
@@ -33,7 +34,7 @@ class TagManager extends React.Component {
     }
 
     componentDidMount() {
-        if (window.performance && this.props.openTagManager) { // If page refreshed, close drawer
+        if (window.performance && mainStore.openTagManager) { // If page refreshed, close drawer
             if (performance.navigation.type == 1) {
                 this.toggleTagManager();
             }
@@ -41,23 +42,19 @@ class TagManager extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        if(prevProps.openTagManager !== this.props.openTagManager) {
-            if(this.props.openTagManager) this.autocomplete.focus();
-        }
+        if(mainStore.openTagManager) this.autocomplete.focus();
     }
 
     render() {
-        const actions = [
-            <FlatButton
-                label="No"
-                secondary={true}
-                onTouchTap={() => this.handleCloseAll()} />,
-            <FlatButton
-                label="Yes"
-                secondary={true}
-                keyboardFocused={true}
-                onTouchTap={() => this.handleClose()} />
-        ];
+        const {drawerLoading, entityObj, filesChecked, openTagManager, screenSize, selectedEntity, showTemplateDetails, tagAutoCompleteList, tagLabels, tagsToAdd, toggleModal} = mainStore;
+        let autoCompleteData = tagAutoCompleteList && tagAutoCompleteList.length > 0 ? tagAutoCompleteList : [];
+        let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
+        let id = selectedEntity !== null ? selectedEntity.id : this.props.params.id;
+        let height = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.height : window.innerHeight;
+        let name = entityObj && filesChecked < 1 ? entityObj.name : 'selected files';
+        let openDiscardTagsModal = toggleModal && toggleModal.id === 'discardTags' ? toggleModal.open : false;
+        let openCreateAnotherObjectModal = toggleModal && toggleModal.id === 'metaDataObjectConfirm' ? toggleModal.open : false;
+        let width = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.width : window.innerWidth;
         const modalActions = [
             <FlatButton
                 label="DISCARD TAGS"
@@ -67,15 +64,15 @@ class TagManager extends React.Component {
                 label="ADD TAGS"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={() => this.addTagsToFiles()} />
+                onTouchTap={() => this.addTagsToFiles(filesChecked, id, tagsToAdd, toggleModal)} />
         ];
-        let tags = this.props.tagsToAdd && this.props.tagsToAdd.length > 0 ? this.props.tagsToAdd.map((tag)=>{
+        let tags = tagsToAdd && tagsToAdd.length > 0 ? tagsToAdd.map((tag)=>{
             return (<div key={BaseUtils.generateUniqueKey()} className="chip">
                 <span className="chip-text">{tag.label}</span>
                 <span className="closebtn" onTouchTap={() => this.deleteTag(tag.id, tag.label)}>&times;</span>
             </div>)
         }) : null;
-        let tagLabels = this.props.tagLabels.map((label)=>{
+        let tagLbls = tagLabels.map((label)=>{
             return (
                 <li key={BaseUtils.generateUniqueKey()} style={styles.tagLabels} onTouchTap={() => this.addTagToCloud(label.label)}>{label.label}
                     <span className="mdl-color-text--grey-600">,</span>
@@ -83,15 +80,9 @@ class TagManager extends React.Component {
             )
         });
 
-        let autoCompleteData = this.props.tagAutoCompleteList && this.props.tagAutoCompleteList.length > 0 ? this.props.tagAutoCompleteList : [];
-        let height = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.height : window.innerHeight;
-        let name = this.props.entityObj && this.props.filesChecked < 1 ? this.props.entityObj.name : 'selected files';
-        let openDiscardTagsModal = this.props.toggleModal && this.props.toggleModal.id === 'discardTags' ? this.props.toggleModal.open : false;
-        let openCreateAnotherObjectModal = this.props.toggleModal && this.props.toggleModal.id === 'metaDataObjectConfirm' ? this.props.toggleModal.open : false;
-        let width = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.width : window.innerWidth;
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                <Drawer docked={false} disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openSecondary={true} open={this.props.openTagManager}>
+                <Drawer docked={false} disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openSecondary={true} open={openTagManager}>
                     <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800"
                          style={styles.drawer}>
                         <IconButton style={styles.toggleBtn}
@@ -134,12 +125,12 @@ class TagManager extends React.Component {
                                     <h6 style={styles.tagLabelsHeading}>Recently used tags <span style={styles.tagLabelsHeading.span}>(click on a tag to add it to {name})</span></h6>
                                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400">
                                         <ul style={styles.tagLabelList}>
-                                            { tagLabels }
+                                            { tagLbls }
                                         </ul>
                                     </div>
                                 </div>
                                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.chipWrapper}>
-                                    {this.props.tagsToAdd.length ? <h6 className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.chipHeader}>New Tags To Add</h6> : null}
+                                    {tagsToAdd.length ? <h6 className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.chipHeader}>New Tags To Add</h6> : null}
                                     <div className="chip-container" style={styles.chipContainer}>
                                         { tags }
                                     </div>
@@ -152,18 +143,18 @@ class TagManager extends React.Component {
                                     <RaisedButton label={'Apply'} secondary={true}
                                                   labelStyle={styles.buttonLabel}
                                                   style={styles.applyBtn}
-                                                  onTouchTap={() => this.addTagsToFiles()}/>
+                                                  onTouchTap={() => this.addTagsToFiles(filesChecked, id, tagsToAdd, toggleModal)}/>
                                 </div>
                             </Tab>
                             <Tab label="Advanced" style={styles.tabStyles} onActive={() => this.activeTab()}>
-                                {this.props.drawerLoading ? <CircularProgress size={80} thickness={5} style={styles.drawerLoader}/> : <span>
-                                    {this.props.showTemplateDetails ? <MetadataObjectCreator {...this.props}/> : <MetadataTemplateList {...this.props}/>}
+                                {drawerLoading ? <CircularProgress size={80} thickness={5} style={styles.drawerLoader}/> : <span>
+                                    {showTemplateDetails ? <MetadataObjectCreator {...this.props}/> : <MetadataTemplateList {...this.props}/>}
                                 </span>}
                             </Tab>
                         </Tabs>
                         <Dialog
                             style={styles.dialogStyles}
-                            contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
+                            contentStyle={dialogWidth}
                             title="Would you like to add these tags?"
                             autoDetectWindowHeight={true}
                             actions={modalActions}
@@ -180,8 +171,8 @@ class TagManager extends React.Component {
     }
 
     activeTab() {
-        if(this.props.tagsToAdd.length) ProjectActions.toggleModals('discardTags');
-        if(!this.props.metaTemplates) ProjectActions.loadMetadataTemplates('');
+        if(mainStore.tagsToAdd.length) mainStore.toggleModals('discardTags');
+        if(!mainStore.metaTemplates.length) mainStore.loadMetadataTemplates('');
     }
 
     addTagToCloud(label) {
@@ -190,7 +181,7 @@ class TagManager extends React.Component {
             this.autocomplete.focus();
         };
         if(label && !label.indexOf(' ') <= 0) {
-            let tags = this.props.tagsToAdd;
+            let tags = mainStore.tagsToAdd;
             if (tags.some((el) => { return el.label === label.trim(); })) {
                 this.setState({floatingErrorText: label + ' tag is already in the list'});
                 setTimeout(()=>{
@@ -199,29 +190,26 @@ class TagManager extends React.Component {
                 }, 2000)
             } else {
                 tags.push({label: label.trim()});
-                ProjectActions.defineTagsToAdd(tags);
+                mainStore.defineTagsToAdd(tags);
                 setTimeout(()=>clearText(), 500);
                 this.setState({floatingErrorText: ''})
             }
         }
     }
 
-    addTagsToFiles() {
-        let files = this.props.filesChecked;
-        let id = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.params.id;
-        let tags = this.props.tagsToAdd;
-        if(!tags.length) {
+    addTagsToFiles(filesChecked, id, tagsToAdd, toggleModal) {
+        if(!tagsToAdd.length) {
             this.setState({floatingErrorText: 'You must add tags to the list. Type a tag name and press enter.'});
         } else {
-            if (this.props.filesChecked.length > 0) {
-                for (let i = 0; i < files.length; i++) {
-                    ProjectActions.appendTags(files[i], 'dds-file', tags);
-                    if(!!this.refs[files[i]]) this.refs[files[i]].checked = false;
+            if (filesChecked.length > 0) {
+                for (let i = 0; i < filesChecked.length; i++) {
+                    mainStore.appendTags(filesChecked[i], 'dds-file', tagsToAdd);
                 }
+                mainStore.handleBatch([],[]);
             } else {
-                ProjectActions.appendTags(id, 'dds-file', tags);
+                mainStore.appendTags(id, 'dds-file', tagsToAdd);
             }
-            if(this.props.toggleModal && this.props.toggleModal.id === 'discardTags') {
+            if(toggleModal && toggleModal.id === 'discardTags') {
                 this.discardTags();
             } else {
                 this.toggleTagManager();
@@ -231,21 +219,21 @@ class TagManager extends React.Component {
     }
 
     deleteTag(id, label) {
-        let fileId = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.params.id;
-        let tags = this.props.tagsToAdd;
+        let fileId = mainStore.selectedEntity !== null ? mainStore.selectedEntity.id : this.props.params.id;
+        let tags = mainStore.tagsToAdd;
         tags = tags.filter(( obj ) => {
             return obj.label !== label;
         });
-        ProjectActions.defineTagsToAdd(tags);
+        mainStore.defineTagsToAdd(tags);
     }
 
     discardTags() {
-        ProjectActions.defineTagsToAdd([]);
-        ProjectActions.toggleModals('discardTags');
+        mainStore.defineTagsToAdd([]);
+        mainStore.toggleModals('discardTags');
     }
 
     handleClose() {
-        ProjectActions.toggleModals();
+        mainStore.toggleModals();
     };
 
     handleUpdateInput (text) {
@@ -256,15 +244,15 @@ class TagManager extends React.Component {
             timeout: setTimeout(() => {
                 let value = text;
                 if (!value.indexOf(' ') <= 0) {
-                    ProjectActions.getTagAutoCompleteList(value);
+                    mainStore.getTagAutoCompleteList(value);
                 }
             }, 500)
         });
     }
 
     toggleTagManager() {
-        ProjectActions.toggleTagManager();
-        ProjectActions.defineTagsToAdd([]);
+        mainStore.toggleTagManager();
+        mainStore.defineTagsToAdd([]);
         if(this.autocomplete.state.searchText !== '') this.autocomplete.setState({searchText:''});
     }
 }
@@ -385,6 +373,19 @@ var styles = {
         flexDirection: 'column',
         paddingLeft: 5
     }
+};
+
+TagManager.propTypes = {
+    drawerLoading: bool,
+    openTagManager: bool,
+    showTemplateDetails: bool,
+    screenSize: object,
+    entityObj: object,
+    selectedEntity: object,
+    toggleModal: object,
+    tagAutoCompleteList: array,
+    tagLabels: array,
+    tagsToAdd: array,
 };
 
 TagManager.contextTypes = {

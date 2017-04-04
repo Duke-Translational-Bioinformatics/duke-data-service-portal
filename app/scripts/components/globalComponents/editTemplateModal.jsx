@@ -1,12 +1,13 @@
 import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
-import BaseUtils from '../../../util/baseUtils'
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import BaseUtils from '../../util/baseUtils'
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 
+@observer
 class EditTemplateModal extends React.Component {
 
     constructor(props) {
@@ -17,11 +18,11 @@ class EditTemplateModal extends React.Component {
     }
 
     render() {
-        let open = this.props.toggleModal && this.props.toggleModal.id === 'editTemplate' ? this.props.toggleModal.open : false;
-        let templateDesc = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.description : null;
-        let templateId = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.id : null;
-        let templateLabel = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.label : null;
-        let templateName = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.name : null;
+        const { metadataTemplate, screenSize, toggleModal } = mainStore;
+        let templateDesc = metadataTemplate && metadataTemplate !== null ? metadataTemplate.description : null;
+        let templateId = metadataTemplate && metadataTemplate !== null ? metadataTemplate.id : null;
+        let templateLabel = metadataTemplate && metadataTemplate !== null ? metadataTemplate.label : null;
+        let templateName = metadataTemplate && metadataTemplate !== null ? metadataTemplate.name : null;
         const editActions = [
             <FlatButton
                 label="CANCEL"
@@ -36,12 +37,12 @@ class EditTemplateModal extends React.Component {
         return (
             <Dialog
                 style={styles.dialogStyles}
-                contentStyle={this.props.screenSize.width < 580 ? {width: '100%'} : {}}
+                contentStyle={screenSize.width < 580 ? {width: '100%'} : {}}
                 title="Edit Template"
                 autoDetectWindowHeight={true}
                 actions={editActions}
                 onRequestClose={() => this.handleClose()}
-                open={open}>
+                open={toggleModal && toggleModal.id === 'editTemplate' ? toggleModal.open : false}>
                 <TextField
                     fullWidth={true}
                     ref={(input) => this.templateName = input}
@@ -83,14 +84,14 @@ class EditTemplateModal extends React.Component {
             });
         } else {
             if (name !== '' && label !== '') {
-                ProjectActions. updateMetadataTemplate(id, name, label, desc);
-                ProjectActions.toggleModals();
+                mainStore. updateMetadataTemplate(id, name, label, desc);
+                mainStore.toggleModals();
             }
         }
     }
 
     handleClose() {
-        ProjectActions.toggleModals();
+        mainStore.toggleModals();
         this.setState({
             errorText: '',
             errorText2: ''
@@ -121,8 +122,9 @@ EditTemplateModal.contextTypes = {
 };
 
 EditTemplateModal.propTypes = {
-    loading: bool,
-    error: object
+    metadataTemplate: object,
+    screenSize: object,
+    toggleModal: object
 };
 
 export default EditTemplateModal;
