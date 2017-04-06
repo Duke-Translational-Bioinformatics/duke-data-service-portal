@@ -1,7 +1,7 @@
 var gulp = require('gulp');
-var path = require('path');
 var $ = require('gulp-load-plugins')();
 var del = require('del');
+var babel = require('gulp-babel');
 // set variable via $ gulp --type production
 var environment = $.util.env.type || 'development';
 var isProduction = environment === 'production';
@@ -27,6 +27,7 @@ var autoprefixerBrowsers = [
 
 gulp.task('scripts', function() {
   return gulp.src(webpackConfig.entry)
+      .pipe(babel())
       .pipe($.webpack(webpackConfig))
       .pipe(isProduction ? $.uglifyjs() : $.util.noop())
       .pipe(gulp.dest(dist + 'js/'))
@@ -127,7 +128,6 @@ gulp.task('watch', function() {
 gulp.task('clean', function(cb) {
   del([dist], cb);
 });
-
 
 // by default build project and then watch files in order to trigger livereload
 gulp.task('default', ['build', 'serve', 'watch']);

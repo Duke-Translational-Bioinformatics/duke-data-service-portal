@@ -1,48 +1,28 @@
 import React from 'react'
-import ProjectActions from '../actions/projectActions';
-import ProjectStore from '../stores/projectStore';
+import { observer } from 'mobx-react';
+import authStore from '../stores/authStore';
+import mainStore from '../stores/mainStore';
 import MetadataTemplateList from '../components/globalComponents/metadataTemplateList.jsx';
 import MetadataTemplateManager from '../components/globalComponents/metadataTemplateManager.jsx';
 
+@observer
 class Metadata extends React.Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            currentUser: ProjectStore.currentUser,
-            loading: false,
-            screenSize: ProjectStore.screenSize,
-            metadataTemplate: ProjectStore.metadataTemplate,
-            metaTemplates: ProjectStore.metaTemplates,
-            toggleModal: ProjectStore.toggleModal,
-            openMetadataManager: ProjectStore.openMetadataManager,
-            showPropertyCreator: ProjectStore.showPropertyCreator,
-            showTemplateCreator: ProjectStore.showTemplateCreator,
-            showTemplateDetails: ProjectStore.showTemplateDetails,
-            templateProperties: ProjectStore.templateProperties
-        };
-    }
-
     componentDidMount() {
-        this.unsubscribe = ProjectStore.listen(state => this.setState(state));
-        if(ProjectStore.openMetadataManager) ProjectActions.toggleMetadataManager();
+        if(mainStore.openMetadataManager) mainStore.toggleMetadataManager();
         this._loadMetadata();
     }
 
-    componentWillUnmount() {
-        this.unsubscribe();
-    }
-
     _loadMetadata() {
-        ProjectActions.getUser();
-        ProjectActions.loadMetadataTemplates(null);
+        authStore.getCurrentUser();
+        mainStore.loadMetadataTemplates(null);
     }
 
     render() {
         return (
             <div style={styles.container}>
-                <MetadataTemplateList {...this.props} {...this.state} />
-                <MetadataTemplateManager {...this.props} {...this.state} />
+                <MetadataTemplateList {...this.props} />
+                <MetadataTemplateManager {...this.props} />
             </div>
         );
     }

@@ -1,96 +1,43 @@
 import React from 'react'
-import ProjectActions from '../actions/projectActions';
-import ProjectStore from '../stores/projectStore';
-import {Kind} from '../../util/urlEnum';
+import { observer } from 'mobx-react';
+import mainStore from '../stores/mainStore';
+import { Kind, Path } from '../util/urlEnum';
 import FileDetails from '../components/fileComponents/fileDetails.jsx';
 import FileOptions from '../components/fileComponents/fileOptions.jsx';
 import Provenance from '../components/globalComponents/provenance.jsx';
 import TagManager from '../components/globalComponents/tagManager.jsx';
 
+@observer
 class File extends React.Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            addEdgeMode: ProjectStore.addEdgeMode,
-            autoCompleteLoading: ProjectStore.autoCompleteLoading,
-            currentUser: ProjectStore.currentUser,
-            dltRelationsBtn: ProjectStore.dltRelationsBtn,
-            filesChecked: ProjectStore.filesChecked,
-            drawerLoading: ProjectStore.drawerLoading,
-            loading: false,
-            metaObjProps: ProjectStore.metaObjProps,
-            moveItemList: ProjectStore.moveItemList,
-            moveModal: ProjectStore.moveModal,
-            moveErrorModal: ProjectStore.moveErrorModal,
-            objectMetadata: ProjectStore.objectMetadata,
-            objectTags: ProjectStore.objectTags,
-            openTagManager: ProjectStore.openTagManager,
-            position: ProjectStore.position,
-            projPermissions: ProjectStore.projPermissions,
-            provEdges: ProjectStore.provEdges,
-            provEditorModal: ProjectStore.provEditorModal,
-            provFileVersions: ProjectStore.provFileVersions,
-            provNodes: ProjectStore.provNodes,
-            relMsg: ProjectStore.relMsg,
-            toggleProv: ProjectStore.toggleProv,
-            toggleProvEdit: ProjectStore.toggleProvEdit,
-            relFrom: ProjectStore.relFrom,
-            relTo: ProjectStore.relTo,
-            scale: ProjectStore.scale,
-            screenSize: ProjectStore.screenSize,
-            searchFilesList: ProjectStore.searchFilesList,
-            selectedEntity: ProjectStore.selectedEntity,
-            selectedEdge: ProjectStore.selectedEdge,
-            selectedNode: ProjectStore.selectedNode,
-            showProvAlert: ProjectStore.showProvAlert,
-            showProvCtrlBtns: ProjectStore.showProvCtrlBtns,
-            showProvDetails: ProjectStore.showProvDetails,
-            tagAutoCompleteList: ProjectStore.tagAutoCompleteList,
-            tagLabels: ProjectStore.tagLabels,
-            tagsToAdd: ProjectStore.tagsToAdd,
-            updatedGraphItem: ProjectStore.updatedGraphItem
-        };
-    }
-
     componentDidMount() {
-        let kind = 'files';
-        let id = this.props.params.id;
-        this.unsubscribe = ProjectStore.listen(state => this.setState(state));
-        this._loadFile(id, kind);
+        this._loadFile();
     }
 
     componentDidUpdate(prevProps) {
-        let kind = 'files';
-        let id = this.props.params.id;
         if(prevProps.params.id !== this.props.params.id) {
-            this._loadFile(id, kind);
-        }
-        if(prevProps.objectTags !== this.props.objectTags) {
-            ProjectActions.getTags(id, 'dds-file');
+            this._loadFile();
         }
     }
 
-    componentWillUnmount() {
-        this.unsubscribe();
-    }
-
-    _loadFile(id, kind) {
-        ProjectActions.getEntity(id, kind);
-        ProjectActions.getFileVersions(id);
-        ProjectActions.getObjectMetadata(id, Kind.DDS_FILE);
-        ProjectActions.getTags(id, Kind.DDS_FILE);
-        ProjectActions.getTagLabels(); // Used to generate a list of tag labels
-        ProjectActions.clearSelectedItems(); // Clear checked files and folders from list
+    _loadFile() {
+        let id = this.props.params.id;
+        mainStore.setSelectedEntity(null, null);
+        mainStore.getEntity(id, Path.FILE);
+        mainStore.getFileVersions(id);
+        mainStore.getObjectMetadata(id, Kind.DDS_FILE);
+        mainStore.getTags(id, Kind.DDS_FILE);
+        mainStore.getTagLabels(); // Used to generate a list of tag labels
+        if(mainStore.filesChecked || mainStore.foldersChecked) mainStore.handleBatch([],[]);
     }
 
     render() {
         return (
             <div>
-                <Provenance {...this.props} {...this.state}/>
-                <FileDetails {...this.props} {...this.state} />
-                <FileOptions {...this.props} {...this.state}/>
-                <TagManager {...this.props} {...this.state} />
+                <Provenance {...this.props} />
+                <FileDetails {...this.props} />
+                <FileOptions {...this.props} />
+                <TagManager {...this.props} />
             </div>
         );
     }

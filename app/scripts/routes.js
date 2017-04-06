@@ -1,5 +1,7 @@
 import React from 'react';
 import { Router, Route, IndexRoute, Redirect, hashHistory } from 'react-router';
+import authStore from './stores/authStore';
+import mainStore from './stores/mainStore';
 import App from './pages/app.jsx';
 import Login from './pages/login.jsx';
 import Home from './pages/home.jsx';

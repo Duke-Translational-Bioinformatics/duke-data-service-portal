@@ -1,48 +1,35 @@
-import React from 'react';
-import ProjectStore from '../../stores/projectStore';
-import MainActions from '../../actions/mainActions';
-import ProjectActions from '../../actions/projectActions';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
+import { observer } from 'mobx-react';
+import authStore from '../../stores/authStore';
+import mainStore from '../../stores/mainStore';
 import CurrentUser from '../globalComponents/currentUser.jsx';
 import Search from '../globalComponents/search.jsx';
 import FontIcon from 'material-ui/FontIcon';
 
+@observer
 class Header extends React.Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            showSearch: ProjectStore.showSearch,
-            includeKinds: ProjectStore.includeKinds,
-            includeProjects: ProjectStore.includeProjects
-        };
-    }
-
-    componentDidMount() {
-        this.unsubscribe = ProjectStore.listen(state => this.setState(state));
-    }
-
-    componentWillUnmount() {
-        this.unsubscribe();
-    }
-
     render() {
+        const { appConfig } = authStore;
+        const { showSearch } = mainStore;
         let header = <div className="navbar" style={styles.navBar}>
-            <div className="navbar-inner" style={{display: this.state.showSearch ? 'none' : '', height: 106}}>
+            <div className="navbar-inner" style={{display: showSearch ? 'none' : '', height: 106}}>
                 <div className="left" style={styles.navBar.leftDiv}>
-                    {!this.props.appConfig.apiToken ? '' : <a href="#" className="open-panel"><FontIcon className="material-icons" style={styles.openIcon}>menu</FontIcon></a>}
-                    {!this.props.appConfig.apiToken ? '' : <img src="images/dukeDSVertical.png" style={styles.logo}/>}
+                    {!appConfig.apiToken ? '' : <a href="#" className="open-panel"><FontIcon className="material-icons" style={styles.openIcon}>menu</FontIcon></a>}
+                    {!appConfig.apiToken ? '' : <img src="images/dukeDSVertical.png" style={styles.logo}/>}
                 </div>
                 <div className="center" style={styles.navBar.centerDiv}></div>
                 <div className="right">
-                    {/*<FontIcon className="material-icons" style={styles.searchIcon}
-                     onTouchTap={()=>this.showSearch()}>search</FontIcon>*/}
-                    <CurrentUser {...this.props} {...this.state}/>
+                {/*<FontIcon className="material-icons"
+                 style={styles.searchIcon}onTouchTap={()=>this.showSearch()}>search</FontIcon>*/}
+                    <CurrentUser {...this.props} />
                 </div>
             </div>
-            {/*this.state.showSearch ? <Search {...this.props} {...this.state}/> : null*/}
+            {/*showSearch ? <Search {...this.props} /> : null*/}
         </div>;
 
-        if(!this.props.appConfig.apiToken) {
+        if(!appConfig.apiToken) {
             return null;
         } else {
             return header
@@ -50,7 +37,7 @@ class Header extends React.Component {
     }
 
     showSearch() {
-        ProjectActions.toggleSearch();
+        mainStore.toggleSearch();
     }
 }
 
@@ -100,6 +87,11 @@ var styles = {
         right: 0,
         width: 200
     }
+};
+
+Header.propTypes = {
+    showSearch: bool,
+    appConfig: object
 };
 
 export default Header;

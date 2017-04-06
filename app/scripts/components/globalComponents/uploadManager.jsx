@@ -1,9 +1,9 @@
 import React, { PropTypes } from 'react';
+import { observer } from 'mobx-react';
 const { object, bool, array, string } = PropTypes;
 import Dropzone from 'react-dropzone';
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
-import BaseUtils from '../../../util/baseUtils';
+import mainStore from '../../stores/mainStore';
+import BaseUtils from '../../util/baseUtils';
 import AddCircle from 'material-ui/svg-icons/content/add-circle';
 import AutoComplete from 'material-ui/AutoComplete';
 import IconButton from 'material-ui/IconButton';
@@ -12,6 +12,7 @@ import Info from 'material-ui/svg-icons/action/info';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import RaisedButton from 'material-ui/RaisedButton';
 
+@observer
 class UploadManager extends React.Component {
 
     constructor(props) {
@@ -25,35 +26,36 @@ class UploadManager extends React.Component {
     }
 
     render() {
-        let tags = this.props.tagsToAdd && this.props.tagsToAdd.length > 0 ? this.props.tagsToAdd.map((tag)=>{
+        const {entityObj, filesRejectedForUpload, filesToUpload, openUploadManager, screenSize, selectedEntity, tagAutoCompleteList, tagLabels, tagsToAdd} = mainStore;
+        let tags = tagsToAdd && tagsToAdd.length > 0 ? tagsToAdd.map((tag)=>{
             return (<div key={BaseUtils.generateUniqueKey()} className="chip">
                 <span className="chip-text">{tag.label}</span>
-                <span className="closebtn" onTouchTap={() => this.deleteTag(tag.id, tag.label)}>&times;</span>
+                <span className="closebtn" onTouchTap={() => this.deleteTag(tag.id, tag.label, selectedEntity, tagsToAdd)}>&times;</span>
             </div>)
         }) : null;
-        let tagLabels = this.props.tagLabels.map((label)=>{
+        let tagLbls = tagLabels.map((label)=>{
             return (
-                <li key={label.label+Math.random()} style={styles.tagLabels} onTouchTap={() => this.addTagToCloud(label.label)}>{label.label}
+                <li key={label.label+Math.random()} style={styles.tagLabels} onTouchTap={() => this.addTagToCloud(label.label, tagsToAdd)}>{label.label}
                     <span className="mdl-color-text--grey-600">,</span>
                 </li>
             )
         });
-        let files = this.props.filesToUpload.length ? this.props.filesToUpload.map((file)=>{
+        let files = filesToUpload.length ? filesToUpload.map((file)=>{
             return <div key={BaseUtils.generateUniqueKey()}>
                 <div className="mdl-cell mdl-cell--6-col" style={styles.fileList}>{file.name}</div>
             </div>
         }) : null;
-        let rejectedFiles = this.props.filesRejectedForUpload.length ? this.props.filesRejectedForUpload.map((file)=>{
+        let rejectedFiles = filesRejectedForUpload.length ? filesRejectedForUpload.map((file)=>{
             return <div key={BaseUtils.generateUniqueKey()}>
                 <div className="mdl-cell mdl-cell--6-col" style={styles.rejectedFileList}>{'Exceeds maximum size of' +
                 ' 5 GB. Cannot upload: '+file.name}</div>
             </div>
         }) : null;
-        let autoCompleteData = this.props.tagAutoCompleteList && this.props.tagAutoCompleteList.length > 0 ? this.props.tagAutoCompleteList : [];
+        let autoCompleteData = tagAutoCompleteList && tagAutoCompleteList.length > 0 ? tagAutoCompleteList : [];
         let dropzoneColor = this.state.dropzoneHover ? '#EEE' : '#FFF';
-        let height = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.height : window.innerHeight;
-        let name = this.props.entityObj ? this.props.entityObj.name : 'these files';
-        let width = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.width : window.innerWidth;
+        let height = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.height : window.innerHeight;
+        let name = entityObj ? entityObj.name : 'these files';
+        let width = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.width : window.innerWidth;
 
         return (
             <div style={styles.fileUpload}>
@@ -66,7 +68,7 @@ class UploadManager extends React.Component {
                     <i className='material-icons'>file_upload</i>
                 </button>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                    <Drawer docked={false} disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openSecondary={true} open={this.props.openUploadManager}>
+                    <Drawer docked={false} disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openSecondary={true} open={openUploadManager}>
                         <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800"
                              style={{marginTop: width > 680 ? 65 : 85}}>
                             <IconButton style={styles.toggleBtn}
@@ -87,7 +89,7 @@ class UploadManager extends React.Component {
                                           style={{width: '100%', border: '2px dashed #BDBDBD', backgroundColor: dropzoneColor}}>
                                     <div style={styles.dropzoneText}>Drag and drop files here, or click to select files to upload.<br/>Folders cannot be uploaded.</div>
                                 </Dropzone>
-                                {this.props.filesToUpload.length ? <h6 className="mdl-color-text--grey-600" style={styles.fileListHeader}>Preparing to upload:</h6> : null}
+                                {filesToUpload.length ? <h6 className="mdl-color-text--grey-600" style={styles.fileListHeader}>Preparing to upload:</h6> : null}
                             </div>
                             {files}
                             {rejectedFiles}
@@ -117,7 +119,7 @@ class UploadManager extends React.Component {
                                     onNewRequest={(value) => this.addTagToCloud(value)}
                                     onUpdateInput={this.handleUpdateInput.bind(this)}
                                     underlineStyle={styles.autoComplete.underline}/>
-                                <IconButton onTouchTap={() => this.addTagToCloud(this.tagInputText.getValue())}
+                                <IconButton onTouchTap={() => this.addTagToCloud(this.autocomplete.state.searchText)}
                                             iconStyle={styles.addTagIcon.icon}
                                             style={styles.addTagIcon}>
                                     <AddCircle color={'#235F9C'}/>
@@ -127,12 +129,12 @@ class UploadManager extends React.Component {
                                 <h6 style={styles.tagLabelsHeading}>Recently used tags <span style={styles.tagLabelsHeading.span}>(click on a tag to add it to {name})</span></h6>
                                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600">
                                     <ul style={styles.tagLabelList}>
-                                        { tagLabels }
+                                        { tagLbls }
                                     </ul>
                                 </div>
                             </div>
                             <div className="mdl-cell mdl-cell--6-col mdl-color-text--grey-600" style={styles.chipWrapper}>
-                                {this.props.tagsToAdd.length ? <h6 style={styles.chipHeader}>New Tags To Add</h6> : null}
+                                {tagsToAdd.length ? <h6 style={styles.chipHeader}>New Tags To Add</h6> : null}
                                 <div className="chip-container" style={styles.chipContainer}>
                                     { tags }
                                 </div>
@@ -141,7 +143,7 @@ class UploadManager extends React.Component {
                                 <RaisedButton label="Upload Files" secondary={true}
                                               labelStyle={{fontWeight: 100}}
                                               style={styles.uploadFilesBtn}
-                                              onTouchTap={() => this.handleUploadButton()}/>
+                                              onTouchTap={() => this.handleUploadButton(filesToUpload, tagsToAdd, entityObj)}/>
                             </div>
                         </div>
                     </Drawer>
@@ -151,12 +153,12 @@ class UploadManager extends React.Component {
     }
 
     addTagToCloud(label) {
+        let tags = mainStore.tagsToAdd;
         let clearText = ()=> {
             this.autocomplete.setState({searchText:''});
             this.autocomplete.focus();
         };
         if(label && !label.indexOf(' ') <= 0) {
-            let tags = this.props.tagsToAdd;
             if (tags.some((el) => { return el.label === label.trim(); })) {
                 this.setState({floatingErrorText: label + ' tag is already in the list'});
                 setTimeout(()=>{
@@ -165,45 +167,43 @@ class UploadManager extends React.Component {
                 }, 2000)
             } else {
                 tags.push({label: label.trim()});
-                ProjectActions.defineTagsToAdd(tags);
+                mainStore.defineTagsToAdd(tags);
                 setTimeout(()=>clearText(), 500);
                 this.setState({floatingErrorText: ''})
             }
         }
     }
 
-    deleteTag(id, label) {
-        let fileId = this.props.selectedEntity !== null ? this.props.selectedEntity.id : this.props.params.id;
-        let tags = this.props.tagsToAdd;
+    deleteTag(id, label, selectedEntity, tagsToAdd) {
+        let fileId = selectedEntity !== null ? selectedEntity.id : this.props.params.id;
+        let tags = tagsToAdd;
         tags = tags.filter(( obj ) => {
             return obj.label !== label;
         });
-        ProjectActions.defineTagsToAdd(tags);
+        mainStore.defineTagsToAdd(tags);
     }
 
-    handleUploadButton() {
-        if (this.props.filesToUpload.length) {
-            let projId = '';
-            let parentKind = '';
+    handleUploadButton(filesToUpload, tagsToAdd, entityObj) {
+        if (filesToUpload.length) {
+            let projId;
+            let parentKind;
             let parentId = this.props.params.id;
-            let fileList = this.props.filesToUpload;
-            let tags = this.props.tagsToAdd;
-            for (let i = 0; i < fileList.length; i++) {
-                let blob = fileList[i];
+            for (let i = 0; i < filesToUpload.length; i++) {
+                let blob = filesToUpload[i];
                 if (!this.props.entityObj) {
                     projId = this.props.params.id;
                     parentKind = 'dds-project';
                 }else{
-                    projId = this.props.entityObj ? this.props.entityObj.ancestors[0].id : null;
-                    parentKind = this.props.entityObj ? this.props.entityObj.kind : null;
+                    projId = entityObj ? entityObj.ancestors[0].id : null;
+                    parentKind = entityObj ? entityObj.kind : null;
                 }
-                ProjectActions.startUpload(projId, blob, parentId, parentKind, null, null, tags);
-                ProjectActions.defineTagsToAdd([]);
+                mainStore.startUpload(projId, blob, parentId, parentKind, null, null, tagsToAdd);
+                mainStore.defineTagsToAdd([]);
             }
         } else {
             return null
         }
-        ProjectActions.toggleUploadManager();
+        mainStore.toggleUploadManager();
     }
 
     handleUpdateInput (text) {
@@ -214,14 +214,14 @@ class UploadManager extends React.Component {
             timeout: setTimeout(() => {
                 let value = text;
                 if (!value.indexOf(' ') <= 0) {
-                    ProjectActions.getTagAutoCompleteList(value);
+                    mainStore.getTagAutoCompleteList(value);
                 }
             }, 500)
         });
     }
 
     onDrop (files, rejectedFiles) {
-        ProjectActions.processFilesToUpload(files, rejectedFiles);
+        mainStore.processFilesToUpload(files, rejectedFiles);
     }
 
     onHoverDropzone(e) {
@@ -229,12 +229,12 @@ class UploadManager extends React.Component {
     }
 
     toggleUploadManager() {
-        ProjectActions.toggleUploadManager();
+        mainStore.toggleUploadManager();
         setTimeout(() => {
             if(this.autocomplete.state.searchText !== '') this.autocomplete.setState({searchText:''});
         }, 500);
-        ProjectActions.defineTagsToAdd([]);
-        ProjectActions.processFilesToUpload([], []);
+        mainStore.defineTagsToAdd([]);
+        mainStore.processFilesToUpload([], []);
     }
 }
 
@@ -375,9 +375,15 @@ UploadManager.contextTypes = {
 };
 
 UploadManager.propTypes = {
-    loading: React.PropTypes.bool,
-    details: array,
-    error: object
+    openUploadManager: bool,
+    entityObj: object,
+    screenSize: object,
+    selectedEntity: object,
+    tagLabels: array,
+    tagAutoCompleteList: array,
+    tagsToAdd: array,
+    filesRejectedForUpload: array,
+    filesToUpload: array
 };
 
 export default UploadManager;

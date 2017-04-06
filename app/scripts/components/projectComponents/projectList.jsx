@@ -1,20 +1,24 @@
-import React from 'react';
-import ProjectActions from '../../actions/projectActions';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
 import AddProjectModal from '../projectComponents/addProjectModal.jsx';
-import Loaders from '../../components/globalComponents/loaders.jsx';
-import BaseUtils from '../../../util/baseUtils.js';
-import {UrlGen} from '../../../util/urlEnum';
+import Loaders from '../globalComponents/loaders.jsx';
+import BaseUtils from '../../util/baseUtils.js';
+import {UrlGen} from '../../util/urlEnum';
 import {Card, CardTitle, CardText} from 'material-ui/Card';
 import FontIcon from 'material-ui/FontIcon';
 import RaisedButton from 'material-ui/RaisedButton';
 
+@observer
 class ProjectList extends React.Component {
 
     render() {
-        let headers = this.props.responseHeaders && this.props.responseHeaders !== null ? this.props.responseHeaders : null;
+        const { loading, projects, responseHeaders } = mainStore;
+        let headers = responseHeaders && responseHeaders !== null ? responseHeaders : null;
         let nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
         let totalProjects = headers !== null && !!headers['x-total'] ? headers['x-total'][0] : null;
-        let projects = this.props.projects.map((project) => {
+        let projectList = projects ? projects.map((project) => {
             return (
                 <Card key={ project.id } className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.card}>
                     <FontIcon className="material-icons" style={styles.icon}>content_paste</FontIcon>
@@ -26,7 +30,7 @@ class ProjectList extends React.Component {
                     </CardText>
                 </Card>
             );
-        });
+        }) : null;
 
         return (
             <div className="project-container mdl-grid">
@@ -35,25 +39,25 @@ class ProjectList extends React.Component {
                         <h4>Projects</h4>
                     </div>
                     <AddProjectModal {...this.props} />
-                    <Loaders {...this.props}/>
+                    <Loaders {...this.props} />
                 </div>
-                { projects }
-                {this.props.projects.length < totalProjects ? <div className="mdl-cell mdl-cell--12-col">
+                { projectList }
+                {projects && projects.length < totalProjects ? <div className="mdl-cell mdl-cell--12-col">
                     <RaisedButton
-                        label={this.props.loading ? "Loading..." : "Load More"}
+                        label={loading ? "Loading..." : "Load More"}
                         secondary={true}
-                        disabled={this.props.loading ? true : false}
+                        disabled={loading ? true : false}
                         onTouchTap={()=>this.loadMore(nextPage)}
                         fullWidth={true}
-                        style={this.props.loading ? {backgroundColor: '#69A3DD'} : {}}
-                        labelStyle={this.props.loading ? {color: '#235F9C'} : {fontWeight: '100'}}/>
+                        style={loading ? {backgroundColor: '#69A3DD'} : {}}
+                        labelStyle={loading ? {color: '#235F9C'} : {fontWeight: '100'}}/>
                     </div> : null}
             </div>
         );
     }
 
     loadMore(page) {
-        ProjectActions.getProjects(page);
+        mainStore.getProjects(page);
     }
 }
 
@@ -87,13 +91,13 @@ var styles = {
 };
 
 ProjectList.contextTypes = {
-    muiTheme: React.PropTypes.object
+    muiTheme: object
 };
 
 ProjectList.propTypes = {
-    loading: React.PropTypes.bool,
-    projects: React.PropTypes.array,
-    error: React.PropTypes.object
+    loading: bool,
+    projects: array,
+    responseHeaders: object
 };
 
 export default ProjectList;

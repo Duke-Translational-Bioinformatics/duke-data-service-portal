@@ -1,18 +1,21 @@
 import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import { observer } from 'mobx-react';
+import authStore from '../../stores/authStore';
+import mainStore from '../../stores/mainStore';
 import VersionOptionsMenu from './versionOptionsMenu.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
-import {UrlGen, Path} from '../../../util/urlEnum';
-import Tooltip from '../../../util/tooltip.js';
-import BaseUtils from '../../../util/baseUtils.js';
+import {UrlGen, Path} from '../../util/urlEnum';
+import Tooltip from '../../util/tooltip.js';
+import BaseUtils from '../../util/baseUtils.js';
 import Card from 'material-ui/Card';
 
+@observer
 class VersionDetails extends React.Component {
 
     render() {
-        let prjPrm = this.props.projPermissions && this.props.projPermissions !== undefined ? this.props.projPermissions : null;
+        const {entityObj, projPermissions} = mainStore;
+        let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         let dlButton = null;
         let optionsMenu = null;
         if (prjPrm !== null) {
@@ -27,21 +30,19 @@ class VersionDetails extends React.Component {
                 </button>;
             optionsMenu = <VersionOptionsMenu {...this.props}/>;
         }
-        let loading = this.props.loading ?
-            <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div> : '';
         let id = this.props.params.id;
-        let parentId = this.props.entityObj && this.props.entityObj.file ? this.props.entityObj.file.id : null;
-        let name = this.props.entityObj && this.props.entityObj.file ? this.props.entityObj.file.name : null;
-        let label = this.props.entityObj && this.props.entityObj.label ? this.props.entityObj.label : null;
-        let projectName = this.props.entityObj && this.props.entityObj.ancestors ? this.props.entityObj.ancestors[0].name : null;
-        let crdOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.created_on : null;
-        let createdBy = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.created_by.full_name : null;
-        let lastUpdatedOn = this.props.entityObj && this.props.entityObj.audit ? this.props.entityObj.audit.last_updated_on : null;
-        let lastUpdatedBy = this.props.entityObj && this.props.entityObj.audit.last_updated_by ? this.props.entityObj.audit.last_updated_by.full_name : null;
-        let storage =  this.props.entityObj && this.props.entityObj.upload ? this.props.entityObj.upload.storage_provider.description : null;
-        let bytes = this.props.entityObj && this.props.entityObj.upload ? this.props.entityObj.upload.size : null;
-        let hash = this.props.entityObj && this.props.entityObj.upload.hashes.length ? this.props.entityObj.upload.hashes[0].algorithm +': '+ this.props.entityObj.upload.hashes[0].value : null;
-        let versNumber = this.props.entityObj ? this.props.entityObj.version : null;
+        let parentId = entityObj && entityObj.file ? entityObj.file.id : null;
+        let name = entityObj && entityObj.file ? entityObj.file.name : null;
+        let label = entityObj && entityObj.label ? entityObj.label : null;
+        let projectName = entityObj && entityObj.ancestors ? entityObj.ancestors[0].name : null;
+        let crdOn = entityObj && entityObj.audit ? entityObj.audit.created_on : null;
+        let createdBy = entityObj && entityObj.audit ? entityObj.audit.created_by.full_name : null;
+        let lastUpdatedOn = entityObj && entityObj.audit ? entityObj.audit.last_updated_on : null;
+        let lastUpdatedBy = entityObj && entityObj.audit.last_updated_by ? entityObj.audit.last_updated_by.full_name : null;
+        let storage =  entityObj && entityObj.upload ? entityObj.upload.storage_provider.description : null;
+        let bytes = entityObj && entityObj.upload ? entityObj.upload.size : null;
+        let hash = entityObj && entityObj.upload && entityObj.upload.hashes.length ? entityObj.upload.hashes[0].algorithm +': '+ entityObj.upload.hashes[0].value : null;
+        let versNumber = entityObj ? entityObj.version : null;
         Tooltip.bindEvents();
 
         let version = <Card className="project-container mdl-color--white content mdl-color-text--grey-800"
@@ -165,8 +166,7 @@ class VersionDetails extends React.Component {
 
     handleDownload(){
         let id = this.props.params.id;
-        let kind = Path.FILE;
-        ProjectActions.getDownloadUrl(id, kind);
+        mainStore.getDownloadUrl(id, Path.FILE_VERSION);
     }
 }
 
@@ -237,9 +237,8 @@ VersionDetails.contextTypes = {
 };
 
 VersionDetails.propTypes = {
-    loading: bool,
-    details: array,
-    error: object
+    entityObj: object,
+    projectPermissions: string
 };
 
 export default VersionDetails;

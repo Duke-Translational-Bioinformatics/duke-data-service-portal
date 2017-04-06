@@ -1,40 +1,44 @@
-import React from 'react';
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
-import BaseUtils from '../../../util/baseUtils.js';
+import React, { PropTypes } from 'react';
+const { object, bool, array, string } = PropTypes;
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import BaseUtils from '../../util/baseUtils.js';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 
+@observer
 class RetryUploads extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            retryUploads: this.props.failedUploads,
+            retryUploads: mainStore.failedUploads.slice(),
             retryUploadModal: true,
             warningText: {}
         };
     }
 
     render() {
-        let failedUploads = this.props.failedUploads && this.props.failedUploads.length ? this.props.failedUploads.map((obj, i) => {
+        const { failedUploads, screenSize } = mainStore;
+        let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
+        let failed = failedUploads && failedUploads.length ? failedUploads.map((obj, i) => {
             return <TableRow key={i} selected={this.state.selected}>
                 <TableRowColumn>{obj.fileName}</TableRowColumn>
                 <TableRowColumn>{obj.id}</TableRowColumn>
             </TableRow>
         }) : null;
         let failedUploadModal = null;
-        if (this.props.failedUploads.length) {
+        if (failedUploads.length) {
             let actions = [
                 <FlatButton
                     label="Cancel"
                     secondary={true}
                     onTouchTap={() => this.handleClose()}/>,
                 <FlatButton
-                            label="Retry"
-                            secondary={true}
-                            onTouchTap={() => this.retryUploads()}/>
+                    label="Retry"
+                    secondary={true}
+                    onTouchTap={() => this.retryUploads()}/>
             ];
             failedUploadModal = <Dialog
                 title="Upload Failed"
@@ -42,7 +46,7 @@ class RetryUploads extends React.Component {
                 modal={false}
                 open={this.state.retryUploadModal}
                 onRequestClose={this.handleClose.bind(this)}
-                contentStyle={this.props.windowWidth < 580 ? {width: '100%'} : {}}
+                contentStyle={dialogWidth}
                 autoDetectWindowHeight={true}
                 style={styles.dialogStyles}>
                     <i className="material-icons" style={styles.warning}>warning</i>
@@ -70,7 +74,7 @@ class RetryUploads extends React.Component {
     }
 
     handleClose() {
-        ProjectActions.removeFailedUploads();
+        mainStore.removeFailedUploads();
         this.setState({retryUploadModal: false});
         setTimeout(() => this.setState({retryUploadModal: true, warningText: {}}), 500);
     }
@@ -83,9 +87,9 @@ class RetryUploads extends React.Component {
                 let parentKind = this.state.retryUploads[i].upload.parentKind;
                 let projId = this.state.retryUploads[i].upload.projectId;
                 let tags = this.state.retryUploads[i].upload.tags;
-                ProjectActions.startUpload(projId, blob, parentId, parentKind, null, null, tags);
+                mainStore.startUpload(projId, blob, parentId, parentKind, null, null, tags);
             }
-            ProjectActions.removeFailedUploads();
+            mainStore.removeFailedUploads();
             this.setState({retryUploadModal: false});
             setTimeout(() => this.setState({retryUploadModal: true, retryUploads: []}), 1500);
         } else {
@@ -94,19 +98,20 @@ class RetryUploads extends React.Component {
     }
 
     selectTableRow(rows) {
+        let failedUploads = mainStore.failedUploads;
         if (rows === 'all') {
-            this.setState({retryUploads: this.props.failedUploads});
+            this.setState({retryUploads: failedUploads});
         }
         if (rows === 'none') this.setState({retryUploads: []});
         if (rows !== 'none' && rows !== 'all') {
             for (let i = 0; i < rows.length; i++) {
-                if (!BaseUtils.objectPropInArray(this.state.retryUploads, 'id', this.props.failedUploads[rows[i]].id)) {
-                    this.state.retryUploads.push(this.props.failedUploads[rows[i]]);
+                if (!BaseUtils.objectPropInArray(this.state.retryUploads, 'id', failedUploads[rows[i]].id)) {
+                    this.state.retryUploads.push(failedUploads[rows[i]]);
                     break;
                 }
                 if (rows.length < this.state.retryUploads.length) {
                     this.state.retryUploads = [];
-                    this.state.retryUploads.push(this.props.failedUploads[rows[i]]);
+                    this.state.retryUploads.push(failedUploads[rows[i]]);
                     break;
                 }
             }
@@ -138,6 +143,11 @@ var styles = {
         textAlign: 'center',
         color: '#F44336'
     }
+};
+
+RetryUploads.propTypes = {
+    screenSize: object,
+    failedUploads: array
 };
 
 export default RetryUploads;

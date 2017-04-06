@@ -134,6 +134,11 @@ let BaseUtils = {
         formatDate(date) {
             date !== null ? date = moment(date).format("MMMM Do, YYYY") : '';
             return date;
+        },
+
+        formatLongDate(date) {
+            date !== null ? date = moment(date).format("LLL") : '';
+            return date;
         }
 };
 

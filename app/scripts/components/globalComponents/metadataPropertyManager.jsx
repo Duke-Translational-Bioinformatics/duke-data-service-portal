@@ -1,9 +1,10 @@
 import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
-import ProjectActions from '../../actions/projectActions';
-import ProjectStore from '../../stores/projectStore';
+import { observer } from 'mobx-react';
+import mainStore from '../../stores/mainStore';
+import authStore from '../../stores/authStore';
 import MetadataTemplateProperties from '../globalComponents/metadataTemplateProperties.jsx';
-import BaseUtils from '../../../util/baseUtils'
+import BaseUtils from '../../util/baseUtils'
 import AddCircle from 'material-ui/svg-icons/content/add-circle';
 import IconButton from 'material-ui/IconButton';
 import MenuItem from 'material-ui/MenuItem';
@@ -11,6 +12,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 
+@observer
 class MetadataPropertyManager extends React.Component {
 
     constructor(props) {
@@ -28,12 +30,13 @@ class MetadataPropertyManager extends React.Component {
     }
 
     render() {
-        let templateCreator = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.audit.created_by.id : null;
-        let templateDesc = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.description : null;
-        let templateId = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.id : null;
-        let templateLabel = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.label : null;
-        let templateName = this.props.metadataTemplate && this.props.metadataTemplate !== null ? this.props.metadataTemplate.name : null;
-        let width = this.props.screenSize !== null && Object.keys(this.props.screenSize).length !== 0 ? this.props.screenSize.width : window.innerWidth;
+        const { metadataTemplate, screenSize } = mainStore;
+        let templateCreator = metadataTemplate && metadataTemplate !== null ? metadataTemplate.audit.created_by.id : null;
+        let templateDesc = metadataTemplate && metadataTemplate !== null ? metadataTemplate.description : null;
+        let templateId = metadataTemplate && metadataTemplate !== null ? metadataTemplate.id : null;
+        let templateLabel = metadataTemplate && metadataTemplate !== null ? metadataTemplate.label : null;
+        let templateName = metadataTemplate && metadataTemplate !== null ? metadataTemplate.name : null;
+        let width = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.width : window.innerWidth;
 
         return (
             <div className="mdl-grid" style={styles.wrapper}>
@@ -121,7 +124,7 @@ class MetadataPropertyManager extends React.Component {
             });
         } else {
             if (name !== '' && label !== '' && desc !== '' && type !== null) {
-                ProjectActions. createMetadataProperty(id, name, label, desc, type);
+                mainStore. createMetadataProperty(id, name, label, desc, type);
                 this.setState({
                     errorText: 'This field is required.',
                     errorText2: 'This field is required.',
@@ -159,7 +162,7 @@ class MetadataPropertyManager extends React.Component {
     }
 
     goBack() {
-        ProjectActions.showMetaDataTemplateDetails();
+        mainStore.showMetaDataTemplateDetails();
     }
 
     handleInputValidation(e) {
@@ -233,11 +236,6 @@ var styles = {
     descTextField: {
         float: 'left',
         margin: '-10px 10px 0px 10px'
-    },
-    dialogStyles: {
-        textAlign: 'center',
-        fontColor: '#303F9F',
-        zIndex: '5000'
     },
     heading: {
         textAlign: 'left',
