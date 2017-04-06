@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import {Kind, Path} from '../../util/urlEnum';
@@ -15,7 +15,7 @@ import LocalOffer from 'material-ui/svg-icons/maps/local-offer';
 class BatchOps extends React.Component {
 
     render() {
-        const { entityObj, filesChecked, foldersChecked, itemsSelected, project, projPermissions, toggleModal } = mainStore;
+        const { filesChecked, foldersChecked, itemsSelected, projPermissions, toggleModal } = mainStore;
         let dlMsg = '';
         let msg = '';
         let dltIcon = null;
@@ -31,10 +31,10 @@ class BatchOps extends React.Component {
             let f = filesChecked.length > 1  ? " files?" : " file?";
             dlMsg = "Are you sure you want to download "+filesChecked.length+f;
         }
-        let parentId = entityObj && entityObj.id ? entityObj.id : project.id;
-        let parentKind = entityObj && entityObj.kind === Kind.DDS_FOLDER ? entityObj.kind : Kind.DDS_PROJECT;
+
         let downloadIcon = filesChecked.length ? <IconButton onTouchTap={() => this.openModal('dwnLoad')} style={styles.downloadBtn}><GetAppIcon color={'#EC407A'}/></IconButton> : null;
         let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
+
         if (prjPrm !== null) {
             dltIcon = prjPrm === 'flDownload' ? null :
                 <IconButton onTouchTap={() => this.openModal('dlt')} style={styles.deleteBtn}>
@@ -56,7 +56,7 @@ class BatchOps extends React.Component {
                 label="Delete"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={() => this.handleDelete(parentId, parentKind)}/>
+                onTouchTap={() => this.handleDelete()}/>
         ];
         let downloadActions = [];
         if(!filesChecked.length){
@@ -115,8 +115,8 @@ class BatchOps extends React.Component {
         );
     }
 
-    handleDelete(parentId, parentKind){
-        mainStore.batchDeleteItems(parentId, parentKind);
+    handleDelete(){
+        mainStore.batchDeleteItems();
         this.handleClose('dlt');
     }
 

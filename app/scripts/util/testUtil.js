@@ -10,12 +10,6 @@ export function respond(status, statusText, json) {
     }))
 }
 
-export function mockSpy(response) {
-    return jest.fn(() => {
-        return Promise.resolve(response);
-    });
-}
-
 export function respondOK(json) {
     return respond(200, 'ok', json)
 }
