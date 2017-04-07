@@ -1,4 +1,4 @@
-jest.unmock("../app/scripts/stores/mainStore")
+import {observable} from 'mobx';
 import * as fake from "../app/scripts/util/testData";
 import { sleep, respondOK, respond }  from "../app/scripts/util/testUtil";
 
@@ -19,20 +19,32 @@ describe('Main Store', () => {
     const DDS_FILE = 'dds-file';
     const FOLDER_PATH = 'folders/';
     const FILE_PATH = 'files/';
-    const TEST_TEMPLATE_ID = 'TEST_TEMPLATE_ID';
+    const TEMPLATE_ID = 'TEMPLATE_ID';
+    const TEMPLATE_NAME = 'TEMPLATE_1';
+    const TEMPLATE_DESCRIPTION = 'TEMPLATE 1 DESCRIPTION';
+    const TEMPLATE_LABEL = 'TEMPLATE 1';
     const TEST_USER_NAME = 'TEST USER NAME';
     const TEST_UID = 'TEST01';
     const USER_ROLE = 'USER_ROLE';
+    const SEARCH_TEXT = 'TEST FILE 1';
+    const STRING = 'STRING';
 
     let transportLayer = null;
     let mainStore = null;
+    let provenanceStore = null;
 
     beforeEach(() => {
         mainStore = require('../app/scripts/stores/mainStore').default;
         transportLayer = {};
         mainStore.transportLayer = transportLayer;
         mainStore.listItems = [];
-        return mainStore;
+    });
+
+    it('@action toggleLoading - should change loading status', () => {
+        mainStore.toggleLoading();
+        expect(mainStore.loading).toBe(true);
+        mainStore.toggleLoading();
+        expect(mainStore.loading).toBe(false);
     });
 
     it('@action toggleTagManager - toggles the tag manager bool', () => {
@@ -191,7 +203,7 @@ describe('Main Store', () => {
         });
     });
 
-    // @action getChildren(id, path, page) {
+    // @action getChildren(id, path, page) { // Todo: Need to write test for this. How to test Promise.all() ???????????????????
     //     this.loading = true;
     //     if (page == null) page = 1;
     //     this.transportLayer.getChildren(id, path, page)
@@ -213,6 +225,441 @@ describe('Main Store', () => {
     //             this.loading = false;
     //         }).catch(ex =>this.handleErrors(ex))
     // }
+
+    it('@action addFileVersion - adds new file version', () => {
+        provenanceStore = require('../app/scripts/stores/provenanceStore').default;
+        provenanceStore.transportLayer = transportLayer;
+        mainStore.entityObj = null;
+
+        transportLayer.addFileVersion = jest.fn((uploadId, label, fileId) => respondOK());
+        mainStore.addFileVersion(UPLOAD_ID, EDITED_LABEL, FILE_ID);
+        return sleep(1).then(() => {
+            expect(transportLayer.addFileVersion).toHaveBeenCalledTimes(1);
+            expect(transportLayer.addFileVersion).toHaveBeenCalledWith(UPLOAD_ID, EDITED_LABEL, FILE_ID);
+            expect(provenanceStore.showProvAlert).toBe(true);
+            expect(mainStore.entityObj).toBeDefined();
+        });
+    });
+
+    it('@action getFileVersions - gets list of file versions for a file', () => {
+        transportLayer.getFileVersions = jest.fn((fileId) => respondOK(fake.file_version_list_json));
+        mainStore.getFileVersions(FILE_ID);
+        return sleep(1).then(() => {
+            expect(transportLayer.getFileVersions).toHaveBeenCalledTimes(1);
+            expect(transportLayer.getFileVersions).toHaveBeenCalledWith(FILE_ID);
+            expect(mainStore.fileVersions[0].id).toBe(fake.file_version_list_json.results[0].id);
+        });
+    });
+
+    // it('checkForHash - checks to make sure hash has been calculated for an upload', () => {
+    //     mainStore.fileHashes = [fake.hash_json];
+    //     expect(mainStore.fileHashes[0].id).toBe(fake.hash_json.id);
+    //     mainStore.checkForHash(UPLOAD_ID);
+    // });
+
+    // it('@action allChunksUploaded - creates a file version after all chunks are uploaded', () => {
+    //     mainStore.fileHashes = [fake.hash_json];
+    //     transportLayer.allChunksUploaded = jest.fn((uploadId, parentId, parentKind, fileName, label, fileId, hash, projectId) => respondOK());
+    //     mainStore.allChunksUploaded(UPLOAD_ID, fake.hash_json.hash, fake.hash_json.hash);
+    //     return sleep(1).then(() => {
+    //         expect(transportLayer.allChunksUploaded).toHaveBeenCalledTimes(1);
+    //         expect(transportLayer.allChunksUploaded).toHaveBeenCalledWith(UPLOAD_ID, fake.hash_json.hash, fake.hash_json.hash);
+    //     });
+    // });
+
+    it('@action uploadError - sets an array of failed uploads that can be retried', () => {
+        mainStore.uploads = observable.map();
+        mainStore.uploads.set(UPLOAD_ID);
+        expect(mainStore.uploads.has(UPLOAD_ID)).toBe(true);
+        mainStore.uploadError(UPLOAD_ID, fake.file_json.name, PROJECT_ID);
+        expect(mainStore.failedUploads.length).toBe(1);
+        expect(mainStore.failedUploads[0].id).toBe(UPLOAD_ID);
+        expect(mainStore.uploads.has(UPLOAD_ID)).toBe(false);
+        mainStore.failedUploads = [];
+    });
+
+    it('@action removeFailedUploads - removes failed uploads', () => {
+        mainStore.uploads = observable.map();
+        mainStore.uploads.set(UPLOAD_ID);
+        expect(mainStore.uploads.has(UPLOAD_ID)).toBe(true);
+        mainStore.uploadError(UPLOAD_ID, fake.file_json.name, PROJECT_ID);
+        expect(mainStore.failedUploads.length).toBe(1);
+        mainStore.removeFailedUploads();
+        expect(mainStore.failedUploads.length).toBe(0);
+    });
+
+    it('@action cancelUpload - cancels selected upload', () => {
+        mainStore.uploads = observable.map();
+        mainStore.uploads.set(UPLOAD_ID);
+        mainStore.uploads.set(FILE_ID);
+        expect(mainStore.uploads.has(UPLOAD_ID)).toBe(true);
+        expect(mainStore.uploads.has(FILE_ID)).toBe(true);
+        mainStore.cancelUpload(UPLOAD_ID, fake.file_json.name);
+        expect(mainStore.uploads.has(UPLOAD_ID)).toBe(false);
+        expect(mainStore.uploads.has(FILE_ID)).toBe(true);
+    });
+
+    it('@action getDownloadUrl - gets the temporary download url for a file', () => {
+        transportLayer.getDownloadUrl = jest.fn((id, kind) => respondOK(fake.download_url_json));
+        mainStore.getDownloadUrl(FILE_ID, DDS_FILE);
+        return sleep(1).then((json) => {
+            expect(transportLayer.getDownloadUrl).toHaveBeenCalledTimes(1);
+            expect(transportLayer.getDownloadUrl).toHaveBeenCalledWith(FILE_ID, DDS_FILE);
+        });
+    });
+
+    it('@action getDownloadUrl ERROR - file can not be found', () => {
+        mainStore.error = null;
+        transportLayer.getDownloadUrl = jest.fn((id, kind) => respond(404, 'not found', {}));
+        mainStore.getDownloadUrl(FILE_ID, DDS_FILE);
+        return sleep(1).then(() => {
+            expect(transportLayer.getDownloadUrl).toHaveBeenCalledTimes(1);
+            expect(transportLayer.getDownloadUrl).toHaveBeenCalledWith(FILE_ID, DDS_FILE);
+            expect(mainStore.error).not.toBeNull();
+        });
+    });
+
+    it('@action getUser - gets current user details', () => {
+        expect(mainStore.currentUser).toEqual({});
+        transportLayer.getUser = jest.fn((id) => respondOK(fake.user_json));
+        mainStore.getUser();
+        return sleep(1).then(() => {
+            expect(transportLayer.getUser).toHaveBeenCalledTimes(1);
+            expect(transportLayer.getUser).toHaveBeenCalledWith();
+        });
+    });
+
+    it('@action getPermissions - gets current user project permissions', () => {
+        transportLayer.getPermissions = jest.fn((id, userId) => respondOK(fake.grant_project_permission_json));
+        mainStore.getPermissions(PROJECT_ID, TEST_UID);
+        return sleep(1).then(() => {
+            expect(transportLayer.getPermissions).toHaveBeenCalledTimes(1);
+            expect(transportLayer.getPermissions).toHaveBeenCalledWith(PROJECT_ID, TEST_UID);
+            expect(mainStore.projPermissions).toBe('prjCrud');
+        });
+    });
+
+    it('@action searchFiles - populates an autocomplete list with file names', () => {
+        transportLayer.searchFiles = jest.fn((text, id) => respondOK(fake.list_items_json));
+        mainStore.searchFiles(SEARCH_TEXT, PROJECT_ID);
+        expect(mainStore.autoCompleteLoading).toBe(true);
+        return sleep(1).then(() => {
+            expect(transportLayer.searchFiles).toHaveBeenCalledTimes(1);
+            expect(transportLayer.searchFiles).toHaveBeenCalledWith(SEARCH_TEXT, PROJECT_ID);
+            expect(mainStore.searchFilesList.length).toBe(1);
+            expect(mainStore.searchFilesList[0].name).toBe(SEARCH_TEXT);
+            expect(mainStore.autoCompleteLoading).toBe(false);
+        });
+    });
+
+    it('@action loadMetadataTemplates - loads a list of metadata templates and sorts by most recent', () => {
+        transportLayer.loadMetadataTemplates = jest.fn((text) => respondOK(fake.metadata_templates_json));
+        mainStore.loadMetadataTemplates(SEARCH_TEXT);
+        return sleep(1).then(() => {
+            expect(transportLayer.loadMetadataTemplates).toHaveBeenCalledTimes(1);
+            expect(transportLayer.loadMetadataTemplates).toHaveBeenCalledWith('?name_contains='+SEARCH_TEXT);
+            expect(mainStore.metaTemplates.length).toBe(2);
+            //test sorting by date
+            expect(mainStore.metaTemplates[0].id).toBe('TEMPLATE_2');
+            expect(mainStore.metaTemplates[1].id).toBe(TEMPLATE_ID);
+        });
+    });
+
+    it('@action createMetadataTemplate - creates a new metadata template', () => {
+        transportLayer.createMetadataTemplate = jest.fn((name, label, desc) => respondOK(fake.metadata_templates_json.results[1]));
+        mainStore.createMetadataTemplate(fake.metadata_templates_json.results[1].name, fake.metadata_templates_json.results[1].label, fake.metadata_templates_json.results[1].description);
+        expect(mainStore.drawerLoading).toBe(true);
+        return sleep(1).then(() => {
+            expect(transportLayer.createMetadataTemplate).toHaveBeenCalledTimes(1);
+            expect(transportLayer.createMetadataTemplate).toHaveBeenCalledWith(fake.metadata_templates_json.results[1].name, fake.metadata_templates_json.results[1].label, fake.metadata_templates_json.results[1].description);
+            expect(mainStore.metadataTemplate.id).toBe(fake.metadata_templates_json.results[1].id);
+            //Test that template was added to the beginning of the array
+            expect(mainStore.metaTemplates[0].id).toBe(fake.metadata_templates_json.results[1].id);
+            expect(mainStore.showTemplateCreator).toBe(false);
+            expect(mainStore.showTemplateDetails).toBe(true);
+            expect(mainStore.drawerLoading).toBe(false);
+        });
+    });
+
+    it('@action getMetadataTemplateDetails - gets metadata template details', () => {
+        transportLayer.getMetadataTemplateDetails = jest.fn((id) => respondOK(fake.metadata_templates_json.results[1]));
+        mainStore.getMetadataTemplateDetails(fake.metadata_templates_json.results[1].id);
+        expect(mainStore.drawerLoading).toBe(true);
+        return sleep(1).then(() => {
+            expect(transportLayer.getMetadataTemplateDetails).toHaveBeenCalledTimes(1);
+            expect(transportLayer.getMetadataTemplateDetails).toHaveBeenCalledWith(fake.metadata_templates_json.results[1].id);
+            expect(mainStore.metadataTemplate.id).toBe(fake.metadata_templates_json.results[1].id);
+            expect(mainStore.openMetadataManager).toBe(true);
+            expect(mainStore.showTemplateCreator).toBe(false);
+            expect(mainStore.showTemplateDetails).toBe(true);
+            expect(mainStore.drawerLoading).toBe(false);
+        });
+    });
+
+    it('@action getMetadataTemplateProperties - gets metadata template properties', () => {
+        transportLayer.getMetadataTemplateProperties = jest.fn((id) => respondOK(fake.template_properties_json));
+        mainStore.getMetadataTemplateProperties(fake.metadata_templates_json.results[0].id);
+        expect(mainStore.drawerLoading).toBe(true);
+        return sleep(1).then(() => {
+            expect(transportLayer.getMetadataTemplateProperties).toHaveBeenCalledTimes(1);
+            expect(transportLayer.getMetadataTemplateProperties).toHaveBeenCalledWith(fake.metadata_templates_json.results[0].id);
+            expect(mainStore.templateProperties[0].id).toBe(fake.template_properties_json.results[0].id);
+            expect(mainStore.templateProperties[0].name).toBe(fake.template_properties_json.results[0].name);
+            expect(mainStore.drawerLoading).toBe(false);
+        });
+    });
+
+    it('@action updateMetadataTemplate - updates label and description of metadata template', () => {
+        transportLayer.updateMetadataTemplate = jest.fn((id, name, label, desc) => respondOK(fake.edited_metadata_templates_json));
+        mainStore.updateMetadataTemplate(fake.edited_metadata_templates_json.id, fake.edited_metadata_templates_json.name, fake.edited_metadata_templates_json.label, fake.edited_metadata_templates_json.description);
+        expect(mainStore.drawerLoading).toBe(true);
+        return sleep(1).then(() => {
+            expect(transportLayer.updateMetadataTemplate).toHaveBeenCalledTimes(1);
+            expect(transportLayer.updateMetadataTemplate).toHaveBeenCalledWith(fake.edited_metadata_templates_json.id, fake.edited_metadata_templates_json.name, fake.edited_metadata_templates_json.label, fake.edited_metadata_templates_json.description);
+            expect(mainStore.metadataTemplate.id).toBe(fake.edited_metadata_templates_json.id);
+            expect(mainStore.metadataTemplate.name).toBe(fake.edited_metadata_templates_json.name);
+            expect(mainStore.showTemplateCreator).toBe(false);
+            expect(mainStore.showTemplateDetails).toBe(true);
+            expect(mainStore.drawerLoading).toBe(false);
+        });
+    });
+
+    it('@action deleteTemplate - deletes metadata template', () => {
+        transportLayer.deleteTemplate = jest.fn((id) => respondOK());
+        mainStore.deleteTemplate(fake.edited_metadata_templates_json.id);
+        return sleep(1).then(() => {
+            expect(transportLayer.deleteTemplate).toHaveBeenCalledTimes(1);
+            expect(transportLayer.deleteTemplate).toHaveBeenCalledWith(fake.edited_metadata_templates_json.id);
+            expect(mainStore.metadataTemplate.id).toBe(fake.edited_metadata_templates_json.id);
+            expect(mainStore.templateProperties.length).toBe(0);
+            expect(mainStore.openMetadataManager).toBe(false);
+            expect(mainStore.showPropertyCreator).toBe(false);
+            expect(mainStore.showTemplateCreator).toBe(true);
+            expect(mainStore.showTemplateDetails).toBe(false);
+        });
+    });
+
+    it('@action deleteMetadataProperty - deletes metadata property', () => {
+        mainStore.toasts = [];
+        mainStore.templateProperties = fake.template_properties_json.results;
+        expect(mainStore.templateProperties.length).toBe(1);
+        transportLayer.deleteMetadataProperty = jest.fn((id) => respondOK());
+        mainStore.deleteMetadataProperty(fake.template_property_json.id, EDITED_LABEL);
+        return sleep(1).then(() => {
+            expect(mainStore.toasts[0].msg).toBe('The '+EDITED_LABEL+' property has been deleted');
+            expect(transportLayer.deleteMetadataProperty).toHaveBeenCalledTimes(1);
+            expect(transportLayer.deleteMetadataProperty).toHaveBeenCalledWith(fake.template_property_json.id);
+            expect(mainStore.metadataTemplate.id).toBe(fake.edited_metadata_templates_json.id);
+            expect(mainStore.templateProperties.length).toBe(0);
+        });
+    });
+
+    it('@action deleteMetadataProperty ERROR FORBIDDEN- fails to delete metadata property', () => {
+        mainStore.error = null;
+        transportLayer.deleteMetadataProperty = jest.fn((id) => respond(403, 'forbidden', {}));
+        mainStore.deleteMetadataProperty(fake.template_property_json.id, EDITED_LABEL);
+        return sleep(1).then(() => {
+            expect(transportLayer.deleteMetadataProperty).toHaveBeenCalledTimes(1);
+            expect(transportLayer.deleteMetadataProperty).toHaveBeenCalledWith(fake.template_property_json.id);
+            expect(mainStore.error.response.status).toBe(403);
+            expect(mainStore.error).toBeDefined();
+        });
+    });
+
+    it('@action createMetadataObject - creates a new metadata object for a file', () => {
+        transportLayer.createMetadataObject = jest.fn((kind, fileId, templateId, properties) => respondOK(fake.metadata_object_json));
+        mainStore.createMetadataObject(DDS_FILE, FILE_ID, TEMPLATE_ID, fake.template_properties_json.results);
+        expect(mainStore.drawerLoading).toBe(true);
+        return sleep(1).then(() => {
+            expect(transportLayer.createMetadataObject).toHaveBeenCalledTimes(1);
+            expect(transportLayer.createMetadataObject).toHaveBeenCalledWith(DDS_FILE, FILE_ID, TEMPLATE_ID, fake.template_properties_json.results);
+            expect(mainStore.metadataTemplate.id).toBe(fake.metadata_templates_json.results[1].id);
+        });
+    });
+
+    it('@action createMetadataObject ERROR 409 Already exists - Should still run but will call updateMetadataObject instead', () => {
+        transportLayer.createMetadataObject = jest.fn((kind, fileId, templateId, properties) => respond(409, 'conflict', fake.metadata_object_json));
+        mainStore.createMetadataObject(DDS_FILE, FILE_ID, TEMPLATE_ID, fake.template_properties_json.results);
+        expect(mainStore.drawerLoading).toBe(true);
+        return sleep(1).then(() => {
+            expect(transportLayer.createMetadataObject).toHaveBeenCalledTimes(1);
+            expect(transportLayer.createMetadataObject).toHaveBeenCalledWith(DDS_FILE, FILE_ID, TEMPLATE_ID, fake.template_properties_json.results);
+            expect(mainStore.metadataTemplate.id).toBe(fake.metadata_templates_json.results[1].id);
+        });
+    });
+
+    it('@action updateMetadataObject - updates an existing metadata object for a file', () => {
+        transportLayer.updateMetadataObject = jest.fn((kind, fileId, templateId, properties) => respondOK(fake.metadata_object_json));
+        mainStore.updateMetadataObject(DDS_FILE, FILE_ID, TEMPLATE_ID, fake.template_properties_json.results);
+        return sleep(1).then(() => {
+            expect(transportLayer.updateMetadataObject).toHaveBeenCalledTimes(1);
+            expect(transportLayer.updateMetadataObject).toHaveBeenCalledWith(DDS_FILE, FILE_ID, TEMPLATE_ID, fake.template_properties_json.results);
+            expect(mainStore.metadataTemplate.id).toBe(fake.metadata_templates_json.results[1].id);
+        });
+    });
+
+    it('@action createMetadataObjectSuccess - creates a new metadata object for a file', () => {
+        mainStore.objectMetadata = [];
+        mainStore.createMetadataObjectSuccess(FILE_ID, DDS_FILE, fake.metadata_object_json);
+        expect(mainStore.drawerLoading).toBe(false);
+        expect(mainStore.showBatchOps).toBe(false);
+        expect(mainStore.showTemplateDetails).toBe(false);
+        expect(mainStore.objectMetadata.length).toBe(1);
+    });
+
+    it('@action createMetadataProperty - creates a new metadata property for a template', () => {
+        mainStore.templateProperties = [];
+        transportLayer.createMetadataProperty = jest.fn((id, name, label, desc, type) => respondOK(fake.template_property_json));
+        mainStore.createMetadataProperty(TEMPLATE_ID, TEMPLATE_NAME, TEMPLATE_LABEL, TEMPLATE_DESCRIPTION, STRING);
+        return sleep(1).then(() => {
+            expect(transportLayer.createMetadataProperty).toHaveBeenCalledTimes(1);
+            expect(transportLayer.createMetadataProperty).toHaveBeenCalledWith(TEMPLATE_ID, TEMPLATE_NAME, TEMPLATE_LABEL, TEMPLATE_DESCRIPTION, STRING);
+            expect(mainStore.templateProperties.length).toBe(1);
+            expect(mainStore.templateProperties[0].template.id).toBe(TEMPLATE_ID);
+        });
+    });
+
+    it('@action createMetaPropsList - creates a list of metadata properties', () => {
+        mainStore.metaProps = [];
+        mainStore.createMetaPropsList(fake.template_properties_json.results);
+        expect(mainStore.metaProps[0].label).toBe(TEMPLATE_LABEL);
+    });
+
+    it('@action showTemplatePropManager - toggles the template property manager', () => {
+        mainStore.showPropertyCreator = false;
+        mainStore.showTemplateCreator = true;
+        mainStore.showTemplateDetails = true;
+        mainStore.showTemplatePropManager();
+        expect(mainStore.showPropertyCreator).toBe(true);
+        expect(mainStore.showTemplateCreator).toBe(false);
+        expect(mainStore.showTemplateDetails).toBe(false);
+    });
+
+    it('@action showMetadataTemplateList - toggles off the template details list', () => {
+        mainStore.showTemplateDetails = true;
+        mainStore.showMetadataTemplateList();
+        expect(mainStore.showTemplateDetails).toBe(false);
+    });
+
+    it('@action toggleMetadataManager - toggles the metadata manager', () => {
+        mainStore.templateProperties = [];
+        mainStore.templateProperties.push(fake.template_property_json);
+        mainStore.showPropertyCreator = true;
+        mainStore.showTemplateCreator = false;
+        mainStore.showTemplateDetails = true;
+        expect(mainStore.templateProperties.length).toBe(1);
+        mainStore.toggleMetadataManager();
+        expect(mainStore.templateProperties.length).toBe(0);
+        expect(mainStore.showPropertyCreator).toBe(false);
+        expect(mainStore.showTemplateCreator).toBe(true);
+        expect(mainStore.showTemplateDetails).toBe(false);
+    });
+
+    it('@action showMetaDataTemplateDetails - shows the template details', () => {
+        mainStore.showMetaDataTemplateDetails();
+        expect(mainStore.showPropertyCreator).toBe(false);
+        expect(mainStore.showTemplateCreator).toBe(false);
+        expect(mainStore.showTemplateDetails).toBe(true);
+    });
+
+    // it('@action searchObjects - searches files and folders', () => {
+    //  Todo: This service is being rebuilt. Implement tests after new service is in place
+    // });
+
+    it('@action toggleSearch - toggles search field', () => {
+        mainStore.toggleSearch();
+        expect(mainStore.searchValue).toBeNull();
+        expect(mainStore.showSearch).toBe(true);
+        mainStore.toggleSearch();
+        expect(mainStore.showSearch).toBe(false);
+    });
+
+    //Todo: These methods may not be used with the new search service. Write tests after new service is implemented.
+    // @action setIncludedSearchKinds(includeKinds) {
+    //     this.includeKinds = includeKinds;
+    //     this.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
+    // }
+    //
+    // @action setIncludedSearchProjects(includeProjects) {
+    //     this.includeProjects = includeProjects;
+    //     this.setSearchFilters();
+    // }
+    //
+    // @action setSearchFilters() {
+    //     this.searchFilters = [];
+    //     this.includeProjects.forEach((projectId) => {this.searchFilters.push({"match":{"project.id": projectId}})});
+    //     this.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
+    // }
+    //
+    // @action clearSearchFilesData() {
+    //     this.searchFilesList = [];
+    //}
+    // Todo: ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    it('@action toggleModals - toggles a modal', () => {
+        mainStore.toggleModals(fake.modal_json.id);
+        expect(mainStore.toggleModal.open).toBe(true);
+        mainStore.toggleModals(fake.modal_json.id);
+        expect(mainStore.toggleModal.open).toBe(false);
+    });
+
+    it('@action toggleSearchFilters - toggles search filters', () => {
+        mainStore.toggleSearchFilters();
+        expect(mainStore.showFilters).toBe(true);
+        mainStore.toggleSearchFilters();
+        expect(mainStore.showFilters).toBe(false);
+    });
+
+    it('@action displayErrorModals - creates an array of errors to be displayed as modals', () => {
+        mainStore.errorModals = [];
+        mainStore.displayErrorModals(fake.error_json);
+        mainStore.displayErrorModals(fake.special_error_json);
+        mainStore.displayErrorModals(fake.error_404);
+        //404 error shouldn't push a modal
+        expect(mainStore.errorModals.length).toBe(2);
+        expect(mainStore.errorModals[0].response).toBe(503);
+        expect(mainStore.errorModals[1].response).toBe('Folders can not be uploaded through the web portal.');
+    });
+
+    it('@action clearErrors - clears errors', () => {
+        mainStore.error = {};
+        expect(mainStore.error).toEqual({});
+        mainStore.error = fake.error_json;
+        mainStore.clearErrors();
+        expect(mainStore.error).toEqual({});
+
+    });
+
+    it('@action toggleUserInfoPanel - toggles user info panel', () => {
+        expect(mainStore.showUserInfoPanel).toBe(false);
+        mainStore.toggleUserInfoPanel();
+        expect(mainStore.showUserInfoPanel).toBe(true);
+        mainStore.toggleUserInfoPanel();
+        expect(mainStore.showUserInfoPanel).toBe(false);
+    });
+
+    it('@action getDeviceType - sets users device type', () => {
+        mainStore.getDeviceType(fake.device_type_json);
+        expect(mainStore.device.android).toBe(false);
+        expect(mainStore.device.ipad).toBe(false);
+        expect(mainStore.device.iphone).toBe(false);
+    });
+
+    it('@action getScreenSize - gets screen height and width', () => {
+        mainStore.getScreenSize(900, 1080);
+        expect(mainStore.screenSize).not.toBeNull();
+        expect(mainStore.screenSize.height).toBe(900);
+        expect(mainStore.screenSize.width).toBe(1080);
+    });
+
+    it('@action addToast - adds toast to display', () => {
+        mainStore.toasts = [];
+        mainStore.addToast('TOAST_MSG');
+        expect(mainStore.toasts.length).toBe(1);
+        expect(mainStore.toasts[0].ref).not.toBeNull();
+        mainStore.addToast('TOAST_MSG');
+        expect(mainStore.toasts.length).toBe(2);
+    });
 
     it('@action handleBatch - sets itemsSelected to all checked items in listItem view. Sets checked folders and files to array of IDs', () => {
         mainStore.handleBatch([FILE_ID], [FOLDER_ID]);
@@ -240,13 +687,6 @@ describe('Main Store', () => {
             expect(mainStore.usage).toEqual(fake.usage_json);
             expect(transportLayer.getUsageDetails).toHaveBeenCalledTimes(1);
         });
-    });
-
-    it('@action toggleLoading - should change loading status', () => {
-        mainStore.toggleLoading();
-        expect(mainStore.loading).toBe(true);
-        mainStore.toggleLoading();
-        expect(mainStore.loading).toBe(false);
     });
 
     it('@action getProjectMembers - should return list of project members', () => {
@@ -318,6 +758,7 @@ describe('Main Store', () => {
     });
 
     it('@action deleteProject - should throw 404 error', () => {
+        mainStore.error = null;
         mainStore.projects = fake.projects_json[0].results;
         expect(mainStore.projects.length).toBe(2);
         transportLayer.deleteProject = jest.fn((PROJECT_ID) => respond(404, 'not found', fake.error_404));
@@ -505,7 +946,7 @@ describe('Main Store', () => {
             expect(transportLayer.getObjectMetadata).toHaveBeenCalledWith(FILE_ID, DDS_FILE);
             expect(mainStore.objectMetadata.length).toBe(1);
             expect(mainStore.objectMetadata[0].object.kind).toBe(DDS_FILE);
-            expect(mainStore.objectMetadata[0].template.id).toBe(TEST_TEMPLATE_ID);
+            expect(mainStore.objectMetadata[0].template.id).toBe(TEMPLATE_ID);
             expect(mainStore.objectMetadata[0]).toHaveProperty('properties');
             expect(mainStore.metaObjProps[0][0].key).toBe('TEST_TEMPLATE_PROPERTY_KEY_1');
             expect(mainStore.metaObjProps[0][0].value).toBe('TEST_TEMPLATE_PROPERTY_VALUE');

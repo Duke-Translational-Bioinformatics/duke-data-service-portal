@@ -1,9 +1,3 @@
-export const error_404 = {
-    "error": "404",
-    "reason": "Project does not exist",
-    "suggestion": "You may have chosen the wrong ID."
-}
-
 export const projects_json = [
     {
         "results": [
@@ -113,7 +107,7 @@ export const grant_project_permission_json = {
         "full_name": "TEST USER NAME"
     },
     "auth_role": {
-        "id": "USER_ROLE",
+        "id": "project_admin",
         "name": "USER_ROLE",
         "description": "Can view, download, create, update and delete files"
     }
@@ -173,7 +167,7 @@ export const file_json = {
         "kind": "dds-folder",
         "id": "552be8c5-209d-4e3b-afaf-cb66686ffbyy"
     },
-    "name": "RSEM_Normalized_PI3K_RNASeq_Matrix.Rdata",
+    "name": "TEST FILE 1",
     "project": {
         "id": "TEST_PROJECT_ID"
     },
@@ -255,7 +249,7 @@ export const list_items_json = {
                 "kind": "dds-folder",
                 "id": "552be8c5-209d-4e3b-afaf-cb66686ffbyy"
             },
-            "name": "RSEM_Normalized_PI3K_RNASeq_Matrix.Rdata",
+            "name": "TEST FILE 1",
             "project": {
                 "id": "TEST_PROJECT_ID"
             },
@@ -333,7 +327,7 @@ export const object_metadata_json = {
                 "id": "b80a2679-f6bf-46da-acaa-b7a4582b1eda"
             },
             "template": {
-                "id": "TEST_TEMPLATE_ID",
+                "id": "TEMPLATE_ID",
                 "name": "TEST_TEMPLATE_1"
             },
             "properties": [
@@ -377,4 +371,197 @@ export const tag_json = {
     },
     "label": "TAG_1",
     "audit": {}
+}
+
+export const  file_version_list_json = {
+    "results": [
+        {
+            "kind": "dds-file-version",
+            "id": "TEST_FILE_VERSION_1",
+            "file": {
+                "id": "TEST_FILE__1",
+                "name": "TEST FILE 1",
+                "project": {
+                    "id": "ca29f7df-33ca-46dd-a015-92c46fdb6fd1"
+                }
+            },
+            "version": 2,
+            "label": "Initial raw data from device",
+            "is_deleted": false,
+            "upload": {
+                "id": "666be35a-98e0-4c2e-9a17-7bc009f9bb23",
+                "size": 30024000,
+                "hashes": [
+                    {
+                        "value": "cf23df2207d99a74fbe169e3eba035e633b65d94",
+                        "algorithm": "md5",
+                        "audit": {}
+                    }
+                ],
+                "storage_provider": {
+                    "id": "g5579f73-0558-4f96-afc7-9d251e65bv33",
+                    "name": "duke_oit_swift",
+                    "description": "Duke OIT Storage"
+                }
+            },
+            "audit": {}
+        }
+    ]
+}
+
+export const hash_json = {
+    "id": "TEST_UPLOAD_1",
+    "hash": "MD5"
+}
+
+export const download_url_json = {
+    "http_verb": "GET",
+    "host": "swift.oit.duke.edu",
+    "url": "/v1/AUTH_dev/418da9e8-7d01-4761-982c-811d95ac6653/0618a1bc-5042-48d2-af66-ed171354bf6b?temp_url_sig=93b5c5a2c920f0d4962c391d932e4054ec76916c&temp_url_expires=1448918738",
+    "http_headers": []
+}
+
+export const metadata_templates_json = {
+    "results": [
+        {
+            "id": "TEMPLATE_ID",
+            "name": "TEMPLATE_1",
+            "label": "TEMPLATE 1",
+            "description": "TEMPLATE_1 Description",
+            "audit": {
+                "created_on": "2015-01-01T12:00:00Z",
+            }
+        },
+        {
+            "id": "TEMPLATE_2",
+            "name": "TEMPLATE_2",
+            "label": "TEMPLATE 2",
+            "description": "TEMPLATE_2 Description",
+            "audit": {
+                "created_on": "2016-01-01T12:00:00Z",
+            }
+        }
+    ]
+}
+
+export const edited_metadata_templates_json = {
+        "id": "TEMPLATE_ID",
+        "name": "EDITED_TEMPLATE_1",
+        "label": "EDITED TEMPLATE 1",
+        "description": "EDITED TEMPLATE_1 Description",
+        "audit": {
+            "created_on": "2015-01-01T12:00:00Z",
+        }
+}
+
+
+export const template_properties_json = {
+    "results": [
+        {
+            "id": "TEMPLATE_PROPERTY_1",
+            "template": {
+                "id": "TEMPLATE_ID",
+                "name": "TEMPLATE_1"
+            },
+            "key": "output_type",
+            "label": "TEMPLATE 1",
+            "description": "The type of data in the sequencing output file.",
+            "type": "string",
+            "audit": {}
+        }
+    ]
+}
+
+export const template_property_json = {
+        "id": "TEMPLATE_PROPERTY_1",
+        "template": {
+            "id": "TEMPLATE_ID",
+            "name": "TEMPLATE_1"
+        },
+        "key": "TEMPLATE_1_KEY",
+        "label": "TEMPLATE 1",
+        "description": "TEMPLATE 1 DESCRIPTION",
+        "type": "STRING",
+        "audit": {}
+}
+
+export const metadata_object_json = {
+    "object": {
+        "kind": "dds-file",
+        "id": "TEST_FILE_1"
+    },
+    "template": {
+        "id": "TEMPLATE_ID",
+        "name": "TEMPLATE_1"
+    },
+    "properties": [
+        {
+            "template_property": {
+                "id": "TEMPLATE_PROPERTY_1",
+                "key": "TEMPLATE_PROPERTY_1"
+            },
+            "value": "TEMPLATE PROPERTY 1"
+        }
+    ]
+}
+
+export const modal_json = {
+    "id": "MODAL",
+    "open": true
+}
+
+export const error_json = {
+    "response": {
+        "_bodyInit": {},
+        "_bodyBlob": {},
+        "type": "default",
+        "url": "https://dukeds-dev.herokuapp.com/api/v1/files/22f4f7f8-a92d-41b6-b76a-f91b63ff70e31/rename",
+        "status": 503,
+        "ok": false,
+        "statusText": "SERVICE UNAVAILABLE",
+        "headers": {
+            "map": {
+                "content-type": [
+                    "application/json"
+                ],
+                "cache-control": [
+                    "no-cache"
+                ]
+            }
+        }
+    }
+}
+
+export const error_404 = {
+    "response": {
+        "_bodyInit": {},
+        "_bodyBlob": {},
+        "type": "default",
+        "url": "https://dukeds-dev.herokuapp.com/api/v1/files/22f4f7f8-a92d-41b6-b76a-f91b63ff70e31/rename",
+        "status": 404,
+        "ok": false,
+        "statusText": "SERVICE UNAVAILABLE",
+        "headers": {
+            "map": {
+                "content-type": [
+                    "application/json"
+                ],
+                "cache-control": [
+                    "no-cache"
+                ]
+            }
+        }
+    }
+}
+
+export const special_error_json = {
+    "code": 8,
+    "message": "A requested file or directory could not be found at the time an operation was processed.",
+    "name":  "NotFoundError"
+}
+
+export const device_type_json = {
+    "android":false,
+    "ipad":false,
+    "iphone":false
 }

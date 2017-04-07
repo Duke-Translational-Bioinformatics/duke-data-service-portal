@@ -864,6 +864,12 @@ export class MainStore {
             mainStore.updateAndProcessChunks(uploadId, chunkNum, {status: chunkUpdates.status});
         }
 
+        xhr.onerror = onError;
+
+        function onError() {
+
+        }
+
         xhr.open('PUT', presignedUrl, true);
         xhr.send(chunkBlob);
     }
@@ -1180,7 +1186,7 @@ export class MainStore {
             .then(response => response.json())
             .then((json) => {
                 this.addToast('A new metadata object was created.');
-                this.createMetadataObjectSuccess(fileId, kind);
+                this.createMetadataObjectSuccess(fileId, kind, json);
             }).catch((ex) => {
                 if (ex.response.status === 409) {
                     this.updateMetadataObject(kind, fileId, templateId, properties);
@@ -1197,7 +1203,7 @@ export class MainStore {
             .then(response => response.json())
             .then((json) => {
                 this.addToast('This metadata object was updated.');
-                this.createMetadataObjectSuccess(fileId, kind);
+                this.createMetadataObjectSuccess(fileId, kind, json);
             }).catch((ex) => {
                 this.addToast('Failed to update metadata object');
                 this.handleErrors(ex)
@@ -1219,11 +1225,16 @@ export class MainStore {
             })
     }
 
-    @action createMetadataObjectSuccess(id, kind) {
+    @action createMetadataObjectSuccess(id, kind, json) {
         this.drawerLoading = false;
         this.showBatchOps = false;
         this.showTemplateDetails = false;
-        this.getObjectMetadata(id,kind);
+        this.objectMetadata.push(json);
+        this.metaObjProps = this.objectMetadata.map((prop) => {
+            return prop.properties.map((prop) => {
+                return {key: prop.template_property.key, id: prop.template_property.id, value: prop.value};
+            })
+        });
     }
 
     @action createMetaPropsList(metaProps) {
@@ -1312,10 +1323,10 @@ export class MainStore {
     }
 
     @action displayErrorModals(error) {
-        if (error.response === null) {
+        if (error.message === 'A requested file or directory could not be found at the time an operation was processed.' && error.code === 8) {
             this.errorModals.push({
-                msg: error.message,
-                response: 'Folders can not be uploaded',
+                msg: 'This feature is not yet supported.',
+                response: 'Folders can not be uploaded through the web portal.',
                 ref: 'modal' + Math.floor(Math.random() * 10000)
             });
         } else if (error && error.response.status !== 404) {
@@ -1381,7 +1392,7 @@ export class MainStore {
         this.failedUploads = [];
     }
 
-    @action clearErrors(error) {
+    @action clearErrors() {
         this.error = {};
     }
 
