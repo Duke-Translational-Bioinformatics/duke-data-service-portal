@@ -17,6 +17,7 @@ export class ProvenanceStore {
     @observable dropdownSelectValue
     @observable network
     @observable onClickProvNode
+    @observable openConfirmRel
     @observable position
     @observable provEditorModal
     @observable provFileVersions
@@ -46,7 +47,8 @@ export class ProvenanceStore {
         this.drawerLoading = false;
         this.dropdownSelectValue = null;
         this.network = {};
-        this.onClickProvNode = {}
+        this.onClickProvNode = {};
+        this.openConfirmRel = false;
         this.position = null;
         this.provEditorModal = {open: false, id: null};
         this.provFileVersions = [];
@@ -332,7 +334,7 @@ export class ProvenanceStore {
                 this.shouldRenderGraph();
                 this.provEdges = edges;
             }).catch((ex) => {
-                mainStore.addToast('Failed to add new relation');
+            mainStore.addToast('Failed to add new relation');
                 mainStore.handleErrors(ex)
             })
     }

@@ -1,6 +1,6 @@
 import {observable} from 'mobx';
-import * as fake from "../app/scripts/util/testData";
-import { sleep, respondOK, respond }  from "../app/scripts/util/testUtil";
+import * as fake from "../app/scripts/testData";
+import { sleep, respondOK, respond, respondPromiseAll }  from "../app/scripts/util/testUtil";
 
 describe('Main Store', () => {
 
@@ -107,7 +107,7 @@ describe('Main Store', () => {
     });
 
     it('@action addNewTag - adds a single tag to a file', () => {
-        mainStore.toasts = []
+        mainStore.toasts = [];
         transportLayer.addNewTag = jest.fn((id, kind, tag) => respondOK(fake.tag_json));
         mainStore.addNewTag(FILE_ID, DDS_FILE, fake.tag_json);
         return sleep(1).then(() => {
@@ -173,19 +173,6 @@ describe('Main Store', () => {
         });
     });
 
-    // @action addFile(uploadId, parentId, parentKind, fileName) {
-    //     this.transportLayer.addFile(uploadId, parentId, parentKind)
-    //         .then(this.checkResponse)
-    //         .then(response => response.json())
-    //         .then((json) => {
-    //             this.addToast(fileName + ' uploaded successfully');
-    //             this.addFileSuccess(parentId, parentKind, uploadId, json.id)
-    //         }).catch((ex) => {
-    //         this.addToast('Failed to upload ' + fileName + '!');
-    //         this.handleErrors(ex)
-    //     })
-    // }
-
     it('@action addFile - adds new file', () => {
         transportLayer.addFile = jest.fn((uploadId, parentId, parentKind) => respondOK(fake.file_json));
         mainStore.addFile(UPLOAD_ID, PROJECT_ID, DDS_PROJECT);
@@ -202,29 +189,6 @@ describe('Main Store', () => {
             });
         });
     });
-
-    // @action getChildren(id, path, page) { // Todo: Need to write test for this. How to test Promise.all() ???????????????????
-    //     this.loading = true;
-    //     if (page == null) page = 1;
-    //     this.transportLayer.getChildren(id, path, page)
-    //         .then(this.checkResponse)
-    //         .then((response) => {
-    //             const results = response.json();
-    //             const headers = response.headers;
-    //             return Promise.all([results, headers]);
-    //         })
-    //         .then((json) => {
-    //             let results = json[0].results;
-    //             let headers = json[1].map;
-    //             if(page <= 1) {
-    //                 this.listItems = results;
-    //             } else {
-    //                 this.listItems = [...this.listItems, ...results];
-    //             }
-    //             this.responseHeaders = headers;
-    //             this.loading = false;
-    //         }).catch(ex =>this.handleErrors(ex))
-    // }
 
     it('@action addFileVersion - adds new file version', () => {
         provenanceStore = require('../app/scripts/stores/provenanceStore').default;
@@ -250,22 +214,6 @@ describe('Main Store', () => {
             expect(mainStore.fileVersions[0].id).toBe(fake.file_version_list_json.results[0].id);
         });
     });
-
-    // it('checkForHash - checks to make sure hash has been calculated for an upload', () => {
-    //     mainStore.fileHashes = [fake.hash_json];
-    //     expect(mainStore.fileHashes[0].id).toBe(fake.hash_json.id);
-    //     mainStore.checkForHash(UPLOAD_ID);
-    // });
-
-    // it('@action allChunksUploaded - creates a file version after all chunks are uploaded', () => {
-    //     mainStore.fileHashes = [fake.hash_json];
-    //     transportLayer.allChunksUploaded = jest.fn((uploadId, parentId, parentKind, fileName, label, fileId, hash, projectId) => respondOK());
-    //     mainStore.allChunksUploaded(UPLOAD_ID, fake.hash_json.hash, fake.hash_json.hash);
-    //     return sleep(1).then(() => {
-    //         expect(transportLayer.allChunksUploaded).toHaveBeenCalledTimes(1);
-    //         expect(transportLayer.allChunksUploaded).toHaveBeenCalledWith(UPLOAD_ID, fake.hash_json.hash, fake.hash_json.hash);
-    //     });
-    // });
 
     it('@action uploadError - sets an array of failed uploads that can be retried', () => {
         mainStore.uploads = observable.map();
@@ -709,18 +657,6 @@ describe('Main Store', () => {
             expect(mainStore.projects.length).toBe(0);
         });
     });
-
-    // it('@action getProjects() - should return a list of projects', () => { // Todo: Fix this test to work with Promise.all
-    //     transportLayer.getProjects = jest.fn((page) => respondOK(fake.projects_json));
-    //     mainStore.getProjects();
-    //     return sleep(1).then(() => {
-    //         expect(mainStore.loading).toBe(true);
-    //         console.log(mainStore.projects.length)
-    //         expect(mainStore.projects.length).toBe(2);
-    //         expect(transportLayer.getProjects.mock.calls.length).toBe(1);
-    //         expect(transportLayer.getProjects.mock.calls[0][0]).toBe(1);
-    //     });
-    // });
 
     it('@action addProject - should add a project', () => {
         transportLayer.addProject = jest.fn((name, description) => respondOK(fake.projects_json[0].results[0]));

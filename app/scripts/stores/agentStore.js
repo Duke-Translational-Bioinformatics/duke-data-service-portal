@@ -4,8 +4,8 @@ import transportLayer from '../transportLayer';
 import authStore from '../stores/authStore';
 import mainStore from '../stores/mainStore';
 import BaseUtils from '../util/baseUtils.js';
-import { UrlGen, Kind, Path } from '../util/urlEnum';
-import { checkStatus, getFetchParams } from '../util/fetchUtil';
+import { Path } from '../util/urlEnum';
+import { checkStatus } from '../util/fetchUtil';
 
 export class AgentStore {
 
@@ -17,6 +17,8 @@ export class AgentStore {
         this.agentApiToken = {};
         this.agentKey = {};
         this.agents = [];
+
+        this.transportLayer = transportLayer;
     }
 
     checkResponse(response) {
@@ -24,7 +26,7 @@ export class AgentStore {
     }
 
     @action createAgentKey(id) {
-        transportLayer.createAgentKey(id)
+        this.transportLayer.createAgentKey(id)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -37,7 +39,7 @@ export class AgentStore {
     }
 
     @action getAgentKey(id) {
-        transportLayer.getAgentKey(id)
+        this.transportLayer.getAgentKey(id)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -50,7 +52,7 @@ export class AgentStore {
     }
 
     @action getAgentApiToken(agentKey, userKey) {
-        transportLayer.getAgentApiToken(agentKey, userKey)
+        this.transportLayer.getAgentApiToken(agentKey, userKey)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => this.agentApiToken = json)
@@ -62,7 +64,7 @@ export class AgentStore {
 
     @action loadAgents() {
         mainStore.toggleLoading();
-        transportLayer.loadAgents()
+        this.transportLayer.loadAgents()
             .then(this.checkResponse)
             .then(response => response.json())
                 .then((json) => {
@@ -72,7 +74,7 @@ export class AgentStore {
     }
 
     @action addAgent(name, desc, repo) {
-        transportLayer.addAgent(name, desc, repo)
+        this.transportLayer.addAgent(name, desc, repo)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -85,7 +87,7 @@ export class AgentStore {
     }
 
     @action editAgent(id, name, desc, repo) {
-        transportLayer.editAgent(id, name, desc, repo)
+        this.transportLayer.editAgent(id, name, desc, repo)
             .then(checkStatus)
             .then(response => response.json())
             .then((json) => {
@@ -98,7 +100,7 @@ export class AgentStore {
     }
 
     @action deleteAgent(id) {
-        transportLayer.deleteAgent(id)
+        this.transportLayer.deleteAgent(id)
             .then(this.checkResponse)
             .then(response => {})
             .then((json) => {

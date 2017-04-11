@@ -565,3 +565,399 @@ export const device_type_json = {
     "ipad":false,
     "iphone":false
 }
+
+export const auth_providers_json = {
+    "results": [
+        {
+            "id": "b67d1249-5251-4058-95fd-8b90b809c556",
+            "service_id": "342c075a-7aca-4c35-b3f5-29f043884b5b",
+            "name": "Duke Authentication Service",
+            "is_deprecated": true,
+            "is_default": false,
+            "login_initiation_url": "https://dds-dev.duhs.duke.edu/duke_authentication_service/authenticate?response_type=token&client_id=090235c0-a87a-4c44-bac7-bcffe57c3340"
+        },
+        {
+            "id": "cfb3bd75-84e8-49ea-b04f-7500b339a093",
+            "service_id": "be33eb97-3bc8-4ce8-a109-c82aa1b32b23",
+            "name": "OIT OpenID",
+            "is_deprecated": false,
+            "is_default": true,
+            "login_initiation_url": "https://oauth.oit.duke.edu/oidc/authorize?response_type=token&client_id=dds_dev"
+        }
+    ]
+}
+
+export const api_token_json = {
+    "api_token": "API_TOKEN",
+    "expires_on": 1491856850,
+    "time_to_live": 7200
+}
+
+export const api_key_json = {
+    "key": "API_KEY",
+    "created_on": "2015-01-01T12:00:00Z"
+}
+
+export const agent_list_json = {
+    "results": [
+        {
+            "id": "AGENT_ID",
+            "name": "AGENT_NAME",
+            "description": null,
+            "repo_url": null,
+            "is_deleted": false,
+            "audit": {}
+        },
+        {
+            "id": "AGENT_ID_2",
+            "name": "AGENT_NAME_2",
+            "description": null,
+            "repo_url": null,
+            "is_deleted": false,
+            "audit": {}
+        }
+    ]
+}
+
+export const agent_json = {
+    "id": "AGENT_ID_3",
+    "name": "AGENT_NAME_3",
+    "description": null,
+    "repo_url": null,
+    "is_deleted": false,
+    "audit": {}
+}
+
+export const activities_json = {
+    "results": [
+        {
+            "kind": "dds-activity",
+            "id": "ACTIVITY_ID",
+            "name": "ACTIVITY_NAME",
+            "description": "ACTIVITY_DESCRIPTION",
+            "started_on": "2015-01-01T12:00:00Z",
+            "ended_on": null,
+            "is_deleted": false,
+            "audit": {}
+        },
+        {
+            "kind": "dds-activity",
+            "id": "ACTIVITY_ID_2",
+            "name": "ACTIVITY_NAME_2",
+            "description": "ACTIVITY_DESCRIPTION_2)",
+            "started_on": "2015-01-01T12:00:00Z",
+            "ended_on": null,
+            "is_deleted": false,
+            "audit": {}
+        }
+    ]
+}
+
+export const graph_json = {
+    "graph": {
+        "nodes": [
+                {
+                "id": "ACTIVITY_ID",
+                "labels": [
+                    "Activity"
+                ],
+                "properties": {
+                    "kind": "dds-activity",
+                    "id": "ACTIVITY_ID",
+                    "name": "ACTIVITY_1",
+                    "description": "ACTIVITY_1_DESCRIPTION",
+                    "started_on": "2017-04-10T21:17:07.758Z",
+                    "ended_on": null,
+                    "is_deleted": false,
+                    "audit": {
+                        "created_on": "2017-04-07T17:28:38.395Z",
+                        "created_by": {
+                            "id": "e8aeeeb8-0071-4308-8bfa-e24d08094c1d",
+                            "username": "cc487",
+                            "full_name": "Casey Choiniere"
+                        },
+                        "last_updated_on": null,
+                        "last_updated_by": null,
+                        "deleted_on": null,
+                        "deleted_by": null
+                    }
+                }
+            }, {
+                "id": "FILE_NODE_1",
+                "labels": [
+                    "FileVersion"
+                ],
+                "properties": {
+                    "id": "FILE_NODE_1",
+                    "kind": "dds-file-version",
+                    "version": 1,
+                    "label": null,
+                    "is_deleted": false,
+                    "audit": {
+                        "created_on": "2017-04-07T17:28:38.395Z",
+                        "created_by": {
+                            "id": "e8aeeeb8-0071-4308-8bfa-e24d08094c1d",
+                            "username": "cc487",
+                            "full_name": "Casey Choiniere"
+                        },
+                        "last_updated_on": null,
+                        "last_updated_by": null,
+                        "deleted_on": null,
+                        "deleted_by": null
+                    },
+                    "upload": {},
+                    "file": {
+                        "id": "847e3285-c8e3-441b-9150-ea885d784522",
+                        "name": "FILE_NODE_1",
+                        "project": {
+                            "id": "c628435b-78e8-4e51-82a7-ff8eb1dc255a",
+                            "name": "a"
+                        }
+                    }
+                }
+            }
+        ],
+        "relationships": [
+                {
+                "id": "EDGE_ID",
+                "type": "WasGeneratedBy",
+                "start_node": "FILE_NODE_1",
+                "end_node": "ACTIVITY_ID",
+                "properties": {
+                    "kind": "dds-relation-was-generated-by",
+                    "id": "8e9e0831-cd9f-4066-814b-b8d4a8850bc0",
+                    "audit": {
+                        "created_on": "2017-04-10T21:17:27.500Z",
+                        "created_by": {
+                            "id": "e8aeeeb8-0071-4308-8bfa-e24d08094c1d",
+                            "username": "cc487",
+                            "full_name": "Casey Choiniere"
+                        },
+                        "last_updated_on": null,
+                        "last_updated_by": null,
+                        "deleted_on": null,
+                        "deleted_by": null
+                    },
+                    "from": {
+                        "id": "FILE_NODE_1",
+                        "kind": "dds-file-version",
+                        "version": 1,
+                        "label": null,
+                        "is_deleted": false,
+                        "audit": {},
+                        "upload": {},
+                        "file": {
+                            "id": "847e3285-c8e3-441b-9150-ea885d784522",
+                            "name": "FILE_NODE_1",
+                            "project": {
+                                "id": "c628435b-78e8-4e51-82a7-ff8eb1dc255a",
+                                "name": "a"
+                            }
+                        }
+                    },
+                    "to": {
+                        "kind": "dds-activity",
+                        "id": "ACTIVITY_ID",
+                        "name": "ACTIVITY_1",
+                        "description": "ACTIVITY_1_DESCRIPTION",
+                        "started_on": "2017-04-10T21:17:07.758Z",
+                        "ended_on": null,
+                        "is_deleted": false,
+                        "audit": {}
+                    }
+                }
+            }
+        ]
+    }
+}
+
+export const relation_json = {
+    "kind": "dds-relation-was-generated-by",
+    "id": "EDGE_ID_2",
+    "audit": {
+        "created_on": "2017-04-10T23:42:11.336Z",
+        "created_by": {
+            "id": "e8aeeeb8-0071-4308-8bfa-e24d08094c1d",
+            "username": "cc487",
+            "full_name": "Casey Choiniere"
+        },
+        "last_updated_on": null,
+        "last_updated_by": null,
+        "deleted_on": null,
+        "deleted_by": null
+    },
+    "from": {
+        "id": "FILE_NODE_1",
+        "kind": "dds-file-version",
+        "version": 1,
+        "label": null,
+        "is_deleted": false,
+        "audit": {
+            "created_on": "2017-04-07T17:28:38.395Z",
+            "created_by": {
+                "id": "e8aeeeb8-0071-4308-8bfa-e24d08094c1d",
+                "username": "cc487",
+                "full_name": "Casey Choiniere"
+            },
+            "last_updated_on": null,
+            "last_updated_by": null,
+            "deleted_on": null,
+            "deleted_by": null
+        },
+        "upload": {
+            "id": "d187e969-3a5b-40ca-84bc-fa5d46e094c1",
+            "size": 5120,
+            "storage_provider": {
+                "id": "e71e2106-2243-4795-a9a0-70de89f68d64",
+                "name": "duke_swift",
+                "description": "Duke OIT Swift Service"
+            },
+            "hashes": [{
+                "algorithm": "md5",
+                "value": "32ca18808933aa12e979375d07048a11",
+                "audit": {
+                    "created_on": "2017-04-07T17:28:37.446Z",
+                    "created_by": {
+                        "id": "e8aeeeb8-0071-4308-8bfa-e24d08094c1d",
+                        "username": "cc487",
+                        "full_name": "Casey Choiniere"
+                    },
+                    "last_updated_on": null,
+                    "last_updated_by": null,
+                    "deleted_on": null,
+                    "deleted_by": null
+                }
+            }]
+        },
+        "file": {
+            "id": "847e3285-c8e3-441b-9150-ea885d784522",
+            "name": "FILE_NODE_1",
+            "project": {
+                "id": "c628435b-78e8-4e51-82a7-ff8eb1dc255a",
+                "name": "a"
+            }
+        }
+    },
+    "to": {
+        "kind": "dds-activity",
+        "id": "ACTIVITY_ID_2",
+        "name": "test activity",
+        "description": "",
+        "started_on": "2016-10-19T19:03:40.065Z",
+        "ended_on": null,
+        "is_deleted": false,
+        "audit": {
+            "created_on": "2016-10-19T19:03:40.164Z",
+            "created_by": {
+                "id": "e8aeeeb8-0071-4308-8bfa-e24d08094c1d",
+                "username": "cc487",
+                "full_name": "Casey Choiniere"
+            },
+            "last_updated_on": null,
+            "last_updated_by": null,
+            "deleted_on": null,
+            "deleted_by": null
+        }
+    }
+}
+
+export const prov_activity_json = {
+    "kind": "dds-activity",
+    "id": "ACTIVITY_ID",
+    "name": "ACTIVITY_1",
+    "description": "ACTIVITY_1_DESCRIPTION",
+    "started_on": "2017-04-11T00:04:24.442Z",
+    "ended_on": null,
+    "is_deleted": false,
+    "audit": {
+        "created_on": "2017-04-11T00:04:24.590Z",
+        "created_by": {
+            "id": "e8aeeeb8-0071-4308-8bfa-e24d08094c1d",
+            "username": "cc487",
+            "full_name": "Casey Choiniere"
+        },
+        "last_updated_on": null,
+        "last_updated_by": null,
+        "deleted_on": null,
+        "deleted_by": null
+    }
+}
+
+export const prov_file_node_json = {
+    "kind": "dds-file",
+    "id": "FILE_NODE_1",
+    "parent": {
+        "kind": "dds-project",
+        "id": "c628435b-78e8-4e51-82a7-ff8eb1dc255a"
+    },
+    "name": "FILE_NODE_1",
+    "audit": {
+        "created_on": "2017-04-07T17:28:38.488Z",
+        "created_by": {
+            "id": "e8aeeeb8-0071-4308-8bfa-e24d08094c1d",
+            "username": "cc487",
+            "full_name": "Casey Choiniere"
+        },
+        "last_updated_on": null,
+        "last_updated_by": null,
+        "deleted_on": null,
+        "deleted_by": null
+    },
+    "is_deleted": false,
+    "current_version": {
+        "id": "3ddaf4cb-a11f-4842-a57c-c69be3535915",
+        "version": 1,
+        "label": null,
+        "upload": {
+            "id": "3be3b3f9-78a0-42c6-9a6d-483206c73ea6",
+            "size": 5120,
+            "storage_provider": {
+                "id": "e71e2106-2243-4795-a9a0-70de89f68d64",
+                "name": "duke_swift",
+                "description": "Duke OIT Swift Service"
+            },
+            "hashes": [
+                {
+                    "algorithm": "md5",
+                    "value": "32ca18808933aa12e979375d07048a11",
+                    "audit": {
+                        "created_on": "2017-04-07T17:28:37.608Z",
+                        "created_by": {
+                            "id": "e8aeeeb8-0071-4308-8bfa-e24d08094c1d",
+                            "username": "cc487",
+                            "full_name": "Casey Choiniere"
+                        },
+                        "last_updated_on": null,
+                        "last_updated_by": null,
+                        "deleted_on": null,
+                        "deleted_by": null
+                    }
+                }
+            ]
+        }
+    },
+    "project": {
+        "id": "c628435b-78e8-4e51-82a7-ff8eb1dc255a",
+        "name": "a"
+    },
+    "ancestors": [
+        {
+            "kind": "dds-project",
+            "id": "c628435b-78e8-4e51-82a7-ff8eb1dc255a",
+            "name": "a"
+        }
+    ]
+}
+
+export const scale_position_data = {
+    "scale": 2,
+    "position": {
+        "x": 1,
+        "y": 2
+    }
+}
+
+export const edge_data = {
+    "from": "FILE_NODE_1",
+    "to": "ACTIVITY_ID"
+}
