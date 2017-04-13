@@ -60,7 +60,7 @@ class RetryUploads extends React.Component {
                             </TableRow>
                         </TableHeader>
                         <TableBody deselectOnClickaway={false}>
-                            {failedUploads}
+                            {failed}
                         </TableBody>
                     </Table>
             </Dialog>;

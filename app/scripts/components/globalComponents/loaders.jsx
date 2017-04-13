@@ -17,7 +17,7 @@ class Loaders extends React.Component {
                     <LinearProgress mode="determinate" color={'#EC407A'} style={styles.uploader} value={upload.uploadProgress} max={100} min={0}/>
                     <i className="material-icons" style={styles.deleteIcon} onTouchTap={()=>this.cancelUpload(id, upload.name)}>cancel</i>
                     <div className="mdl-color-text--grey-600" style={styles.uploadText}>
-                        {upload.uploadProgress == 0 ? 'Preparing to upload '+ upload.name : upload.uploadProgress.toFixed(2) + '% of ' + upload.name +' uploaded...'}
+                        {upload.uploadProgress == 100 ? upload.uploadProgress.toFixed(2) + '% of ' + upload.name +' uploaded... Processing file, please wait.' : upload.uploadProgress == 0 ? 'Preparing to upload '+ upload.name : upload.uploadProgress.toFixed(2) + '% of ' + upload.name +' uploaded...'}
                     </div>
                 </div>;
             });
