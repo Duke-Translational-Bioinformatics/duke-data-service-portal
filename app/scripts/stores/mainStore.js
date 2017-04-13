@@ -608,10 +608,9 @@ export class MainStore {
             fileName = blob.name,
             contentType = blob.type,
             slicedFile = null,
-            BYTES_PER_CHUNK, SIZE, NUM_CHUNKS, start, end;
+            BYTES_PER_CHUNK, SIZE, start, end;
         BYTES_PER_CHUNK = 5242880 * 6;
         SIZE = blob.size;
-        NUM_CHUNKS = Math.max(Math.ceil(SIZE / BYTES_PER_CHUNK), 1);
         start = 0;
         end = BYTES_PER_CHUNK;
 
@@ -681,7 +680,7 @@ export class MainStore {
     // File Hashing
     @action hashFile(file, id) {
         function postHash(hash) {
-            let fileHashes = mainStore.fileHashes.push(hash);
+            mainStore.fileHashes.push(hash);
         }
         if (file.blob.size < 5242880 * 6) {
             function calculateMd5(blob, id) {
@@ -829,18 +828,18 @@ export class MainStore {
             let chunk = chunks[i];
             if (chunk.chunkUpdates.status === StatusEnum.STATUS_WAITING_FOR_UPLOAD || chunk.chunkUpdates.status === StatusEnum.STATUS_RETRY) {
                 chunk.chunkUpdates.status = StatusEnum.STATUS_UPLOADING;
-                this.getChunkUrl(uploadId, upload.blob.slice(chunk.start, chunk.end), chunk.number, upload.size, upload.parentId, upload.parentKind, upload.name, chunk.chunkUpdates);
+                this.getChunkUrl(uploadId, upload, upload.blob.slice(chunk.start, chunk.end), chunk);
                 return;
             }
             if (chunk.chunkUpdates.status !== StatusEnum.STATUS_SUCCESS) allDone = false;
         }
         if (allDone === true) this.checkForHash(uploadId, upload.parentId, upload.parentKind, upload.name, upload.label, upload.fileId, upload.projectId);
-        window.onbeforeunload = function (e) { // If done, set to false so no warning is sent.
-            let preventLeave = false;
+        window.onbeforeunload = function () { // If done, set to false so no warning is sent.
+            preventLeave = false;
         };
     }
 
-    @action uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKind, chunkNum, fileName, chunkUpdates) {
+    @action uploadChunk(uploadId, upload, presignedUrl, chunkBlob, chunkNum, fileName, chunkUpdates) {
         window.addEventListener('offline', function () {
             mainStore.uploadError(uploadId, fileName)
         });
@@ -854,7 +853,6 @@ export class MainStore {
 
         xhr.onload = onComplete;
         function onComplete() {
-            let status = null;
             if (xhr.status >= 200 && xhr.status < 300) {
                 chunkUpdates.status = StatusEnum.STATUS_SUCCESS;
             }
@@ -865,16 +863,18 @@ export class MainStore {
         }
 
         xhr.onerror = onError;
-
         function onError() {
-
+            mainStore.uploadError(uploadId, fileName, upload.projectId)
         }
 
         xhr.open('PUT', presignedUrl, true);
         xhr.send(chunkBlob);
     }
 
-    getChunkUrl(uploadId, chunkBlob, chunkNum, size, parentId, parentKind, fileName, chunkUpdates) {
+    getChunkUrl(uploadId, upload, chunkBlob, chunk) {
+        var chunkNum = chunk.number;
+        var fileName = upload.name;
+        var chunkUpdates = chunk.chunkUpdates;
         var fileReader = new FileReader();
         fileReader.onload = function (event) {
             var arrayBuffer = event.target.result;
@@ -888,7 +888,7 @@ export class MainStore {
                     let chunkObj = json;
                     if (chunkObj && chunkObj.url && chunkObj.host) {
                         // upload chunks
-                        mainStore.uploadChunk(uploadId, chunkObj.host + chunkObj.url, chunkBlob, size, parentId, parentKind, chunkNum, fileName, chunkUpdates)
+                        mainStore.uploadChunk(uploadId, upload, chunkObj.host + chunkObj.url, chunkBlob, chunkNum, fileName, chunkUpdates)
                     } else {
                         throw 'Unexpected response';
                     }
