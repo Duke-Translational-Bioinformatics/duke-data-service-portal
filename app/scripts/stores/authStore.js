@@ -2,8 +2,6 @@ import React from 'react';
 import mainStore from '../stores/mainStore';
 import { observable, computed, action } from 'mobx';
 import transportLayer from '../transportLayer';
-import { UrlGen, Path } from '../util/urlEnum';
-import { checkStatus, getFetchParams } from '../util/fetchUtil';
 import appConfig from '../config';
 import cookie from 'react-cookie';
 
@@ -23,6 +21,8 @@ export class AuthStore {
         this.appConfig.redirectUrl = cookie.load('redirectUrl');
         this.appConfig.apiToken = cookie.load('apiToken');
         this.appConfig.isLoggedIn = cookie.load('isLoggedIn');
+
+        this.transportLayer = transportLayer;
     }
 
     @action setLoadingStatus() {
@@ -36,7 +36,7 @@ export class AuthStore {
     }
 
     @action getAuthProviders() {
-        transportLayer.getAuthProviders()
+        this.transportLayer.getAuthProviders()
             .then(mainStore.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -57,7 +57,7 @@ export class AuthStore {
     }
 
     @action getApiToken(accessToken) {
-        transportLayer.getApiToken(accessToken, this.appConfig)
+        this.transportLayer.getApiToken(accessToken, this.appConfig)
             .then(mainStore.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -72,7 +72,7 @@ export class AuthStore {
     }
 
     @action getCurrentUser() {
-        transportLayer.getCurrentUser()
+        this.transportLayer.getCurrentUser()
             .then(mainStore.checkResponse)
             .then(response => response.json())
             .then(json => this.currentUser = json)
@@ -80,7 +80,7 @@ export class AuthStore {
     }
 
     @action getUserKey() {
-        transportLayer.getUserKey()
+        this.transportLayer.getUserKey()
             .then(mainStore.checkResponse)
             .then(response => response.json())
             .then((json) => this.userKey = json)
@@ -88,7 +88,7 @@ export class AuthStore {
     }
 
     @action createUserKey() {
-        transportLayer.createUserKey()
+        this.transportLayer.createUserKey()
             .then(mainStore.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -101,7 +101,7 @@ export class AuthStore {
     }
 
     @action deleteUserKey() {
-        transportLayer.deleteUserKey()
+        this.transportLayer.deleteUserKey()
             .then(mainStore.checkResponse)
             .then(response => {})
             .then((json) => {

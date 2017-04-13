@@ -4,10 +4,8 @@ import transportLayer from '../transportLayer';
 import authStore from '../stores/authStore';
 import mainStore from '../stores/mainStore';
 import BaseUtils from '../util/baseUtils.js';
-import { StatusEnum } from '../enum';
-import { UrlGen, Kind, Path } from '../util/urlEnum';
-import {graphOptions, graphColors} from '../graphConfig';
-import { checkStatus, getFetchParams } from '../util/fetchUtil';
+import { graphColors} from '../graphConfig';
+import { checkStatus } from '../util/fetchUtil';
 
 export class ProvenanceStore {
 
@@ -19,6 +17,7 @@ export class ProvenanceStore {
     @observable dropdownSelectValue
     @observable network
     @observable onClickProvNode
+    @observable openConfirmRel
     @observable position
     @observable provEditorModal
     @observable provFileVersions
@@ -48,7 +47,8 @@ export class ProvenanceStore {
         this.drawerLoading = false;
         this.dropdownSelectValue = null;
         this.network = {};
-        this.onClickProvNode = {}
+        this.onClickProvNode = {};
+        this.openConfirmRel = false;
         this.position = null;
         this.provEditorModal = {open: false, id: null};
         this.provFileVersions = [];
@@ -69,6 +69,8 @@ export class ProvenanceStore {
         this.toggleProv = false;
         this.toggleProvEdit = false;
         this.updatedGraphItem = [];
+
+        this.transportLayer = transportLayer
     }
 
     checkResponse(response) {
@@ -76,7 +78,7 @@ export class ProvenanceStore {
     }
 
     @action getActivities() {
-        transportLayer.getActivities(authStore.appConfig.apiToken)
+        this.transportLayer.getActivities(authStore.appConfig.apiToken)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -86,7 +88,7 @@ export class ProvenanceStore {
 
     @action getWasGeneratedByNode(id, prevGraph) {
         this.drawerLoading = true;
-        transportLayer.getWasGeneratedByNode(id)
+        this.transportLayer.getWasGeneratedByNode(id)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -96,7 +98,7 @@ export class ProvenanceStore {
 
     @action getProvenance(id, kind, prevGraph) {
         this.drawerLoading = true;
-        transportLayer.getProvenance(id, kind)
+        this.transportLayer.getProvenance(id, kind)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -304,7 +306,7 @@ export class ProvenanceStore {
     }
 
     @action addProvRelation(kind, body) {
-        transportLayer.addProvRelation(kind, body)
+        this.transportLayer.addProvRelation(kind, body)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -332,7 +334,7 @@ export class ProvenanceStore {
                 this.shouldRenderGraph();
                 this.provEdges = edges;
             }).catch((ex) => {
-                mainStore.addToast('Failed to add new relation');
+            mainStore.addToast('Failed to add new relation');
                 mainStore.handleErrors(ex)
             })
     }
@@ -340,7 +342,7 @@ export class ProvenanceStore {
     @action deleteProvItem(data, id) {
         let kind = data.hasOwnProperty('from') ? 'relations/' : 'activities/';
         let msg = kind === 'activities/' ? data.label : data.type;
-        transportLayer.deleteProvItem(data.id, kind)
+        this.transportLayer.deleteProvItem(data.id, kind)
             .then(this.checkResponse)
             .then((response) => {})
             .then((json) => {
@@ -363,7 +365,7 @@ export class ProvenanceStore {
     }
 
     @action addProvActivity(name, desc) {
-        transportLayer.addProvActivity(name, desc)
+        this.transportLayer.addProvActivity(name, desc)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -399,7 +401,7 @@ export class ProvenanceStore {
     }
 
     @action editProvActivity(id, name, desc, prevName) {
-        transportLayer.editProvActivity(id, name, desc)
+        this.transportLayer.editProvActivity(id, name, desc)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -516,7 +518,7 @@ export class ProvenanceStore {
     }
 
     @action getProvFileVersions(id) {
-        transportLayer.getProvFileVersions(id)
+        this.transportLayer.getProvFileVersions(id)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {

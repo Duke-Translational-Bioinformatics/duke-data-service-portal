@@ -16,7 +16,7 @@ class Project extends React.Component {
         let id = this.props.params.id;
         if(mainStore.openTagManager) mainStore.toggleTagManager();
         mainStore.getChildren(id, Path.PROJECT);
-        mainStore.showDetails(id);
+        mainStore.getProjectDetails(id);
         mainStore.getProjectMembers(id);
         mainStore.getTagLabels(); // Used to generate a list of tag labels
         mainStore.clearSelectedItems(); // Clear checked files and folders from list
