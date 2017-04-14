@@ -9,7 +9,6 @@ import RetryUploads from '../components/globalComponents/retryUploads.jsx';
 import Search from '../components/globalComponents/search.jsx';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import RaisedButton from 'material-ui/RaisedButton';
 import Snackbar from 'material-ui/Snackbar';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Theme from '../theme/customTheme.js';
@@ -91,17 +90,11 @@ class App extends React.Component {
     }
 
     handleResize(e) {
-        this.setState({windowWidth: window.innerWidth});
         mainStore.getScreenSize(window.innerHeight, window.innerWidth);
     }
 
-    createLoginUrl() {
-        return authStore.appConfig.authServiceUri + "/authenticate?client_id=" +
-            authStore.appConfig.serviceId + "&state=" + authStore.appConfig.securityState;
-    }
-
     render() {
-        const {errorModals, screenSize, toasts} = mainStore;
+        const {errorModals, toasts} = mainStore;
         const {appConfig} = authStore;
         let dialogs, tsts = null;
         if (toasts) {
