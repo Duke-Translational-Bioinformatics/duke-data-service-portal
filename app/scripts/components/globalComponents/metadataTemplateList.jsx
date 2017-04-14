@@ -1,18 +1,13 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
-import ReactDOM from 'react-dom';
+const { object, bool, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore'
 import authStore from '../../stores/authStore'
-import AddAgentModal from '../../components/globalComponents/addAgentModal.jsx';
 import CircularProgress from 'material-ui/CircularProgress';
-import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import Help from 'material-ui/svg-icons/action/help';
 import IconButton from 'material-ui/IconButton';
 import Loaders from '../../components/globalComponents/loaders.jsx';
-import LinearProgress from 'material-ui/LinearProgress';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import Search from 'material-ui/svg-icons/action/search';
