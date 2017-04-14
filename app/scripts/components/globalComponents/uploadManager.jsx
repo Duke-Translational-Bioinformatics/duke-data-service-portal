@@ -1,9 +1,10 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
-const { object, bool, array, string } = PropTypes;
+const { object, bool, array } = PropTypes;
 import Dropzone from 'react-dropzone';
 import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../util/baseUtils';
+import {Kind} from '../../util/urlEnum';
 import AddCircle from 'material-ui/svg-icons/content/add-circle';
 import AutoComplete from 'material-ui/AutoComplete';
 import IconButton from 'material-ui/IconButton';
@@ -26,11 +27,11 @@ class UploadManager extends React.Component {
     }
 
     render() {
-        const {entityObj, filesRejectedForUpload, filesToUpload, openUploadManager, screenSize, selectedEntity, tagAutoCompleteList, tagLabels, tagsToAdd} = mainStore;
+        const {entityObj, filesRejectedForUpload, filesToUpload, openUploadManager, screenSize, tagAutoCompleteList, tagLabels, tagsToAdd} = mainStore;
         let tags = tagsToAdd && tagsToAdd.length > 0 ? tagsToAdd.map((tag)=>{
             return (<div key={BaseUtils.generateUniqueKey()} className="chip">
                 <span className="chip-text">{tag.label}</span>
-                <span className="closebtn" onTouchTap={() => this.deleteTag(tag.id, tag.label, selectedEntity, tagsToAdd)}>&times;</span>
+                <span className="closebtn" onTouchTap={() => this.deleteTag(tag.label, tagsToAdd)}>&times;</span>
             </div>)
         }) : null;
         let tagLbls = tagLabels.map((label)=>{
@@ -53,7 +54,6 @@ class UploadManager extends React.Component {
         }) : null;
         let autoCompleteData = tagAutoCompleteList && tagAutoCompleteList.length > 0 ? tagAutoCompleteList : [];
         let dropzoneColor = this.state.dropzoneHover ? '#EEE' : '#FFF';
-        let height = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.height : window.innerHeight;
         let name = entityObj ? entityObj.name : 'these files';
         let width = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.width : window.innerWidth;
 
@@ -174,8 +174,7 @@ class UploadManager extends React.Component {
         }
     }
 
-    deleteTag(id, label, selectedEntity, tagsToAdd) {
-        let fileId = selectedEntity !== null ? selectedEntity.id : this.props.params.id;
+    deleteTag(label, tagsToAdd) {
         let tags = tagsToAdd;
         tags = tags.filter(( obj ) => {
             return obj.label !== label;
@@ -185,18 +184,12 @@ class UploadManager extends React.Component {
 
     handleUploadButton(filesToUpload, tagsToAdd, entityObj) {
         if (filesToUpload.length) {
-            let projId;
-            let parentKind;
+            let projId, parentKind;
             let parentId = this.props.params.id;
             for (let i = 0; i < filesToUpload.length; i++) {
                 let blob = filesToUpload[i];
-                if (!this.props.entityObj) {
-                    projId = this.props.params.id;
-                    parentKind = 'dds-project';
-                }else{
-                    projId = entityObj ? entityObj.ancestors[0].id : null;
-                    parentKind = entityObj ? entityObj.kind : null;
-                }
+                projId = entityObj ? entityObj.ancestors[0].id : this.props.params.id;
+                parentKind = this.props.router.location.pathname.includes('project') ? Kind.DDS_PROJECT : Kind.DDS_FOLDER;
                 mainStore.startUpload(projId, blob, parentId, parentKind, null, null, tagsToAdd);
                 mainStore.defineTagsToAdd([]);
             }
@@ -207,8 +200,6 @@ class UploadManager extends React.Component {
     }
 
     handleUpdateInput (text) {
-        let timeout = this.state.timeout;
-        let searchInput = this.autocomplete;
         clearTimeout(this.state.timeout);
         this.setState({
             timeout: setTimeout(() => {
@@ -238,7 +229,7 @@ class UploadManager extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     addTagIcon: {
         margin: '-30px 20px 0px 0px',
         float: 'right',

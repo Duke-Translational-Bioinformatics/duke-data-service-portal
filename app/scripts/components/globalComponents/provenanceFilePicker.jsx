@@ -161,12 +161,6 @@ class ProvenanceFilePicker extends React.Component {
         if(id === 'addFile') this.state.projectSelectValue = null;
     }
 
-    handleFloatingError(e) {
-        if(this.state.floatingErrorText !== '' || !e.target.value) { // Avoid lagging text input due to re-renders
-            this.setState({floatingErrorText: e.target.value ? '' : 'This field is required.'});
-        }
-    }
-
     handleProjectSelect(e, index, value) {
         mainStore.clearSearchFilesData(); //If project is changed, clear files from autocomplete list
         this.setState({
@@ -177,7 +171,6 @@ class ProvenanceFilePicker extends React.Component {
     handleUpdateInput (text, isProject) {
         if(isProject) mainStore.clearSearchFilesData(); //Boolean: If project is changed clear files from autocomplete list
         let id = this.state.projectSelectValue !== null ? this.state.projectSelectValue : mainStore.entityObj.file ? mainStore.entityObj.file.project.id : mainStore.entityObj.project.id;
-        let timeout = this.state.timeout;
         clearTimeout(this.state.timeout);
         this.setState({
             timeout: setTimeout(() => {
