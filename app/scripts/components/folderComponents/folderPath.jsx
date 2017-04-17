@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
-import {Path, Kind} from '../../util/urlEnum';
+import { Path } from '../../util/urlEnum';
 import FolderOptionsMenu from './folderOptionsMenu.jsx';
 import UploadManager from '../globalComponents/uploadManager.jsx';
 import BaseUtils from '../../util/baseUtils';
@@ -14,14 +14,12 @@ class FolderPath extends React.Component {
     
     render() {
         const {entityObj, projPermissions} = mainStore;
-        let id = this.props.params.id;
         let projectName = entityObj && entityObj.ancestors ? entityObj.ancestors[0].name : null;
         let ancestors = entityObj ? entityObj.ancestors : null;
         let parentKind = entityObj ? entityObj.parent.kind : null;
         let parentId = entityObj ? entityObj.parent.id : null;
         let name = entityObj ? entityObj.name : '';
         let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
-        
         let uploadMdl = null;
         let optionsMenu = null;
         if (prjPrm !== null) {
@@ -38,10 +36,10 @@ class FolderPath extends React.Component {
                         { optionsMenu }
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                        <a href={'/#/' + BaseUtils.getUrlPath(parentKind) + parentId }
-                           className="mdl-color-text--grey-800 external"><i
-                            className="material-icons"
-                            style={styles.backIcon}>keyboard_backspace</i>Back</a>
+                        <a href={'/#/' + BaseUtils.getUrlPath(parentKind) + parentId } className="mdl-color-text--grey-800 external">
+                            <i className="material-icons" style={styles.backIcon}>keyboard_backspace</i>
+                            Back
+                        </a>
                     </div>
                     <div className="mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800"
                          style={styles.detailsTitle}>

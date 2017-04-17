@@ -952,7 +952,7 @@ export class MainStore {
 
     @action addFileVersionSuccess(id, uploadId) {
         provenanceStore.displayProvAlert();
-        this.getEntity(id, Path.FILE);
+        if(location.href.includes(id)) this.getEntity(id, Path.FILE);
         this.getFileVersions(id);
         if (this.uploads.has(uploadId)) this.uploads.delete(uploadId);
     }
