@@ -49,7 +49,7 @@ export class AgentStore {
     @action getAgentApiToken(id) {
         mainStore.toggleLoading();
         if(authStore.userKey.key === undefined) {
-            authStore.transportLayer.createUserKey()
+            this.transportLayer.createUserKey()
                 .then(this.checkResponse)
                 .then(response => response.json())
                 .then((json) => {
@@ -58,7 +58,7 @@ export class AgentStore {
                 })
                 .catch((ex) => mainStore.handleErrors(ex));
         } else {
-            let userKey = authStore.transportLayer.getUserKey()
+            let userKey = this.transportLayer.getUserKey()
                 .then(this.checkResponse)
                 .then(response => response.json())
                 .then((json) => authStore.userKey = json)
