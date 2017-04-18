@@ -80,11 +80,13 @@ export class AuthStore {
     }
 
     @action getUserKey() {
-        this.transportLayer.getUserKey()
+        this.userKey.key !== undefined ? this.transportLayer.getUserKey() : this.transportLayer.createUserKey()
             .then(mainStore.checkResponse)
             .then(response => response.json())
             .then((json) => this.userKey = json)
-            .catch(ex =>mainStore.handleErrors(ex))
+            .catch((ex) => {
+                ex.response.status !== 404 ? mainStore.handleErrors(ex) : this.createUserKey();
+            })
     }
 
     @action createUserKey() {
