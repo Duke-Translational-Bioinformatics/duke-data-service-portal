@@ -1,8 +1,9 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object, bool } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import authStore from '../../stores/authStore';
+import BaseUtils from '../../util/baseUtils';
 import Divider from 'material-ui/Divider';
 import FontIcon from 'material-ui/FontIcon';
 import {Popover, PopoverAnimationVertical} from 'material-ui/Popover';
@@ -12,7 +13,7 @@ class CurrentUser extends React.Component {
 
     render() {
         const { appConfig, currentUser } = authStore;
-        const { showUserInfoPanel } = mainStore;
+        const { showUserInfoPanel, projectRole } = mainStore;
         if (!appConfig.apiToken) {
             return null
         }
@@ -36,6 +37,8 @@ class CurrentUser extends React.Component {
                         <Divider />
                         <p style={styles.userDisplay}>Email: {' ' + currentUser.email}</p>
                         <Divider />
+                        {projectRole !== null ? <span><p style={styles.userDisplay}>{'Project Role: ' + BaseUtils.toTitleCase(projectRole)}</p>
+                            <Divider /></span> : null}
                         <a href="#" className="mdl-color-text--grey-700 external" style={styles.userLogout} onTouchTap={() => this.handleLogout()}>Log Out</a>
                         <FontIcon className="material-icons" style={styles.userLogoutIcon} onTouchTap={() => this.handleLogout()}>exit_to_app</FontIcon>
                     </div>

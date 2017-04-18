@@ -46,7 +46,6 @@ class FileDetails extends React.Component {
         let parentId = entityObj  && entityObj.parent ? entityObj.parent.id : null;
         let name = entityObj ? entityObj.name : '';
         let label = entityObj && entityObj.current_version && entityObj.current_version.label ? entityObj.current_version.label : null;
-        let projectName = entityObj && entityObj.ancestors ? entityObj.ancestors[0].name : null;
         let crdOn = entityObj && entityObj.audit ? entityObj.audit.created_on : null;
         let createdBy = entityObj && entityObj.audit ? entityObj.audit.created_by.full_name : null;
         let lastUpdatedOn = entityObj && entityObj.audit ? entityObj.audit.last_updated_on : null;
