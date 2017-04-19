@@ -73,8 +73,10 @@ class App extends React.Component {
         }
     }
 
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate() {
         if(authStore.appConfig.apiToken && !Object.keys(authStore.currentUser).length) authStore.getCurrentUser();
+        if(authStore.sessionTimeoutWarning) authStore.setRedirectUrl(location.href);
+        if(authStore.appConfig.apiToken && authStore.appConfig.redirectUrl.split('/').pop().length > 0 && authStore.appConfig.redirectUrl.split('/').pop() !== 'login') document.location.replace(authStore.appConfig.redirectUrl);
         this.showToasts();
         this.checkError();
     }
@@ -92,6 +94,10 @@ class App extends React.Component {
     handleResize(e) {
         mainStore.getScreenSize(window.innerHeight, window.innerWidth);
     }
+
+    createLoginUrl = () => {
+        return authStore.appConfig.authServiceUri+'&state='+authStore.appConfig.serviceId+'&redirect_uri='+window.location.href;
+    };
 
     render() {
         const {errorModals, toasts} = mainStore;
@@ -124,6 +130,30 @@ class App extends React.Component {
                     <h6>Please try again</h6>
                 </Dialog>
             });
+        }
+        if (authStore.sessionTimeoutWarning) {
+                let actions = [
+                    <FlatButton
+                        label="Logout"
+                        secondary={true}
+                        onTouchTap={() => authStore.handleLogout()}/>,
+                    <a href={this.createLoginUrl()} className="external">
+                        <FlatButton
+                            label="Refresh Session"
+                            secondary={true}
+                            style={styles.refreshBtn}
+                            onClick={() => this.handleLoginBtn()}>
+                        </FlatButton>
+                    </a>
+                ];
+                dialogs = <Dialog title="Your session will expire in 3 minutes"
+                               actions={actions}
+                               modal={false}
+                               open={true}
+                               style={styles.dialogStyles}>
+                    <i className="material-icons" style={styles.warning}>warning</i>
+                    <h6>If you want to stay logged in, please refresh your session.</h6>
+                </Dialog>
         }
         return (
             <span>
@@ -167,9 +197,14 @@ class App extends React.Component {
             });
         }
     }
+
+    handleLoginBtn() {
+        authStore.handleLogout(401);
+        authStore.isLoggedInHandler();
+    }
 }
 
-var styles = {
+const styles = {
     dialogStyles: {
         textAlign: 'center',
         fontColor: '#303F9F',
@@ -182,6 +217,10 @@ var styles = {
         margin: '0 auto',
         marginTop: 50,
         padding: 10
+    },
+    refreshBtn: {
+        backgroundColor: '#E1F5FE',
+        margin: '0px 10px 10px 10px'
     },
     toast: {
         position: 'absolute',
