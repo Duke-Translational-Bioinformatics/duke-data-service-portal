@@ -1,5 +1,5 @@
 import * as fake from "../app/scripts/testData";
-import { sleep, respondOK }  from "../app/scripts/util/testUtil";
+import { sleep, respond, respondOK }  from "../app/scripts/util/testUtil";
 
 describe('Agent Store', () => {
 
@@ -88,16 +88,20 @@ describe('Agent Store', () => {
         });
     });
 
-    /* Todo: Refactored this method to use Promise.all() Need to figure out how to get test to pass with Promise.all()???
     it('@action getAgentApiToken - creates an agent api token', () => {
-        transportLayer.getAgentApiToken = jest.fn((id) => respondOK(fake.api_token_json));
+        transportLayer.getUserKey = jest.fn(() => respond(201, 'ok', fake.api_key_json));
+        transportLayer.getAgentKey = jest.fn((id) => respond(201, 'ok',fake.api_key_json));
+        transportLayer.getAgentApiToken = jest.fn((agentKey, userKey) => respond(201, 'ok', fake.api_token_json));
         agentStore.getAgentApiToken(AGENT_ID);
         return sleep(1).then(() => {
+            expect(transportLayer.getUserKey).toHaveBeenCalledTimes(1);
+            expect(transportLayer.getAgentKey).toHaveBeenCalledTimes(1);
             expect(transportLayer.getAgentApiToken).toHaveBeenCalledTimes(1);
-            expect(transportLayer.getAgentApiToken).toHaveBeenCalledWith(AGENT_ID);
+            expect(transportLayer.getAgentKey).toHaveBeenCalledWith(AGENT_ID);
+            expect(transportLayer.getAgentApiToken).toHaveBeenCalledWith(API_KEY, API_KEY);
             expect(agentStore.agentApiToken.api_token).toBe(API_TOKEN);
         });
-    }); */
+    });
 
     it('@action createAgentKey - creates an agent key', () => {
         transportLayer.createAgentKey = jest.fn((id) => respondOK(fake.api_key_json));

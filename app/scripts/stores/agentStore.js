@@ -65,7 +65,8 @@ export class AgentStore {
                 .catch((ex) => {
                     ex.response.status !== 404 ? mainStore.handleErrors(ex) : authStore.createUserKey()
                 });
-            let agentKey = this.transportLayer.getAgentKey(id).then(this.checkResponse)
+            let agentKey = this.transportLayer.getAgentKey(id)
+                .then(this.checkResponse)
                 .then(response => response.json())
                 .then((json) => { return agentStore.agentKey = json })
                 .catch(ex => mainStore.handleErrors(ex));
