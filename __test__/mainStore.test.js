@@ -283,6 +283,7 @@ describe('Main Store', () => {
         return sleep(1).then(() => {
             expect(transportLayer.getPermissions).toHaveBeenCalledTimes(1);
             expect(transportLayer.getPermissions).toHaveBeenCalledWith(PROJECT_ID, TEST_UID);
+            expect(mainStore.projectRole).toBe('project_admin');
             expect(mainStore.projPermissions).toBe('prjCrud');
         });
     });

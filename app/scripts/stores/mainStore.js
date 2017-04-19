@@ -53,6 +53,7 @@ export class MainStore {
     @observable project
     @observable projPermissions
     @observable projectMembers
+    @observable projectRole
     @observable metaObjProps
     @observable responseHeaders
     @observable screenSize
@@ -126,6 +127,7 @@ export class MainStore {
         this.project = {};
         this.projPermissions = null;
         this.projectMembers = [];
+        this.projectRole = null;
         this.metaObjProps = [];
         this.responseHeaders = {};
         this.screenSize = {};
@@ -1054,6 +1056,7 @@ export class MainStore {
             .then(response => response.json())
             .then((json) => {
                 let id = json.auth_role.id;
+                this.projectRole = json.auth_role.id;
                 if (id === 'project_viewer') this.projPermissions = 'viewOnly';
                 if (id === 'project_admin' || id === 'system_admin') this.projPermissions = 'prjCrud';
                 if (id === 'file_editor') this.projPermissions = 'flCrud';

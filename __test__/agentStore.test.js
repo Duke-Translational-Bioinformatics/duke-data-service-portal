@@ -1,5 +1,5 @@
 import * as fake from "../app/scripts/testData";
-import { sleep, respondOK }  from "../app/scripts/util/testUtil";
+import { sleep, respond, respondOK }  from "../app/scripts/util/testUtil";
 
 describe('Agent Store', () => {
 
@@ -89,11 +89,16 @@ describe('Agent Store', () => {
     });
 
     it('@action getAgentApiToken - creates an agent api token', () => {
-        transportLayer.getAgentApiToken = jest.fn((agentKey, userKey) => respondOK(fake.api_token_json));
-        agentStore.getAgentApiToken(AGENT_KEY, USER_KEY);
+        transportLayer.getUserKey = jest.fn(() => respond(201, 'ok', fake.api_key_json));
+        transportLayer.getAgentKey = jest.fn((id) => respond(201, 'ok',fake.api_key_json));
+        transportLayer.getAgentApiToken = jest.fn((agentKey, userKey) => respond(201, 'ok', fake.api_token_json));
+        agentStore.getAgentApiToken(AGENT_ID);
         return sleep(1).then(() => {
+            expect(transportLayer.getUserKey).toHaveBeenCalledTimes(1);
+            expect(transportLayer.getAgentKey).toHaveBeenCalledTimes(1);
             expect(transportLayer.getAgentApiToken).toHaveBeenCalledTimes(1);
-            expect(transportLayer.getAgentApiToken).toHaveBeenCalledWith(AGENT_KEY, USER_KEY);
+            expect(transportLayer.getAgentKey).toHaveBeenCalledWith(AGENT_ID);
+            expect(transportLayer.getAgentApiToken).toHaveBeenCalledWith(API_KEY, API_KEY);
             expect(agentStore.agentApiToken.api_token).toBe(API_TOKEN);
         });
     });

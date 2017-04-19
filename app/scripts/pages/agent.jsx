@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../stores/mainStore';
 import agentStore from '../stores/agentStore';
@@ -20,7 +20,7 @@ class Agent extends React.Component {
         let id = this.props.params.id;
         mainStore.getEntity(id, Path.AGENT);
         agentStore.getAgentKey(id);
-        authStore.getUserKey();
+        if(authStore.userKey.key) authStore.getUserKey();
     }
 
     render() {

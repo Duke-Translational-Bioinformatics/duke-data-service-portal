@@ -42,24 +42,51 @@ export class AgentStore {
         this.transportLayer.getAgentKey(id)
             .then(this.checkResponse)
             .then(response => response.json())
-            .then((json) => {
-                this.agentKey = json;
-                let formData = new FormData();
-                formData.append('agent_key', this.agentKey.key);
-                formData.append('user_key', authStore.userKey.key);
-                if(this.agentKey.key && authStore.userKey.key) this.getAgentApiToken(this.agentKey.key, authStore.userKey.key, formData);
-            }).catch(ex =>mainStore.handleErrors(ex))
+            .then(json => this.agentKey = json)
+            .catch(ex =>mainStore.handleErrors(ex))
     }
 
-    @action getAgentApiToken(agentKey, userKey) {
-        this.transportLayer.getAgentApiToken(agentKey, userKey)
-            .then(this.checkResponse)
-            .then(response => response.json())
-            .then((json) => this.agentApiToken = json)
-            .catch((ex) => {
-                mainStore.addToast('Failed to generate an API token');
-                mainStore.handleErrors(ex)
-            })
+    @action getAgentApiToken(id) {
+        mainStore.toggleLoading();
+        if(authStore.userKey.key === undefined) {
+            this.transportLayer.createUserKey()
+                .then(this.checkResponse)
+                .then(response => response.json())
+                .then((json) => {
+                    authStore.userKey = json;
+                    this.getAgentApiToken(id);
+                })
+                .catch((ex) => mainStore.handleErrors(ex));
+        } else {
+            let userKey = this.transportLayer.getUserKey()
+                .then(this.checkResponse)
+                .then(response => response.json())
+                .then((json) => authStore.userKey = json)
+                .catch((ex) => {
+                    ex.response.status !== 404 ? mainStore.handleErrors(ex) : authStore.createUserKey()
+                });
+            let agentKey = this.transportLayer.getAgentKey(id)
+                .then(this.checkResponse)
+                .then(response => response.json())
+                .then((json) => { return agentStore.agentKey = json })
+                .catch(ex => mainStore.handleErrors(ex));
+            Promise.all([userKey, agentKey]).then((values) => {
+                userKey = values[0].key;
+                agentKey = values[1].key;
+                agentStore.transportLayer.getAgentApiToken(agentKey, userKey)
+                    .then(agentStore.checkResponse)
+                    .then(response => response.json())
+                    .then((json) => {
+                        agentStore.agentApiToken = json;
+                        mainStore.toggleModals('agentCred');
+                        if(mainStore.loading) mainStore.toggleLoading();
+                    })
+                    .catch((ex) => {
+                        mainStore.addToast('Failed to generate an API token');
+                        mainStore.handleErrors(ex);
+                    })
+            });
+        }
     }
 
     @action loadAgents() {

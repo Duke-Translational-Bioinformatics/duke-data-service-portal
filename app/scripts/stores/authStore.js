@@ -11,12 +11,14 @@ export class AuthStore {
     @observable currentUser
     @observable userKey
     @observable redirectUrl
+    @observable sessionTimeoutWarning
 
     constructor() {
         this.appConfig = appConfig;
         this.authServiceLoading = false;
         this.currentUser = {};
         this.userKey = {};
+        this.sessionTimeoutWarning = false;
         this.appConfig.authServiceId = cookie.load('authServiceId');
         this.appConfig.redirectUrl = cookie.load('redirectUrl');
         this.appConfig.apiToken = cookie.load('apiToken');
@@ -65,6 +67,9 @@ export class AuthStore {
                     let expiresAt = new Date(Date.now() + (60 * 60 * 2 * 1000));
                     this.appConfig.apiToken = json.api_token;
                     cookie.save('apiToken', this.appConfig.apiToken, {expires: expiresAt});
+                    setTimeout(() => {
+                        this.sessionTimeoutWarning = true;
+                    }, 7020000)
                 } else {
                     throw "An error has occurred while trying to authenticate";
                 }
@@ -80,11 +85,13 @@ export class AuthStore {
     }
 
     @action getUserKey() {
-        this.transportLayer.getUserKey()
+        this.userKey.key !== undefined ? this.transportLayer.getUserKey() : this.transportLayer.createUserKey()
             .then(mainStore.checkResponse)
             .then(response => response.json())
             .then((json) => this.userKey = json)
-            .catch(ex =>mainStore.handleErrors(ex))
+            .catch((ex) => {
+                ex.response.status !== 404 ? mainStore.handleErrors(ex) : this.createUserKey();
+            })
     }
 
     @action createUserKey() {

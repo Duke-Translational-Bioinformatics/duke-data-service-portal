@@ -325,8 +325,8 @@ class AgentOptionsMenu extends React.Component {
                     title="Your API Token"
                     autoDetectWindowHeight={true}
                     actions={newApiTokenActions}
-                    onRequestClose={() => this.toggleModal('apiToken')}
-                    open={toggleModal && toggleModal.id === 'apiToken' ? toggleModal.open : false}>
+                    onRequestClose={() => this.toggleModal('agentCred')}
+                    open={toggleModal && toggleModal.id === 'agentCred' ? toggleModal.open : false}>
                     <h6 style={styles.dialogHeading}>{ msg }</h6>
                     <form action="#" id="apiTokenForm">
                         <TextField
@@ -357,7 +357,7 @@ class AgentOptionsMenu extends React.Component {
                     <MenuItem primaryText="Edit Agent Details" leftIcon={<i className="material-icons">mode_edit</i>} onTouchTap={() => this.toggleModal('editOpen')}/>
                     <MenuItem primaryText="Agent Secret Key" leftIcon={<i className="material-icons">vpn_key</i>} onTouchTap={() => this.openApiKeyModal()}/>
                     <MenuItem primaryText="User Secret Key" leftIcon={<i className="material-icons">vpn_key</i>} onTouchTap={() => this.handleTouchTapUserKey()}/>
-                    <MenuItem primaryText="API Token" leftIcon={<i className="material-icons">stars</i>} onTouchTap={() => this.handleTouchTapApiToken(agKey, usrKey)}/>
+                    <MenuItem primaryText="API Token" leftIcon={<i className="material-icons">stars</i>} onTouchTap={() => this.handleTouchTapApiToken()}/>
                 </IconMenu>
             </div>
         );
@@ -377,12 +377,12 @@ class AgentOptionsMenu extends React.Component {
         setTimeout(() => this.apiKeyText.select(), 300);
     }
 
-    handleTouchTapApiToken(agentKey, userKey) {
+    handleTouchTapApiToken() {
+        let id = this.props.params.id;
         if (!agentStore.agentApiToken.api_token){
-            agentStore.getAgentApiToken(agentKey, userKey);
-            setTimeout(() => mainStore.toggleModals('apiToken'), 800);
+            agentStore.getAgentApiToken(id);
         } else {
-            mainStore.toggleModals('apiToken');
+            mainStore.toggleModals('agentCred');
         }
     }
 
