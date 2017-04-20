@@ -1,11 +1,9 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
-import { observer, inject } from 'mobx-react';
-import Header from '../components/globalComponents/header.jsx';
+const { object, bool } = PropTypes;
+import { observer } from 'mobx-react';
 import authStore from '../stores/authStore.js';
 import mainStore from '../stores/mainStore.js';
 import CircularProgress from 'material-ui/CircularProgress';
-import LinearProgress from 'material-ui/LinearProgress';
 import RaisedButton from 'material-ui/RaisedButton';
 import {UrlGen} from '../util/urlEnum';
 
@@ -14,11 +12,11 @@ class Login extends React.Component {
 
     componentDidMount() {
         if(this.props.location.pathname !== '/404' && authStore.appConfig.apiToken ) this.props.router.push('/');
-        if(authStore.authServiceLoading) authStore.setLoadingStatus();
+        if(authStore.authServiceLoading && !authStore.appConfig.isLoggedIn) authStore.setLoadingStatus();
     }
 
     componentDidUpdate(prevProps) {
-        if(prevProps.location.pathname.substr(0, 13) === '/access_token' && !authStore.authServiceLoading) authStore.setLoadingStatus();
+        if(prevProps.location.pathname.includes('/access_token') && !authStore.authServiceLoading) authStore.setLoadingStatus();
         if(authStore.appConfig.apiToken) {
             if (authStore.appConfig.redirectUrl) {
                 document.location.replace(authStore.appConfig.redirectUrl);
@@ -76,7 +74,7 @@ class Login extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     loginWrapper: {
         maxWidth: 600,
         height: 'auto',

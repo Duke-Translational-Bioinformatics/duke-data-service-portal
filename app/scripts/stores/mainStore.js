@@ -130,7 +130,7 @@ export class MainStore {
         this.projectRole = null;
         this.metaObjProps = [];
         this.responseHeaders = {};
-        this.screenSize = {};
+        this.screenSize = {width:0, height:0};
         this.searchFilesList = [];
         this.searchFilters = [];
         this.searchResults = [];
