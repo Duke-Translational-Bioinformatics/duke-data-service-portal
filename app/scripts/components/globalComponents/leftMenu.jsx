@@ -69,7 +69,7 @@ class LeftMenu extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     navIcon: {
         paddingRight: 5,
         verticalAlign: -6

@@ -1,11 +1,9 @@
 import React, { PropTypes } from 'react';
 const { object, bool } = PropTypes;
-import { observer, inject } from 'mobx-react';
-import Header from '../components/globalComponents/header.jsx';
+import { observer } from 'mobx-react';
 import authStore from '../stores/authStore.js';
 import mainStore from '../stores/mainStore.js';
 import CircularProgress from 'material-ui/CircularProgress';
-import LinearProgress from 'material-ui/LinearProgress';
 import RaisedButton from 'material-ui/RaisedButton';
 import {UrlGen} from '../util/urlEnum';
 
@@ -76,7 +74,7 @@ class Login extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     loginWrapper: {
         maxWidth: 600,
         height: 'auto',

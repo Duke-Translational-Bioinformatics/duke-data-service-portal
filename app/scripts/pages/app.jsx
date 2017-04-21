@@ -115,7 +115,7 @@ class App extends React.Component {
                     label="Okay"
                     secondary={true}
                     onTouchTap={() => this.closeErrorModal(obj.ref)}
-                    />;
+                />;
                 return <Dialog key={obj.ref} ref={obj.ref} message={obj.msg}
                                contentStyle={dialogWidth}
                                title="An Error Occurred"
@@ -132,29 +132,29 @@ class App extends React.Component {
             });
         }
         if (authStore.sessionTimeoutWarning) {
-                let actions = [
+            let actions = [
+                <FlatButton
+                    label="Logout"
+                    secondary={true}
+                    onTouchTap={() => authStore.handleLogout()}/>,
+                <a href={this.createLoginUrl()} className="external">
                     <FlatButton
-                        label="Logout"
+                        label="Refresh Session"
                         secondary={true}
-                        onTouchTap={() => authStore.handleLogout()}/>,
-                    <a href={this.createLoginUrl()} className="external">
-                        <FlatButton
-                            label="Refresh Session"
-                            secondary={true}
-                            style={styles.refreshBtn}
-                            onClick={() => this.handleLoginBtn()}>
-                        </FlatButton>
-                    </a>
-                ];
-                dialogs = <Dialog title="Your session will expire in 3 minutes"
-                                  contentStyle={dialogWidth}
-                                  actions={actions}
-                                  modal={false}
-                                  open={true}
-                                  style={styles.dialogStyles}>
-                    <i className="material-icons" style={styles.warning}>warning</i>
-                    <h6>If you want to stay logged in, please refresh your session.</h6>
-                </Dialog>
+                        style={styles.refreshBtn}
+                        onClick={() => this.handleLoginBtn()}>
+                    </FlatButton>
+                </a>
+            ];
+            dialogs = <Dialog title="Your session will expire in 3 minutes"
+                              contentStyle={dialogWidth}
+                              actions={actions}
+                              modal={false}
+                              open={true}
+                              style={styles.dialogStyles}>
+                <i className="material-icons" style={styles.warning}>warning</i>
+                <h6>If you want to stay logged in, please refresh your session.</h6>
+            </Dialog>
         }
         return (
             <span>

@@ -102,9 +102,9 @@ export class AuthStore {
                 mainStore.addToast('User Key created successfully');
                 this.userKey = json;
             }).catch((ex) => {
-                mainStore.addToast('Failed to create new User key');
-                mainStore.handleErrors(ex)
-            })
+            mainStore.addToast('Failed to create new User key');
+            mainStore.handleErrors(ex)
+        })
     }
 
     @action deleteUserKey() {
@@ -115,9 +115,9 @@ export class AuthStore {
                 mainStore.addToast('User key deleted');
                 this.userKey = {};
             }).catch((ex) => {
-                mainStore.addToast('Failed to delete user key');
-                mainStore.handleErrors(ex)
-            });
+            mainStore.addToast('Failed to delete user key');
+            mainStore.handleErrors(ex)
+        });
     }
 
     @action isLoggedInHandler() {
@@ -143,7 +143,7 @@ export class AuthStore {
             this.appConfig.redirectUrl = null;
             cookie.remove('redirectUrl');
         }
-        document.location.assign('/#/login');
+        window.location.assign('/#/login');
     }
 }
 
