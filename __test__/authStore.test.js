@@ -32,14 +32,18 @@ describe('Auth Store', () => {
     });
 
     it('@action handleLogout 401 - logs user out and clears appConfig when api token expires', () => {
+        window.location.assign = jest.fn();
         authStore.handleLogout(401);
+        expect(window.location.assign).toHaveBeenCalled();
         expect(authStore.appConfig.isLoggedIn).toBeNull();
         expect(authStore.appConfig.apiToken).toBeNull();
         expect(authStore.appConfig.redirectUrl).not.toBeNull();
     });
 
     it('@action handleLogout - logs user out and resets appConfig.redirectUrl when user logs out through log out option', () => {
+        window.location.assign = jest.fn();
         authStore.handleLogout();
+        expect(window.location.assign).toHaveBeenCalled();
         expect(authStore.appConfig.isLoggedIn).toBeNull();
         expect(authStore.appConfig.apiToken).toBeNull();
         expect(authStore.appConfig.redirectUrl).toBeNull();
