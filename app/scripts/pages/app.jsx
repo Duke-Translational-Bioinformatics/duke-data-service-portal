@@ -6,7 +6,6 @@ import Header from '../components/globalComponents/header.jsx';
 import Footer from '../components/globalComponents/footer.jsx';
 import LeftMenu from '../components/globalComponents/leftMenu.jsx';
 import RetryUploads from '../components/globalComponents/retryUploads.jsx';
-import Search from '../components/globalComponents/search.jsx';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import Snackbar from 'material-ui/Snackbar';
@@ -76,22 +75,21 @@ class App extends React.Component {
     componentDidUpdate() {
         if(authStore.appConfig.apiToken && !Object.keys(authStore.currentUser).length) authStore.getCurrentUser();
         if(authStore.sessionTimeoutWarning) authStore.setRedirectUrl(location.href);
-        if(authStore.appConfig.apiToken && authStore.appConfig.redirectUrl.split('/').pop().length > 0 && authStore.appConfig.redirectUrl.split('/').pop() !== 'login') document.location.replace(authStore.appConfig.redirectUrl);
         this.showToasts();
         this.checkError();
     }
 
     checkError() {
-        if (mainStore.error && mainStore.error.response){
-            if(mainStore.error.response === 404) {
+        if (mainStore.error && mainStore.error.response.status){
+            if(mainStore.error.response.status === 404) {
                 mainStore.clearErrors();
                 setTimeout(()=>this.props.router.push('/404'),1000);
             }
-            mainStore.error.response !== 404 ? console.log(mainStore.error.msg) : null;
+            mainStore.error.response.status !== 404 ? console.log(mainStore.error.stack) : null;
         }
     }
 
-    handleResize(e) {
+    handleResize() {
         mainStore.getScreenSize(window.innerHeight, window.innerWidth);
     }
 
@@ -100,8 +98,9 @@ class App extends React.Component {
     };
 
     render() {
-        const {errorModals, toasts} = mainStore;
+        const {errorModals, toasts, screenSize} = mainStore;
         const {appConfig} = authStore;
+        let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let dialogs, tsts = null;
         if (toasts) {
             tsts = toasts.map(obj => {
@@ -118,6 +117,7 @@ class App extends React.Component {
                     onTouchTap={() => this.closeErrorModal(obj.ref)}
                     />;
                 return <Dialog key={obj.ref} ref={obj.ref} message={obj.msg}
+                               contentStyle={dialogWidth}
                                title="An Error Occurred"
                                actions={actions}
                                modal={false}
@@ -147,10 +147,11 @@ class App extends React.Component {
                     </a>
                 ];
                 dialogs = <Dialog title="Your session will expire in 3 minutes"
-                               actions={actions}
-                               modal={false}
-                               open={true}
-                               style={styles.dialogStyles}>
+                                  contentStyle={dialogWidth}
+                                  actions={actions}
+                                  modal={false}
+                                  open={true}
+                                  style={styles.dialogStyles}>
                     <i className="material-icons" style={styles.warning}>warning</i>
                     <h6>If you want to stay logged in, please refresh your session.</h6>
                 </Dialog>

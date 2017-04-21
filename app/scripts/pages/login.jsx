@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object, bool } = PropTypes;
 import { observer, inject } from 'mobx-react';
 import Header from '../components/globalComponents/header.jsx';
 import authStore from '../stores/authStore.js';
@@ -14,11 +14,11 @@ class Login extends React.Component {
 
     componentDidMount() {
         if(this.props.location.pathname !== '/404' && authStore.appConfig.apiToken ) this.props.router.push('/');
-        if(authStore.authServiceLoading) authStore.setLoadingStatus();
+        if(authStore.authServiceLoading && !authStore.appConfig.isLoggedIn) authStore.setLoadingStatus();
     }
 
     componentDidUpdate(prevProps) {
-        if(prevProps.location.pathname.substr(0, 13) === '/access_token' && !authStore.authServiceLoading) authStore.setLoadingStatus();
+        if(prevProps.location.pathname.includes('/access_token') && !authStore.authServiceLoading) authStore.setLoadingStatus();
         if(authStore.appConfig.apiToken) {
             if (authStore.appConfig.redirectUrl) {
                 document.location.replace(authStore.appConfig.redirectUrl);

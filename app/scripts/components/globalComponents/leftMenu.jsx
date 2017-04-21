@@ -60,7 +60,8 @@ class LeftMenu extends React.Component {
     }
 
     handleTouchTap() {
-        authStore.handleLogout()
+        authStore.handleLogout();
+        location.reload();
     }
 
     closeLeftNav() {

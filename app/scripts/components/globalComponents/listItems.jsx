@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object, bool, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../util/baseUtils.js';
@@ -11,22 +11,21 @@ import FolderOptionsMenu from '../../components/folderComponents/folderOptionsMe
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import FontIcon from 'material-ui/FontIcon';
 import RaisedButton from 'material-ui/RaisedButton';
+import Paper from 'material-ui/Paper';
 
-import Checkbox from 'material-ui/Checkbox';
+import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 
 @observer
 class ListItems extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            checked: false
-        }
     }
 
     render() {
-        const { filesChecked, foldersChecked, listItems, loading, projPermissions, responseHeaders, screenSize, uploads } = mainStore;
+        const { filesChecked, foldersChecked, listItems, loading, projPermissions, responseHeaders, screenSize, tableBodyRenderKey, uploads } = mainStore;
         let showBatchOps = filesChecked.length || foldersChecked.length ? true : false;
+        let menuWidth = screenSize.width > 1230 ? 42 : 35;
         let headers = responseHeaders && responseHeaders !== null ? responseHeaders : null;
         let nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
         let totalChildren = headers !== null && !!headers['x-total'] ? headers['x-total'][0] : null;
@@ -38,76 +37,93 @@ class ListItems extends React.Component {
             showChecks = !!(prjPrm !== 'viewOnly' && prjPrm !== 'flUpload');
         }
         let children = listItems && listItems.length ? listItems.map((children) => {
-            let fileOptionsMenu = screenSize && screenSize.width >= 680 ? <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, Path.FILE)}/> : null;
-            let folderOptionsMenu = screenSize && screenSize.width >= 680 ? <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, Path.FOLDER)}/> : null;
+            let fileOptionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, Path.FILE)}/>;
+            let folderOptionsMenu = <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, Path.FOLDER)}/>;
             if (children.kind === 'dds-folder') {
                 return (
-                    <li key={ children.id } className="hover">
-                        {prjPrm !== 'viewOnly' ?
-                            <span style={styles.menuIcon}>
-                                { folderOptionsMenu }
-                            </span> : null}
-                        <a href={UrlGen.routes.folder(children.id)}
-                           className="item-content external">
-                            {showChecks ? <Checkbox  iconStyle={styles.checkIcon} style={screenSize.width > 580 ? {width: 48} : {width: 24}} checked={mainStore.foldersChecked.includes(children.id)} onCheck={e => this.handleChange(children.id, Kind.DDS_FOLDER)}/> : null}
-                            <div className="item-media">
-                                <FontIcon className="material-icons" style={styles.icon}>folder</FontIcon>
-                            </div>
-                            <div className="item-inner">
-                                <div className="item-title-row">
-                                    <div className="item-title mdl-color-text--grey-800" style={styles.title}>{children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}</div>
+                    <TableRow key={children.id} selected={mainStore.foldersChecked.includes(children.id)}>
+                        <TableRowColumn>
+                            <a onClick={()=>this.goTo(children.id, children.kind)} href={UrlGen.routes.folder(children.id)} className="external">
+                                <div onClick={(e) => {e.stopPropagation()}} style={{color:'#235F9C'}}>
+                                    <FontIcon className="material-icons" style={styles.icon}>folder</FontIcon>
+                                    {children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}
                                 </div>
-                                <div className="item-subtitle mdl-color-text--grey-600">Created by { children.audit.created_by.full_name }</div>
-                                <div className="item-subtitle mdl-color-text--grey-600">{children.audit.last_updated_on !== null ? 'Last updated on '+BaseUtils.formatDate(children.audit.last_updated_on)+ ' by ': <br />}
-                                    { children.audit.last_updated_by !== null ? children.audit.last_updated_by.full_name : null}</div>
+                            </a>
+                        </TableRowColumn>
+                        {screenSize && screenSize.width >= 680 ? <TableRowColumn>
+                            <div onClick={(e) => {e.stopPropagation()}}>
+                                {children.audit.last_updated_on !== null ? BaseUtils.formatDate(children.audit.last_updated_on)+' by '+children.audit.last_updated_by.full_name : BaseUtils.formatDate(children.audit.created_on)+' by '+children.audit.created_by.full_name}
                             </div>
-                        </a>
-                    </li>
+                        </TableRowColumn> : null}
+                        {screenSize && screenSize.width >= 840 ? <TableRowColumn style={{width: 100}}>
+                            <div onClick={(e) => {e.stopPropagation()}}>
+                                {'---'}
+                            </div>
+                        </TableRowColumn> : null}
+                        <TableRowColumn style={{textAlign: 'right', width: menuWidth}}>
+                            <div onClick={(e) => {e.stopPropagation()}}>
+                                { folderOptionsMenu }
+                            </div>
+                        </TableRowColumn>
+                    </TableRow>
+
                 );
             } else {
                 return (
-                    <li key={ children.id } className="hover">
-                        { prjPrm !== 'viewOnly' ?
-                            <span style={styles.menuIcon}>
-                                { fileOptionsMenu }
-                            </span> : null }
-                        <a href={UrlGen.routes.file(children.id)}
-                           className="item-content external">
-                            {showChecks ? <Checkbox iconStyle={styles.checkIcon} style={screenSize.width > 580 ? {width: 48} : {width: 24}} checked={mainStore.filesChecked.includes(children.id)} ref={children.id} onCheck={e => this.handleChange(children.id, Kind.DDS_FILE)}/> : null}
-                            <div className="item-media">
-                                <FontIcon className="material-icons" style={styles.icon}>description</FontIcon>
-                            </div>
-                            <div className="item-inner">
-                                <div className="item-title-row">
-                                    <div className="item-title mdl-color-text--grey-800" style={styles.title}>{children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}</div>
+                    <TableRow key={children.id} selected={mainStore.filesChecked.includes(children.id)}>
+                        <TableRowColumn>
+                            <a onClick={()=>this.goTo(children.id, children.kind)} href={UrlGen.routes.file(children.id)} className="external">
+                                <div onClick={(e) => {e.stopPropagation()}} style={{color:'#235F9C'}}>
+                                    <FontIcon className="material-icons" style={styles.icon}>description</FontIcon>
+                                    {children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name+' '}
+                                    {' (version '+ children.current_version.version+')'}
                                 </div>
-                                <div className="item-subtitle mdl-color-text--grey-600">{BaseUtils.bytesToSize(children.current_version.upload.size)+' - '}version {children.current_version.version}</div>
-                                <div className="item-subtitle mdl-color-text--grey-600">{children.audit.last_updated_on !== null ? 'Last updated on '+BaseUtils.formatDate(children.audit.last_updated_on)+ ' by ': <br />}
-                                    { children.audit.last_updated_by !== null ? children.audit.last_updated_by.full_name : null}</div>
+                            </a>
+                        </TableRowColumn>
+                        {screenSize && screenSize.width >= 680 ? <TableRowColumn>
+                            <div onClick={(e) => {e.stopPropagation()}}>
+                                {children.audit.last_updated_on !== null ? BaseUtils.formatDate(children.audit.last_updated_on)+' by '+children.audit.last_updated_by.full_name : BaseUtils.formatDate(children.audit.created_on)+' by '+children.audit.created_by.full_name}
                             </div>
-                        </a>
-                    </li>
-                );
+                        </TableRowColumn> : null}
+                        {screenSize && screenSize.width >= 840 ? <TableRowColumn style={{width: 100}}>
+                            <div onClick={(e) => {e.stopPropagation()}}>
+                                {children.current_version ? BaseUtils.bytesToSize(children.current_version.upload.size) : '---'}
+                            </div>
+                        </TableRowColumn> : null}
+                        <TableRowColumn style={{textAlign: 'right', width: menuWidth}}>
+                            <div onClick={(e) => {e.stopPropagation()}}>
+                                { fileOptionsMenu }
+                            </div>
+                        </TableRowColumn>
+                    </TableRow>
+            );
             }
         }) : null;
 
         return (
-            <div className="list-container" ref={(c) => this.listContainer = c}>
+            <div className="list-items-container" ref={(c) => this.listContainer = c}>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
                     {!showBatchOps ? <div className="mdl-cell mdl-cell--12-col">
                         { newFolderModal }
                     </div> : null}
-                    <div className="mdl-cell mdl-cell--12-col" style={styles.batchOpsWrapper}>
+
                         { showBatchOps ? <BatchOps {...this.props}/> : null }
-                    </div>
                 </div>
                 { uploads || loading ? <Loaders {...this.props}/> : null }
-                <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
-                    <div className="list-block list-block-search searchbar-found media-list">
-                        <ul>
-                            { children }
-                        </ul>
-                    </div>
+                <Paper className="mdl-cell mdl-cell--12-col" style={styles.list}>
+                    {listItems.length ? <Table multiSelectable={true} fixedHeader={true} onRowSelection={(rows) => this.selectTableRow(rows)}>
+                        <TableHeader displaySelectAll={showChecks} adjustForCheckbox={showChecks}>
+                            <TableRow>
+                                <TableHeaderColumn></TableHeaderColumn>
+                                {screenSize && screenSize.width >= 680 ? <TableHeaderColumn>Last Updated</TableHeaderColumn> : null}
+                                {screenSize && screenSize.width >= 840 ? <TableHeaderColumn style={{width: 100}}>Size</TableHeaderColumn> : null}
+                                <TableHeaderColumn style={{textAlign: 'right', width: menuWidth}}></TableHeaderColumn>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody key={tableBodyRenderKey} showRowHover={true} displayRowCheckbox={showChecks} deselectOnClickaway={false}>
+                            {children}
+                        </TableBody>
+                    </Table> : null}
                     {listItems.length < totalChildren && totalChildren > 25 ?
                         <div className="mdl-cell mdl-cell--12-col">
                             <RaisedButton
@@ -119,40 +135,35 @@ class ListItems extends React.Component {
                                 style={loading ? {backgroundColor: '#69A3DD'} : {}}
                                 labelStyle={loading ? {color: '#235F9C'} : {fontWeight: '100'}}/>
                         </div> : null}
-                </div>
+                </Paper>
             </div>
         );
     }
 
-    getSelectedItems(items, id) {
-        if(items.includes(id)) {
-            items = items.filter(val => val !== id);
-        } else {
-            items = [...items, id]
-        }
-        return items;
+    goTo(id, path) {
+        let route = path === Kind.DDS_FILE ? Path.FILE : Path.FOLDER;
+        this.props.router.push(route+id)
     }
 
-    handleChange(id, kind) {
-        let files = mainStore.filesChecked;
-        let folders = mainStore.foldersChecked;
-        if(kind === 'dds-file') {
-            files = this.getSelectedItems(files, id);
+    selectTableRow(rows) {
+        let files = [];
+        let folders = [];
+        if (rows !== 'all' && rows !== 'none') {
+            for (let i = 0; i < rows.length; i++) {
+                if (mainStore.listItems[rows[i]].kind === Kind.DDS_FILE && !BaseUtils.objectPropInArray(files, 'id', mainStore.listItems[rows[i]].id)) {
+                    files = [...files, mainStore.listItems[rows[i]].id]
+                } else {
+                    if(!BaseUtils.objectPropInArray(folders, 'id', mainStore.listItems[rows[i]].id)) folders = [...folders, mainStore.listItems[rows[i]].id]
+                }
+            }
         }
-        if(kind === 'dds-folder') {
-            folders = this.getSelectedItems(folders, id);
-        }
+        if(rows === 'all') mainStore.listItems.map((obj)=> {obj.kind === Kind.DDS_FILE ? files = [...files, obj.id] : folders = [...folders, obj.id]})
         mainStore.handleBatch(files, folders);
-    }
-
-    handleDownload(id) {
-        let kind = Path.FILE;
-        mainStore.getDownloadUrl(id, kind);
     }
 
     loadMore(page) {
         let id = this.props.params.id;
-        let kind = mainStore.entityObj ? Path.FOLDER : Path.PROJECT;
+        let kind = this.props.router.location.pathname.includes('project') ? Kind.DDS_PROJECT : Kind.DDS_FOLDER;
         mainStore.getChildren(id, kind, page);
     }
 
@@ -169,27 +180,14 @@ var styles = {
     batchOpsWrapper: {
         marginBottom: 0
     },
-    checkIcon: {
-        width: 22,
-        height: 22
-    },
-    menuIcon: {
-        position: 'absolute',
-        right: 0,
-        top: 26,
-        zIndex: 100
-    },
     icon: {
-        fontSize: 36,
-        marginTop: 20,
-        color: '#616161'
+        marginLeft: -4,
+        marginRight: 10,
+        verticalAlign: -6
     },
     list: {
         float: 'right',
-        marginTop: -10
-    },
-    title: {
-        marginRight: 40
+        marginTop: '10 auto'
     }
 };
 

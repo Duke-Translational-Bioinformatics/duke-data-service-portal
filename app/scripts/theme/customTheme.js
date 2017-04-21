@@ -12,12 +12,12 @@ export default {
         primary2Color: "#235F9C",
         primary3Color: "#0680CD",
         accent1Color: "#235F9C",
-        accent2Color: "#ED2B2B",
+        accent2Color: "#ECEFF1",
         accent3Color: "#F58C8C",
         textColor: "#424242",
         alternateTextColor: "#FFF",
         canvasColor: Colors.white,
-        borderColor: Colors.grey300,
+        borderColor: "#ECEFF1",
         pickerHeaderColor: Colors.cyan500
     }
 };

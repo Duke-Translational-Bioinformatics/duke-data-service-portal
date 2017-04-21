@@ -71,6 +71,7 @@ export class MainStore {
     @observable showTemplateDetails
     @observable showUserInfoPanel
     @observable showSearch
+    @observable tableBodyRenderKey
     @observable tagLabels
     @observable tagsToAdd
     @observable templateProperties
@@ -130,7 +131,7 @@ export class MainStore {
         this.projectRole = null;
         this.metaObjProps = [];
         this.responseHeaders = {};
-        this.screenSize = {};
+        this.screenSize = {width: 0, height: 0};
         this.searchFilesList = [];
         this.searchFilters = [];
         this.searchResults = [];
@@ -145,6 +146,7 @@ export class MainStore {
         this.showTemplateDetails = false;
         this.showUserInfoPanel = false;
         this.showSearch = false;
+        this.tableBodyRenderKey = 0;
         this.tagLabels = [];
         this.tagsToAdd = [];
         this.templateProperties = [];
@@ -162,6 +164,10 @@ export class MainStore {
 
     checkResponse(response) {
         return checkStatus(response, authStore);
+    }
+
+    @action incrementTableBodyRenderKey() {
+        this.tableBodyRenderKey = this.tableBodyRenderKey + 1;
     }
 
     @action clearSelectedItems() {
@@ -317,6 +323,7 @@ export class MainStore {
             this.deleteFolder(folders[i]);
             this.listItems = BaseUtils.removeObjByKey(this.listItems.slice(), {key: 'id', value: folders[i]});
         }
+        this.incrementTableBodyRenderKey();
         this.handleBatch([], []);
     }
 
@@ -579,13 +586,15 @@ export class MainStore {
         let msg = tags.map((tag)=> {
             return tag.label
         });
+        this.loading = true;
         this.transportLayer.appendTags(id, kind, tags)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
                 this.addToast('Added ' + msg + ' as tags to all selected files.');
                 this.getTags(id, Kind.DDS_FILE);
-                this.handleBatch([], [])
+                this.loading = false;
+                // this.handleBatch([], [])
             }).catch((ex) => {
                 this.addToast('Failed to add tags');
                 this.handleErrors(ex)
