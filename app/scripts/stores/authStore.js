@@ -143,7 +143,7 @@ export class AuthStore {
             this.appConfig.redirectUrl = null;
             cookie.remove('redirectUrl');
         }
-        document.location.assign('/#/login');
+        window.location.assign('/#/login');
     }
 }
 
