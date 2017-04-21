@@ -1027,6 +1027,7 @@ export class MainStore {
     }
 
     @action getChildren(id, path, page) {
+        if(this.listItems.length) this.listItems = [];
         this.loading = true;
         if (page == null) page = 1;
         this.transportLayer.getChildren(id, path, page)

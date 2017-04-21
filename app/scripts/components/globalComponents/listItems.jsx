@@ -142,7 +142,7 @@ class ListItems extends React.Component {
 
     goTo(id, path) {
         let route = path === Kind.DDS_FILE ? Path.FILE : Path.FOLDER;
-        this.props.router.push(route+id)
+        this.props.router.push(route+id);
     }
 
     selectTableRow(rows) {

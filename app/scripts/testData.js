@@ -240,6 +240,114 @@ export const file_version_json = {
     "audit": {}
 }
 
+export const list_item_response_json = {
+    "_bodyInit": {},
+    "_bodyBlob": {"results": [
+        {
+            "kind": "dds-file",
+            "id": "TEST_FILE_1",
+            "parent": {
+                "kind": "dds-folder",
+                "id": "552be8c5-209d-4e3b-afaf-cb66686ffbyy"
+            },
+            "name": "TEST FILE 1",
+            "project": {
+                "id": "TEST_PROJECT_ID"
+            },
+            "ancestors": [
+                {
+                    "kind": "dds-project",
+                    "id": "ca29f7df-33ca-46dd-a015-92c46fdb6fd1",
+                    "name": "Knockout Mouse Project (KOMP)"
+                },
+                {
+                    "kind": "dds-folder",
+                    "id": "552be8c5-209d-4e3b-afaf-cb66686ffbyy",
+                    "name": "Sequencing Core"
+                }
+            ],
+            "is_deleted": false,
+            "current_version": {
+                "id": "89ef1e77-1a0b-40a8-aaca-260d13987f2b",
+                "version": 1,
+                "label": "Initial raw data from device",
+                "upload": {
+                    "id": "666be35a-98e0-4c2e-9a17-7bc009f9bb23",
+                    "size": 30024000,
+                    "hashes": [
+                        {
+                            "value": "cf23df2207d99a74fbe169e3eba035e633b65d94",
+                            "algorithm": "md5",
+                            "audit": {}
+                        }
+                    ],
+                    "storage_provider": {
+                        "id": "g5579f73-0558-4f96-afc7-9d251e65bv33",
+                        "name": "duke_oit_swift",
+                        "description": "Duke OIT Storage"
+                    }
+                }
+            },
+            "audit": {}
+        },
+        {
+            "kind": "dds-folder",
+            "id": "TEST_FOLDER_1",
+            "parent": {
+                "kind": "dds-folder",
+                "id": "552be8c5-209d-4e3b-afaf-cb66686ffbyy"
+            },
+            "name": "TEST FOLDER 1",
+            "project": {
+                "id": "TEST_PROJECT_1"
+            },
+            "ancestors": [
+                {
+                    "kind": "dds-project",
+                    "id": "TEST_PROJECT_1",
+                    "name": "TEST PROJECT 1"
+                },
+                {
+                    "kind": "dds-folder",
+                    "id": "552be8c5-209d-4e3b-afaf-cb66686ffbyy",
+                    "name": "Sequencing Core"
+                }
+            ],
+            "is_deleted": false,
+            "audit": {}
+        }
+
+    ]
+    },
+    "type": "default",
+    "url": "https://dukeds-dev.herokuapp.com/api/v1/projects/c628435b-78e8-4e51-82a7-ff8eb1dc255a/children?page=1&per_page=25",
+    "status": 200,
+    "ok": true,
+    "statusText": "OK",
+    "headers": {
+        "map": {
+            "x-total": [
+                "17"
+            ],
+            "x-per-page": [
+                "25"
+            ],
+            "content-type": [
+                "application/json"
+            ],
+            "cache-control": [
+                "max-age=0, private, must-revalidate"
+            ],
+            "x-total-pages": [
+                "1"
+            ],
+            "x-page": [
+                "1"
+            ]
+        }
+    }
+}
+
 export const list_items_json = {
     "results": [
         {
