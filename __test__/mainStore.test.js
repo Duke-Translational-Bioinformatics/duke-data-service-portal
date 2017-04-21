@@ -814,6 +814,18 @@ describe('Main Store', () => {
         });
     });
 
+    it('@action getChildren - gets a list of folder or project children', () => {
+        mainStore.listItems = fake.list_items_json.results;
+        expect(mainStore.listItems.length).toBe(2);
+        transportLayer.getChildren = jest.fn(() => respond(201, 'ok', fake.list_item_response_json));
+        mainStore.getChildren(FOLDER_ID, FOLDER_PATH, PAGE);
+        expect(mainStore.listItems.length).toBe(0);
+        return sleep(1).then(() => {
+            expect(transportLayer.getChildren).toHaveBeenCalledTimes(1);
+            expect(transportLayer.getChildren).toHaveBeenCalledWith(FOLDER_ID, FOLDER_PATH, PAGE);
+        });
+    });
+
     it('@action getMoveItemList - should return a list of items', () => {
         transportLayer.getMoveItemList = jest.fn((id, path) => respondOK(fake.list_items_json));
         mainStore.getMoveItemList(FOLDER_ID, FOLDER_PATH);

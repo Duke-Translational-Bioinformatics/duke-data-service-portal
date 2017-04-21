@@ -82,7 +82,7 @@ class BatchOps extends React.Component {
 
         return (
             <Card style={styles.card}>
-                <h6 style={styles.numSelected}>{itemsSelected}  selected</h6>
+                <h6 style={styles.numSelected}>{itemsSelected} selected</h6>
                 <div style={styles.iconBtn} title="Delete selected items">
                     { dltIcon }
                 </div>
@@ -146,13 +146,10 @@ class BatchOps extends React.Component {
 let styles = {
     card: {
         overflow: 'auto',
-        marginLeft: 9,
-        marginBottom: 0,
-        marginTop: 28,
+        margin: '8px 0px 0px 0px',
         padding: '0 auto',
         backgroundColor:'#ECEFF1',
-        minHeight: 36,
-        maxWidth: '98.5%'
+        minHeight: 36
     },
     dialogStyles: {
         textAlign: 'center',

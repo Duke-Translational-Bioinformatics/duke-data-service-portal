@@ -80,12 +80,12 @@ class App extends React.Component {
     }
 
     checkError() {
-        if (mainStore.error && mainStore.error.response){
-            if(mainStore.error.response === 404) {
+        if (mainStore.error && mainStore.error.response.status){
+            if(mainStore.error.response.status === 404) {
                 mainStore.clearErrors();
                 setTimeout(()=>this.props.router.push('/404'),1000);
             }
-            mainStore.error.response !== 404 ? console.log(mainStore.error.msg) : null;
+            mainStore.error.response.status !== 404 ? console.log(mainStore.error.stack) : null;
         }
     }
 

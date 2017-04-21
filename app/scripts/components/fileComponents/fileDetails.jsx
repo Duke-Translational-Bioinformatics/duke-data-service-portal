@@ -105,10 +105,10 @@ class FileDetails extends React.Component {
                     { optionsMenu }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                    <a href={'/#/' + BaseUtils.getUrlPath(parentKind) + parentId } style={styles.back}
-                       className="mdl-color-text--grey-800 external">
-                        <i className="material-icons"
-                           style={styles.backIcon}>keyboard_backspace</i>Back</a>
+                    <a href={'/#/' + BaseUtils.getUrlPath(parentKind) + parentId } style={styles.back} className="mdl-color-text--grey-800 external">
+                        <i className="material-icons" style={styles.backIcon}>keyboard_backspace</i>
+                        Back
+                    </a>
                 </div>
                 <div className="mdl-cell mdl-cell--9-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
                     <span className="mdl-color-text--grey-800" style={styles.title}>{ name }</span>
