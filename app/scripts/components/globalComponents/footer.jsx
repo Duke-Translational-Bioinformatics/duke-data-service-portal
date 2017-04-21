@@ -23,7 +23,7 @@ class Footer extends React.Component {
         }
 
         return (
-            <footer className="mdl-mini-footer" style={{backgroundColor : envColor, padding: '0px 16px 0px 16px', marginTop: 10}}>
+            <footer className="mdl-mini-footer" style={{backgroundColor : envColor, padding: '0px 16px 0px 16px'}}>
                 <div className="mdl-mini-footer__left-section">
                     <div className="mdl-logo"><h6 style={styles.logo}>Duke Data Service {' ' + appName}</h6></div>
                 </div>

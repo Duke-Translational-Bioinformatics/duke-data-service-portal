@@ -69,6 +69,7 @@ export class AuthStore {
                     cookie.save('apiToken', this.appConfig.apiToken, {expires: expiresAt});
                     setTimeout(() => {
                         this.sessionTimeoutWarning = true;
+                        setTimeout(() => this.handleLogout(), 178800)
                     }, 7020000)
                 } else {
                     throw "An error has occurred while trying to authenticate";
