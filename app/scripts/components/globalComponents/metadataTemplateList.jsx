@@ -86,7 +86,6 @@ class MetadataTemplateList extends React.Component {
                             style={styles.addTemplateBtn}
                             label="Add New Template"
                             labelStyle={styles.addTemplateBtn.label}
-                            secondary={true}
                             onTouchTap={() => this.openMetadataManager()} /> : null}
                         <h4>Metadata Templates
                             <IconButton tooltip={tooltip}
@@ -194,7 +193,7 @@ var styles = {
     addTemplateBtn: {
         float: 'right',
         label: {
-            fontWeight: 100
+            color: '#235f9c'
         }
     },
     drawerLoader: {

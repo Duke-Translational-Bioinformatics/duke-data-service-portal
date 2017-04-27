@@ -50,7 +50,6 @@ class TagManager extends React.Component {
         let autoCompleteData = tagAutoCompleteList && tagAutoCompleteList.length > 0 ? tagAutoCompleteList : [];
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let id = selectedEntity !== null ? selectedEntity.id : this.props.params.id;
-        let height = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.height : window.innerHeight;
         let name = entityObj && filesChecked < 1 ? entityObj.name : 'selected files';
         let openDiscardTagsModal = toggleModal && toggleModal.id === 'discardTags' ? toggleModal.open : false;
         let openCreateAnotherObjectModal = toggleModal && toggleModal.id === 'metaDataObjectConfirm' ? toggleModal.open : false;
@@ -136,14 +135,14 @@ class TagManager extends React.Component {
                                     </div>
                                 </div>
                                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.buttonWrapper}>
-                                    <RaisedButton label={'Cancel'} secondary={true}
-                                                  labelStyle={styles.buttonLabel}
-                                                  style={styles.cancelBtn}
-                                                  onTouchTap={() => this.toggleTagManager()}/>
-                                    <RaisedButton label={'Apply'} secondary={true}
+                                    <RaisedButton label={'Apply'}
                                                   labelStyle={styles.buttonLabel}
                                                   style={styles.applyBtn}
                                                   onTouchTap={() => this.addTagsToFiles(filesChecked, id, tagsToAdd, toggleModal)}/>
+                                    <RaisedButton label={'Cancel'}
+                                                  labelStyle={styles.buttonLabel}
+                                                  style={styles.cancelBtn}
+                                                  onTouchTap={() => this.toggleTagManager()}/>
                                 </div>
                             </Tab>
                             <Tab label="Advanced" style={styles.tabStyles} onActive={() => this.activeTab()}>
@@ -284,7 +283,7 @@ var styles = {
         maxWidth: 'calc(100% - 42px)'
     },
     buttonLabel: {
-        fontWeight: 100
+        color: '#235f9c'
     },
     buttonWrapper: {
         textAlign: 'left'

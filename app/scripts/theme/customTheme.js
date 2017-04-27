@@ -17,7 +17,8 @@ export default {
         textColor: "#424242",
         alternateTextColor: "#FFF",
         canvasColor: Colors.white,
-        borderColor: "#ECEFF1",
-        pickerHeaderColor: Colors.cyan500
+        borderColor: Colors.grey300,
+        pickerHeaderColor: Colors.cyan500,
+        shadowColor: Colors.fullBlack
     }
 };

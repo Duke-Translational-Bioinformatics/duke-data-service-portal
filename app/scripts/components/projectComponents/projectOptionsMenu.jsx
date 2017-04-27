@@ -114,7 +114,7 @@ class ProjectOptionsMenu extends React.Component {
                           anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                           targetOrigin={{horizontal: 'right', vertical: 'top'}}>
                     <MenuItem primaryText="Delete Project" leftIcon={<i className="material-icons">delete</i>} onTouchTap={() => this.toggleModal('deleteOpen')}/>
-                    <MenuItem primaryText="Edit Project" leftIcon={<i className="material-icons">mode_edit</i>} onTouchTap={() => this.toggleModal('editOpen')}/>
+                    <MenuItem primaryText="Edit Project Details" leftIcon={<i className="material-icons">mode_edit</i>} onTouchTap={() => this.toggleModal('editOpen')}/>
                     <MenuItem primaryText="Add Project Member" leftIcon={<i className="material-icons">person_add</i>} onTouchTap={() => this.toggleModal('addMember')}/>
                 </IconMenu>
             </div>

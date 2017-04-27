@@ -75,7 +75,7 @@ class FolderOptions extends React.Component {
                 <Dialog
                     style={styles.dialogStyles}
                     contentStyle={dialogWidth}
-                    title="Update Folder"
+                    title="Edit Folder Name"
                     autoDetectWindowHeight={true}
                     actions={editActions}
                     onRequestClose={()=>this.toggleModal('editFolder')}

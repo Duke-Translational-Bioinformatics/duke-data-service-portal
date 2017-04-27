@@ -59,14 +59,6 @@ class UploadManager extends React.Component {
 
         return (
             <div style={styles.fileUpload}>
-                <button
-                    title="Upload File"
-                    rel="tooltip"
-                    className='mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-button--colored'
-                    style={styles.floatingButton}
-                    onTouchTap={() => this.toggleUploadManager()}>
-                    <i className='material-icons'>file_upload</i>
-                </button>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <Drawer docked={false} disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openSecondary={true} open={openUploadManager}>
                         <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800"
@@ -140,10 +132,14 @@ class UploadManager extends React.Component {
                                 </div>
                             </div>
                             <div className="mdl-cell mdl-cell--6-col mdl-color-text--grey-400" style={styles.buttonWrapper}>
-                                <RaisedButton label="Upload Files" secondary={true}
-                                              labelStyle={{fontWeight: 100}}
+                                <RaisedButton label="Start Upload"
+                                              labelStyle={styles.buttonLabel}
                                               style={styles.uploadFilesBtn}
                                               onTouchTap={() => this.handleUploadButton(filesToUpload, tagsToAdd, entityObj)}/>
+                                <RaisedButton label={'Cancel'}
+                                              labelStyle={styles.buttonLabel}
+                                              style={styles.cancelBtn}
+                                              onTouchTap={() => this.toggleUploadManager()}/>
                             </div>
                         </div>
                     </Drawer>
@@ -227,6 +223,7 @@ class UploadManager extends React.Component {
         mainStore.defineTagsToAdd([]);
         mainStore.processFilesToUpload([], []);
     }
+
 }
 
 const styles = {
@@ -255,6 +252,9 @@ const styles = {
     buttonWrapper: {
         textAlign: 'left'
     },
+    buttonLabel: {
+        color: '#235f9c'
+    },
     chipWrapper: {
         textAlign: 'left'
     },
@@ -279,6 +279,7 @@ const styles = {
     fileList: {
         margin: '0 auto',
         textAlign: 'left',
+        color: '#235f9c',
         padding: 5
     },
     fileListHeader: {
@@ -321,7 +322,7 @@ const styles = {
         margin: '0 auto',
         textAlign: 'left',
         padding: 5,
-        backgroundColor: '#ffcdd2'
+        backgroundColor: '#f44336'
     },
     tagLabels: {
         margin: 3,
@@ -351,6 +352,10 @@ const styles = {
     uploadFilesBtn: {
         margin: '10px 0px 20px 0px',
         float: 'right'
+    },
+    cancelBtn: {
+        float: 'right',
+        margin: '10px 10px 20px 0px',
     },
     wrapper:{
         display: 'flex',

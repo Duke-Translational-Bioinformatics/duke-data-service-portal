@@ -7,6 +7,7 @@ $grey = #eee
 $black = #222
 $white = #f7f7f7
 $blue = #235F9C
+$lightBlue = #448AFF
 $pink = #EC407A
 
 html
@@ -68,7 +69,7 @@ body
   margin-top: 80px
 
 .link:hover
-  color: $blue
+  text-decoration: underline
 
 .hover a
   color: #616161
@@ -102,6 +103,21 @@ input[type=text]::-ms-clear /*To remove the cancel button inside inputs IE10+*/
     right: 0;
   }
 }
+
+//Project Details styles
+.hide-details
+  visibility: hidden;
+  opacity: 0;
+  max-height: 0;
+  transition: visibility 0s, opacity 0.3s linear, max-height 0.3s linear;
+  transition-timing-function: ease-in;
+
+.show-details
+  visibility: visible;
+  opacity: 1;
+  max-height: 1000px;
+  transition: visibility 0s, opacity 0.3s linear, max-height 0.3s linear;
+  transition-timing-function: ease-in;
 
 //Tooltip Styles
 

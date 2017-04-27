@@ -13,6 +13,8 @@ import FontIcon from 'material-ui/FontIcon';
 import RaisedButton from 'material-ui/RaisedButton';
 import Paper from 'material-ui/Paper';
 
+import FileUpload from 'material-ui/svg-icons/file/file-upload'
+
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 
 @observer
@@ -30,10 +32,17 @@ class ListItems extends React.Component {
         let nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
         let totalChildren = headers !== null && !!headers['x-total'] ? headers['x-total'][0] : null;
         let newFolderModal = null;
+        let uploadManager = null;
         let showChecks = null;
         let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         if (prjPrm !== null) {
             newFolderModal = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <AddFolderModal {...this.props}/>;
+            uploadManager = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <RaisedButton label="Upload Files"
+                                                                                                    labelPosition="before"
+                                                                                                    labelStyle={{color: '#235F9C'}}
+                                                                                                    style={styles.uploadFilesBtn}
+                                                                                                    icon={<FileUpload color={'#EC407A'} />}
+                                                                                                    onTouchTap={() => this.toggleUploadManager()}/>;
             showChecks = !!(prjPrm !== 'viewOnly' && prjPrm !== 'flUpload');
         }
         let children = listItems && listItems.length ? listItems.map((children) => {
@@ -43,22 +52,18 @@ class ListItems extends React.Component {
                 return (
                     <TableRow key={children.id} selected={mainStore.foldersChecked.includes(children.id)}>
                         <TableRowColumn>
-                            <a onClick={()=>this.goTo(children.id, children.kind)} href={UrlGen.routes.folder(children.id)} className="external">
-                                <div onClick={(e) => {e.stopPropagation()}} style={{color:'#235F9C'}}>
+                            <a onClick={(e)=>this.goTo(e, children.id, children.kind)} href={UrlGen.routes.folder(children.id)} className="external">
+                                <div style={{color:'#235F9C'}}>
                                     <FontIcon className="material-icons" style={styles.icon}>folder</FontIcon>
                                     {children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}
                                 </div>
                             </a>
                         </TableRowColumn>
                         {screenSize && screenSize.width >= 680 ? <TableRowColumn>
-                            <div onClick={(e) => {e.stopPropagation()}}>
-                                {children.audit.last_updated_on !== null ? BaseUtils.formatDate(children.audit.last_updated_on)+' by '+children.audit.last_updated_by.full_name : BaseUtils.formatDate(children.audit.created_on)+' by '+children.audit.created_by.full_name}
-                            </div>
+                            {children.audit.last_updated_on !== null ? BaseUtils.formatDate(children.audit.last_updated_on)+' by '+children.audit.last_updated_by.full_name : BaseUtils.formatDate(children.audit.created_on)+' by '+children.audit.created_by.full_name}
                         </TableRowColumn> : null}
                         {screenSize && screenSize.width >= 840 ? <TableRowColumn style={{width: 100}}>
-                            <div onClick={(e) => {e.stopPropagation()}}>
-                                {'---'}
-                            </div>
+                            {'---'}
                         </TableRowColumn> : null}
                         <TableRowColumn style={{textAlign: 'right', width: menuWidth}}>
                             <div onClick={(e) => {e.stopPropagation()}}>
@@ -72,8 +77,8 @@ class ListItems extends React.Component {
                 return (
                     <TableRow key={children.id} selected={mainStore.filesChecked.includes(children.id)}>
                         <TableRowColumn>
-                            <a onClick={()=>this.goTo(children.id, children.kind)} href={UrlGen.routes.file(children.id)} className="external">
-                                <div onClick={(e) => {e.stopPropagation()}} style={{color:'#235F9C'}}>
+                            <a onClick={(e)=>this.goTo(e, children.id, children.kind)} href={UrlGen.routes.file(children.id)} className="external">
+                                <div style={{color:'#235F9C'}}>
                                     <FontIcon className="material-icons" style={styles.icon}>description</FontIcon>
                                     {children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name+' '}
                                     {' (version '+ children.current_version.version+')'}
@@ -81,14 +86,10 @@ class ListItems extends React.Component {
                             </a>
                         </TableRowColumn>
                         {screenSize && screenSize.width >= 680 ? <TableRowColumn>
-                            <div onClick={(e) => {e.stopPropagation()}}>
-                                {children.audit.last_updated_on !== null ? BaseUtils.formatDate(children.audit.last_updated_on)+' by '+children.audit.last_updated_by.full_name : BaseUtils.formatDate(children.audit.created_on)+' by '+children.audit.created_by.full_name}
-                            </div>
+                            {children.audit.last_updated_on !== null ? BaseUtils.formatDate(children.audit.last_updated_on)+' by '+children.audit.last_updated_by.full_name : BaseUtils.formatDate(children.audit.created_on)+' by '+children.audit.created_by.full_name}
                         </TableRowColumn> : null}
                         {screenSize && screenSize.width >= 840 ? <TableRowColumn style={{width: 100}}>
-                            <div onClick={(e) => {e.stopPropagation()}}>
-                                {children.current_version ? BaseUtils.bytesToSize(children.current_version.upload.size) : '---'}
-                            </div>
+                            {children.current_version ? BaseUtils.bytesToSize(children.current_version.upload.size) : '---'}
                         </TableRowColumn> : null}
                         <TableRowColumn style={{textAlign: 'right', width: menuWidth}}>
                             <div onClick={(e) => {e.stopPropagation()}}>
@@ -104,9 +105,9 @@ class ListItems extends React.Component {
             <div className="list-items-container" ref={(c) => this.listContainer = c}>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
                     {!showBatchOps ? <div className="mdl-cell mdl-cell--12-col">
+                        { uploadManager }
                         { newFolderModal }
                     </div> : null}
-
                         { showBatchOps ? <BatchOps {...this.props}/> : null }
                 </div>
                 { uploads || loading ? <Loaders {...this.props}/> : null }
@@ -140,7 +141,8 @@ class ListItems extends React.Component {
         );
     }
 
-    goTo(id, path) {
+    goTo(e, id, path) {
+        e.stopPropagation()
         let route = path === Kind.DDS_FILE ? Path.FILE : Path.FOLDER;
         this.props.router.push(route+id);
     }
@@ -163,12 +165,18 @@ class ListItems extends React.Component {
 
     loadMore(page) {
         let id = this.props.params.id;
-        let kind = this.props.router.location.pathname.includes('project') ? Kind.DDS_PROJECT : Kind.DDS_FOLDER;
+        let kind = this.props.router.location.pathname.includes('project') ? Path.PROJECT : Path.FOLDER;
         mainStore.getChildren(id, kind, page);
     }
 
     setSelectedEntity(id, path) {
         mainStore.setSelectedEntity(id, path);
+    }
+
+    toggleUploadManager() {
+        mainStore.toggleUploadManager();
+        mainStore.defineTagsToAdd([]);
+        mainStore.processFilesToUpload([], []);
     }
 }
 
@@ -188,6 +196,11 @@ var styles = {
     list: {
         float: 'right',
         marginTop: '10 auto'
+    },
+    uploadFilesBtn: {
+        fontWeight: 200,
+        float: 'right',
+        margin: '0px -8px 0px  18px'
     }
 };
 
