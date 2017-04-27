@@ -22,6 +22,28 @@ class ListItems extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            rows: []
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if(prevState.rows !== this.state.rows) {
+            let files = [];
+            let folders = [];
+            if (this.state.rows !== 'all' && this.state.rows !== 'none' && this.state.rows.length) {
+                for (let i = 0; i < this.state.rows.length; i++) {
+                    if (mainStore.listItems[this.state.rows[i]].kind === Kind.DDS_FILE && !BaseUtils.objectPropInArray(files, 'id', mainStore.listItems[this.state.rows[i]].id)) {
+                        files = [...files, mainStore.listItems[this.state.rows[i]].id]
+                    } else {
+                        if(!BaseUtils.objectPropInArray(folders, 'id', mainStore.listItems[this.state.rows[i]].id)) folders = [...folders, mainStore.listItems[this.state.rows[i]].id]
+                    }
+                }
+            }
+            if(this.state.rows === 'all') mainStore.listItems.map((obj)=> {obj.kind === Kind.DDS_FILE ? files = [...files, obj.id] : folders = [...folders, obj.id]})
+            if(this.state.rows === 'none') { files = []; folders = []; }
+            mainStore.handleBatch(files, folders);
+        }
     }
 
     render() {
@@ -97,7 +119,7 @@ class ListItems extends React.Component {
                             </div>
                         </TableRowColumn>
                     </TableRow>
-            );
+                );
             }
         }) : null;
 
@@ -108,7 +130,7 @@ class ListItems extends React.Component {
                         { uploadManager }
                         { newFolderModal }
                     </div> : null}
-                        { showBatchOps ? <BatchOps {...this.props}/> : null }
+                    { showBatchOps ? <BatchOps {...this.props}/> : null }
                 </div>
                 { uploads || loading ? <Loaders {...this.props}/> : null }
                 <Paper className="mdl-cell mdl-cell--12-col" style={styles.list}>
@@ -148,19 +170,10 @@ class ListItems extends React.Component {
     }
 
     selectTableRow(rows) {
-        let files = [];
-        let folders = [];
-        if (rows !== 'all' && rows !== 'none') {
-            for (let i = 0; i < rows.length; i++) {
-                if (mainStore.listItems[rows[i]].kind === Kind.DDS_FILE && !BaseUtils.objectPropInArray(files, 'id', mainStore.listItems[rows[i]].id)) {
-                    files = [...files, mainStore.listItems[rows[i]].id]
-                } else {
-                    if(!BaseUtils.objectPropInArray(folders, 'id', mainStore.listItems[rows[i]].id)) folders = [...folders, mainStore.listItems[rows[i]].id]
-                }
-            }
-        }
-        if(rows === 'all') mainStore.listItems.map((obj)=> {obj.kind === Kind.DDS_FILE ? files = [...files, obj.id] : folders = [...folders, obj.id]})
-        mainStore.handleBatch(files, folders);
+        // Local state is used here to fix a bug that exists in the Material-UI data table component. This bug
+        // is slated to be fixed on the 'next' MUI branch (>0.17). See issue here
+        // Once fixed this setState call can be removed and the logic from componentDidUpdate can be moved to this method.
+        this.setState((prevState) => ({ rows: prevState.rows === 'all' && rows !== 'all' ? 'none' : rows }))
     }
 
     loadMore(page) {
