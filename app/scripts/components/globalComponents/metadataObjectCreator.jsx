@@ -154,15 +154,15 @@ class MetadataObjectCreator extends React.Component {
                            zDepth={1}>
                        <span>You must add or edit at least one value</span>
                     </Paper>
-                    <RaisedButton label={'Cancel'} secondary={true}
-                                  labelStyle={styles.button.label}
-                                  style={styles.button.cancel}
-                                  onTouchTap={() => this.toggleTagManager()}/>
                     {templateProperties && templateProperties.length ?
-                    <RaisedButton label={'Apply'} secondary={true}
+                    <RaisedButton label={'Apply'}
                                   labelStyle={styles.button.label}
                                   style={styles.button.apply}
                                   onTouchTap={() => this.createMetadataObject(templateId)}/> : null}
+                    <RaisedButton label={'Cancel'}
+                                  labelStyle={styles.button.label}
+                                  style={styles.button.cancel}
+                                  onTouchTap={() => this.toggleTagManager()}/>
                 </div>
             </div>
         )
@@ -284,7 +284,7 @@ var styles = {
             float: 'right'
         },
         label: {
-            fontWeight: 100
+            color: '#235f9c'
         }
     },
     btnWrapper: {

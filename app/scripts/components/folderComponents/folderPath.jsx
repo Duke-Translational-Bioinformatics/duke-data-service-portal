@@ -48,7 +48,7 @@ class FolderPath extends React.Component {
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.breadcrumbs}>
                         <h5 style={styles.heading}><FontIcon className="material-icons" style={styles.folderIcon}>folder_open</FontIcon>{ name }</h5>
                     </div>
-                    <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.breadcrumbs}>
+                    <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.breadcrumbs}>
                         <h6 style={styles.breadcrumbHeading}>{path}  {' '+name}</h6>
                     </div>
                 </div>
@@ -75,8 +75,7 @@ var styles = {
     },
     breadcrumbHeading: {
         marginTop: 0,
-        marginBottom: 6,
-        fontWeight: 200
+        marginBottom: 6
     },
     detailsTitle: {
         textAlign: 'left',

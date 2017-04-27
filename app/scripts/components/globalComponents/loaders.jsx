@@ -22,8 +22,7 @@ class Loaders extends React.Component {
                 </div>;
             });
         }
-        let loading = mainStore.loading ?
-        <LinearProgress mode="indeterminate" color={'#EC407A'} style={styles.uploader}/> : '';
+        let loading = mainStore.loading ? <LinearProgress mode="indeterminate" color={'#EC407A'} style={styles.loader}/> : '';
         if (mainStore.uploads && mainStore.uploads.size != 0) {
             return (
                 <div>
@@ -42,19 +41,24 @@ class Loaders extends React.Component {
         mainStore.cancelUpload(uploadId, name);
     }
 }
-var styles = {
+
+const styles = {
     deleteIcon: {
         fontSize: 18,
         cursor: 'pointer',
         color: '#F44336',
         position: 'absolute',
         marginTop: -11,
-        marginLeft: 22
+        marginLeft: 4
     },
     uploader: {
-        width: '95%',
-        margin: '0 auto',
-        marginRight: 24,
+        width: '97.7%',
+        margin: '0px 8px 0px 22px',
+        backgroundColor: "#235F9C"
+    },
+    loader: {
+        width: '98.7%',
+        margin: '0px 8px 0px 8px',
         backgroundColor: "#235F9C"
     },
     uploadText: {

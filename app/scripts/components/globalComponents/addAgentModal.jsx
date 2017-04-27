@@ -106,7 +106,7 @@ var styles = {
     addButton: {
         float: 'right',
         position: 'relative',
-        margin: '24px 5px 0px 0px'
+        margin: '0px 5px 0px 0px'
     },
     dialogStyles: {
         textAlign: 'center',

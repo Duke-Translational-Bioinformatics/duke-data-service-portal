@@ -51,6 +51,7 @@ class Details extends React.Component {
         ];
 
         let createdById = project && project.audit ? project.audit.created_by.id : null;
+        let crdOn = project && project.audit ? project.audit.created_on : null;
         let currentUserId = currentUser ? currentUser.id : null;
         let description = project ? project.description : null;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
@@ -127,6 +128,12 @@ class Details extends React.Component {
                         <li className="item-content">
                             <div className="item-inner">
                                 <div className="item-title">{ projectId }</div>
+                            </div>
+                        </li>
+                        <li className="item-divider">Created On</li>
+                        <li className="item-content">
+                            <div className="item-inner">
+                                <div>{ BaseUtils.formatDate(crdOn) }</div>
                             </div>
                         </li>
                         <li className="item-divider">Last Updated By</li>
