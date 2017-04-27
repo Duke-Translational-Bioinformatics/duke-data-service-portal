@@ -34,19 +34,18 @@ class ProjectDetails extends React.Component {
             optionsMenu = prjPrm === 'prjCrud' ? <ProjectOptionsMenu {...this.props} /> : null;
         }
         return (
-            <Card
-                className="project-container mdl-color--white mdl-color-text--grey-800"
-                style={{overflow: 'visible', padding: '10px 0px 10px 0px'}}>
+            <Card className="project-container"
+                style={styles.container}>
                 { uploadMdl }
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                    <div style={styles.menuIcon}>
-                        { optionsMenu }
-                    </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
                         <a href={UrlGen.routes.home()} style={styles.back} className="external mdl-color-text--grey-800">
                             <i className="material-icons mdl-color-text--grey-800" style={styles.backIcon}>keyboard_backspace</i>
                             Back
                         </a>
+                        <div style={styles.menuIcon}>
+                            { optionsMenu }
+                        </div>
                     </div>
                     <div className="mdl-cell mdl-cell--9-col mdl-cell--4-col-tablet mdl-cell--4-col-phone"
                          style={styles.detailsTitle}>
@@ -86,7 +85,6 @@ class ProjectDetails extends React.Component {
 
 const styles = {
     container: {
-        marginTop: 40,
         overflow: 'visible',
         padding: '10px 0px 10px 0px'
     },
@@ -121,8 +119,8 @@ const styles = {
     },
     menuIcon: {
         float: 'right',
-        marginTop: 32,
-        marginRight: -5
+        // marginTop: 32,
+        // marginRight: -5
     },
     projectName: {
         margin: 0,
@@ -137,10 +135,7 @@ const styles = {
     },
     back: {
         verticalAlign: -2
-    },
-    // span: {
-    //     color: '#212121'
-    // }
+    }
 };
 
 ProjectDetails.contextTypes = {

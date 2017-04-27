@@ -20,18 +20,12 @@ class Metadata extends React.Component {
 
     render() {
         return (
-            <div style={styles.container}>
+            <div>
                 <MetadataTemplateList {...this.props} />
                 <MetadataTemplateManager {...this.props} />
             </div>
         );
     }
 }
-
-const styles = {
-    container: {
-        marginTop: 85
-    }
-};
 
 export default Metadata;

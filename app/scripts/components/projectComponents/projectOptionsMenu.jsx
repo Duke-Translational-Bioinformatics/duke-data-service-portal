@@ -189,7 +189,7 @@ var styles = {
         marginLeft: 30
     },
     openIcon: {
-        marginBottom: 12
+        margin: '-10px -12px 0px 0px'
     },
     warning: {
         fontSize: 48,

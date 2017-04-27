@@ -80,7 +80,7 @@ class App extends React.Component {
     }
 
     checkError() {
-        if (mainStore.error && mainStore.error.response.status){
+        if (mainStore.error && mainStore.error.response){
             if(mainStore.error.response.status === 404) {
                 mainStore.clearErrors();
                 setTimeout(()=>this.props.router.push('/404'),1000);

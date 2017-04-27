@@ -189,9 +189,10 @@ MetadataTemplateList.contextTypes = {
     muiTheme: React.PropTypes.object
 };
 
-var styles = {
+const styles = {
     addTemplateBtn: {
         float: 'right',
+        marginTop: 10,
         label: {
             color: '#235f9c'
         }

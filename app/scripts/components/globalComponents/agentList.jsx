@@ -84,17 +84,13 @@ class AgentList extends React.Component {
         });
 
         return (
-            <div className="list-container" style={styles.listContainer}>
+            <div className="list-container" >
                 {modal}
-                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
-                    <div style={styles.headerTitle}>
-                        <h4>Software Agents</h4>
-                    </div>
-                    <div className="mdl-cell mdl-cell--12-col">
-                        <AddAgentModal {...this.props}/>
-                    </div>
+                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.headerWrapper}>
+                    <h4 style={styles.headerTitle}>Software Agents</h4>
+                    <AddAgentModal {...this.props}/>
                 </div>
-                <div className="mdl-cell mdl-cell--12-col" style={styles.loading}>
+                <div className="mdl-cell mdl-cell--12-col">
                     { uploads || loading ? <Loaders {...this.props}/> : null }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
@@ -152,7 +148,11 @@ var styles = {
     },
     headerTitle: {
         float: 'left',
-        margin: '10px 0px 0px 14px'
+        margin: 0
+    },
+    headerWrapper: {
+        float: 'right',
+        padding: '0px 14px 0px 14px'
     },
     icon: {
         fontSize: 36,
@@ -166,9 +166,6 @@ var styles = {
     },
     list: {
         float: 'right'
-    },
-    listContainer: {
-        marginTop: 65
     },
     loaders: {
         paddingTop: 40

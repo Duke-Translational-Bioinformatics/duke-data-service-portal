@@ -819,7 +819,7 @@ describe('Main Store', () => {
         expect(mainStore.listItems.length).toBe(2);
         transportLayer.getChildren = jest.fn(() => respond(201, 'ok', fake.list_item_response_json));
         mainStore.getChildren(FOLDER_ID, FOLDER_PATH, PAGE);
-        expect(mainStore.listItems.length).toBe(0);
+        expect(mainStore.listItems.length).toBe(2);
         return sleep(1).then(() => {
             expect(transportLayer.getChildren).toHaveBeenCalledTimes(1);
             expect(transportLayer.getChildren).toHaveBeenCalledWith(FOLDER_ID, FOLDER_PATH, PAGE);

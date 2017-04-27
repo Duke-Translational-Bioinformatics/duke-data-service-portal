@@ -27,7 +27,7 @@ class ListItems extends React.Component {
     render() {
         const { filesChecked, foldersChecked, listItems, loading, projPermissions, responseHeaders, screenSize, tableBodyRenderKey, uploads } = mainStore;
         let showBatchOps = filesChecked.length || foldersChecked.length ? true : false;
-        let menuWidth = screenSize.width > 1230 ? 42 : 35;
+        let menuWidth = screenSize.width > 1230 ? 39 : 28;
         let headers = responseHeaders && responseHeaders !== null ? responseHeaders : null;
         let nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
         let totalChildren = headers !== null && !!headers['x-total'] ? headers['x-total'][0] : null;
