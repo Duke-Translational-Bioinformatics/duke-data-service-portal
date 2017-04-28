@@ -7,6 +7,7 @@ import Details from './details.jsx';
 import UploadManager from '../globalComponents/uploadManager.jsx';
 import {UrlGen} from '../../util/urlEnum';
 import FlatButton from 'material-ui/FlatButton';
+import FontIcon from 'material-ui/FontIcon';
 import Card from 'material-ui/Card';
 import KeyboardArrowDown from 'material-ui/svg-icons/hardware/keyboard-arrow-down'
 import KeyboardArrowUp from 'material-ui/svg-icons/hardware/keyboard-arrow-up'
@@ -34,8 +35,7 @@ class ProjectDetails extends React.Component {
             optionsMenu = prjPrm === 'prjCrud' ? <ProjectOptionsMenu {...this.props} /> : null;
         }
         return (
-            <Card className="project-container"
-                style={styles.container}>
+            <Card className="project-container" style={styles.container}>
                 { uploadMdl }
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
@@ -49,13 +49,15 @@ class ProjectDetails extends React.Component {
                     </div>
                     <div className="mdl-cell mdl-cell--9-col mdl-cell--4-col-tablet mdl-cell--4-col-phone"
                          style={styles.detailsTitle}>
-                        <h4 style={styles.projectName}>{ projectName }</h4>
+                        <h4 style={styles.projectName}>
+                            <FontIcon className="material-icons" style={styles.projectIcon}>content_paste</FontIcon>
+                            { projectName }
+                        </h4>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-color-text--grey-800" style={styles.details}>
-                        Created By: {' '+ createdBy }
-                    </div>
-                    <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.detailsButton}>
+                        <span style={styles.createdBy}>Created By: {' '+ createdBy }</span>
                         <FlatButton
+                            style={styles.btn}
                             label={'PROJECT DETAILS'}
                             labelPosition="before"
                             secondary={true}
@@ -84,9 +86,25 @@ class ProjectDetails extends React.Component {
 }
 
 const styles = {
+    arrow: {
+        textAlign: 'left'
+    },
+    back: {
+        verticalAlign: -2
+    },
+    backIcon: {
+        fontSize: 24,
+        float: 'left'
+    },
+    btn: {
+        float: 'right'
+    },
     container: {
-        overflow: 'visible',
+        overflow: 'auto',
         padding: '10px 0px 10px 0px'
+    },
+    createdBy: {
+        verticalAlign: '-10px'
     },
     detailsTitle: {
         textAlign: 'left',
@@ -105,36 +123,25 @@ const styles = {
         marginLeft: 7,
         marginTop: 19
     },
-    summary: {
-        float: 'left',
-        textAlign: 'left'
-    },
-    detailsButton: {
-        align: 'center',
-        clear: 'both',
-        textAlign: 'right'
-    },
     moreDetails: {
         textAlign: 'left'
     },
     menuIcon: {
-        float: 'right',
-        // marginTop: 32,
-        // marginRight: -5
+        float: 'right'
     },
     projectName: {
         margin: 0,
         fontWeight: 200
     },
-    backIcon: {
-        fontSize: 24,
-        float: 'left'
+    projectIcon: {
+        fontSize: 36,
+        color: '#616161',
+        margin: '0px 8px 0px -3px',
+        verticalAlign: 'text-bottom'
     },
-    arrow: {
+    summary: {
+        float: 'left',
         textAlign: 'left'
-    },
-    back: {
-        verticalAlign: -2
     }
 };
 

@@ -116,7 +116,7 @@ class Details extends React.Component {
                         </SelectField><br/>
                     </form>
                 </Dialog>
-                <div className="list-block">
+                <div className="list-block" style={styles.firstListBlock}>
                     <ul>
                         <li className="item-divider">Description</li>
                         <li className="item-content">
@@ -244,7 +244,7 @@ class Details extends React.Component {
 }
 
 
-var styles = {
+const styles = {
     deleteIcon: {
         fontSize: 18,
         color: '#F44336',
@@ -254,6 +254,9 @@ var styles = {
         textAlign: 'center',
         fontColor: '#303F9F',
         zIndex: '5000'
+    },
+    firstListBlock: {
+        marginTop: 110
     },
     iconContainer: {
         float: 'right'
