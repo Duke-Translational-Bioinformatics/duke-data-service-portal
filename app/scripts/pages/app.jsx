@@ -55,7 +55,6 @@ class App extends React.Component {
             mainStore.loadMetadataTemplates(null);
             authStore.removeLoginCookie();
         }
-        this.checkError();
     }
 
     componentWillUnmount() {
@@ -76,17 +75,6 @@ class App extends React.Component {
         if(authStore.appConfig.apiToken && !Object.keys(authStore.currentUser).length) authStore.getCurrentUser();
         if(authStore.sessionTimeoutWarning) authStore.setRedirectUrl(location.href);
         this.showToasts();
-        this.checkError();
-    }
-
-    checkError() {
-        if (mainStore.error && mainStore.error.response){
-            if(mainStore.error.response.status === 404) {
-                mainStore.clearErrors();
-                setTimeout(()=>this.props.router.push('/404'),1000);
-            }
-            mainStore.error.response.status !== 404 ? console.log(mainStore.error.stack) : null;
-        }
     }
 
     handleResize() {
@@ -107,7 +95,7 @@ class App extends React.Component {
                 return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} open={true}/>
             });
         }
-        if (appConfig.apiToken && errorModals) {
+        if (appConfig.apiToken && errorModals.length) {
             dialogs = errorModals.map(obj => {
                 let actions = <FlatButton
                     key={obj.ref}

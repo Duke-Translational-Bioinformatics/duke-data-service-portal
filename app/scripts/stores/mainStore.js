@@ -21,7 +21,6 @@ export class MainStore {
     @observable device
     @observable drawerLoading
     @observable entityObj
-    @observable error
     @observable errorModals
     @observable failedUploads
     @observable filesChecked
@@ -96,7 +95,6 @@ export class MainStore {
         this.destinationKind = null;
         this.drawerLoading = false;
         this.entityObj = null;
-        this.error = null;
         this.errorModals = [];
         this.failedUploads = [];
         this.filesChecked = [];
@@ -1342,19 +1340,13 @@ export class MainStore {
                 response: 'Folders can not be uploaded through the web portal.',
                 ref: 'modal' + Math.floor(Math.random() * 10000)
             });
-        } else if (error && error.response.status !== 404) {
+        } else {
             this.errorModals.push({
                 msg: error.response.status === 403 ? error.message + ': You don\'t have permissions to view or change' +
-                ' this resource' : error.message,
+                    ' this resource' : error.message,
                 response: error.response.status,
                 ref: 'modal' + Math.floor(Math.random() * 10000)
             });
-        } else {
-            if (authStore.appConfig.apiToken) {
-                setTimeout(()=>window.location.href = window.location.protocol + "//" + window.location.host + "/#/404", 1000);
-            } else {
-                setTimeout(()=>window.location.href = window.location.protocol + "//" + window.location.host + "/#/login", 1000);
-            }
         }
     }
 
@@ -1368,11 +1360,18 @@ export class MainStore {
     }
 
     @action handleErrors(error) {
-        this.displayErrorModals(error);
-        this.error = error;
         this.loading = false;
         this.drawerLoading = false;
         provenanceStore.toggleGraphLoading();
+        if (error && error.response && error.response.status) {
+            if (error.response.status === 401) {
+                window.location.href = window.location.protocol + "//" + window.location.host + "/#/login";
+            } else if (error.response.status === 404 && authStore.appConfig.apiToken) {
+                window.location.href = window.location.protocol + "//" + window.location.host + "/#/404";
+            } else {
+                this.displayErrorModals(error);
+            }
+        }
     }
 
     @action addToast(msg) {
@@ -1405,10 +1404,6 @@ export class MainStore {
         this.failedUploads = [];
     }
 
-    @action clearErrors() {
-        this.error = {};
-    }
-
     @action removeErrorModal(refId) {
         for (let i = 0; i < this.errorModals.length; i++) {
             if (this.errorModals[i].ref === refId) {
@@ -1416,7 +1411,6 @@ export class MainStore {
                 break;
             }
         }
-        this.error = {};
     }
 
     @action toggleLoading() {

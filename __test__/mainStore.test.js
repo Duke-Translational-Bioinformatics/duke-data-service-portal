@@ -162,14 +162,11 @@ describe('Main Store', () => {
     });
 
     it('@action deleteTag - deletes tag from a file', () => {
-        mainStore.error = null;
         transportLayer.deleteTag = jest.fn((id, label, tag) => respond(404, 'not found', {}));
         mainStore.deleteTag(fake.tag_json.id);
         return sleep(1).then(() => {
             expect(transportLayer.deleteTag).toHaveBeenCalledTimes(1);
             expect(transportLayer.deleteTag).toHaveBeenCalledWith(fake.tag_json.id);
-            expect(mainStore.error).not.toBeNull()
-            expect(mainStore.error.response.status).toBe(404)
         });
     });
 
@@ -257,13 +254,11 @@ describe('Main Store', () => {
     });
 
     it('@action getDownloadUrl ERROR - file can not be found', () => {
-        mainStore.error = null;
         transportLayer.getDownloadUrl = jest.fn((id, kind) => respond(404, 'not found', {}));
         mainStore.getDownloadUrl(FILE_ID, DDS_FILE);
         return sleep(1).then(() => {
             expect(transportLayer.getDownloadUrl).toHaveBeenCalledTimes(1);
             expect(transportLayer.getDownloadUrl).toHaveBeenCalledWith(FILE_ID, DDS_FILE);
-            expect(mainStore.error).not.toBeNull();
         });
     });
 
@@ -404,14 +399,13 @@ describe('Main Store', () => {
     });
 
     it('@action deleteMetadataProperty ERROR FORBIDDEN- fails to delete metadata property', () => {
-        mainStore.error = null;
+        mainStore.errorModals = [];
         transportLayer.deleteMetadataProperty = jest.fn((id) => respond(403, 'forbidden', {}));
         mainStore.deleteMetadataProperty(fake.template_property_json.id, EDITED_LABEL);
         return sleep(1).then(() => {
             expect(transportLayer.deleteMetadataProperty).toHaveBeenCalledTimes(1);
             expect(transportLayer.deleteMetadataProperty).toHaveBeenCalledWith(fake.template_property_json.id);
-            expect(mainStore.error.response.status).toBe(403);
-            expect(mainStore.error).toBeDefined();
+            expect(mainStore.errorModals.length).toBe(1);
         });
     });
 
@@ -563,20 +557,9 @@ describe('Main Store', () => {
         mainStore.errorModals = [];
         mainStore.displayErrorModals(fake.error_json);
         mainStore.displayErrorModals(fake.special_error_json);
-        mainStore.displayErrorModals(fake.error_404);
-        //404 error shouldn't push a modal
         expect(mainStore.errorModals.length).toBe(2);
         expect(mainStore.errorModals[0].response).toBe(503);
         expect(mainStore.errorModals[1].response).toBe('Folders can not be uploaded through the web portal.');
-    });
-
-    it('@action clearErrors - clears errors', () => {
-        mainStore.error = {};
-        expect(mainStore.error).toEqual({});
-        mainStore.error = fake.error_json;
-        mainStore.clearErrors();
-        expect(mainStore.error).toEqual({});
-
     });
 
     it('@action toggleUserInfoPanel - toggles user info panel', () => {
