@@ -32,7 +32,6 @@ class Login extends React.Component {
 
     render() {
         let content = '';
-        const {error} = mainStore;
         const {appConfig, authServiceLoading} = authStore;
         if (!appConfig.apiToken) {
             let url = window.location.hash.split('&');
@@ -58,7 +57,6 @@ class Login extends React.Component {
                 </div>
             );
             if (accessToken && appConfig.serviceId !== null) authStore.getApiToken(accessToken);
-            if (error !== null) content = error
         }
         return (
             <div>
@@ -95,7 +93,6 @@ const styles = {
 };
 
 Login.propTypes = {
-    error: object,
     appConfig: object,
     authServiceLoading: bool
 };
