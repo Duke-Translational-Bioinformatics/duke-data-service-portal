@@ -25,6 +25,7 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.handleResize = this.handleResize.bind(this);
+        this.$$ = Dom7;
     }
 
     static childContextTypes = {
@@ -71,9 +72,10 @@ class App extends React.Component {
         }
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(prevProps) {
         if(authStore.appConfig.apiToken && !Object.keys(authStore.currentUser).length) authStore.getCurrentUser();
         if(authStore.sessionTimeoutWarning) authStore.setRedirectUrl(location.href);
+        if(prevProps.location.pathname !== this.props.location.pathname) this.$$('.page-content').scrollTo(0, 0);
         this.showToasts();
     }
 
