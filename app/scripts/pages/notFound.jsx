@@ -28,7 +28,7 @@ class NotFound extends React.Component {
        this.props.router.push('/home');
     }
 }
-var styles = {
+const styles = {
     button: {
         marginBottom: 10
     },

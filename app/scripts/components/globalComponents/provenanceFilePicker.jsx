@@ -1,9 +1,9 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
-import ReactDOM from 'react-dom';
+const { object, bool, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import provenanceStore from '../../stores/provenanceStore';
+import { Color } from '../../theme/customTheme';
 import BaseUtils from '../../util/baseUtils.js';
 import AutoComplete from 'material-ui/AutoComplete';
 import CircularProgress from 'material-ui/CircularProgress';
@@ -192,7 +192,7 @@ class ProvenanceFilePicker extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     autoComplete: {
         maxWidth: 'calc(100% - 45px)'
     },
@@ -212,7 +212,7 @@ var styles = {
     },
     dialogStyles: {
         textAlign: 'center',
-        fontColor: '#303F9F',
+        fontColor: Color.dkBlue,
         zIndex: '5000'
     },
     projectSelect: {

@@ -143,7 +143,7 @@ class FolderOptions extends React.Component {
         this.setState({floatingErrorText: e.target.value ? '' : 'This field is required.'});
     }
 }
-var styles = {
+const styles = {
     addFolder: {
         position: 'relative',
         margin: '12px 8px 0px 0px'

@@ -1,9 +1,7 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object, bool, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
-import Close from 'material-ui/svg-icons/navigation/close';
-import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 

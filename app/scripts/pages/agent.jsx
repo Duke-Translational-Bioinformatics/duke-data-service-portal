@@ -114,7 +114,7 @@ class Agent extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     arrow: {
         textAlign: 'left'
     },

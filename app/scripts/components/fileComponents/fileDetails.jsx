@@ -264,7 +264,7 @@ class FileDetails extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     arrow: {
         textAlign: 'left',
         marginTop: -5

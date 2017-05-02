@@ -1,8 +1,9 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import authStore from '../../stores/authStore';
+import { Color } from '../../theme/customTheme';
 import BaseUtils from '../../util/baseUtils'
 
 @observer
@@ -47,13 +48,13 @@ class MetadataTemplateProperties extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     datatypeHeading: {
         paddingRight: 50
     },
     deleteIcon: {
         fontSize: 22,
-        color: '#F44336',
+        color: Color.red,
         cursor: 'pointer'
     },
     listHeader: {
@@ -70,8 +71,8 @@ MetadataTemplateProperties.contextTypes = {
 };
 
 MetadataTemplateProperties.propTypes = {
-    currentUser: React.PropTypes.object,
-    templateProperties: React.PropTypes.array
+    currentUser: object,
+    templateProperties: array
 };
 
 export default MetadataTemplateProperties;

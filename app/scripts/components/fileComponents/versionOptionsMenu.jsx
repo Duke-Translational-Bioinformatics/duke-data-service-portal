@@ -169,7 +169,7 @@ class VersionsOptionsMenu extends React.Component {
         mainStore.toggleModals(id)
     }
 }
-var styles = {
+const styles = {
     dialogStyles: {
         textAlign: 'center',
         fontColor: '#303F9F',

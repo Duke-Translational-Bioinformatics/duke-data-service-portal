@@ -231,8 +231,6 @@ class TagManager extends React.Component {
     };
 
     handleUpdateInput (text) {
-        let timeout = this.state.timeout;
-        let searchInput = this.autocomplete;
         clearTimeout(this.state.timeout);
         this.setState({
             timeout: setTimeout(() => {

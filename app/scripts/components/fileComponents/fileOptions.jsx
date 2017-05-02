@@ -147,7 +147,7 @@ class FileOptions extends React.Component {
         });
     }
 }
-var styles = {
+const styles = {
     deleteFile: {
         float: 'right',
         position: 'relative',

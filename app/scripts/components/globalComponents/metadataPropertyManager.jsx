@@ -210,7 +210,7 @@ class MetadataPropertyManager extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     addPropBtn: {
         margin: '12px -24px 12px 0px',
         float: 'right'

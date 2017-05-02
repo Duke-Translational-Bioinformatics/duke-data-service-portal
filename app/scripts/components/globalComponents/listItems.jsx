@@ -3,7 +3,7 @@ const { object, bool, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../util/baseUtils.js';
-import {UrlGen, Path, Kind} from '../../util/urlEnum';
+import { UrlGen, Path, Kind } from '../../util/urlEnum';
 import { Color } from '../../theme/customTheme';
 import BatchOps from '../../components/globalComponents/batchOps.jsx';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';

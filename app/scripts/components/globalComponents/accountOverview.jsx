@@ -38,7 +38,7 @@ class AccountOverview extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     cardSquare: {
         marginBottom: 40,
         height: 120,

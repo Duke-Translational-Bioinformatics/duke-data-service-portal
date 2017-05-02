@@ -93,7 +93,7 @@ class AddFolderModal extends React.Component {
     }
 }
 
-let styles = {
+const styles = {
     addFolder: {
         float: 'right'
     },

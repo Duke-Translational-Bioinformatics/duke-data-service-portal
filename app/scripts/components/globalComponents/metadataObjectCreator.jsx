@@ -95,11 +95,9 @@ class MetadataObjectCreator extends React.Component {
             )
         }) : null;
         let showWarning = this.state.noValueWarning ? 'block' : 'none';
-        let templateDesc = metadataTemplate && metadataTemplate !== null ? metadataTemplate.description : null;
         let templateId = metadataTemplate && metadataTemplate !== null ? metadataTemplate.id : null;
         let templateInfo = metadataTemplate && metadataTemplate !== null ? showTemplate(metadataTemplate) : null;
         let templateLabel = metadataTemplate && metadataTemplate !== null ? metadataTemplate.label : null;
-        let templateName = metadataTemplate && metadataTemplate !== null ? metadataTemplate.name : null;
 
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.wrapper}>
