@@ -109,9 +109,8 @@ class Provenance extends React.Component {
     }
 
     render() {
-        const { addEdgeMode, dltRelationsBtn, doubleClicked, drawerLoading, dropdownSelectValue, provEdges, provNodes, provEditorModal, relationMode, relFrom, relTo, relMsg, removeFileFromProvBtn, selectedEdge, showProvDetails, toggleProv, toggleProvEdit } = provenanceStore;
+        const { addEdgeMode, dltRelationsBtn, drawerLoading, dropdownSelectValue, provEditorModal, relationMode, relFrom, relTo, relMsg, removeFileFromProvBtn, selectedEdge, showProvDetails, toggleProv, toggleProvEdit } = provenanceStore;
         const { entityObj, fileVersions, projPermissions, screenSize } = mainStore;
-        const { currentUser } = authStore;
         let fileName = entityObj && entityObj.name ? entityObj.name : null;
         if(fileName === null) fileName = entityObj ? entityObj.file.name : null;
         let fileVersion = entityObj && entityObj.current_version ? entityObj.current_version.version : null;
@@ -611,7 +610,6 @@ const styles = {
 };
 
 Provenance.propTypes = {
-    currentUser: object,
     entityObj: object,
     selectedNode: object,
     screenSize: object,
@@ -626,7 +624,6 @@ Provenance.propTypes = {
     toggleProvEdit: bool,
     addEdgeMode: bool,
     dltRelationsBtn: bool,
-    doubleClicked: bool,
     drawerLoading: bool,
     relationMode: bool,
     removeFileFromProvBtn: bool,
