@@ -17,7 +17,7 @@ class AccountOverview extends React.Component {
 
         return (
             <Card className="account-overview content mdl-color-text--grey-800"
-                  style={{padding: 20,textAlign: 'center'}}>
+                  style={{padding: '0px 0px 20px 0px', textAlign: 'center'}}>
                 <div style={styles.cardSquare}
                      className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
                     <h4>{numProjects + ' Projects'}</h4>
@@ -40,7 +40,6 @@ class AccountOverview extends React.Component {
 
 const styles = {
     cardSquare: {
-        marginBottom: 40,
         height: 120,
         display: 'inline-block'
     },

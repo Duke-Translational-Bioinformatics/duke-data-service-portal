@@ -42,7 +42,6 @@ class ProvenanceFilePicker extends React.Component {
         if(fileName === null) fileName = entityObj ? entityObj.file.name : null;
         let fileVersion = entityObj && entityObj.current_version ? entityObj.current_version.version : null;
         if(fileVersion === null) fileVersion = entityObj ? entityObj.version : null;
-        let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         let project = entityObj && entityObj.current_version ? entityObj.project.id : null;
         if(project === null) project = entityObj && entityObj.file ? entityObj.file.project.id : null;
         let projectList = projects && projects.length ? projects.map((project)=>{
@@ -96,7 +95,7 @@ class ProvenanceFilePicker extends React.Component {
                                  autoWidth={true}
                                  fullWidth={true}
                                  floatingLabelText="Select a Project"
-                                 floatingLabelStyle={{color: '#BDBDBD', fontWeight: 100}}
+                                 floatingLabelStyle={{color: Color.grey}}
                                  style={styles.projectSelect}>
                         {projectList}
                     </SelectField>

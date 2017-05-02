@@ -46,7 +46,7 @@ let MoveItemModal = observer(React.createClass({
                     primaryText={moveToObj.name}
                     leftIcon={<Folder />}
                     onTouchTap={() => this.selectedLocation(moveToObj.id, moveToObj.kind)}
-                    rightIconButton={<Archive style={styles.rightIcon} color={Color.pink} onTouchTap={() => this.handleMove(moveToObj.id, moveToObj.kind)}/>}/>
+                    rightIconButton={<IconButton tooltip="move here" tooltipPosition="bottom"><Archive style={styles.rightIcon} color={Color.pink} onTouchTap={() => this.handleMove(moveToObj.id, moveToObj.kind)}/></IconButton>}/>
             }
         }
 
@@ -65,7 +65,7 @@ let MoveItemModal = observer(React.createClass({
                                   primaryText={item.name}
                                   leftIcon={<ContentPaste />}
                                   onTouchTap={() => this.getProjectChildren(item.id)}
-                                  rightIconButton={<Archive style={styles.rightIcon} color={Color.pink} onTouchTap={() => this.handleMove(item.id, item.kind)}/>}/>
+                                  rightIconButton={<IconButton tooltip="move here" tooltipPosition="bottom"><Archive style={styles.rightIcon} color={Color.pink} onTouchTap={() => this.handleMove(item.id, item.kind)}/></IconButton>}/>
                     )
                 } else {
                     return (
@@ -91,7 +91,7 @@ let MoveItemModal = observer(React.createClass({
                                   primaryText={children.name}
                                   leftIcon={<Folder />}
                                   onTouchTap={() => this.openListItem(children.id, children.kind)}
-                                  rightIconButton={<Archive style={styles.rightIcon} color={Color.pink} onTouchTap={() => this.handleMove(children.id, children.kind)}/>}/>
+                                  rightIconButton={<IconButton tooltip="move here" tooltipPosition="bottom"><Archive style={styles.rightIcon} color={Color.pink} onTouchTap={() => this.handleMove(item.id, item.kind)}/></IconButton>}/>
                     )
                 } else {
                     return (
@@ -117,7 +117,7 @@ let MoveItemModal = observer(React.createClass({
                                   primaryText={children.name}
                                   leftIcon={<Folder />}
                                   onTouchTap={() => this.openListItem(children.id, children.kind)}
-                                  rightIconButton={<Archive style={styles.rightIcon} color={Color.pink} onTouchTap={() => this.handleMove(children.id, children.kind)}/>}/>
+                                  rightIconButton={<IconButton tooltip="move here" tooltipPosition="bottom"><Archive style={styles.rightIcon} color={Color.pink} onTouchTap={() => this.handleMove(item.id, item.kind)}/></IconButton>}/>
                     )
                 } else {
                     return (

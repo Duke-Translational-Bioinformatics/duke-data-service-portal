@@ -55,7 +55,6 @@ class UploadManager extends React.Component {
         }) : null;
         let autoCompleteData = tagAutoCompleteList && tagAutoCompleteList.length > 0 ? tagAutoCompleteList : [];
         let dropzoneColor = this.state.dropzoneHover ? '#EEE' : '#FFF';
-        let name = entityObj ? entityObj.name : 'these files';
         let width = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.width : window.innerWidth;
 
         return (
@@ -119,7 +118,10 @@ class UploadManager extends React.Component {
                                 </IconButton><br/>
                             </div>
                             <div className="mdl-cell mdl-cell--6-col mdl-color-text--grey-600" style={styles.tagLabelsContainer}>
-                                <h6 style={styles.tagLabelsHeading}>Recently used tags <span style={styles.tagLabelsHeading.span}>(click on a tag to add it to {name})</span></h6>
+                                <h6 style={styles.tagLabelsHeading}>Recently used tags
+                                    <span style={styles.tagLabelsHeading.span}>
+                                        (click on a tag to add it to {filesToUpload.length === 1 ? filesToUpload[0].name + ' during upload' : 'these files during upload'})
+                                    </span></h6>
                                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600">
                                     <ul style={styles.tagLabelList}>
                                         { tagLbls }

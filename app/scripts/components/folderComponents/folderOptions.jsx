@@ -99,7 +99,7 @@ class FolderOptions extends React.Component {
                     {...this.props}
                     style={styles.dialogStyles}
                     contentStyle={dialogWidth}
-                    title="Select Destination"
+                    title="Select a Location to Move Folder"
                     autoDetectWindowHeight={true}
                     actions={moveActions}
                     open={toggleModal && toggleModal.id === 'moveFolder' ? toggleModal.open : false}

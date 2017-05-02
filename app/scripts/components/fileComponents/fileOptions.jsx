@@ -96,7 +96,7 @@ class FileOptions extends React.Component {
                     {...this.props}
                     style={styles.dialogStyles}
                     contentStyle={dialogWidth}
-                    title="Select Destination"
+                    title="Select a Location to Move File"
                     autoDetectWindowHeight={true}
                     actions={moveActions}
                     open={toggleModal && toggleModal.id === 'moveItem' ? toggleModal.open : false}

@@ -26,8 +26,8 @@ class ProjectDetails extends React.Component {
 
     render() {
         const { project, projPermissions } = mainStore;
-        let createdBy = project && project.audit ? project.audit.created_by.full_name : null;
-        let projectName = project ? project.name : null;
+        let createdBy = project && project.audit ? project.audit.created_by.full_name : '';
+        let projectName = project ? project.name : '';
         let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         let uploadMdl = null;
         let optionsMenu = null;

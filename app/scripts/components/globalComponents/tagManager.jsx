@@ -110,7 +110,7 @@ class TagManager extends React.Component {
                                         onNewRequest={(value) => this.addTagToCloud(value)}
                                         onUpdateInput={this.handleUpdateInput.bind(this)}
                                         underlineStyle={styles.autoCompleteUnderline}/>
-                                    <IconButton onTouchTap={() => this.addTagToCloud(this.state.searchText)}
+                                    <IconButton onTouchTap={() => this.addTagToCloud(this.autocomplete.state.searchText)}
                                                 iconStyle={styles.addTagIconBtn.size}
                                                 style={styles.addTagIconBtn}>
                                         <AddCircle color={Color.blue}/>
