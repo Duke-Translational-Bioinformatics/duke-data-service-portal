@@ -3,6 +3,7 @@ const { object, bool, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore'
 import authStore from '../../stores/authStore'
+import { Color } from '../../theme/customTheme';
 import CircularProgress from 'material-ui/CircularProgress';
 import FontIcon from 'material-ui/FontIcon';
 import Help from 'material-ui/svg-icons/action/help';
@@ -34,8 +35,8 @@ class MetadataTemplateList extends React.Component {
         const { currentUser } = authStore;
         let route = this.props.location.pathname.split('/').splice([1], 1).toString();
         let showSearch = this.state.searchMode ? 'block' : 'none';
-        let switchColor = this.state.toggleSwitch ? {track: {backgroundColor: '#235F9C'}, thumb: {backgroundColor: '#003366'}} :
-            {track: {backgroundColor: '#BDBDBD'}, thumb: {backgroundColor: '#9E9E9E'}};
+        let switchColor = this.state.toggleSwitch ? {track: {backgroundColor: Color.blue}, thumb: {backgroundColor: Color.ltBlue2}} :
+            {track: {backgroundColor: Color.ltGrey}, thumb: {backgroundColor: Color.dkGrey}};
         let templateList = metaTemplates && metaTemplates !== null && currentUser !== null ? metaTemplates.map((obj) => {
             if(this.state.toggleSwitch){
                 return (
@@ -92,7 +93,7 @@ class MetadataTemplateList extends React.Component {
                                         tooltipPosition="bottom-center"
                                         iconStyle={styles.infoIcon.size}
                                         style={styles.infoIcon}>
-                                <Help color={'#BDBDBD'}/>
+                                <Help color={Color.ltGrey}/>
                             </IconButton>
                         </h4>
                     </div>
@@ -194,7 +195,7 @@ const styles = {
         float: 'right',
         marginTop: 10,
         label: {
-            color: '#235f9c'
+            color: Color.blue
         }
     },
     drawerLoader: {
@@ -213,7 +214,7 @@ const styles = {
     },
     icon: {
         fontSize: 36,
-        color: '#616161'
+        color: Color.dkGrey2
     },
     infoIcon: {
         verticalAlign: 8,

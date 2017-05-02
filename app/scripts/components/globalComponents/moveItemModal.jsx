@@ -1,9 +1,10 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object, bool, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
-import {Kind, Path} from '../../util/urlEnum';
-import {List, ListItem} from 'material-ui/List';
+import { Color } from '../../theme/customTheme';
+import { Kind, Path } from '../../util/urlEnum';
+import { List, ListItem } from 'material-ui/List';
 import Archive from 'material-ui/svg-icons/content/archive.js';
 import CircularProgress from 'material-ui/CircularProgress';
 import ContentPaste from 'material-ui/svg-icons/content/content-paste.js';
@@ -29,8 +30,7 @@ let MoveItemModal = observer(React.createClass({
         let children = [];
         let projectChildren = [];
         let openItem = <span></span>;
-        let path = this.props.location.pathname.split('/').splice([1], 1).toString();
-        let itemId = selectedEntity && selectedEntity !== null ? selectedEntity.id : this.props.entityObj.id;
+        let itemId = selectedEntity && selectedEntity !== null ? selectedEntity.id : entityObj.id;
 
         if (!this.state.projectChildren && moveToObj) {
             if (itemId === moveToObj.id) {
@@ -46,7 +46,7 @@ let MoveItemModal = observer(React.createClass({
                     primaryText={moveToObj.name}
                     leftIcon={<Folder />}
                     onTouchTap={() => this.selectedLocation(moveToObj.id, moveToObj.kind)}
-                    rightIconButton={<Archive style={styles.rightIcon} color={'#EC407A'} onTouchTap={() => this.handleMove(moveToObj.id, moveToObj.kind)}/>}/>
+                    rightIconButton={<Archive style={styles.rightIcon} color={Color.pink} onTouchTap={() => this.handleMove(moveToObj.id, moveToObj.kind)}/>}/>
             }
         }
 
@@ -65,7 +65,7 @@ let MoveItemModal = observer(React.createClass({
                                   primaryText={item.name}
                                   leftIcon={<ContentPaste />}
                                   onTouchTap={() => this.getProjectChildren(item.id)}
-                                  rightIconButton={<Archive style={styles.rightIcon} color={'#EC407A'} onTouchTap={() => this.handleMove(item.id, item.kind)}/>}/>
+                                  rightIconButton={<Archive style={styles.rightIcon} color={Color.pink} onTouchTap={() => this.handleMove(item.id, item.kind)}/>}/>
                     )
                 } else {
                     return (
@@ -91,7 +91,7 @@ let MoveItemModal = observer(React.createClass({
                                   primaryText={children.name}
                                   leftIcon={<Folder />}
                                   onTouchTap={() => this.openListItem(children.id, children.kind)}
-                                  rightIconButton={<Archive style={styles.rightIcon} color={'#EC407A'} onTouchTap={() => this.handleMove(children.id, children.kind)}/>}/>
+                                  rightIconButton={<Archive style={styles.rightIcon} color={Color.pink} onTouchTap={() => this.handleMove(children.id, children.kind)}/>}/>
                     )
                 } else {
                     return (
@@ -117,7 +117,7 @@ let MoveItemModal = observer(React.createClass({
                                   primaryText={children.name}
                                   leftIcon={<Folder />}
                                   onTouchTap={() => this.openListItem(children.id, children.kind)}
-                                  rightIconButton={<Archive style={styles.rightIcon} color={'#EC407A'} onTouchTap={() => this.handleMove(children.id, children.kind)}/>}/>
+                                  rightIconButton={<Archive style={styles.rightIcon} color={Color.pink} onTouchTap={() => this.handleMove(children.id, children.kind)}/>}/>
                     )
                 } else {
                     return (
@@ -154,10 +154,9 @@ let MoveItemModal = observer(React.createClass({
     },
 
     handleMove(destinationId, destinationKind) {
-        const {entityObj, parent, selectedEntity} = mainStore;
+        const {parent, selectedEntity} = mainStore;
         let id = selectedEntity && selectedEntity !== null ? selectedEntity.id : this.props.params.id;
         let kind = selectedEntity && selectedEntity !== null ? selectedEntity.kind : this.props.entityObj.kind;
-        let parentId = parent ? parent.id : null;
         let transitionToParent = (root, parentId) => {
             setTimeout(()=>{this.props.router.push(root + parentId)}, 500)
         };
@@ -221,7 +220,7 @@ let MoveItemModal = observer(React.createClass({
     }
 }));
 
-var styles = {
+const styles = {
     backButton: {
         float: 'left',
         marginLeft: -10,
@@ -247,7 +246,7 @@ var styles = {
         right: 4
     },
     warning: {
-        backgroundColor: '#ef5350',
+        backgroundColor: Color.ltRed,
         color: '#EEEEEE',
         height: 40,
         marginBottom: 10,

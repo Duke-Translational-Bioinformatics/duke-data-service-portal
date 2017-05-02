@@ -1,14 +1,11 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object, bool, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../util/baseUtils';
+import { Color } from '../../theme/customTheme';
 import MetadataObjectCreator from '../globalComponents/metadataObjectCreator.jsx';
-import MetadataPropertyManager from '../globalComponents/metadataPropertyManager.jsx';
-import MetadataTemplateCreator from '../globalComponents/metadataTemplateCreator.jsx';
 import MetadataTemplateList from '../globalComponents/metadataTemplateList.jsx';
-import MetadataTemplateManager from '../globalComponents/metadataTemplateManager.jsx';
-import MetadataTemplateOptions from '../globalComponents/metadataTemplateOptions.jsx';
 import AddCircle from 'material-ui/svg-icons/content/add-circle';
 import AutoComplete from 'material-ui/AutoComplete';
 import CircularProgress from 'material-ui/CircularProgress';
@@ -52,7 +49,6 @@ class TagManager extends React.Component {
         let id = selectedEntity !== null ? selectedEntity.id : this.props.params.id;
         let name = entityObj && filesChecked < 1 ? entityObj.name : 'selected files';
         let openDiscardTagsModal = toggleModal && toggleModal.id === 'discardTags' ? toggleModal.open : false;
-        let openCreateAnotherObjectModal = toggleModal && toggleModal.id === 'metaDataObjectConfirm' ? toggleModal.open : false;
         let width = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.width : window.innerWidth;
         const modalActions = [
             <FlatButton
@@ -68,7 +64,7 @@ class TagManager extends React.Component {
         let tags = tagsToAdd && tagsToAdd.length > 0 ? tagsToAdd.map((tag)=>{
             return (<div key={BaseUtils.generateUniqueKey()} className="chip">
                 <span className="chip-text">{tag.label}</span>
-                <span className="closebtn" onTouchTap={() => this.deleteTag(tag.id, tag.label)}>&times;</span>
+                <span className="closebtn" onTouchTap={() => this.deleteTag(tag.label)}>&times;</span>
             </div>)
         }) : null;
         let tagLbls = tagLabels.map((label)=>{
@@ -98,7 +94,7 @@ class TagManager extends React.Component {
                                                     tooltipPosition="bottom-center"
                                                     iconStyle={styles.infoIcon.size}
                                                     style={styles.infoIcon}>
-                                            <Help color={'#BDBDBD'}/>
+                                            <Help color={Color.ltGrey}/>
                                         </IconButton>
                                     </h5>
                                 </div>
@@ -117,7 +113,7 @@ class TagManager extends React.Component {
                                     <IconButton onTouchTap={() => this.addTagToCloud(this.state.searchText)}
                                                 iconStyle={styles.addTagIconBtn.size}
                                                 style={styles.addTagIconBtn}>
-                                        <AddCircle color={'#235F9C'}/>
+                                        <AddCircle color={Color.blue}/>
                                     </IconButton><br/>
                                 </div>
                                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.tagLabelsContainer}>
@@ -217,8 +213,7 @@ class TagManager extends React.Component {
         }
     }
 
-    deleteTag(id, label) {
-        let fileId = mainStore.selectedEntity !== null ? mainStore.selectedEntity.id : this.props.params.id;
+    deleteTag(label) {
         let tags = mainStore.tagsToAdd;
         tags = tags.filter(( obj ) => {
             return obj.label !== label;
@@ -256,7 +251,7 @@ class TagManager extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     addTagIconBtn: {
         margin: '-30px 0px 0px 0px',
         float: 'right',
@@ -279,11 +274,11 @@ var styles = {
         maxWidth: '100%'
     },
     autoCompleteUnderline: {
-        borderColor: '#0680CD',
+        borderColor: Color.ltBlue,
         maxWidth: 'calc(100% - 42px)'
     },
     buttonLabel: {
-        color: '#235f9c'
+        color: Color.blue
     },
     buttonWrapper: {
         textAlign: 'left'
@@ -304,7 +299,6 @@ var styles = {
     },
     dialogStyles: {
         textAlign: 'center',
-        fontColor: '#303F9F',
         zIndex: '5000'
     },
     drawer: {
@@ -327,13 +321,8 @@ var styles = {
             width: 20
         }
     },
-    modalIcon: {
-        fontSize: 48,
-        textAlign: 'center',
-        color: '#4CAF50'
-    },
     tabInkBar: {
-        backgroundColor: '#EC407A',
+        backgroundColor: Color.pink,
         paddingTop: 3,
         marginTop: -3
     },
@@ -343,7 +332,7 @@ var styles = {
     tagLabels: {
         margin: 3,
         cursor: 'pointer',
-        color: '#235F9C',
+        color: Color.blue,
         float: 'left'
     },
     tagLabelsContainer: {

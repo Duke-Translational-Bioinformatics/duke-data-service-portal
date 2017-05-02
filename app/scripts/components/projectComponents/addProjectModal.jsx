@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
+import { Color } from '../../theme/customTheme';
 import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
@@ -37,7 +38,7 @@ class AddProjectModal extends React.Component {
             <div>
                 <RaisedButton
                     label="Add Project"
-                    labelColor="#235F9C"
+                    labelColor={Color.blue}
                     style={styles.addProject}
                     onTouchTap={this.handleTouchTap.bind(this)} />
                 <Dialog
@@ -111,7 +112,7 @@ class AddProjectModal extends React.Component {
     };
 }
 
-var styles = {
+const styles = {
     addProject: {
         float: 'right',
         position: 'relative',
@@ -119,12 +120,12 @@ var styles = {
     },
     dialogStyles: {
         textAlign: 'center',
-        fontColor: '#303F9F',
+        fontColor: Color.dkBlue,
         zIndex: '9999'
     },
     textStyles: {
         textAlign: 'left',
-        fontColor: '#303F9F'
+        fontColor: Color.dkBlue
     }
 };
 

@@ -4,6 +4,7 @@ import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../util/baseUtils.js';
 import {UrlGen, Path, Kind} from '../../util/urlEnum';
+import { Color } from '../../theme/customTheme';
 import BatchOps from '../../components/globalComponents/batchOps.jsx';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
 import FileOptionsMenu from '../../components/fileComponents/fileOptionsMenu.jsx';
@@ -61,9 +62,9 @@ class ListItems extends React.Component {
             newFolderModal = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <AddFolderModal {...this.props}/>;
             uploadManager = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <RaisedButton label="Upload Files"
                                                                                                     labelPosition="before"
-                                                                                                    labelStyle={{color: '#235F9C'}}
+                                                                                                    labelStyle={{color: Color.blue}}
                                                                                                     style={styles.uploadFilesBtn}
-                                                                                                    icon={<FileUpload color={'#EC407A'} />}
+                                                                                                    icon={<FileUpload color={Color.pink} />}
                                                                                                     onTouchTap={() => this.toggleUploadManager()}/>;
             showChecks = !!(prjPrm !== 'viewOnly' && prjPrm !== 'flUpload');
         }
@@ -75,7 +76,7 @@ class ListItems extends React.Component {
                     <TableRow key={children.id} selected={mainStore.foldersChecked.includes(children.id)}>
                         <TableRowColumn>
                             <a onClick={(e)=>this.goTo(e, children.id, children.kind)} href={UrlGen.routes.folder(children.id)} className="external">
-                                <div style={{color:'#235F9C'}}>
+                                <div style={{color: Color.blue}}>
                                     <FontIcon className="material-icons" style={styles.icon}>folder</FontIcon>
                                     {children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}
                                 </div>
@@ -100,7 +101,7 @@ class ListItems extends React.Component {
                     <TableRow key={children.id} selected={mainStore.filesChecked.includes(children.id)}>
                         <TableRowColumn>
                             <a onClick={(e)=>this.goTo(e, children.id, children.kind)} href={UrlGen.routes.file(children.id)} className="external">
-                                <div style={{color:'#235F9C'}}>
+                                <div style={{color: Color.blue}}>
                                     <FontIcon className="material-icons" style={styles.icon}>description</FontIcon>
                                     {children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name+' '}
                                     {' (version '+ children.current_version.version+')'}
@@ -155,8 +156,8 @@ class ListItems extends React.Component {
                                 disabled={loading ? true : false}
                                 onTouchTap={()=>this.loadMore(nextPage)}
                                 fullWidth={true}
-                                style={loading ? {backgroundColor: '#69A3DD'} : {}}
-                                labelStyle={loading ? {color: '#235F9C'} : {fontWeight: '100'}}/>
+                                style={loading ? {backgroundColor: Color.ltBlue2} : {}}
+                                labelStyle={loading ? {color: Color.blue} : {fontWeight: '100'}}/>
                         </div> : null}
                 </Paper>
             </div>

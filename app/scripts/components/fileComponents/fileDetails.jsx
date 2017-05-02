@@ -3,7 +3,8 @@ const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import provenanceStore from '../../stores/provenanceStore';
-import {Kind, Path} from '../../util/urlEnum';
+import { Color } from '../../theme/customTheme';
+import { Path } from '../../util/urlEnum';
 import CustomMetadata from './customMetadata.jsx';
 import FileOptionsMenu from './fileOptionsMenu.jsx';
 import FileVersionsList from './fileVersionsList.jsx';
@@ -311,7 +312,7 @@ var styles = {
     provAlert: {
         display: 'block',
         overflow: 'auto',
-        backgroundColor: '#66BB6A',
+        backgroundColor: Color.green,
         minHeight: 48,
         alertButton: {
             float: 'right',

@@ -1,8 +1,9 @@
 import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
 import ReactDOM from 'react-dom';
-import { observer, inject } from 'mobx-react';
-import {graphOptions, graphColors} from '../../graphConfig';
+import { observer } from 'mobx-react';
+import { graphOptions } from '../../graphConfig';
+import { Color } from '../../theme/customTheme';
 import authStore from '../../stores/authStore';
 import mainStore from '../../stores/mainStore';
 import provenanceStore from '../../stores/provenanceStore';
@@ -10,25 +11,17 @@ import ProvenanceActivityManager from '../globalComponents/provenanceActivityMan
 import ProvenanceDetails from '../globalComponents/provenanceDetails.jsx';
 import ProvenanceFilePicker from '../globalComponents/provenanceFilePicker.jsx';
 import FileVersionsList from '../fileComponents/fileVersionsList.jsx';
-import BaseUtils from '../../util/baseUtils.js';
-import AutoComplete from 'material-ui/AutoComplete';
 import BorderColor from 'material-ui/svg-icons/editor/border-color';
-import Cancel from 'material-ui/svg-icons/navigation/cancel';
 import CircularProgress from 'material-ui/CircularProgress';
 import Dialog from 'material-ui/Dialog';
-import Divider from 'material-ui/Divider';
 import FlatButton from 'material-ui/FlatButton';
-import Fullscreen from 'material-ui/svg-icons/navigation/fullscreen';
-import FullscreenExit from 'material-ui/svg-icons/navigation/fullscreen-exit';
 import Help from 'material-ui/svg-icons/action/help';
 import IconButton from 'material-ui/IconButton';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
-import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import SelectField from 'material-ui/SelectField';
-import TextField from 'material-ui/TextField';
 
 @observer
 class Provenance extends React.Component {
@@ -282,7 +275,7 @@ class Provenance extends React.Component {
                             {relationMode ?
                                 <RaisedButton
                                     label="Cancel"
-                                    labelStyle={{color: '#f44336'}}
+                                    labelStyle={{color: Color.red}}
                                     style={styles.btnStyle}
                                     onTouchTap={() => this.toggleEdgeMode()}/>
                                 : null}
@@ -292,7 +285,7 @@ class Provenance extends React.Component {
                                             tooltipPosition="bottom-center"
                                             iconStyle={styles.infoIcon.iconStyle}
                                             style={styles.infoIcon}>
-                                    <Help color={'#BDBDBD'}/>
+                                    <Help color={Color.ltGrey}/>
                                 </IconButton>
                             </span> : null}
                             <RaisedButton
@@ -306,7 +299,7 @@ class Provenance extends React.Component {
                                             tooltipPosition="bottom-center"
                                             iconStyle={styles.infoIcon2.iconStyle}
                                             style={styles.infoIcon2}>
-                                    <Help color={'#BDBDBD'}/>
+                                    <Help color={Color.ltGrey}/>
                                 </IconButton>
                             </span><br/>
                             {showProvDetails ? <ProvenanceDetails {...this.props}/> : null}
@@ -472,14 +465,14 @@ class Provenance extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     btnStyle: {
         margin: 10,
         width: '80%'
     },
     dialogStyles: {
         textAlign: 'center',
-        fontColor: '#303F9F',
+        fontColor: Color.dkBlue,
         zIndex: '5000'
     },
     graphLoader: {
@@ -492,7 +485,7 @@ var styles = {
     derivedRelationDialogIcon: {
         fontSize: 48,
         textAlign: 'center',
-        color: '#235F9C'
+        color: Color.blue
     },
     closeEditorIcon: {
         position: 'absolute',
@@ -550,13 +543,13 @@ var styles = {
         details: {
             width: '100%',
             margin: 0,
-            color:'#757575'
+            color: Color.dkGrey
         },
         addEdgeInstruction: {
             maxWidth:'168px',
             margin: '5px 15px 5px 15px',
             padding: 8,
-            backgroundColor: '#66BB6A',
+            backgroundColor: Color.green,
             color: '#FFF'
         },
         btn: {
@@ -570,7 +563,7 @@ var styles = {
         expandGraphInstructions: {
             width: 170,
             fontSize: 16,
-            color: '#757575'
+            color: Color.dkGrey
         },
         title: {
             margin: '112px 0px 0px 54px',
@@ -594,26 +587,26 @@ var styles = {
         maxWidth: '90%',
         minWidth: 160,
         textAlign: 'left',
-        color: '#757575',
+        color: Color.dkGrey,
         floatingLabel: {
-            color: '#235F9C'
+            color: Color.blue
         },
         icon: {
             right: -10
         },
         label: {
             paddingRight: 0,
-            color: '#235F9C'
+            color: Color.blue
         }
     },
     textStyles: {
         textAlign: 'left',
-        fontColor: '#303F9F'
+        fontColor: Color.dkBlue
     },
     warning: {
         fontSize: 48,
         textAlign: 'center',
-        color: '#F44336'
+        color: Color.red
     }
 };
 

@@ -10,7 +10,7 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import Snackbar from 'material-ui/Snackbar';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import Theme from '../theme/customTheme.js';
+import { Theme } from '../theme/customTheme';
 
 let zIndex = {
     zIndex: {

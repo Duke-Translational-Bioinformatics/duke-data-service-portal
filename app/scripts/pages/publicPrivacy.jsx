@@ -1,30 +1,29 @@
 import React from 'react';
 import Card from 'material-ui/Card';
+import { Color } from '../theme/customTheme';
 
 class PublicPrivacy extends React.Component {
 
     render() {
 
         return (
-            <Card className="project-container mdl-color--white content mdl-color-text--grey-800"
-                  style={{marginTop: 30, marginBottom: 30, padding: '10px 30px 30px 30px',
-                                 overflow: 'visible'}}>
-                <a className="external mdl-color--white mdl-cell mdl-cell--12-col" href="" style={{float: 'left'}}>
-                    <i className="material-icons" style={{verticalAlign: -7, marginLeft: -10, marginRight: 5}}>keyboard_backspace</i>
+            <Card className="project-container mdl-color--white content mdl-color-text--grey-800" style={styles.card}>
+                <a className="external mdl-color--white mdl-cell mdl-cell--12-col" href="" style={styles.bkBtn}>
+                    <i className="material-icons" style={styles.icon}>keyboard_backspace</i>
                     Back To Login
                 </a>
-                <h1 style={{textAlign: 'center', fontSize: '3em'}}>DukeDS / Data Service at Duke</h1>
+                <h1 style={styles.h1}>DukeDS / Data Service at Duke</h1>
                 <h6>This is the privacy policy for Data Service at Duke, and is intended to describe the privacy
                     practices employed and detail how information is collected, accessed, stored and transmitted,
                     for what purpose(s), and by and to whom is it or may it be transmitted/shared.</h6>
-                <h3 style={{fontSize: '2em'}}>“Plain English” Privacy Policy</h3>
+                <h3 style={styles.h3}>“Plain English” Privacy Policy</h3>
                 <p><b>Summary:</b><br/>
                     “At this time, Data Service is system for the storage of non-Protected Health Information (PHI)
                     research data, and provenance regarding those data. We store the data you upload, and metadata
                     associated with that data. Data Service is not currently approved for the storage of PHI
                     (but will in the future). Access to the data you store in DataService is determined by you.
                     We retain a small amount of logging information in order to support the service.”</p>
-                <h3 style={{fontSize: '2em'}}>Data Service at Duke Privacy Policy Details</h3>
+                <h3 style={styles.h3}>Data Service at Duke Privacy Policy Details</h3>
                 <p><b>Purpose:</b><br/>
                     Data Service at Duke (https://dataservice.duke.edu) is a system designed for the storage of data
                     and metadata — information about the data and its relationship to other data.</p>
@@ -59,12 +58,43 @@ class PublicPrivacy extends React.Component {
                     project.</p>
                 <h4>Updates and Changes to these policies</h4>
                 <p>Changes to this policy will be posted on the DataService project/portal page at
-                    <a href="https://dataservice.duke.edu" className="external" style={{marginLeft: 8, color: '#235F9C'}}>
+                    <a href="https://dataservice.duke.edu" className="external" style={styles.link}>
                         https://dataservice.duke.edu</a>
                 </p>
-                <p style={{textAlign: 'right'}}>Effective Date: 10/7/16</p>
+                <p style={styles.date}>Effective Date: 10/7/16</p>
             </Card>
         );
+    }
+}
+
+const styles = {
+    bkBtn: {
+        float: 'left'
+    },
+    card: {
+        marginTop: 30,
+        marginBottom: 30,
+        padding: '10px 30px 30px 30px',
+        overflow: 'visible'
+    },
+    date: {
+        textAlign: 'right'
+    },
+    h1: {
+        textAlign: 'center',
+        fontSize: '3em'
+    },
+    h3: {
+        fontSize: '2em'
+    },
+    icon: {
+        verticalAlign: -7,
+        marginLeft: -10,
+        marginRight: 5
+    },
+    link: {
+        marginLeft: 8,
+        color: Color.blue
     }
 }
 

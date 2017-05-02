@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object } = PropTypes;
 import { observer } from 'mobx-react';
+import { Color } from '../../theme/customTheme';
 import mainStore from '../../stores/mainStore';
 import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
@@ -88,24 +89,24 @@ class VersionUpload extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     fileUpload: {
         float: 'right',
         position: 'relative',
         margin: '12px 8px 0px 0px'
     },
     iconColor: {
-        color: '#235F9C'
+        color: Color.blue
     },
     dialogStyles: {
         zIndex: '9996',
         textAlign: 'center',
-        fontColor: '#303F9F'
+        fontColor: Color.dkBlue
     },
     textStyles: {
         minWidth: '48%',
         textAlign: 'left',
-        fontColor: '#303F9F'
+        fontColor: Color.dkBlue
     },
     floatingButton: {
         position: 'absolute',
@@ -113,16 +114,11 @@ var styles = {
         marginRight: 17,
         right: '2%',
         zIndex: '2',
-        color: '#ffffff'
+        color: '#fff'
     },
     msg: {
         textAlign: 'center',
         marginLeft: 30
-    },
-    warning: {
-        fontSize: 48,
-        textAlign: 'center',
-        color: '#FFEB3B'
     }
 };
 
