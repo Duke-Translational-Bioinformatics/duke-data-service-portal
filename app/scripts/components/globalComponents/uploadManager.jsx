@@ -79,7 +79,7 @@ class UploadManager extends React.Component {
                                           onDrop={this.onDrop.bind(this)}
                                           maxSize={5*1024*1024*1024}
                                           style={{width: '100%', border: '2px dashed #BDBDBD', backgroundColor: dropzoneColor}}>
-                                    <div style={styles.dropzoneText}>Drag and drop files here, or click to select files to upload.<br/>Folders cannot be uploaded.</div>
+                                    <div style={styles.dropzoneText}>Drag and drop files here, or click to select files to upload<br/>Folders cannot be uploaded unless they are<br/> compressed into a .zip file first</div>
                                 </Dropzone>
                                 {filesToUpload.length ? <h6 className="mdl-color-text--grey-600" style={styles.fileListHeader}>Preparing to upload:</h6> : null}
                             </div>

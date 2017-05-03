@@ -1336,7 +1336,7 @@ export class MainStore {
     @action displayErrorModals(error) {
         if (error.message === 'A requested file or directory could not be found at the time an operation was processed.' && error.code === 8) {
             this.errorModals.push({
-                msg: 'This feature is not yet supported.',
+                msg: 'This feature is not yet supported. Please compress the folder into a zip file if you would like to upload it.',
                 response: 'Folders can not be uploaded through the web portal.',
                 ref: 'modal' + Math.floor(Math.random() * 10000)
             });
@@ -1371,6 +1371,8 @@ export class MainStore {
             } else {
                 this.displayErrorModals(error);
             }
+        } else if (error.code === 8) { // Handles error thrown from trying to read folder as a file
+            this.displayErrorModals(error);
         }
     }
 
