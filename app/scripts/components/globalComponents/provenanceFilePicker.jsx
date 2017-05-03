@@ -29,7 +29,7 @@ class ProvenanceFilePicker extends React.Component {
     }
 
     render() {
-        const { autoCompleteLoading, entityObj, projects, projPermissions, screenSize, searchFilesList } = mainStore;
+        const { autoCompleteLoading, entityObj, projects, screenSize, searchFilesList } = mainStore;
         const { provEditorModal, provFileVersions } = provenanceStore;
         let addFile = provEditorModal.id !== null && provEditorModal.id === 'addFile' ? provEditorModal.open : false;
         let autoCompleteData = searchFilesList.map((file)=>{
@@ -42,14 +42,12 @@ class ProvenanceFilePicker extends React.Component {
         if(fileName === null) fileName = entityObj ? entityObj.file.name : null;
         let fileVersion = entityObj && entityObj.current_version ? entityObj.current_version.version : null;
         if(fileVersion === null) fileVersion = entityObj ? entityObj.version : null;
-        let project = entityObj && entityObj.current_version ? entityObj.project.id : null;
-        if(project === null) project = entityObj && entityObj.file ? entityObj.file.project.id : null;
+        let project = entityObj && entityObj !== null ? entityObj.ancestors[0].id : null;
         let projectList = projects && projects.length ? projects.map((project)=>{
             if(!project.is_deleted) {
                 return <MenuItem key={project.id}
                                  value={project.id}
-                                 primaryText={project.name}
-                                 onTouchTap={() => this.handleProjectSelect(project.id, project.name)}/>
+                                 primaryText={project.name} />
             }
         }) : null;
         let provFileVersionsList = provFileVersions.map((node) => {
@@ -142,9 +140,7 @@ class ProvenanceFilePicker extends React.Component {
             provenanceStore.clearProvFileVersions();
         }
         this.setState({floatingErrorText:'This field is required'});
-        setTimeout(()=>{
-            this.setState({floatingErrorText:''});
-        }, 3000);
+        setTimeout(()=>{ this.setState({floatingErrorText:''}) }, 3000);
     }
 
     chooseFileVersion(value, e) {
@@ -162,9 +158,9 @@ class ProvenanceFilePicker extends React.Component {
 
     handleProjectSelect(e, index, value) {
         mainStore.clearSearchFilesData(); //If project is changed, clear files from autocomplete list
-        this.setState({
-            projectSelectValue: value
-        });
+        mainStore.searchFiles('', value);
+        this.setState({ projectSelectValue: value });
+        setTimeout(() => this.searchText.focus(), 600);
     }
 
     handleUpdateInput (text, isProject) {

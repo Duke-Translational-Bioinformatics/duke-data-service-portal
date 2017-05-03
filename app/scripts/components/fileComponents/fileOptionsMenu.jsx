@@ -77,6 +77,8 @@ class FileOptionsMenu extends React.Component {
     }
 
     toggleProv(id, versionId) {
+        let projId = this.props.router.location.pathname.includes('project') ? this.props.params.id : mainStore.entityObj.ancestors[0].id;
+        mainStore.searchFiles('', projId);
         provenanceStore.getWasGeneratedByNode(versionId);
         provenanceStore.toggleProvView();
         this.props.router.push('/file/'+id);
