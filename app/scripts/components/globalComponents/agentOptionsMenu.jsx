@@ -1,11 +1,12 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import agentStore from '../../stores/agentStore';
 import authStore from '../../stores/authStore';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
+import Divider from 'material-ui/Divider';
 import FlatButton from 'material-ui/FlatButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
@@ -23,8 +24,8 @@ class AgentOptionsMenu extends React.Component {
     }
 
     render() {
-        const { agentApiToken, agentKey, agents } = agentStore;
-        const { currentUser, userKey } = authStore;
+        const { agentApiToken, agentKey } = agentStore;
+        const { userKey } = authStore;
         const { entityObj, screenSize, toggleModal } = mainStore;
 
         let apiToken = agentApiToken ? agentApiToken.api_token : null;
@@ -353,8 +354,9 @@ class AgentOptionsMenu extends React.Component {
                 <IconMenu iconButtonElement={<IconButton iconClassName="material-icons">more_vert</IconButton>}
                           anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                           targetOrigin={{horizontal: 'right', vertical: 'top'}}>
-                    <MenuItem primaryText="Delete Agent" leftIcon={<i className="material-icons">delete</i>} onTouchTap={() => this.toggleModal('deleteOpen')}/>
                     <MenuItem primaryText="Edit Agent Details" leftIcon={<i className="material-icons">mode_edit</i>} onTouchTap={() => this.toggleModal('editOpen')}/>
+                    <MenuItem primaryText="Delete Agent" leftIcon={<i className="material-icons">delete</i>} onTouchTap={() => this.toggleModal('deleteOpen')}/>
+                    <Divider/>
                     <MenuItem primaryText="Agent Secret Key" leftIcon={<i className="material-icons">vpn_key</i>} onTouchTap={() => this.openApiKeyModal()}/>
                     <MenuItem primaryText="User Secret Key" leftIcon={<i className="material-icons">vpn_key</i>} onTouchTap={() => this.handleTouchTapUserKey()}/>
                     <MenuItem primaryText="API Token" leftIcon={<i className="material-icons">stars</i>} onTouchTap={() => this.handleTouchTapApiToken()}/>

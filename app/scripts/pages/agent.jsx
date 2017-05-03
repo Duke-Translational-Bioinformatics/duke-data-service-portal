@@ -5,7 +5,6 @@ import mainStore from '../stores/mainStore';
 import agentStore from '../stores/agentStore';
 import authStore from '../stores/authStore';
 import AgentOptionsMenu from '../components/globalComponents/agentOptionsMenu.jsx';
-import Loaders from '../components/globalComponents/loaders.jsx';
 import {UrlGen, Path} from '../util/urlEnum';
 import Card from 'material-ui/Card';
 
@@ -37,8 +36,7 @@ class Agent extends React.Component {
         let lastUpdatedOn = entityObj && entityObj.audit ? entityObj.audit.last_updated_on : null;
         let lastUpdatedBy = entityObj && entityObj.audit.last_updated_by ? entityObj.audit.last_updated_by.full_name : null;
         let repoUrl = entityObj ? entityObj.repo_url : null;
-        let agent = <Card className="project-container mdl-color--white content mdl-color-text--grey-800"
-                          style={{marginBottom: 30, overflow: 'visible', padding: '10px 0px 10px 0px'}}>
+        let agent = <Card className="project-container mdl-color--white content mdl-color-text--grey-800" style={styles.card}>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <div style={styles.menuIcon}>
                     <AgentOptionsMenu {...this.props}/>
@@ -122,6 +120,11 @@ const styles = {
         fontSize: 24,
         verticalAlign:-7
     },
+    card: {
+        marginBottom: 30,
+        overflow: 'visible',
+        padding: '10px 0px 10px 0px'
+    },
     container: {
         marginTop: 30,
         marginBottom: 30,
@@ -136,7 +139,7 @@ const styles = {
     },
     menuIcon: {
         float: 'right',
-        marginTop: 30
+        marginTop: -10
     },
     subTitle: {
         fontSize: '1.1em',
