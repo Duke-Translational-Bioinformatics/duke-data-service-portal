@@ -10,12 +10,10 @@ import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx
 import FileOptionsMenu from '../../components/fileComponents/fileOptionsMenu.jsx';
 import FolderOptionsMenu from '../../components/folderComponents/folderOptionsMenu.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
+import FileUpload from 'material-ui/svg-icons/file/file-upload'
 import FontIcon from 'material-ui/FontIcon';
 import RaisedButton from 'material-ui/RaisedButton';
 import Paper from 'material-ui/Paper';
-
-import FileUpload from 'material-ui/svg-icons/file/file-upload'
-
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 
 @observer
@@ -214,7 +212,7 @@ const styles = {
     uploadFilesBtn: {
         fontWeight: 200,
         float: 'right',
-        margin: '0px -8px 0px  18px'
+        margin: '0px -8px 0px 18px'
     }
 };
 

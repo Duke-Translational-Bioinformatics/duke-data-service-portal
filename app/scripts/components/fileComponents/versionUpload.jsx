@@ -43,7 +43,7 @@ class VersionUpload extends React.Component {
                         <div className="mdl-cell mdl-cell--6-col mdl-textfield mdl-textfield--file">
                             <textarea className="mdl-textfield__input mdl-color-text--grey-800" placeholder="File" type="text" ref={(input) => this.fileList = input} rows="3" readOnly></textarea>
                             <div className="mdl-button mdl-button--icon mdl-button--file">
-                                <i className="material-icons" style={styles.iconColor}>attach_file</i>
+                                <i className="material-icons" style={styles.iconColor}>file_upload</i>
                                 <input type='file' ref={(input) => this.fileInput = input} onChange={this.handleFileName.bind(this)} />
                             </div>
                         </div> <br/>
@@ -96,7 +96,7 @@ const styles = {
         margin: '12px 8px 0px 0px'
     },
     iconColor: {
-        color: Color.blue
+        color: Color.pink
     },
     dialogStyles: {
         zIndex: '9996',
