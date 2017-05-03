@@ -1,12 +1,13 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
+import { Kind } from '../../util/urlEnum';
+import { Color } from '../../theme/customTheme';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
-import { Kind } from '../../util/urlEnum';
 
 @observer
 class AddFolderModal extends React.Component {
@@ -39,7 +40,7 @@ class AddFolderModal extends React.Component {
             <div>
                 <RaisedButton
                     label="New Folder"
-                    labelStyle={{color: '#235F9C'}}
+                    labelStyle={{color: Color.blue}}
                     style={styles.addFolder}
                     onTouchTap={()=>this.openModal()}/>
                 <Dialog
@@ -92,18 +93,18 @@ class AddFolderModal extends React.Component {
     }
 }
 
-let styles = {
+const styles = {
     addFolder: {
         float: 'right'
     },
     dialogStyles: {
         textAlign: 'center',
-        fontColor: '#303F9F',
+        fontColor: Color.dkBlue,
         zIndex: '9996'
     },
     textStyles: {
         textAlign: 'left',
-        fontColor: '#303F9F'
+        fontColor: Color.dkBlue
     }
 };
 

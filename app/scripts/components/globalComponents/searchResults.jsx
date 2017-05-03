@@ -2,14 +2,14 @@ import React, { PropTypes } from 'react';
 const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
+import { Color } from '../../theme/customTheme';
+import { UrlGen } from '../../util/urlEnum';
 import BaseUtils from '../../util/baseUtils.js';
 import Loaders from '../globalComponents/loaders.jsx';
 import SearchFilters from '../globalComponents/searchFilters.jsx';
 import FontIcon from 'material-ui/FontIcon';
 import IconButton from 'material-ui/IconButton';
 import RaisedButton from 'material-ui/RaisedButton';
-import Paper from 'material-ui/Paper';
-import {UrlGen} from '../../util/urlEnum';
 
 @observer
 class SearchResults extends React.Component {
@@ -140,13 +140,13 @@ class SearchResults extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     searchTextWrapper: {
     },
     icon: {
         fontSize: 36,
         marginTop: 20,
-        color: '#616161'
+        color: Color.dkGrey
     },
     list: {
         float: 'right'

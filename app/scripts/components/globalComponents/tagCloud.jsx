@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
-import Tooltip from '../../util/tooltip.js';
+import { Color } from '../../theme/customTheme';
 import IconButton from 'material-ui/IconButton';
 import LocalOffer from 'material-ui/svg-icons/maps/local-offer';
 
@@ -18,7 +18,7 @@ class TagCloud extends React.Component {
                                        style={styles.addTagButton}
                                        tooltipStyles={{marginTop: -20}}
                                        onTouchTap={() => this.openTagManager()}>
-                                <LocalOffer color={'#EC407A'} />
+                                <LocalOffer color={Color.pink} />
                            </IconButton>
         }
         let tags = objectTags.map((tag)=>{
@@ -49,7 +49,7 @@ class TagCloud extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     // Additional styles for chips located in stylus/main.styl
     addTagButton: {
         height: 24,

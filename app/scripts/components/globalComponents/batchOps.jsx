@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 const { object, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
-import {Kind, Path} from '../../util/urlEnum';
+import { Color } from '../../theme/customTheme';
 import Card from 'material-ui/Card';
 import DeleteForeverIcon from 'material-ui/svg-icons/action/delete-forever';
 import Dialog from 'material-ui/Dialog';
@@ -32,19 +32,19 @@ class BatchOps extends React.Component {
             dlMsg = "Are you sure you want to download "+filesChecked.length+f;
         }
 
-        let downloadIcon = filesChecked.length ? <IconButton onTouchTap={() => this.openModal('dwnLoad')} style={styles.downloadBtn}><GetAppIcon color={'#EC407A'}/></IconButton> : null;
+        let downloadIcon = filesChecked.length ? <IconButton onTouchTap={() => this.openModal('dwnLoad')} style={styles.downloadBtn}><GetAppIcon color={Color.pink}/></IconButton> : null;
         let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
 
         if (prjPrm !== null) {
             dltIcon = prjPrm === 'flDownload' ? null :
                 <IconButton onTouchTap={() => this.openModal('dlt')} style={styles.deleteBtn}>
-                    <DeleteForeverIcon color={'#EC407A'}/>
+                    <DeleteForeverIcon color={Color.pink}/>
                 </IconButton>;
         }
         if (prjPrm !== null) {
             tagIcon = prjPrm === 'flDownload' || !filesChecked.length ? null :
                 <IconButton onTouchTap={() => this.openTagManager()} style={styles.tagBtn}>
-                    <LocalOffer color={'#EC407A'}/>
+                    <LocalOffer color={Color.pink}/>
                 </IconButton>;
         }
         const deleteActions = [
@@ -143,7 +143,7 @@ class BatchOps extends React.Component {
     };
 }
 
-let styles = {
+const styles = {
     card: {
         overflow: 'auto',
         margin: '8px 0px 0px 0px',
@@ -153,7 +153,7 @@ let styles = {
     },
     dialogStyles: {
         textAlign: 'center',
-        fontColor: '#303F9F',
+        fontColor: Color.dkBlue,
         zIndex: '9996'
     },
     deleteBtn: {
@@ -186,12 +186,12 @@ let styles = {
     },
     textStyles: {
         textAlign: 'left',
-        fontColor: '#303F9F'
+        fontColor: Color.dkBlue
     },
     warning: {
         fontSize: 48,
         textAlign: 'center',
-        color: '#F44336'
+        color: Color.red
     }
 };
 

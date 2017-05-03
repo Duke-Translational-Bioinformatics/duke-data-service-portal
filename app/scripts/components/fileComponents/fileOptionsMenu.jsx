@@ -1,14 +1,9 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import provenanceStore from '../../stores/provenanceStore';
-import {Kind, Path} from '../../util/urlEnum';
-import FileOptions from '../fileComponents/fileOptions.jsx';
-import MoveItemModal from '../globalComponents/moveItemModal.jsx';
-import TextField from 'material-ui/TextField';
-import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
+import { Kind, Path } from '../../util/urlEnum';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
@@ -20,7 +15,6 @@ class FileOptionsMenu extends React.Component {
         const { entityObj, projPermissions, selectedEntity } = mainStore;
         let id = selectedEntity !== null ? selectedEntity.id : entityObj !== null ? entityObj.id : null;
         let versionId = selectedEntity !== null && selectedEntity.current_version ? selectedEntity.current_version.id : entityObj !== null && entityObj.current_version ? entityObj.current_version.id : null;
-        let path = this.props.location.pathname.split('/').splice([1], 1).toString();
         let prjPrm = projPermissions && projPermissions !== undefined ? projPermissions : null;
         let menu = null;
         if (prjPrm !== null) {

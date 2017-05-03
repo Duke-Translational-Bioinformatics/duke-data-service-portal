@@ -2,15 +2,14 @@ import React, { PropTypes } from 'react';
 const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
+import { Color } from '../../theme/customTheme';
 import AddProjectMemberModal from '../projectComponents/addProjectMemberModal.jsx';
-import AutoComplete from 'material-ui/AutoComplete';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
-import SelectField from 'material-ui/SelectField';
 
 @observer
 class ProjectOptionsMenu extends React.Component {
@@ -166,7 +165,7 @@ class ProjectOptionsMenu extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     addProject: {
         float: 'right',
         position: 'relative',
@@ -177,12 +176,12 @@ var styles = {
     },
     dialogStyles: {
         textAlign: 'center',
-        fontColor: '#303F9F',
+        fontColor: Color.dkBlue,
         zIndex: '5000'
     },
     textStyles: {
         textAlign: 'left',
-        fontColor: '#303F9F'
+        fontColor: Color.dkBlue
     },
     msg: {
         textAlign: 'left',
@@ -194,7 +193,7 @@ var styles = {
     warning: {
         fontSize: 48,
         textAlign: 'center',
-        color: '#F44336'
+        color: Color.red
     }
 };
 

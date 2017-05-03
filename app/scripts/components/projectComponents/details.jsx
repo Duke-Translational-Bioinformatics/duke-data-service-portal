@@ -1,9 +1,10 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import authStore from '../../stores/authStore';
 import BaseUtils from '../../util/baseUtils.js';
+import { Color } from '../../theme/customTheme';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import MenuItem from 'material-ui/MenuItem';
@@ -105,7 +106,7 @@ class Details extends React.Component {
                         <SelectField value={this.state.value}
                                      onChange={this.handleSelectValueChange.bind(this, 'value')}
                                      floatingLabelText="Project Role"
-                                     floatingLabelStyle={{color: '#757575'}}
+                                     floatingLabelStyle={{color: Color.dkGrey}}
                                      errorText={this.state.errorText}
                                      style={styles.textStyles}>
                             <MenuItem value={0} primaryText='Project Administrator'/>
@@ -247,12 +248,12 @@ class Details extends React.Component {
 const styles = {
     deleteIcon: {
         fontSize: 18,
-        color: '#F44336',
+        color: Color.red,
         marginTop: 22
     },
     dialogStyles: {
         textAlign: 'center',
-        fontColor: '#303F9F',
+        fontColor: Color.dkBlue,
         zIndex: '5000'
     },
     firstListBlock: {
@@ -263,19 +264,18 @@ const styles = {
     },
     settingsIcon: {
         fontSize: 18,
-        color: '#235F9C',
+        color: Color.blue,
         marginTop: 22,
         marginLeft: 16
     },
     textStyles: {
         textAlign: 'left',
-        fontColor: '#303F9F'
+        fontColor: Color.dkBlue
     },
     warning: {
         fontSize: 48,
-        color: '#F44336'
+        color: Color.red
     }
-
 };
 
 Details.contextTypes = {

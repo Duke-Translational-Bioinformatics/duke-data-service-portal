@@ -477,7 +477,7 @@ class AgentOptionsMenu extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     apiMsg: {
         textAlign: 'center',
         color: '#F44336'

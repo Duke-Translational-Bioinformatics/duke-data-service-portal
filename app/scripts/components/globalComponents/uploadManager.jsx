@@ -3,8 +3,9 @@ import { observer } from 'mobx-react';
 const { object, bool, array } = PropTypes;
 import Dropzone from 'react-dropzone';
 import mainStore from '../../stores/mainStore';
+import { Color } from '../../theme/customTheme';
 import BaseUtils from '../../util/baseUtils';
-import {Kind} from '../../util/urlEnum';
+import { Kind } from '../../util/urlEnum';
 import AddCircle from 'material-ui/svg-icons/content/add-circle';
 import AutoComplete from 'material-ui/AutoComplete';
 import IconButton from 'material-ui/IconButton';
@@ -54,7 +55,6 @@ class UploadManager extends React.Component {
         }) : null;
         let autoCompleteData = tagAutoCompleteList && tagAutoCompleteList.length > 0 ? tagAutoCompleteList : [];
         let dropzoneColor = this.state.dropzoneHover ? '#EEE' : '#FFF';
-        let name = entityObj ? entityObj.name : 'these files';
         let width = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.width : window.innerWidth;
 
         return (
@@ -94,7 +94,7 @@ class UploadManager extends React.Component {
                                                 tooltipPosition="top-center"
                                                 iconStyle={styles.infoIcon.icon}
                                                 style={styles.infoIcon}>
-                                        <Info color={'#BDBDBD'}/>
+                                        <Info color={Color.ltGrey}/>
                                     </IconButton>
                                 </h6>
                             </div>
@@ -114,11 +114,14 @@ class UploadManager extends React.Component {
                                 <IconButton onTouchTap={() => this.addTagToCloud(this.autocomplete.state.searchText)}
                                             iconStyle={styles.addTagIcon.icon}
                                             style={styles.addTagIcon}>
-                                    <AddCircle color={'#235F9C'}/>
+                                    <AddCircle color={Color.blue}/>
                                 </IconButton><br/>
                             </div>
                             <div className="mdl-cell mdl-cell--6-col mdl-color-text--grey-600" style={styles.tagLabelsContainer}>
-                                <h6 style={styles.tagLabelsHeading}>Recently used tags <span style={styles.tagLabelsHeading.span}>(click on a tag to add it to {name})</span></h6>
+                                <h6 style={styles.tagLabelsHeading}>Recently used tags
+                                    <span style={styles.tagLabelsHeading.span}>
+                                        (click on a tag to add it to {filesToUpload.length === 1 ? filesToUpload[0].name + ' during upload' : 'these files during upload'})
+                                    </span></h6>
                                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600">
                                     <ul style={styles.tagLabelList}>
                                         { tagLbls }
@@ -245,7 +248,7 @@ const styles = {
     autoComplete: {
         maxWidth: 'calc(100% - 5px)',
         underline: {
-            borderColor: '#0680CD',
+            borderColor: Color.ltBlue,
             maxWidth: 'calc(100% - 42px)'
         }
     },
@@ -253,7 +256,7 @@ const styles = {
         textAlign: 'left'
     },
     buttonLabel: {
-        color: '#235f9c'
+        color: Color.blue
     },
     chipWrapper: {
         textAlign: 'left'
@@ -279,7 +282,7 @@ const styles = {
     fileList: {
         margin: '0 auto',
         textAlign: 'left',
-        color: '#235f9c',
+        color: Color.blue,
         padding: 5
     },
     fileListHeader: {
@@ -322,12 +325,12 @@ const styles = {
         margin: '0 auto',
         textAlign: 'left',
         padding: 5,
-        backgroundColor: '#f44336'
+        backgroundColor: Color.red
     },
     tagLabels: {
         margin: 3,
         cursor: 'pointer',
-        color: '#235F9C',
+        color: Color.blue,
         float: 'left'
     },
     tagLabelsContainer: {

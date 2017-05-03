@@ -3,6 +3,7 @@ const { object, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import authStore from '../../stores/authStore';
+import { Color } from '../../theme/customTheme';
 import AutoComplete from 'material-ui/AutoComplete';
 import CircularProgress from 'material-ui/CircularProgress';
 import Dialog from 'material-ui/Dialog';
@@ -73,7 +74,7 @@ class AddProjectMemberModal extends React.Component {
                         <SelectField value={this.state.value}
                                      onChange={this.handleSelectValueChange.bind(this, 'value')}
                                      floatingLabelText="Project Role"
-                                     floatingLabelStyle={{color: '#235f9c'}}
+                                     floatingLabelStyle={{color: Color.blue}}
                                      errorText={this.state.errorText}
                                      errorStyle={styles.textStyles}
                                      style={styles.textStyles}>

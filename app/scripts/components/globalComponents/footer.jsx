@@ -1,5 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
+import { Color } from '../../theme/customTheme';
 
 @observer
 class Footer extends React.Component {
@@ -9,15 +10,15 @@ class Footer extends React.Component {
         let appName = '';
         switch(DDS_PORTAL_CONFIG.environment){
             case 'production':
-                envColor = '#235F9C';
+                envColor = Color.blue;
                 appName = '';
                 break;
             case 'development':
-                envColor = '#f44336';
+                envColor = Color.red;
                 appName = ' - DEVELOPMENT';
                 break;
             case 'ua_test':
-                envColor = '#4caf50';
+                envColor = Color.green;
                 appName = ' - UA TEST';
                 break;
         }
@@ -40,9 +41,9 @@ class Footer extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     themeColor: {
-        backgroundColor: '#235F9C'
+        backgroundColor: Color.blue
     },
     logo: {
         margin: '8px 0px 4px 0px'

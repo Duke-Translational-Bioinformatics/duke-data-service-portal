@@ -2,6 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import authStore from '../stores/authStore';
 import mainStore from '../stores/mainStore';
+import { Color } from '../theme/customTheme';
 import ProjectList from '../components/projectComponents/projectList.jsx';
 import AccountOverview from '../components/globalComponents/accountOverview.jsx';
 import FlatButton from 'material-ui/FlatButton';
@@ -72,11 +73,11 @@ class Home extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     dialogStyles: {
         marginTop: 0,
         textAlign: 'center',
-        fontColor: '#303F9F',
+        fontColor: Color.dkBlue,
         zIndex: '9999'
     },
     main: {

@@ -1,5 +1,4 @@
-import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+import React from 'react';
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import authStore from '../../stores/authStore';
@@ -88,7 +87,7 @@ class MetadataTemplateOptions extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     btn: {
         margin: '12px 0px 12px 12px',
         float: 'right',

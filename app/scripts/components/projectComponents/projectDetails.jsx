@@ -2,10 +2,11 @@ import React, { PropTypes } from 'react';
 const { object, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
+import { Color } from '../../theme/customTheme';
+import { UrlGen } from '../../util/urlEnum';
 import ProjectOptionsMenu from './projectOptionsMenu.jsx';
 import Details from './details.jsx';
 import UploadManager from '../globalComponents/uploadManager.jsx';
-import {UrlGen} from '../../util/urlEnum';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import Card from 'material-ui/Card';
@@ -25,8 +26,8 @@ class ProjectDetails extends React.Component {
 
     render() {
         const { project, projPermissions } = mainStore;
-        let createdBy = project && project.audit ? project.audit.created_by.full_name : null;
-        let projectName = project ? project.name : null;
+        let createdBy = project && project.audit ? project.audit.created_by.full_name : '';
+        let projectName = project ? project.name : '';
         let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         let uploadMdl = null;
         let optionsMenu = null;
@@ -62,7 +63,7 @@ class ProjectDetails extends React.Component {
                             labelPosition="before"
                             secondary={true}
                             onTouchTap={() => this.showDetails()}
-                            icon={!this.state.showDetails ? <KeyboardArrowDown color={'#235f9c'} /> : <KeyboardArrowUp color={'#235f9c'} />}
+                            icon={!this.state.showDetails ? <KeyboardArrowDown color={Color.blue}/> : <KeyboardArrowUp color={Color.blue}/>}
                         />
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
@@ -135,7 +136,7 @@ const styles = {
     },
     projectIcon: {
         fontSize: 36,
-        color: '#616161',
+        color: Color.dkGrey2,
         margin: '0px 8px 0px -3px',
         verticalAlign: 'text-bottom'
     },

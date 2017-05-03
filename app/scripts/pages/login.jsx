@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 const { object, bool } = PropTypes;
 import { observer } from 'mobx-react';
 import authStore from '../stores/authStore.js';
-import mainStore from '../stores/mainStore.js';
+import { Color } from '../theme/customTheme';
 import CircularProgress from 'material-ui/CircularProgress';
 import RaisedButton from 'material-ui/RaisedButton';
 import {UrlGen} from '../util/urlEnum';
@@ -44,7 +44,7 @@ class Login extends React.Component {
                         {!authServiceLoading ? <a href={this.createLoginUrl()} className="external">
                             <RaisedButton
                                 label="Log In" labelStyle={{fontWeight: '400'}} labelColor={'#f9f9f9'}
-                                backgroundColor={'#0680CD'} style={{marginBottom: 40, width: 150}}
+                                backgroundColor={Color.ltBlue} style={{marginBottom: 40, width: 150}}
                                 onClick={() => this.handleLoginBtn()}>
                             </RaisedButton>
                         </a> : <CircularProgress size={70} thickness={5} color="#fff"/>}
@@ -80,7 +80,7 @@ const styles = {
         margin: '0 auto',
         padding: 20,
         overflow: 'auto',
-        backgroundColor: '#235F9C',
+        backgroundColor: Color.blue,
         fontColor: '#f9f9f9'
     },
     logo: {

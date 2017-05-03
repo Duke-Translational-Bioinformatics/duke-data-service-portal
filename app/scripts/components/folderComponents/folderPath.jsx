@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
+import { Color } from '../../theme/customTheme';
 import { Path } from '../../util/urlEnum';
 import FolderOptionsMenu from './folderOptionsMenu.jsx';
 import UploadManager from '../globalComponents/uploadManager.jsx';
@@ -80,7 +81,7 @@ const styles = {
         fontSize: 36,
         verticalAlign: 'text-bottom',
         marginRight: 8,
-        color: '#616161'
+        color: Color.dkGrey
     },
     heading: {
         margin: 0,

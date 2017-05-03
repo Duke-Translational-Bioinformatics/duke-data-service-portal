@@ -67,7 +67,7 @@ export class ProvenanceStore {
         this.showProvCtrlBtns = false;
         this.showProvDetails = false;
         this.toggleProv = false;
-        this.toggleProvEdit = false;
+        this.toggleProvEdit = true;
         this.updatedGraphItem = [];
 
         this.transportLayer = transportLayer

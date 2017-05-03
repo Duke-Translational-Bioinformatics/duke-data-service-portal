@@ -10,7 +10,7 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import Snackbar from 'material-ui/Snackbar';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import Theme from '../theme/customTheme.js';
+import { Theme } from '../theme/customTheme';
 
 let zIndex = {
     zIndex: {
@@ -25,6 +25,7 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.handleResize = this.handleResize.bind(this);
+        this.$$ = Dom7;
     }
 
     static childContextTypes = {
@@ -71,9 +72,10 @@ class App extends React.Component {
         }
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(prevProps) {
         if(authStore.appConfig.apiToken && !Object.keys(authStore.currentUser).length) authStore.getCurrentUser();
         if(authStore.sessionTimeoutWarning) authStore.setRedirectUrl(location.href);
+        if(prevProps.location.pathname !== this.props.location.pathname) this.$$('.page-content').scrollTo(0, 0);
         this.showToasts();
     }
 
