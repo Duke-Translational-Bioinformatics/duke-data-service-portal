@@ -4,6 +4,7 @@ import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import provenanceStore from '../../stores/provenanceStore';
 import { Kind, Path } from '../../util/urlEnum';
+import Divider from 'material-ui/Divider';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
@@ -24,7 +25,7 @@ class FileOptionsMenu extends React.Component {
                             anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                             targetOrigin={{horizontal: 'right', vertical: 'top'}}>
                             {prjPrm !== 'viewOnly' ? <MenuItem primaryText="Download File" leftIcon={<i className="material-icons">file_download</i>} onTouchTap={() => this.handleDownload()}/> : null}
-                            <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>} onTouchTap={() => this.toggleProv(id, versionId)}/>
+                            <MenuItem primaryText="Edit Provenance" leftIcon={<i className="material-icons">device_hub</i>} onTouchTap={() => this.toggleProv(id, versionId)}/>
                 </IconMenu>;
             }
             if(prjPrm === 'flUpload'){
@@ -33,7 +34,7 @@ class FileOptionsMenu extends React.Component {
                             anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                             targetOrigin={{horizontal: 'right', vertical: 'top'}}>
                             <MenuItem primaryText="Upload New Version" leftIcon={<i className="material-icons">file_upload</i>} onTouchTap={() => this.toggleModal('newVersionModal')}/>
-                            <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>} onTouchTap={() => this.toggleProv(id, versionId)}/>
+                            <MenuItem primaryText="Edit Provenance" leftIcon={<i className="material-icons">device_hub</i>} onTouchTap={() => this.toggleProv(id, versionId)}/>
                 </IconMenu>;
             }
             if(prjPrm === 'prjCrud' || prjPrm === 'flCrud'){
@@ -41,13 +42,15 @@ class FileOptionsMenu extends React.Component {
                             iconButtonElement={<IconButton iconClassName="material-icons" onTouchTap={this.props.clickHandler}>more_vert</IconButton>}
                             anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                             targetOrigin={{horizontal: 'right', vertical: 'top'}}>
-                            <MenuItem primaryText="Download File" leftIcon={<i className="material-icons">file_download</i>} onTouchTap={() => this.handleDownload(id)}/>
-                            <MenuItem primaryText="Delete File" leftIcon={<i className="material-icons">delete</i>} onTouchTap={() => this.toggleModal('dltFile')}/>
                             <MenuItem primaryText="Edit File Name" leftIcon={<i className="material-icons">mode_edit</i>} onTouchTap={() => this.toggleModal('editFile')}/>
-                            <MenuItem primaryText="Add Tags" leftIcon={<i className="material-icons">local_offer</i>} onTouchTap={() => this.openTagManager(id)}/>
                             <MenuItem primaryText="Move File" leftIcon={<i className="material-icons">low_priority</i>} onTouchTap={() => this.moveFile(id)}/>
+                            <MenuItem primaryText="Delete File" leftIcon={<i className="material-icons">delete</i>} onTouchTap={() => this.toggleModal('dltFile')}/>
+                            <Divider/>
+                            <MenuItem primaryText="Download File" leftIcon={<i className="material-icons">file_download</i>} onTouchTap={() => this.handleDownload(id)}/>
                             <MenuItem primaryText="Upload New Version" leftIcon={<i className="material-icons">file_upload</i>} onTouchTap={() => this.toggleModal('newVersionModal')}/>
-                            <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>} onTouchTap={() => this.toggleProv(id, versionId)}/>
+                            <Divider/>
+                            <MenuItem primaryText="Add Tags" leftIcon={<i className="material-icons">local_offer</i>} onTouchTap={() => this.openTagManager(id)}/>
+                            <MenuItem primaryText="Edit Provenance" leftIcon={<i className="material-icons">device_hub</i>} onTouchTap={() => this.toggleProv(id, versionId)}/>
                 </IconMenu>;
             }
         }
@@ -74,6 +77,8 @@ class FileOptionsMenu extends React.Component {
     }
 
     toggleProv(id, versionId) {
+        let projId = this.props.router.location.pathname.includes('project') ? this.props.params.id : mainStore.entityObj.ancestors[0].id;
+        mainStore.searchFiles('', projId);
         provenanceStore.getWasGeneratedByNode(versionId);
         provenanceStore.toggleProvView();
         this.props.router.push('/file/'+id);

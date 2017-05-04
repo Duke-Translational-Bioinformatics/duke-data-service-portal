@@ -19,9 +19,9 @@ class FolderOptionsMenu extends React.Component {
                     iconButtonElement={<IconButton iconClassName="material-icons" onTouchTap={this.props.clickHandler}>more_vert</IconButton>}
                     anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                     targetOrigin={{horizontal: 'right', vertical: 'top'}}>
-                    <MenuItem primaryText="Delete Folder" leftIcon={<i className="material-icons">delete</i>} onTouchTap={() => this.toggleModal('dltFolder')}/>
                     <MenuItem primaryText="Edit Folder Name" leftIcon={<i className="material-icons">mode_edit</i>} onTouchTap={() => this.toggleModal('editFolder')}/>
                     <MenuItem primaryText="Move Folder" leftIcon={<i className="material-icons">low_priority</i>} onTouchTap={() => this.moveFolder(id)}/>
+                    <MenuItem primaryText="Delete Folder" leftIcon={<i className="material-icons">delete</i>} onTouchTap={() => this.toggleModal('dltFolder')}/>
                 </IconMenu>
             </div>
         );

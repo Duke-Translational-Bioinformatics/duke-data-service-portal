@@ -4,7 +4,6 @@ import ReactDOM from 'react-dom';
 import { observer } from 'mobx-react';
 import { graphOptions } from '../../graphConfig';
 import { Color } from '../../theme/customTheme';
-import authStore from '../../stores/authStore';
 import mainStore from '../../stores/mainStore';
 import provenanceStore from '../../stores/provenanceStore';
 import ProvenanceActivityManager from '../globalComponents/provenanceActivityManager.jsx';
@@ -405,12 +404,6 @@ class Provenance extends React.Component {
     handleClose(id) {
         provenanceStore.closeProvEditorModal(id);
         this.saveZoomState();
-    }
-
-    handleFloatingError(e) {
-        if(this.state.floatingErrorText !== '' || !e.target.value) { // Avoid lagging text input due to re-renders
-            this.setState({floatingErrorText: e.target.value ? '' : 'This field is required.'});
-        }
     }
 
     handleSelectValueChange(index, event, value) {
