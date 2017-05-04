@@ -2,7 +2,10 @@ import React, { PropTypes } from 'react';
 const { array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
+<<<<<<< Updated upstream
 import { Color } from '../../theme/customTheme';
+=======
+>>>>>>> Stashed changes
 import IconButton from 'material-ui/IconButton';
 import LocalOffer from 'material-ui/svg-icons/maps/local-offer';
 

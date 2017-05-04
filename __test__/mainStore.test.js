@@ -67,6 +67,15 @@ describe('Main Store', () => {
         expect(mainStore.filesRejectedForUpload[0]).toBe(FOLDER_ID);
     });
 
+    it('@action removeFileFromUploadList - removes a selected file from upload list based on index', () => {
+        mainStore.filesToUpload  = [FILE_ID, FOLDER_ID];
+        expect(mainStore.filesToUpload.length).toBe(2);
+        expect(mainStore.filesToUpload[0]).toBe(FILE_ID);
+        mainStore.removeFileFromUploadList(0);
+        expect(mainStore.filesToUpload.length).toBe(1);
+        expect(mainStore.filesToUpload[0]).toBe(FOLDER_ID);
+    });
+
     it('@action defineTagsToAdd - define tags that will be added', () => {
         mainStore.defineTagsToAdd([FILE_ID,FOLDER_ID]);
         expect(mainStore.tagsToAdd[0]).toBe(FILE_ID);
