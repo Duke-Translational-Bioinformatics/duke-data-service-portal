@@ -31,6 +31,7 @@ export class MainStore {
     @observable fileVersions
     @observable includeKinds
     @observable includeProjects
+    @observable isListItem
     @observable itemsSelected
     @observable listItems
     @observable loading
@@ -105,6 +106,7 @@ export class MainStore {
         this.fileVersions = [];
         this.includeKinds = [];
         this.includeProjects = [];
+        this.isListItem = false;
         this.itemsSelected = null;
         this.listItems = [];
         this.loading = false;
@@ -313,16 +315,16 @@ export class MainStore {
     @action batchDeleteItems() {
         let files = this.filesChecked;
         let folders = this.foldersChecked;
-        for (let i = 0; i < files.length; i++) {
-            this.deleteFile(files[i]);
-            this.listItems = BaseUtils.removeObjByKey(this.listItems.slice(), {key: 'id', value: files[i]});
+        for (let id of files) {
+            this.deleteFile(id);
+            this.listItems = BaseUtils.removeObjByKey(this.listItems.slice(), {key: 'id', value: id});
         }
-        for (let i = 0; i < folders.length; i++) {
-            this.deleteFolder(folders[i]);
-            this.listItems = BaseUtils.removeObjByKey(this.listItems.slice(), {key: 'id', value: folders[i]});
+        for (let id of folders) {
+            this.deleteFolder(id);
+            this.listItems = BaseUtils.removeObjByKey(this.listItems.slice(), {key: 'id', value: id});
         }
         this.incrementTableBodyRenderKey();
-        this.handleBatch([], []);
+        this.handleBatch([],[]);
     }
 
     @action editVersionLabel(id, label) {
@@ -399,8 +401,16 @@ export class MainStore {
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
-                this.addToast(type + ' moved successfully');
-                this.listItems = BaseUtils.removeObjByKey(this.listItems.slice(), {key: 'id', value: id});
+                this.addToast('Item moved successfully');
+                if(this.filesChecked.length || this.foldersChecked.length || this.isListItem) {
+                    this.listItems = BaseUtils.removeObjByKey(this.listItems.slice(), {key: 'id', value: id});
+                    this.filesChecked = this.filesChecked.filter(i => i !== id);
+                    this.foldersChecked = this.foldersChecked.filter(i => i !== id);
+                    this.handleBatch(this.filesChecked, this.foldersChecked);
+                    this.incrementTableBodyRenderKey();
+                } else if(!this.isListItem) {
+                    this.entityObj = json;
+                }
                 this.loading = false;
             }).catch((ex) => {
                 this.addToast('Failed to move ' + type + ' to new location');
@@ -409,6 +419,7 @@ export class MainStore {
     }
 
     @action getEntity(id, path, requester) {
+        this.parent = {};
         this.loading = requester !== 'moveItemModal' ? true : false;
         this.transportLayer.getEntity(id, path)
             .then(this.checkResponse)
@@ -426,7 +437,7 @@ export class MainStore {
             }).catch(ex => this.handleErrors(ex))
     }
 
-    @action setSelectedEntity(id, path) {
+    @action setSelectedEntity(id, path, isListItem) {
         if (id === null) {
             this.selectedEntity = null;
         } else {
@@ -435,6 +446,7 @@ export class MainStore {
                 .then(response => response.json())
                 .then((json) => {
                     this.selectedEntity = json;
+                    this.isListItem = isListItem;
                 }).catch(ex => this.handleErrors(ex))
         }
     }
@@ -592,7 +604,6 @@ export class MainStore {
                 this.addToast('Added ' + msg + ' as tags to all selected files.');
                 this.getTags(id, Kind.DDS_FILE);
                 this.loading = false;
-                // this.handleBatch([], [])
             }).catch((ex) => {
                 this.addToast('Failed to add tags');
                 this.handleErrors(ex)

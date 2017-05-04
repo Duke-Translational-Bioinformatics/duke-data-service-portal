@@ -67,8 +67,8 @@ class ListItems extends React.Component {
             showChecks = !!(prjPrm !== 'viewOnly' && prjPrm !== 'flUpload');
         }
         let children = listItems && listItems.length ? listItems.map((children) => {
-            let fileOptionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, Path.FILE)}/>;
-            let folderOptionsMenu = <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, Path.FOLDER)}/>;
+            let fileOptionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, Path.FILE, true)}/>;
+            let folderOptionsMenu = <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, Path.FOLDER, true)}/>;
             if (children.kind === 'dds-folder') {
                 return (
                     <TableRow key={children.id} selected={mainStore.foldersChecked.includes(children.id)}>
@@ -181,8 +181,8 @@ class ListItems extends React.Component {
         mainStore.getChildren(id, kind, page);
     }
 
-    setSelectedEntity(id, path) {
-        mainStore.setSelectedEntity(id, path);
+    setSelectedEntity(id, path, isListItem) {
+        mainStore.setSelectedEntity(id, path, isListItem);
     }
 
     toggleUploadManager() {

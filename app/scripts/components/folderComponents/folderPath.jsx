@@ -55,7 +55,8 @@ class FolderPath extends React.Component {
 
     setSelectedEntity() {
         let id = this.props.params.id;
-        mainStore.setSelectedEntity(id, Path.FOLDER);
+        let isListItem = false;
+        mainStore.setSelectedEntity(id, Path.FOLDER, isListItem);
     }
 }
 

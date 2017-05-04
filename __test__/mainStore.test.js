@@ -828,6 +828,7 @@ describe('Main Store', () => {
     });
 
     it('@action moveItem - should move an item to another location and remove item from current list', () => {
+        mainStore.isListItem = true;
         mainStore.listItems = fake.list_items_json.results;
         expect(mainStore.listItems.length).toBe(2);
         transportLayer.moveItem = jest.fn((id, kind, destination, destinationKind) => respondOK(fake.file_json));
@@ -867,6 +868,18 @@ describe('Main Store', () => {
         return sleep(1).then(() => {
             expect(transportLayer.setSelectedEntity).toHaveBeenCalledTimes(0);
             expect(mainStore.selectedEntity).toBeNull();
+        });
+    });
+
+    it('@action setSelectedEntity - should return a file or folder object and set isListItem to true', () => {
+        mainStore.isListItem = false;
+        expect(mainStore.isListItem).toBe(false);
+        transportLayer.setSelectedEntity = jest.fn((id, path) => respondOK(fake.file_json));
+        mainStore.setSelectedEntity(FILE_ID, FILE_PATH, true);
+        return sleep(1).then(() => {
+            expect(transportLayer.setSelectedEntity).toHaveBeenCalledTimes(1);
+            expect(mainStore.selectedEntity.id).toBe(FILE_ID);
+            expect(mainStore.isListItem).toBe(true);
         });
     });
 
