@@ -42,9 +42,12 @@ class UploadManager extends React.Component {
                 </li>
             )
         });
-        let files = filesToUpload.length ? filesToUpload.map((file)=>{
+        let files = filesToUpload.length ? filesToUpload.map((file, i)=>{
             return <div key={BaseUtils.generateUniqueKey()}>
-                <div className="mdl-cell mdl-cell--6-col" style={styles.fileList}>{file.name}</div>
+                <div className="mdl-cell mdl-cell--6-col" style={styles.fileList}>
+                    <i className="material-icons" style={styles.deleteIcon} onTouchTap={() => this.removeFileFromList(i)}>cancel</i>
+                    {file.name}
+                </div>
             </div>
         }) : null;
         let rejectedFiles = filesRejectedForUpload.length ? filesRejectedForUpload.map((file)=>{
@@ -74,6 +77,7 @@ class UploadManager extends React.Component {
                         <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.fileInputContainer}>
                             <div className="mdl-cell mdl-cell--6-col" style={styles.dropzoneContainer}>
                                 <Dropzone ref={(drop)=> this.dropzone = drop}
+                                          disablePreview={true}
                                           onMouseEnter={(e)=>this.onHoverDropzone(e)}
                                           onMouseLeave={(e)=>this.onHoverDropzone(e)}
                                           onDrop={this.onDrop.bind(this)}
@@ -191,6 +195,7 @@ class UploadManager extends React.Component {
                 parentKind = this.props.router.location.pathname.includes('project') ? Kind.DDS_PROJECT : Kind.DDS_FOLDER;
                 mainStore.startUpload(projId, blob, parentId, parentKind, null, null, tagsToAdd);
                 mainStore.defineTagsToAdd([]);
+                mainStore.processFilesToUpload([], []);
             }
         } else {
             return null
@@ -216,6 +221,10 @@ class UploadManager extends React.Component {
 
     onHoverDropzone(e) {
         this.setState({dropzoneHover: !this.state.dropzoneHover});
+    }
+
+    removeFileFromList(index) {
+        mainStore.removeFileFromUploadList(index);
     }
 
     toggleUploadManager() {
@@ -267,6 +276,13 @@ const styles = {
     chipHeader: {
         marginLeft: 5,
         marginTop: 0
+    },
+    deleteIcon: {
+        fontSize: 18,
+        cursor: 'pointer',
+        color: Color.red,
+        verticalAlign: 'middle',
+        marginRight: 3
     },
     dropzoneContainer: {
         margin: '0 auto'

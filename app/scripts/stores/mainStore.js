@@ -546,8 +546,12 @@ export class MainStore {
     }
 
     @action processFilesToUpload(files, rejectedFiles) {
-        this.filesToUpload = files;
-        this.filesRejectedForUpload = rejectedFiles;
+        this.filesToUpload = files.length ? [...this.filesToUpload, ...files] : [];
+        this.filesRejectedForUpload = rejectedFiles.length ? [...this.filesRejectedForUpload, ...rejectedFiles] : [];
+    }
+
+    @action removeFileFromUploadList(index) {
+        this.filesToUpload.splice(index, 1);
     }
 
     @action defineTagsToAdd(tags) {
