@@ -250,7 +250,8 @@ class FileDetails extends React.Component {
 
     setSelectedEntity() {
         let id = this.props.params.id;
-        mainStore.setSelectedEntity(id, Path.FILE);
+        let isListItem = false;
+        mainStore.setSelectedEntity(id, Path.FILE, isListItem);
     }
 }
 

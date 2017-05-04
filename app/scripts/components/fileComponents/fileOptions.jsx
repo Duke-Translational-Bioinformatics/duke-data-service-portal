@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import { Path } from '../../util/urlEnum';

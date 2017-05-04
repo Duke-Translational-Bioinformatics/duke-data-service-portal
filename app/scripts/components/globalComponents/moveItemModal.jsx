@@ -32,30 +32,40 @@ class MoveItemModal extends React.Component {
         let children = [];
         let projectChildren = [];
         let openItem = <span></span>;
-        let itemId = selectedEntity && selectedEntity !== null ? selectedEntity.id : entityObj.id;
+        let itemId = null;
+        let itemParentId = null;
+        let itemBatchId = [];
+        if(mainStore.filesChecked.length || mainStore.foldersChecked.length) {
+            itemBatchId = [...itemBatchId, ...mainStore.filesChecked];
+            itemBatchId = [...itemBatchId, ...mainStore.foldersChecked];
+
+        } else {
+            itemId = selectedEntity && selectedEntity !== null ? selectedEntity.id : entityObj !== null ? entityObj.id : null;
+            itemParentId = selectedEntity && selectedEntity !== null ? selectedEntity.parent.id : entityObj !== null ? entityObj.parent.id : null;
+        }
 
         if (!this.state.projectChildren && moveToObj) {
-            if (itemId === moveToObj.id) {
+            if (itemId === moveToObj.id || itemBatchId.includes(moveToObj.id)) {
                 openItem = <span></span>
             }
-            if (itemId != moveToObj.id && !this.state.openChildren) {
+            if ((itemId !== moveToObj.id || !itemBatchId.includes(moveToObj.id)) && !this.state.openChildren) {
                 openItem = <span></span>;
             }
-            if (itemId != moveToObj.id && this.state.openChildren) {
+            if ((itemId !== moveToObj.id || !itemBatchId.includes(moveToObj.id)) && this.state.openChildren) {
                 openItem = <ListItem
                     style={styles.listItem}
                     innerDivStyle={{marginLeft: 20}}
                     value={moveToObj.id}
-                    primaryText={moveToObj.name}
+                    primaryText={moveToObj.name + ' open'}
                     leftIcon={<Folder />}
                     onTouchTap={() => this.selectedLocation(moveToObj.id, moveToObj.kind)}
-                    rightIconButton={<IconButton tooltip="move here" tooltipPosition="bottom"><Archive style={styles.rightIcon} color={Color.pink} onTouchTap={() => this.handleMove(moveToObj.id, moveToObj.kind)}/></IconButton>}/>
+                    rightIconButton={<IconButton disabled={moveToObj.id === this.props.params.id || moveToObj.id === itemParentId} tooltip="move here" tooltipPosition="bottom" onTouchTap={() => this.handleMove(moveToObj.id, moveToObj.kind)}><Archive style={styles.rightIcon} color={Color.pink} /></IconButton>}/>
             }
         }
 
         if (moveToObj && moveToObj.ancestors) {
             ancestors = moveToObj.ancestors.map((item) => {
-                if (item.id === itemId) {
+                if (item.id === itemId || itemBatchId.includes(item.id)) {
                     return (
                         <span key={item.id}></span>
                     )
@@ -65,10 +75,10 @@ class MoveItemModal extends React.Component {
                         <ListItem key={item.id}
                                   style={styles.listItem}
                                   value={item.id}
-                                  primaryText={item.name}
+                                  primaryText={item.name + ' a'}
                                   leftIcon={<ContentPaste />}
                                   onTouchTap={() => this.getProjectChildren(item.id)}
-                                  rightIconButton={<IconButton tooltip="move here" tooltipPosition="bottom"><Archive style={styles.rightIcon} color={Color.pink} onTouchTap={() => this.handleMove(item.id, item.kind)}/></IconButton>}/>
+                                  rightIconButton={<IconButton disabled={item.id === this.props.params.id || item.id === itemParentId} tooltip="move here" tooltipPosition="bottom" onTouchTap={() => this.handleMove(item.id, item.kind)}><Archive style={styles.rightIcon} color={Color.pink}/></IconButton>}/>
                     )
                 } else if(!this.state.projectChildren) {
                     return (
@@ -76,10 +86,10 @@ class MoveItemModal extends React.Component {
                                   style={styles.listItem}
                                   innerDivStyle={{marginLeft: 10}}
                                   value={item.id}
-                                  primaryText={item.name}
+                                  primaryText={item.name  + ' a'}
                                   leftIcon={<Folder />}
                                   onTouchTap={() => this.openListItem(item.id, item.kind)}
-                                  rightIconButton={<IconButton tooltip="move here" tooltipPosition="bottom"><Archive style={styles.rightIcon} color={Color.pink} onTouchTap={() => this.handleMove(item.id, item.kind)}/></IconButton>}/>
+                                  rightIconButton={<IconButton disabled={item.id === this.props.params.id || item.id === itemParentId} tooltip="move here" tooltipPosition="bottom" onTouchTap={() => this.handleMove(item.id, item.kind)}><Archive style={styles.rightIcon} color={Color.pink}/></IconButton>}/>
                     )
                 }
             });
@@ -87,7 +97,7 @@ class MoveItemModal extends React.Component {
 
         if (moveItemList.length && this.state.openChildren) {
             children = moveItemList.map((item) => {
-                if (item.id === itemId || item.parent.id === itemId) {
+                if (item.id === itemId || item.parent.id === itemId || itemBatchId.includes(item.id) || itemBatchId.includes(item.parent.id)) {
                     return (
                         <span key={item.id}></span>
                     )
@@ -98,10 +108,10 @@ class MoveItemModal extends React.Component {
                                   style={styles.listItem}
                                   innerDivStyle={{marginLeft: 30}}
                                   value={item.id}
-                                  primaryText={item.name}
+                                  primaryText={item.name  + ' c'}
                                   leftIcon={<Folder />}
                                   onTouchTap={() => this.openListItem(item.id, item.kind)}
-                                  rightIconButton={<IconButton tooltip="move here" tooltipPosition="bottom"><Archive style={styles.rightIcon} color={Color.pink} onTouchTap={() => this.handleMove(item.id, item.kind)}/></IconButton>}/>
+                                  rightIconButton={<IconButton disabled={item.id === this.props.params.id || item.id === itemParentId} tooltip="move here" tooltipPosition="bottom" onTouchTap={() => this.handleMove(item.id, item.kind)}><Archive style={styles.rightIcon} color={Color.pink}/></IconButton>}/>
                     )
                 } else {
                     return (
@@ -113,7 +123,7 @@ class MoveItemModal extends React.Component {
 
         if (moveItemList.length && this.state.projectChildren) {
             projectChildren = moveItemList.map((item) => {
-                if (item.id === itemId || item.parent.id === itemId) {
+                if (item.id === itemId || item.parent.id === itemId || itemBatchId.includes(item.id) || itemBatchId.includes(item.parent.id)) {
                     return (
                         <span key={item.id}></span>
                     )
@@ -124,10 +134,10 @@ class MoveItemModal extends React.Component {
                                   style={styles.listItem}
                                   innerDivStyle={{marginLeft: 0}}
                                   value={item.id}
-                                  primaryText={item.name}
+                                  primaryText={item.name + ' pc'}
                                   leftIcon={<Folder />}
                                   onTouchTap={() => this.openListItem(item.id, item.kind)}
-                                  rightIconButton={<IconButton tooltip="move here" tooltipPosition="bottom"><Archive style={styles.rightIcon} color={Color.pink} onTouchTap={() => this.handleMove(item.id, item.kind)}/></IconButton>}/>
+                                  rightIconButton={<IconButton disabled={item.id === this.props.params.id || item.id === itemParentId} tooltip="move here" tooltipPosition="bottom" onTouchTap={() => this.handleMove(item.id, item.kind)}><Archive style={styles.rightIcon} color={Color.pink}/></IconButton>}/>
                     )
                 } else {
                     return (
@@ -164,23 +174,20 @@ class MoveItemModal extends React.Component {
     }
 
     handleMove(destinationId, destinationKind) {
-        const {parent, selectedEntity} = mainStore;
+        const {entityObj, filesChecked, foldersChecked, parent, selectedEntity} = mainStore;
         let id = selectedEntity && selectedEntity !== null ? selectedEntity.id : this.props.params.id;
-        let kind = selectedEntity && selectedEntity !== null ? selectedEntity.kind : this.props.entityObj.kind;
-        let transitionToParent = (root, parentId) => {
-            setTimeout(()=>{this.props.router.push(root + parentId)}, 500)
-        };
+        let kind = selectedEntity && selectedEntity !== null ? selectedEntity.kind : entityObj !== null ? entityObj.kind : Kind.DDS_PROJECT;
         if (destinationId === parent.id || destinationId === id) {
             this.setState({showWarning: true});
         } else {
-            mainStore.moveItem(id, kind, destinationId, destinationKind);
-            if (parent.kind === Kind.DDS_FOLDER) {
-                transitionToParent('/folder/', parent.id);
+            if(mainStore.filesChecked.length || mainStore.foldersChecked.length) {
+                for (let id of filesChecked) mainStore.moveItem(id, Kind.DDS_FILE, destinationId, destinationKind);
+                for (let id of foldersChecked) mainStore.moveItem(id, Kind.DDS_FOLDER, destinationId, destinationKind);
             } else {
-                transitionToParent('/project/', parent.id);
+                mainStore.moveItem(id, kind, destinationId, destinationKind);
             }
-            this.setState({showWarning: false});
             mainStore.toggleModals('moveItem');
+            this.setState({showWarning: false});
         }
     }
 
