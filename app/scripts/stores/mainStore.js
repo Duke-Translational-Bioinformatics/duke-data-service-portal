@@ -547,6 +547,7 @@ export class MainStore {
 
     @action processFilesToUpload(files, rejectedFiles) {
         this.filesToUpload = files.length ? [...this.filesToUpload, ...files] : [];
+        this.filesToUpload = this.filesToUpload.filter((file, index, self) => self.findIndex(f => f.name === file.name && f.size === file.size && f.lastModified === file.lastModified) === index);
         this.filesRejectedForUpload = rejectedFiles.length ? [...this.filesRejectedForUpload, ...rejectedFiles] : [];
     }
 
