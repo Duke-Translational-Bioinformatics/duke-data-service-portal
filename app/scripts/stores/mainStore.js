@@ -67,6 +67,7 @@ export class MainStore {
     @observable selectedEntity
     @observable showFilters
     @observable showPropertyCreator
+    @observable showTagCloud
     @observable showTemplateCreator
     @observable showTemplateDetails
     @observable showUserInfoPanel
@@ -142,6 +143,7 @@ export class MainStore {
         this.selectedEntity = null;
         this.showFilters = false;
         this.showPropertyCreator = false;
+        this.showTagCloud = false;
         this.showTemplateCreator = false;
         this.showTemplateDetails = false;
         this.showUserInfoPanel = false;
@@ -539,6 +541,10 @@ export class MainStore {
 
     @action toggleTagManager() {
         this.openTagManager = !this.openTagManager;
+    }
+
+    @action toggleTagCloud() {
+        this.showTagCloud = !this.showTagCloud;
     }
 
     @action toggleUploadManager() {
