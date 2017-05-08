@@ -43,7 +43,7 @@ class TagManager extends React.Component {
     }
 
     render() {
-        const {drawerLoading, entityObj, filesChecked, openTagManager, screenSize, selectedEntity, showTemplateDetails, tagAutoCompleteList, tagLabels, tagsToAdd, toggleModal} = mainStore;
+        const {drawerLoading, entityObj, filesChecked, openTagManager, screenSize, selectedEntity, showTagCloud, showTemplateDetails, tagAutoCompleteList, tagLabels, tagsToAdd, toggleModal} = mainStore;
         let autoCompleteData = tagAutoCompleteList && tagAutoCompleteList.length > 0 ? tagAutoCompleteList : [];
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let id = selectedEntity !== null ? selectedEntity.id : this.props.params.id;
@@ -78,8 +78,7 @@ class TagManager extends React.Component {
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <Drawer docked={false} disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openSecondary={true} open={openTagManager}>
-                    <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800"
-                         style={styles.drawer}>
+                    <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" style={styles.drawer}>
                         <IconButton style={styles.toggleBtn}
                                     onTouchTap={() => this.toggleTagManager()}>
                             <NavigationClose />
@@ -116,21 +115,25 @@ class TagManager extends React.Component {
                                         <AddCircle color={Color.blue}/>
                                     </IconButton><br/>
                                 </div>
-                                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.tagLabelsContainer}>
-                                    <h6 style={styles.tagLabelsHeading}>Recently used tags <span style={styles.tagLabelsHeading.span}>(click on a tag to add it to {name})</span></h6>
-                                    <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400">
+                                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.tagLabelsContainer}>
+                                    <h6 style={styles.tagLabelsHeading}>Recently used tags</h6>
+                                    <i className="material-icons" style={styles.toggleTagBtn} onTouchTap={()=>this.toggleTagCloud()}>{showTagCloud ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}</i>
+                                    <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={{display: showTagCloud ? 'block' : 'none', marginTop: 0}}>
+                                        <span className="mdl-cell mdl-cell--12-col" style={styles.tagLabelsHeading.span}>
+                                            {'(click on a tag to add it to '+name+')'}
+                                        </span>
                                         <ul style={styles.tagLabelList}>
                                             { tagLbls }
                                         </ul>
                                     </div>
                                 </div>
-                                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.chipWrapper}>
-                                    {tagsToAdd.length ? <h6 className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.chipHeader}>New Tags To Add</h6> : null}
+                                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.chipWrapper}>
+                                    {tagsToAdd.length ? <h6 className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.chipHeader}>New Tags To Add</h6> : null}
                                     <div className="chip-container" style={styles.chipContainer}>
                                         { tags }
                                     </div>
                                 </div>
-                                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.buttonWrapper}>
+                                <div className="mdl-cell mdl-cell--12-col" style={styles.buttonWrapper}>
                                     <RaisedButton label={'Apply'}
                                                   labelStyle={styles.buttonLabel}
                                                   style={styles.applyBtn}
@@ -210,6 +213,7 @@ class TagManager extends React.Component {
                 this.toggleTagManager();
                 this.setState({floatingErrorText: ''})
             }
+            if(mainStore.showTagCloud) this.toggleTagCloud();
         }
     }
 
@@ -242,9 +246,14 @@ class TagManager extends React.Component {
         });
     }
 
+    toggleTagCloud() {
+        mainStore.toggleTagCloud();
+    }
+
     toggleTagManager() {
         mainStore.toggleTagManager();
         mainStore.defineTagsToAdd([]);
+        if(mainStore.showTagCloud) this.toggleTagCloud();
         if(this.autocomplete.state.searchText !== '') this.autocomplete.setState({searchText:''});
     }
 }
@@ -273,7 +282,7 @@ const styles = {
     },
     autoCompleteUnderline: {
         borderColor: Color.ltBlue,
-        maxWidth: 'calc(100% - 42px)'
+        maxWidth: 'calc(100% - 22px)'
     },
     buttonLabel: {
         color: Color.blue
@@ -338,9 +347,13 @@ const styles = {
         overflow: 'auto'
     },
     tagLabelsHeading: {
-        margin: '10px 0px 10px 0px',
+        marginLeft: '10px 0px 10px 0px',
+        float: 'left',
         span: {
-            fontSize: '.7em'
+            fontSize: '.9em',
+            float: 'left',
+            marginLeft: -8,
+            marginTop: 0
         }
     },
     tagLabelList: {
@@ -351,6 +364,10 @@ const styles = {
     toggleBtn: {
         margin: '25px 0px 15px 0px',
         zIndex: 9999
+    },
+    toggleTagBtn: {
+        color: Color.blue,
+        marginTop: 24
     },
     wrapper:{
         display: 'flex',

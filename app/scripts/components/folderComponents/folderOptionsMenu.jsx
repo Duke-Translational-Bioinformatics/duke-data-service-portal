@@ -11,12 +11,12 @@ import MenuItem from 'material-ui/MenuItem';
 class FolderOptionsMenu extends React.Component {
 
     render() {
-        const {entityObj, selectedEntity} = mainStore;
+        const {entityObj, filesChecked, foldersChecked, selectedEntity} = mainStore;
         let id = selectedEntity !== null ? selectedEntity.id : entityObj !== null ? entityObj.id : null;
         return (
             <div>
                 <IconMenu
-                    iconButtonElement={<IconButton iconClassName="material-icons" onTouchTap={this.props.clickHandler}>more_vert</IconButton>}
+                    iconButtonElement={<IconButton disabled={!!(filesChecked.length || foldersChecked.length)} iconClassName="material-icons" onTouchTap={this.props.clickHandler}>more_vert</IconButton>}
                     anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                     targetOrigin={{horizontal: 'right', vertical: 'top'}}>
                     <MenuItem primaryText="Edit Folder Name" leftIcon={<i className="material-icons">mode_edit</i>} onTouchTap={() => this.toggleModal('editFolder')}/>

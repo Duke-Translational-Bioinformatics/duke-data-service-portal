@@ -28,7 +28,7 @@ class UploadManager extends React.Component {
     }
 
     render() {
-        const {entityObj, filesRejectedForUpload, filesToUpload, openUploadManager, screenSize, tagAutoCompleteList, tagLabels, tagsToAdd} = mainStore;
+        const {entityObj, filesRejectedForUpload, filesToUpload, openUploadManager, screenSize, showTagCloud, tagAutoCompleteList, tagLabels, tagsToAdd} = mainStore;
         let tags = tagsToAdd && tagsToAdd.length > 0 ? tagsToAdd.map((tag)=>{
             return (<div key={BaseUtils.generateUniqueKey()} className="chip">
                 <span className="chip-text">{tag.label}</span>
@@ -64,8 +64,7 @@ class UploadManager extends React.Component {
             <div style={styles.fileUpload}>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <Drawer docked={false} disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openSecondary={true} open={openUploadManager}>
-                        <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800"
-                             style={{marginTop: width > 680 ? 65 : 85}}>
+                        <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" style={{marginTop: 65}}>
                             <IconButton style={styles.toggleBtn}
                                         onTouchTap={() => this.toggleUploadManager()}>
                                 <NavigationClose />
@@ -122,11 +121,12 @@ class UploadManager extends React.Component {
                                 </IconButton><br/>
                             </div>
                             <div className="mdl-cell mdl-cell--6-col mdl-color-text--grey-600" style={styles.tagLabelsContainer}>
-                                <h6 style={styles.tagLabelsHeading}>Recently used tags
+                                <h6 style={styles.tagLabelsHeading} >Recently used tags</h6>
+                                <i className="material-icons" style={{color: Color.blue}} onTouchTap={()=>this.toggleTagCloud()}>{showTagCloud ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}</i>
+                                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={{display: showTagCloud ? 'block' : 'none', marginTop: 0}}>
                                     <span style={styles.tagLabelsHeading.span}>
                                         (click on a tag to add it to {filesToUpload.length === 1 ? filesToUpload[0].name + ' during upload' : 'these files during upload'})
-                                    </span></h6>
-                                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600">
+                                    </span>
                                     <ul style={styles.tagLabelList}>
                                         { tagLbls }
                                     </ul>
@@ -201,6 +201,7 @@ class UploadManager extends React.Component {
             return null
         }
         mainStore.toggleUploadManager();
+        if(mainStore.showTagCloud) this.toggleTagCloud();
     }
 
     handleUpdateInput (text) {
@@ -227,11 +228,16 @@ class UploadManager extends React.Component {
         mainStore.removeFileFromUploadList(index);
     }
 
+    toggleTagCloud() {
+        mainStore.toggleTagCloud();
+    }
+
     toggleUploadManager() {
         mainStore.toggleUploadManager();
         setTimeout(() => {
             if(this.autocomplete.state.searchText !== '') this.autocomplete.setState({searchText:''});
         }, 500);
+        if(mainStore.showTagCloud) this.toggleTagCloud();
         mainStore.defineTagsToAdd([]);
         mainStore.processFilesToUpload([], []);
     }
@@ -240,7 +246,7 @@ class UploadManager extends React.Component {
 
 const styles = {
     addTagIcon: {
-        margin: '-30px 20px 0px 0px',
+        margin: '-30px 0px 0px 0px',
         float: 'right',
         width: 24,
         height: 24,
@@ -258,7 +264,7 @@ const styles = {
         maxWidth: 'calc(100% - 5px)',
         underline: {
             borderColor: Color.ltBlue,
-            maxWidth: 'calc(100% - 42px)'
+            maxWidth: 'calc(100% - 22px)'
         }
     },
     buttonWrapper: {
@@ -355,9 +361,11 @@ const styles = {
     },
     tagLabelsHeading: {
         margin: 0,
+        float: 'left',
         span: {
-            fontSize: '.7em'
-        }
+            fontSize: '.9em',
+            marginLeft: -8
+        },
     },
     tagLabelList: {
         listStyleType: 'none',

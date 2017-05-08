@@ -13,7 +13,7 @@ import MenuItem from 'material-ui/MenuItem';
 class FileOptionsMenu extends React.Component {
 
     render() {
-        const { entityObj, projPermissions, selectedEntity } = mainStore;
+        const { entityObj, filesChecked, foldersChecked, projPermissions, selectedEntity } = mainStore;
         let id = selectedEntity !== null ? selectedEntity.id : entityObj !== null ? entityObj.id : null;
         let versionId = selectedEntity !== null && selectedEntity.current_version ? selectedEntity.current_version.id : entityObj !== null && entityObj.current_version ? entityObj.current_version.id : null;
         let prjPrm = projPermissions && projPermissions !== undefined ? projPermissions : null;
@@ -39,7 +39,7 @@ class FileOptionsMenu extends React.Component {
             }
             if(prjPrm === 'prjCrud' || prjPrm === 'flCrud'){
                 menu = <IconMenu
-                            iconButtonElement={<IconButton iconClassName="material-icons" onTouchTap={this.props.clickHandler}>more_vert</IconButton>}
+                            iconButtonElement={<IconButton disabled={!!(filesChecked.length || foldersChecked.length)} iconClassName="material-icons" onTouchTap={this.props.clickHandler}>more_vert</IconButton>}
                             anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                             targetOrigin={{horizontal: 'right', vertical: 'top'}}>
                             <MenuItem primaryText="Edit File Name" leftIcon={<i className="material-icons">mode_edit</i>} onTouchTap={() => this.toggleModal('editFile')}/>
