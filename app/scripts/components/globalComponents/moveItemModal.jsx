@@ -56,7 +56,7 @@ class MoveItemModal extends React.Component {
                     style={styles.listItem}
                     innerDivStyle={{marginLeft: 20}}
                     value={moveToObj.id}
-                    primaryText={moveToObj.name + ' open'}
+                    primaryText={moveToObj.name}
                     leftIcon={<Folder />}
                     onTouchTap={() => this.selectedLocation(moveToObj.id, moveToObj.kind)}
                     rightIconButton={<IconButton disabled={moveToObj.id === this.props.params.id || moveToObj.id === itemParentId} tooltip="move here" tooltipPosition="bottom" onTouchTap={() => this.handleMove(moveToObj.id, moveToObj.kind)}><Archive style={styles.rightIcon} color={Color.pink} /></IconButton>}/>
@@ -75,7 +75,7 @@ class MoveItemModal extends React.Component {
                         <ListItem key={item.id}
                                   style={styles.listItem}
                                   value={item.id}
-                                  primaryText={item.name + ' a'}
+                                  primaryText={item.name}
                                   leftIcon={<ContentPaste />}
                                   onTouchTap={() => this.getProjectChildren(item.id)}
                                   rightIconButton={<IconButton disabled={item.id === this.props.params.id || item.id === itemParentId} tooltip="move here" tooltipPosition="bottom" onTouchTap={() => this.handleMove(item.id, item.kind)}><Archive style={styles.rightIcon} color={Color.pink}/></IconButton>}/>
@@ -86,7 +86,7 @@ class MoveItemModal extends React.Component {
                                   style={styles.listItem}
                                   innerDivStyle={{marginLeft: 10}}
                                   value={item.id}
-                                  primaryText={item.name  + ' a'}
+                                  primaryText={item.name}
                                   leftIcon={<Folder />}
                                   onTouchTap={() => this.openListItem(item.id, item.kind)}
                                   rightIconButton={<IconButton disabled={item.id === this.props.params.id || item.id === itemParentId} tooltip="move here" tooltipPosition="bottom" onTouchTap={() => this.handleMove(item.id, item.kind)}><Archive style={styles.rightIcon} color={Color.pink}/></IconButton>}/>
@@ -108,7 +108,7 @@ class MoveItemModal extends React.Component {
                                   style={styles.listItem}
                                   innerDivStyle={{marginLeft: 30}}
                                   value={item.id}
-                                  primaryText={item.name  + ' c'}
+                                  primaryText={item.name}
                                   leftIcon={<Folder />}
                                   onTouchTap={() => this.openListItem(item.id, item.kind)}
                                   rightIconButton={<IconButton disabled={item.id === this.props.params.id || item.id === itemParentId} tooltip="move here" tooltipPosition="bottom" onTouchTap={() => this.handleMove(item.id, item.kind)}><Archive style={styles.rightIcon} color={Color.pink}/></IconButton>}/>
@@ -134,7 +134,7 @@ class MoveItemModal extends React.Component {
                                   style={styles.listItem}
                                   innerDivStyle={{marginLeft: 0}}
                                   value={item.id}
-                                  primaryText={item.name + ' pc'}
+                                  primaryText={item.name}
                                   leftIcon={<Folder />}
                                   onTouchTap={() => this.openListItem(item.id, item.kind)}
                                   rightIconButton={<IconButton disabled={item.id === this.props.params.id || item.id === itemParentId} tooltip="move here" tooltipPosition="bottom" onTouchTap={() => this.handleMove(item.id, item.kind)}><Archive style={styles.rightIcon} color={Color.pink}/></IconButton>}/>
