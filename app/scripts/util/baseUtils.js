@@ -1,5 +1,6 @@
 import React from 'react';
 import moment from 'moment';
+import { Color } from '../theme/customTheme';
 
 let BaseUtils = {
         bytesToSize(bytes){
@@ -19,7 +20,7 @@ let BaseUtils = {
             };
             return ancestors !== null ? ancestors.map((obj)=>{
                 let kind = getKind(obj.kind);
-                return <a href={'#'+kind+obj.id} key={obj.id} className='external link' style={{fontWeight: 400}}>{obj.name + ' > '}</a>;
+                return <span><a href={'#'+kind+obj.id} key={obj.id} className='external link' style={{fontWeight: 400, color: Color.blue}}>{obj.name}</a><span style={{fontSize: '1.2em', verticalAlign: '-1px'}}> / </span></span>;
             }) : '';
         },
 
@@ -139,6 +140,10 @@ let BaseUtils = {
         formatLongDate(date) {
             date !== null ? date = moment(date).format("LLL") : '';
             return date;
+        },
+
+        toTitleCase(str) {
+            return str.replace(/_/g, " ").replace(/\w\S*/g, (txt) => {return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()});
         }
 };
 

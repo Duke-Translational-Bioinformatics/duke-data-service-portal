@@ -18,13 +18,8 @@ class AgentList extends React.Component {
     render() {
         const { agentApiToken, agentKey, agents } = agentStore;
         const { currentUser, userKey } = authStore;
-        const { entityObj, loading, screenSize, toggleModal, uploads } = mainStore;
-        let key = agentKey ? agentKey.key : null;
+        const { loading, screenSize, toggleModal, uploads } = mainStore;
         let dialogStyle= screenSize.width < 580 ? {width: '100%', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'} : {position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'};
-        let userApiKey = userKey ? userKey.key : null;
-        let apiToken = agentApiToken ? agentApiToken.api_token : null;
-        let apiUrl = DDS_PORTAL_CONFIG.baseUrl;
-        let obj = {agent_key: key, user_key: userApiKey, api_token: apiToken, api_url: apiUrl};
         let msg = Object.keys(agentApiToken).length > 0 ?
             <h6 style={styles.apiMsg2}>The API token included with these credentials will expire in 2 hours.</h6> :
             <h6 style={styles.apiMsg}>You must have a valid user key, please create one by selecting 'USER SECRET KEY' in the drop down menu.</h6>;
@@ -67,7 +62,7 @@ class AgentList extends React.Component {
             if (agent.audit.created_by.id === currentUser.id) {
                 return (
                     <li key={ agent.id } className="hover">
-                        <FlatButton label="credentials" primary={true} style={styles.getKeyButton} onTouchTap={() => this.getCredentials(agent.id, userApiKey)}/>
+                        <FlatButton label="credentials" primary={true} style={styles.getKeyButton} onTouchTap={() => this.getCredentials(agent.id)}/>
                         <a href={UrlGen.routes.agent(agent.id)} className="item-content external">
                             <div className="item-media">
                                 <FontIcon className="material-icons" style={styles.icon}>laptop_mac</FontIcon>
@@ -89,17 +84,13 @@ class AgentList extends React.Component {
         });
 
         return (
-            <div className="list-container" style={styles.listContainer}>
+            <div className="list-container" >
                 {modal}
-                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
-                    <div style={styles.headerTitle}>
-                        <h4>Software Agents</h4>
-                    </div>
-                    <div className="mdl-cell mdl-cell--12-col">
-                        <AddAgentModal {...this.props}/>
-                    </div>
+                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.headerWrapper}>
+                    <h4 style={styles.headerTitle}>Software Agents</h4>
+                    <AddAgentModal {...this.props}/>
                 </div>
-                <div className="mdl-cell mdl-cell--12-col" style={styles.loading}>
+                <div className="mdl-cell mdl-cell--12-col">
                     { uploads || loading ? <Loaders {...this.props}/> : null }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
@@ -113,26 +104,8 @@ class AgentList extends React.Component {
         );
     }
 
-    getCredentials(id, userKey) {
-        agentStore.getAgentKey(id);
-        authStore.getUserKey();
-        setTimeout(() => {
-            if (!userKey){
-                authStore.createUserKey();
-                authStore.getUserKey();
-                setTimeout(() => {
-                    if (!userKey){
-                        authStore.createUserKey();
-                        authStore.getUserKey();
-                    }
-                }, 800);
-            }
-            if(userKey) {
-                mainStore.toggleModals('agentCred');
-            } else {
-                setTimeout(() => mainStore.toggleModals('agentCred'), 500);
-            }
-        }, 800);
+    getCredentials(id) {
+        agentStore.getAgentApiToken(id)
     }
 
     copyApiKey() {
@@ -156,7 +129,7 @@ class AgentList extends React.Component {
     };
 }
 
-var styles = {
+const styles = {
     apiMsg: {
         textAlign: 'center',
         color: '#F44336'
@@ -175,7 +148,11 @@ var styles = {
     },
     headerTitle: {
         float: 'left',
-        margin: '10px 0px 0px 14px'
+        margin: 0
+    },
+    headerWrapper: {
+        float: 'right',
+        padding: '0px 14px 0px 14px'
     },
     icon: {
         fontSize: 36,
@@ -189,9 +166,6 @@ var styles = {
     },
     list: {
         float: 'right'
-    },
-    listContainer: {
-        marginTop: 65
     },
     loaders: {
         paddingTop: 40

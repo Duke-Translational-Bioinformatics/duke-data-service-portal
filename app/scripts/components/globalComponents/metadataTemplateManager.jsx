@@ -1,11 +1,10 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object, bool } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import MetadataPropertyManager from '../globalComponents/metadataPropertyManager.jsx';
 import MetadataTemplateCreator from '../globalComponents/metadataTemplateCreator.jsx';
 import MetadataTemplateOptions from '../globalComponents/metadataTemplateOptions.jsx';
-import BaseUtils from '../../util/baseUtils'
 import CircularProgress from 'material-ui/CircularProgress';
 import IconButton from 'material-ui/IconButton';
 import Drawer from 'material-ui/Drawer';
@@ -50,7 +49,7 @@ class MetadataTemplateManager extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     drawerLoader: {
         position: 'absolute',
         margin: '0 auto',

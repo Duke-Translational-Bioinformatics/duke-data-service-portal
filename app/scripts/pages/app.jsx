@@ -6,13 +6,11 @@ import Header from '../components/globalComponents/header.jsx';
 import Footer from '../components/globalComponents/footer.jsx';
 import LeftMenu from '../components/globalComponents/leftMenu.jsx';
 import RetryUploads from '../components/globalComponents/retryUploads.jsx';
-import Search from '../components/globalComponents/search.jsx';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import RaisedButton from 'material-ui/RaisedButton';
 import Snackbar from 'material-ui/Snackbar';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import Theme from '../theme/customTheme.js';
+import { Theme } from '../theme/customTheme';
 
 let zIndex = {
     zIndex: {
@@ -27,6 +25,7 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.handleResize = this.handleResize.bind(this);
+        this.$$ = Dom7;
     }
 
     static childContextTypes = {
@@ -57,7 +56,6 @@ class App extends React.Component {
             mainStore.loadMetadataTemplates(null);
             authStore.removeLoginCookie();
         }
-        this.checkError();
     }
 
     componentWillUnmount() {
@@ -74,42 +72,32 @@ class App extends React.Component {
         }
     }
 
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate(prevProps) {
         if(authStore.appConfig.apiToken && !Object.keys(authStore.currentUser).length) authStore.getCurrentUser();
+        if(authStore.sessionTimeoutWarning) authStore.setRedirectUrl(location.href);
+        if(prevProps.location.pathname !== this.props.location.pathname) this.$$('.page-content').scrollTo(0, 0);
         this.showToasts();
-        this.checkError();
     }
 
-    checkError() {
-        if (mainStore.error && mainStore.error.response){
-            if(mainStore.error.response === 404) {
-                mainStore.clearErrors();
-                setTimeout(()=>this.props.router.push('/404'),1000);
-            }
-            mainStore.error.response !== 404 ? console.log(mainStore.error.msg) : null;
-        }
-    }
-
-    handleResize(e) {
-        this.setState({windowWidth: window.innerWidth});
+    handleResize() {
         mainStore.getScreenSize(window.innerHeight, window.innerWidth);
     }
 
-    createLoginUrl() {
-        return authStore.appConfig.authServiceUri + "/authenticate?client_id=" +
-            authStore.appConfig.serviceId + "&state=" + authStore.appConfig.securityState;
-    }
+    createLoginUrl = () => {
+        return authStore.appConfig.authServiceUri+'&state='+authStore.appConfig.serviceId+'&redirect_uri='+window.location.href;
+    };
 
     render() {
-        const {errorModals, screenSize, toasts} = mainStore;
+        const {errorModals, toasts, screenSize} = mainStore;
         const {appConfig} = authStore;
+        let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let dialogs, tsts = null;
         if (toasts) {
             tsts = toasts.map(obj => {
                 return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} open={true}/>
             });
         }
-        if (appConfig.apiToken && errorModals) {
+        if (appConfig.apiToken && errorModals.length) {
             dialogs = errorModals.map(obj => {
                 let actions = <FlatButton
                     key={obj.ref}
@@ -117,8 +105,9 @@ class App extends React.Component {
                     label="Okay"
                     secondary={true}
                     onTouchTap={() => this.closeErrorModal(obj.ref)}
-                    />;
+                />;
                 return <Dialog key={obj.ref} ref={obj.ref} message={obj.msg}
+                               contentStyle={dialogWidth}
                                title="An Error Occurred"
                                actions={actions}
                                modal={false}
@@ -131,6 +120,31 @@ class App extends React.Component {
                     <h6>Please try again</h6>
                 </Dialog>
             });
+        }
+        if (authStore.sessionTimeoutWarning) {
+            let actions = [
+                <FlatButton
+                    label="Logout"
+                    secondary={true}
+                    onTouchTap={() => authStore.handleLogout()}/>,
+                <a href={this.createLoginUrl()} className="external">
+                    <FlatButton
+                        label="Refresh Session"
+                        secondary={true}
+                        style={styles.refreshBtn}
+                        onClick={() => this.handleLoginBtn()}>
+                    </FlatButton>
+                </a>
+            ];
+            dialogs = <Dialog title="Your session will expire in 3 minutes"
+                              contentStyle={dialogWidth}
+                              actions={actions}
+                              modal={false}
+                              open={true}
+                              style={styles.dialogStyles}>
+                <i className="material-icons" style={styles.warning}>warning</i>
+                <h6>If you want to stay logged in, please refresh your session.</h6>
+            </Dialog>
         }
         return (
             <span>
@@ -174,9 +188,14 @@ class App extends React.Component {
             });
         }
     }
+
+    handleLoginBtn() {
+        authStore.handleLogout(401);
+        authStore.isLoggedInHandler();
+    }
 }
 
-var styles = {
+const styles = {
     dialogStyles: {
         textAlign: 'center',
         fontColor: '#303F9F',
@@ -189,6 +208,10 @@ var styles = {
         margin: '0 auto',
         marginTop: 50,
         padding: 10
+    },
+    refreshBtn: {
+        backgroundColor: '#E1F5FE',
+        margin: '0px 10px 10px 10px'
     },
     toast: {
         position: 'absolute',

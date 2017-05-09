@@ -50,7 +50,7 @@ class DeleteTemplateModal extends React.Component {
     };
 }
 
-var styles = {
+const styles = {
     dialogStyles: {
         textAlign: 'center',
         fontColor: '#303F9F',

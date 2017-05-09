@@ -2,15 +2,14 @@ import React, { PropTypes } from 'react';
 const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
+import { Color } from '../../theme/customTheme';
 import AddProjectMemberModal from '../projectComponents/addProjectMemberModal.jsx';
-import AutoComplete from 'material-ui/AutoComplete';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
-import SelectField from 'material-ui/SelectField';
 
 @observer
 class ProjectOptionsMenu extends React.Component {
@@ -113,9 +112,9 @@ class ProjectOptionsMenu extends React.Component {
                 <IconMenu iconButtonElement={<IconButton iconClassName="material-icons" style={styles.openIcon}>more_vert</IconButton>}
                           anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                           targetOrigin={{horizontal: 'right', vertical: 'top'}}>
+                    <MenuItem primaryText="Edit Project Details" leftIcon={<i className="material-icons">mode_edit</i>} onTouchTap={() => this.toggleModal('editOpen')}/>
+                    <MenuItem primaryText="Add Project Members" leftIcon={<i className="material-icons">person_add</i>} onTouchTap={() => this.toggleModal('addMember')}/>
                     <MenuItem primaryText="Delete Project" leftIcon={<i className="material-icons">delete</i>} onTouchTap={() => this.toggleModal('deleteOpen')}/>
-                    <MenuItem primaryText="Edit Project" leftIcon={<i className="material-icons">mode_edit</i>} onTouchTap={() => this.toggleModal('editOpen')}/>
-                    <MenuItem primaryText="Add Project Member" leftIcon={<i className="material-icons">person_add</i>} onTouchTap={() => this.toggleModal('addMember')}/>
                 </IconMenu>
             </div>
         );
@@ -166,7 +165,7 @@ class ProjectOptionsMenu extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     addProject: {
         float: 'right',
         position: 'relative',
@@ -177,24 +176,24 @@ var styles = {
     },
     dialogStyles: {
         textAlign: 'center',
-        fontColor: '#303F9F',
+        fontColor: Color.dkBlue,
         zIndex: '5000'
     },
     textStyles: {
         textAlign: 'left',
-        fontColor: '#303F9F'
+        fontColor: Color.dkBlue
     },
     msg: {
         textAlign: 'left',
         marginLeft: 30
     },
     openIcon: {
-        marginBottom: 12
+        margin: '-10px -12px 0px 0px'
     },
     warning: {
         fontSize: 48,
         textAlign: 'center',
-        color: '#F44336'
+        color: Color.red
     }
 };
 

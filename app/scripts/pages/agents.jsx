@@ -12,7 +12,7 @@ class Agents extends React.Component {
     }
 
     _loadAgents() {
-        authStore.getUserKey();
+        if(authStore.userKey.key) authStore.getUserKey();
         agentStore.loadAgents();
     }
 

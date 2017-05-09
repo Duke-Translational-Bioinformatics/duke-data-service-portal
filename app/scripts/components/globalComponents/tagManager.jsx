@@ -1,14 +1,11 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object, bool, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../util/baseUtils';
+import { Color } from '../../theme/customTheme';
 import MetadataObjectCreator from '../globalComponents/metadataObjectCreator.jsx';
-import MetadataPropertyManager from '../globalComponents/metadataPropertyManager.jsx';
-import MetadataTemplateCreator from '../globalComponents/metadataTemplateCreator.jsx';
 import MetadataTemplateList from '../globalComponents/metadataTemplateList.jsx';
-import MetadataTemplateManager from '../globalComponents/metadataTemplateManager.jsx';
-import MetadataTemplateOptions from '../globalComponents/metadataTemplateOptions.jsx';
 import AddCircle from 'material-ui/svg-icons/content/add-circle';
 import AutoComplete from 'material-ui/AutoComplete';
 import CircularProgress from 'material-ui/CircularProgress';
@@ -46,14 +43,12 @@ class TagManager extends React.Component {
     }
 
     render() {
-        const {drawerLoading, entityObj, filesChecked, openTagManager, screenSize, selectedEntity, showTemplateDetails, tagAutoCompleteList, tagLabels, tagsToAdd, toggleModal} = mainStore;
+        const {drawerLoading, entityObj, filesChecked, openTagManager, screenSize, selectedEntity, showTagCloud, showTemplateDetails, tagAutoCompleteList, tagLabels, tagsToAdd, toggleModal} = mainStore;
         let autoCompleteData = tagAutoCompleteList && tagAutoCompleteList.length > 0 ? tagAutoCompleteList : [];
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let id = selectedEntity !== null ? selectedEntity.id : this.props.params.id;
-        let height = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.height : window.innerHeight;
         let name = entityObj && filesChecked < 1 ? entityObj.name : 'selected files';
         let openDiscardTagsModal = toggleModal && toggleModal.id === 'discardTags' ? toggleModal.open : false;
-        let openCreateAnotherObjectModal = toggleModal && toggleModal.id === 'metaDataObjectConfirm' ? toggleModal.open : false;
         let width = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.width : window.innerWidth;
         const modalActions = [
             <FlatButton
@@ -69,7 +64,7 @@ class TagManager extends React.Component {
         let tags = tagsToAdd && tagsToAdd.length > 0 ? tagsToAdd.map((tag)=>{
             return (<div key={BaseUtils.generateUniqueKey()} className="chip">
                 <span className="chip-text">{tag.label}</span>
-                <span className="closebtn" onTouchTap={() => this.deleteTag(tag.id, tag.label)}>&times;</span>
+                <span className="closebtn" onTouchTap={() => this.deleteTag(tag.label)}>&times;</span>
             </div>)
         }) : null;
         let tagLbls = tagLabels.map((label)=>{
@@ -83,8 +78,7 @@ class TagManager extends React.Component {
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <Drawer docked={false} disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openSecondary={true} open={openTagManager}>
-                    <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800"
-                         style={styles.drawer}>
+                    <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" style={styles.drawer}>
                         <IconButton style={styles.toggleBtn}
                                     onTouchTap={() => this.toggleTagManager()}>
                             <NavigationClose />
@@ -99,7 +93,7 @@ class TagManager extends React.Component {
                                                     tooltipPosition="bottom-center"
                                                     iconStyle={styles.infoIcon.size}
                                                     style={styles.infoIcon}>
-                                            <Help color={'#BDBDBD'}/>
+                                            <Help color={Color.ltGrey}/>
                                         </IconButton>
                                     </h5>
                                 </div>
@@ -115,35 +109,39 @@ class TagManager extends React.Component {
                                         onNewRequest={(value) => this.addTagToCloud(value)}
                                         onUpdateInput={this.handleUpdateInput.bind(this)}
                                         underlineStyle={styles.autoCompleteUnderline}/>
-                                    <IconButton onTouchTap={() => this.addTagToCloud(this.state.searchText)}
+                                    <IconButton onTouchTap={() => this.addTagToCloud(this.autocomplete.state.searchText)}
                                                 iconStyle={styles.addTagIconBtn.size}
                                                 style={styles.addTagIconBtn}>
-                                        <AddCircle color={'#235F9C'}/>
+                                        <AddCircle color={Color.blue}/>
                                     </IconButton><br/>
                                 </div>
-                                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.tagLabelsContainer}>
-                                    <h6 style={styles.tagLabelsHeading}>Recently used tags <span style={styles.tagLabelsHeading.span}>(click on a tag to add it to {name})</span></h6>
-                                    <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400">
+                                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.tagLabelsContainer}>
+                                    <h6 style={styles.tagLabelsHeading}>Recently used tags</h6>
+                                    <i className="material-icons" style={styles.toggleTagBtn} onTouchTap={()=>this.toggleTagCloud()}>{showTagCloud ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}</i>
+                                    <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={{display: showTagCloud ? 'block' : 'none', marginTop: 0}}>
+                                        <span className="mdl-cell mdl-cell--12-col" style={styles.tagLabelsHeading.span}>
+                                            {'(click on a tag to add it to '+name+')'}
+                                        </span>
                                         <ul style={styles.tagLabelList}>
                                             { tagLbls }
                                         </ul>
                                     </div>
                                 </div>
-                                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.chipWrapper}>
-                                    {tagsToAdd.length ? <h6 className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.chipHeader}>New Tags To Add</h6> : null}
+                                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.chipWrapper}>
+                                    {tagsToAdd.length ? <h6 className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.chipHeader}>New Tags To Add</h6> : null}
                                     <div className="chip-container" style={styles.chipContainer}>
                                         { tags }
                                     </div>
                                 </div>
-                                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-400" style={styles.buttonWrapper}>
-                                    <RaisedButton label={'Cancel'} secondary={true}
-                                                  labelStyle={styles.buttonLabel}
-                                                  style={styles.cancelBtn}
-                                                  onTouchTap={() => this.toggleTagManager()}/>
-                                    <RaisedButton label={'Apply'} secondary={true}
+                                <div className="mdl-cell mdl-cell--12-col" style={styles.buttonWrapper}>
+                                    <RaisedButton label={'Apply'}
                                                   labelStyle={styles.buttonLabel}
                                                   style={styles.applyBtn}
                                                   onTouchTap={() => this.addTagsToFiles(filesChecked, id, tagsToAdd, toggleModal)}/>
+                                    <RaisedButton label={'Cancel'}
+                                                  labelStyle={styles.buttonLabel}
+                                                  style={styles.cancelBtn}
+                                                  onTouchTap={() => this.toggleTagManager()}/>
                                 </div>
                             </Tab>
                             <Tab label="Advanced" style={styles.tabStyles} onActive={() => this.activeTab()}>
@@ -215,11 +213,11 @@ class TagManager extends React.Component {
                 this.toggleTagManager();
                 this.setState({floatingErrorText: ''})
             }
+            if(mainStore.showTagCloud) this.toggleTagCloud();
         }
     }
 
-    deleteTag(id, label) {
-        let fileId = mainStore.selectedEntity !== null ? mainStore.selectedEntity.id : this.props.params.id;
+    deleteTag(label) {
         let tags = mainStore.tagsToAdd;
         tags = tags.filter(( obj ) => {
             return obj.label !== label;
@@ -237,8 +235,6 @@ class TagManager extends React.Component {
     };
 
     handleUpdateInput (text) {
-        let timeout = this.state.timeout;
-        let searchInput = this.autocomplete;
         clearTimeout(this.state.timeout);
         this.setState({
             timeout: setTimeout(() => {
@@ -250,14 +246,19 @@ class TagManager extends React.Component {
         });
     }
 
+    toggleTagCloud() {
+        mainStore.toggleTagCloud();
+    }
+
     toggleTagManager() {
         mainStore.toggleTagManager();
         mainStore.defineTagsToAdd([]);
+        if(mainStore.showTagCloud) this.toggleTagCloud();
         if(this.autocomplete.state.searchText !== '') this.autocomplete.setState({searchText:''});
     }
 }
 
-var styles = {
+const styles = {
     addTagIconBtn: {
         margin: '-30px 0px 0px 0px',
         float: 'right',
@@ -280,11 +281,11 @@ var styles = {
         maxWidth: '100%'
     },
     autoCompleteUnderline: {
-        borderColor: '#0680CD',
-        maxWidth: 'calc(100% - 42px)'
+        borderColor: Color.ltBlue,
+        maxWidth: 'calc(100% - 22px)'
     },
     buttonLabel: {
-        fontWeight: 100
+        color: Color.blue
     },
     buttonWrapper: {
         textAlign: 'left'
@@ -305,7 +306,6 @@ var styles = {
     },
     dialogStyles: {
         textAlign: 'center',
-        fontColor: '#303F9F',
         zIndex: '5000'
     },
     drawer: {
@@ -328,13 +328,8 @@ var styles = {
             width: 20
         }
     },
-    modalIcon: {
-        fontSize: 48,
-        textAlign: 'center',
-        color: '#4CAF50'
-    },
     tabInkBar: {
-        backgroundColor: '#EC407A',
+        backgroundColor: Color.pink,
         paddingTop: 3,
         marginTop: -3
     },
@@ -344,7 +339,7 @@ var styles = {
     tagLabels: {
         margin: 3,
         cursor: 'pointer',
-        color: '#235F9C',
+        color: Color.blue,
         float: 'left'
     },
     tagLabelsContainer: {
@@ -352,9 +347,13 @@ var styles = {
         overflow: 'auto'
     },
     tagLabelsHeading: {
-        margin: '10px 0px 10px 0px',
+        marginLeft: '10px 0px 10px 0px',
+        float: 'left',
         span: {
-            fontSize: '.7em'
+            fontSize: '.9em',
+            float: 'left',
+            marginLeft: -8,
+            marginTop: 0
         }
     },
     tagLabelList: {
@@ -365,6 +364,10 @@ var styles = {
     toggleBtn: {
         margin: '25px 0px 15px 0px',
         zIndex: 9999
+    },
+    toggleTagBtn: {
+        color: Color.blue,
+        marginTop: 24
     },
     wrapper:{
         display: 'flex',

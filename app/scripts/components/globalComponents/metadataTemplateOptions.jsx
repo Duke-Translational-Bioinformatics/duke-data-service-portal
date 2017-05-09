@@ -1,5 +1,4 @@
-import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+import React from 'react';
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import authStore from '../../stores/authStore';
@@ -41,9 +40,9 @@ class MetadataTemplateOptions extends React.Component {
                           style={styles.menuIconBtn}
                           anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                           targetOrigin={{horizontal: 'right', vertical: 'top'}}>
-                    <MenuItem primaryText="Delete Template" leftIcon={<i className="material-icons">delete</i>} onTouchTap={()=>this.deleteTemplateModal()}/>
                     <MenuItem primaryText="Edit Template" leftIcon={<i className="material-icons">mode_edit</i>} onTouchTap={() => this.editTemplateModal()}/>
                     <MenuItem primaryText="Add Template Properties" leftIcon={<i className="material-icons">add_circle</i>} onTouchTap={() => this.createProperties()}/>
+                    <MenuItem primaryText="Delete Template" leftIcon={<i className="material-icons">delete</i>} onTouchTap={()=>this.deleteTemplateModal()}/>
                 </IconMenu> : null}
                 <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" style={styles.headingWrapper}>
                    <h5 className="mdl-color-text--grey-600" style={styles.title}>{templateLabel}</h5>
@@ -88,7 +87,7 @@ class MetadataTemplateOptions extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     btn: {
         margin: '12px 0px 12px 12px',
         float: 'right',

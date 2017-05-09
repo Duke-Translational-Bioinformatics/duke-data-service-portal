@@ -1,18 +1,14 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
-import ReactDOM from 'react-dom';
+const { object, bool, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore'
 import authStore from '../../stores/authStore'
-import AddAgentModal from '../../components/globalComponents/addAgentModal.jsx';
+import { Color } from '../../theme/customTheme';
 import CircularProgress from 'material-ui/CircularProgress';
-import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import Help from 'material-ui/svg-icons/action/help';
 import IconButton from 'material-ui/IconButton';
 import Loaders from '../../components/globalComponents/loaders.jsx';
-import LinearProgress from 'material-ui/LinearProgress';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import Search from 'material-ui/svg-icons/action/search';
@@ -39,8 +35,8 @@ class MetadataTemplateList extends React.Component {
         const { currentUser } = authStore;
         let route = this.props.location.pathname.split('/').splice([1], 1).toString();
         let showSearch = this.state.searchMode ? 'block' : 'none';
-        let switchColor = this.state.toggleSwitch ? {track: {backgroundColor: '#235F9C'}, thumb: {backgroundColor: '#003366'}} :
-            {track: {backgroundColor: '#BDBDBD'}, thumb: {backgroundColor: '#9E9E9E'}};
+        let switchColor = this.state.toggleSwitch ? {track: {backgroundColor: Color.blue}, thumb: {backgroundColor: Color.ltBlue2}} :
+            {track: {backgroundColor: Color.ltGrey}, thumb: {backgroundColor: Color.dkGrey}};
         let templateList = metaTemplates && metaTemplates !== null && currentUser !== null ? metaTemplates.map((obj) => {
             if(this.state.toggleSwitch){
                 return (
@@ -91,14 +87,13 @@ class MetadataTemplateList extends React.Component {
                             style={styles.addTemplateBtn}
                             label="Add New Template"
                             labelStyle={styles.addTemplateBtn.label}
-                            secondary={true}
                             onTouchTap={() => this.openMetadataManager()} /> : null}
                         <h4>Metadata Templates
                             <IconButton tooltip={tooltip}
                                         tooltipPosition="bottom-center"
                                         iconStyle={styles.infoIcon.size}
                                         style={styles.infoIcon}>
-                                <Help color={'#BDBDBD'}/>
+                                <Help color={Color.ltGrey}/>
                             </IconButton>
                         </h4>
                     </div>
@@ -195,11 +190,12 @@ MetadataTemplateList.contextTypes = {
     muiTheme: React.PropTypes.object
 };
 
-var styles = {
+const styles = {
     addTemplateBtn: {
         float: 'right',
+        marginTop: 10,
         label: {
-            fontWeight: 100
+            color: Color.blue
         }
     },
     drawerLoader: {
@@ -218,7 +214,7 @@ var styles = {
     },
     icon: {
         fontSize: 36,
-        color: '#616161'
+        color: Color.dkGrey2
     },
     infoIcon: {
         verticalAlign: 8,

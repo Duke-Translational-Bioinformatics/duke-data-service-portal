@@ -6,12 +6,10 @@ import provenanceStore from '../stores/provenanceStore';
 import transportLayer from '../transportLayer';
 import BaseUtils from '../util/baseUtils.js';
 import { StatusEnum } from '../enum';
-import { UrlGen, Kind, Path } from '../util/urlEnum';
-import { graphOptions, graphColors } from '../graphConfig';
-import { checkStatus, getFetchParams } from '../util/fetchUtil';
+import { Kind, Path } from '../util/urlEnum';
+import { checkStatus } from '../util/fetchUtil';
 
 export class MainStore {
-
     @observable agents
     @observable agentKey
     @observable agentApiToken
@@ -23,7 +21,6 @@ export class MainStore {
     @observable device
     @observable drawerLoading
     @observable entityObj
-    @observable error
     @observable errorModals
     @observable failedUploads
     @observable filesChecked
@@ -34,6 +31,7 @@ export class MainStore {
     @observable fileVersions
     @observable includeKinds
     @observable includeProjects
+    @observable isListItem
     @observable itemsSelected
     @observable listItems
     @observable loading
@@ -55,8 +53,8 @@ export class MainStore {
     @observable project
     @observable projPermissions
     @observable projectMembers
+    @observable projectRole
     @observable metaObjProps
-    @observable provEditorModal
     @observable responseHeaders
     @observable screenSize
     @observable searchFilesList
@@ -69,10 +67,12 @@ export class MainStore {
     @observable selectedEntity
     @observable showFilters
     @observable showPropertyCreator
+    @observable showTagCloud
     @observable showTemplateCreator
     @observable showTemplateDetails
     @observable showUserInfoPanel
     @observable showSearch
+    @observable tableBodyRenderKey
     @observable tagLabels
     @observable tagsToAdd
     @observable templateProperties
@@ -86,7 +86,6 @@ export class MainStore {
     @observable versionModal
 
     constructor() {
-
         this.agents = [];
         this.agentKey = {};
         this.agentApiToken = {};
@@ -98,7 +97,6 @@ export class MainStore {
         this.destinationKind = null;
         this.drawerLoading = false;
         this.entityObj = null;
-        this.error = null;
         this.errorModals = [];
         this.failedUploads = [];
         this.filesChecked = [];
@@ -109,6 +107,7 @@ export class MainStore {
         this.fileVersions = [];
         this.includeKinds = [];
         this.includeProjects = [];
+        this.isListItem = false;
         this.itemsSelected = null;
         this.listItems = [];
         this.loading = false;
@@ -130,9 +129,10 @@ export class MainStore {
         this.project = {};
         this.projPermissions = null;
         this.projectMembers = [];
+        this.projectRole = null;
         this.metaObjProps = [];
         this.responseHeaders = {};
-        this.screenSize = {};
+        this.screenSize = {width: 0, height: 0};
         this.searchFilesList = [];
         this.searchFilters = [];
         this.searchResults = [];
@@ -143,10 +143,12 @@ export class MainStore {
         this.selectedEntity = null;
         this.showFilters = false;
         this.showPropertyCreator = false;
+        this.showTagCloud = false;
         this.showTemplateCreator = false;
         this.showTemplateDetails = false;
         this.showUserInfoPanel = false;
         this.showSearch = false;
+        this.tableBodyRenderKey = 0;
         this.tagLabels = [];
         this.tagsToAdd = [];
         this.templateProperties = [];
@@ -158,10 +160,16 @@ export class MainStore {
         this.users = [];
         this.userKey = {};
         this.versionModal = false;
+
+        this.transportLayer = transportLayer
     }
 
     checkResponse(response) {
         return checkStatus(response, authStore);
+    }
+
+    @action incrementTableBodyRenderKey() {
+        this.tableBodyRenderKey = this.tableBodyRenderKey + 1;
     }
 
     @action clearSelectedItems() {
@@ -170,7 +178,7 @@ export class MainStore {
     }
 
     @action getUsageDetails() {
-        transportLayer.getUsageDetails()
+        this.transportLayer.getUsageDetails()
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -181,7 +189,7 @@ export class MainStore {
     @action getProjects(page) {
         this.loading = true;
         if (page == null) page = 1;
-        transportLayer.getProjects(page)
+        this.transportLayer.getProjects(page)
             .then(this.checkResponse).then((response) => {
                 const results = response.json();
                 const headers = response.headers;
@@ -200,7 +208,7 @@ export class MainStore {
     }
 
     @action getProjectMembers(id) {
-        transportLayer.getProjectMembers(id)
+        this.transportLayer.getProjectMembers(id)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -210,7 +218,7 @@ export class MainStore {
 
     @action addProject(name, desc) {
         this.loading = true;
-        transportLayer.addProject(name, desc)
+        this.transportLayer.addProject(name, desc)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -224,12 +232,12 @@ export class MainStore {
     }
 
     @action editProject(id, name, desc) {
-        transportLayer.editProject(id, name, desc)
+        this.transportLayer.editProject(id, name, desc)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
                 this.addToast('Project Updated');
-                this.showDetails(id);
+                this.project = json;
             }).catch((ex) => {
                 this.addToast('Project Update Failed');
                 this.handleErrors(ex)
@@ -237,20 +245,20 @@ export class MainStore {
     }
 
     @action deleteProject(id) {
-        transportLayer.deleteProject(id)
+        this.transportLayer.deleteProject(id)
             .then(this.checkResponse)
             .then(response => {})
             .then((json) => {
                 this.addToast('Project Deleted');
-
+                BaseUtils.removeObjByKey(this.projects, {key: 'id', value: id})
             }).catch((ex) => {
                 this.addToast('Project Delete Failed');
                 this.handleErrors(ex)
             });
     }
 
-    @action showDetails(id) {
-        transportLayer.showDetails(id)
+    @action getProjectDetails(id) {
+        this.transportLayer.getProjectDetails(id)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -260,7 +268,7 @@ export class MainStore {
 
     @action addFolder(id, parentKind, name) {
         this.loading = true;
-        transportLayer.addFolder(id, parentKind, name)
+        this.transportLayer.addFolder(id, parentKind, name)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -273,54 +281,57 @@ export class MainStore {
             })
     }
 
-    @action deleteFolder(id, parentId, parentKind) {
+    @action deleteFolder(id) {
         this.loading = true;
-        transportLayer.deleteFolder(id)
+        this.transportLayer.deleteFolder(id)
             .then(this.checkResponse)
             .then(response => {})
             .then(() => {
                 this.addToast('Folder(s) Deleted!');
-                this.deleteItemSuccess(parentId, parentKind, id)
+                this.deleteItemSuccess(id)
             }).catch((ex) => {
                 this.addToast('Folder Deleted Failed!');
                 this.handleErrors(ex)
             });
     }
 
-    @action deleteFile(id, parentId, parentKind) {
+    @action deleteFile(id) {
         this.loading = true;
-        transportLayer.deleteFile(id)
+        this.transportLayer.deleteFile(id)
             .then(this.checkResponse)
             .then(response => {})
             .then(() => {
                 this.addToast('File(s) Deleted!');
-                this.deleteItemSuccess(parentId, parentKind, id)
+                this.deleteItemSuccess(id)
             }).catch((ex) => {
                 this.addToast('Failed to Delete File!');
                 this.handleErrors(ex)
             });
     }
 
-    @action deleteItemSuccess(parentId, parentKind, id) {
+    @action deleteItemSuccess(id) {
         this.loading = false;
         this.listItems = BaseUtils.removeObjByKey(this.listItems.slice(), {key: 'id', value: id});
     }
 
-    @action batchDeleteItems(parentId, parentKind) {
+    @action batchDeleteItems() {
         let files = this.filesChecked;
         let folders = this.foldersChecked;
-        for (let i = 0; i < files.length; i++) {
-            this.deleteFile(files[i], parentId, parentKind);
+        for (let id of files) {
+            this.deleteFile(id);
+            this.listItems = BaseUtils.removeObjByKey(this.listItems.slice(), {key: 'id', value: id});
         }
-        for (let i = 0; i < folders.length; i++) {
-            this.deleteFolder(folders[i], parentId, parentKind);
+        for (let id of folders) {
+            this.deleteFolder(id);
+            this.listItems = BaseUtils.removeObjByKey(this.listItems.slice(), {key: 'id', value: id});
         }
-        this.handleBatch([], []);
+        this.incrementTableBodyRenderKey();
+        this.handleBatch([],[]);
     }
 
     @action editVersionLabel(id, label) {
         this.loading = true;
-        transportLayer.editVersionLabel(id, label)
+        this.transportLayer.editVersionLabel(id, label)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -335,7 +346,7 @@ export class MainStore {
 
     @action deleteVersion(id) {
         this.loading = true;
-        transportLayer.deleteVersion(id)
+        this.transportLayer.deleteVersion(id)
             .then(this.checkResponse)
             .then(response => {})
             .then(() => {
@@ -349,7 +360,7 @@ export class MainStore {
 
     @action editItem(id, name, path) {
         this.loading = true;
-        transportLayer.editItem(id, name, path)
+        this.transportLayer.editItem(id, name, path)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -370,7 +381,7 @@ export class MainStore {
     @action getMoveItemList(id, path) {
         this.moveItemList = [];
         this.moveItemLoading = true;
-        transportLayer.getMoveItemList(id, path)
+        this.transportLayer.getMoveItemList(id, path)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -388,12 +399,20 @@ export class MainStore {
         this.loading = true;
         let path = kind === Kind.DDS_FILE ? Path.FILE : Path.FOLDER;
         let type = kind === Kind.DDS_FILE ? 'File' : 'Folder';
-        transportLayer.moveItem(id, path, destination, destinationKind)
+        this.transportLayer.moveItem(id, path, destination, destinationKind)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
-                this.addToast(type + ' moved successfully');
-                this.listItems = BaseUtils.removeObjByKey(this.listItems.slice(), {key: 'id', value: id});
+                this.addToast('Item moved successfully');
+                if(this.filesChecked.length || this.foldersChecked.length || this.isListItem) {
+                    this.listItems = BaseUtils.removeObjByKey(this.listItems.slice(), {key: 'id', value: id});
+                    this.filesChecked = this.filesChecked.filter(i => i !== id);
+                    this.foldersChecked = this.foldersChecked.filter(i => i !== id);
+                    this.handleBatch(this.filesChecked, this.foldersChecked);
+                    this.incrementTableBodyRenderKey();
+                } else if(!this.isListItem) {
+                    this.entityObj = json;
+                }
                 this.loading = false;
             }).catch((ex) => {
                 this.addToast('Failed to move ' + type + ' to new location');
@@ -402,38 +421,40 @@ export class MainStore {
     }
 
     @action getEntity(id, path, requester) {
+        this.parent = {};
         this.loading = requester !== 'moveItemModal' ? true : false;
-        transportLayer.getEntity(id, path)
+        this.transportLayer.getEntity(id, path)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
-                if(this.projPermissions === null && (json.kind === 'dds-file' || json.kind === 'dds-folder')) this.getUser(json.project.id);
-                if(this.projPermissions === null && json.kind === 'dds-file-version') this.getUser(json.file.project.id);
                 if (requester === undefined) this.entityObj = json;
                 if (requester === 'moveItemModal') this.moveToObj = json;
                 if (requester === 'optionsMenu') {
                     this.parent = json.parent;
                     this.moveToObj = json;
                 }
+                if(this.projPermissions === null && (json.kind === 'dds-file' || json.kind === 'dds-folder')) this.getUser(json.project.id);
+                if(this.projPermissions === null && json.kind === 'dds-file-version') this.getUser(json.file.project.id);
                 this.loading = false;
             }).catch(ex => this.handleErrors(ex))
     }
 
-    @action setSelectedEntity(id, path) {
+    @action setSelectedEntity(id, path, isListItem) {
         if (id === null) {
             this.selectedEntity = null;
         } else {
-            transportLayer.setSelectedEntity(id, path)
+            this.transportLayer.setSelectedEntity(id, path)
                 .then(this.checkResponse)
                 .then(response => response.json())
                 .then((json) => {
                     this.selectedEntity = json;
+                    this.isListItem = isListItem;
                 }).catch(ex => this.handleErrors(ex))
         }
     }
 
     @action getObjectMetadata(id, kind) {
-        transportLayer.getObjectMetadata(id, kind)
+        this.transportLayer.getObjectMetadata(id, kind)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -448,7 +469,7 @@ export class MainStore {
 
     @action getUserNameFromAuthProvider(text, id) {
         this.drawerLoading = true;
-        transportLayer.getUserNameFromAuthProvider(text, id)
+        this.transportLayer.getUserNameFromAuthProvider(text, id)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -458,7 +479,7 @@ export class MainStore {
     }
 
     @action registerNewUser(id) {
-        transportLayer.registerNewUser(id)
+        this.transportLayer.registerNewUser(id)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {})
@@ -472,7 +493,7 @@ export class MainStore {
 
     @action getUserId(fullName, id, role) {
         this.loading = true;
-        transportLayer.getUserId(fullName)
+        this.transportLayer.getUserId(fullName)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -486,7 +507,7 @@ export class MainStore {
 
     @action addProjectMember(id, userId, role, name) {
         let newRole = role.replace('_', ' ');
-        transportLayer.addProjectMember(id, userId, role)
+        this.transportLayer.addProjectMember(id, userId, role)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -500,7 +521,7 @@ export class MainStore {
     }
 
     @action deleteProjectMember(id, userId, userName) {
-        transportLayer.deleteProjectMember(id, userId)
+        this.transportLayer.deleteProjectMember(id, userId)
             .then(this.checkResponse)
             .then(response => {})
             .then((json) => {
@@ -522,13 +543,22 @@ export class MainStore {
         this.openTagManager = !this.openTagManager;
     }
 
+    @action toggleTagCloud() {
+        this.showTagCloud = !this.showTagCloud;
+    }
+
     @action toggleUploadManager() {
         this.openUploadManager = !this.openUploadManager;
     }
 
     @action processFilesToUpload(files, rejectedFiles) {
-        this.filesToUpload = files;
-        this.filesRejectedForUpload = rejectedFiles;
+        this.filesToUpload = files.length ? [...this.filesToUpload, ...files] : [];
+        this.filesToUpload = this.filesToUpload.filter((file, index, self) => self.findIndex(f => f.name === file.name && f.size === file.size && f.lastModified === file.lastModified) === index);
+        this.filesRejectedForUpload = rejectedFiles.length ? [...this.filesRejectedForUpload, ...rejectedFiles] : [];
+    }
+
+    @action removeFileFromUploadList(index) {
+        this.filesToUpload.splice(index, 1);
     }
 
     @action defineTagsToAdd(tags) {
@@ -537,7 +567,7 @@ export class MainStore {
 
     @action getTagAutoCompleteList(text) {
         let query = text === null ? '' : '&label_contains=' + text;
-        transportLayer.getTagAutoCompleteList(query)
+        this.transportLayer.getTagAutoCompleteList(query)
             .then(this.checkResponse)
             .then(response => response.json())
             .then(json => this.tagAutoCompleteList = json.results.map((item) => {return item.label}))
@@ -545,7 +575,7 @@ export class MainStore {
     }
 
     @action getTagLabels() {
-        transportLayer.getTagLabels()
+        this.transportLayer.getTagLabels()
             .then(this.checkResponse)
             .then(response => response.json())
             .then(json => this.tagLabels = json.results)
@@ -553,7 +583,7 @@ export class MainStore {
     }
 
     @action getTags(id, kind) {
-        transportLayer.getTags(id, kind)
+        this.transportLayer.getTags(id, kind)
             .then(this.checkResponse)
             .then(response => response.json())
             .then(json => this.objectTags = json.results)
@@ -561,7 +591,7 @@ export class MainStore {
     }
 
     @action addNewTag(id, kind, tag) {
-        transportLayer.addNewTag(id, kind, tag)
+        this.transportLayer.addNewTag(id, kind, tag)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -577,13 +607,14 @@ export class MainStore {
         let msg = tags.map((tag)=> {
             return tag.label
         });
-        transportLayer.appendTags(id, kind, tags)
+        this.loading = true;
+        this.transportLayer.appendTags(id, kind, tags)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
                 this.addToast('Added ' + msg + ' as tags to all selected files.');
                 this.getTags(id, Kind.DDS_FILE);
-                this.handleBatch([], [])
+                this.loading = false;
             }).catch((ex) => {
                 this.addToast('Failed to add tags');
                 this.handleErrors(ex)
@@ -591,7 +622,7 @@ export class MainStore {
     }
 
     @action deleteTag(id, label, fileId) {
-        transportLayer.deleteTag(id)
+        this.transportLayer.deleteTag(id)
             .then(this.checkResponse)
             .then(response => {})
             .then(() => {
@@ -608,10 +639,9 @@ export class MainStore {
             fileName = blob.name,
             contentType = blob.type,
             slicedFile = null,
-            BYTES_PER_CHUNK, SIZE, NUM_CHUNKS, start, end;
+            BYTES_PER_CHUNK, SIZE, start, end;
         BYTES_PER_CHUNK = 5242880 * 6;
         SIZE = blob.size;
-        NUM_CHUNKS = Math.max(Math.ceil(SIZE / BYTES_PER_CHUNK), 1);
         start = 0;
         end = BYTES_PER_CHUNK;
 
@@ -650,7 +680,7 @@ export class MainStore {
         }
         fileReader.onload = function (event, files) {
             // create project upload
-            transportLayer.startUpload(projId, fileName, contentType, SIZE)
+            mainStore.transportLayer.startUpload(projId, fileName, contentType, SIZE)
                 .then(checkStatus)
                 .then(response => response.json())
                 .then((json) => {
@@ -681,7 +711,7 @@ export class MainStore {
     // File Hashing
     @action hashFile(file, id) {
         function postHash(hash) {
-            let fileHashes = mainStore.fileHashes.push(hash);
+            mainStore.fileHashes.push(hash);
         }
         if (file.blob.size < 5242880 * 6) {
             function calculateMd5(blob, id) {
@@ -829,18 +859,18 @@ export class MainStore {
             let chunk = chunks[i];
             if (chunk.chunkUpdates.status === StatusEnum.STATUS_WAITING_FOR_UPLOAD || chunk.chunkUpdates.status === StatusEnum.STATUS_RETRY) {
                 chunk.chunkUpdates.status = StatusEnum.STATUS_UPLOADING;
-                this.getChunkUrl(uploadId, upload.blob.slice(chunk.start, chunk.end), chunk.number, upload.size, upload.parentId, upload.parentKind, upload.name, chunk.chunkUpdates);
+                this.getChunkUrl(uploadId, upload, upload.blob.slice(chunk.start, chunk.end), chunk);
                 return;
             }
             if (chunk.chunkUpdates.status !== StatusEnum.STATUS_SUCCESS) allDone = false;
         }
         if (allDone === true) this.checkForHash(uploadId, upload.parentId, upload.parentKind, upload.name, upload.label, upload.fileId, upload.projectId);
-        window.onbeforeunload = function (e) { // If done, set to false so no warning is sent.
-            let preventLeave = false;
+        window.onbeforeunload = function () { // If done, set to false so no warning is sent.
+            preventLeave = false;
         };
     }
 
-    @action uploadChunk(uploadId, presignedUrl, chunkBlob, size, parentId, parentKind, chunkNum, fileName, chunkUpdates) {
+    @action uploadChunk(uploadId, upload, presignedUrl, chunkBlob, chunkNum, fileName, chunkUpdates) {
         window.addEventListener('offline', function () {
             mainStore.uploadError(uploadId, fileName)
         });
@@ -854,7 +884,6 @@ export class MainStore {
 
         xhr.onload = onComplete;
         function onComplete() {
-            let status = null;
             if (xhr.status >= 200 && xhr.status < 300) {
                 chunkUpdates.status = StatusEnum.STATUS_SUCCESS;
             }
@@ -864,25 +893,33 @@ export class MainStore {
             mainStore.updateAndProcessChunks(uploadId, chunkNum, {status: chunkUpdates.status});
         }
 
+        xhr.onerror = onError;
+        function onError() {
+            mainStore.uploadError(uploadId, fileName, upload.projectId)
+        }
+
         xhr.open('PUT', presignedUrl, true);
         xhr.send(chunkBlob);
     }
 
-    getChunkUrl(uploadId, chunkBlob, chunkNum, size, parentId, parentKind, fileName, chunkUpdates) {
+    getChunkUrl(uploadId, upload, chunkBlob, chunk) {
+        var chunkNum = chunk.number;
+        var fileName = upload.name;
+        var chunkUpdates = chunk.chunkUpdates;
         var fileReader = new FileReader();
         fileReader.onload = function (event) {
             var arrayBuffer = event.target.result;
             var wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
             var md5crc = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
             var algorithm = 'MD5';
-            transportLayer.getChunkUrl(uploadId, chunkNum, chunkBlob.size, md5crc, algorithm)
+            mainStore.transportLayer.getChunkUrl(uploadId, chunkNum, chunkBlob.size, md5crc, algorithm)
                 .then(this.checkResponse)
                 .then(response => response.json())
                 .then((json) => {
                     let chunkObj = json;
                     if (chunkObj && chunkObj.url && chunkObj.host) {
                         // upload chunks
-                        mainStore.uploadChunk(uploadId, chunkObj.host + chunkObj.url, chunkBlob, size, parentId, parentKind, chunkNum, fileName, chunkUpdates)
+                        mainStore.uploadChunk(uploadId, upload, chunkObj.host + chunkObj.url, chunkBlob, chunkNum, fileName, chunkUpdates)
                     } else {
                         throw 'Unexpected response';
                     }
@@ -893,7 +930,7 @@ export class MainStore {
 
     allChunksUploaded(uploadId, parentId, parentKind, fileName, label, fileId, hash, projectId) {
         let algorithm = 'MD5';
-        transportLayer.allChunksUploaded(uploadId, hash, algorithm)
+        this.transportLayer.allChunksUploaded(uploadId, hash, algorithm)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -905,8 +942,8 @@ export class MainStore {
             }).catch(ex => this.uploadError(uploadId, fileName, projectId))
     }
 
-    addFile(uploadId, parentId, parentKind, fileName) {
-        transportLayer.addFile(uploadId, parentId, parentKind)
+    @action addFile(uploadId, parentId, parentKind, fileName) {
+        this.transportLayer.addFile(uploadId, parentId, parentKind)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -931,7 +968,7 @@ export class MainStore {
     }
 
     @action addFileVersion(uploadId, label, fileId) {
-        transportLayer.addFileVersion(uploadId, label, fileId)
+        this.transportLayer.addFileVersion(uploadId, label, fileId)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -946,14 +983,14 @@ export class MainStore {
 
     @action addFileVersionSuccess(id, uploadId) {
         provenanceStore.displayProvAlert();
-        this.getEntity(id, Path.FILE);
+        if(location.href.includes(id)) this.getEntity(id, Path.FILE);
         this.getFileVersions(id);
         if (this.uploads.has(uploadId)) this.uploads.delete(uploadId);
     }
 
     @action getFileVersions(id) {
         this.loading = true;
-        transportLayer.getFileVersions(id)
+        this.transportLayer.getFileVersions(id)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -993,7 +1030,7 @@ export class MainStore {
 
     @action  getDownloadUrl(id, kind) {
         this.loading = true;
-        transportLayer.getDownloadUrl(id, kind)
+        this.transportLayer.getDownloadUrl(id, kind)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -1010,9 +1047,10 @@ export class MainStore {
     }
 
     @action getChildren(id, path, page) {
+        if(this.listItems.length && page === null) this.listItems = [];
         this.loading = true;
         if (page == null) page = 1;
-        transportLayer.getChildren(id, path, page)
+        this.transportLayer.getChildren(id, path, page)
             .then(this.checkResponse)
             .then((response) => {
                 const results = response.json();
@@ -1033,7 +1071,7 @@ export class MainStore {
     }
 
     @action getUser(id) {
-        transportLayer.getUser()
+        this.transportLayer.getUser()
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -1043,11 +1081,12 @@ export class MainStore {
     }
 
     @action getPermissions(id, userId) {
-        transportLayer.getPermissions(id, userId)
+        this.transportLayer.getPermissions(id, userId)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
                 let id = json.auth_role.id;
+                this.projectRole = json.auth_role.id;
                 if (id === 'project_viewer') this.projPermissions = 'viewOnly';
                 if (id === 'project_admin' || id === 'system_admin') this.projPermissions = 'prjCrud';
                 if (id === 'file_editor') this.projPermissions = 'flCrud';
@@ -1058,7 +1097,7 @@ export class MainStore {
 
     @action searchFiles(text, id) {
         this.autoCompleteLoading = true;
-        transportLayer.searchFiles(text, id)
+        this.transportLayer.searchFiles(text, id)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -1072,7 +1111,7 @@ export class MainStore {
     @action loadMetadataTemplates(value) {
         this.loading = true;
         let searchQuery = value !== null ? '?name_contains=' + value : '';
-        transportLayer.loadMetadataTemplates(searchQuery)
+        this.transportLayer.loadMetadataTemplates(searchQuery)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -1087,7 +1126,7 @@ export class MainStore {
 
     @action createMetadataTemplate(name, label, desc) {
         this.drawerLoading = true;
-        transportLayer.createMetadataTemplate(name, label, desc)
+        this.transportLayer.createMetadataTemplate(name, label, desc)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -1105,7 +1144,7 @@ export class MainStore {
 
     @action getMetadataTemplateDetails(id) {
         this.drawerLoading = true;
-        transportLayer.getMetadataTemplateDetails(id)
+        this.transportLayer.getMetadataTemplateDetails(id)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -1119,7 +1158,7 @@ export class MainStore {
 
     @action getMetadataTemplateProperties(id) {
         this.drawerLoading = true;
-        transportLayer.getMetadataTemplateProperties(id)
+        this.transportLayer.getMetadataTemplateProperties(id)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -1130,7 +1169,7 @@ export class MainStore {
 
     @action updateMetadataTemplate(id, name, label, desc) {
         this.drawerLoading = true;
-        transportLayer.updateMetadataTemplate(id, name, label, desc)
+        this.transportLayer.updateMetadataTemplate(id, name, label, desc)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -1147,7 +1186,7 @@ export class MainStore {
     }
 
     @action deleteTemplate(id, label) {
-        transportLayer.deleteTemplate(id)
+        this.transportLayer.deleteTemplate(id)
             .then(this.checkResponse)
             .then(response => {})
             .then((json) => {
@@ -1161,7 +1200,7 @@ export class MainStore {
     }
 
     @action deleteMetadataProperty(id, label) {
-        transportLayer.deleteMetadataProperty(id)
+        this.transportLayer.deleteMetadataProperty(id)
             .then(this.checkResponse)
             .then(response => {})
             .then((json) => {
@@ -1175,12 +1214,12 @@ export class MainStore {
 
     @action createMetadataObject(kind, fileId, templateId, properties) {
         this.drawerLoading = true;
-        transportLayer.createMetadataObject(kind, fileId, templateId, properties)
+        this.transportLayer.createMetadataObject(kind, fileId, templateId, properties)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
                 this.addToast('A new metadata object was created.');
-                this.createMetadataObjectSuccess(fileId, kind);
+                this.createMetadataObjectSuccess(fileId, kind, json);
             }).catch((ex) => {
                 if (ex.response.status === 409) {
                     this.updateMetadataObject(kind, fileId, templateId, properties);
@@ -1192,12 +1231,12 @@ export class MainStore {
     }
 
     @action updateMetadataObject(kind, fileId, templateId, properties) {
-        transportLayer.updateMetadataObject(kind, fileId, templateId, properties)
+        this.transportLayer.updateMetadataObject(kind, fileId, templateId, properties)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
                 this.addToast('This metadata object was updated.');
-                this.createMetadataObjectSuccess(fileId, kind);
+                this.createMetadataObjectSuccess(fileId, kind, json);
             }).catch((ex) => {
                 this.addToast('Failed to update metadata object');
                 this.handleErrors(ex)
@@ -1206,7 +1245,7 @@ export class MainStore {
 
     @action createMetadataProperty(id, name, label, desc, type) {
         this.drawerLoading = true;
-        transportLayer.createMetadataProperty(id, name, label, desc, type)
+        this.transportLayer.createMetadataProperty(id, name, label, desc, type)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -1219,11 +1258,16 @@ export class MainStore {
             })
     }
 
-    @action createMetadataObjectSuccess(id, kind) {
+    @action createMetadataObjectSuccess(id, kind, json) {
         this.drawerLoading = false;
         this.showBatchOps = false;
         this.showTemplateDetails = false;
-        this.getObjectMetadata(id,kind);
+        this.objectMetadata.push(json);
+        this.metaObjProps = this.objectMetadata.map((prop) => {
+            return prop.properties.map((prop) => {
+                return {key: prop.template_property.key, id: prop.template_property.id, value: prop.value};
+            })
+        });
     }
 
     @action createMetaPropsList(metaProps) {
@@ -1258,7 +1302,7 @@ export class MainStore {
         this.searchValue = value;
         this.loading = true;
         if (includeKinds === null || !includeKinds.length) includeKinds = ['dds-file', 'dds-folder'];
-        transportLayer.searchObjects(value, includeKinds, includeProjects)
+        this.transportLayer.searchObjects(value, includeKinds, includeProjects)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -1312,25 +1356,19 @@ export class MainStore {
     }
 
     @action displayErrorModals(error) {
-        if (error.response === null) {
+        if (error.message === 'A requested file or directory could not be found at the time an operation was processed.' && error.code === 8) {
             this.errorModals.push({
-                msg: error.message,
-                response: 'Folders can not be uploaded',
-                ref: 'modal' + Math.floor(Math.random() * 10000)
-            });
-        } else if (error && error.response.status !== 404) {
-            this.errorModals.push({
-                msg: error.response.status === 403 ? error.message + ': You don\'t have permissions to view or change' +
-                ' this resource' : error.message,
-                response: error.response.status,
+                msg: 'This feature is not yet supported. Please compress the folder into a zip file if you would like to upload it.',
+                response: 'Folders can not be uploaded through the web portal.',
                 ref: 'modal' + Math.floor(Math.random() * 10000)
             });
         } else {
-            if (authStore.appConfig.apiToken) {
-                setTimeout(()=>window.location.href = window.location.protocol + "//" + window.location.host + "/#/404", 1000);
-            } else {
-                setTimeout(()=>window.location.href = window.location.protocol + "//" + window.location.host + "/#/login", 1000);
-            }
+            this.errorModals.push({
+                msg: error.response.status === 403 ? error.message + ': You don\'t have permissions to view or change' +
+                    ' this resource' : error.message,
+                response: error.response.status,
+                ref: 'modal' + Math.floor(Math.random() * 10000)
+            });
         }
     }
 
@@ -1344,11 +1382,20 @@ export class MainStore {
     }
 
     @action handleErrors(error) {
-        this.displayErrorModals(error);
-        this.error = error;
         this.loading = false;
         this.drawerLoading = false;
         provenanceStore.toggleGraphLoading();
+        if (error && error.response && error.response.status) {
+            if (error.response.status === 401) {
+                window.location.href = window.location.protocol + "//" + window.location.host + "/#/login";
+            } else if (error.response.status === 404 && authStore.appConfig.apiToken) {
+                window.location.href = window.location.protocol + "//" + window.location.host + "/#/404";
+            } else {
+                this.displayErrorModals(error);
+            }
+        } else if (error.code === 8) { // Handles error thrown from trying to read folder as a file
+            this.displayErrorModals(error);
+        }
     }
 
     @action addToast(msg) {
@@ -1381,10 +1428,6 @@ export class MainStore {
         this.failedUploads = [];
     }
 
-    @action clearErrors(error) {
-        this.error = {};
-    }
-
     @action removeErrorModal(refId) {
         for (let i = 0; i < this.errorModals.length; i++) {
             if (this.errorModals[i].ref === refId) {
@@ -1392,7 +1435,6 @@ export class MainStore {
                 break;
             }
         }
-        this.error = {};
     }
 
     @action toggleLoading() {

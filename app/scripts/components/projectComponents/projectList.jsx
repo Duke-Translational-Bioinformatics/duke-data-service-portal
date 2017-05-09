@@ -1,11 +1,12 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object, bool, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
+import BaseUtils from '../../util/baseUtils.js';
+import { Color } from '../../theme/customTheme';
+import { UrlGen } from '../../util/urlEnum';
 import AddProjectModal from '../projectComponents/addProjectModal.jsx';
 import Loaders from '../globalComponents/loaders.jsx';
-import BaseUtils from '../../util/baseUtils.js';
-import {UrlGen} from '../../util/urlEnum';
 import {Card, CardTitle, CardText} from 'material-ui/Card';
 import FontIcon from 'material-ui/FontIcon';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -49,8 +50,8 @@ class ProjectList extends React.Component {
                         disabled={loading ? true : false}
                         onTouchTap={()=>this.loadMore(nextPage)}
                         fullWidth={true}
-                        style={loading ? {backgroundColor: '#69A3DD'} : {}}
-                        labelStyle={loading ? {color: '#235F9C'} : {fontWeight: '100'}}/>
+                        style={loading ? {backgroundColor: Color.ltBlue2} : {}}
+                        labelStyle={loading ? {color: Color.blue} : {fontWeight: '100'}}/>
                     </div> : null}
             </div>
         );
@@ -61,7 +62,7 @@ class ProjectList extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     card: {
         minHeight: 260,
         padding: 10
@@ -74,7 +75,7 @@ var styles = {
         fontSize: 36,
         float: 'left',
         margin: '20px 15px 0px 13px',
-        color: '#616161'
+        color: Color.dkGrey2
     },
     listTitle: {
         margin: '0px 0px 0px 0px',

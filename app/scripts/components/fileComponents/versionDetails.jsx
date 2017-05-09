@@ -1,14 +1,15 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object, string } = PropTypes;
 import { observer } from 'mobx-react';
-import authStore from '../../stores/authStore';
 import mainStore from '../../stores/mainStore';
 import VersionOptionsMenu from './versionOptionsMenu.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
-import {UrlGen, Path} from '../../util/urlEnum';
-import Tooltip from '../../util/tooltip.js';
+import { Color } from '../../theme/customTheme';
+import { UrlGen, Path } from '../../util/urlEnum';
 import BaseUtils from '../../util/baseUtils.js';
 import Card from 'material-ui/Card';
+import FileDownload from 'material-ui/svg-icons/file/file-download'
+import RaisedButton from 'material-ui/RaisedButton';
 
 @observer
 class VersionDetails extends React.Component {
@@ -19,22 +20,18 @@ class VersionDetails extends React.Component {
         let dlButton = null;
         let optionsMenu = null;
         if (prjPrm !== null) {
-            dlButton = prjPrm === 'viewOnly' || prjPrm === 'flUpload' ? null :
-                <button
-                    title="Download File"
-                    style={styles.downloadBtn}
-                    rel="tooltip"
-                    className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab mdl-button--colored"
-                    onTouchTap={() => this.handleDownload()}>
-                    <i className="material-icons">get_app</i>
-                </button>;
+            dlButton = prjPrm === 'viewOnly' || prjPrm === 'flUpload' ? null :  <RaisedButton label="Download"
+                                                                                              labelPosition="before"
+                                                                                              labelStyle={{color: Color.blue}}
+                                                                                              style={styles.dlButton}
+                                                                                              icon={<FileDownload color={Color.pink} />}
+                                                                                              onTouchTap={() => this.handleDownload()}/>;
             optionsMenu = <VersionOptionsMenu {...this.props}/>;
         }
         let id = this.props.params.id;
         let parentId = entityObj && entityObj.file ? entityObj.file.id : null;
         let name = entityObj && entityObj.file ? entityObj.file.name : null;
         let label = entityObj && entityObj.label ? entityObj.label : null;
-        let projectName = entityObj && entityObj.ancestors ? entityObj.ancestors[0].name : null;
         let crdOn = entityObj && entityObj.audit ? entityObj.audit.created_on : null;
         let createdBy = entityObj && entityObj.audit ? entityObj.audit.created_by.full_name : null;
         let lastUpdatedOn = entityObj && entityObj.audit ? entityObj.audit.last_updated_on : null;
@@ -42,24 +39,18 @@ class VersionDetails extends React.Component {
         let storage =  entityObj && entityObj.upload ? entityObj.upload.storage_provider.description : null;
         let bytes = entityObj && entityObj.upload ? entityObj.upload.size : null;
         let hash = entityObj && entityObj.upload && entityObj.upload.hashes.length ? entityObj.upload.hashes[0].algorithm +': '+ entityObj.upload.hashes[0].value : null;
-        let versNumber = entityObj ? entityObj.version : null;
-        Tooltip.bindEvents();
+        let versNumber = entityObj && entityObj.version ? entityObj.version : '';
 
-        let version = <Card className="project-container mdl-color--white content mdl-color-text--grey-800"
-                            style={styles.card}>
-            <div className="mdl-cell mdl-cell--12-col" style={{position: 'relative'}}>
-                { dlButton }
-            </div>
-            <div id="tooltip"></div>
+        let version = <Card className="project-container mdl-color--white content mdl-color-text--grey-800" style={styles.card}>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                <div style={styles.menuIcon}>
-                    { optionsMenu }
-                </div>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
                     <a href={UrlGen.routes.file(parentId)} style={styles.back}
                        className="mdl-color-text--grey-800 external">
                         <i className="material-icons"
                            style={styles.backIcon}>keyboard_backspace</i>Back</a>
+                    <div style={styles.menuIcon}>
+                        { optionsMenu }
+                    </div>
                 </div>
                 <div className="mdl-cell mdl-cell--9-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
                     <span className="mdl-color-text--grey-800" style={styles.title}>{ name }</span>
@@ -67,8 +58,11 @@ class VersionDetails extends React.Component {
                 { label != null ? <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.subTitle}>
                     <span className="mdl-color-text--grey-600" style={styles.spanTitle}>{ label }</span>
                 </div> : null }
-                <div className="mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.subTitle}>
+                <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-color-text--grey-800" style={styles.subTitle}>
                     <span style={styles.spanTitle}>{ 'Version: ' + versNumber }</span>
+                    <div style={styles.btnWrapper}>
+                        { dlButton }
+                    </div>
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block"  style={styles.list}>
                     <div className="list-block">
@@ -170,7 +164,7 @@ class VersionDetails extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     arrow: {
         textAlign: 'left',
         marginTop: -5
@@ -183,11 +177,10 @@ var styles = {
         verticalAlign:-7
     },
     btnWrapper: {
-        marginTop: 11,
-        marginRight: 25,
+        marginRight: 32,
         float: 'right'
     },
-    button: {
+    dlButton: {
         float: 'right'
     },
     card: {
@@ -200,31 +193,24 @@ var styles = {
         float: 'left',
         marginLeft: 26
     },
-    downloadBtn: {
-        position: 'absolute',
-        top: -33,
-        right: '1.4%',
-        zIndex: '2',
-        color: '#ffffff'
-    },
     list: {
         paddingTop: 5,
         clear: 'both'
     },
     menuIcon: {
         float: 'right',
-        marginTop: 30,
-        marginBottom: -3,
-        marginRight: 10
+        marginTop: -6,
+        marginRight: 2
     },
     spanTitle: {
-        fontSize: '1.2em'
+        fontSize: '1.2em',
+        verticalAlign: -8
     },
     subTitle: {
         textAlign: 'left',
         float: 'left',
         marginLeft: 25,
-        marginTop: 18
+        marginTop: 6
     },
     title: {
         fontSize: 24,

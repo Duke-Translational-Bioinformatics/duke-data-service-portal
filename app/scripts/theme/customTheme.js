@@ -1,23 +1,38 @@
 import * as Colors from 'material-ui/styles/colors';
-import ColorManipulator from 'material-ui/utils/colorManipulator';
 import Spacing from 'material-ui/styles/spacing';
 import zIndex from 'material-ui/styles/zIndex';
 
-export default {
+export const Theme = {
     spacing: Spacing,
     zIndex: zIndex,
     fontFamily: 'Roboto, sans-serif',
     palette: {
-        primary1Color: "#235F9C",
-        primary2Color: "#235F9C",
-        primary3Color: "#0680CD",
-        accent1Color: "#235F9C",
-        accent2Color: "#ED2B2B",
-        accent3Color: "#F58C8C",
-        textColor: "#424242",
-        alternateTextColor: "#FFF",
+        primary1Color: '#235F9C',
+        primary2Color: '#235F9C',
+        primary3Color: '#0680CD',
+        accent1Color: '#235F9C',
+        accent2Color: '#ECEFF1',
+        accent3Color: '#F58C8C',
+        textColor: '#424242',
+        alternateTextColor: '#FFF',
         canvasColor: Colors.white,
         borderColor: Colors.grey300,
-        pickerHeaderColor: Colors.cyan500
+        pickerHeaderColor: Colors.cyan500,
+        shadowColor: Colors.fullBlack
     }
-};
+}
+
+export const Color = {
+    blue:  '#235F9C',
+    dkBlue: '#303F9F',
+    ltBlue: '#0680CD',
+    ltBlue2: '#69A3DD',
+    pink: '#EC407A',
+    ltPink: '#F58C8C',
+    green: '#66BB6A',
+    red: '#F44336',
+    ltRed: '#EF5350',
+    ltGrey: '#BDBDBD',
+    dkGrey: '#757575',
+    dkGrey2: '#616161',
+}

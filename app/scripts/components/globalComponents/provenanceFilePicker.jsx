@@ -1,9 +1,9 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
-import ReactDOM from 'react-dom';
+const { object, bool, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import provenanceStore from '../../stores/provenanceStore';
+import { Color } from '../../theme/customTheme';
 import BaseUtils from '../../util/baseUtils.js';
 import AutoComplete from 'material-ui/AutoComplete';
 import CircularProgress from 'material-ui/CircularProgress';
@@ -29,7 +29,7 @@ class ProvenanceFilePicker extends React.Component {
     }
 
     render() {
-        const { autoCompleteLoading, entityObj, projects, projPermissions, screenSize, searchFilesList } = mainStore;
+        const { autoCompleteLoading, entityObj, projects, screenSize, searchFilesList } = mainStore;
         const { provEditorModal, provFileVersions } = provenanceStore;
         let addFile = provEditorModal.id !== null && provEditorModal.id === 'addFile' ? provEditorModal.open : false;
         let autoCompleteData = searchFilesList.map((file)=>{
@@ -42,15 +42,12 @@ class ProvenanceFilePicker extends React.Component {
         if(fileName === null) fileName = entityObj ? entityObj.file.name : null;
         let fileVersion = entityObj && entityObj.current_version ? entityObj.current_version.version : null;
         if(fileVersion === null) fileVersion = entityObj ? entityObj.version : null;
-        let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
-        let project = entityObj && entityObj.current_version ? entityObj.project.id : null;
-        if(project === null) project = entityObj && entityObj.file ? entityObj.file.project.id : null;
+        let project = entityObj && entityObj !== null ? entityObj.ancestors[0].id : null;
         let projectList = projects && projects.length ? projects.map((project)=>{
             if(!project.is_deleted) {
                 return <MenuItem key={project.id}
                                  value={project.id}
-                                 primaryText={project.name}
-                                 onTouchTap={() => this.handleProjectSelect(project.id, project.name)}/>
+                                 primaryText={project.name} />
             }
         }) : null;
         let provFileVersionsList = provFileVersions.map((node) => {
@@ -96,7 +93,7 @@ class ProvenanceFilePicker extends React.Component {
                                  autoWidth={true}
                                  fullWidth={true}
                                  floatingLabelText="Select a Project"
-                                 floatingLabelStyle={{color: '#BDBDBD', fontWeight: 100}}
+                                 floatingLabelStyle={{color: Color.grey}}
                                  style={styles.projectSelect}>
                         {projectList}
                     </SelectField>
@@ -143,9 +140,7 @@ class ProvenanceFilePicker extends React.Component {
             provenanceStore.clearProvFileVersions();
         }
         this.setState({floatingErrorText:'This field is required'});
-        setTimeout(()=>{
-            this.setState({floatingErrorText:''});
-        }, 3000);
+        setTimeout(()=>{ this.setState({floatingErrorText:''}) }, 3000);
     }
 
     chooseFileVersion(value, e) {
@@ -161,23 +156,16 @@ class ProvenanceFilePicker extends React.Component {
         if(id === 'addFile') this.state.projectSelectValue = null;
     }
 
-    handleFloatingError(e) {
-        if(this.state.floatingErrorText !== '' || !e.target.value) { // Avoid lagging text input due to re-renders
-            this.setState({floatingErrorText: e.target.value ? '' : 'This field is required.'});
-        }
-    }
-
     handleProjectSelect(e, index, value) {
         mainStore.clearSearchFilesData(); //If project is changed, clear files from autocomplete list
-        this.setState({
-            projectSelectValue: value
-        });
+        mainStore.searchFiles('', value);
+        this.setState({ projectSelectValue: value });
+        setTimeout(() => this.searchText.focus(), 600);
     }
 
     handleUpdateInput (text, isProject) {
         if(isProject) mainStore.clearSearchFilesData(); //Boolean: If project is changed clear files from autocomplete list
         let id = this.state.projectSelectValue !== null ? this.state.projectSelectValue : mainStore.entityObj.file ? mainStore.entityObj.file.project.id : mainStore.entityObj.project.id;
-        let timeout = this.state.timeout;
         clearTimeout(this.state.timeout);
         this.setState({
             timeout: setTimeout(() => {
@@ -199,7 +187,7 @@ class ProvenanceFilePicker extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     autoComplete: {
         maxWidth: 'calc(100% - 45px)'
     },
@@ -219,7 +207,7 @@ var styles = {
     },
     dialogStyles: {
         textAlign: 'center',
-        fontColor: '#303F9F',
+        fontColor: Color.dkBlue,
         zIndex: '5000'
     },
     projectSelect: {
