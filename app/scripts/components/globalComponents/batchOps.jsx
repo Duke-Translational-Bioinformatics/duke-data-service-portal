@@ -36,7 +36,7 @@ class BatchOps extends React.Component {
             let f = filesChecked.length > 1  ? " files?" : " file?";
             dlMsg = "Are you sure you want to download "+filesChecked.length+f;
         }
-
+        let isSafari = navigator.vendor && navigator.vendor.indexOf('Apple') > -1 && navigator.userAgent && !navigator.userAgent.match('CriOS');
         let downloadIcon = filesChecked.length ? <IconButton onTouchTap={() => this.openModal('dwnLoad')} style={styles.downloadBtn}><GetAppIcon color={Color.pink}/></IconButton> : null;
         let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
 
@@ -128,6 +128,7 @@ class BatchOps extends React.Component {
                     open={toggleModal && toggleModal.id == 'dwnLoad' ? toggleModal.open : false}
                     onRequestClose={() => this.handleClose('dwnLoad')}>
                     <i className="material-icons" style={styles.warning}>warning</i>
+                    {isSafari ? <h4 style={{color: Color.red}}>It looks like you're using the Safari browser. If you want to download files you must enable pop ups in your browser first.</h4> : null}
                     <p style={styles.textStyles}>If you want to download the contents of a folder, please open that folder and select the files to download.</p>
                 </Dialog>
                 <Dialog
