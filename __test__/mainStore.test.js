@@ -53,7 +53,7 @@ describe('Main Store', () => {
         mainStore.toggleTagManager();
         expect(mainStore.openTagManager).toBe(false);
     });
-  
+
     it('@action toggleTagCloud - toggles the tag cloud of recently used tags', () => {
         mainStore.toggleTagCloud();
         expect(mainStore.showTagCloud).toBe(true);
