@@ -211,7 +211,6 @@ class MetadataObjectCreator extends React.Component {
                     for (let i = 0; i < files.length; i++) {
                         mainStore.createMetadataObject(Kind.DDS_FILE, files[i], templateId, metaProps);
                     }
-                    mainStore.handleBatch([], []);
                 } else {
                     mainStore.createMetadataObject(Kind.DDS_FILE, fileId, templateId, metaProps);
                 }
