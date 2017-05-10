@@ -203,7 +203,6 @@ class TagManager extends React.Component {
                 for (let i = 0; i < filesChecked.length; i++) {
                     mainStore.appendTags(filesChecked[i], 'dds-file', tagsToAdd);
                 }
-                mainStore.handleBatch([],[]);
             } else {
                 mainStore.appendTags(id, 'dds-file', tagsToAdd);
             }
