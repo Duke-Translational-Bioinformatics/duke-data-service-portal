@@ -1,17 +1,15 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
-import authStore from '../../stores/authStore';
-import MetadataTemplateProperties from '../globalComponents/metadataTemplateProperties.jsx';
 import BaseUtils from '../../util/baseUtils';
-import {Kind, Path} from '../../util/urlEnum';
+import { Kind } from '../../util/urlEnum';
+import { Color } from '../../theme/customTheme';
 import DatePicker from 'material-ui/DatePicker';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 import TextField from 'material-ui/TextField';
-import Theme from '../../theme/customTheme.js';
 
 @observer
 class MetadataObjectCreator extends React.Component {
@@ -97,11 +95,9 @@ class MetadataObjectCreator extends React.Component {
             )
         }) : null;
         let showWarning = this.state.noValueWarning ? 'block' : 'none';
-        let templateDesc = metadataTemplate && metadataTemplate !== null ? metadataTemplate.description : null;
         let templateId = metadataTemplate && metadataTemplate !== null ? metadataTemplate.id : null;
         let templateInfo = metadataTemplate && metadataTemplate !== null ? showTemplate(metadataTemplate) : null;
         let templateLabel = metadataTemplate && metadataTemplate !== null ? metadataTemplate.label : null;
-        let templateName = metadataTemplate && metadataTemplate !== null ? metadataTemplate.name : null;
 
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.wrapper}>
@@ -150,19 +146,19 @@ class MetadataObjectCreator extends React.Component {
                 </div>
                 <div className="mdl-cell mdl-cell--12-col" style={styles.btnWrapper}>
                     <Paper className="mdl-cell mdl-cell--12-col"
-                           style={{backgroundColor: '#ef5350', color: '#EEEEEE', height: 40, marginBottom: 10, marginTop: 10, padding: 10, textAlign: 'center', display: showWarning}}
+                           style={{backgroundColor: Color.ltRed, color: '#EEEEEE', height: 40, marginBottom: 10, marginTop: 10, padding: 10, textAlign: 'center', display: showWarning}}
                            zDepth={1}>
                        <span>You must add or edit at least one value</span>
                     </Paper>
-                    <RaisedButton label={'Cancel'} secondary={true}
-                                  labelStyle={styles.button.label}
-                                  style={styles.button.cancel}
-                                  onTouchTap={() => this.toggleTagManager()}/>
                     {templateProperties && templateProperties.length ?
-                    <RaisedButton label={'Apply'} secondary={true}
+                    <RaisedButton label={'Apply'}
                                   labelStyle={styles.button.label}
                                   style={styles.button.apply}
                                   onTouchTap={() => this.createMetadataObject(templateId)}/> : null}
+                    <RaisedButton label={'Cancel'}
+                                  labelStyle={styles.button.label}
+                                  style={styles.button.cancel}
+                                  onTouchTap={() => this.toggleTagManager()}/>
                 </div>
             </div>
         )
@@ -215,7 +211,6 @@ class MetadataObjectCreator extends React.Component {
                     for (let i = 0; i < files.length; i++) {
                         mainStore.createMetadataObject(Kind.DDS_FILE, files[i], templateId, metaProps);
                     }
-                    mainStore.handleBatch([], []);
                 } else {
                     mainStore.createMetadataObject(Kind.DDS_FILE, fileId, templateId, metaProps);
                 }
@@ -262,7 +257,7 @@ class MetadataObjectCreator extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     backButton: {
         float: 'left',
         cursor: 'pointer'
@@ -284,7 +279,7 @@ var styles = {
             float: 'right'
         },
         label: {
-            fontWeight: 100
+            color: Color.blue
         }
     },
     btnWrapper: {
@@ -303,7 +298,7 @@ var styles = {
     },
     dialogStyles: {
         textAlign: 'center',
-        fontColor: '#303F9F',
+        fontColor: Color.dkBlue,
         zIndex: '5000'
     },
     heading: {
@@ -357,7 +352,7 @@ var styles = {
         marginBottom: 0
     },
     warningDiv: {
-        backgroundColor: '#ef5350',
+        backgroundColor: Color.ltRed,
         color: '#EEEEEE',
         padding: 10,
         textAlign: 'left'
@@ -376,12 +371,12 @@ MetadataObjectCreator.contextTypes = {
 };
 
 MetadataObjectCreator.propTypes = {
-    entityObj: React.PropTypes.object,
-    filesChecked: React.PropTypes.array,
-    metaObjProps: React.PropTypes.array,
-    metaProps: React.PropTypes.array,
-    metadataTemplate: React.PropTypes.object,
-    templateProperties: React.PropTypes.object
+    entityObj: object,
+    filesChecked: array,
+    metaObjProps: array,
+    metaProps: array,
+    metadataTemplate: object,
+    templateProperties: object
 };
 
 export default MetadataObjectCreator;

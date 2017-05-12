@@ -4,8 +4,8 @@ import transportLayer from '../transportLayer';
 import authStore from '../stores/authStore';
 import mainStore from '../stores/mainStore';
 import BaseUtils from '../util/baseUtils.js';
-import { UrlGen, Kind, Path } from '../util/urlEnum';
-import { checkStatus, getFetchParams } from '../util/fetchUtil';
+import { Path } from '../util/urlEnum';
+import { checkStatus } from '../util/fetchUtil';
 
 export class AgentStore {
 
@@ -17,6 +17,8 @@ export class AgentStore {
         this.agentApiToken = {};
         this.agentKey = {};
         this.agents = [];
+
+        this.transportLayer = transportLayer;
     }
 
     checkResponse(response) {
@@ -24,7 +26,7 @@ export class AgentStore {
     }
 
     @action createAgentKey(id) {
-        transportLayer.createAgentKey(id)
+        this.transportLayer.createAgentKey(id)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -37,32 +39,59 @@ export class AgentStore {
     }
 
     @action getAgentKey(id) {
-        transportLayer.getAgentKey(id)
+        this.transportLayer.getAgentKey(id)
             .then(this.checkResponse)
             .then(response => response.json())
-            .then((json) => {
-                this.agentKey = json;
-                let formData = new FormData();
-                formData.append('agent_key', this.agentKey.key);
-                formData.append('user_key', authStore.userKey.key);
-                if(this.agentKey.key && authStore.userKey.key) this.getAgentApiToken(this.agentKey.key, authStore.userKey.key, formData);
-            }).catch(ex =>mainStore.handleErrors(ex))
+            .then(json => this.agentKey = json)
+            .catch(ex =>mainStore.handleErrors(ex))
     }
 
-    @action getAgentApiToken(agentKey, userKey) {
-        transportLayer.getAgentApiToken(agentKey, userKey)
-            .then(this.checkResponse)
-            .then(response => response.json())
-            .then((json) => this.agentApiToken = json)
-            .catch((ex) => {
-                mainStore.addToast('Failed to generate an API token');
-                mainStore.handleErrors(ex)
-            })
+    @action getAgentApiToken(id) {
+        mainStore.toggleLoading();
+        if(authStore.userKey.key === undefined) {
+            this.transportLayer.createUserKey()
+                .then(this.checkResponse)
+                .then(response => response.json())
+                .then((json) => {
+                    authStore.userKey = json;
+                    this.getAgentApiToken(id);
+                })
+                .catch((ex) => mainStore.handleErrors(ex));
+        } else {
+            let userKey = this.transportLayer.getUserKey()
+                .then(this.checkResponse)
+                .then(response => response.json())
+                .then((json) => authStore.userKey = json)
+                .catch((ex) => {
+                    ex.response.status !== 404 ? mainStore.handleErrors(ex) : authStore.createUserKey()
+                });
+            let agentKey = this.transportLayer.getAgentKey(id)
+                .then(this.checkResponse)
+                .then(response => response.json())
+                .then((json) => { return agentStore.agentKey = json })
+                .catch(ex => mainStore.handleErrors(ex));
+            Promise.all([userKey, agentKey]).then((values) => {
+                userKey = values[0].key;
+                agentKey = values[1].key;
+                agentStore.transportLayer.getAgentApiToken(agentKey, userKey)
+                    .then(agentStore.checkResponse)
+                    .then(response => response.json())
+                    .then((json) => {
+                        agentStore.agentApiToken = json;
+                        mainStore.toggleModals('agentCred');
+                        if(mainStore.loading) mainStore.toggleLoading();
+                    })
+                    .catch((ex) => {
+                        mainStore.addToast('Failed to generate an API token');
+                        mainStore.handleErrors(ex);
+                    })
+            });
+        }
     }
 
     @action loadAgents() {
         mainStore.toggleLoading();
-        transportLayer.loadAgents()
+        this.transportLayer.loadAgents()
             .then(this.checkResponse)
             .then(response => response.json())
                 .then((json) => {
@@ -72,7 +101,7 @@ export class AgentStore {
     }
 
     @action addAgent(name, desc, repo) {
-        transportLayer.addAgent(name, desc, repo)
+        this.transportLayer.addAgent(name, desc, repo)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -85,7 +114,7 @@ export class AgentStore {
     }
 
     @action editAgent(id, name, desc, repo) {
-        transportLayer.editAgent(id, name, desc, repo)
+        this.transportLayer.editAgent(id, name, desc, repo)
             .then(checkStatus)
             .then(response => response.json())
             .then((json) => {
@@ -98,7 +127,7 @@ export class AgentStore {
     }
 
     @action deleteAgent(id) {
-        transportLayer.deleteAgent(id)
+        this.transportLayer.deleteAgent(id)
             .then(this.checkResponse)
             .then(response => {})
             .then((json) => {

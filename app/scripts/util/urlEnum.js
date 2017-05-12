@@ -1,7 +1,5 @@
 export const UrlGen = {
     routes: {
-        authServiceUri: DDS_PORTAL_CONFIG.authServiceUri,
-        baseUrl: DDS_PORTAL_CONFIG.baseUrl,
         apiPrefix: '/api/v1/',
         login: () => '/login',
         home: () => '/',

@@ -1,8 +1,9 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import authStore from '../../stores/authStore';
+import { Color } from '../../theme/customTheme';
 import AutoComplete from 'material-ui/AutoComplete';
 import CircularProgress from 'material-ui/CircularProgress';
 import Dialog from 'material-ui/Dialog';
@@ -53,7 +54,7 @@ class AddProjectMemberModal extends React.Component {
                 <Dialog
                     style={styles.dialogStyles}
                     contentStyle={dialogWidth}
-                    title="Add a Member"
+                    title="Add Project Member"
                     autoDetectWindowHeight={true}
                     actions={memberActions}
                     onRequestClose={() => this.toggleModal()}
@@ -73,7 +74,7 @@ class AddProjectMemberModal extends React.Component {
                         <SelectField value={this.state.value}
                                      onChange={this.handleSelectValueChange.bind(this, 'value')}
                                      floatingLabelText="Project Role"
-                                     floatingLabelStyle={{color: '#757575'}}
+                                     floatingLabelStyle={{color: Color.blue}}
                                      errorText={this.state.errorText}
                                      errorStyle={styles.textStyles}
                                      style={styles.textStyles}>
@@ -158,7 +159,6 @@ class AddProjectMemberModal extends React.Component {
 const styles = {
     dialogStyles: {
         textAlign: 'center',
-        fontColor: '#303F9F',
         zIndex: '5000'
     },
     loading: {
@@ -168,8 +168,7 @@ const styles = {
         right: 0
     },
     textStyles: {
-        textAlign: 'left',
-        fontColor: '#303F9F'
+        textAlign: 'left'
     }
 };
 

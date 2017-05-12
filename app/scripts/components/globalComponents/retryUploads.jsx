@@ -1,7 +1,8 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
+import { Color } from '../../theme/customTheme';
 import BaseUtils from '../../util/baseUtils.js';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -60,7 +61,7 @@ class RetryUploads extends React.Component {
                             </TableRow>
                         </TableHeader>
                         <TableBody deselectOnClickaway={false}>
-                            {failedUploads}
+                            {failed}
                         </TableBody>
                     </Table>
             </Dialog>;
@@ -119,10 +120,10 @@ class RetryUploads extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     dialogStyles: {
         textAlign: 'center',
-        fontColor: '#303F9F',
+        fontColor: Color.dkBlue,
         zIndex: '9999'
     },
     loginWrapper: {

@@ -1,10 +1,10 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object } = PropTypes;
 import { observer } from 'mobx-react';
-import mainStore from '../../stores/mainStore';
 import provenanceStore from '../../stores/provenanceStore';
 import BaseUtils from '../../util/baseUtils.js';
-import {UrlGen} from '../../util/urlEnum';
+import { Color } from '../../theme/customTheme';
+import { UrlGen } from '../../util/urlEnum';
 
 @observer
 class ProvenanceDetails extends React.Component {
@@ -124,16 +124,16 @@ class ProvenanceDetails extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     details: {
         padding: 20,
         width: '100%',
         margin: 0,
-        color:'#757575'
+        color: Color.dkGrey
     },
     linkIcon: {
         verticalAlign: -6,
-        color: '#235F9C'
+        color: Color.blue
     },
     listBlock: {
         margin: 0

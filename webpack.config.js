@@ -1,11 +1,10 @@
 var webpack = require('webpack');
 
 module.exports.getConfig = function (type) {
-
     var isDev = type === 'development';
 
     var config = {
-        entry: './app/scripts/main.js',
+        entry:  './app/scripts/main.js',
         output: {
             path: __dirname,
             filename: 'main.js'
@@ -27,7 +26,7 @@ module.exports.getConfig = function (type) {
         plugins: [
             new webpack.DefinePlugin({
                 'process.env': {
-                    'NODE_ENV': JSON.stringify('production')
+                    'NODE_ENV': JSON.stringify(type)
                 }
             }),
             new webpack.optimize.DedupePlugin(), //dedupe similar code

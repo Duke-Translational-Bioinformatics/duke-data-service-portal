@@ -4,7 +4,6 @@ import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../util/baseUtils';
 import Checkbox from 'material-ui/Checkbox';
-import IconButton from 'material-ui/IconButton';
 import Drawer from 'material-ui/Drawer';
 import RaisedButton from 'material-ui/RaisedButton';
 import {List, ListItem} from 'material-ui/List';

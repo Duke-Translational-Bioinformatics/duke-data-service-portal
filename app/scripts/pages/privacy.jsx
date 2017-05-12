@@ -1,5 +1,6 @@
 import React from 'react';
 import Card from 'material-ui/Card';
+import { Color } from '../theme/customTheme';
 
 class Privacy extends React.Component {
 
@@ -59,7 +60,7 @@ class Privacy extends React.Component {
                     project.</p>
                 <h4>Updates and Changes to these policies</h4>
                 <p>Changes to this policy will be posted on the DataService project/portal page at
-                    <a href="https://dataservice.duke.edu" className="external" style={{marginLeft: 8, color: '#235F9C'}}>
+                    <a href="https://dataservice.duke.edu" className="external" style={{marginLeft: 8, color: Color.blue}}>
                         https://dataservice.duke.edu</a>
                 </p>
                 <p style={{textAlign: 'right'}}>Effective Date: 10/7/16</p>

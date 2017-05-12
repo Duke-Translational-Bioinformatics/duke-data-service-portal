@@ -2,8 +2,6 @@ import React from 'react';
 import mainStore from '../stores/mainStore';
 import { observable, computed, action } from 'mobx';
 import transportLayer from '../transportLayer';
-import { UrlGen, Path } from '../util/urlEnum';
-import { checkStatus, getFetchParams } from '../util/fetchUtil';
 import appConfig from '../config';
 import cookie from 'react-cookie';
 
@@ -13,16 +11,20 @@ export class AuthStore {
     @observable currentUser
     @observable userKey
     @observable redirectUrl
+    @observable sessionTimeoutWarning
 
     constructor() {
         this.appConfig = appConfig;
         this.authServiceLoading = false;
         this.currentUser = {};
         this.userKey = {};
+        this.sessionTimeoutWarning = false;
         this.appConfig.authServiceId = cookie.load('authServiceId');
         this.appConfig.redirectUrl = cookie.load('redirectUrl');
         this.appConfig.apiToken = cookie.load('apiToken');
         this.appConfig.isLoggedIn = cookie.load('isLoggedIn');
+
+        this.transportLayer = transportLayer;
     }
 
     @action setLoadingStatus() {
@@ -36,7 +38,7 @@ export class AuthStore {
     }
 
     @action getAuthProviders() {
-        transportLayer.getAuthProviders()
+        this.transportLayer.getAuthProviders()
             .then(mainStore.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -57,7 +59,7 @@ export class AuthStore {
     }
 
     @action getApiToken(accessToken) {
-        transportLayer.getApiToken(accessToken, this.appConfig)
+        this.transportLayer.getApiToken(accessToken, this.appConfig)
             .then(mainStore.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -65,6 +67,10 @@ export class AuthStore {
                     let expiresAt = new Date(Date.now() + (60 * 60 * 2 * 1000));
                     this.appConfig.apiToken = json.api_token;
                     cookie.save('apiToken', this.appConfig.apiToken, {expires: expiresAt});
+                    setTimeout(() => {
+                        this.sessionTimeoutWarning = true;
+                        setTimeout(() => this.handleLogout(), 178800)
+                    }, 7020000)
                 } else {
                     throw "An error has occurred while trying to authenticate";
                 }
@@ -72,7 +78,7 @@ export class AuthStore {
     }
 
     @action getCurrentUser() {
-        transportLayer.getCurrentUser()
+        this.transportLayer.getCurrentUser()
             .then(mainStore.checkResponse)
             .then(response => response.json())
             .then(json => this.currentUser = json)
@@ -80,37 +86,39 @@ export class AuthStore {
     }
 
     @action getUserKey() {
-        transportLayer.getUserKey()
+        this.userKey.key !== undefined ? this.transportLayer.getUserKey() : this.transportLayer.createUserKey()
             .then(mainStore.checkResponse)
             .then(response => response.json())
             .then((json) => this.userKey = json)
-            .catch(ex =>mainStore.handleErrors(ex))
+            .catch((ex) => {
+                ex.response.status !== 404 ? mainStore.handleErrors(ex) : this.createUserKey();
+            })
     }
 
     @action createUserKey() {
-        transportLayer.createUserKey()
+        this.transportLayer.createUserKey()
             .then(mainStore.checkResponse)
             .then(response => response.json())
             .then((json) => {
                 mainStore.addToast('User Key created successfully');
                 this.userKey = json;
             }).catch((ex) => {
-                mainStore.addToast('Failed to create new User key');
-                mainStore.handleErrors(ex)
-            })
+            mainStore.addToast('Failed to create new User key');
+            mainStore.handleErrors(ex)
+        })
     }
 
     @action deleteUserKey() {
-        transportLayer.deleteUserKey()
+        this.transportLayer.deleteUserKey()
             .then(mainStore.checkResponse)
             .then(response => {})
             .then((json) => {
                 mainStore.addToast('User key deleted');
                 this.userKey = {};
             }).catch((ex) => {
-                mainStore.addToast('Failed to delete user key');
-                mainStore.handleErrors(ex)
-            });
+            mainStore.addToast('Failed to delete user key');
+            mainStore.handleErrors(ex)
+        });
     }
 
     @action isLoggedInHandler() {
@@ -118,6 +126,7 @@ export class AuthStore {
         this.appConfig.isLoggedIn = true;
         cookie.save('isLoggedIn', this.appConfig.isLoggedIn, {expires: expiresAt});
         this.authServiceLoading = true;
+        this.sessionTimeoutWarning = false;
     }
 
     @action removeLoginCookie() {
@@ -126,6 +135,7 @@ export class AuthStore {
     }
 
     @action handleLogout(status) {
+        this.sessionTimeoutWarning = false;
         this.appConfig.apiToken = null;
         cookie.remove('apiToken');
         this.appConfig.isLoggedIn = null;
@@ -134,7 +144,7 @@ export class AuthStore {
             this.appConfig.redirectUrl = null;
             cookie.remove('redirectUrl');
         }
-        location.reload();
+        window.location.assign('/#/login');
     }
 }
 

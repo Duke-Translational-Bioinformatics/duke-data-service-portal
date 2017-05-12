@@ -1,7 +1,7 @@
 import React from 'react'
 import { observer } from 'mobx-react';
 import mainStore from '../stores/mainStore';
-import {Path, Kind} from '../util/urlEnum';
+import {Path} from '../util/urlEnum';
 import FolderPath from '../components/folderComponents/folderPath.jsx';
 import FileOptions from '../components/fileComponents/fileOptions.jsx';
 import FolderOptions from '../components/folderComponents/folderOptions.jsx';

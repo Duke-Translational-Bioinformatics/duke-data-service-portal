@@ -1,12 +1,9 @@
-import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+import React from 'react';
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
-import authStore from '../../stores/authStore';
-import MetadataTemplateProperties from '../globalComponents/metadataTemplateProperties.jsx';
+import { Color } from '../../theme/customTheme';
 import BaseUtils from '../../util/baseUtils'
-import AddCircle from 'material-ui/svg-icons/content/add-circle';
-import IconButton from 'material-ui/IconButton';
+import MetadataTemplateProperties from '../globalComponents/metadataTemplateProperties.jsx';
 import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import SelectField from 'material-ui/SelectField';
@@ -68,7 +65,7 @@ class MetadataPropertyManager extends React.Component {
                                  floatingLabelText="Data Type"
                                  errorText={this.state.errorText4}
                                  errorStyle={{bottom: 20}}
-                                 labelStyle={{paddingRight: 0, color: '#235F9C' }}
+                                 labelStyle={{paddingRight: 0, color: Color.blue }}
                                  style={styles.selectStyles}>
                         <MenuItem style={styles.menuItemStyle} value={0} primaryText='text'/>
                         <MenuItem style={styles.menuItemStyle} value={1} primaryText='number'/>
@@ -213,7 +210,7 @@ class MetadataPropertyManager extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     addPropBtn: {
         margin: '12px -24px 12px 0px',
         float: 'right'
@@ -256,7 +253,7 @@ var styles = {
     selectStyles: {
         maxWidth: 213,
         textAlign: 'left',
-        color: '#757575'
+        color: Color.dkGrey
     },
     title: {
         textAlign: 'center'

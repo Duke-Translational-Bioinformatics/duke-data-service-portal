@@ -3,16 +3,17 @@ const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import provenanceStore from '../../stores/provenanceStore';
-import {Kind, Path} from '../../util/urlEnum';
+import { Color } from '../../theme/customTheme';
+import { Path } from '../../util/urlEnum';
 import CustomMetadata from './customMetadata.jsx';
 import FileOptionsMenu from './fileOptionsMenu.jsx';
 import FileVersionsList from './fileVersionsList.jsx';
 import VersionUpload from './versionUpload.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import TagCloud from '../../components/globalComponents/tagCloud.jsx';
-import Tooltip from '../../util/tooltip.js';
 import BaseUtils from '../../util/baseUtils.js';
 import Card from 'material-ui/Card';
+import FileDownload from 'material-ui/svg-icons/file/file-download'
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
@@ -30,23 +31,19 @@ class FileDetails extends React.Component {
         let optionsMenu = null;
         let id = entityObj && entityObj.current_version && entityObj.current_version.id ? entityObj.current_version.id : null;
         if (prjPrm !== null) {
-            dlButton = prjPrm === 'viewOnly' || prjPrm === 'flUpload' ? null :
-                <button
-                    title="Download File"
-                    rel="tooltip"
-                    className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--mini-fab mdl-button--colored"
-                    style={styles.downloadBtn}
-                    onTouchTap={() => this.handleDownload()}>
-                    <i className="material-icons">get_app</i>
-                </button>;
+            dlButton = prjPrm === 'viewOnly' || prjPrm === 'flUpload' ? null : <RaisedButton label="Download"
+                                                                                             labelPosition="before"
+                                                                                             labelStyle={{color: Color.blue}}
+                                                                                             style={styles.dlButton}
+                                                                                             icon={<FileDownload color={Color.pink} />}
+                                                                                             onTouchTap={() => this.handleDownload()}/>
             optionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity()}/>;
         }
         let ancestors = entityObj && entityObj.ancestors ? entityObj.ancestors : [];
         let parentKind = entityObj && entityObj.parent ? entityObj.parent.kind : null;
         let parentId = entityObj  && entityObj.parent ? entityObj.parent.id : null;
         let name = entityObj ? entityObj.name : '';
-        let label = entityObj && entityObj.current_version && entityObj.current_version.label ? entityObj.current_version.label : null;
-        let projectName = entityObj && entityObj.ancestors ? entityObj.ancestors[0].name : null;
+        let label = entityObj && entityObj.current_version && entityObj.current_version.label ? entityObj.current_version.label : '';
         let crdOn = entityObj && entityObj.audit ? entityObj.audit.created_on : null;
         let createdBy = entityObj && entityObj.audit ? entityObj.audit.created_by.full_name : null;
         let lastUpdatedOn = entityObj && entityObj.audit ? entityObj.audit.last_updated_on : null;
@@ -54,7 +51,7 @@ class FileDetails extends React.Component {
         let storage =  entityObj && entityObj.current_version && entityObj.current_version.upload ? entityObj.current_version.upload.storage_provider.description : null;
         let bytes = entityObj && entityObj.current_version && entityObj.current_version.upload ? entityObj.current_version.upload.size : null;
         let hash = entityObj && entityObj.current_version && entityObj.current_version.upload.hashes.length ? entityObj.current_version.upload.hashes[0].algorithm +': '+ entityObj.current_version.upload.hashes[0].value : null;
-        let currentVersion = entityObj && entityObj.current_version && entityObj.current_version.version ? entityObj.current_version.version : null;
+        let currentVersion = entityObj && entityObj.current_version && entityObj.current_version.version ? entityObj.current_version.version : '';
         let versionsButton = null;
         let versions = null;
         let versionCount = [];
@@ -84,46 +81,39 @@ class FileDetails extends React.Component {
                     if (versionCount.length > 1) {
                         versionsButton = <RaisedButton
                                             label="FILE VERSIONS"
-                                            secondary={true}
                                             style={styles.button}
-                                            labelStyle={{fontWeight: 100}}
+                                            labelStyle={{color: Color.blue}}
                                             onTouchTap={() => this.openModal('fileVersions')} />
                     }
                 }
             }
         }
 
-        Tooltip.bindEvents();
-
-        let file = <Card className="project-container mdl-color--white content mdl-color-text--grey-800"
-                         style={styles.card}>
-            <div className="mdl-cell mdl-cell--12-col" style={{position: 'relative'}}>
-                { dlButton }
-            </div>
-            <div id="tooltip"></div>
+        let file = <Card className="project-container mdl-color--white content mdl-color-text--grey-800" style={styles.card}>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                <div style={styles.menuIcon}>
-                    { optionsMenu }
-                </div>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                    <a href={'/#/' + BaseUtils.getUrlPath(parentKind) + parentId } style={styles.back}
-                       className="mdl-color-text--grey-800 external">
-                        <i className="material-icons"
-                           style={styles.backIcon}>keyboard_backspace</i>Back</a>
+                    <a href={'/#/' + BaseUtils.getUrlPath(parentKind) + parentId } style={styles.back} className="mdl-color-text--grey-800 external">
+                        <i className="material-icons" style={styles.backIcon}>keyboard_backspace</i>
+                        Back
+                    </a>
+                    <div style={styles.menuIcon}>
+                        { optionsMenu }
+                    </div>
                 </div>
-                <div className="mdl-cell mdl-cell--9-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
+                <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.detailsTitle}>
                     <span className="mdl-color-text--grey-800" style={styles.title}>{ name }</span>
                 </div>
                 { label != null ? <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone" style={styles.subTitle}>
-                    <span className="mdl-color-text--grey-600" style={styles.spanTitle}>{ label }</span>
+                    <span className="mdl-color-text--grey-800" style={styles.spanTitle}>{ label }</span>
                 </div> : null }
-                <div className="mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.subTitle}>
+                <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-color-text--grey-800" style={styles.subTitle}>
                     <span style={styles.spanTitle}>{ 'Version: ' + currentVersion }</span>
                 </div>
-                <div className="mdl-cell mdl-cell--8-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.subTitle}>
+                <div className="mdl-cell mdl-cell--8-col mdl-cell--8-col-tablet mdl-color-text--grey-800" style={styles.subTitle}>
                     <span style={styles.spanTitle}>{path}  {' '+name}</span>
                 </div>
-                <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet mdl-color-text--grey-600" style={styles.btnWrapper}>
+                <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.btnWrapper}>
+                    { dlButton }
                     { versionsButton }
                 </div>
                 {width >  300 ? <TagCloud {...this.props}/> : null}
@@ -260,11 +250,12 @@ class FileDetails extends React.Component {
 
     setSelectedEntity() {
         let id = this.props.params.id;
-        mainStore.setSelectedEntity(id, Path.FILE);
+        let isListItem = false;
+        mainStore.setSelectedEntity(id, Path.FILE, isListItem);
     }
 }
 
-var styles = {
+const styles = {
     arrow: {
         textAlign: 'left',
         marginTop: -5
@@ -277,6 +268,7 @@ var styles = {
         verticalAlign:-7
     },
     btnWrapper: {
+        minWidth: 280,
         margin: '11px 25px 20px 8px',
         float: 'right'
     },
@@ -293,12 +285,9 @@ var styles = {
         float: 'left',
         marginLeft: 25
     },
-    downloadBtn: {
-        position: 'absolute',
-        top: -33,
-        right: '1.4%',
-        zIndex: '2',
-        color: '#ffffff'
+    dlButton: {
+        float: 'right',
+        marginLeft: 15
     },
     list: {
         paddingTop: 5,
@@ -306,13 +295,13 @@ var styles = {
     },
     menuIcon: {
         float: 'right',
-        marginTop: 30,
-        marginBottom: -3
+        marginTop: -6,
+        marginRight: -6
     },
     provAlert: {
         display: 'block',
         overflow: 'auto',
-        backgroundColor: '#66BB6A',
+        backgroundColor: Color.green,
         minHeight: 48,
         alertButton: {
             float: 'right',

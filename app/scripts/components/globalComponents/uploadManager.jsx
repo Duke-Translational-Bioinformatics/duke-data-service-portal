@@ -1,9 +1,11 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
-const { object, bool, array, string } = PropTypes;
+const { object, bool, array } = PropTypes;
 import Dropzone from 'react-dropzone';
 import mainStore from '../../stores/mainStore';
+import { Color } from '../../theme/customTheme';
 import BaseUtils from '../../util/baseUtils';
+import { Kind } from '../../util/urlEnum';
 import AddCircle from 'material-ui/svg-icons/content/add-circle';
 import AutoComplete from 'material-ui/AutoComplete';
 import IconButton from 'material-ui/IconButton';
@@ -26,11 +28,11 @@ class UploadManager extends React.Component {
     }
 
     render() {
-        const {entityObj, filesRejectedForUpload, filesToUpload, openUploadManager, screenSize, selectedEntity, tagAutoCompleteList, tagLabels, tagsToAdd} = mainStore;
+        const {entityObj, filesRejectedForUpload, filesToUpload, openUploadManager, screenSize, showTagCloud, tagAutoCompleteList, tagLabels, tagsToAdd} = mainStore;
         let tags = tagsToAdd && tagsToAdd.length > 0 ? tagsToAdd.map((tag)=>{
             return (<div key={BaseUtils.generateUniqueKey()} className="chip">
                 <span className="chip-text">{tag.label}</span>
-                <span className="closebtn" onTouchTap={() => this.deleteTag(tag.id, tag.label, selectedEntity, tagsToAdd)}>&times;</span>
+                <span className="closebtn" onTouchTap={() => this.deleteTag(tag.label, tagsToAdd)}>&times;</span>
             </div>)
         }) : null;
         let tagLbls = tagLabels.map((label)=>{
@@ -40,9 +42,12 @@ class UploadManager extends React.Component {
                 </li>
             )
         });
-        let files = filesToUpload.length ? filesToUpload.map((file)=>{
+        let files = filesToUpload.length ? filesToUpload.map((file, i)=>{
             return <div key={BaseUtils.generateUniqueKey()}>
-                <div className="mdl-cell mdl-cell--6-col" style={styles.fileList}>{file.name}</div>
+                <div className="mdl-cell mdl-cell--6-col" style={styles.fileList}>
+                    <i className="material-icons" style={styles.deleteIcon} onTouchTap={() => this.removeFileFromList(i)}>cancel</i>
+                    {file.name}
+                </div>
             </div>
         }) : null;
         let rejectedFiles = filesRejectedForUpload.length ? filesRejectedForUpload.map((file)=>{
@@ -53,24 +58,13 @@ class UploadManager extends React.Component {
         }) : null;
         let autoCompleteData = tagAutoCompleteList && tagAutoCompleteList.length > 0 ? tagAutoCompleteList : [];
         let dropzoneColor = this.state.dropzoneHover ? '#EEE' : '#FFF';
-        let height = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.height : window.innerHeight;
-        let name = entityObj ? entityObj.name : 'these files';
         let width = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.width : window.innerWidth;
 
         return (
             <div style={styles.fileUpload}>
-                <button
-                    title="Upload File"
-                    rel="tooltip"
-                    className='mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-button--colored'
-                    style={styles.floatingButton}
-                    onTouchTap={() => this.toggleUploadManager()}>
-                    <i className='material-icons'>file_upload</i>
-                </button>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <Drawer docked={false} disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openSecondary={true} open={openUploadManager}>
-                        <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800"
-                             style={{marginTop: width > 680 ? 65 : 85}}>
+                        <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" style={{marginTop: 65}}>
                             <IconButton style={styles.toggleBtn}
                                         onTouchTap={() => this.toggleUploadManager()}>
                                 <NavigationClose />
@@ -82,12 +76,13 @@ class UploadManager extends React.Component {
                         <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.fileInputContainer}>
                             <div className="mdl-cell mdl-cell--6-col" style={styles.dropzoneContainer}>
                                 <Dropzone ref={(drop)=> this.dropzone = drop}
+                                          disablePreview={true}
                                           onMouseEnter={(e)=>this.onHoverDropzone(e)}
                                           onMouseLeave={(e)=>this.onHoverDropzone(e)}
                                           onDrop={this.onDrop.bind(this)}
                                           maxSize={5*1024*1024*1024}
                                           style={{width: '100%', border: '2px dashed #BDBDBD', backgroundColor: dropzoneColor}}>
-                                    <div style={styles.dropzoneText}>Drag and drop files here, or click to select files to upload.<br/>Folders cannot be uploaded.</div>
+                                    <div style={styles.dropzoneText}>Drag and drop files here, or click to select files to upload<br/>Folders cannot be uploaded unless they are<br/> compressed into a .zip file first</div>
                                 </Dropzone>
                                 {filesToUpload.length ? <h6 className="mdl-color-text--grey-600" style={styles.fileListHeader}>Preparing to upload:</h6> : null}
                             </div>
@@ -102,7 +97,7 @@ class UploadManager extends React.Component {
                                                 tooltipPosition="top-center"
                                                 iconStyle={styles.infoIcon.icon}
                                                 style={styles.infoIcon}>
-                                        <Info color={'#BDBDBD'}/>
+                                        <Info color={Color.ltGrey}/>
                                     </IconButton>
                                 </h6>
                             </div>
@@ -122,12 +117,16 @@ class UploadManager extends React.Component {
                                 <IconButton onTouchTap={() => this.addTagToCloud(this.autocomplete.state.searchText)}
                                             iconStyle={styles.addTagIcon.icon}
                                             style={styles.addTagIcon}>
-                                    <AddCircle color={'#235F9C'}/>
+                                    <AddCircle color={Color.blue}/>
                                 </IconButton><br/>
                             </div>
                             <div className="mdl-cell mdl-cell--6-col mdl-color-text--grey-600" style={styles.tagLabelsContainer}>
-                                <h6 style={styles.tagLabelsHeading}>Recently used tags <span style={styles.tagLabelsHeading.span}>(click on a tag to add it to {name})</span></h6>
-                                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600">
+                                <h6 style={styles.tagLabelsHeading} >Recently used tags</h6>
+                                <i className="material-icons" style={{color: Color.blue}} onTouchTap={()=>this.toggleTagCloud()}>{showTagCloud ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}</i>
+                                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={{display: showTagCloud ? 'block' : 'none', marginTop: 0}}>
+                                    <span style={styles.tagLabelsHeading.span}>
+                                        (click on a tag to add it to {filesToUpload.length === 1 ? filesToUpload[0].name + ' during upload' : 'these files during upload'})
+                                    </span>
                                     <ul style={styles.tagLabelList}>
                                         { tagLbls }
                                     </ul>
@@ -140,10 +139,14 @@ class UploadManager extends React.Component {
                                 </div>
                             </div>
                             <div className="mdl-cell mdl-cell--6-col mdl-color-text--grey-400" style={styles.buttonWrapper}>
-                                <RaisedButton label="Upload Files" secondary={true}
-                                              labelStyle={{fontWeight: 100}}
+                                <RaisedButton label="Start Upload"
+                                              labelStyle={styles.buttonLabel}
                                               style={styles.uploadFilesBtn}
                                               onTouchTap={() => this.handleUploadButton(filesToUpload, tagsToAdd, entityObj)}/>
+                                <RaisedButton label={'Cancel'}
+                                              labelStyle={styles.buttonLabel}
+                                              style={styles.cancelBtn}
+                                              onTouchTap={() => this.toggleUploadManager()}/>
                             </div>
                         </div>
                     </Drawer>
@@ -174,8 +177,7 @@ class UploadManager extends React.Component {
         }
     }
 
-    deleteTag(id, label, selectedEntity, tagsToAdd) {
-        let fileId = selectedEntity !== null ? selectedEntity.id : this.props.params.id;
+    deleteTag(label, tagsToAdd) {
         let tags = tagsToAdd;
         tags = tags.filter(( obj ) => {
             return obj.label !== label;
@@ -185,30 +187,24 @@ class UploadManager extends React.Component {
 
     handleUploadButton(filesToUpload, tagsToAdd, entityObj) {
         if (filesToUpload.length) {
-            let projId;
-            let parentKind;
+            let projId, parentKind;
             let parentId = this.props.params.id;
             for (let i = 0; i < filesToUpload.length; i++) {
                 let blob = filesToUpload[i];
-                if (!this.props.entityObj) {
-                    projId = this.props.params.id;
-                    parentKind = 'dds-project';
-                }else{
-                    projId = entityObj ? entityObj.ancestors[0].id : null;
-                    parentKind = entityObj ? entityObj.kind : null;
-                }
+                projId = entityObj ? entityObj.ancestors[0].id : this.props.params.id;
+                parentKind = this.props.router.location.pathname.includes('project') ? Kind.DDS_PROJECT : Kind.DDS_FOLDER;
                 mainStore.startUpload(projId, blob, parentId, parentKind, null, null, tagsToAdd);
                 mainStore.defineTagsToAdd([]);
+                mainStore.processFilesToUpload([], []);
             }
         } else {
             return null
         }
         mainStore.toggleUploadManager();
+        if(mainStore.showTagCloud) this.toggleTagCloud();
     }
 
     handleUpdateInput (text) {
-        let timeout = this.state.timeout;
-        let searchInput = this.autocomplete;
         clearTimeout(this.state.timeout);
         this.setState({
             timeout: setTimeout(() => {
@@ -228,19 +224,29 @@ class UploadManager extends React.Component {
         this.setState({dropzoneHover: !this.state.dropzoneHover});
     }
 
+    removeFileFromList(index) {
+        mainStore.removeFileFromUploadList(index);
+    }
+
+    toggleTagCloud() {
+        mainStore.toggleTagCloud();
+    }
+
     toggleUploadManager() {
         mainStore.toggleUploadManager();
         setTimeout(() => {
             if(this.autocomplete.state.searchText !== '') this.autocomplete.setState({searchText:''});
         }, 500);
+        if(mainStore.showTagCloud) this.toggleTagCloud();
         mainStore.defineTagsToAdd([]);
         mainStore.processFilesToUpload([], []);
     }
+
 }
 
-var styles = {
+const styles = {
     addTagIcon: {
-        margin: '-30px 20px 0px 0px',
+        margin: '-30px 0px 0px 0px',
         float: 'right',
         width: 24,
         height: 24,
@@ -257,12 +263,15 @@ var styles = {
     autoComplete: {
         maxWidth: 'calc(100% - 5px)',
         underline: {
-            borderColor: '#0680CD',
-            maxWidth: 'calc(100% - 42px)'
+            borderColor: Color.ltBlue,
+            maxWidth: 'calc(100% - 22px)'
         }
     },
     buttonWrapper: {
         textAlign: 'left'
+    },
+    buttonLabel: {
+        color: Color.blue
     },
     chipWrapper: {
         textAlign: 'left'
@@ -273,6 +282,13 @@ var styles = {
     chipHeader: {
         marginLeft: 5,
         marginTop: 0
+    },
+    deleteIcon: {
+        fontSize: 18,
+        cursor: 'pointer',
+        color: Color.red,
+        verticalAlign: 'middle',
+        marginRight: 3
     },
     dropzoneContainer: {
         margin: '0 auto'
@@ -288,6 +304,7 @@ var styles = {
     fileList: {
         margin: '0 auto',
         textAlign: 'left',
+        color: Color.blue,
         padding: 5
     },
     fileListHeader: {
@@ -330,12 +347,12 @@ var styles = {
         margin: '0 auto',
         textAlign: 'left',
         padding: 5,
-        backgroundColor: '#ffcdd2'
+        backgroundColor: Color.red
     },
     tagLabels: {
         margin: 3,
         cursor: 'pointer',
-        color: '#235F9C',
+        color: Color.blue,
         float: 'left'
     },
     tagLabelsContainer: {
@@ -344,9 +361,11 @@ var styles = {
     },
     tagLabelsHeading: {
         margin: 0,
+        float: 'left',
         span: {
-            fontSize: '.7em'
-        }
+            fontSize: '.9em',
+            marginLeft: -8
+        },
     },
     tagLabelList: {
         listStyleType: 'none',
@@ -360,6 +379,10 @@ var styles = {
     uploadFilesBtn: {
         margin: '10px 0px 20px 0px',
         float: 'right'
+    },
+    cancelBtn: {
+        float: 'right',
+        margin: '10px 10px 20px 0px',
     },
     wrapper:{
         display: 'flex',

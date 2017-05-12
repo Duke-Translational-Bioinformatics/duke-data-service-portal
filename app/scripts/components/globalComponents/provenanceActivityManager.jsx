@@ -1,20 +1,16 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
-import ReactDOM from 'react-dom';
+const { object, bool, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import provenanceStore from '../../stores/provenanceStore';
+import { Color } from '../../theme/customTheme';
 import AutoComplete from 'material-ui/AutoComplete';
 import BaseUtils from '../../util/baseUtils.js';
-import Checkbox from 'material-ui/Checkbox';
-import CircularProgress from 'material-ui/CircularProgress';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
-import SelectField from 'material-ui/SelectField';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import TextField from 'material-ui/TextField';
-import Toggle from 'material-ui/Toggle';
 
 @observer
 class ProvenanceActivityManager extends React.Component {
@@ -286,7 +282,7 @@ class ProvenanceActivityManager extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     provEditor:{
         display: 'flex',
         justifyContent: 'center',
@@ -294,7 +290,7 @@ var styles = {
     },
     dialogStyles: {
         textAlign: 'center',
-        fontColor: '#303F9F',
+        fontColor: Color.dkBlue,
         zIndex: '5000'
     },
     btn: {
@@ -313,7 +309,7 @@ var styles = {
         textAlign: 'center'
     },
     tabInkBar: {
-        backgroundColor: '#EC407A',
+        backgroundColor: Color.pink,
         paddingTop: 3,
         marginTop: -3
     },
@@ -322,12 +318,12 @@ var styles = {
     },
     textStyles: {
         textAlign: 'left',
-        fontColor: '#303F9F'
+        fontColor: Color.dkBlue
     },
     warning: {
         fontSize: 48,
         textAlign: 'center',
-        color: '#F44336'
+        color: Color.red
     }
 };
 

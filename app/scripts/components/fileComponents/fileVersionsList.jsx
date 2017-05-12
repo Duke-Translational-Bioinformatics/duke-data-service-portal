@@ -66,7 +66,7 @@ class FileVersionsList extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     addProject: {
         float: 'right',
         position: 'relative',

@@ -41,7 +41,7 @@ class Header extends React.Component {
     }
 }
 
-var styles = {
+const styles = {
     icon: {
         color: "#fff",
         fontSize: 24,

@@ -75,7 +75,7 @@ class FolderOptions extends React.Component {
                 <Dialog
                     style={styles.dialogStyles}
                     contentStyle={dialogWidth}
-                    title="Update Folder"
+                    title="Edit Folder Name"
                     autoDetectWindowHeight={true}
                     actions={editActions}
                     onRequestClose={()=>this.toggleModal('editFolder')}
@@ -99,7 +99,7 @@ class FolderOptions extends React.Component {
                     {...this.props}
                     style={styles.dialogStyles}
                     contentStyle={dialogWidth}
-                    title="Select Destination"
+                    title="Select a Location to Move Folder"
                     autoDetectWindowHeight={true}
                     actions={moveActions}
                     open={toggleModal && toggleModal.id === 'moveFolder' ? toggleModal.open : false}
@@ -143,7 +143,7 @@ class FolderOptions extends React.Component {
         this.setState({floatingErrorText: e.target.value ? '' : 'This field is required.'});
     }
 }
-var styles = {
+const styles = {
     addFolder: {
         position: 'relative',
         margin: '12px 8px 0px 0px'
