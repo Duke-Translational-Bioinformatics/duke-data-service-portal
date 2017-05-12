@@ -20,7 +20,7 @@ let BaseUtils = {
             };
             return ancestors !== null ? ancestors.map((obj)=>{
                 let kind = getKind(obj.kind);
-                return <span><a href={'#'+kind+obj.id} key={obj.id} className='external link' style={{fontWeight: 400, color: Color.blue}}>{obj.name}</a><span style={{fontSize: '1.2em', verticalAlign: '-1px'}}> / </span></span>;
+                return <span key={obj.id}><a href={'#'+kind+obj.id} className='external link' style={{fontWeight: 400, color: Color.blue}}>{obj.name}</a><span style={{fontSize: '1.2em', verticalAlign: '-1px'}}> / </span></span>;
             }) : '';
         },
 

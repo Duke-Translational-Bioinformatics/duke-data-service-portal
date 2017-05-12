@@ -164,7 +164,7 @@ class ListItems extends React.Component {
 
     goTo(e, id, path) {
         e.stopPropagation()
-        let route = path === Kind.DDS_FILE ? Path.FILE : Path.FOLDER;
+        let route = path === Kind.DDS_FILE ? 'file' : 'folder';
         this.props.router.push(route+id);
     }
 
