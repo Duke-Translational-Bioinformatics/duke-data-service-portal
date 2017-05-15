@@ -258,7 +258,6 @@ export class MainStore {
     }
 
     @action getProjectDetails(id) {
-        // if(this.entityObj !== null) this.entityObj = null;
         this.transportLayer.getProjectDetails(id)
             .then(this.checkResponse)
             .then(response => response.json())
