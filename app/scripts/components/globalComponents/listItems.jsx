@@ -162,12 +162,6 @@ class ListItems extends React.Component {
         );
     }
 
-    goTo(e, id, path) {
-        e.stopPropagation()
-        let route = path === Kind.DDS_FILE ? 'file' : 'folder';
-        this.props.router.push(route+id);
-    }
-
     selectTableRow(rows) {
         // Local state is used here to fix a bug that exists in the Material-UI data table component. This bug
         // is slated to be fixed on the 'next' MUI branch (>0.17). See issue here
