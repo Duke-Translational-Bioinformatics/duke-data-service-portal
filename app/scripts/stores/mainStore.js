@@ -368,8 +368,7 @@ export class MainStore {
                 if(BaseUtils.objectPropInArray(this.listItems.slice(), 'id', id)) {
                     this.listItems = this.listItems.filter(obj => obj.id !== id);
                     this.listItems.unshift(json);
-                } else if(this.entityObj.id === id) {
-                    this.entityObj = json;
+                    if(this.entityObj.id === id) this.entityObj = json;
                 }
                 this.loading = false;
             }).catch((ex) => {
