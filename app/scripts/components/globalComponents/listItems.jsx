@@ -73,7 +73,7 @@ class ListItems extends React.Component {
                 return (
                     <TableRow key={children.id} selected={mainStore.foldersChecked.includes(children.id)}>
                         <TableRowColumn>
-                            <a onClick={(e)=>this.goTo(e, children.id, children.kind)} href={UrlGen.routes.folder(children.id)} className="external">
+                            <a onClick={(e) => {e.stopPropagation()}} href={UrlGen.routes.folder(children.id)} className="external">
                                 <div style={{color: Color.blue}}>
                                     <FontIcon className="material-icons" style={styles.icon}>folder</FontIcon>
                                     {children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}
@@ -98,7 +98,7 @@ class ListItems extends React.Component {
                 return (
                     <TableRow key={children.id} selected={mainStore.filesChecked.includes(children.id)}>
                         <TableRowColumn>
-                            <a onClick={(e)=>this.goTo(e, children.id, children.kind)} href={UrlGen.routes.file(children.id)} className="external">
+                            <a onClick={(e) => {e.stopPropagation()}} href={UrlGen.routes.file(children.id)} className="external">
                                 <div style={{color: Color.blue}}>
                                     <FontIcon className="material-icons" style={styles.icon}>description</FontIcon>
                                     {children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name+' '}
