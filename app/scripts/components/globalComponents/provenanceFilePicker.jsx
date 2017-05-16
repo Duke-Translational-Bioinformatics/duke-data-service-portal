@@ -42,7 +42,7 @@ class ProvenanceFilePicker extends React.Component {
         if(fileName === null) fileName = entityObj ? entityObj.file.name : null;
         let fileVersion = entityObj && entityObj.current_version ? entityObj.current_version.version : null;
         if(fileVersion === null) fileVersion = entityObj ? entityObj.version : null;
-        let project = entityObj && entityObj.size ? entityObj.ancestors[0].id : null;
+        let project = entityObj && entityObj.ancestors ? entityObj.ancestors[0].id : null;
         let projectList = projects && projects.length ? projects.map((project)=>{
             if(!project.is_deleted) {
                 return <MenuItem key={project.id}
