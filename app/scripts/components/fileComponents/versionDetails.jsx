@@ -111,6 +111,19 @@ class VersionDetails extends React.Component {
                         </div>
                         <div className="list-group">
                             <ul>
+                                <li className="list-group-title">Most Recent Version</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <a href={UrlGen.routes.file(parentId)} className="external">
+                                            <div style={{color: Color.blue}}>                                             <i className="material-icons" style={styles.linkIcon}>link</i>
+                                                {name} </div>
+                                        </a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="list-group">
+                            <ul>
                                 <li className="list-group-title">Hash</li>
                                 <li className="item-content">
                                     <div className="item-inner">
@@ -195,6 +208,11 @@ const styles = {
         textAlign: 'left',
         float: 'left',
         marginLeft: 26
+    },
+    linkIcon: {
+        color: Color.blue,
+        transform: 'rotate(45deg)',
+        transformOrigin: '20% 40%',
     },
     list: {
         paddingTop: 5,

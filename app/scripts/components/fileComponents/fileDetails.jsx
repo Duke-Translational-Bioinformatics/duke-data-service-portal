@@ -109,7 +109,7 @@ class FileDetails extends React.Component {
                 <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-color-text--grey-800" style={styles.subTitle}>
                     <span style={styles.spanTitle}>{ 'Version: ' + currentVersion }</span>
                 </div>
-                <div className="mdl-cell mdl-cell--8-col mdl-cell--8-col-tablet mdl-color-text--grey-800" style={styles.subTitle}>
+                <div className="mdl-cell mdl-cell--8-col mdl-cell--8-col-tablet mdl-color-text--grey-800" style={styles.breadcrumbs}>
                     <span style={styles.spanTitle}>{path}  {' '+name}</span>
                 </div>
                 <div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet" style={styles.btnWrapper}>
@@ -267,9 +267,15 @@ const styles = {
     back: {
         verticalAlign:-7
     },
+    breadcrumbs: {
+        textAlign: 'left',
+        float: 'left',
+        marginLeft: 25,
+        marginTop: 8
+    },
     btnWrapper: {
         minWidth: 280,
-        margin: '11px 25px 20px 8px',
+        margin: '0px 25px 20px 8px',
         float: 'right'
     },
     button: {
@@ -321,7 +327,7 @@ const styles = {
         textAlign: 'left',
         float: 'left',
         marginLeft: 25,
-        marginTop: 18
+        marginTop: 0
     },
     spanTitle: {
         fontSize: '1.2em'
