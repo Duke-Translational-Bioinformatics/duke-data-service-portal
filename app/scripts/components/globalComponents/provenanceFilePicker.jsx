@@ -42,7 +42,7 @@ class ProvenanceFilePicker extends React.Component {
         if(fileName === null) fileName = entityObj ? entityObj.file.name : null;
         let fileVersion = entityObj && entityObj.current_version ? entityObj.current_version.version : null;
         if(fileVersion === null) fileVersion = entityObj ? entityObj.version : null;
-        let project = entityObj && entityObj !== null ? entityObj.ancestors[0].id : null;
+        let project = entityObj && entityObj.size ? entityObj.ancestors[0].id : null;
         let projectList = projects && projects.length ? projects.map((project)=>{
             if(!project.is_deleted) {
                 return <MenuItem key={project.id}
@@ -50,13 +50,13 @@ class ProvenanceFilePicker extends React.Component {
                                  primaryText={project.name} />
             }
         }) : null;
-        let provFileVersionsList = provFileVersions.map((node) => {
+        let provFileVersionsList = provFileVersions !== null && provFileVersions.length > 1 ? provFileVersions.map((node) => {
             if(!node.is_deleted) {
                 return <li key={node.id} id={node.id} onTouchTap={() => this.useFileVersion(node.file.name, node.version, node)}>
-                        Version: {node.version}
-                    </li>;
+                    Version: {node.version}
+                </li>;
             }
-        });
+        }) : null;
         const addFileNodeActions = [
             <FlatButton
                 label="Cancel"
@@ -111,7 +111,7 @@ class ProvenanceFilePicker extends React.Component {
                         onNewRequest={(value, e) => this.chooseFileVersion(value, e)}
                         onUpdateInput={this.handleUpdateInput.bind(this)}/>
                     {autoCompleteLoading ? <CircularProgress size={60} thickness={5} style={styles.autoCompleteProgress}/> : null}
-                    {provFileVersionsList.length ?
+                    {provFileVersionsList !== null ?
                         <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.versionListWrapper}>
                             <h7>Would you like to use a different version of this file?</h7>
                             <ul id='fileVersionUl'>
@@ -131,7 +131,7 @@ class ProvenanceFilePicker extends React.Component {
                 provenanceStore.saveGraphZoomState(provenanceStore.network.getScale(), provenanceStore.network.getViewPosition());
                 provenanceStore.addFileToGraph(node);
                 provenanceStore.closeProvEditorModal('addFile');
-                this.state.addFileNode = null;
+                this.setState({addFileNode: null});
             } else {
                 provenanceStore.openProvEditorModal('nodeWarning');
             }
@@ -146,7 +146,7 @@ class ProvenanceFilePicker extends React.Component {
     chooseFileVersion(value, e) {
         if(e === -1) return false;
         let fileId = value.id;
-        this.state.addFileNode = value.node;
+        this.setState({addFileNode: value.node});
         provenanceStore.getProvFileVersions(fileId);
     }
 
@@ -183,7 +183,7 @@ class ProvenanceFilePicker extends React.Component {
 
     useFileVersion(name, version, node) {
         document.getElementById('searchText').value = name +' - Version: '+ version;
-        this.state.addFileNode = node;
+        this.setState({addFileNode: node});
     }
 }
 

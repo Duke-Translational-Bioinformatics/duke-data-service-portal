@@ -9,7 +9,7 @@ import VersionDetails from '../components/fileComponents/versionDetails.jsx';
 @observer
 class Version extends React.Component {
 
-    componentWillMount() {
+    componentDidMount() {
         this._loadVersion();
     }
 

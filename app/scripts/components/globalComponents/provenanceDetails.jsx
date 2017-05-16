@@ -14,7 +14,7 @@ class ProvenanceDetails extends React.Component {
         let details = null;
         if (onClickProvNode && onClickProvNode.properties.hasOwnProperty('audit')) {
             let id = this.props.params.id;
-            let versionId = null;
+            let versionId = onClickProvNode !== null ? onClickProvNode.id : null;
             let activityName = onClickProvNode !== null && onClickProvNode.properties.kind === 'dds-activity' ? onClickProvNode.properties.name : null;
             let activityDescription = onClickProvNode !== null && onClickProvNode.properties.kind === 'dds-activity' ? onClickProvNode.properties.description : null;
             let fileName = onClickProvNode !== null && onClickProvNode.properties.file ? onClickProvNode.properties.file.name : null;
@@ -33,11 +33,8 @@ class ProvenanceDetails extends React.Component {
             }
             let fileLink = null;
             if (fileName !== null) {
-                fileLink = <span><i className="material-icons" style={styles.linkIcon}>link</i><a href={fileId !== null ?
-                UrlGen.routes.file(fileId) :
-                UrlGen.routes.version(versionId)} className="external link" onTouchTap={() => this.toggleProv()}>
-                    {fileName}
-                </a></span>
+                fileLink = <span><i className="material-icons" style={styles.linkIcon}>link</i>
+                    <a href={UrlGen.routes.version(versionId)} className="external link" onTouchTap={() => this.toggleProv()}>{fileName}</a></span>
             }
             if (fileId === id || versionId === id) fileLink =
                 <span className="mdl-color-text--grey-800">{fileName}</span>;
