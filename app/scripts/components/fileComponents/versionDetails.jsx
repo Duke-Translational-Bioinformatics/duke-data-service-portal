@@ -15,7 +15,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 class VersionDetails extends React.Component {
 
     render() {
-        const {entityObj, projPermissions} = mainStore;
+        const {entityObj, loading, projPermissions} = mainStore;
         let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         let dlButton = null;
         let optionsMenu = null;
@@ -63,6 +63,9 @@ class VersionDetails extends React.Component {
                     <div style={styles.btnWrapper}>
                         { dlButton }
                     </div>
+                </div>
+                <div style={styles.loader}>
+                    { loading ? <Loaders {...this.props}/> : null }
                 </div>
                 <div className="mdl-cell mdl-cell--12-col content-block"  style={styles.list}>
                     <div className="list-block">
@@ -196,6 +199,9 @@ const styles = {
     list: {
         paddingTop: 5,
         clear: 'both'
+    },
+    loader: {
+        marginBottom: -35
     },
     menuIcon: {
         float: 'right',
