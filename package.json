@@ -67,7 +67,7 @@
     "gulp-util": "^3.0.4",
     "gulp-watch": "^4.2.1",
     "gulp-webpack": "^1.5.0",
-    "helmet": "^3.4.0",
+    "helmet": "^3.6.0",
     "heroku-ssl-redirect": "0.0.3",
     "history": "^3.0.0",
     "jest": "^19.0.2",
