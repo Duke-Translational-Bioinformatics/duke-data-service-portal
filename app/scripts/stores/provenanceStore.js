@@ -108,7 +108,7 @@ export class ProvenanceStore {
 
     @action getProvenanceSuccess(prov, prevGraph) {
         let edges = prov.relationships.filter((edge) => {
-            if (edge.properties.audit.deleted_on === null && edge.type !== 'WasAttributedTo') {
+            if (edge.properties !== null && edge.type !== 'WasAttributedTo') {
                 return edge;
             }
         });
