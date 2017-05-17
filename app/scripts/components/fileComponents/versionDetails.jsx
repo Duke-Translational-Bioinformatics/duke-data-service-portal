@@ -15,7 +15,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 class VersionDetails extends React.Component {
 
     render() {
-        const {entityObj, projPermissions} = mainStore;
+        const {entityObj, loading, projPermissions} = mainStore;
         let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         let dlButton = null;
         let optionsMenu = null;
@@ -64,6 +64,9 @@ class VersionDetails extends React.Component {
                         { dlButton }
                     </div>
                 </div>
+                <div style={styles.loader}>
+                    { loading ? <Loaders {...this.props}/> : null }
+                </div>
                 <div className="mdl-cell mdl-cell--12-col content-block"  style={styles.list}>
                     <div className="list-block">
                         <div className="list-group">
@@ -102,6 +105,19 @@ class VersionDetails extends React.Component {
                                 <li className="item-content">
                                     <div className="item-inner">
                                         <div>{ id }</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="list-group">
+                            <ul>
+                                <li className="list-group-title">Most Recent Version</li>
+                                <li className="item-content">
+                                    <div className="item-inner">
+                                        <a href={UrlGen.routes.file(parentId)} className="external">
+                                            <div style={{color: Color.blue}}>                                             <i className="material-icons" style={styles.linkIcon}>link</i>
+                                                {name} </div>
+                                        </a>
                                     </div>
                                 </li>
                             </ul>
@@ -193,9 +209,17 @@ const styles = {
         float: 'left',
         marginLeft: 26
     },
+    linkIcon: {
+        color: Color.blue,
+        transform: 'rotate(45deg)',
+        transformOrigin: '20% 40%',
+    },
     list: {
         paddingTop: 5,
         clear: 'both'
+    },
+    loader: {
+        marginBottom: -35
     },
     menuIcon: {
         float: 'right',
