@@ -14,4 +14,4 @@ require('babel-polyfill');
 var injectTapEventPlugin = require("react-tap-event-plugin");
 injectTapEventPlugin();
 
-ReactDOM.render(routes, document.body);
+ReactDOM.render(routes, document.getElementById('app-root'));
