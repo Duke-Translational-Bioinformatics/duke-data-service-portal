@@ -1,10 +1,11 @@
 var hsts = require('hsts');
 var sslRedirect = require('heroku-ssl-redirect');
 var express = require('express');
+var helmet = require('helmet')
 var app = express();
 
 app.set('port', (process.env.PORT || 5000));
-app.use(sslRedirect(['development','ua_test','production']), hsts({maxAge: 15552000}), express.static(__dirname + '/dist'));
+app.use(sslRedirect(['development','ua_test','production']), hsts({maxAge: 15552000}), express.static(__dirname + '/dist'), helmet());
 
 app.set('views', __dirname + '/dist');
 app.set('view engine', 'ejs');
