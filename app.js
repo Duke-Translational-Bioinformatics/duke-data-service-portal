@@ -1,7 +1,7 @@
 var hsts = require('hsts');
 var sslRedirect = require('heroku-ssl-redirect');
 var express = require('express');
-var helmet = require('helmet')
+var helmet = require('helmet');
 var app = express();
 
 app.set('port', (process.env.PORT || 5000));
