@@ -9,6 +9,7 @@ app.use(sslRedirect(['development','ua_test','production']), hsts({maxAge: 15552
 
 app.set('views', __dirname + '/dist');
 app.set('view engine', 'ejs');
+app.use('/images', express.static(path.join(__dirname, 'dist/images')));
 app.get('/*', function (req, res) {
     res.render('index', {env: process.env});
 });
