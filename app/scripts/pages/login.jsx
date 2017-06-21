@@ -34,7 +34,7 @@ class Login extends React.Component {
         let content = '';
         const {appConfig, authServiceLoading} = authStore;
         if (!appConfig.apiToken) {
-            let url = window.location.href.split('&');
+            let url = window.location.hash.split('&');
             let accessToken = url[0].split('=')[1];
             content = (
                 <div className="mdl-cell mdl-cell--12-col mdl-shadow--2dp" style={styles.loginWrapper}>
