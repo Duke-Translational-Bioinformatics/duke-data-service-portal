@@ -17,7 +17,7 @@ class Header extends React.Component {
             <div className="navbar-inner" style={{display: showSearch ? 'none' : '', height: 106}}>
                 <div className="left" style={styles.navBar.leftDiv}>
                     {!appConfig.apiToken ? '' : <a href="#" className="open-panel"><FontIcon className="material-icons" style={styles.openIcon}>menu</FontIcon></a>}
-                    {!appConfig.apiToken ? '' : <img src="images/dukeDSVertical.png" style={styles.logo}/>}
+                    {!appConfig.apiToken ? '' : <img src="/images/dukeDSVertical.png" style={styles.logo}/>}
                 </div>
                 <div className="center" style={styles.navBar.centerDiv}></div>
                 <div className="right">
