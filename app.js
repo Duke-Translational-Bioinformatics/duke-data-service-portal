@@ -5,11 +5,15 @@ var helmet = require('helmet')
 var app = express();
 
 app.set('port', (process.env.PORT || 5000));
+
 app.use(sslRedirect(['development','ua_test','production']), hsts({maxAge: 15552000}), express.static(__dirname + '/dist'), helmet());
 
+app.use('/images', express.static(path.join(__dirname, '/dist/images')));
+
 app.set('views', __dirname + '/dist');
+
 app.set('view engine', 'ejs');
-app.use('/images', express.static(path.join(__dirname, 'dist/images')));
+
 app.get('/*', function (req, res) {
     res.render('index', {env: process.env});
 });
