@@ -34,12 +34,12 @@ class Login extends React.Component {
         let content = '';
         const {appConfig, authServiceLoading} = authStore;
         if (!appConfig.apiToken) {
-            let url = window.location.hash.split('&');
+            let url = window.location.href.split('&');
             let accessToken = url[0].split('=')[1];
             content = (
                 <div className="mdl-cell mdl-cell--12-col mdl-shadow--2dp" style={styles.loginWrapper}>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--white">
-                        <img src="images/dukeDSLogo.png" style={styles.logo}/>
+                        <img src="https://github.com/Duke-Translational-Bioinformatics/duke-data-service-portal/blob/production/app/images/dukeDSLogo.png?raw=true" style={styles.logo}/>
                         <h2 style={{fontWeight: '100'}}>Duke Data Service</h2>
                         {!authServiceLoading ? <a href={this.createLoginUrl()} className="external">
                             <RaisedButton
