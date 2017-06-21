@@ -6,9 +6,7 @@ var app = express();
 
 app.set('port', (process.env.PORT || 5000));
 
-app.use(sslRedirect(['development','ua_test','production']), hsts({maxAge: 15552000}), express.static(__dirname + '/dist'), helmet());
-
-app.use('/images', express.static(path.join(__dirname, '/dist/images')));
+app.use(sslRedirect(['development','ua_test','production']), hsts({maxAge: 15552000}), express.static(path.join(__dirname, '/dist')), helmet());
 
 app.set('views', __dirname + '/dist');
 
