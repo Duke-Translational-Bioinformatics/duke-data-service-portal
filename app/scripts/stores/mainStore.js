@@ -281,52 +281,50 @@ export class MainStore {
             })
     }
 
-    @action deleteFolder(id) {
+    @action deleteFolder(id, path, parentId) {
         this.loading = true;
         this.transportLayer.deleteFolder(id)
             .then(this.checkResponse)
             .then(response => {})
             .then(() => {
                 this.addToast('Folder(s) Deleted!');
-                this.deleteItemSuccess(id)
+                this.deleteItemSuccess(id, path, parentId)
             }).catch((ex) => {
                 this.addToast('Folder Deleted Failed!');
                 this.handleErrors(ex)
             });
     }
 
-    @action deleteFile(id) {
+    @action deleteFile(id, path, parentId) {
         this.loading = true;
         this.transportLayer.deleteFile(id)
             .then(this.checkResponse)
             .then(response => {})
             .then(() => {
                 this.addToast('File(s) Deleted!');
-                this.deleteItemSuccess(id)
+                this.deleteItemSuccess(id, path, parentId)
             }).catch((ex) => {
                 this.addToast('Failed to Delete File!');
                 this.handleErrors(ex)
             });
     }
 
-    @action deleteItemSuccess(id) {
+    @action deleteItemSuccess(id, path, parentId) {
         this.loading = false;
         this.listItems = BaseUtils.removeObjByKey(this.listItems.slice(), {key: 'id', value: id});
+        if(this.listItems.length === 0) this.getChildren(parentId, path)
     }
 
-    @action batchDeleteItems() {
-        let files = this.filesChecked;
-        let folders = this.foldersChecked;
-        for (let id of files) {
-            this.deleteFile(id);
-            this.listItems = BaseUtils.removeObjByKey(this.listItems.slice(), {key: 'id', value: id});
+    @action batchDeleteItems(path, parentId) {
+        for (let id of this.filesChecked) {
+            this.deleteFile(id, path, parentId);
+            this.filesChecked = this.filesChecked.filter(file => file !== id)
         }
-        for (let id of folders) {
-            this.deleteFolder(id);
-            this.listItems = BaseUtils.removeObjByKey(this.listItems.slice(), {key: 'id', value: id});
+        for (let id of this.foldersChecked) {
+            this.deleteFolder(id, path, parentId);
+            this.foldersChecked = this.foldersChecked.filter(folder => folder !== id)
         }
         this.incrementTableBodyRenderKey();
-        this.handleBatch([],[]);
     }
 
     @action editVersionLabel(id, label) {
