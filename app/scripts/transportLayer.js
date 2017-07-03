@@ -2,7 +2,7 @@ import { UrlGen, Path } from './util/urlEnum';
 import { getFetchParams } from './util/fetchUtil';
 import authStore from './stores/authStore';
 
-const DDS_BASE_URI = process.env.NODE_ENV === 'production' ? DDS_PORTAL_CONFIG.baseUrl : 'https://apidev.dataservice.duke.edu/';
+const DDS_BASE_URI = process.env.NODE_ENV === 'production' ? DDS_PORTAL_CONFIG.baseUrl : 'https://apidev.dataservice.duke.edu';
 const apiPrefix = UrlGen.routes.apiPrefix;
 
 const transportLayer = {
