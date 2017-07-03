@@ -693,7 +693,7 @@ describe('Main Store', () => {
         });
     });
 
-    it('@action deleteProject - should throw 404 error but still optimistically update list', () => {
+    it('@action deleteProject - should throw 404 error', () => {
         mainStore.error = null;
         mainStore.projects = fake.projects_json[0].results;
         expect(mainStore.projects.length).toBe(2);
