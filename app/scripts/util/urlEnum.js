@@ -1,6 +1,6 @@
 export const UrlGen = {
     routes: {
-        apiPrefix: 'api/v1/',
+        apiPrefix: '/api/v1/',
         login: () => '/login',
         home: () => '/',
         metadata: () => '/#/metadata',
