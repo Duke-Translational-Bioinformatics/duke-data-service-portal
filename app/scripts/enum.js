@@ -4,5 +4,5 @@ export const StatusEnum = Object.freeze({
     STATUS_RETRY : 2,
     STATUS_UPLOADING : 3,
     STATUS_FAILED : 4,
-    MAX_RETRY : 2
+    MAX_RETRY : 5
 });
