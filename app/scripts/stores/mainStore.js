@@ -7,7 +7,7 @@ import transportLayer from '../transportLayer';
 import BaseUtils from '../util/baseUtils.js';
 import { StatusEnum } from '../enum';
 import { Kind, Path } from '../util/urlEnum';
-import { checkStatus } from '../util/fetchUtil';
+import { checkStatus, checkStatusAndConsistency } from '../util/fetchUtil';
 
 export class MainStore {
     @observable agents
@@ -160,12 +160,27 @@ export class MainStore {
         this.users = [];
         this.userKey = {};
         this.versionModal = false;
+        this.counter = 0;
 
         this.transportLayer = transportLayer
     }
 
     checkResponse(response) {
         return checkStatus(response, authStore);
+    }
+
+    tryAsyncAgain(func, args) {
+        mainStore.counter++;
+        mainStore.loading = true;
+        if(mainStore.counter < StatusEnum.MAX_RETRY) {
+            mainStore.addToast(`The resource you're requesting is temporarily unavailable. Retrying...`);
+            setTimeout(() => func(...args),3000)
+        } else {
+            mainStore.counter = 0;
+            mainStore.addToast(`Failed to get resource. Please try again in a few minutes`);
+            mainStore.loading = false;
+            if(location.href.includes('file') || location.href.includes('folder')) window.location.href = window.location.protocol + '//' + window.location.host + '/#/home';
+        }
     }
 
     @action incrementTableBodyRenderKey() {
@@ -418,22 +433,27 @@ export class MainStore {
     }
 
     @action getEntity(id, path, requester) {
-        this.parent = {};
-        this.loading = requester !== 'moveItemModal' ? true : false;
-        this.transportLayer.getEntity(id, path)
-            .then(this.checkResponse)
+        mainStore.parent = {};
+        mainStore.loading = requester !== 'moveItemModal' ? true : false;
+        let retryArgs = [id, path, requester];
+        mainStore.transportLayer.getEntity(id, path)
+            .then(checkStatusAndConsistency)
             .then(response => response.json())
             .then((json) => {
-                if (requester === undefined) this.entityObj = json;
-                if (requester === 'moveItemModal') this.moveToObj = json;
-                if (requester === 'optionsMenu') {
-                    this.parent = json.parent;
-                    this.moveToObj = json;
+                if(!json.error) {
+                    if (requester === undefined) mainStore.entityObj = json;
+                    if (requester === 'moveItemModal') mainStore.moveToObj = json;
+                    if (requester === 'optionsMenu') {
+                        mainStore.parent = json.parent;
+                        mainStore.moveToObj = json;
+                    }
+                    if (mainStore.projPermissions === null && (json.kind === 'dds-file' || json.kind === 'dds-folder')) mainStore.getUser(json.project.id);
+                    if (mainStore.projPermissions === null && json.kind === 'dds-file-version') mainStore.getUser(json.file.project.id);
+                    mainStore.loading = false;
+                } else {
+                    json.code === 'resource_not_consistent' ? mainStore.tryAsyncAgain(mainStore.getEntity, retryArgs) : mainStore.handleErrors(json);
                 }
-                if(this.projPermissions === null && (json.kind === 'dds-file' || json.kind === 'dds-folder')) this.getUser(json.project.id);
-                if(this.projPermissions === null && json.kind === 'dds-file-version') this.getUser(json.file.project.id);
-                this.loading = false;
-            }).catch(ex => this.handleErrors(ex))
+            }).catch(ex => mainStore.handleErrors(ex))
     }
 
     @action setSelectedEntity(id, path, isListItem) {
@@ -637,11 +657,12 @@ export class MainStore {
             contentType = blob.type,
             slicedFile = null,
             BYTES_PER_CHUNK, SIZE, start, end;
-        BYTES_PER_CHUNK = 5242880 * 6;
-        SIZE = blob.size;
-        start = 0;
-        end = BYTES_PER_CHUNK;
+            BYTES_PER_CHUNK = 5242880 * 6;
+            SIZE = blob.size;
+            start = 0;
+            end = BYTES_PER_CHUNK;
 
+        const retryArgs = [projId, blob, parentId, parentKind, label, fileId, tags];
         var fileReader = new FileReader();
 
         let details = {
@@ -678,22 +699,27 @@ export class MainStore {
         fileReader.onload = function (event, files) {
             // create project upload
             mainStore.transportLayer.startUpload(projId, fileName, contentType, SIZE)
-                .then(checkStatus)
+                .then(checkStatusAndConsistency)
                 .then(response => response.json())
                 .then((json) => {
-                    let uploadObj = json;
-                    if (!uploadObj || !uploadObj.id) throw "Problem, no upload created";
-                    mainStore.uploads.set(uploadObj.id, details);
-                    mainStore.hashFile(mainStore.uploads.get(uploadObj.id), uploadObj.id);
-                    mainStore.updateAndProcessChunks(uploadObj.id, null, null);
-                    window.onbeforeunload = function (e) {// If uploading files and user navigates away from page, send them warning
-                        let preventLeave = true;
-                        if (preventLeave) {
-                            return "If you refresh the page or close your browser, files being uploaded will be lost and you" +
-                                " will have to start again. Are" +
-                                " you sure you want to do this?";
-                        }
-                    };
+                    if(!json.error) {
+                        this.loading = false;
+                        let uploadObj = json;
+                        if (!uploadObj.id && !uploadObj.error) throw "no upload was created";
+                        mainStore.uploads.set(uploadObj.id, details);
+                        mainStore.hashFile(mainStore.uploads.get(uploadObj.id), uploadObj.id);
+                        mainStore.updateAndProcessChunks(uploadObj.id, null, null);
+                        window.onbeforeunload = function (e) {// If uploading files and user navigates away from page, send them warning
+                            let preventLeave = true;
+                            if (preventLeave) {
+                                return "If you refresh the page or close your browser, files being uploaded will be lost and you" +
+                                    " will have to start again. Are" +
+                                    " you sure you want to do this?";
+                            }
+                        };
+                    } else {
+                        json.code === 'resource_not_consistent' ? mainStore.tryAsyncAgain(mainStore.startUpload, retryArgs) : mainStore.handleErrors(json);
+                    }
                 })
                 .catch(ex => mainStore.handleErrors(ex))
         };
@@ -1385,14 +1411,17 @@ export class MainStore {
         provenanceStore.toggleGraphLoading();
         if (error && error.response && error.response.status) {
             if (error.response.status === 401) {
-                window.location.href = window.location.protocol + "//" + window.location.host + "/#/login";
-            } else if (error.response.status === 404 && authStore.appConfig.apiToken) {
-                window.location.href = window.location.protocol + "//" + window.location.host + "/#/404";
+                window.location.href = window.location.protocol + '//' + window.location.host + '/#/login';
+            } else if (error.response.status === 404 && error.response.statusText !== '' && authStore.appConfig.apiToken) {
+                window.location.href = window.location.protocol + '//' + window.location.host + '/#/404';
+                console.log(error.response);
             } else {
                 this.displayErrorModals(error);
             }
         } else if (error.code === 8) { // Handles error thrown from trying to read folder as a file
             this.displayErrorModals(error);
+        } else if (error && error.error && error.error === '404') {
+            window.location.href = window.location.protocol + '//' + window.location.host + '/#/404';
         }
     }
 
