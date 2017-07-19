@@ -15,16 +15,19 @@ import RaisedButton from 'material-ui/RaisedButton';
 class ProjectList extends React.Component {
 
     render() {
-        const { loading, projects, responseHeaders } = mainStore;
+        const { loading, projects, projectRoles, responseHeaders } = mainStore;
         let headers = responseHeaders && responseHeaders !== null ? responseHeaders : null;
         let nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
         let totalProjects = headers !== null && !!headers['x-total'] ? headers['x-total'][0] : null;
         let projectList = projects ? projects.map((project) => {
+            let role = projectRoles.get(project.id)
             return (
                 <Card key={ project.id } className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.card}>
                     <FontIcon className="material-icons" style={styles.icon}>content_paste</FontIcon>
                     <a href={UrlGen.routes.project(project.id)} className="external">
-                        <CardTitle title={project.name} subtitle={'Created On: ' + BaseUtils.formatDate(project.audit.created_on)} titleColor="#424242" style={styles.cardTitle}/>
+                        <CardTitle title={project.name} titleColor="#424242" style={styles.cardTitle}/>
+                        <CardTitle subtitle={'Created On: ' + BaseUtils.formatDate(project.audit.created_on)} titleColor="#424242" style={styles.cardTitle}/>
+                        <CardTitle subtitle={'Project Role: ' + role} titleColor="#424242" style={styles.cardTitle2}/>
                     </a>
                     <CardText>
                         <span className="mdl-color-text--grey-900">Description:</span>{ project.description.length > 300 ? ' ' + project.description.substring(0,300)+'...' : ' ' + project.description }
@@ -70,6 +73,11 @@ const styles = {
     cardTitle: {
         fontWeight: 200,
         marginBottom: -15
+    },
+    cardTitle2: {
+        fontWeight: 200,
+        marginBottom: -15,
+        padding: '4px 4px 4px 16px'
     },
     icon: {
         fontSize: 36,

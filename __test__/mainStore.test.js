@@ -658,6 +658,16 @@ describe('Main Store', () => {
         });
     });
 
+    it('@action getAllProjectPermissions - should return project roles', () => {
+        transportLayer.getPermissions = jest.fn((id, userId) => respondOK(fake.grant_project_permission_json));
+        mainStore.getAllProjectPermissions(PROJECT_ID, TEST_UID);
+        return sleep(1).then(() => {
+            expect(transportLayer.getPermissions).toHaveBeenCalledTimes(1);
+            expect(transportLayer.getPermissions).toHaveBeenCalledWith(PROJECT_ID, TEST_UID);
+            expect(mainStore.projectRoles).toBeDefined();
+        });
+    });
+
     it('@action addProject - should add a project', () => {
         transportLayer.addProject = jest.fn((name, description) => respondOK(fake.projects_json[0].results[0]));
         mainStore.addProject(fake.projects_json[0].results[0].name, fake.projects_json[0].results[0].description);
