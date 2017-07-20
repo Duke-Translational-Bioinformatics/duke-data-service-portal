@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 const { object, bool, array } = PropTypes;
-import Dropzone from 'react-dropzone';
+import DropZone from '../globalComponents/dropzone.jsx';
 import mainStore from '../../stores/mainStore';
 import { Color } from '../../theme/customTheme';
 import BaseUtils from '../../util/baseUtils';
@@ -20,7 +20,6 @@ class UploadManager extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            dropzoneHover: false,
             floatingErrorText: '',
             searchText: '',
             timeout: null
@@ -28,7 +27,7 @@ class UploadManager extends React.Component {
     }
 
     render() {
-        const {entityObj, filesRejectedForUpload, filesToUpload, openUploadManager, screenSize, showTagCloud, tagAutoCompleteList, tagLabels, tagsToAdd} = mainStore;
+        const {filesRejectedForUpload, filesToUpload, isFolderUpload, openUploadManager, screenSize, showTagCloud, tagAutoCompleteList, tagLabels, tagsToAdd} = mainStore;
         let tags = tagsToAdd && tagsToAdd.length > 0 ? tagsToAdd.map((tag)=>{
             return (<div key={BaseUtils.generateUniqueKey()} className="chip">
                 <span className="chip-text">{tag.label}</span>
@@ -51,13 +50,12 @@ class UploadManager extends React.Component {
             </div>
         }) : null;
         let rejectedFiles = filesRejectedForUpload.length ? filesRejectedForUpload.map((file)=>{
-            return <div key={BaseUtils.generateUniqueKey()}>
-                <div className="mdl-cell mdl-cell--6-col" style={styles.rejectedFileList}>{'Exceeds maximum size of' +
-                ' 5 GB. Cannot upload: '+file.name}</div>
-            </div>
+            return <div key={BaseUtils.generateUniqueKey()} className="mdl-cell mdl-cell--6-col" style={styles.rejectedFileList}>
+                    {file.name+' exceeds the maximum size of 5 GB.'}
+                </div>
         }) : null;
+
         let autoCompleteData = tagAutoCompleteList && tagAutoCompleteList.length > 0 ? tagAutoCompleteList : [];
-        let dropzoneColor = this.state.dropzoneHover ? '#EEE' : '#FFF';
         let width = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.width : window.innerWidth;
 
         return (
@@ -75,15 +73,7 @@ class UploadManager extends React.Component {
                         </div>
                         <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.fileInputContainer}>
                             <div className="mdl-cell mdl-cell--6-col" style={styles.dropzoneContainer}>
-                                <Dropzone ref={(drop)=> this.dropzone = drop}
-                                          disablePreview={true}
-                                          onMouseEnter={(e)=>this.onHoverDropzone(e)}
-                                          onMouseLeave={(e)=>this.onHoverDropzone(e)}
-                                          onDrop={this.onDrop.bind(this)}
-                                          maxSize={5*1024*1024*1024}
-                                          style={{width: '100%', border: '2px dashed #BDBDBD', backgroundColor: dropzoneColor}}>
-                                    <div style={styles.dropzoneText}>Drag and drop files here, or click to select files to upload<br/>Folders cannot be uploaded unless they are<br/> compressed into a .zip file first</div>
-                                </Dropzone>
+                                <DropZone />
                                 {filesToUpload.length ? <h6 className="mdl-color-text--grey-600" style={styles.fileListHeader}>Preparing to upload:</h6> : null}
                             </div>
                             {files}
@@ -142,7 +132,7 @@ class UploadManager extends React.Component {
                                 <RaisedButton label="Start Upload"
                                               labelStyle={styles.buttonLabel}
                                               style={styles.uploadFilesBtn}
-                                              onTouchTap={() => this.handleUploadButton(filesToUpload, tagsToAdd, entityObj)}/>
+                                              onTouchTap={() => this.handleUploadButton(filesToUpload, isFolderUpload, tagsToAdd)}/>
                                 <RaisedButton label={'Cancel'}
                                               labelStyle={styles.buttonLabel}
                                               style={styles.cancelBtn}
@@ -185,17 +175,20 @@ class UploadManager extends React.Component {
         mainStore.defineTagsToAdd(tags);
     }
 
-    handleUploadButton(filesToUpload, tagsToAdd, entityObj) {
+    handleUploadButton(filesToUpload, isFolderUpload, tagsToAdd) {
         if (filesToUpload.length) {
-            let projId, parentKind;
+            let projectId = mainStore.project.id;
+            let parentKind = this.props.router.location.pathname.includes('project') ? Kind.DDS_PROJECT : Kind.DDS_FOLDER;
             let parentId = this.props.params.id;
-            for (let i = 0; i < filesToUpload.length; i++) {
-                let blob = filesToUpload[i];
-                projId = entityObj ? entityObj.ancestors[0].id : this.props.params.id;
-                parentKind = this.props.router.location.pathname.includes('project') ? Kind.DDS_PROJECT : Kind.DDS_FOLDER;
-                mainStore.startUpload(projId, blob, parentId, parentKind, null, null, tagsToAdd);
-                mainStore.defineTagsToAdd([]);
-                mainStore.processFilesToUpload([], []);
+            if(!isFolderUpload) {
+                for (let i = 0; i < filesToUpload.length; i++) {
+                    let blob = filesToUpload[i];
+                    mainStore.startUpload(projectId, blob, parentId, parentKind, null, null, tagsToAdd);
+                    mainStore.defineTagsToAdd([]);
+                    mainStore.processFilesToUpload([], []);
+                }
+            } else {
+                mainStore.processFilesToUploadDepthFirst(filesToUpload, parentId, parentKind, projectId)
             }
         } else {
             return null
@@ -214,14 +207,6 @@ class UploadManager extends React.Component {
                 }
             }, 500)
         });
-    }
-
-    onDrop (files, rejectedFiles) {
-        mainStore.processFilesToUpload(files, rejectedFiles);
-    }
-
-    onHoverDropzone(e) {
-        this.setState({dropzoneHover: !this.state.dropzoneHover});
     }
 
     removeFileFromList(index) {
@@ -291,10 +276,7 @@ const styles = {
         marginRight: 3
     },
     dropzoneContainer: {
-        margin: '0 auto'
-    },
-    dropzoneText: {
-        margin: '6% auto'
+        margin: '0 auto',
     },
     fileInputContainer: {
         textAlign: 'center',
@@ -323,7 +305,7 @@ const styles = {
         marginRight: 17,
         right: '2%',
         zIndex: '2',
-        color: '#ffffff'
+        color: Color.white
     },
     heading: {
         textAlign: 'left',
@@ -344,9 +326,10 @@ const styles = {
         textAlign: 'center'
     },
     rejectedFileList: {
-        margin: '0 auto',
+        margin: '1.5px auto',
         textAlign: 'left',
         padding: 5,
+        color: Color.white,
         backgroundColor: Color.red
     },
     tagLabels: {

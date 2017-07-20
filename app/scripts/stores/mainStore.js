@@ -91,6 +91,8 @@ export class MainStore {
         this.agentApiToken = {};
         this.autoCompleteLoading = false;
         this.audit = {};
+        this.counter = 0;
+        this.currentLocation = null;
         this.currentUser = {};
         this.device = {};
         this.destination = null;
@@ -107,6 +109,7 @@ export class MainStore {
         this.fileVersions = [];
         this.includeKinds = [];
         this.includeProjects = [];
+        this.isFolderUpload = false;
         this.isListItem = false;
         this.itemsSelected = null;
         this.listItems = [];
@@ -160,13 +163,16 @@ export class MainStore {
         this.users = [];
         this.userKey = {};
         this.versionModal = false;
-        this.counter = 0;
 
         this.transportLayer = transportLayer
     }
 
     checkResponse(response) {
         return checkStatus(response, authStore);
+    }
+
+    setCurrentRouteLocation(location) {
+        this.currentLocation = location;
     }
 
     tryAsyncAgain(func, args) {
@@ -206,20 +212,20 @@ export class MainStore {
         if (page == null) page = 1;
         this.transportLayer.getProjects(page)
             .then(this.checkResponse).then((response) => {
-                const results = response.json();
-                const headers = response.headers;
-                return Promise.all([results, headers]);
-            }).then((json) => {
-                let results = json[0].results;
-                let headers = json[1].map;
-                if(page <= 1) {
-                    this.projects = results;
-                } else {
-                    this.projects = [...this.projects, ...results];
-                }
-                this.responseHeaders = headers;
-                this.loading = false;
-            }).catch(ex => this.handleErrors(ex))
+            const results = response.json();
+            const headers = response.headers;
+            return Promise.all([results, headers]);
+        }).then((json) => {
+            let results = json[0].results;
+            let headers = json[1].map;
+            if(page <= 1) {
+                this.projects = results;
+            } else {
+                this.projects = [...this.projects, ...results];
+            }
+            this.responseHeaders = headers;
+            this.loading = false;
+        }).catch(ex => this.handleErrors(ex))
     }
 
     @action getProjectMembers(id) {
@@ -241,9 +247,9 @@ export class MainStore {
                 this.projects = [json, ...this.projects];
                 this.loading = false;
             }).catch((ex) => {
-                this.addToast('Failed to add new project');
-                this.handleErrors(ex)
-            })
+            this.addToast('Failed to add new project');
+            this.handleErrors(ex)
+        })
     }
 
     @action editProject(id, name, desc) {
@@ -254,9 +260,9 @@ export class MainStore {
                 this.addToast('Project Updated');
                 this.project = json;
             }).catch((ex) => {
-                this.addToast('Project Update Failed');
-                this.handleErrors(ex)
-            });
+            this.addToast('Project Update Failed');
+            this.handleErrors(ex)
+        });
     }
 
     @action deleteProject(id) {
@@ -267,9 +273,9 @@ export class MainStore {
                 this.addToast('Project Deleted');
                 BaseUtils.removeObjByKey(this.projects, {key: 'id', value: id})
             }).catch((ex) => {
-                this.addToast('Project Delete Failed');
-                this.handleErrors(ex)
-            });
+            this.addToast('Project Delete Failed');
+            this.handleErrors(ex)
+        });
     }
 
     @action getProjectDetails(id) {
@@ -291,9 +297,9 @@ export class MainStore {
                 this.listItems = [json, ...this.listItems];
                 this.loading = false;
             }).catch((ex) => {
-                this.addToast('Failed to Add a New Folder');
-                this.handleErrors(ex)
-            })
+            this.addToast('Failed to Add a New Folder');
+            this.handleErrors(ex)
+        })
     }
 
     @action deleteFolder(id, path, parentId) {
@@ -305,9 +311,9 @@ export class MainStore {
                 this.addToast('Folder(s) Deleted!');
                 this.deleteItemSuccess(id, path, parentId)
             }).catch((ex) => {
-                this.addToast('Folder Deleted Failed!');
-                this.handleErrors(ex)
-            });
+            this.addToast('Folder Deleted Failed!');
+            this.handleErrors(ex)
+        });
     }
 
     @action deleteFile(id, path, parentId) {
@@ -319,9 +325,9 @@ export class MainStore {
                 this.addToast('File(s) Deleted!');
                 this.deleteItemSuccess(id, path, parentId)
             }).catch((ex) => {
-                this.addToast('Failed to Delete File!');
-                this.handleErrors(ex)
-            });
+            this.addToast('Failed to Delete File!');
+            this.handleErrors(ex)
+        });
     }
 
     @action deleteItemSuccess(id, path, parentId) {
@@ -352,9 +358,9 @@ export class MainStore {
                 this.entityObj = json;
                 this.loading = false;
             }).catch((ex) => {
-                this.addToast('Failed to Update Label');
-                this.handleErrors(ex)
-            });
+            this.addToast('Failed to Update Label');
+            this.handleErrors(ex)
+        });
     }
 
     @action deleteVersion(id) {
@@ -366,9 +372,9 @@ export class MainStore {
                 this.addToast('Version Deleted!');
                 this.loading = false;
             }).catch((ex) => {
-                this.addToast('Failed to Delete Version!');
-                this.handleErrors(ex)
-            });
+            this.addToast('Failed to Delete Version!');
+            this.handleErrors(ex)
+        });
     }
 
     @action editItem(id, name, path) {
@@ -385,9 +391,9 @@ export class MainStore {
                 }
                 this.loading = false;
             }).catch((ex) => {
-                this.addToast('Failed to update item');
-                this.handleErrors(ex)
-            });
+            this.addToast('Failed to update item');
+            this.handleErrors(ex)
+        });
     }
 
     @action getMoveItemList(id, path) {
@@ -427,9 +433,9 @@ export class MainStore {
                 }
                 this.loading = false;
             }).catch((ex) => {
-                this.addToast('Failed to move ' + type + ' to new location');
-                this.handleErrors(ex)
-            })
+            this.addToast('Failed to move ' + type + ' to new location');
+            this.handleErrors(ex)
+        })
     }
 
     @action getEntity(id, path, requester) {
@@ -532,9 +538,9 @@ export class MainStore {
                 this.getProjectMembers(id);
                 this.loading = false;
             }).catch((ex) => {
-                this.addToast('Could not add member to this project or member does not exist');
-                this.handleErrors(ex)
-            });
+            this.addToast('Could not add member to this project or member does not exist');
+            this.handleErrors(ex)
+        });
     }
 
     @action deleteProjectMember(id, userId, userName) {
@@ -545,9 +551,9 @@ export class MainStore {
                 this.addToast(userName + ' ' + 'has been removed from this project');
                 this.getProjectMembers(id);
             }).catch((ex) => {
-                this.addToast('Unable to remove ' + userName + ' from this project');
-                this.handleErrors(ex)
-            });
+            this.addToast('Unable to remove ' + userName + ' from this project');
+            this.handleErrors(ex)
+        });
     }
 
     @action handleBatch (files, folders) {
@@ -569,9 +575,60 @@ export class MainStore {
     }
 
     @action processFilesToUpload(files, rejectedFiles) {
-        this.filesToUpload = files.length ? [...this.filesToUpload, ...files] : [];
-        this.filesToUpload = this.filesToUpload.filter((file, index, self) => self.findIndex(f => f.name === file.name && f.size === file.size && f.lastModified === file.lastModified) === index);
-        this.filesRejectedForUpload = rejectedFiles.length ? [...this.filesRejectedForUpload, ...rejectedFiles] : [];
+        if(files.length) mainStore.isFolderUpload = Object.keys(files[0]).some(v => v === 'fullPath');
+        this.filesToUpload = files.length || rejectedFiles.length ? [...this.filesToUpload, ...files] : [];
+        this.filesToUpload = this.filesToUpload.filter((file, index, self) => self.findIndex(f => f.name === file.name && f.size === file.size && f.lastModified === file.lastModified) === index); // Checking and removing duplicate files in file list before starting upload
+        this.filesRejectedForUpload = rejectedFiles.length || files.length ? [...this.filesRejectedForUpload, ...rejectedFiles] : [];
+    }
+
+    @action processFilesToUploadDepthFirst(files, parentId, parentKind, projectId) {
+        let fileList = files.map((file) => { return {path: file.fullPath, filename: file.name , file: file} });
+        const hierarchy = {}; // {folder_name} = { name: <name of folder>, children: {...just like hierarchy...}, files: [] }
+        // build tree
+        fileList.map(file => {
+            const paths = file.path.split('/').slice(0, -1);
+            let parentFolder = null;
+            // builds the hierarchy of folders.
+            paths.map(path => {
+                if (!parentFolder) {
+                    if (!hierarchy[path]) {
+                        hierarchy[path] = {
+                            name: path,
+                            children: {},
+                            files: [],
+                        };
+                    }
+                    parentFolder = hierarchy[path]
+                } else {
+                    if (!parentFolder.children[path]) {
+                        parentFolder.children[path] = {
+                            name: path,
+                            children: {},
+                            files: [],
+                        };
+                    }
+                    parentFolder = parentFolder.children[path];
+                }
+            });
+            parentFolder.files.push(file);
+        });
+
+        Object.keys(hierarchy).map(folderName => this.uploadFilesDepthFirst(parentId, parentKind, hierarchy[folderName], projectId));
+    }
+
+    @action uploadFilesDepthFirst(parentId, parentKind, folderInfo, projectId) {
+        this.transportLayer.addFolder(parentId, parentKind, folderInfo.name)
+            .then()
+            .then(response => response.json())
+            .then((ddsFolder) => {
+                Object.keys(folderInfo.children).forEach(childFolderName => this.uploadFilesDepthFirst(ddsFolder.id, ddsFolder.kind, folderInfo.children[childFolderName], projectId));
+                folderInfo.files.map(file => {
+                    this.startUpload(projectId, file.file, ddsFolder.id, ddsFolder.kind, null, null, this.tagsToAdd);
+                });
+            }).catch((ex) => {
+            this.addToast('Failed to add a new folder');
+            this.handleErrors(ex)
+        })
     }
 
     @action removeFileFromUploadList(index) {
@@ -615,9 +672,9 @@ export class MainStore {
                 this.addToast('Added ' + json.label + ' tag');
                 this.getTags(id, Kind.DDS_FILE);
             }).catch((ex) => {
-                this.addToast('Failed to add new tag');
-                this.handleErrors(ex)
-            })
+            this.addToast('Failed to add new tag');
+            this.handleErrors(ex)
+        })
     }
 
     @action appendTags(id, kind, tags) {
@@ -633,9 +690,9 @@ export class MainStore {
                 this.getTags(id, Kind.DDS_FILE);
                 this.loading = false;
             }).catch((ex) => {
-                this.addToast('Failed to add tags');
-                this.handleErrors(ex)
-            })
+            this.addToast('Failed to add tags');
+            this.handleErrors(ex)
+        })
     }
 
     @action deleteTag(id, label, fileId) {
@@ -646,9 +703,9 @@ export class MainStore {
                 this.addToast(label + ' tag deleted!');
                 this.getTags(fileId, Kind.DDS_FILE);
             }).catch((ex) => {
-                this.addToast('Failed to delete ' + label);
-                this.handleErrors(ex)
-            });
+            this.addToast('Failed to delete ' + label);
+            this.handleErrors(ex)
+        });
     }
 
     @action startUpload(projId, blob, parentId, parentKind, label, fileId, tags) {
@@ -973,19 +1030,22 @@ export class MainStore {
                 this.addToast(fileName + ' uploaded successfully');
                 this.addFileSuccess(parentId, parentKind, uploadId, json.id)
             }).catch((ex) => {
-                this.addToast('Failed to upload ' + fileName + '!');
-                this.handleErrors(ex)
-            })
+            this.addToast('Failed to upload ' + fileName + '!');
+            this.handleErrors(ex)
+        })
     }
 
     @action addFileSuccess(parentId, parentKind, uploadId, fileId) {
         if (this.uploads.get(uploadId).tags.length) this.appendTags(fileId, 'dds-file', this.uploads.get(uploadId).tags);
-        if(this.uploads.size === 1) {
-            if (parentKind === 'dds-project') {
-                this.getChildren(parentId, Path.PROJECT);
-            } else {
-                this.getChildren(parentId, Path.FOLDER);
-            }
+        if (this.uploads.size === 1 && !this.isFolderUpload) {
+            let path = parentKind === 'dds-project' ? Path.PROJECT : Path.FOLDER;
+            this.getChildren(parentId, path);
+            this.getChildren(parentId, path);
+        } else if (this.uploads.size === 1 && this.isFolderUpload) {
+            this.isFolderUpload = false;
+            let id = this.currentLocation.id;
+            let path = this.currentLocation.location.includes('project') ? Path.PROJECT : Path.FOLDER;
+            this.getChildren(id, path);
         }
         if(this.uploads.has(uploadId)) this.uploads.delete(uploadId);
     }
@@ -998,10 +1058,10 @@ export class MainStore {
                 this.addToast('Created New File Version!');
                 this.addFileVersionSuccess(fileId, uploadId)
             }).catch((ex) => {
-                this.addToast('Failed to Create New Version');
-                this.uploadError(uploadId, label);
-                this.handleErrors(ex);
-            });
+            this.addToast('Failed to Create New Version');
+            this.uploadError(uploadId, label);
+            this.handleErrors(ex);
+        });
     }
 
     @action addFileVersionSuccess(id, uploadId) {
@@ -1161,9 +1221,9 @@ export class MainStore {
                 this.showTemplateDetails = true;
                 this.drawerLoading = false;
             }).catch((ex) => {
-                this.addToast('Failed to add new template');
-                this.handleErrors(ex)
-            })
+            this.addToast('Failed to add new template');
+            this.handleErrors(ex)
+        })
     }
 
     @action getMetadataTemplateDetails(id) {
@@ -1204,9 +1264,9 @@ export class MainStore {
                 this.drawerLoading = false;
                 this.loadMetadataTemplates('');
             }).catch((ex) => {
-                this.addToast('Failed to update ' + label);
-                this.handleErrors(ex)
-            })
+            this.addToast('Failed to update ' + label);
+            this.handleErrors(ex)
+        })
     }
 
     @action deleteTemplate(id, label) {
@@ -1218,9 +1278,9 @@ export class MainStore {
                 this.toggleMetadataManager();
                 this.loadMetadataTemplates('');
             }).catch((ex) => {
-                this.addToast('Failed to delete ' + label);
-                this.handleErrors(ex)
-            });
+            this.addToast('Failed to delete ' + label);
+            this.handleErrors(ex)
+        });
     }
 
     @action deleteMetadataProperty(id, label) {
@@ -1231,9 +1291,9 @@ export class MainStore {
                 this.addToast('The ' + label + ' property has been deleted');
                 this.templateProperties = BaseUtils.removeObjByKey(this.templateProperties.slice(), {key: 'id', value: id});
             }).catch((ex) => {
-                this.addToast('Failed to delete ' + label);
-                this.handleErrors(ex)
-            });
+            this.addToast('Failed to delete ' + label);
+            this.handleErrors(ex)
+        });
     }
 
     @action createMetadataObject(kind, fileId, templateId, properties) {
@@ -1245,13 +1305,13 @@ export class MainStore {
                 this.addToast('A new metadata object was created.');
                 this.createMetadataObjectSuccess(fileId, kind, json);
             }).catch((ex) => {
-                if (ex.response.status === 409) {
-                    this.updateMetadataObject(kind, fileId, templateId, properties);
-                } else {
-                    this.addToast('Failed to add new metadata object');
-                    this.handleErrors(ex)
-                }
-            })
+            if (ex.response.status === 409) {
+                this.updateMetadataObject(kind, fileId, templateId, properties);
+            } else {
+                this.addToast('Failed to add new metadata object');
+                this.handleErrors(ex)
+            }
+        })
     }
 
     @action updateMetadataObject(kind, fileId, templateId, properties) {
@@ -1262,9 +1322,9 @@ export class MainStore {
                 this.addToast('This metadata object was updated.');
                 this.createMetadataObjectSuccess(fileId, kind, json);
             }).catch((ex) => {
-                this.addToast('Failed to update metadata object');
-                this.handleErrors(ex)
-            })
+            this.addToast('Failed to update metadata object');
+            this.handleErrors(ex)
+        })
     }
 
     @action createMetadataProperty(id, name, label, desc, type) {
@@ -1277,9 +1337,9 @@ export class MainStore {
                 this.templateProperties.push(json);
                 this.drawerLoading = false;
             }).catch((ex) => {
-                this.addToast('Failed to add new template property');
-                this.handleErrors(ex)
-            })
+            this.addToast('Failed to add new template property');
+            this.handleErrors(ex)
+        })
     }
 
     @action createMetadataObjectSuccess(id, kind, json) {

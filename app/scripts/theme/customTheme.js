@@ -20,7 +20,7 @@ export const Theme = {
         pickerHeaderColor: Colors.cyan500,
         shadowColor: Colors.fullBlack
     }
-}
+};
 
 export const Color = {
     blue:  '#235F9C',
@@ -35,4 +35,5 @@ export const Color = {
     ltGrey: '#BDBDBD',
     dkGrey: '#757575',
     dkGrey2: '#616161',
-}
+    white: '#FFF',
+};
