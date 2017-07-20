@@ -133,6 +133,7 @@ export class MainStore {
         this.projPermissions = null;
         this.projectMembers = [];
         this.projectRole = null;
+        this.projectRoles = observable.map();
         this.metaObjProps = [];
         this.responseHeaders = {};
         this.screenSize = {width: 0, height: 0};
@@ -164,7 +165,7 @@ export class MainStore {
         this.userKey = {};
         this.versionModal = false;
 
-        this.transportLayer = transportLayer
+        this.transportLayer = transportLayer;
     }
 
     checkResponse(response) {
@@ -223,9 +224,26 @@ export class MainStore {
             } else {
                 this.projects = [...this.projects, ...results];
             }
+            this.projects.forEach((p) => {
+                this.getAllProjectPermissions(p.id, authStore.currentUser.id)
+            })
             this.responseHeaders = headers;
             this.loading = false;
         }).catch(ex => this.handleErrors(ex))
+    }
+
+    @action getAllProjectPermissions(id, userId) {
+        this.transportLayer.getPermissions(id, userId)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => {
+                this.projects.forEach((p) => {
+                    let role = json.auth_role.name;
+                    if(p.id === id){
+                        this.projectRoles.set(p.id, role);
+                    }
+                })
+            }).catch(ex => this.handleErrors(ex))
     }
 
     @action getProjectMembers(id) {
