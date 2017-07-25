@@ -329,21 +329,21 @@ export class MainStore {
             });
     }
 
-    @action deleteFile(id, path, parentId) {
+    @action deleteFile(id, parentId, path) {
         this.loading = true;
         this.transportLayer.deleteFile(id)
             .then(this.checkResponse)
             .then(response => {})
             .then(() => {
                 this.addToast('File(s) Deleted!');
-                this.deleteItemSuccess(id, path, parentId)
+                this.deleteItemSuccess(id, parentId, path)
             }).catch((ex) => {
                 this.addToast('Failed to Delete File!');
                 this.handleErrors(ex)
             });
     }
 
-    @action deleteItemSuccess(id, path, parentId) {
+    @action deleteItemSuccess(id, parentId, path) {
         this.loading = false;
         this.listItems = BaseUtils.removeObjByKey(this.listItems.slice(), {key: 'id', value: id});
         if(this.listItems.length === 0) this.getChildren(parentId, path)
