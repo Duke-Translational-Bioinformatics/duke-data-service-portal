@@ -16,12 +16,14 @@ export class MainStore {
     @observable autoCompleteLoading
     @observable audit
     @observable currentUser
+    @observable currentLocation
     @observable destination
     @observable destinationKind
     @observable device
     @observable drawerLoading
     @observable entityObj
     @observable errorModals
+    @observable expandUploadProgressCard
     @observable failedUploads
     @observable filesChecked
     @observable filesToUpload
@@ -29,6 +31,7 @@ export class MainStore {
     @observable fileHashes
     @observable foldersChecked
     @observable fileVersions
+    @observable hideUploadProgress
     @observable includeKinds
     @observable includeProjects
     @observable isListItem
@@ -100,6 +103,7 @@ export class MainStore {
         this.drawerLoading = false;
         this.entityObj = null;
         this.errorModals = [];
+        this.expandUploadProgressCard = true;
         this.failedUploads = [];
         this.filesChecked = [];
         this.filesToUpload = [];
@@ -107,6 +111,7 @@ export class MainStore {
         this.fileHashes = [];
         this.foldersChecked = [];
         this.fileVersions = [];
+        this.hideUploadProgress = false;
         this.includeKinds = [];
         this.includeProjects = [];
         this.isFolderUpload = false;
@@ -164,6 +169,7 @@ export class MainStore {
         this.users = [];
         this.userKey = {};
         this.versionModal = false;
+        this.warnUserBeforeLeavingPage = false;
 
         this.transportLayer = transportLayer;
     }
@@ -174,6 +180,10 @@ export class MainStore {
 
     setCurrentRouteLocation(location) {
         this.currentLocation = location;
+    }
+
+    toggleUploadProgressCard() {
+        this.expandUploadProgressCard = !this.expandUploadProgressCard;
     }
 
     tryAsyncAgain(func, args) {
@@ -226,7 +236,7 @@ export class MainStore {
             }
             this.projects.forEach((p) => {
                 this.getAllProjectPermissions(p.id, authStore.currentUser.id)
-            })
+            });
             this.responseHeaders = headers;
             this.loading = false;
         }).catch(ex => this.handleErrors(ex))
@@ -287,7 +297,7 @@ export class MainStore {
         this.transportLayer.deleteProject(id)
             .then(this.checkResponse)
             .then(response => {})
-            .then((json) => {
+            .then(() => {
                 this.addToast('Project Deleted');
                 BaseUtils.removeObjByKey(this.projects, {key: 'id', value: id})
             }).catch((ex) => {
@@ -551,7 +561,7 @@ export class MainStore {
         this.transportLayer.addProjectMember(id, userId, role)
             .then(this.checkResponse)
             .then(response => response.json())
-            .then((json) => {
+            .then(() => {
                 this.addToast(name + ' ' + 'has been added as a ' + newRole + ' to this project');
                 this.getProjectMembers(id);
                 this.loading = false;
@@ -565,7 +575,7 @@ export class MainStore {
         this.transportLayer.deleteProjectMember(id, userId)
             .then(this.checkResponse)
             .then(response => {})
-            .then((json) => {
+            .then(() => {
                 this.addToast(userName + ' ' + 'has been removed from this project');
                 this.getProjectMembers(id);
             }).catch((ex) => {
@@ -597,9 +607,11 @@ export class MainStore {
         this.filesToUpload = files.length || rejectedFiles.length ? [...this.filesToUpload, ...files] : [];
         this.filesToUpload = this.filesToUpload.filter((file, index, self) => self.findIndex(f => f.name === file.name && f.size === file.size && f.lastModified === file.lastModified) === index); // Checking and removing duplicate files in file list before starting upload
         this.filesRejectedForUpload = rejectedFiles.length || files.length ? [...this.filesRejectedForUpload, ...rejectedFiles] : [];
+        if(this.filesToUpload.length > 5) this.hideUploadProgress = true;
     }
 
     @action processFilesToUploadDepthFirst(files, parentId, parentKind, projectId) {
+        this.loading = true;
         let fileList = files.map((file) => { return {path: file.fullPath, filename: file.name , file: file} });
         const hierarchy = {}; // {folder_name} = { name: <name of folder>, children: {...just like hierarchy...}, files: [] }
         // build tree
@@ -703,7 +715,7 @@ export class MainStore {
         this.transportLayer.appendTags(id, kind, tags)
             .then(this.checkResponse)
             .then(response => response.json())
-            .then((json) => {
+            .then(() => {
                 this.addToast('Added ' + msg + ' as tags to all selected files.');
                 this.getTags(id, Kind.DDS_FILE);
                 this.loading = false;
@@ -732,13 +744,13 @@ export class MainStore {
             contentType = blob.type,
             slicedFile = null,
             BYTES_PER_CHUNK, SIZE, start, end;
-            BYTES_PER_CHUNK = 5242880 * 6;
+            BYTES_PER_CHUNK =  2500000;
             SIZE = blob.size;
             start = 0;
             end = BYTES_PER_CHUNK;
 
         const retryArgs = [projId, blob, parentId, parentKind, label, fileId, tags];
-        var fileReader = new FileReader();
+        const fileReader = new FileReader();
 
         let details = {
             name: fileName,
@@ -771,7 +783,7 @@ export class MainStore {
             end = start + BYTES_PER_CHUNK;
             chunkNum++;
         }
-        fileReader.onload = function (event, files) {
+        fileReader.onload = function (e, files) {
             // create project upload
             mainStore.transportLayer.startUpload(projId, fileName, contentType, SIZE)
                 .then(checkStatusAndConsistency)
@@ -784,9 +796,9 @@ export class MainStore {
                         mainStore.uploads.set(uploadObj.id, details);
                         mainStore.hashFile(mainStore.uploads.get(uploadObj.id), uploadObj.id);
                         mainStore.updateAndProcessChunks(uploadObj.id, null, null);
-                        window.onbeforeunload = function (e) {// If uploading files and user navigates away from page, send them warning
-                            let preventLeave = true;
-                            if (preventLeave) {
+                        window.onbeforeunload = function () {// If uploading files and user navigates away from page, send them warning
+                            mainStore.warnUserBeforeLeavingPage = true;
+                            if (mainStore.warnUserBeforeLeavingPage) {
                                 return "If you refresh the page or close your browser, files being uploaded will be lost and you" +
                                     " will have to start again. Are" +
                                     " you sure you want to do this?";
@@ -811,7 +823,7 @@ export class MainStore {
         function postHash(hash) {
             mainStore.fileHashes.push(hash);
         }
-        if (file.blob.size < 5242880 * 6) {
+        if (file.blob.size < 5000000) {
             function calculateMd5(blob, id) {
                 let reader = new FileReader();
                 reader.readAsArrayBuffer(blob);
@@ -870,12 +882,10 @@ export class MainStore {
                 blob = blob.getBlob();
             }
             let worker = new Worker(URL.createObjectURL(blob));
-            let chunksize = 5242880;
+            let chunksize = 2500000;
             let f = file.blob; // FileList object
-            let i = 0,
-                chunks = Math.ceil(f.size / chunksize),
-                chunkTasks = [],
-                startTime = (new Date()).getTime();
+            let chunks = Math.ceil(f.size / chunksize),
+                chunkTasks = [];
             worker.onmessage = function (e) {
                 // create callback
                 for (let j = 0; j < chunks; j++) {
@@ -964,7 +974,7 @@ export class MainStore {
         }
         if (allDone === true) this.checkForHash(uploadId, upload.parentId, upload.parentKind, upload.name, upload.label, upload.fileId, upload.projectId);
         window.onbeforeunload = function () { // If done, set to false so no warning is sent.
-            preventLeave = false;
+            this.warnUserBeforeLeavingPage = false;
         };
     }
 
@@ -972,7 +982,7 @@ export class MainStore {
         window.addEventListener('offline', function () {
             mainStore.uploadError(uploadId, fileName)
         });
-        var xhr = new XMLHttpRequest();
+        const xhr = new XMLHttpRequest();
         xhr.upload.onprogress = uploadProgress;
         function uploadProgress(e) {
             if (e.lengthComputable) {
@@ -1001,15 +1011,15 @@ export class MainStore {
     }
 
     getChunkUrl(uploadId, upload, chunkBlob, chunk) {
-        var chunkNum = chunk.number;
-        var fileName = upload.name;
-        var chunkUpdates = chunk.chunkUpdates;
-        var fileReader = new FileReader();
+        let chunkNum = chunk.number;
+        let fileName = upload.name;
+        let chunkUpdates = chunk.chunkUpdates;
+        const fileReader = new FileReader();
         fileReader.onload = function (event) {
-            var arrayBuffer = event.target.result;
-            var wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
-            var md5crc = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
-            var algorithm = 'MD5';
+            let arrayBuffer = event.target.result;
+            let wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
+            let md5crc = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
+            let algorithm = 'MD5';
             mainStore.transportLayer.getChunkUrl(uploadId, chunkNum, chunkBlob.size, md5crc, algorithm)
                 .then(this.checkResponse)
                 .then(response => response.json())
@@ -1031,7 +1041,7 @@ export class MainStore {
         this.transportLayer.allChunksUploaded(uploadId, hash, algorithm)
             .then(this.checkResponse)
             .then(response => response.json())
-            .then((json) => {
+            .then(() => {
                 if (fileId == null) {
                     this.addFile(uploadId, parentId, parentKind, fileName, label);
                 } else {
@@ -1066,6 +1076,7 @@ export class MainStore {
             this.getChildren(id, path);
         }
         if(this.uploads.has(uploadId)) this.uploads.delete(uploadId);
+        if(this.uploads.size < 1 && this.hideUploadProgress) this.hideUploadProgress = false;
     }
 
     @action addFileVersion(uploadId, label, fileId) {
@@ -1127,6 +1138,12 @@ export class MainStore {
     @action cancelUpload(uploadId, name) {
         if(this.uploads.has(uploadId)) this.uploads.delete(uploadId);
         this.addToast('Canceled upload of '+name);
+        if(!this.uploads.size && this.warnUserBeforeLeavingPage) this.warnUserBeforeLeavingPage = false;
+        if(!this.uploads.size) { // If user cancels last uploads, make sure that page loads with new list items
+            let id = this.currentLocation.id;
+            let path = this.currentLocation.location.includes('project') ? Path.PROJECT : Path.FOLDER;
+            this.getChildren(id, path);
+        }
     }
 
     @action  getDownloadUrl(id, kind) {
@@ -1137,7 +1154,7 @@ export class MainStore {
             .then((json) => {
                 let host = json.host;
                 let url = json.url;
-                var win = window.open(host + url, '_blank');
+                let win = window.open(host + url, '_blank');
                 if (win) {
                     win.focus();
                 } else { // if browser blocks popups use location.href instead

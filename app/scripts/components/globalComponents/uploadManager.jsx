@@ -42,12 +42,11 @@ class UploadManager extends React.Component {
             )
         });
         let files = filesToUpload.length ? filesToUpload.map((file, i)=>{
-            return <div key={BaseUtils.generateUniqueKey()}>
-                <div className="mdl-cell mdl-cell--6-col" style={styles.fileList}>
+            return <div key={BaseUtils.generateUniqueKey()} className="mdl-cell mdl-cell--6-col" style={styles.fileList}>
                     <i className="material-icons" style={styles.deleteIcon} onTouchTap={() => this.removeFileFromList(i)}>cancel</i>
                     {file.name}
                 </div>
-            </div>
+
         }) : null;
         let rejectedFiles = filesRejectedForUpload.length ? filesRejectedForUpload.map((file)=>{
             return <div key={BaseUtils.generateUniqueKey()} className="mdl-cell mdl-cell--6-col" style={styles.rejectedFileList}>
@@ -74,10 +73,12 @@ class UploadManager extends React.Component {
                         <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.fileInputContainer}>
                             <div className="mdl-cell mdl-cell--6-col" style={styles.dropzoneContainer}>
                                 <DropZone />
-                                {filesToUpload.length ? <h6 className="mdl-color-text--grey-600" style={styles.fileListHeader}>Preparing to upload:</h6> : null}
+                                {filesToUpload.length ? <h6 className="mdl-color-text--grey-600" style={styles.fileListHeader}>Preparing to upload {filesToUpload.length} file{filesToUpload.length > 1 ? 's' : ''}</h6> : null}
                             </div>
+                            <div className="mdl-cell mdl-cell--6-col" style={{margin: '0 auto'}}>
                             {files}
                             {rejectedFiles}
+                            </div>
                         </div>
                         <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.wrapper}>
                             <div className="mdl-cell mdl-cell--6-col mdl-cell--6-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" >
@@ -287,7 +288,9 @@ const styles = {
         margin: '0 auto',
         textAlign: 'left',
         color: Color.blue,
-        padding: 5
+        padding: 5,
+        float: 'left',
+        minWidth: '50%'
     },
     fileListHeader: {
         textAlign: 'left',

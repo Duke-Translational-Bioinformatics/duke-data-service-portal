@@ -16,8 +16,8 @@ class AccountOverview extends React.Component {
         let bytes = usage && usage !== null ? usage.storage_bytes : 0;
 
         return (
-            <Card className="account-overview content mdl-color-text--grey-800"
-                  style={{padding: '0px 0px 20px 0px', textAlign: 'center'}}>
+            <Card className="account-overview content mdl-cell mdl-cell--12-col mdl-color-text--grey-800"
+                  style={styles.card}>
                 <div style={styles.cardSquare}
                      className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
                     <h4>{numProjects + ' Projects'}</h4>
@@ -39,6 +39,11 @@ class AccountOverview extends React.Component {
 }
 
 const styles = {
+    card: {
+        padding: '0px 0px 20px 0px',
+        textAlign: 'center',
+        margin: '0 auto'
+    },
     cardSquare: {
         height: 120,
         display: 'inline-block'

@@ -36,7 +36,7 @@ class ProjectDetails extends React.Component {
             optionsMenu = prjPrm === 'prjCrud' ? <ProjectOptionsMenu {...this.props} /> : null;
         }
         return (
-            <Card className="project-container" style={styles.container}>
+            <Card className="mdl-cell mdl-cell--12-col" style={styles.container}>
                 { uploadMdl }
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
@@ -102,7 +102,9 @@ const styles = {
     },
     container: {
         overflow: 'auto',
-        padding: '10px 0px 10px 0px'
+        padding: '10px 0px 10px 0px',
+        maxWidth: 1228,
+        margin: '0 auto'
     },
     createdBy: {
         verticalAlign: '-10px'
