@@ -676,7 +676,7 @@ export class MainStore {
             contentType = blob.type,
             slicedFile = null,
             BYTES_PER_CHUNK, SIZE, start, end;
-            BYTES_PER_CHUNK = 5242880 * 6;
+            BYTES_PER_CHUNK = 2500000;
             SIZE = blob.size;
             start = 0;
             end = BYTES_PER_CHUNK;
@@ -755,7 +755,7 @@ export class MainStore {
         function postHash(hash) {
             mainStore.fileHashes.push(hash);
         }
-        if (file.blob.size < 5242880 * 6) {
+        if (file.blob.size < 5000000) {
             function calculateMd5(blob, id) {
                 let reader = new FileReader();
                 reader.readAsArrayBuffer(blob);
@@ -814,7 +814,7 @@ export class MainStore {
                 blob = blob.getBlob();
             }
             let worker = new Worker(URL.createObjectURL(blob));
-            let chunksize = 5242880;
+            let chunksize = 2500000;
             let f = file.blob; // FileList object
             let i = 0,
                 chunks = Math.ceil(f.size / chunksize),
