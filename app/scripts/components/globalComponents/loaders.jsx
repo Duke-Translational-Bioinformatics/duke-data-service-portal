@@ -19,7 +19,7 @@ class Loaders extends React.Component {
 
     @observer
     render() {
-        let {expandUploadProgressCard, hideUploadProgress, loading, uploads} = mainStore;
+        let {expandUploadProgressCard, hideUploadProgress, loading, totalUploads, uploads} = mainStore;
         let uploading = null;
         if (uploads) {
             uploading = uploads.entries().map(uploads => {
@@ -29,7 +29,8 @@ class Loaders extends React.Component {
                     <LinearProgress mode="determinate" color={Color.pink} style={styles.uploader} value={upload.uploadProgress} max={100} min={0}/>
                     <i className="material-icons" style={styles.deleteIcon} onTouchTap={()=>this.cancelUpload(id, upload.name)}>cancel</i>
                     <div className="mdl-color-text--grey-600" style={styles.uploadText}>
-                        {upload.uploadProgress === 100 ? upload.uploadProgress.toFixed(2) + '% of ' + upload.name +' uploaded... Processing file, please wait.' : upload.uploadProgress === 0 ? 'Preparing to upload '+ upload.name : upload.uploadProgress.toFixed(2) + '% of ' + upload.name +' uploaded...'}
+                        {upload.uploadProgress === 100 ? upload.uploadProgress.toFixed(2) + '% of ' + upload.name +' uploaded... Processing file, please wait.' : upload.uploadProgress === 0 ? 'Preparing to upload '+ upload.name : upload.uploadProgress.toFixed(2) + '% of ' + upload.name +' uploaded'}
+                        {upload.blob.fullPath && upload.uploadProgress !== 100 ? '  to '+upload.blob.fullPath.split('/').slice(0, -1).join('/') : ''}
                     </div>
                 </div>;
             });
@@ -56,6 +57,7 @@ class Loaders extends React.Component {
                                 icon={<i className="material-icons" style={{color: Color.blue}}>{expandUploadProgressCard ? 'expand_less' : 'expand_more'}</i>}
                             />
                             <CardText expandable={true} >
+                                <div className="mdl-color-text--grey-800" style={styles.uploadCounter}>{totalUploads.complete} of {totalUploads.inProcess} complete...</div>
                                 {uploading}
                             </CardText>
                         </Card>
@@ -102,6 +104,9 @@ const styles = {
         width: '98.7%',
         margin: '0px 8px 0px 8px',
         backgroundColor: Color.blue
+    },
+    uploadCounter: {
+        margin: '0px 6px 20px 6px'
     },
     uploadText: {
         fontSize: 13,

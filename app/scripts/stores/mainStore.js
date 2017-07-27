@@ -87,6 +87,7 @@ export class MainStore {
     @observable users
     @observable userKey
     @observable versionModal
+    @observable totalUploads
 
     constructor() {
         this.agents = [];
@@ -171,6 +172,7 @@ export class MainStore {
         this.versionModal = false;
         this.warnUserBeforeLeavingPage = false;
 
+        this.totalUploads = {inProcess: 0, complete: 0};
         this.transportLayer = transportLayer;
     }
 
@@ -178,15 +180,15 @@ export class MainStore {
         return checkStatus(response, authStore);
     }
 
-    setCurrentRouteLocation(location) {
+    @action setCurrentRouteLocation(location) {
         this.currentLocation = location;
     }
 
-    toggleUploadProgressCard() {
+    @action toggleUploadProgressCard() {
         this.expandUploadProgressCard = !this.expandUploadProgressCard;
     }
 
-    tryAsyncAgain(func, args) {
+    @action tryAsyncAgain(func, args) {
         mainStore.counter++;
         mainStore.loading = true;
         if(mainStore.counter < StatusEnum.MAX_RETRY) {
@@ -611,6 +613,8 @@ export class MainStore {
     }
 
     @action processFilesToUploadDepthFirst(files, parentId, parentKind, projectId) {
+        console.log(JSON.stringify(files))
+
         this.loading = true;
         let fileList = files.map((file) => { return {path: file.fullPath, filename: file.name , file: file} });
         const hierarchy = {}; // {folder_name} = { name: <name of folder>, children: {...just like hierarchy...}, files: [] }
@@ -794,6 +798,7 @@ export class MainStore {
                         let uploadObj = json;
                         if (!uploadObj.id && !uploadObj.error) throw "no upload was created";
                         mainStore.uploads.set(uploadObj.id, details);
+                        mainStore.totalUploads.inProcess++;
                         mainStore.hashFile(mainStore.uploads.get(uploadObj.id), uploadObj.id);
                         mainStore.updateAndProcessChunks(uploadObj.id, null, null);
                         window.onbeforeunload = function () {// If uploading files and user navigates away from page, send them warning
@@ -1072,11 +1077,15 @@ export class MainStore {
         } else if (this.uploads.size === 1 && this.isFolderUpload) {
             this.isFolderUpload = false;
             let id = this.currentLocation.id;
-            let path = this.currentLocation.location.includes('project') ? Path.PROJECT : Path.FOLDER;
+            let path = this.currentLocation.path.includes('project') ? Path.PROJECT : Path.FOLDER;
             this.getChildren(id, path);
         }
         if(this.uploads.has(uploadId)) this.uploads.delete(uploadId);
-        if(this.uploads.size < 1 && this.hideUploadProgress) this.hideUploadProgress = false;
+        this.totalUploads.complete++;
+        if(this.uploads.size < 1) {
+           if(this.hideUploadProgress) this.hideUploadProgress = false;
+           this.totalUploads = {inProcess: 0, complete: 0};
+        }
     }
 
     @action addFileVersion(uploadId, label, fileId) {
@@ -1141,7 +1150,7 @@ export class MainStore {
         if(!this.uploads.size && this.warnUserBeforeLeavingPage) this.warnUserBeforeLeavingPage = false;
         if(!this.uploads.size) { // If user cancels last uploads, make sure that page loads with new list items
             let id = this.currentLocation.id;
-            let path = this.currentLocation.location.includes('project') ? Path.PROJECT : Path.FOLDER;
+            let path = this.currentLocation.path.includes('project') ? Path.PROJECT : Path.FOLDER;
             this.getChildren(id, path);
         }
     }

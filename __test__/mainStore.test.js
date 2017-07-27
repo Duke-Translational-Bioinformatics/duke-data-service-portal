@@ -19,6 +19,8 @@ describe('Main Store', () => {
     const DDS_FILE = 'dds-file';
     const FOLDER_PATH = 'folders/';
     const FILE_PATH = 'files/';
+    const LOCATION_ID = 'LOCATION_ID';
+    const LOCATION_PATH = '/folder/LOCATION_ID';
     const TEMPLATE_ID = 'TEMPLATE_ID';
     const TEMPLATE_NAME = 'TEMPLATE_1';
     const TEMPLATE_DESCRIPTION = 'TEMPLATE 1 DESCRIPTION';
@@ -38,6 +40,27 @@ describe('Main Store', () => {
         transportLayer = {};
         mainStore.transportLayer = transportLayer;
         mainStore.listItems = [];
+    });
+
+    it('@action setCurrentRouteLocation - should set a location object containing an ID and path', () => {
+        mainStore.setCurrentRouteLocation(fake.location);
+        expect(mainStore.currentLocation.id).toBe(LOCATION_ID);
+        expect(mainStore.currentLocation.path).toBe(LOCATION_PATH);
+    });
+
+    it('@action incrementTableBodyRenderKey - should increment by 1', () => {
+        expect(mainStore.tableBodyRenderKey).toBe(0);
+        mainStore.incrementTableBodyRenderKey();
+        expect(mainStore.tableBodyRenderKey).toBe(1);
+        mainStore.incrementTableBodyRenderKey();
+        expect(mainStore.tableBodyRenderKey).toBe(2);
+    });
+
+    it('@action toggleUploadProgressCard - should toggle expandUploadProgressCard', () => {
+        mainStore.toggleUploadProgressCard();
+        expect(mainStore.expandUploadProgressCard).toBe(false);
+        mainStore.toggleUploadProgressCard();
+        expect(mainStore.expandUploadProgressCard).toBe(true);
     });
 
     it('@action toggleLoading - should change loading status', () => {
@@ -72,6 +95,7 @@ describe('Main Store', () => {
         mainStore.processFilesToUpload([FILE_ID], [FOLDER_ID]);
         expect(mainStore.filesToUpload[0]).toBe(FILE_ID);
         expect(mainStore.filesRejectedForUpload[0]).toBe(FOLDER_ID);
+        expect(mainStore.hideUploadProgress).toBe(false);
     });
 
     it('@action removeFileFromUploadList - removes a selected file from upload list based on index', () => {

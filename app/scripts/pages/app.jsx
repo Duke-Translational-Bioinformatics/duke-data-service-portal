@@ -77,7 +77,7 @@ class App extends React.Component {
         if(authStore.sessionTimeoutWarning) authStore.setRedirectUrl(location.href);
         if(prevProps.location.pathname !== this.props.location.pathname || mainStore.currentLocation === null) {
             this.$$('.page-content').scrollTo(0, 0);
-            mainStore.setCurrentRouteLocation({location: this.props.location.pathname, id: this.props.params.id});
+            mainStore.setCurrentRouteLocation({path: this.props.location.pathname, id: this.props.params.id});
         }
         this.showToasts();
     }
