@@ -613,8 +613,6 @@ export class MainStore {
     }
 
     @action processFilesToUploadDepthFirst(files, parentId, parentKind, projectId) {
-        console.log(JSON.stringify(files))
-
         this.loading = true;
         let fileList = files.map((file) => { return {path: file.fullPath, filename: file.name , file: file} });
         const hierarchy = {}; // {folder_name} = { name: <name of folder>, children: {...just like hierarchy...}, files: [] }
@@ -1317,7 +1315,7 @@ export class MainStore {
         this.transportLayer.deleteTemplate(id)
             .then(this.checkResponse)
             .then(response => {})
-            .then((json) => {
+            .then(() => {
                 this.addToast('The ' + label + ' template has been deleted');
                 this.toggleMetadataManager();
                 this.loadMetadataTemplates('');
@@ -1331,7 +1329,7 @@ export class MainStore {
         this.transportLayer.deleteMetadataProperty(id)
             .then(this.checkResponse)
             .then(response => {})
-            .then((json) => {
+            .then(() => {
                 this.addToast('The ' + label + ' property has been deleted');
                 this.templateProperties = BaseUtils.removeObjByKey(this.templateProperties.slice(), {key: 'id', value: id});
             }).catch((ex) => {
