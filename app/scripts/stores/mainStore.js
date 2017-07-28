@@ -315,47 +315,47 @@ export class MainStore {
             })
     }
 
-    @action deleteFolder(id, path, parentId) {
+    @action deleteFolder(id, parentId, path) {
         this.loading = true;
         this.transportLayer.deleteFolder(id)
             .then(this.checkResponse)
             .then(response => {})
             .then(() => {
                 this.addToast('Folder(s) Deleted!');
-                this.deleteItemSuccess(id, path, parentId)
+                this.deleteItemSuccess(id, parentId, path)
             }).catch((ex) => {
                 this.addToast('Folder Deleted Failed!');
                 this.handleErrors(ex)
             });
     }
 
-    @action deleteFile(id, path, parentId) {
+    @action deleteFile(id, parentId, path) {
         this.loading = true;
         this.transportLayer.deleteFile(id)
             .then(this.checkResponse)
             .then(response => {})
             .then(() => {
                 this.addToast('File(s) Deleted!');
-                this.deleteItemSuccess(id, path, parentId)
+                this.deleteItemSuccess(id, parentId, path)
             }).catch((ex) => {
                 this.addToast('Failed to Delete File!');
                 this.handleErrors(ex)
             });
     }
 
-    @action deleteItemSuccess(id, path, parentId) {
+    @action deleteItemSuccess(id, parentId, path) {
         this.loading = false;
         this.listItems = BaseUtils.removeObjByKey(this.listItems.slice(), {key: 'id', value: id});
         if(this.listItems.length === 0) this.getChildren(parentId, path)
     }
 
-    @action batchDeleteItems(path, parentId) {
+    @action batchDeleteItems(parentId, path) {
         for (let id of this.filesChecked) {
-            this.deleteFile(id, path, parentId);
+            this.deleteFile(id, parentId, path);
             this.filesChecked = this.filesChecked.filter(file => file !== id)
         }
         for (let id of this.foldersChecked) {
-            this.deleteFolder(id, path, parentId);
+            this.deleteFolder(id, parentId, path);
             this.foldersChecked = this.foldersChecked.filter(folder => folder !== id)
         }
         this.incrementTableBodyRenderKey();
@@ -676,7 +676,7 @@ export class MainStore {
             contentType = blob.type,
             slicedFile = null,
             BYTES_PER_CHUNK, SIZE, start, end;
-            BYTES_PER_CHUNK = 5242880 * 6;
+            BYTES_PER_CHUNK = 2500000;
             SIZE = blob.size;
             start = 0;
             end = BYTES_PER_CHUNK;
@@ -755,7 +755,7 @@ export class MainStore {
         function postHash(hash) {
             mainStore.fileHashes.push(hash);
         }
-        if (file.blob.size < 5242880 * 6) {
+        if (file.blob.size < 5000000) {
             function calculateMd5(blob, id) {
                 let reader = new FileReader();
                 reader.readAsArrayBuffer(blob);
@@ -814,7 +814,7 @@ export class MainStore {
                 blob = blob.getBlob();
             }
             let worker = new Worker(URL.createObjectURL(blob));
-            let chunksize = 5242880;
+            let chunksize = 2500000;
             let f = file.blob; // FileList object
             let i = 0,
                 chunks = Math.ceil(f.size / chunksize),

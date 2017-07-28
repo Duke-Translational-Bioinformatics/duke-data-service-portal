@@ -149,7 +149,7 @@ class BatchOps extends React.Component {
     handleDelete(){
         let parentId = this.props.params.id;
         let path = this.props.router.location.pathname.includes('project') ? Path.PROJECT : Path.FOLDER;
-        mainStore.batchDeleteItems(path, parentId);
+        mainStore.batchDeleteItems(parentId, path);
         this.handleClose('dlt');
     }
 

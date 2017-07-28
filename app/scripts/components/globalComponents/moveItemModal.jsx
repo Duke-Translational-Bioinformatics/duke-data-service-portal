@@ -59,7 +59,7 @@ class MoveItemModal extends React.Component {
                     primaryText={moveToObj.name}
                     leftIcon={<Folder />}
                     onTouchTap={() => this.selectedLocation(moveToObj.id, moveToObj.kind)}
-                    rightIconButton={<IconButton disabled={moveToObj.id === this.props.params.id || moveToObj.id === itemParentId} tooltip="move here" tooltipPosition="bottom" onTouchTap={() => this.handleMove(moveToObj.id, moveToObj.kind)}><Archive style={styles.rightIcon} color={Color.pink} /></IconButton>}/>
+                    rightIconButton={<IconButton disabled={moveToObj.id === this.props.params.id || moveToObj.id === itemParentId} tooltip="move here" tooltipPosition="bottom-center" onTouchTap={() => this.handleMove(moveToObj.id, moveToObj.kind)}><Archive style={styles.rightIcon} color={Color.pink} /></IconButton>}/>
             }
         }
 
@@ -78,7 +78,7 @@ class MoveItemModal extends React.Component {
                                   primaryText={item.name}
                                   leftIcon={<ContentPaste />}
                                   onTouchTap={() => this.getProjectChildren(item.id)}
-                                  rightIconButton={<IconButton disabled={item.id === this.props.params.id || item.id === itemParentId} tooltip="move here" tooltipPosition="bottom" onTouchTap={() => this.handleMove(item.id, item.kind)}><Archive style={styles.rightIcon} color={Color.pink}/></IconButton>}/>
+                                  rightIconButton={<IconButton disabled={item.id === this.props.params.id || item.id === itemParentId} tooltip="move here" tooltipPosition="bottom-center" onTouchTap={() => this.handleMove(item.id, item.kind)}><Archive style={styles.rightIcon} color={Color.pink}/></IconButton>}/>
                     )
                 } else if(!this.state.projectChildren) {
                     return (
@@ -89,7 +89,7 @@ class MoveItemModal extends React.Component {
                                   primaryText={item.name}
                                   leftIcon={<Folder />}
                                   onTouchTap={() => this.openListItem(item.id, item.kind)}
-                                  rightIconButton={<IconButton disabled={item.id === this.props.params.id || item.id === itemParentId} tooltip="move here" tooltipPosition="bottom" onTouchTap={() => this.handleMove(item.id, item.kind)}><Archive style={styles.rightIcon} color={Color.pink}/></IconButton>}/>
+                                  rightIconButton={<IconButton disabled={item.id === this.props.params.id || item.id === itemParentId} tooltip="move here" tooltipPosition="bottom-center" onTouchTap={() => this.handleMove(item.id, item.kind)}><Archive style={styles.rightIcon} color={Color.pink}/></IconButton>}/>
                     )
                 }
             });
@@ -111,7 +111,7 @@ class MoveItemModal extends React.Component {
                                   primaryText={item.name}
                                   leftIcon={<Folder />}
                                   onTouchTap={() => this.openListItem(item.id, item.kind)}
-                                  rightIconButton={<IconButton disabled={item.id === this.props.params.id || item.id === itemParentId} tooltip="move here" tooltipPosition="bottom" onTouchTap={() => this.handleMove(item.id, item.kind)}><Archive style={styles.rightIcon} color={Color.pink}/></IconButton>}/>
+                                  rightIconButton={<IconButton disabled={item.id === this.props.params.id || item.id === itemParentId} tooltip="move here" tooltipPosition="bottom-center" onTouchTap={() => this.handleMove(item.id, item.kind)}><Archive style={styles.rightIcon} color={Color.pink}/></IconButton>}/>
                     )
                 } else {
                     return (
@@ -137,7 +137,7 @@ class MoveItemModal extends React.Component {
                                   primaryText={item.name}
                                   leftIcon={<Folder />}
                                   onTouchTap={() => this.openListItem(item.id, item.kind)}
-                                  rightIconButton={<IconButton disabled={item.id === this.props.params.id || item.id === itemParentId} tooltip="move here" tooltipPosition="bottom" onTouchTap={() => this.handleMove(item.id, item.kind)}><Archive style={styles.rightIcon} color={Color.pink}/></IconButton>}/>
+                                  rightIconButton={<IconButton disabled={item.id === this.props.params.id || item.id === itemParentId} tooltip="move here" tooltipPosition="bottom-center" onTouchTap={() => this.handleMove(item.id, item.kind)}><Archive style={styles.rightIcon} color={Color.pink}/></IconButton>}/>
                     )
                 } else {
                     return (
