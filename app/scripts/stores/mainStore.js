@@ -315,14 +315,14 @@ export class MainStore {
             })
     }
 
-    @action deleteFolder(id, path, parentId) {
+    @action deleteFolder(id, parentId, path) {
         this.loading = true;
         this.transportLayer.deleteFolder(id)
             .then(this.checkResponse)
             .then(response => {})
             .then(() => {
                 this.addToast('Folder(s) Deleted!');
-                this.deleteItemSuccess(id, path, parentId)
+                this.deleteItemSuccess(id, parentId, path)
             }).catch((ex) => {
                 this.addToast('Folder Deleted Failed!');
                 this.handleErrors(ex)
@@ -349,13 +349,13 @@ export class MainStore {
         if(this.listItems.length === 0) this.getChildren(parentId, path)
     }
 
-    @action batchDeleteItems(path, parentId) {
+    @action batchDeleteItems(parentId, path) {
         for (let id of this.filesChecked) {
-            this.deleteFile(id, path, parentId);
+            this.deleteFile(id, parentId, path);
             this.filesChecked = this.filesChecked.filter(file => file !== id)
         }
         for (let id of this.foldersChecked) {
-            this.deleteFolder(id, path, parentId);
+            this.deleteFolder(id, parentId, path);
             this.foldersChecked = this.foldersChecked.filter(folder => folder !== id)
         }
         this.incrementTableBodyRenderKey();
