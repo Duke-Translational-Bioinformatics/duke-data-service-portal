@@ -81,13 +81,13 @@ export class MainStore {
     @observable templateProperties
     @observable toasts
     @observable toggleModal
+    @observable totalUploads
     @observable uploadCount
     @observable uploads
     @observable usage
     @observable users
     @observable userKey
     @observable versionModal
-    @observable totalUploads
 
     constructor() {
         this.agents = [];
@@ -164,6 +164,7 @@ export class MainStore {
         this.templateProperties = [];
         this.toasts = [];
         this.toggleModal = {open: false, id: null};
+        this.totalUploads = {inProcess: 0, complete: 0};
         this.uploadCount = [];
         this.uploads = observable.map();
         this.usage = null;
@@ -172,7 +173,6 @@ export class MainStore {
         this.versionModal = false;
         this.warnUserBeforeLeavingPage = false;
 
-        this.totalUploads = {inProcess: 0, complete: 0};
         this.transportLayer = transportLayer;
     }
 
