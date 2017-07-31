@@ -151,7 +151,7 @@ class ListItems extends React.Component {
                             <RaisedButton
                                 label={loading ? "Loading..." : "Load More"}
                                 secondary={true}
-                                disabled={loading ? true : false}
+                                disabled={!!loading}
                                 onTouchTap={()=>this.loadMore(nextPage)}
                                 fullWidth={true}
                                 style={loading ? {backgroundColor: Color.ltBlue2} : {}}

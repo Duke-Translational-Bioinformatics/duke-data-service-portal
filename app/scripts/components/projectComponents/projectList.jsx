@@ -20,14 +20,14 @@ class ProjectList extends React.Component {
         let nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
         let totalProjects = headers !== null && !!headers['x-total'] ? headers['x-total'][0] : null;
         let projectList = projects ? projects.map((project) => {
-            let role = projectRoles.get(project.id)
+            let role = projectRoles.get(project.id);
             return (
                 <Card key={ project.id } className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.card}>
                     <FontIcon className="material-icons" style={styles.icon}>content_paste</FontIcon>
                     <a href={UrlGen.routes.project(project.id)} className="external">
                         <CardTitle title={project.name} titleColor="#424242" style={styles.cardTitle}/>
                         <CardTitle subtitle={'Created On: ' + BaseUtils.formatDate(project.audit.created_on)} titleColor="#424242" style={styles.cardTitle}/>
-                        <CardTitle subtitle={'Project Role: ' + role} titleColor="#424242" style={styles.cardTitle2}/>
+                        <CardTitle subtitle={role !== undefined ? 'Project Role: ' + role : 'Project Role:'} titleColor="#424242" style={styles.cardTitle2}/>
                     </a>
                     <CardText>
                         <span className="mdl-color-text--grey-900">Description:</span>{ project.description.length > 300 ? ' ' + project.description.substring(0,300)+'...' : ' ' + project.description }
@@ -50,7 +50,7 @@ class ProjectList extends React.Component {
                     <RaisedButton
                         label={loading ? "Loading..." : "Load More"}
                         secondary={true}
-                        disabled={loading ? true : false}
+                        disabled={!!loading}
                         onTouchTap={()=>this.loadMore(nextPage)}
                         fullWidth={true}
                         style={loading ? {backgroundColor: Color.ltBlue2} : {}}

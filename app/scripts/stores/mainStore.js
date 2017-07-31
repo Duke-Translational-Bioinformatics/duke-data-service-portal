@@ -202,10 +202,11 @@ export class MainStore {
             }).catch(ex => this.handleErrors(ex))
     }
 
-    @action getProjects(page) {
+    @action getProjects(page, perPage) {
         this.loading = true;
         if (page == null) page = 1;
-        this.transportLayer.getProjects(page)
+        if (perPage == null) perPage = 25;
+        this.transportLayer.getProjects(page, perPage)
             .then(this.checkResponse).then((response) => {
                 const results = response.json();
                 const headers = response.headers;
@@ -213,7 +214,6 @@ export class MainStore {
             }).then((json) => {
                 let results = json[0].results;
                 let headers = json[1].map;
-                let projects = [];
                 if(page <= 1) {
                     this.projects = results;
                 } else {
@@ -223,6 +223,19 @@ export class MainStore {
                     this.getAllProjectPermissions(p.id, authStore.currentUser.id)
                 })
                 this.responseHeaders = headers;
+                this.loading = false;
+            }).catch(ex => this.handleErrors(ex))
+    }
+
+    @action getProjectListForProvenanceEditor() {
+        this.loading = true;
+        const page = 1;
+        const perPage = 1000;
+        this.transportLayer.getProjects(page, perPage)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => {
+                this.projects = json.results;
                 this.loading = false;
             }).catch(ex => this.handleErrors(ex))
     }

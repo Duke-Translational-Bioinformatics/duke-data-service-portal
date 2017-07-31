@@ -98,8 +98,8 @@ const transportLayer = {
     getUsageDetails: () => {
         return fetch(`${DDS_BASE_URI+apiPrefix+Path.CURRENT_USER}usage`, getFetchParams('get', authStore.appConfig.apiToken))
     },
-    getProjects: (page) => {
-        return fetch(`${DDS_BASE_URI+apiPrefix+Path.PROJECT}?page=${page}&per_page=25`, getFetchParams('get', authStore.appConfig.apiToken))
+    getProjects: (page, perPage) => {
+        return fetch(`${DDS_BASE_URI+apiPrefix+Path.PROJECT}?page=${page}&per_page=${perPage}`, getFetchParams('get', authStore.appConfig.apiToken))
     },
     getProjectMembers: (id) => {
         return fetch(DDS_BASE_URI+apiPrefix+Path.PROJECT+id+Path.PERMISSIONS, getFetchParams('get', authStore.appConfig.apiToken))
