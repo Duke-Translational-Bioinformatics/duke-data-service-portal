@@ -42,7 +42,7 @@ class Provenance extends React.Component {
     componentDidMount() {
         // Listen for resize changes when rotating device
         window.addEventListener('resize', this.handleResize);
-        mainStore.getProjects();
+        mainStore.getProjectListForProvenanceEditor();
         provenanceStore.getActivities();
     }
 

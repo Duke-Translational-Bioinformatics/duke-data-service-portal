@@ -13,7 +13,7 @@ class Home extends React.Component {
 
     componentDidMount() {
         if(authStore.appConfig.apiToken) {
-            mainStore.getProjects();
+            mainStore.getProjects(null, null);
             mainStore.getUsageDetails();
         } else {
             this.props.router.push('/login');

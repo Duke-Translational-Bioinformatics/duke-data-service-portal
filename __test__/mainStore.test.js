@@ -682,6 +682,16 @@ describe('Main Store', () => {
         });
     });
 
+    it('@action getProjectListForProvenanceEditor - initially should return an empty list of projects', () => {
+        transportLayer.getProjects = jest.fn((page) => respondOK([]));
+        mainStore.getProjects(PAGE);
+        return sleep(1).then(() => {
+            expect(transportLayer.getProjects).toHaveBeenCalledTimes(1);
+            expect(transportLayer.getProjects.mock.calls[0][0]).toBe(PAGE);
+            expect(mainStore.projects.length).toBe(0);
+        });
+    });
+
     it('@action getAllProjectPermissions - should return project roles', () => {
         transportLayer.getPermissions = jest.fn((id, userId) => respondOK(fake.grant_project_permission_json));
         mainStore.getAllProjectPermissions(PROJECT_ID, TEST_UID);
