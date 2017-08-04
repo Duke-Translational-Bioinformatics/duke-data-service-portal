@@ -658,6 +658,26 @@ describe('Main Store', () => {
         });
     });
 
+    it('@action getProjectListForProvenanceEditor - initially should return an empty list of projects', () => {
+        transportLayer.getProjects = jest.fn((page) => respondOK([]));
+        mainStore.getProjects(PAGE);
+        return sleep(1).then(() => {
+            expect(transportLayer.getProjects).toHaveBeenCalledTimes(1);
+            expect(transportLayer.getProjects.mock.calls[0][0]).toBe(PAGE);
+            expect(mainStore.projects.length).toBe(0);
+        });
+    });
+
+    it('@action getAllProjectPermissions - should return project roles', () => {
+        transportLayer.getPermissions = jest.fn((id, userId) => respondOK(fake.grant_project_permission_json));
+        mainStore.getAllProjectPermissions(PROJECT_ID, TEST_UID);
+        return sleep(1).then(() => {
+            expect(transportLayer.getPermissions).toHaveBeenCalledTimes(1);
+            expect(transportLayer.getPermissions).toHaveBeenCalledWith(PROJECT_ID, TEST_UID);
+            expect(mainStore.projectRoles).toBeDefined();
+        });
+    });
+
     it('@action addProject - should add a project', () => {
         transportLayer.addProject = jest.fn((name, description) => respondOK(fake.projects_json[0].results[0]));
         mainStore.addProject(fake.projects_json[0].results[0].name, fake.projects_json[0].results[0].description);

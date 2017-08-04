@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 const { object, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
-import { Path } from '../../util/urlEnum';
+import { Path, Kind } from '../../util/urlEnum';
 import { Color } from '../../theme/customTheme';
 import MoveItemModal from '../globalComponents/moveItemModal.jsx';
 import Card from 'material-ui/Card';
@@ -147,7 +147,9 @@ class BatchOps extends React.Component {
     }
 
     handleDelete(){
-        mainStore.batchDeleteItems();
+        let parentId = this.props.params.id;
+        let path = this.props.router.location.pathname.includes('project') ? Path.PROJECT : Path.FOLDER;
+        mainStore.batchDeleteItems(parentId, path);
         this.handleClose('dlt');
     }
 

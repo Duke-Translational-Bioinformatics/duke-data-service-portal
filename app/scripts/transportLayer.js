@@ -2,7 +2,7 @@ import { UrlGen, Path } from './util/urlEnum';
 import { getFetchParams } from './util/fetchUtil';
 import authStore from './stores/authStore';
 
-const DDS_BASE_URI = process.env.NODE_ENV === 'production' ? DDS_PORTAL_CONFIG.baseUrl : 'https://apidev.dataservice.duke.edu/';
+const DDS_BASE_URI = process.env.NODE_ENV === 'production' ? DDS_PORTAL_CONFIG.baseUrl : 'https://apidev.dataservice.duke.edu';
 const apiPrefix = UrlGen.routes.apiPrefix;
 
 const transportLayer = {
@@ -98,8 +98,8 @@ const transportLayer = {
     getUsageDetails: () => {
         return fetch(`${DDS_BASE_URI+apiPrefix+Path.CURRENT_USER}usage`, getFetchParams('get', authStore.appConfig.apiToken))
     },
-    getProjects: (page) => {
-        return fetch(`${DDS_BASE_URI+apiPrefix+Path.PROJECT}?page=${page}&per_page=25`, getFetchParams('get', authStore.appConfig.apiToken))
+    getProjects: (page, perPage) => {
+        return fetch(`${DDS_BASE_URI+apiPrefix+Path.PROJECT}?page=${page}&per_page=${perPage}`, getFetchParams('get', authStore.appConfig.apiToken))
     },
     getProjectMembers: (id) => {
         return fetch(DDS_BASE_URI+apiPrefix+Path.PROJECT+id+Path.PERMISSIONS, getFetchParams('get', authStore.appConfig.apiToken))

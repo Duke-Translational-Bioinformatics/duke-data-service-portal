@@ -112,10 +112,11 @@ class FileOptions extends React.Component {
     }
 
     handleDeleteButton(id, parentId, parentKind) {
-        let urlPath = parentKind === 'dds-project' ? '/project/' : '/folder/';
-        mainStore.deleteFile(id, parentId, parentKind);
+        let path = parentKind === 'dds-folder' ? Path.FOLDER : Path.PROJECT;
+        let redirectPath = parentKind === 'dds-project' ? '/project/' : '/folder/';
+        mainStore.deleteFile(id, parentId, path);
         this.handleClose('dltFile');
-        setTimeout(()=>this.props.router.push(urlPath + parentId), 500)
+        setTimeout(()=>this.props.router.push(redirectPath + parentId), 500)
     }
 
     handleUpdateButton(id) {
