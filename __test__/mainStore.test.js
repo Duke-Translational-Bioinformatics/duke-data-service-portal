@@ -42,6 +42,14 @@ describe('Main Store', () => {
         mainStore.listItems = [];
     });
 
+    it('@action toggleAllItemsSelected - should be true or false and should be the bool arg passed in', () => {
+        expect(mainStore.allItemsSelected).toBe(false);
+        mainStore.toggleAllItemsSelected(true);
+        expect(mainStore.allItemsSelected).toBe(true);
+        mainStore.toggleAllItemsSelected(false);
+        expect(mainStore.allItemsSelected).toBe(false);
+    });
+
     it('@action setCurrentRouteLocation - should set a location object containing an ID and path', () => {
         mainStore.setCurrentRouteLocation(fake.location);
         expect(mainStore.currentLocation.id).toBe(LOCATION_ID);
@@ -253,13 +261,16 @@ describe('Main Store', () => {
     });
 
     it('@action uploadError - sets an array of failed uploads that can be retried', () => {
+        mainStore.totalUploads = {inProcess: 1, complete: 0};
         mainStore.uploads = observable.map();
         mainStore.uploads.set(UPLOAD_ID);
+        expect(mainStore.totalUploads.inProcess).toBe(1);
         expect(mainStore.uploads.has(UPLOAD_ID)).toBe(true);
         mainStore.uploadError(UPLOAD_ID, fake.file_json.name, PROJECT_ID);
         expect(mainStore.failedUploads.length).toBe(1);
         expect(mainStore.failedUploads[0].id).toBe(UPLOAD_ID);
         expect(mainStore.uploads.has(UPLOAD_ID)).toBe(false);
+        expect(mainStore.totalUploads.inProcess).toBe(0);
         mainStore.failedUploads = [];
     });
 
@@ -274,13 +285,16 @@ describe('Main Store', () => {
     });
 
     it('@action cancelUpload - cancels selected upload', () => {
+        mainStore.totalUploads = {inProcess: 2, complete: 0};
         mainStore.uploads = observable.map();
         mainStore.uploads.set(UPLOAD_ID);
         mainStore.uploads.set(FILE_ID);
+        expect(mainStore.totalUploads.inProcess).toBe(2);
         expect(mainStore.uploads.has(UPLOAD_ID)).toBe(true);
         expect(mainStore.uploads.has(FILE_ID)).toBe(true);
         mainStore.cancelUpload(UPLOAD_ID, fake.file_json.name);
         expect(mainStore.uploads.has(UPLOAD_ID)).toBe(false);
+        expect(mainStore.totalUploads.inProcess).toBe(1);
         expect(mainStore.uploads.has(FILE_ID)).toBe(true);
     });
 

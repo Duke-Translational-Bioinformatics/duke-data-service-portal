@@ -13,6 +13,7 @@ export class MainStore {
     @observable agents
     @observable agentKey
     @observable agentApiToken
+    @observable allItemsSelected
     @observable autoCompleteLoading
     @observable audit
     @observable currentUser
@@ -93,6 +94,7 @@ export class MainStore {
         this.agents = [];
         this.agentKey = {};
         this.agentApiToken = {};
+        this.allItemsSelected = false;
         this.autoCompleteLoading = false;
         this.audit = {};
         this.counter = 0;
@@ -178,6 +180,10 @@ export class MainStore {
 
     checkResponse(response) {
         return checkStatus(response, authStore);
+    }
+
+    @action toggleAllItemsSelected (bool) {
+        this.allItemsSelected = bool;
     }
 
     @action setCurrentRouteLocation(location) {
@@ -383,12 +389,13 @@ export class MainStore {
     @action batchDeleteItems(parentId, path) {
         for (let id of this.filesChecked) {
             this.deleteFile(id, parentId, path);
-            this.filesChecked = this.filesChecked.filter(file => file !== id)
+            this.filesChecked = this.filesChecked.filter(file => file !== id);
         }
         for (let id of this.foldersChecked) {
             this.deleteFolder(id, parentId, path);
-            this.foldersChecked = this.foldersChecked.filter(folder => folder !== id)
+            this.foldersChecked = this.foldersChecked.filter(folder => folder !== id);
         }
+        if(this.allItemsSelected) this.toggleAllItemsSelected(!this.allItemsSelected);
         this.incrementTableBodyRenderKey();
     }
 
@@ -1152,12 +1159,16 @@ export class MainStore {
                 projectId: projectId
             });
             this.uploads.delete(uploadId);
+            this.totalUploads.inProcess--;
             this.failedUpload(this.failedUploads);
         }
     }
 
     @action cancelUpload(uploadId, name) {
-        if(this.uploads.has(uploadId)) this.uploads.delete(uploadId);
+        if(this.uploads.has(uploadId)) {
+            this.uploads.delete(uploadId);
+            this.totalUploads.inProcess--;
+        }
         this.addToast('Canceled upload of '+name);
         if(!this.uploads.size && this.warnUserBeforeLeavingPage) this.warnUserBeforeLeavingPage = false;
         if(!this.uploads.size) { // If user cancels last uploads, make sure that page loads with new list items
