@@ -1159,12 +1159,16 @@ export class MainStore {
                 projectId: projectId
             });
             this.uploads.delete(uploadId);
+            this.totalUploads.inProcess--;
             this.failedUpload(this.failedUploads);
         }
     }
 
     @action cancelUpload(uploadId, name) {
-        if(this.uploads.has(uploadId)) this.uploads.delete(uploadId);
+        if(this.uploads.has(uploadId)) {
+            this.uploads.delete(uploadId);
+            this.totalUploads.inProcess--;
+        }
         this.addToast('Canceled upload of '+name);
         if(!this.uploads.size && this.warnUserBeforeLeavingPage) this.warnUserBeforeLeavingPage = false;
         if(!this.uploads.size) { // If user cancels last uploads, make sure that page loads with new list items
