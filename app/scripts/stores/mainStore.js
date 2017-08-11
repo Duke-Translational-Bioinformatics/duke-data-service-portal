@@ -36,6 +36,7 @@ export class MainStore {
     @observable includeKinds
     @observable includeProjects
     @observable isListItem
+    @observable isSafari
     @observable itemsSelected
     @observable listItems
     @observable loading
@@ -119,6 +120,7 @@ export class MainStore {
         this.includeProjects = [];
         this.isFolderUpload = false;
         this.isListItem = false;
+        this.isSafari = false;
         this.itemsSelected = null;
         this.listItems = [];
         this.loading = false;
@@ -1521,6 +1523,8 @@ export class MainStore {
 
     @action getDeviceType(device) {
         this.device = device;
+        this.isSafari = /constructor/i.test(window.HTMLElement);
+        console.log(this.isSafari)
     }
 
     @action getScreenSize(height, width) {

@@ -21,7 +21,7 @@ import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColu
 class ListItems extends React.Component {
 
     render() {
-        const { allItemsSelected, filesChecked, foldersChecked, listItems, loading, projPermissions, responseHeaders, screenSize, tableBodyRenderKey, uploads } = mainStore;
+        const { allItemsSelected, filesChecked, foldersChecked, isSafari, listItems, loading, projPermissions, responseHeaders, screenSize, tableBodyRenderKey, uploads } = mainStore;
         let showBatchOps = !!(filesChecked.length || foldersChecked.length);
         let menuWidth = screenSize.width > 1230 ? 35 : 28;
         let headers = responseHeaders && responseHeaders !== null ? responseHeaders : null;
@@ -31,6 +31,7 @@ class ListItems extends React.Component {
         let uploadManager = null;
         let showChecks = null;
         let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
+        let checkboxStyle = { maxWidth: 24, float: 'left', marginRight: isSafari ? 16 : 0 };
         if (prjPrm !== null) {
             newFolderModal = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <AddFolderModal {...this.props}/>;
             uploadManager = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <RaisedButton label="Upload Files"
@@ -49,14 +50,14 @@ class ListItems extends React.Component {
                     <TableRow key={children.id} selectable={false}>
                         <TableRowColumn onTouchTap={()=>this.check(children.id, children.kind)}>
                             {showChecks && <Checkbox
-                                style={styles.checkbox}
+                                style={checkboxStyle}
                                 checked={mainStore.foldersChecked.includes(children.id)}
                             />}
-                            <a onClick={(e) => {e.stopPropagation()}} href={UrlGen.routes.folder(children.id)} className="external">
-                                <span style={{color: Color.blue}}>
+                            <a onClick={(e) => {e.stopPropagation()}} href={UrlGen.routes.folder(children.id)} className="external" style={{overflow: 'hidden'}}>
+                                <div style={{color: Color.blue}}>
                                     <FontIcon className="material-icons" style={styles.icon}>folder</FontIcon>
                                     {children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}
-                                </span>
+                                </div>
                             </a>
                         </TableRowColumn>
                         {screenSize && screenSize.width >= 680 && <TableRowColumn onTouchTap={()=>this.check(children.id, children.kind)}>
@@ -78,15 +79,15 @@ class ListItems extends React.Component {
                     <TableRow key={children.id} selectable={false}>
                         <TableRowColumn onTouchTap={()=>this.check(children.id, children.kind)}>
                             {showChecks && <Checkbox
-                                style={styles.checkbox}
+                                style={checkboxStyle}
                                 checked={mainStore.filesChecked.includes(children.id)}
                             />}
-                            <a onClick={(e) => {e.stopPropagation()}} href={UrlGen.routes.file(children.id)} className="external">
-                                <span style={{color: Color.blue}}>
+                            <a onClick={(e) => {e.stopPropagation()}} href={UrlGen.routes.file(children.id)} className="external" style={{overflow: 'hidden'}}>
+                                <div style={{color: Color.blue}}>
                                     <FontIcon className="material-icons" style={styles.icon}>description</FontIcon>
                                     {children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name+' '}
                                     {' (version '+ children.current_version.version+')'}
-                                </span>
+                                </div>
                             </a>
                         </TableRowColumn>
                         {screenSize && screenSize.width >= 680 && <TableRowColumn onTouchTap={()=>this.check(children.id, children.kind)}>
@@ -120,7 +121,7 @@ class ListItems extends React.Component {
                         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                             <TableRow>
                                 <TableHeaderColumn>{showChecks && <Checkbox
-                                    style={styles.checkbox}
+                                    style={checkboxStyle}
                                     onCheck={()=> this.check(!allItemsSelected, null)}
                                     checked={allItemsSelected}
                                 />}
@@ -195,10 +196,6 @@ ListItems.contextTypes = {
 const styles = {
     batchOpsWrapper: {
         marginBottom: 0
-    },
-    checkbox: {
-        maxWidth: 24,
-        float: 'left'
     },
     icon: {
         marginLeft: -4,
