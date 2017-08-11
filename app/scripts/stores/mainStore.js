@@ -1524,7 +1524,6 @@ export class MainStore {
     @action getDeviceType(device) {
         this.device = device;
         this.isSafari = /constructor/i.test(window.HTMLElement);
-        console.log(this.isSafari)
     }
 
     @action getScreenSize(height, width) {
