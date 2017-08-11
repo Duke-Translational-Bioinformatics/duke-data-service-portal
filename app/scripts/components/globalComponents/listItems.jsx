@@ -46,24 +46,23 @@ class ListItems extends React.Component {
             let folderOptionsMenu = showChecks && <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(children.id, Path.FOLDER, true)}/>;
             if (children.kind === 'dds-folder') {
                 return (
-                    <TableRow key={children.id} selected={mainStore.foldersChecked.includes(children.id)} selectable={false}>
-                        <TableRowColumn>
+                    <TableRow key={children.id} selectable={false}>
+                        <TableRowColumn onTouchTap={()=>this.check(children.id, children.kind)}>
                             {showChecks && <Checkbox
                                 style={styles.checkbox}
-                                onCheck={()=> this.check(children.id, children.kind)}
                                 checked={mainStore.foldersChecked.includes(children.id)}
                             />}
                             <a onClick={(e) => {e.stopPropagation()}} href={UrlGen.routes.folder(children.id)} className="external">
-                                <div style={{color: Color.blue}}>
+                                <span style={{color: Color.blue}}>
                                     <FontIcon className="material-icons" style={styles.icon}>folder</FontIcon>
                                     {children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name}
-                                </div>
+                                </span>
                             </a>
                         </TableRowColumn>
-                        {screenSize && screenSize.width >= 680 && <TableRowColumn>
-                            {children.audit.last_updated_on !== null ? BaseUtils.formatDate(children.audit.last_updated_on)+' by '+children.audit.last_updated_by.full_name : BaseUtils.formatDate(children.audit.created_on)+' by '+children.audit.created_by.full_name}
+                        {screenSize && screenSize.width >= 680 && <TableRowColumn onTouchTap={()=>this.check(children.id, children.kind)}>
+                            <span>{children.audit.last_updated_on !== null ? BaseUtils.formatDate(children.audit.last_updated_on)+' by '+children.audit.last_updated_by.full_name : BaseUtils.formatDate(children.audit.created_on)+' by '+children.audit.created_by.full_name}</span>
                         </TableRowColumn>}
-                        {screenSize && screenSize.width >= 840 && <TableRowColumn style={{width: 100}}>
+                        {screenSize && screenSize.width >= 840 && <TableRowColumn onTouchTap={()=>this.check(children.id, children.kind)} style={{width: 100}}>
                             {'---'}
                         </TableRowColumn>}
                         <TableRowColumn style={{textAlign: 'right', width: menuWidth}}>
@@ -76,25 +75,24 @@ class ListItems extends React.Component {
                 );
             } else {
                 return (
-                    <TableRow key={children.id} selected={mainStore.filesChecked.includes(children.id)} selectable={false}>
-                        <TableRowColumn>
+                    <TableRow key={children.id} selectable={false}>
+                        <TableRowColumn onTouchTap={()=>this.check(children.id, children.kind)}>
                             {showChecks && <Checkbox
                                 style={styles.checkbox}
-                                onCheck={()=> this.check(children.id, children.kind)}
                                 checked={mainStore.filesChecked.includes(children.id)}
                             />}
                             <a onClick={(e) => {e.stopPropagation()}} href={UrlGen.routes.file(children.id)} className="external">
-                                <div style={{color: Color.blue}}>
+                                <span style={{color: Color.blue}}>
                                     <FontIcon className="material-icons" style={styles.icon}>description</FontIcon>
                                     {children.name.length > 82 ? children.name.substring(0, 82) + '...' : children.name+' '}
                                     {' (version '+ children.current_version.version+')'}
-                                </div>
+                                </span>
                             </a>
                         </TableRowColumn>
-                        {screenSize && screenSize.width >= 680 && <TableRowColumn>
+                        {screenSize && screenSize.width >= 680 && <TableRowColumn onTouchTap={()=>this.check(children.id, children.kind)}>
                             {children.audit.last_updated_on !== null ? BaseUtils.formatDate(children.audit.last_updated_on)+' by '+children.audit.last_updated_by.full_name : BaseUtils.formatDate(children.audit.created_on)+' by '+children.audit.created_by.full_name}
                         </TableRowColumn>}
-                        {screenSize && screenSize.width >= 840 && <TableRowColumn style={{width: 100}}>
+                        {screenSize && screenSize.width >= 840 && <TableRowColumn onTouchTap={()=>this.check(children.id, children.kind)} style={{width: 100}}>
                             {children.current_version ? BaseUtils.bytesToSize(children.current_version.upload.size) : '---'}
                         </TableRowColumn>}
                         <TableRowColumn style={{textAlign: 'right', width: menuWidth}}>
