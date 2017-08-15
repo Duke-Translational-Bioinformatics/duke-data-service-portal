@@ -50,13 +50,14 @@ class ListItems extends React.Component {
             let folderOptionsMenu = showChecks && <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FOLDER, true)}/>;
                 return (
                     <TableRow key={child.id} selectable={false}>
-                        <TableRowColumn onTouchTap={()=>this.check(child.id, child.kind)}>
+                        <TableRowColumn>
                             {showChecks && <Checkbox
                                 style={checkboxStyle}
+                                onCheck={()=>this.check(child.id, child.kind)}
                                 checked={itemsChecked.includes(child.id)}
                             />}
-                            <a onClick={(e) => {e.stopPropagation()}} href={route} className="external">
-                                <div style={{color: Color.blue}}>
+                            <a href={route} className="external" onClick={(e) => this.checkForAllItemsSelected(e)}>
+                                <div style={styles.linkColor}>
                                     <FontIcon className="material-icons" style={styles.icon}>{icon}</FontIcon>
                                     {child.name.length > 82 ? child.name.substring(0, 82) + '...' : child.name}
                                     {child.kind === Kind.DDS_FILE && ' (version '+ child.current_version.version+')'}
@@ -146,9 +147,15 @@ class ListItems extends React.Component {
         if(prjPrm !== 'viewOnly' && prjPrm !== 'flUpload') mainStore.handleBatch(files, folders);
     }
 
+    checkForAllItemsSelected(e) {
+        const allItemsSelected = mainStore.allItemsSelected;
+        allItemsSelected ? mainStore.toggleAllItemsSelected(!allItemsSelected) : null;
+        e.stopPropagation();
+    }
+
     loadMore(page) {
-        let id = this.props.params.id;
-        let kind = this.props.router.location.pathname.includes('project') ? Path.PROJECT : Path.FOLDER;
+        const id = this.props.params.id;
+        const kind = this.props.router.location.pathname.includes('project') ? Path.PROJECT : Path.FOLDER;
         mainStore.getChildren(id, kind, page);
     }
 
@@ -175,6 +182,9 @@ const styles = {
         marginLeft: -4,
         marginRight: 10,
         verticalAlign: -6
+    },
+    linkColor: {
+        color: Color.blue
     },
     list: {
         float: 'right',

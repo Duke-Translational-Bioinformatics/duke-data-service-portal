@@ -387,7 +387,7 @@ export class MainStore {
 
     @action deleteItemSuccess(id, parentId, path) {
         this.loading = false;
-        this.listItems = BaseUtils.removeObjByKey(this.listItems.slice(), {key: 'id', value: id});
+        this.listItems = this.listItems.filter(l => l.id !== id);
         if(this.listItems.length === 0) this.getChildren(parentId, path)
     }
 
@@ -440,11 +440,11 @@ export class MainStore {
             .then(response => response.json())
             .then((json) => {
                 this.addToast('Item name updated to ' + name);
-                if(BaseUtils.objectPropInArray(this.listItems.slice(), 'id', id)) {
-                    this.listItems = this.listItems.filter(obj => obj.id !== id);
-                    this.listItems.unshift(json);
-                    if(this.entityObj.id === id) this.entityObj = json;
+                if(this.listItems.some(l => l.id === id)) {
+                    let index = this.listItems.findIndex(p => p.id === id);
+                    this.listItems.splice(index, 1, json);
                 }
+                if(this.entityObj && this.entityObj.id === id) this.entityObj = json;
                 this.loading = false;
             }).catch((ex) => {
             this.addToast('Failed to update item');
