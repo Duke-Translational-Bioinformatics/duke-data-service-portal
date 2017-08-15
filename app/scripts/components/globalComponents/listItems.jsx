@@ -128,6 +128,7 @@ class ListItems extends React.Component {
         let files = mainStore.filesChecked;
         let folders = mainStore.foldersChecked;
         let allItemsSelected = mainStore.allItemsSelected;
+        let prjPrm = mainStore.projPermissions;
         if(id === true || id === false) {
             files = [];
             folders = [];
@@ -142,7 +143,7 @@ class ListItems extends React.Component {
             !folders.includes(id) ? folders = [...folders, id] : folders = folders.filter(f => f !== id);
             allItemsSelected ? mainStore.toggleAllItemsSelected(!allItemsSelected) : null;
         }
-        mainStore.handleBatch(files, folders);
+        if(prjPrm !== 'viewOnly' && prjPrm !== 'flUpload') mainStore.handleBatch(files, folders);
     }
 
     loadMore(page) {
