@@ -4,6 +4,7 @@ import authStore from '../stores/authStore';
 import mainStore from '../stores/mainStore';
 import { Color } from '../theme/customTheme';
 import ProjectList from '../components/projectComponents/projectList.jsx';
+import ProjectOptions from '../components/projectComponents/projectOptions.jsx';
 import AccountOverview from '../components/globalComponents/accountOverview.jsx';
 import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
@@ -22,8 +23,8 @@ class Home extends React.Component {
 
     render() {
         const {modalOpen, screenSize} = mainStore;
-        let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
-        let standardActions = [
+        const dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
+        const actions = [
             <FlatButton
                 label="Cancel"
                 secondary={true}
@@ -33,12 +34,12 @@ class Home extends React.Component {
                 secondary={true}
                 onTouchTap={this.handleAcceptButton.bind(this)} />
         ];
-        let modal = (
+        const modal = (
             <Dialog
                 style={styles.dialogStyles}
                 contentStyle={dialogWidth}
                 title="Terms of Use - Protected Health Information"
-                actions={standardActions}
+                actions={actions}
                 autoDetectWindowHeight={true}
                 open={modalOpen === undefined ? true : modalOpen}
                 modal={true}>
@@ -59,6 +60,7 @@ class Home extends React.Component {
             <div>
                 <AccountOverview { ...this.props } />
                 <ProjectList { ...this.props } />
+                <ProjectOptions { ...this.props } />
                 {modal}
             </div>
         );
