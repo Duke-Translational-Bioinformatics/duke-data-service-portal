@@ -30,7 +30,7 @@ class DropZone extends React.Component {
     }
 
     render() {
-        let dropzoneColor = this.state.dropzoneHover ? '#EEE' : '#FFF';
+        let dropzoneColor = this.state.dropzoneHover ? '#C8E6C9' : '#F5F5F5';
 
         return (
             <form action="/" className="dropzone needsclick dz-clickable" id="dropArea">

@@ -48,6 +48,7 @@ export class MainStore {
     @observable moveItemList
     @observable moveItemLoading
     @observable moveToObj
+    @observable nextPage
     @observable objectMetadata
     @observable objectTags
     @observable openMetadataManager
@@ -82,6 +83,7 @@ export class MainStore {
     @observable tagsToAdd
     @observable templateProperties
     @observable toasts
+    @observable totalItems
     @observable toggleModal
     @observable totalUploads
     @observable uploadCount
@@ -132,6 +134,7 @@ export class MainStore {
         this.moveItemList = [];
         this.moveItemLoading = false;
         this.moveToObj = {};
+        this.nextPage = null;
         this.objectMetadata = [];
         this.objectTags = [];
         this.openMetadataManager = false;
@@ -167,6 +170,7 @@ export class MainStore {
         this.tagsToAdd = [];
         this.templateProperties = [];
         this.toasts = [];
+        this.totalItems = null;
         this.toggleModal = {open: false, id: null};
         this.totalUploads = {inProcess: 0, complete: 0};
         this.uploadCount = [];
@@ -250,6 +254,8 @@ export class MainStore {
                 userId !== null ? this.getAllProjectPermissions(p.id, authStore.currentUser.id) : null;
             });
             this.responseHeaders = headers;
+            this.nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
+            this.totalItems = headers !== null && !!headers['x-total'] ? parseInt(headers['x-total'][0], 10) : null;
             this.loading = false;
         }).catch(ex => this.handleErrors(ex))
     }
@@ -298,6 +304,10 @@ export class MainStore {
             .then((json) => {
                 this.addToast('Project Added');
                 this.projects = [json, ...this.projects];
+                const userId = authStore.currentUser.id !== undefined ? authStore.currentUser.id : this.currentUser.id !== undefined ? this.currentUser.id : null;
+                this.projects.forEach((p) => {
+                    userId !== null ? this.getAllProjectPermissions(p.id, authStore.currentUser.id) : null;
+                });
                 this.loading = false;
             }).catch((ex) => {
             this.addToast('Failed to add new project');
@@ -327,6 +337,7 @@ export class MainStore {
             .then(() => {
                 this.addToast('Project Deleted');
                 this.projects = this.projects.filter(p => p.id !== id);
+                this.totalItems--;
             }).catch((ex) => {
             this.addToast('Project Delete Failed');
             this.handleErrors(ex)
@@ -388,6 +399,7 @@ export class MainStore {
     @action deleteItemSuccess(id, parentId, path) {
         this.loading = false;
         this.listItems = this.listItems.filter(l => l.id !== id);
+        this.totalItems--;
         if(this.listItems.length === 0) this.getChildren(parentId, path)
     }
 
@@ -1227,6 +1239,8 @@ export class MainStore {
                     this.listItems = [...this.listItems, ...results];
                 }
                 this.responseHeaders = headers;
+                this.nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
+                this.totalItems = headers !== null && !!headers['x-total'] ? parseInt(headers['x-total'][0], 10) : null;
                 this.loading = false;
             }).catch(ex =>this.handleErrors(ex))
     }

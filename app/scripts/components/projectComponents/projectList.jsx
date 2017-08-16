@@ -16,10 +16,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 class ProjectList extends React.Component {
 
     render() {
-        const { loading, projects, projectRoles, responseHeaders } = mainStore;
-        let headers = responseHeaders && responseHeaders !== null ? responseHeaders : null;
-        let nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
-        let totalProjects = headers !== null && !!headers['x-total'] ? headers['x-total'][0] : null;
+        const { loading, nextPage, projects, projectRoles, totalItems } = mainStore;
         let projectList = projects ? projects.map((project) => {
             let role = projectRoles.get(project.id);
             return (
@@ -48,7 +45,7 @@ class ProjectList extends React.Component {
                     <Loaders {...this.props} />
                 </div>
                 { projectList }
-                {projects && projects.length < totalProjects ? <div className="mdl-cell mdl-cell--12-col">
+                {projects && projects.length < totalItems ? <div className="mdl-cell mdl-cell--12-col">
                     <RaisedButton
                         label={loading ? "Loading..." : "Load More"}
                         secondary={true}
