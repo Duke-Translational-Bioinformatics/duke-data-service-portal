@@ -5,6 +5,7 @@ import mainStore from '../../stores/mainStore';
 import { Color } from '../../theme/customTheme';
 import { UrlGen } from '../../util/urlEnum';
 import ProjectOptionsMenu from './projectOptionsMenu.jsx';
+import ProjectOptions from './projectOptions.jsx';
 import Details from './details.jsx';
 import UploadManager from '../globalComponents/uploadManager.jsx';
 import FlatButton from 'material-ui/FlatButton';
@@ -46,6 +47,7 @@ class ProjectDetails extends React.Component {
                         </a>
                         <div style={styles.menuIcon}>
                             { optionsMenu }
+                            <ProjectOptions {...this.props}/>
                         </div>
                     </div>
                     <div className="mdl-cell mdl-cell--9-col mdl-cell--4-col-tablet mdl-cell--4-col-phone"

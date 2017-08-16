@@ -13,6 +13,7 @@ export class MainStore {
     @observable agents
     @observable agentKey
     @observable agentApiToken
+    @observable allItemsSelected
     @observable autoCompleteLoading
     @observable audit
     @observable currentUser
@@ -35,6 +36,7 @@ export class MainStore {
     @observable includeKinds
     @observable includeProjects
     @observable isListItem
+    @observable isSafari
     @observable itemsSelected
     @observable listItems
     @observable loading
@@ -93,6 +95,7 @@ export class MainStore {
         this.agents = [];
         this.agentKey = {};
         this.agentApiToken = {};
+        this.allItemsSelected = false;
         this.autoCompleteLoading = false;
         this.audit = {};
         this.counter = 0;
@@ -117,6 +120,7 @@ export class MainStore {
         this.includeProjects = [];
         this.isFolderUpload = false;
         this.isListItem = false;
+        this.isSafari = false;
         this.itemsSelected = null;
         this.listItems = [];
         this.loading = false;
@@ -180,6 +184,10 @@ export class MainStore {
         return checkStatus(response, authStore);
     }
 
+    @action toggleAllItemsSelected (bool) {
+        this.allItemsSelected = bool;
+    }
+
     @action setCurrentRouteLocation(location) {
         this.currentLocation = location;
     }
@@ -237,9 +245,10 @@ export class MainStore {
             } else {
                 this.projects = [...this.projects, ...results];
             }
+            const userId = authStore.currentUser.id !== undefined ? authStore.currentUser.id : this.currentUser.id !== undefined ? this.currentUser.id : null;
             this.projects.forEach((p) => {
-                this.getAllProjectPermissions(p.id, authStore.currentUser.id)
-            })
+                userId !== null ? this.getAllProjectPermissions(p.id, authStore.currentUser.id) : null;
+            });
             this.responseHeaders = headers;
             this.loading = false;
         }).catch(ex => this.handleErrors(ex))
@@ -303,6 +312,8 @@ export class MainStore {
             .then((json) => {
                 this.addToast('Project Updated');
                 this.project = json;
+                let index = this.projects.findIndex((p) => p.id === id);
+                this.projects.splice(index, 1, json);
             }).catch((ex) => {
             this.addToast('Project Update Failed');
             this.handleErrors(ex)
@@ -315,7 +326,7 @@ export class MainStore {
             .then(response => {})
             .then(() => {
                 this.addToast('Project Deleted');
-                BaseUtils.removeObjByKey(this.projects, {key: 'id', value: id})
+                this.projects = this.projects.filter(p => p.id !== id);
             }).catch((ex) => {
             this.addToast('Project Delete Failed');
             this.handleErrors(ex)
@@ -376,19 +387,20 @@ export class MainStore {
 
     @action deleteItemSuccess(id, parentId, path) {
         this.loading = false;
-        this.listItems = BaseUtils.removeObjByKey(this.listItems.slice(), {key: 'id', value: id});
+        this.listItems = this.listItems.filter(l => l.id !== id);
         if(this.listItems.length === 0) this.getChildren(parentId, path)
     }
 
     @action batchDeleteItems(parentId, path) {
         for (let id of this.filesChecked) {
             this.deleteFile(id, parentId, path);
-            this.filesChecked = this.filesChecked.filter(file => file !== id)
+            this.filesChecked = this.filesChecked.filter(file => file !== id);
         }
         for (let id of this.foldersChecked) {
             this.deleteFolder(id, parentId, path);
-            this.foldersChecked = this.foldersChecked.filter(folder => folder !== id)
+            this.foldersChecked = this.foldersChecked.filter(folder => folder !== id);
         }
+        if(this.allItemsSelected) this.toggleAllItemsSelected(!this.allItemsSelected);
         this.incrementTableBodyRenderKey();
     }
 
@@ -428,11 +440,11 @@ export class MainStore {
             .then(response => response.json())
             .then((json) => {
                 this.addToast('Item name updated to ' + name);
-                if(BaseUtils.objectPropInArray(this.listItems.slice(), 'id', id)) {
-                    this.listItems = this.listItems.filter(obj => obj.id !== id);
-                    this.listItems.unshift(json);
-                    if(this.entityObj.id === id) this.entityObj = json;
+                if(this.listItems.some(l => l.id === id)) {
+                    let index = this.listItems.findIndex(p => p.id === id);
+                    this.listItems.splice(index, 1, json);
                 }
+                if(this.entityObj && this.entityObj.id === id) this.entityObj = json;
                 this.loading = false;
             }).catch((ex) => {
             this.addToast('Failed to update item');
@@ -518,6 +530,15 @@ export class MainStore {
                     this.isListItem = isListItem;
                 }).catch(ex => this.handleErrors(ex))
         }
+    }
+
+    @action setSelectedProject(id) {
+        this.transportLayer.getProjectDetails(id)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => {
+                this.project = json;
+            }).catch(ex => this.handleErrors(ex))
     }
 
     @action getObjectMetadata(id, kind) {
@@ -1514,6 +1535,7 @@ export class MainStore {
 
     @action getDeviceType(device) {
         this.device = device;
+        this.isSafari = /constructor/i.test(window.HTMLElement);
     }
 
     @action getScreenSize(height, width) {

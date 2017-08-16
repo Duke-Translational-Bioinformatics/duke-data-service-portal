@@ -42,6 +42,14 @@ describe('Main Store', () => {
         mainStore.listItems = [];
     });
 
+    it('@action toggleAllItemsSelected - should be true or false and should be the bool arg passed in', () => {
+        expect(mainStore.allItemsSelected).toBe(false);
+        mainStore.toggleAllItemsSelected(true);
+        expect(mainStore.allItemsSelected).toBe(true);
+        mainStore.toggleAllItemsSelected(false);
+        expect(mainStore.allItemsSelected).toBe(false);
+    });
+
     it('@action setCurrentRouteLocation - should set a location object containing an ID and path', () => {
         mainStore.setCurrentRouteLocation(fake.location);
         expect(mainStore.currentLocation.id).toBe(LOCATION_ID);

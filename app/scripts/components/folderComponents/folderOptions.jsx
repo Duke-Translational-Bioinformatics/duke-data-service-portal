@@ -115,7 +115,7 @@ class FolderOptions extends React.Component {
         let redirectPath = parentKind === 'dds-project' ? '/project/' : '/folder/';
         mainStore.deleteFolder(id, parentId, path);
         mainStore.toggleModals('dltFolder');
-        setTimeout(()=>this.props.router.push(redirectPath + parentId), 500)
+        this.props.router.location.pathname.includes(id) ? setTimeout(()=>this.props.router.push(redirectPath + parentId), 500) : null;
     }
 
     handleUpdateButton(id) {

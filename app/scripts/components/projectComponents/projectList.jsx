@@ -7,6 +7,7 @@ import { Color } from '../../theme/customTheme';
 import { UrlGen } from '../../util/urlEnum';
 import AddProjectModal from '../projectComponents/addProjectModal.jsx';
 import Loaders from '../globalComponents/loaders.jsx';
+import ProjectOptionsMenu from './projectOptionsMenu.jsx';
 import {Card, CardTitle, CardText} from 'material-ui/Card';
 import FontIcon from 'material-ui/FontIcon';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -24,6 +25,7 @@ class ProjectList extends React.Component {
             return (
                 <Card key={ project.id } className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.card}>
                     <FontIcon className="material-icons" style={styles.icon}>content_paste</FontIcon>
+                    {role && role === 'Project Admin' && <div style={styles.menuIcon} onClick={(e) => {e.stopPropagation()}}><ProjectOptionsMenu {...this.props} clickHandler={()=>this.setSelectedProject(project.id)}/></div>}
                     <a href={UrlGen.routes.project(project.id)} className="external">
                         <CardTitle title={project.name} titleColor="#424242" style={styles.cardTitle}/>
                         <CardTitle subtitle={'Created On: ' + BaseUtils.formatDate(project.audit.created_on)} titleColor="#424242" style={styles.cardTitle}/>
@@ -63,6 +65,10 @@ class ProjectList extends React.Component {
     loadMore(page) {
         mainStore.getProjects(page);
     }
+
+    setSelectedProject(id) {
+        mainStore.setSelectedProject(id);
+    }
 }
 
 const styles = {
@@ -72,7 +78,8 @@ const styles = {
     },
     cardTitle: {
         fontWeight: 200,
-        marginBottom: -15
+        marginBottom: -15,
+        marginRight: 24
     },
     cardTitle2: {
         fontWeight: 200,
@@ -90,6 +97,11 @@ const styles = {
         textAlign: 'left',
         float: 'left',
         paddingLeft: 20
+    },
+    menuIcon: {
+        float: 'right',
+        marginTop: 19,
+        marginRight: 3
     },
     title: {
         margin: '-10px 0px 0px 0px',
