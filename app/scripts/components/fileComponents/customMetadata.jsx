@@ -1,26 +1,25 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import Card from 'material-ui/Card';
 
-
 const CustomMetadata = observer(() => {
     const {objectMetadata} = mainStore;
-    let metadataItems = [];
-    metadataItems = objectMetadata && objectMetadata.length ? objectMetadata.map((obj)=>{
+
+    let metadataItems = objectMetadata && objectMetadata.length ? objectMetadata.map((obj) => {
         let properties = obj.properties.map((prop)=>{
             return <span key={prop.template_property.id}>
-                    <li className="list-group-title">{prop.template_property.key}</li>
                     <li className="item-content">
                         <div className="item-inner">
-                            <div>{prop.value}</div>
+                            <div className="mdl-color-text--grey-600">{prop.template_property.key+' '}<span className="mdl-color-text--grey-800">=></span><span className="mdl-color-text--grey-600">{' '+prop.value}</span></div>
                         </div>
                     </li>
                </span>
         });
         return <span key={obj.template.id}>
-                <div className="list-group">
+                <div className="list-group" style={{listStyle: 'none'}}>
+                    <li className="list-group-title">{obj.template.name}<i className="material-icons" style={{float: 'right', cursor: 'pointer', color: 'red'}}>delete_forever</i></li>
                     <ul>
                         {properties}
                     </ul>

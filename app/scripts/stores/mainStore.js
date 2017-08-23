@@ -561,7 +561,12 @@ export class MainStore {
                 this.objectMetadata = json.results;
                 this.metaObjProps = json.results.map((prop) => {
                     return prop.properties.map((prop) => {
-                        return {key: prop.template_property.key, id: prop.template_property.id, value: prop.value};
+                        return {
+                            template: prop.template,
+                            key: prop.template_property.key,
+                            id: prop.template_property.id,
+                            value: prop.value
+                        };
                     })
                 });
             }).catch(ex => this.handleErrors(ex))
@@ -1394,7 +1399,7 @@ export class MainStore {
             .then(response => response.json())
             .then((json) => {
                 this.addToast('A new metadata object was created.');
-                this.createMetadataObjectSuccess(fileId, kind, json);
+                this.createMetadataObjectSuccess(json);
             }).catch((ex) => {
             if (ex.response.status === 409) {
                 this.updateMetadataObject(kind, fileId, templateId, properties);
@@ -1411,7 +1416,7 @@ export class MainStore {
             .then(response => response.json())
             .then((json) => {
                 this.addToast('This metadata object was updated.');
-                this.createMetadataObjectSuccess(fileId, kind, json);
+                this.createMetadataObjectSuccess(json);
             }).catch((ex) => {
             this.addToast('Failed to update metadata object');
             this.handleErrors(ex)
@@ -1433,10 +1438,11 @@ export class MainStore {
         })
     }
 
-    @action createMetadataObjectSuccess(id, kind, json) {
+    @action createMetadataObjectSuccess(json) {
         this.drawerLoading = false;
         this.showBatchOps = false;
         this.showTemplateDetails = false;
+        this.objectMetadata = this.objectMetadata.filter((o) => o.template.id !== json.template.id);
         this.objectMetadata.push(json);
         this.metaObjProps = this.objectMetadata.map((prop) => {
             return prop.properties.map((prop) => {

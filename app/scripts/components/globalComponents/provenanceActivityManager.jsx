@@ -138,15 +138,14 @@ class ProvenanceActivityManager extends React.Component {
                                 <h2 style={styles.tabHeadline}>Add an Existing Activity</h2>
                                 <AutoComplete
                                     fullWidth={true}
-                                    menuStyle={{maxHeight: 200}}
+                                    menuStyle={styles.autoComplete}
                                     errorText={this.state.floatingErrorText}
                                     floatingLabelText="Type an Existing Activity Name"
                                     dataSource={autoCompleteData}
                                     filter={AutoComplete.caseInsensitiveFilter}
                                     ref={(input) => this.activityNameSearch = input}
                                     openOnFocus={true}
-                                    onNewRequest={(value) => this.chooseActivity(value)}
-                                    underlineStyle={styles.autoCompleteUnderline}/>
+                                    onNewRequest={(value) => this.chooseActivity(value)}/>
                             </Tab>
                         </Tabs>
                 </Dialog>
@@ -283,6 +282,10 @@ class ProvenanceActivityManager extends React.Component {
 }
 
 const styles = {
+    autoComplete: {
+        maxHeight: 200,
+        overflowY: 'auto'
+    },
     provEditor:{
         display: 'flex',
         justifyContent: 'center',

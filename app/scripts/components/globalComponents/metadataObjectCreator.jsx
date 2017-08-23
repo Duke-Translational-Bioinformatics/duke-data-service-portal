@@ -54,11 +54,11 @@ class MetadataObjectCreator extends React.Component {
                         if(p.id === obj.id && obj.type !== 'date') {
                             value = p.value;
                         } else if(p.id === obj.id && obj.type === 'date') {
-                            value = new Date(p.value.split("-").join("/"))
+                            value = new Date(p.value.split("-").join("/"));
                         }
                     });
                 });
-                return value;
+                if(value !== '') return value;
             };
             return (
                 <TableRow  key={obj.id}>
@@ -185,6 +185,7 @@ class MetadataObjectCreator extends React.Component {
                 this.replacePropertyValue(metaProps, key, formattedDate);
             }
         }
+        if(this.state.noValueWarning) this.setState({noValueWarning: false})
     }
 
     addToPropertyList(key) {
