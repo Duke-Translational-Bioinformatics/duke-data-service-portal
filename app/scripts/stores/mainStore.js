@@ -562,6 +562,10 @@ export class MainStore {
                 this.metaObjProps = json.results.map((prop) => {
                     return prop.properties.map((prop) => {
                         return {
+                            object: {
+                                kind: prop.object.kind,
+                                id: prop.object.id
+                            },
                             template: prop.template,
                             key: prop.template_property.key,
                             id: prop.template_property.id,
@@ -570,6 +574,22 @@ export class MainStore {
                     })
                 });
             }).catch(ex => this.handleErrors(ex))
+    }
+
+    @action deleteObjectMetadata(object, template) {
+        const index = this.objectMetadata.findIndex(o => o.template.id === template.id);
+        const itemToDelete = this.objectMetadata.filter((o) => {return o.template.id === template.id});
+        this.objectMetadata = this.objectMetadata.filter((o) => o.template.id !== template.id);
+        this.transportLayer.deleteObjectMetadata(object, template.id)
+            .then(this.checkResponse)
+            .then(response => {})
+            .then(() => {
+                this.addToast(`File metadata from ${template.name} has been deleted`);
+            }).catch((ex) => {
+            this.addToast(`Failed to delete file metadata from ${template.name}`);
+            this.objectMetadata.splice(index, 1, itemToDelete);
+            this.handleErrors(ex)
+        });
     }
 
     @action getUserNameFromAuthProvider(text, id) {

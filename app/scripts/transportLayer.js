@@ -316,6 +316,9 @@ const transportLayer = {
     deleteMetadataProperty: (id) => {
         return fetch(DDS_BASE_URI+apiPrefix+Path.TEMPLATE_PROPERTIES+id, getFetchParams('delete', authStore.appConfig.apiToken))
     },
+    deleteObjectMetadata: (object, templateId) => {
+        return fetch(`${DDS_BASE_URI+apiPrefix+Path.META+object.kind}/${object.id}/${templateId}`, getFetchParams('delete', authStore.appConfig.apiToken))
+    },
     createMetadataObject: (kind, fileId, templateId, properties) => {
         const body = {
             "properties": properties
