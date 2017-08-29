@@ -57,6 +57,13 @@ const transportLayer = {
         };
         return fetch(DDS_BASE_URI+apiPrefix+Path.ACTIVITIES, getFetchParams('post', authStore.appConfig.apiToken, body))
     },
+    editProvActivity: (id, name, desc) => {
+        const body = {
+            "name": name,
+            "description": desc
+        };
+        return fetch(DDS_BASE_URI+apiPrefix+Path.ACTIVITIES+id, getFetchParams('put', authStore.appConfig.apiToken, body))
+    },
     getProvFileVersions: (id) => {
         return fetch(`${DDS_BASE_URI+apiPrefix+Path.FILE+id}/${Path.VERSIONS}`, getFetchParams('get', authStore.appConfig.apiToken))
     },
@@ -319,17 +326,17 @@ const transportLayer = {
     deleteObjectMetadata: (object, templateId) => {
         return fetch(`${DDS_BASE_URI+apiPrefix+Path.META+object.kind}/${object.id}/${templateId}`, getFetchParams('delete', authStore.appConfig.apiToken))
     },
-    createMetadataObject: (kind, fileId, templateId, properties) => {
+    createMetadataObject: (kind, id, templateId, properties) => {
         const body = {
             "properties": properties
         };
-        return fetch(`${DDS_BASE_URI+apiPrefix+Path.META+kind}/${fileId}/${templateId}`, getFetchParams('post', authStore.appConfig.apiToken, body))
+        return fetch(`${DDS_BASE_URI+apiPrefix+Path.META+kind}/${id}/${templateId}`, getFetchParams('post', authStore.appConfig.apiToken, body))
     },
-    updateMetadataObject: (kind, fileId, templateId, properties) => {
+    updateMetadataObject: (kind, id, templateId, properties) => {
         const body = {
             "properties": properties
         };
-        return fetch(`${DDS_BASE_URI+apiPrefix+Path.META+kind}/${fileId}/${templateId}`, getFetchParams('put', authStore.appConfig.apiToken, body))
+        return fetch(`${DDS_BASE_URI+apiPrefix+Path.META+kind}/${id}/${templateId}`, getFetchParams('put', authStore.appConfig.apiToken, body))
     },
     createMetadataProperty: (id, name, label, desc, type) => {
         const body = {
@@ -371,23 +378,6 @@ const transportLayer = {
         };
         return fetch(DDS_BASE_URI+apiPrefix+Path.SEARCH, getFetchParams('post', authStore.appConfig.apiToken, body))
     },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 };
 
 export default transportLayer

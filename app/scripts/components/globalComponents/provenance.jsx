@@ -460,7 +460,8 @@ class Provenance extends React.Component {
 const styles = {
     btnStyle: {
         margin: 10,
-        width: '80%'
+        width: '80%',
+        minWidth: 168
     },
     dialogStyles: {
         textAlign: 'center',

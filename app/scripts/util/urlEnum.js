@@ -41,5 +41,6 @@ export const Path = Object.freeze({
 export const Kind = Object.freeze({
     DDS_FILE: 'dds-file',
     DDS_FOLDER: 'dds-folder',
-    DDS_PROJECT: 'dds-project'
+    DDS_PROJECT: 'dds-project',
+    DDS_ACTIVITY: 'dds-activity'
 });

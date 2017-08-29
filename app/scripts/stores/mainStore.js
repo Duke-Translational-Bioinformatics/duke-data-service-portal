@@ -562,15 +562,8 @@ export class MainStore {
                 this.metaObjProps = json.results.map((prop) => {
                     return prop.properties.map((prop) => {
                         return {
-                            object: {
-                                kind: prop.object.kind,
-                                id: prop.object.id
-                            },
-                            template: prop.template,
-                            key: prop.template_property.key,
-                            id: prop.template_property.id,
-                            value: prop.value
-                        };
+                            key: prop.template_property.key, id: prop.template_property.id, value: prop.value
+                        }
                     })
                 });
             }).catch(ex => this.handleErrors(ex))
@@ -790,8 +783,8 @@ export class MainStore {
             .then(this.checkResponse)
             .then(response => response.json())
             .then(() => {
-                this.addToast('Added ' + msg + ' as tags to all selected files.');
-                this.getTags(id, Kind.DDS_FILE);
+                this.addToast('Added ' + msg + ' as tags to all selected resources.');
+                this.getTags(id, kind);
                 this.loading = false;
             }).catch((ex) => {
             this.addToast('Failed to add tags');
@@ -1412,9 +1405,9 @@ export class MainStore {
         });
     }
 
-    @action createMetadataObject(kind, fileId, templateId, properties) {
+    @action createMetadataObject(kind, id, templateId, properties) {
         this.drawerLoading = true;
-        this.transportLayer.createMetadataObject(kind, fileId, templateId, properties)
+        this.transportLayer.createMetadataObject(kind, id, templateId, properties)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -1422,7 +1415,7 @@ export class MainStore {
                 this.createMetadataObjectSuccess(json);
             }).catch((ex) => {
             if (ex.response.status === 409) {
-                this.updateMetadataObject(kind, fileId, templateId, properties);
+                this.updateMetadataObject(kind, id, templateId, properties);
             } else {
                 this.addToast('Failed to add new metadata object');
                 this.handleErrors(ex)
@@ -1430,8 +1423,8 @@ export class MainStore {
         })
     }
 
-    @action updateMetadataObject(kind, fileId, templateId, properties) {
-        this.transportLayer.updateMetadataObject(kind, fileId, templateId, properties)
+    @action updateMetadataObject(kind, id, templateId, properties) {
+        this.transportLayer.updateMetadataObject(kind, id, templateId, properties)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
@@ -1466,7 +1459,9 @@ export class MainStore {
         this.objectMetadata.push(json);
         this.metaObjProps = this.objectMetadata.map((prop) => {
             return prop.properties.map((prop) => {
-                return {key: prop.template_property.key, id: prop.template_property.id, value: prop.value};
+                return {
+                    key: prop.template_property.key, id: prop.template_property.id, value: prop.value
+                }
             })
         });
     }

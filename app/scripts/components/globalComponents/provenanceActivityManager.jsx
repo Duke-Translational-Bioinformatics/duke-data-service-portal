@@ -6,6 +6,7 @@ import provenanceStore from '../../stores/provenanceStore';
 import { Color } from '../../theme/customTheme';
 import AutoComplete from 'material-ui/AutoComplete';
 import BaseUtils from '../../util/baseUtils.js';
+import { Kind } from '../../util/urlEnum';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -94,6 +95,12 @@ class ProvenanceActivityManager extends React.Component {
                             labelStyle={styles.btn.label}
                             style={{zIndex: 9999, margin: '10px 0px 10px 0px', minWidth: 168, width: '100%', display: showBtns}}
                             onTouchTap={() => this.openModal('editAct')}/>
+                        <RaisedButton
+                            label="Tag Activity"
+                            primary={true}
+                            labelStyle={styles.btn.label}
+                            style={{zIndex: 9999, margin: '20px 0px 10px 0px', minWidth: 168, width: '100%', display: showBtns}}
+                            onTouchTap={() => this.toggleTagManager()}/>
                         <RaisedButton
                             label="Delete Activity"
                             primary={true}
@@ -278,6 +285,12 @@ class ProvenanceActivityManager extends React.Component {
 
     toggleTab2() {
         this.activityNameSearch.focus();
+    }
+
+    toggleTagManager() {
+        let id = provenanceStore.selectedNode.id;
+        mainStore.getObjectMetadata(id, Kind.DDS_ACTIVITY);
+        mainStore.toggleTagManager();
     }
 }
 

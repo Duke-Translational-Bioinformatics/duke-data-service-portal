@@ -552,6 +552,7 @@ export class ProvenanceStore {
 
     @action toggleProvView() {
         this.toggleProv = !this.toggleProv;
+        this.selectedNode = {};
         if(this.toggleProv !== true) { //clear old graph on close of provenance view
             this.provEdges = [];
             this.provNodes = [];
