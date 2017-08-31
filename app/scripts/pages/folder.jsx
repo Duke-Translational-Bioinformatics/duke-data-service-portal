@@ -23,6 +23,11 @@ class Folder extends React.Component {
         }
     }
 
+    componentWillReceiveProps(nextProps) {
+        const routeChanged = nextProps.location !== this.props.location;
+        mainStore.toggleBackButtonVisibility(routeChanged);
+    }
+
     _loadFolder() {
         let path = Path.FOLDER;
         let id = this.props.params.id;

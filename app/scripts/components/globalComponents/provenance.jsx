@@ -46,11 +46,11 @@ class Provenance extends React.Component {
         provenanceStore.getActivities();
     }
 
-    componentWillUpdate(nextProps, nextState) {
-        let scale = provenanceStore.scale;
-        let position = provenanceStore.position;
-        let edges = provenanceStore.provEdges && provenanceStore.provEdges.length > 0 ? provenanceStore.provEdges.slice() : [];
-        let nodes = provenanceStore.provNodes && provenanceStore.provNodes.length > 0 ? provenanceStore.provNodes.slice() : [];
+    componentWillUpdate() {
+        const {currentGraph, provEdges, provNodes, position, scale} = provenanceStore;
+        const id = this.props.params.id;
+        const edges = provEdges && provEdges.length > 0 ? provEdges.slice() : currentGraph !== null && currentGraph.id === id ? currentGraph.edges.slice() : [];
+        const nodes = provNodes && provNodes.length > 0 ? provNodes.slice() : currentGraph !== null && currentGraph.id === id ? currentGraph.nodes.slice() : [];
         if(provenanceStore.renderGraph) this.renderProvGraph(edges, nodes, scale, position);
     }
 
@@ -66,7 +66,7 @@ class Provenance extends React.Component {
     }
 
     renderProvGraph(edge, node, scale, position) {
-        provenanceStore.shouldRenderGraph()
+        provenanceStore.shouldRenderGraph();
         let edges = new vis.DataSet(edge);
         let nodes = new vis.DataSet(node);
         let onAddEdgeMode = (data, callback) => {

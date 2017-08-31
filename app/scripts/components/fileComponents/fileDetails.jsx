@@ -24,7 +24,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 class FileDetails extends React.Component {
 
     render() {
-        const {entityObj, fileVersions, loading, objectMetadata, projPermissions, screenSize, uploads} = mainStore;
+        const {entityObj, fileVersions, loading, objectMetadata, projPermissions, screenSize, showBackButton, uploads} = mainStore;
         const { showProvAlert } = provenanceStore;
         let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         let dlButton = null;
@@ -40,8 +40,6 @@ class FileDetails extends React.Component {
             optionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity()}/>;
         }
         let ancestors = entityObj && entityObj.ancestors ? entityObj.ancestors : [];
-        let parentKind = entityObj && entityObj.parent ? entityObj.parent.kind : null;
-        let parentId = entityObj  && entityObj.parent ? entityObj.parent.id : null;
         let name = entityObj ? entityObj.name : '';
         let label = entityObj && entityObj.current_version && entityObj.current_version.label ? entityObj.current_version.label : '';
         let crdOn = entityObj && entityObj.audit ? entityObj.audit.created_on : null;
@@ -92,10 +90,10 @@ class FileDetails extends React.Component {
         let file = <Card className="project-container mdl-color--white content mdl-color-text--grey-800" style={styles.card}>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                    <a href={'/#/' + BaseUtils.getUrlPath(parentKind) + parentId } style={styles.back} className="mdl-color-text--grey-800 external">
+                    { showBackButton && <a href="#" style={styles.back} className="mdl-color-text--grey-800 external" onTouchTap={() => this.goBack()}>
                         <i className="material-icons" style={styles.backIcon}>keyboard_backspace</i>
                         Back
-                    </a>
+                    </a> }
                     <div style={styles.menuIcon}>
                         { optionsMenu }
                     </div>
@@ -229,6 +227,10 @@ class FileDetails extends React.Component {
 
     dismissAlert(){
         provenanceStore.hideProvAlert();
+    }
+
+    goBack() {
+        this.props.router.goBack();
     }
 
     handleDownload(){

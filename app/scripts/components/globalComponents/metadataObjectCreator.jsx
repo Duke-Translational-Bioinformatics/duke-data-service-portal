@@ -209,7 +209,7 @@ class MetadataObjectCreator extends React.Component {
         const { selectedEntity } = mainStore;
         let files = mainStore.filesChecked;
         let id = selectedNode && selectedNode.properties !== undefined ? selectedNode.properties.id : selectedEntity !== null ? selectedEntity.id : this.props.params.id;
-        const kind = selectedNode && selectedNode.properties !== undefined && selectedNode.properties.kind === Kind.DDS_ACTIVITY ? Kind.DDS_ACTIVITY : Kind.DDS_FILE;
+        const kind = selectedNode && selectedNode.properties !== undefined && selectedNode.properties.kind === Kind.DDS_ACTIVITY || this.props.location.pathname.includes('activity') ? Kind.DDS_ACTIVITY : Kind.DDS_FILE;
         let metaProps = mainStore.metaProps.slice();
         let errors = this.state.errorText;
         if(Object.keys(errors).length === 0 && errors.constructor === Object) {

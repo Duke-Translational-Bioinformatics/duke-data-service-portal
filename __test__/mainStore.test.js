@@ -962,8 +962,8 @@ describe('Main Store', () => {
             expect(mainStore.objectMetadata[0].object.kind).toBe(DDS_FILE);
             expect(mainStore.objectMetadata[0].template.id).toBe(TEMPLATE_ID);
             expect(mainStore.objectMetadata[0]).toHaveProperty('properties');
-            expect(mainStore.metaObjProps[0][0].key).toBe('TEMPLATE_PROPERTY_1');
-            expect(mainStore.metaObjProps[0][0].value).toBe(TEMPLATE_PROPERTY);
+            expect(mainStore.metaObjProps[0][0].key).toBe('TEST_TEMPLATE_PROPERTY_KEY_1');
+            expect(mainStore.metaObjProps[0][0].value).toBe('TEST_TEMPLATE_PROPERTY_VALUE');
         });
     });
 

@@ -14,7 +14,7 @@ import FontIcon from 'material-ui/FontIcon';
 class FolderPath extends React.Component {
     
     render() {
-        const {entityObj, projPermissions} = mainStore;
+        const {entityObj, projPermissions, showBackButton} = mainStore;
         let ancestors = entityObj ? entityObj.ancestors : null;
         let parentKind = entityObj ? entityObj.parent.kind : null;
         let parentId = entityObj ? entityObj.parent.id : null;
@@ -33,10 +33,10 @@ class FolderPath extends React.Component {
                 { uploadMdl }
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                        <a href={'/#/' + BaseUtils.getUrlPath(parentKind) + parentId } className="mdl-color-text--grey-800 external">
+                        { showBackButton && <a href="#" className="mdl-color-text--grey-800 external" onTouchTap={() => this.goBack()}>
                             <i className="material-icons" style={styles.backIcon}>keyboard_backspace</i>
                             Back
-                        </a>
+                        </a> }
                         <div style={styles.menuIcon}>
                             { optionsMenu }
                         </div>
@@ -51,6 +51,10 @@ class FolderPath extends React.Component {
                 </div>
             </Card>
         );
+    }
+
+    goBack() {
+        this.props.router.goBack();
     }
 
     setSelectedEntity() {

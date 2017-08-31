@@ -71,6 +71,7 @@ export class MainStore {
     @observable searchResultsProjects
     @observable searchValue
     @observable selectedEntity
+    @observable showBackButton
     @observable showFilters
     @observable showPropertyCreator
     @observable showTagCloud
@@ -158,6 +159,7 @@ export class MainStore {
         this.searchResultsProjects = [];
         this.searchValue = null;
         this.selectedEntity = null;
+        this.showBackButton = true;
         this.showFilters = false;
         this.showPropertyCreator = false;
         this.showTagCloud = false;
@@ -188,7 +190,11 @@ export class MainStore {
         return checkStatus(response, authStore);
     }
 
-    @action toggleAllItemsSelected (bool) {
+    @action toggleBackButtonVisibility(bool){
+        this.showBackButton = bool;
+    }
+
+    @action toggleAllItemsSelected(bool) {
         this.allItemsSelected = bool;
     }
 
@@ -577,9 +583,9 @@ export class MainStore {
             .then(this.checkResponse)
             .then(response => {})
             .then(() => {
-                this.addToast(`File metadata from ${template.name} has been deleted`);
+                this.addToast(`Resource metadata from ${template.name} has been deleted`);
             }).catch((ex) => {
-            this.addToast(`Failed to delete file metadata from ${template.name}`);
+            this.addToast(`Failed to delete resource metadata from ${template.name}`);
             this.objectMetadata.splice(index, 1, itemToDelete);
             this.handleErrors(ex)
         });
@@ -767,7 +773,7 @@ export class MainStore {
             .then(response => response.json())
             .then((json) => {
                 this.addToast('Added ' + json.label + ' tag');
-                this.getTags(id, Kind.DDS_FILE);
+                this.objectTags.push(json);
             }).catch((ex) => {
             this.addToast('Failed to add new tag');
             this.handleErrors(ex)
@@ -782,9 +788,9 @@ export class MainStore {
         this.transportLayer.appendTags(id, kind, tags)
             .then(this.checkResponse)
             .then(response => response.json())
-            .then(() => {
+            .then((json) => {
                 this.addToast('Added ' + msg + ' as tags to all selected resources.');
-                this.getTags(id, kind);
+                this.objectTags = [...this.objectTags, ...json.results];
                 this.loading = false;
             }).catch((ex) => {
             this.addToast('Failed to add tags');
@@ -792,13 +798,13 @@ export class MainStore {
         })
     }
 
-    @action deleteTag(id, label, fileId) {
+    @action deleteTag(id, label) {
         this.transportLayer.deleteTag(id)
             .then(this.checkResponse)
             .then(response => {})
             .then(() => {
                 this.addToast(label + ' tag deleted!');
-                this.getTags(fileId, Kind.DDS_FILE);
+                this.objectTags = this.objectTags.filter(t => t.id !== id);
             }).catch((ex) => {
             this.addToast('Failed to delete ' + label);
             this.handleErrors(ex)
@@ -1132,7 +1138,7 @@ export class MainStore {
     }
 
     @action addFileSuccess(parentId, parentKind, uploadId, fileId) {
-        if (this.uploads.get(uploadId).tags.length) this.appendTags(fileId, 'dds-file', this.uploads.get(uploadId).tags);
+        if (this.uploads.get(uploadId).tags.length) this.appendTags(fileId, Kind.DDS_FILE, this.uploads.get(uploadId).tags);
         if (this.uploads.size === 1 && !this.isFolderUpload) {
             let path = parentKind === 'dds-project' ? Path.PROJECT : Path.FOLDER;
             this.getChildren(parentId, path);

@@ -46,11 +46,11 @@ class TagManager extends React.Component {
 
     render() {
         const {drawerLoading, entityObj, filesChecked, openTagManager, screenSize, selectedEntity, showTagCloud, showTemplateDetails, tagAutoCompleteList, tagLabels, tagsToAdd, toggleModal} = mainStore;
-        const { selectedNode } = provenanceStore;
+        const { activity, selectedNode } = provenanceStore;
         let autoCompleteData = tagAutoCompleteList && tagAutoCompleteList.length > 0 ? tagAutoCompleteList : [];
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let id = selectedNode && selectedNode.properties !== undefined ? selectedNode.properties.id : selectedEntity !== null ? selectedEntity.id : this.props.params.id;
-        let name = entityObj && filesChecked < 1 ? selectedNode && selectedNode.properties !== undefined ? selectedNode.properties.name : entityObj.name : 'selected files';
+        let name = entityObj && filesChecked < 1 ? selectedNode && selectedNode.properties !== undefined ? selectedNode.properties.name : this.props.location.pathname.includes('activity') && activity !== null ? activity.name : entityObj.name : 'selected files';
         let openDiscardTagsModal = toggleModal && toggleModal.id === 'discardTags' ? toggleModal.open : false;
         let width = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.width : window.innerWidth;
         const modalActions = [
@@ -209,7 +209,7 @@ class TagManager extends React.Component {
 
     addTagsToResource(filesChecked, id, tagsToAdd, toggleModal) {
         const { selectedNode } = provenanceStore;
-        const kind = selectedNode && selectedNode.properties !== undefined && selectedNode.properties.kind === Kind.DDS_ACTIVITY ? Kind.DDS_ACTIVITY : Kind.DDS_FILE
+        const kind = selectedNode && selectedNode.properties !== undefined && selectedNode.properties.kind === Kind.DDS_ACTIVITY || this.props.location.pathname.includes('activity') ? Kind.DDS_ACTIVITY : Kind.DDS_FILE;
         if(!tagsToAdd.length) {
             this.setState({floatingErrorText: 'You must add tags to the list. Type a tag name and press enter.'});
         } else {

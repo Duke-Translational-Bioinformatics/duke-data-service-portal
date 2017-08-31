@@ -14,9 +14,11 @@ describe('Provenance Store', () => {
 
     let transportLayer = null;
     let provenanceStore = null;
+    let mainStore = null;
 
     beforeEach(() => {
         provenanceStore = require('../app/scripts/stores/provenanceStore').default;
+        mainStore = require('../app/scripts/stores/mainStore').default;
         transportLayer = {};
         provenanceStore.transportLayer = transportLayer;
     });

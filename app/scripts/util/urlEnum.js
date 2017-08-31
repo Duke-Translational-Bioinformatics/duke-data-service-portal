@@ -10,6 +10,7 @@ export const UrlGen = {
         folder: (folderId) => '/#/folder/' + folderId,
         file: (fileId) => '/#/file/' + fileId,
         version: (versionId) => '/#/version/' + versionId,
+        activities: (activityId) => '/#/activity/' + activityId,
         agents: () => '/#/agents',
         agent: (agentId) => '/#/agent/' + agentId
     }
