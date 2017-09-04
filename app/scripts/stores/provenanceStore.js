@@ -64,7 +64,7 @@ export class ProvenanceStore {
         this.relTo = null;
         this.relMsg = null;
         this.removeFileFromProvBtn = false;
-        this.renderGraph = false
+        this.renderGraph = false;
         this.scale = null;
         this.selectedNode = {};
         this.selectedEdge = null;
@@ -348,10 +348,11 @@ export class ProvenanceStore {
                 edges.push(this.updatedGraphItem[0]);
                 this.shouldRenderGraph();
                 this.provEdges = edges;
+                this.currentGraph.edges = edges;
             }).catch((ex) => {
             mainStore.addToast('Failed to add new relation');
-                mainStore.handleErrors(ex)
-            })
+            mainStore.handleErrors(ex)
+        })
     }
 
     @action deleteProvItem(data, id) {
@@ -368,15 +369,17 @@ export class ProvenanceStore {
                 this.shouldRenderGraph();
                 if(data.hasOwnProperty('from')){
                     this.provEdges = this.provEdges.filter(obj => obj.id !== data.id);
+                    this.currentGraph.edges = this.provEdges;
                 } else {
                     this.provNodes = this.provNodes.filter(obj => obj.id !== data.id);
+                    this.currentGraph.nodes = provNodes;
                     this.getActivities();
                 }
                 this.updatedGraphItem = item;
             }).catch((ex) => {
-                mainStore.addToast('Failed to delete ' + msg);
-                mainStore.handleErrors(ex)
-            });
+            mainStore.addToast('Failed to delete ' + msg);
+            mainStore.handleErrors(ex)
+        });
     }
 
     @action addProvActivity(name, desc) {
@@ -387,9 +390,9 @@ export class ProvenanceStore {
                 mainStore.addToast('New Activity Added');
                 this.addProvActivitySuccess(json);
             }).catch((ex) => {
-                mainStore.addToast('Failed to add new actvity');
-                mainStore.handleErrors(ex)
-            })
+            mainStore.addToast('Failed to add new actvity');
+            mainStore.handleErrors(ex)
+        })
     }
 
     @action addProvActivitySuccess(json) {
@@ -410,8 +413,9 @@ export class ProvenanceStore {
         });
         let nodes = this.provNodes.slice();
         nodes.push(this.updatedGraphItem[0]);
-        this.shouldRenderGraph();
         this.provNodes = nodes;
+        this.currentGraph.nodes = nodes;
+        this.shouldRenderGraph();
         mainStore.addToast(json.name+' was added to the graph');
     }
 
@@ -446,6 +450,7 @@ export class ProvenanceStore {
                 this.activity = json;
                 this.shouldRenderGraph();
                 this.provNodes = nodes;
+                this.currentGraph.nodes = nodes;
                 this.showProvCtrlBtns = false;
             }).catch(ex =>mainStore.handleErrors(ex))
     }
@@ -457,6 +462,7 @@ export class ProvenanceStore {
             .then(() => {
                 mainStore.addToast(`${name} activity was deleted!`);
                 this.provNodes = this.provNodes.filter(obj => obj.id !== id);
+                this.currentGraph.nodes = this.provNodes;
             }).catch((ex) => {
             mainStore.addToast(`Failed to delete ${name}`);
             mainStore.handleErrors(ex)
@@ -501,6 +507,7 @@ export class ProvenanceStore {
         nodes.push(this.updatedGraphItem[0]);
         this.shouldRenderGraph();
         this.provNodes = nodes;
+        this.currentGraph.nodes = nodes;
     }
 
     @action switchRelationFromTo(from, to){
@@ -553,8 +560,8 @@ export class ProvenanceStore {
             .then((json) => {
                 this.provFileVersions = json.results
             }).catch((ex) => {
-                mainStore.handleErrors(ex)
-            })
+            mainStore.handleErrors(ex)
+        })
     }
 
     @action createGraph(graph) {

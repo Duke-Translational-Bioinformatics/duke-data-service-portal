@@ -24,7 +24,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 class FileDetails extends React.Component {
 
     render() {
-        const {entityObj, fileVersions, loading, objectMetadata, projPermissions, screenSize, showBackButton, uploads} = mainStore;
+        const {entityObj, fileVersions, loading, objectMetadata, projPermissions, screenSize, uploads} = mainStore;
         const { showProvAlert } = provenanceStore;
         let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         let dlButton = null;
@@ -36,7 +36,7 @@ class FileDetails extends React.Component {
                                                                                              labelStyle={{color: Color.blue}}
                                                                                              style={styles.dlButton}
                                                                                              icon={<FileDownload color={Color.pink} />}
-                                                                                             onTouchTap={() => this.handleDownload()}/>
+                                                                                             onTouchTap={() => this.handleDownload()}/>;
             optionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity()}/>;
         }
         let ancestors = entityObj && entityObj.ancestors ? entityObj.ancestors : [];
@@ -46,6 +46,8 @@ class FileDetails extends React.Component {
         let createdBy = entityObj && entityObj.audit ? entityObj.audit.created_by.full_name : null;
         let lastUpdatedOn = entityObj && entityObj.audit ? entityObj.audit.last_updated_on : null;
         let lastUpdatedBy = entityObj && entityObj.audit.last_updated_by ? entityObj.audit.last_updated_by.full_name : null;
+        let parentKind = entityObj && entityObj.parent ? entityObj.parent.kind : null;
+        let parentId = entityObj  && entityObj.parent ? entityObj.parent.id : null;
         let storage =  entityObj && entityObj.current_version && entityObj.current_version.upload ? entityObj.current_version.upload.storage_provider.description : null;
         let bytes = entityObj && entityObj.current_version && entityObj.current_version.upload ? entityObj.current_version.upload.size : null;
         let hash = entityObj && entityObj.current_version && entityObj.current_version.upload.hashes.length ? entityObj.current_version.upload.hashes[0].algorithm +': '+ entityObj.current_version.upload.hashes[0].value : null;
@@ -90,10 +92,10 @@ class FileDetails extends React.Component {
         let file = <Card className="project-container mdl-color--white content mdl-color-text--grey-800" style={styles.card}>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                    { showBackButton && <a href="#" style={styles.back} className="mdl-color-text--grey-800 external" onTouchTap={() => this.goBack()}>
+                    <a href={'/#/' + BaseUtils.getUrlPath(parentKind) + parentId } style={styles.back} className="mdl-color-text--grey-800 external" onTouchTap={() => this.goBack()}>
                         <i className="material-icons" style={styles.backIcon}>keyboard_backspace</i>
                         Back
-                    </a> }
+                    </a>
                     <div style={styles.menuIcon}>
                         { optionsMenu }
                     </div>
@@ -230,7 +232,7 @@ class FileDetails extends React.Component {
     }
 
     goBack() {
-        this.props.router.goBack();
+        mainStore.showBackButton ? this.props.router.goBack() : null;
     }
 
     handleDownload(){

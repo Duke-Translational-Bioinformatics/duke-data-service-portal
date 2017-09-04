@@ -15,7 +15,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 class VersionDetails extends React.Component {
 
     render() {
-        const {entityObj, loading, projPermissions, showBackButton} = mainStore;
+        const {entityObj, loading, projPermissions} = mainStore;
         let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         let dlButton = null;
         let optionsMenu = null;
@@ -44,9 +44,9 @@ class VersionDetails extends React.Component {
         let version = <Card className="project-container mdl-color--white content mdl-color-text--grey-800" style={styles.card}>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                    { showBackButton && <a href="#" style={styles.back} className="mdl-color-text--grey-800 external" onTouchTap={() => this.goBack()}>
+                    <a href={UrlGen.routes.file(parentId)} style={styles.back} className="mdl-color-text--grey-800 external" onTouchTap={() => this.goBack()}>
                         <i className="material-icons" style={styles.backIcon}>keyboard_backspace</i>Back
-                    </a> }
+                    </a>
                     <div style={styles.menuIcon}>
                         { optionsMenu }
                     </div>
@@ -114,8 +114,10 @@ class VersionDetails extends React.Component {
                                 <li className="item-content">
                                     <div className="item-inner">
                                         <a href={UrlGen.routes.file(parentId)} className="external">
-                                            <div style={{color: Color.blue}}>                                             <i className="material-icons" style={styles.linkIcon}>link</i>
-                                                {name} </div>
+                                            <div style={{color: Color.blue}}>
+                                                <i className="material-icons" style={styles.linkIcon}>link</i>
+                                                {name}
+                                            </div>
                                         </a>
                                     </div>
                                 </li>
@@ -174,7 +176,7 @@ class VersionDetails extends React.Component {
     }
 
     goBack() {
-        this.props.router.goBack();
+        mainStore.showBackButton ? this.props.router.goBack() : null;
     }
 
     handleDownload(){
