@@ -48,6 +48,7 @@ export class MainStore {
     @observable moveItemList
     @observable moveItemLoading
     @observable moveToObj
+    @observable nextPage
     @observable objectMetadata
     @observable objectTags
     @observable openMetadataManager
@@ -70,6 +71,7 @@ export class MainStore {
     @observable searchResultsProjects
     @observable searchValue
     @observable selectedEntity
+    @observable showBackButton
     @observable showFilters
     @observable showPropertyCreator
     @observable showTagCloud
@@ -82,6 +84,7 @@ export class MainStore {
     @observable tagsToAdd
     @observable templateProperties
     @observable toasts
+    @observable totalItems
     @observable toggleModal
     @observable totalUploads
     @observable uploadCount
@@ -132,6 +135,7 @@ export class MainStore {
         this.moveItemList = [];
         this.moveItemLoading = false;
         this.moveToObj = {};
+        this.nextPage = null;
         this.objectMetadata = [];
         this.objectTags = [];
         this.openMetadataManager = false;
@@ -155,6 +159,7 @@ export class MainStore {
         this.searchResultsProjects = [];
         this.searchValue = null;
         this.selectedEntity = null;
+        this.showBackButton = true;
         this.showFilters = false;
         this.showPropertyCreator = false;
         this.showTagCloud = false;
@@ -167,6 +172,7 @@ export class MainStore {
         this.tagsToAdd = [];
         this.templateProperties = [];
         this.toasts = [];
+        this.totalItems = null;
         this.toggleModal = {open: false, id: null};
         this.totalUploads = {inProcess: 0, complete: 0};
         this.uploadCount = [];
@@ -184,7 +190,11 @@ export class MainStore {
         return checkStatus(response, authStore);
     }
 
-    @action toggleAllItemsSelected (bool) {
+    @action toggleBackButtonVisibility(bool){
+        this.showBackButton = bool;
+    }
+
+    @action toggleAllItemsSelected(bool) {
         this.allItemsSelected = bool;
     }
 
@@ -250,6 +260,8 @@ export class MainStore {
                 userId !== null ? this.getAllProjectPermissions(p.id, authStore.currentUser.id) : null;
             });
             this.responseHeaders = headers;
+            this.nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
+            this.totalItems = headers !== null && !!headers['x-total'] ? parseInt(headers['x-total'][0], 10) : null;
             this.loading = false;
         }).catch(ex => this.handleErrors(ex))
     }
@@ -298,6 +310,10 @@ export class MainStore {
             .then((json) => {
                 this.addToast('Project Added');
                 this.projects = [json, ...this.projects];
+                const userId = authStore.currentUser.id !== undefined ? authStore.currentUser.id : this.currentUser.id !== undefined ? this.currentUser.id : null;
+                this.projects.forEach((p) => {
+                    userId !== null ? this.getAllProjectPermissions(p.id, authStore.currentUser.id) : null;
+                });
                 this.loading = false;
             }).catch((ex) => {
             this.addToast('Failed to add new project');
@@ -327,6 +343,7 @@ export class MainStore {
             .then(() => {
                 this.addToast('Project Deleted');
                 this.projects = this.projects.filter(p => p.id !== id);
+                this.totalItems--;
             }).catch((ex) => {
             this.addToast('Project Delete Failed');
             this.handleErrors(ex)
@@ -388,6 +405,7 @@ export class MainStore {
     @action deleteItemSuccess(id, parentId, path) {
         this.loading = false;
         this.listItems = this.listItems.filter(l => l.id !== id);
+        this.totalItems--;
         if(this.listItems.length === 0) this.getChildren(parentId, path)
     }
 
@@ -549,10 +567,28 @@ export class MainStore {
                 this.objectMetadata = json.results;
                 this.metaObjProps = json.results.map((prop) => {
                     return prop.properties.map((prop) => {
-                        return {key: prop.template_property.key, id: prop.template_property.id, value: prop.value};
+                        return {
+                            key: prop.template_property.key, id: prop.template_property.id, value: prop.value
+                        }
                     })
                 });
             }).catch(ex => this.handleErrors(ex))
+    }
+
+    @action deleteObjectMetadata(object, template) {
+        const index = this.objectMetadata.findIndex(o => o.template.id === template.id);
+        const itemToDelete = this.objectMetadata.filter((o) => {return o.template.id === template.id});
+        this.objectMetadata = this.objectMetadata.filter((o) => o.template.id !== template.id);
+        this.transportLayer.deleteObjectMetadata(object, template.id)
+            .then(this.checkResponse)
+            .then(response => {})
+            .then(() => {
+                this.addToast(`Resource metadata from ${template.name} has been deleted`);
+            }).catch((ex) => {
+            this.addToast(`Failed to delete resource metadata from ${template.name}`);
+            this.objectMetadata.splice(index, 1, itemToDelete);
+            this.handleErrors(ex)
+        });
     }
 
     @action getUserNameFromAuthProvider(text, id) {
@@ -737,7 +773,7 @@ export class MainStore {
             .then(response => response.json())
             .then((json) => {
                 this.addToast('Added ' + json.label + ' tag');
-                this.getTags(id, Kind.DDS_FILE);
+                this.objectTags.push(json);
             }).catch((ex) => {
             this.addToast('Failed to add new tag');
             this.handleErrors(ex)
@@ -752,9 +788,9 @@ export class MainStore {
         this.transportLayer.appendTags(id, kind, tags)
             .then(this.checkResponse)
             .then(response => response.json())
-            .then(() => {
-                this.addToast('Added ' + msg + ' as tags to all selected files.');
-                this.getTags(id, Kind.DDS_FILE);
+            .then((json) => {
+                this.addToast('Added ' + msg + ' as tags to all selected resources.');
+                this.objectTags = [...this.objectTags, ...json.results];
                 this.loading = false;
             }).catch((ex) => {
             this.addToast('Failed to add tags');
@@ -762,13 +798,13 @@ export class MainStore {
         })
     }
 
-    @action deleteTag(id, label, fileId) {
+    @action deleteTag(id, label) {
         this.transportLayer.deleteTag(id)
             .then(this.checkResponse)
             .then(response => {})
             .then(() => {
                 this.addToast(label + ' tag deleted!');
-                this.getTags(fileId, Kind.DDS_FILE);
+                this.objectTags = this.objectTags.filter(t => t.id !== id);
             }).catch((ex) => {
             this.addToast('Failed to delete ' + label);
             this.handleErrors(ex)
@@ -1102,7 +1138,7 @@ export class MainStore {
     }
 
     @action addFileSuccess(parentId, parentKind, uploadId, fileId) {
-        if (this.uploads.get(uploadId).tags.length) this.appendTags(fileId, 'dds-file', this.uploads.get(uploadId).tags);
+        if (this.uploads.get(uploadId).tags.length) this.appendTags(fileId, Kind.DDS_FILE, this.uploads.get(uploadId).tags);
         if (this.uploads.size === 1 && !this.isFolderUpload) {
             let path = parentKind === 'dds-project' ? Path.PROJECT : Path.FOLDER;
             this.getChildren(parentId, path);
@@ -1227,6 +1263,8 @@ export class MainStore {
                     this.listItems = [...this.listItems, ...results];
                 }
                 this.responseHeaders = headers;
+                this.nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
+                this.totalItems = headers !== null && !!headers['x-total'] ? parseInt(headers['x-total'][0], 10) : null;
                 this.loading = false;
             }).catch(ex =>this.handleErrors(ex))
     }
@@ -1373,17 +1411,17 @@ export class MainStore {
         });
     }
 
-    @action createMetadataObject(kind, fileId, templateId, properties) {
+    @action createMetadataObject(kind, id, templateId, properties) {
         this.drawerLoading = true;
-        this.transportLayer.createMetadataObject(kind, fileId, templateId, properties)
+        this.transportLayer.createMetadataObject(kind, id, templateId, properties)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
                 this.addToast('A new metadata object was created.');
-                this.createMetadataObjectSuccess(fileId, kind, json);
+                this.createMetadataObjectSuccess(json);
             }).catch((ex) => {
             if (ex.response.status === 409) {
-                this.updateMetadataObject(kind, fileId, templateId, properties);
+                this.updateMetadataObject(kind, id, templateId, properties);
             } else {
                 this.addToast('Failed to add new metadata object');
                 this.handleErrors(ex)
@@ -1391,13 +1429,13 @@ export class MainStore {
         })
     }
 
-    @action updateMetadataObject(kind, fileId, templateId, properties) {
-        this.transportLayer.updateMetadataObject(kind, fileId, templateId, properties)
+    @action updateMetadataObject(kind, id, templateId, properties) {
+        this.transportLayer.updateMetadataObject(kind, id, templateId, properties)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
                 this.addToast('This metadata object was updated.');
-                this.createMetadataObjectSuccess(fileId, kind, json);
+                this.createMetadataObjectSuccess(json);
             }).catch((ex) => {
             this.addToast('Failed to update metadata object');
             this.handleErrors(ex)
@@ -1419,14 +1457,17 @@ export class MainStore {
         })
     }
 
-    @action createMetadataObjectSuccess(id, kind, json) {
+    @action createMetadataObjectSuccess(json) {
         this.drawerLoading = false;
         this.showBatchOps = false;
         this.showTemplateDetails = false;
+        this.objectMetadata = this.objectMetadata.filter((o) => o.template.id !== json.template.id);
         this.objectMetadata.push(json);
         this.metaObjProps = this.objectMetadata.map((prop) => {
             return prop.properties.map((prop) => {
-                return {key: prop.template_property.key, id: prop.template_property.id, value: prop.value};
+                return {
+                    key: prop.template_property.key, id: prop.template_property.id, value: prop.value
+                }
             })
         });
     }

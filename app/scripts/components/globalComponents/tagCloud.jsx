@@ -3,6 +3,7 @@ const { array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import { Color } from '../../theme/customTheme';
+import { Kind } from '../../util/urlEnum';
 import IconButton from 'material-ui/IconButton';
 import LocalOffer from 'material-ui/svg-icons/maps/local-offer';
 
@@ -39,9 +40,8 @@ class TagCloud extends React.Component {
     }
 
     deleteTag(id, label) {
-        let fileId = this.props.params.id;
         this.id.style.display = 'none';
-        mainStore.deleteTag(id, label, fileId);
+        mainStore.deleteTag(id, label);
     }
 
     openTagManager() {

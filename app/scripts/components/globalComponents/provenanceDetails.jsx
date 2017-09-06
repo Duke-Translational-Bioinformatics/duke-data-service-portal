@@ -16,6 +16,7 @@ class ProvenanceDetails extends React.Component {
             let id = this.props.params.id;
             let versionId = onClickProvNode !== null ? onClickProvNode.id : null;
             let activityName = onClickProvNode !== null && onClickProvNode.properties.kind === 'dds-activity' ? onClickProvNode.properties.name : null;
+            let activityId = onClickProvNode !== null && onClickProvNode.properties.kind === 'dds-activity' ? onClickProvNode.properties.id : null;
             let activityDescription = onClickProvNode !== null && onClickProvNode.properties.kind === 'dds-activity' ? onClickProvNode.properties.description : null;
             let fileName = onClickProvNode !== null && onClickProvNode.properties.file ? onClickProvNode.properties.file.name : null;
             if (fileName === null && onClickProvNode !== null && onClickProvNode.properties.current_version) fileName = onClickProvNode.properties.name;
@@ -31,18 +32,19 @@ class ProvenanceDetails extends React.Component {
                     onClickProvNode.properties.upload.storage_provider.description :
                     onClickProvNode.properties.current_version.upload.storage_provider.description;
             }
-            let fileLink = null;
-            if (fileName !== null) {
-                fileLink = <span><i className="material-icons" style={styles.linkIcon}>link</i>
-                    <a href={UrlGen.routes.version(versionId)} className="external link" onTouchTap={() => this.toggleProv()}>{fileName}</a></span>
+            let link = null;
+            if (fileName !== null || activityName !== null) { // Todo: Create a link for activities as well!!!!!!!!
+                link = <span><i className="material-icons" style={styles.linkIcon}>link</i>
+                    <a href={fileName !== null ? UrlGen.routes.version(versionId) : UrlGen.routes.activities(activityId)} className="external link" onTouchTap={() => this.toggleProv()}>{fileName !== null ? fileName : activityName}</a></span>
             }
-            if (fileId === id || versionId === id) fileLink =
-                <span className="mdl-color-text--grey-800">{fileName}</span>;
+            if (fileId === id || versionId === id) link = <span className="mdl-color-text--grey-800">{fileName}</span>;
+            // if (activityName !== null) link = <span className="mdl-color-text--grey-800">{activityName}</span>;
             let bytes = onClickProvNode !== null && onClickProvNode.properties.upload ? onClickProvNode.properties.upload.size : null;
             if (bytes === null && onClickProvNode !== null && onClickProvNode.properties.kind !== 'dds-activity') bytes = onClickProvNode.properties.current_version.upload.size;
             details = <div className="mdl-cell mdl-cell--12-col" style={styles.details}>
                 <h6 style={styles.listHeader}>
-                    {fileName !== null ? fileLink : <span className="mdl-color-text--grey-800">{activityName}</span>}
+                    {/*{fileName !== null ? link : <span className="mdl-color-text--grey-800">{activityName}</span>}*/}
+                    {link}
                 </h6>
                 <div className="list-block" style={styles.listBlock}>
                     {fileName !== null ? <div className="list-group">

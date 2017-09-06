@@ -44,10 +44,9 @@ class VersionDetails extends React.Component {
         let version = <Card className="project-container mdl-color--white content mdl-color-text--grey-800" style={styles.card}>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                    <a href={UrlGen.routes.file(parentId)} style={styles.back}
-                       className="mdl-color-text--grey-800 external">
-                        <i className="material-icons"
-                           style={styles.backIcon}>keyboard_backspace</i>Back</a>
+                    <a href={UrlGen.routes.file(parentId)} style={styles.back} className="mdl-color-text--grey-800 external" onTouchTap={() => this.goBack()}>
+                        <i className="material-icons" style={styles.backIcon}>keyboard_backspace</i>Back
+                    </a>
                     <div style={styles.menuIcon}>
                         { optionsMenu }
                     </div>
@@ -115,8 +114,10 @@ class VersionDetails extends React.Component {
                                 <li className="item-content">
                                     <div className="item-inner">
                                         <a href={UrlGen.routes.file(parentId)} className="external">
-                                            <div style={{color: Color.blue}}>                                             <i className="material-icons" style={styles.linkIcon}>link</i>
-                                                {name} </div>
+                                            <div style={{color: Color.blue}}>
+                                                <i className="material-icons" style={styles.linkIcon}>link</i>
+                                                {name}
+                                            </div>
                                         </a>
                                     </div>
                                 </li>
@@ -172,6 +173,10 @@ class VersionDetails extends React.Component {
                 <Loaders {...this.props}/>
             </div>
         )
+    }
+
+    goBack() {
+        mainStore.showBackButton ? this.props.router.goBack() : null;
     }
 
     handleDownload(){

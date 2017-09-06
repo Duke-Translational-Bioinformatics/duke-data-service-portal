@@ -36,18 +36,18 @@ class FileDetails extends React.Component {
                                                                                              labelStyle={{color: Color.blue}}
                                                                                              style={styles.dlButton}
                                                                                              icon={<FileDownload color={Color.pink} />}
-                                                                                             onTouchTap={() => this.handleDownload()}/>
+                                                                                             onTouchTap={() => this.handleDownload()}/>;
             optionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity()}/>;
         }
         let ancestors = entityObj && entityObj.ancestors ? entityObj.ancestors : [];
-        let parentKind = entityObj && entityObj.parent ? entityObj.parent.kind : null;
-        let parentId = entityObj  && entityObj.parent ? entityObj.parent.id : null;
         let name = entityObj ? entityObj.name : '';
         let label = entityObj && entityObj.current_version && entityObj.current_version.label ? entityObj.current_version.label : '';
         let crdOn = entityObj && entityObj.audit ? entityObj.audit.created_on : null;
         let createdBy = entityObj && entityObj.audit ? entityObj.audit.created_by.full_name : null;
         let lastUpdatedOn = entityObj && entityObj.audit ? entityObj.audit.last_updated_on : null;
         let lastUpdatedBy = entityObj && entityObj.audit.last_updated_by ? entityObj.audit.last_updated_by.full_name : null;
+        let parentKind = entityObj && entityObj.parent ? entityObj.parent.kind : null;
+        let parentId = entityObj  && entityObj.parent ? entityObj.parent.id : null;
         let storage =  entityObj && entityObj.current_version && entityObj.current_version.upload ? entityObj.current_version.upload.storage_provider.description : null;
         let bytes = entityObj && entityObj.current_version && entityObj.current_version.upload ? entityObj.current_version.upload.size : null;
         let hash = entityObj && entityObj.current_version && entityObj.current_version.upload.hashes.length ? entityObj.current_version.upload.hashes[0].algorithm +': '+ entityObj.current_version.upload.hashes[0].value : null;
@@ -92,7 +92,7 @@ class FileDetails extends React.Component {
         let file = <Card className="project-container mdl-color--white content mdl-color-text--grey-800" style={styles.card}>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                    <a href={'/#/' + BaseUtils.getUrlPath(parentKind) + parentId } style={styles.back} className="mdl-color-text--grey-800 external">
+                    <a href={'/#/' + BaseUtils.getUrlPath(parentKind) + parentId } style={styles.back} className="mdl-color-text--grey-800 external" onTouchTap={() => this.goBack()}>
                         <i className="material-icons" style={styles.backIcon}>keyboard_backspace</i>
                         Back
                     </a>
@@ -229,6 +229,10 @@ class FileDetails extends React.Component {
 
     dismissAlert(){
         provenanceStore.hideProvAlert();
+    }
+
+    goBack() {
+        mainStore.showBackButton ? this.props.router.goBack() : null;
     }
 
     handleDownload(){
