@@ -251,7 +251,7 @@ export class MainStore {
             }
             const userId = authStore.currentUser.id !== undefined ? authStore.currentUser.id : this.currentUser.id !== undefined ? this.currentUser.id : null;
             this.projects.forEach((p) => {
-                userId !== null ? this.getAllProjectPermissions(p.id, authStore.currentUser.id) : null;
+                userId !== null ? this.getAllProjectPermissions(p.id, userId) : null;
             });
             this.responseHeaders = headers;
             this.nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
