@@ -21,12 +21,13 @@ class Header extends React.Component {
                 </div>
                 <div className="center" style={styles.navBar.centerDiv}></div>
                 <div className="right">
-                {/*<FontIcon className="material-icons"
-                 style={styles.searchIcon}onTouchTap={()=>this.showSearch()}>search</FontIcon>*/}
+                    <FontIcon className="material-icons" style={styles.searchIcon}onTouchTap={()=>this.showSearch()}>
+                        search
+                    </FontIcon>
                     <CurrentUser {...this.props} />
                 </div>
             </div>
-            {/*showSearch ? <Search {...this.props} /> : null*/}
+            { showSearch ? <Search {...this.props} /> : null }
         </div>;
 
         if(!appConfig.apiToken) {

@@ -26,7 +26,7 @@ class Search extends React.Component {
                 hintText="Search"
                 defaultValue={searchValue ? searchValue : null}
                 hintStyle={styles.searchBar.hintText}
-                onKeyDown={(e)=>this.search(e)}
+                onKeyDown={(e) => this.search(e)}
                 style={{width: '90%',position: 'absolute',top: '20%', left: screenSize.width < 680 ? '11%' : '8%'}}
                 underlineStyle={styles.searchBar.textFieldUnderline}
                 underlineFocusStyle={styles.searchBar.textFieldUnderline} />
@@ -38,13 +38,16 @@ class Search extends React.Component {
     }
 
     search(e) {
-        let includeKinds = mainStore.includeKinds;
-        let includeProjects = mainStore.includeProjects;
-        let searchInput = this.refs.searchInput;
+        // let includeKinds = mainStore.includeKinds;
+        // let includeProjects = mainStore.includeProjects;
+        // let searchInput = this.refs.searchInput;
         if(e.keyCode === 13) {
-            let value = searchInput.getValue();
-            mainStore.searchObjects(value, includeKinds, includeProjects);
-            this.props.router.push('/results')
+            let query = this.refs.searchInput.getValue();
+            let value = query;
+            query = encodeURI(value).replace(/#/,"%23");
+            mainStore.searchObjects(query, value);
+            // mainStore.searchObjects(value, includeKinds, includeProjects);
+            !this.props.location.pathname.includes('results') ? this.props.router.push('/results') : null;
         }
     }
 

@@ -337,36 +337,60 @@ const transportLayer = {
         };
         return fetch(DDS_BASE_URI+apiPrefix+Path.TEMPLATES+id+Path.PROPERTIES, getFetchParams('post', authStore.appConfig.apiToken, body))
     },
-    searchObjects: (value, includeKinds, includeProjects) => {
-        const body = {
-            "include_kinds": includeKinds,
-            "search_query": {
-                "query": {
-                    "bool": {
-                        "must": {
-                            "multi_match": {
-                                "query": value,
-                                "type": "phrase_prefix",
-                                "fields": [
-                                    "label",
-                                    "meta",
-                                    "name",
-                                    "tags.*"
-                                ]
-                            }
-                        },
-                        "filter": {
-                            "bool": {
-                                "must_not": {"match": {"is_deleted": true}},
-                                "should": includeProjects
-                            }
-                        }
-                    }
+    searchObjects: (query, includeKinds, includeProjects) => {
+        const body =  {
+            "query_string": {
+                "query": query
+            },
+            "filters": [
+                {"kind": ["dds-file", "dds-folder"]}
+            ],
+            "aggs": [
+                {
+                    "field": "project.name",
+                    "name": "project_names",
+                    "size": 20
                 },
-                size: 1000
-            }
-        };
-        return fetch(DDS_BASE_URI+apiPrefix+Path.SEARCH, getFetchParams('post', authStore.appConfig.apiToken, body))
+                {
+                    "field": "tags.label",
+                    "name": "tags",
+                    "size": 20
+                },
+            ],
+            // "post_filters": [
+            //     {"project.name": ["Directory Uploads!!!!"]}
+            // ]
+        }
+        // const body = {
+        //     "include_kinds": includeKinds,
+        //     "search_query": {
+        //         "query": {
+        //             "bool": {
+        //                 "must": {
+        //                     "multi_match": {
+        //                         "query": value,
+        //                         "type": "phrase_prefix",
+        //                         "fields": [
+        //                             "label",
+        //                             "meta",
+        //                             "name",
+        //                             "tags.*"
+        //                         ]
+        //                     }
+        //                 },
+        //                 "filter": {
+        //                     "bool": {
+        //                         "must_not": {"match": {"is_deleted": true}},
+        //                         "should": includeProjects
+        //                     }
+        //                 }
+        //             }
+        //         },
+        //         size: 1000
+        //     }
+        // };
+        // return fetch(DDS_BASE_URI+apiPrefix+Path.SEARCH, getFetchParams('post', authStore.appConfig.apiToken, body))
+        return fetch(DDS_BASE_URI+apiPrefix+'/search/folders_files', getFetchParams('post', authStore.appConfig.apiToken, body))
     },
 
 

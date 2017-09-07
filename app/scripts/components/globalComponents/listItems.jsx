@@ -24,21 +24,15 @@ class ListItems extends React.Component {
         const { allItemsSelected, filesChecked, foldersChecked, isSafari, listItems, loading, nextPage, projPermissions, screenSize, tableBodyRenderKey, totalItems, uploads } = mainStore;
         let showBatchOps = !!(filesChecked.length || foldersChecked.length);
         let menuWidth = screenSize.width > 1230 ? 35 : 28;
-        let newFolderModal = null;
-        let uploadManager = null;
-        let showChecks = null;
-        let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         let checkboxStyle = { maxWidth: 24, float: 'left', marginRight: isSafari ? 16 : 0 };
-        if (prjPrm !== null) {
-            newFolderModal = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <AddFolderModal {...this.props}/>;
-            uploadManager = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <RaisedButton label="Upload Files"
-                                                                                                    labelPosition="before"
-                                                                                                    labelStyle={{color: Color.blue}}
-                                                                                                    style={styles.uploadFilesBtn}
-                                                                                                    icon={<FileUpload color={Color.pink} />}
-                                                                                                    onTouchTap={() => this.toggleUploadManager()}/>;
-            showChecks = (prjPrm !== 'viewOnly' && prjPrm !== 'flUpload');
-        }
+        let newFolderModal = projPermissions !== null && (projPermissions === 'viewOnly' || projPermissions === 'flDownload') ? null : <AddFolderModal {...this.props}/>;
+        let uploadManager = projPermissions !== null && (projPermissions === 'viewOnly' || projPermissions === 'flDownload') ? null : <RaisedButton label="Upload Files"
+                                                                                                                                            labelPosition="before"
+                                                                                                                                            labelStyle={{color: Color.blue}}
+                                                                                                                                            style={styles.uploadFilesBtn}
+                                                                                                                                            icon={<FileUpload color={Color.pink} />}
+                                                                                                                                            onTouchTap={() => this.toggleUploadManager()}/>;
+        let showChecks = (projPermissions !== null && (projPermissions !== 'viewOnly' || projPermissions !== 'flUpload'));
         let children = listItems && listItems.length ? listItems.map((child) => {
             let icon = child.kind === Kind.DDS_FOLDER ? 'folder' : 'description';
             let itemsChecked = child.kind === Kind.DDS_FOLDER ? foldersChecked : filesChecked;

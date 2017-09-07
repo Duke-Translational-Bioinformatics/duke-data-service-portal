@@ -251,7 +251,7 @@ export class MainStore {
             }
             const userId = authStore.currentUser.id !== undefined ? authStore.currentUser.id : this.currentUser.id !== undefined ? this.currentUser.id : null;
             this.projects.forEach((p) => {
-                userId !== null ? this.getAllProjectPermissions(p.id, authStore.currentUser.id) : null;
+                userId !== null ? this.getAllProjectPermissions(p.id, userId) : null;
             });
             this.responseHeaders = headers;
             this.nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
@@ -793,7 +793,7 @@ export class MainStore {
             contentType = blob.type,
             slicedFile = null,
             BYTES_PER_CHUNK, SIZE, start, end;
-            BYTES_PER_CHUNK =  2500000;
+            BYTES_PER_CHUNK =  10000000;
             SIZE = blob.size;
             start = 0;
             end = BYTES_PER_CHUNK;
@@ -1473,25 +1473,53 @@ export class MainStore {
         this.showTemplateDetails = true;
     }
 
-    @action searchObjects(value, includeKinds, includeProjects) {
+    // @action searchObjects(value, includeKinds, includeProjects) {
+    //     this.searchValue = value;
+    //     this.loading = true;
+    //     if (includeKinds === null || !includeKinds.length) includeKinds = ['dds-file', 'dds-folder'];
+    //     this.transportLayer.searchObjects(value, includeKinds, includeProjects)
+    //         .then(this.checkResponse)
+    //         .then(response => response.json())
+    //         .then((json) => {
+    //             this.searchResults = json.results;
+    //             this.searchResultsFiles = json.results.filter((obj)=>{
+    //                 return obj.kind === 'dds-file';
+    //             });
+    //             this.searchResultsFolders = json.results.filter((obj)=>{
+    //                 return obj.kind === 'dds-folder';
+    //             });
+    //             let p = json.results.map((obj) => {
+    //                 return {name: obj.ancestors[0].name, id: obj.ancestors[0].id};
+    //             });
+    //             this.searchResultsProjects = BaseUtils.removeDuplicates(p, 'id');
+    //             this.loading = false;
+    //         }).catch(ex =>this.handleErrors(ex))
+    // }
+    //
+    @action searchObjects(query, value) {
         this.searchValue = value;
         this.loading = true;
-        if (includeKinds === null || !includeKinds.length) includeKinds = ['dds-file', 'dds-folder'];
-        this.transportLayer.searchObjects(value, includeKinds, includeProjects)
+        // Todo: use list of project id's to pass as possible post filters to transport layer!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // if (includeKinds === null || !includeKinds.length) includeKinds = ['dds-file', 'dds-folder'];
+        this.transportLayer.searchObjects(query)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
-                this.searchResults = json.results;
-                this.searchResultsFiles = json.results.filter((obj)=>{
-                    return obj.kind === 'dds-file';
-                });
-                this.searchResultsFolders = json.results.filter((obj)=>{
-                    return obj.kind === 'dds-folder';
-                });
-                let p = json.results.map((obj) => {
-                    return {name: obj.ancestors[0].name, id: obj.ancestors[0].id};
-                });
-                this.searchResultsProjects = BaseUtils.removeDuplicates(p, 'id');
+            console.log(JSON.stringify(json, null, 2))
+                this.searchResults = json.results.filter(r => !r.is_deleted);
+
+            this.searchResultsProjects = json.aggs.project_names.buckets;
+            console.log(JSON.stringify(this.searchResultsProjects, null, 2))
+                // this.searchResultsFiles = json.results.filter((obj)=>{
+                //     return obj.kind === 'dds-file';
+                // });
+                // this.searchResultsFolders = json.results.filter((obj)=>{
+                //     return obj.kind === 'dds-folder';
+                // });
+                // let p = json.results.map((obj) => {
+                //     return {name: obj.ancestors[0].name, id: obj.ancestors[0].id};
+                // });
+                // this.searchResultsProjects = BaseUtils.removeDuplicates(p, 'id');
                 this.loading = false;
             }).catch(ex =>this.handleErrors(ex))
     }

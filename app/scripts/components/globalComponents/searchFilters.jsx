@@ -3,6 +3,7 @@ const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../util/baseUtils';
+import { Color } from '../../theme/customTheme';
 import Checkbox from 'material-ui/Checkbox';
 import Drawer from 'material-ui/Drawer';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -19,7 +20,7 @@ class SearchFilters extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        if(mainStore.showFilters && (!mainStore.searchResultsFiles.length && !mainStore.searchResultsFolders.length || !mainStore.searchResultsProjects.length)) this.toggleFilters();
+        // if(mainStore.showFilters && (!mainStore.searchResultsFiles.length && !mainStore.searchResultsFolders.length || !mainStore.searchResultsProjects.length)) this.toggleFilters();
     }
 
     render() {
@@ -30,12 +31,14 @@ class SearchFilters extends React.Component {
             return sums;
         },{});
         let projects = searchResultsProjects.map((obj) => {
-            let count = projectCount.hasOwnProperty(obj.id) ? projectCount[obj.id] : 0;
-            return <span key={obj.id}>
-                <ListItem primaryText={obj.name + " ("+count+")"}
-                          leftCheckbox={<Checkbox style={styles.checkbox} checked={includeProjects.includes(obj.id)}/>}
-                          style={{textAlign: 'right'}}
-                          onClick={() => this.setIncludeProjects(obj.id)}/>
+            // let count = projectCount.hasOwnProperty(obj.key) ? projectCount[obj.id] : 0;
+            let text = <span style={{fontSize: 14}}>{`${obj.key} `}<span style={{color: Color.ltPink, fontSize: 14}}>{` (${obj.doc_count})`}</span></span>;
+            return <span key={obj.key}>
+                <ListItem primaryText={text}
+                          leftCheckbox={<Checkbox style={styles.checkbox} />}
+                          style={{textAlign: 'left', paddingLeft: 32}}
+                          // onClick={() => this.setIncludeProjects(obj.id)}
+                />
             </span>
         });
 
@@ -120,7 +123,8 @@ const styles = {
     },
     checkbox: {
         height: 0,
-        width: 0
+        width: 0,
+        left: 0
     },
     drawer: {
         display: 'flex',
@@ -132,12 +136,10 @@ const styles = {
         justifyContent: 'center'
     },
     listDivider: {
-        width: 270,
-        marginLeft: 17
+        width: 300
     },
     listHeader: {
         textAlign: 'left',
-        marginLeft: 17,
         marginBottom: 8
     },
     spacer: {
