@@ -219,9 +219,10 @@ export class MainStore {
                 } else {
                     this.projects = [...this.projects, ...results];
                 }
+                const userId = authStore.currentUser.id !== undefined ? authStore.currentUser.id : this.currentUser.id !== undefined ? this.currentUser.id : null;
                 this.projects.forEach((p) => {
-                    this.getAllProjectPermissions(p.id, authStore.currentUser.id)
-                })
+                    userId !== null ? this.getAllProjectPermissions(p.id, userId) : null;
+                });
                 this.responseHeaders = headers;
                 this.loading = false;
             }).catch(ex => this.handleErrors(ex))
