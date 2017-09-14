@@ -571,11 +571,6 @@ describe('Main Store', () => {
     //     this.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
     // }
     //
-    // @action setIncludedSearchProjects(includeProjects) {
-    //     this.includeProjects = includeProjects;
-    //     this.setSearchFilters();
-    // }
-    //
     // @action setSearchFilters() {
     //     this.searchFilters = [];
     //     this.includeProjects.forEach((projectId) => {this.searchFilters.push({"match":{"project.id": projectId}})});

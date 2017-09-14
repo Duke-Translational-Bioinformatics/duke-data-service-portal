@@ -38,15 +38,9 @@ class Search extends React.Component {
     }
 
     search(e) {
-        // let includeKinds = mainStore.includeKinds;
-        // let includeProjects = mainStore.includeProjects;
-        // let searchInput = this.refs.searchInput;
         if(e.keyCode === 13) {
             let query = this.refs.searchInput.getValue();
-            let value = query;
-            query = encodeURI(value).replace(/#/,"%23");
-            mainStore.searchObjects(query, value);
-            // mainStore.searchObjects(value, includeKinds, includeProjects);
+            mainStore.searchObjects(query, null, null, null);
             !this.props.location.pathname.includes('results') ? this.props.router.push('/results') : null;
         }
     }
@@ -54,8 +48,7 @@ class Search extends React.Component {
     showSearch() {
         if(this.props.location.pathname === '/results') this.props.router.goBack();
         if(mainStore.showFilters) mainStore.toggleSearchFilters();
-        if(mainStore.includeKinds.length) mainStore.setIncludedSearchKinds([]);
-        if(mainStore.includeProjects.length) mainStore.setIncludedSearchProjects([]);
+        mainStore.resetSearchFilters();
         mainStore.toggleSearch();
     }
 }

@@ -16,7 +16,7 @@ import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColu
 class SearchResults extends React.Component {
 
     render() {
-        const { loading, nextPage, screenSize, searchResults, searchValue, showFilters, tableBodyRenderKey, totalItems, uploads } = mainStore;
+        const { loading, nextPage, screenSize, searchResults, searchResultsProjects, searchResultsTags, searchValue, showFilters, tableBodyRenderKey, totalItems, uploads } = mainStore;
         let menuWidth = screenSize.width > 1230 ? 35 : 28;
         let srchValue = searchValue !== null ? 'for ' +'"'+searchValue+'"' : '';
         // let containerClass = showFilters ? ' show-filters-transition' : ' hide-filters-transition';
@@ -60,15 +60,14 @@ class SearchResults extends React.Component {
             <div className="list-items-container">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
                     {<div style={styles.searchText}>Showing{" "+pageResults+" "}results{' '+srchValue}</div>}
-                    {/*{showBatchOps && <BatchOps {...this.props}/>}*/}
-                        <IconButton
+                    {searchResults.length ? <IconButton
                              iconClassName="material-icons"
                              tooltip="filter results"
                              style={{float: 'right'}}
                              onTouchTap={()=>this.toggleFilters()}
                              >
                              tune
-                         </IconButton>
+                        </IconButton> : null}
                 </div>
                 {uploads || loading ? <Loaders {...this.props}/> : null}
                 <Paper className="mdl-cell mdl-cell--12-col" style={styles.list}>

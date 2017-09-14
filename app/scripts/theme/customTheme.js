@@ -33,6 +33,7 @@ export const Color = {
     red: '#F44336',
     ltRed: '#EF5350',
     ltGrey: '#BDBDBD',
+    ltGrey2: '#E0E0E0',
     dkGrey: '#757575',
     dkGrey2: '#616161',
     white: '#FFF',

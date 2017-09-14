@@ -33,8 +33,6 @@ export class MainStore {
     @observable foldersChecked
     @observable fileVersions
     @observable hideUploadProgress
-    @observable includeKinds
-    @observable includeProjects
     @observable isListItem
     @observable isSafari
     @observable itemsSelected
@@ -65,10 +63,13 @@ export class MainStore {
     @observable screenSize
     @observable searchFilesList
     @observable searchFilters
+    @observable searchProjectsPostFilters
+    @observable searchTagsPostFilters
     @observable searchResults
     @observable searchResultsFiles
     @observable searchResultsFolders
     @observable searchResultsProjects
+    @observable searchResultsTags
     @observable searchValue
     @observable selectedEntity
     @observable showFilters
@@ -118,8 +119,6 @@ export class MainStore {
         this.foldersChecked = [];
         this.fileVersions = [];
         this.hideUploadProgress = false;
-        this.includeKinds = [];
-        this.includeProjects = [];
         this.isFolderUpload = false;
         this.isListItem = false;
         this.isSafari = false;
@@ -152,10 +151,13 @@ export class MainStore {
         this.screenSize = {width: 0, height: 0};
         this.searchFilesList = [];
         this.searchFilters = [];
+        this.searchProjectsPostFilters = {"project.name": []};
+        this.searchTagsPostFilters = {"tags.label": []};
         this.searchResults = [];
         this.searchResultsFiles = [];
         this.searchResultsFolders = [];
         this.searchResultsProjects = [];
+        this.searchResultsTags = [];
         this.searchValue = null;
         this.selectedEntity = null;
         this.showFilters = false;
@@ -1473,53 +1475,38 @@ export class MainStore {
         this.showTemplateDetails = true;
     }
 
-    // @action searchObjects(value, includeKinds, includeProjects) {
-    //     this.searchValue = value;
-    //     this.loading = true;
-    //     if (includeKinds === null || !includeKinds.length) includeKinds = ['dds-file', 'dds-folder'];
-    //     this.transportLayer.searchObjects(value, includeKinds, includeProjects)
-    //         .then(this.checkResponse)
-    //         .then(response => response.json())
-    //         .then((json) => {
-    //             this.searchResults = json.results;
-    //             this.searchResultsFiles = json.results.filter((obj)=>{
-    //                 return obj.kind === 'dds-file';
-    //             });
-    //             this.searchResultsFolders = json.results.filter((obj)=>{
-    //                 return obj.kind === 'dds-folder';
-    //             });
-    //             let p = json.results.map((obj) => {
-    //                 return {name: obj.ancestors[0].name, id: obj.ancestors[0].id};
-    //             });
-    //             this.searchResultsProjects = BaseUtils.removeDuplicates(p, 'id');
-    //             this.loading = false;
-    //         }).catch(ex =>this.handleErrors(ex))
-    // }
-    //
-    @action searchObjects(query, value) {
-        this.searchValue = value;
+    @action searchObjects(query, filter, projectPostFilter, tagPostFilter) {
+        if (projectPostFilter !== null && !this.searchProjectsPostFilters['project.name'].includes(projectPostFilter)) {
+            this.searchProjectsPostFilters['project.name'].push(projectPostFilter);
+        } else {
+            this.searchProjectsPostFilters['project.name'] = this.searchProjectsPostFilters['project.name'].filter(f => f !== projectPostFilter);
+        }
+        if (tagPostFilter !== null && !this.searchTagsPostFilters['tags.label'].includes(tagPostFilter)) {
+            this.searchTagsPostFilters['tags.label'].push(tagPostFilter);
+        } else {
+            this.searchTagsPostFilters['tags.label'] = this.searchTagsPostFilters['tags.label'].filter(f => f !== tagPostFilter);
+        }
+        if (filter !== null) {
+            this.searchFilters.includes(filter) ? this.searchFilters = this.searchFilters.filter(f => f !== filter) : this.searchFilters.push(filter);
+        }
+        this.searchValue = query;
+        query = encodeURI(query).replace(/#/,"%23");
         this.loading = true;
-        // Todo: use list of project id's to pass as possible post filters to transport layer!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // if (includeKinds === null || !includeKinds.length) includeKinds = ['dds-file', 'dds-folder'];
-        this.transportLayer.searchObjects(query)
+        this.transportLayer.searchObjects(query, this.searchFilters, this.searchProjectsPostFilters, this.searchTagsPostFilters)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
             console.log(JSON.stringify(json, null, 2))
                 this.searchResults = json.results.filter(r => !r.is_deleted);
-
-            this.searchResultsProjects = json.aggs.project_names.buckets;
-            console.log(JSON.stringify(this.searchResultsProjects, null, 2))
-                // this.searchResultsFiles = json.results.filter((obj)=>{
-                //     return obj.kind === 'dds-file';
-                // });
-                // this.searchResultsFolders = json.results.filter((obj)=>{
-                //     return obj.kind === 'dds-folder';
-                // });
-                // let p = json.results.map((obj) => {
-                //     return {name: obj.ancestors[0].name, id: obj.ancestors[0].id};
-                // });
-                // this.searchResultsProjects = BaseUtils.removeDuplicates(p, 'id');
+                this.searchResultsProjects = json.aggs.project_names.buckets;
+                this.searchResultsTags = json.aggs.tags.buckets;
+                console.log(JSON.stringify(this.searchResultsProjects, null, 2))
+                this.searchResultsFiles =  this.searchResults.filter((obj)=>{
+                    return obj.kind === 'dds-file';
+                });
+                this.searchResultsFolders =  this.searchResults.filter((obj)=>{
+                    return obj.kind === 'dds-folder';
+                });
                 this.loading = false;
             }).catch(ex =>this.handleErrors(ex))
     }
@@ -1533,20 +1520,8 @@ export class MainStore {
         this.showFilters = !this.showFilters;
     }
 
-    @action setIncludedSearchKinds(includeKinds) {
-        this.includeKinds = includeKinds;
-        this.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
-    }
-
-    @action setIncludedSearchProjects(includeProjects) {
-        this.includeProjects = includeProjects;
-        this.setSearchFilters();
-    }
-
-    @action setSearchFilters() {
+    @action resetSearchFilters() {
         this.searchFilters = [];
-        this.includeProjects.forEach((projectId) => {this.searchFilters.push({"match":{"project.id": projectId}})});
-        this.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
     }
 
     @action clearSearchFilesData() {

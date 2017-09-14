@@ -1,4 +1,4 @@
-import { UrlGen, Path } from './util/urlEnum';
+import { UrlGen, Path, Kind } from './util/urlEnum';
 import { getFetchParams } from './util/fetchUtil';
 import authStore from './stores/authStore';
 
@@ -337,13 +337,17 @@ const transportLayer = {
         };
         return fetch(DDS_BASE_URI+apiPrefix+Path.TEMPLATES+id+Path.PROPERTIES, getFetchParams('post', authStore.appConfig.apiToken, body))
     },
-    searchObjects: (query, includeKinds, includeProjects) => {
+    searchObjects: (query, kindFilter, projectPostFilter, tagPostFilter) => {
+        const kind = kindFilter.length ? kindFilter : [Kind.DDS_FILE, Kind.DDS_FOLDER];
+        const postFilters = [];
+        projectPostFilter['project.name'].length ? postFilters.push(projectPostFilter) : null;
+        tagPostFilter['tags.label'].length ? postFilters.push(tagPostFilter) : null;
         const body =  {
             "query_string": {
                 "query": query
             },
             "filters": [
-                {"kind": ["dds-file", "dds-folder"]}
+                {"kind": kind}
             ],
             "aggs": [
                 {
@@ -357,40 +361,9 @@ const transportLayer = {
                     "size": 20
                 },
             ],
-            // "post_filters": [
-            //     {"project.name": ["Directory Uploads!!!!"]}
-            // ]
-        }
-        // const body = {
-        //     "include_kinds": includeKinds,
-        //     "search_query": {
-        //         "query": {
-        //             "bool": {
-        //                 "must": {
-        //                     "multi_match": {
-        //                         "query": value,
-        //                         "type": "phrase_prefix",
-        //                         "fields": [
-        //                             "label",
-        //                             "meta",
-        //                             "name",
-        //                             "tags.*"
-        //                         ]
-        //                     }
-        //                 },
-        //                 "filter": {
-        //                     "bool": {
-        //                         "must_not": {"match": {"is_deleted": true}},
-        //                         "should": includeProjects
-        //                     }
-        //                 }
-        //             }
-        //         },
-        //         size: 1000
-        //     }
-        // };
-        // return fetch(DDS_BASE_URI+apiPrefix+Path.SEARCH, getFetchParams('post', authStore.appConfig.apiToken, body))
-        return fetch(DDS_BASE_URI+apiPrefix+'/search/folders_files', getFetchParams('post', authStore.appConfig.apiToken, body))
+            "post_filters": postFilters
+        };
+        return fetch(DDS_BASE_URI+apiPrefix+'search/folders_files', getFetchParams('post', authStore.appConfig.apiToken, body))
     },
 
 
