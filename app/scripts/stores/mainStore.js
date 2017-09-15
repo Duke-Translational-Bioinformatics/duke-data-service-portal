@@ -254,8 +254,6 @@ export class MainStore {
                 userId !== null ? this.getAllProjectPermissions(p.id, userId) : null;
             });
             this.responseHeaders = headers;
-            this.nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
-            this.totalItems = headers !== null && !!headers['x-total'] ? parseInt(headers['x-total'][0], 10) : null;
             this.loading = false;
         }).catch(ex => this.handleErrors(ex))
     }
