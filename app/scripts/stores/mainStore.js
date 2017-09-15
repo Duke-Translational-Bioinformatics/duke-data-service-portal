@@ -258,6 +258,35 @@ export class MainStore {
         }).catch(ex => this.handleErrors(ex))
     }
 
+    @action getProjects(page, perPage) {
+        this.loading = true;
+        if (page == null) page = 1;
+        if (perPage == null) perPage = 25;
+        this.transportLayer.getProjects(page, perPage)
+            .then(this.checkResponse).then((response) => {
+            const results = response.json();
+            const headers = response.headers;
+            return Promise.all([results, headers]);
+        }).then((json) => {
+            let results = json[0].results;
+            let headers = json[1].map;
+            if(page <= 1) {
+                this.projects = results;
+            } else {
+                this.projects = [...this.projects, ...results];
+            }
+            const userId = authStore.currentUser.id !== undefined ? authStore.currentUser.id : this.currentUser.id !== undefined ? this.currentUser.id : null;
+            this.projects.forEach((p) => {
+                userId !== null ? this.getAllProjectPermissions(p.id, userId) : null;
+            });
+            this.responseHeaders = headers;
+            this.nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
+            this.totalItems = headers !== null && !!headers['x-total'] ? parseInt(headers['x-total'][0], 10) : null;
+            this.loading = false;
+        }).catch(ex => this.handleErrors(ex))
+    }
+
+
     @action getProjectListForProvenanceEditor() {
         this.loading = true;
         const page = 1;
