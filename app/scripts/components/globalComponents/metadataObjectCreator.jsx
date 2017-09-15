@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 const { object, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
+import provenanceStore from '../../stores/provenanceStore';
 import BaseUtils from '../../util/baseUtils';
 import { Kind } from '../../util/urlEnum';
 import { Color } from '../../theme/customTheme';
@@ -24,6 +25,8 @@ class MetadataObjectCreator extends React.Component {
 
     render() {
         const { entityObj, filesChecked, metaObjProps, metadataTemplate, templateProperties } = mainStore;
+        const { selectedNode } = provenanceStore;
+
         function formatDate(date) {
             return (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
         }
@@ -43,7 +46,7 @@ class MetadataObjectCreator extends React.Component {
             );
         }
 
-        let name = entityObj && filesChecked < 1 ? entityObj.name : 'selected files';
+        let name = entityObj && filesChecked < 1 ? selectedNode && selectedNode.properties !== undefined ? selectedNode.properties.name : entityObj.name : 'selected files';
         let metaObjProperties = metaObjProps && metaObjProps !== null ? metaObjProps : null;
         let properties = templateProperties && templateProperties.length !== 0 ? templateProperties.map((obj)=>{
             let type = BaseUtils.getTemplatePropertyType(obj.type);
@@ -54,11 +57,11 @@ class MetadataObjectCreator extends React.Component {
                         if(p.id === obj.id && obj.type !== 'date') {
                             value = p.value;
                         } else if(p.id === obj.id && obj.type === 'date') {
-                            value = new Date(p.value.split("-").join("/"))
+                            value = new Date(p.value.split("-").join("/"));
                         }
                     });
                 });
-                return value;
+                if(value !== '') return value;
             };
             return (
                 <TableRow  key={obj.id}>
@@ -185,6 +188,7 @@ class MetadataObjectCreator extends React.Component {
                 this.replacePropertyValue(metaProps, key, formattedDate);
             }
         }
+        if(this.state.noValueWarning) this.setState({noValueWarning: false})
     }
 
     addToPropertyList(key) {
@@ -201,8 +205,11 @@ class MetadataObjectCreator extends React.Component {
     }
 
     createMetadataObject(templateId) {
+        const { selectedNode } = provenanceStore;
+        const { selectedEntity } = mainStore;
         let files = mainStore.filesChecked;
-        let fileId = mainStore.selectedEntity !== null ? mainStore.selectedEntity.id : this.props.params.id;
+        let id = selectedNode && selectedNode.properties !== undefined ? selectedNode.properties.id : selectedEntity !== null ? selectedEntity.id : this.props.params.id;
+        const kind = selectedNode && selectedNode.properties !== undefined && selectedNode.properties.kind === Kind.DDS_ACTIVITY || this.props.location.pathname.includes('activity') ? Kind.DDS_ACTIVITY : Kind.DDS_FILE;
         let metaProps = mainStore.metaProps.slice();
         let errors = this.state.errorText;
         if(Object.keys(errors).length === 0 && errors.constructor === Object) {
@@ -212,7 +219,7 @@ class MetadataObjectCreator extends React.Component {
                         mainStore.createMetadataObject(Kind.DDS_FILE, files[i], templateId, metaProps);
                     }
                 } else {
-                    mainStore.createMetadataObject(Kind.DDS_FILE, fileId, templateId, metaProps);
+                    mainStore.createMetadataObject(kind, id, templateId, metaProps);
                 }
                 this.toggleTagManager();
             } else {

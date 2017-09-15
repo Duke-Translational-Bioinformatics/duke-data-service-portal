@@ -20,6 +20,11 @@ class File extends React.Component {
         }
     }
 
+    componentWillReceiveProps(nextProps) {
+        const routeChanged = nextProps.location !== this.props.location;
+        mainStore.toggleBackButtonVisibility(routeChanged);
+    }
+
     _loadFile() {
         let id = this.props.params.id;
         mainStore.setSelectedEntity(null, null);

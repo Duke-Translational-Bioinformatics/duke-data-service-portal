@@ -14,9 +14,11 @@ describe('Provenance Store', () => {
 
     let transportLayer = null;
     let provenanceStore = null;
+    let mainStore = null;
 
     beforeEach(() => {
         provenanceStore = require('../app/scripts/stores/provenanceStore').default;
+        mainStore = require('../app/scripts/stores/mainStore').default;
         transportLayer = {};
         provenanceStore.transportLayer = transportLayer;
     });
@@ -197,6 +199,7 @@ describe('Provenance Store', () => {
 
     it('@action addFileToGraph - adds a file to the provenance graph', () => {
         provenanceStore.provNodes = [fake.prov_activity_json];
+        provenanceStore.currentGraph = {};
         expect(provenanceStore.provNodes.length).toBe(1);
         provenanceStore.addFileToGraph(fake.prov_file_node_json);
         expect(provenanceStore.provNodes.length).toBe(2);

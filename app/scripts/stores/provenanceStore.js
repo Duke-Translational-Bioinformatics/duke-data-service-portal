@@ -3,14 +3,17 @@ import { observable, computed, action, map } from 'mobx';
 import transportLayer from '../transportLayer';
 import authStore from '../stores/authStore';
 import mainStore from '../stores/mainStore';
-import BaseUtils from '../util/baseUtils.js';
+import BaseUtils from '../util/baseUtils';
+import { Path } from '../util/urlEnum';
 import { graphColors} from '../graphConfig';
 import { checkStatus } from '../util/fetchUtil';
 
 export class ProvenanceStore {
 
     @observable activities
+    @observable activity
     @observable addEdgeMode
+    @observable currentGraph
     @observable dltRelationsBtn
     @observable doubleClicked
     @observable drawerLoading
@@ -41,7 +44,9 @@ export class ProvenanceStore {
 
     constructor() {
         this.activities = [];
+        this.activity = null;
         this.addEdgeMode = false;
+        this.currentGraph = null;
         this.dltRelationsBtn = false;
         this.doubleClicked = false;
         this.drawerLoading = false;
@@ -59,7 +64,7 @@ export class ProvenanceStore {
         this.relTo = null;
         this.relMsg = null;
         this.removeFileFromProvBtn = false;
-        this.renderGraph = false
+        this.renderGraph = false;
         this.scale = null;
         this.selectedNode = {};
         this.selectedEdge = null;
@@ -75,6 +80,15 @@ export class ProvenanceStore {
 
     checkResponse(response) {
         return checkStatus(response, authStore);
+    }
+
+    @action getActivity(id, path) {
+        this.transportLayer.getEntity(id, path)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => {
+                this.activity= json;
+            }).catch(ex =>mainStore.handleErrors(ex))
     }
 
     @action getActivities() {
@@ -176,8 +190,8 @@ export class ProvenanceStore {
             }
         });
         if(prevGraph !== null && typeof prevGraph === 'object') {
-            let prevNodes = prevGraph.nodes;
-            let prevEdges = prevGraph.edges;
+            let prevNodes = prevGraph.nodes.length ? prevGraph.nodes : this.currentGraph.nodes;
+            let prevEdges = prevGraph.edges.length ? prevGraph.edges : this.currentGraph.edges;
             for(let i=0; i<prevNodes.length; i++) {
                 this.provNodes.push(prevNodes[i]);
             }
@@ -188,6 +202,7 @@ export class ProvenanceStore {
             this.provEdges = this.provEdges.filter((edge, index, self) => self.findIndex((t) => {return t.id === edge.id}) === index);
         }
         this.shouldRenderGraph();
+        mainStore.currentLocation !== null ? this.currentGraph = {id: mainStore.currentLocation.id, edges: this.provEdges, nodes: this.provNodes} : null;
         this.drawerLoading = false;
         this.showProvCtrlBtns = false;
         this.showProvDetails = false;
@@ -333,10 +348,11 @@ export class ProvenanceStore {
                 edges.push(this.updatedGraphItem[0]);
                 this.shouldRenderGraph();
                 this.provEdges = edges;
+                this.currentGraph.edges = edges;
             }).catch((ex) => {
             mainStore.addToast('Failed to add new relation');
-                mainStore.handleErrors(ex)
-            })
+            mainStore.handleErrors(ex)
+        })
     }
 
     @action deleteProvItem(data, id) {
@@ -353,15 +369,17 @@ export class ProvenanceStore {
                 this.shouldRenderGraph();
                 if(data.hasOwnProperty('from')){
                     this.provEdges = this.provEdges.filter(obj => obj.id !== data.id);
+                    this.currentGraph.edges = this.provEdges;
                 } else {
                     this.provNodes = this.provNodes.filter(obj => obj.id !== data.id);
+                    this.currentGraph.nodes = provNodes;
                     this.getActivities();
                 }
                 this.updatedGraphItem = item;
             }).catch((ex) => {
-                mainStore.addToast('Failed to delete ' + msg);
-                mainStore.handleErrors(ex)
-            });
+            mainStore.addToast('Failed to delete ' + msg);
+            mainStore.handleErrors(ex)
+        });
     }
 
     @action addProvActivity(name, desc) {
@@ -372,9 +390,9 @@ export class ProvenanceStore {
                 mainStore.addToast('New Activity Added');
                 this.addProvActivitySuccess(json);
             }).catch((ex) => {
-                mainStore.addToast('Failed to add new actvity');
-                mainStore.handleErrors(ex)
-            })
+            mainStore.addToast('Failed to add new actvity');
+            mainStore.handleErrors(ex)
+        })
     }
 
     @action addProvActivitySuccess(json) {
@@ -395,8 +413,9 @@ export class ProvenanceStore {
         });
         let nodes = this.provNodes.slice();
         nodes.push(this.updatedGraphItem[0]);
-        this.shouldRenderGraph();
         this.provNodes = nodes;
+        this.currentGraph.nodes = nodes;
+        this.shouldRenderGraph();
         mainStore.addToast(json.name+' was added to the graph');
     }
 
@@ -428,10 +447,26 @@ export class ProvenanceStore {
                     };
                 });
                 nodes.push(this.updatedGraphItem[0]);
+                this.activity = json;
                 this.shouldRenderGraph();
                 this.provNodes = nodes;
+                this.currentGraph.nodes = nodes;
                 this.showProvCtrlBtns = false;
             }).catch(ex =>mainStore.handleErrors(ex))
+    }
+
+    @action deleteProvActivity(id, name) {
+        this.transportLayer.deleteProvItem(id, Path.ACTIVITIES)
+            .then(this.checkResponse)
+            .then(response => {})
+            .then(() => {
+                mainStore.addToast(`${name} activity was deleted!`);
+                this.provNodes = this.provNodes.filter(obj => obj.id !== id);
+                this.currentGraph.nodes = this.provNodes;
+            }).catch((ex) => {
+            mainStore.addToast(`Failed to delete ${name}`);
+            mainStore.handleErrors(ex)
+        });
     }
 
     @action addFileToGraph(node) {
@@ -472,6 +507,7 @@ export class ProvenanceStore {
         nodes.push(this.updatedGraphItem[0]);
         this.shouldRenderGraph();
         this.provNodes = nodes;
+        this.currentGraph.nodes = nodes;
     }
 
     @action switchRelationFromTo(from, to){
@@ -524,8 +560,8 @@ export class ProvenanceStore {
             .then((json) => {
                 this.provFileVersions = json.results
             }).catch((ex) => {
-                mainStore.handleErrors(ex)
-            })
+            mainStore.handleErrors(ex)
+        })
     }
 
     @action createGraph(graph) {
@@ -552,6 +588,7 @@ export class ProvenanceStore {
 
     @action toggleProvView() {
         this.toggleProv = !this.toggleProv;
+        this.selectedNode = {};
         if(this.toggleProv !== true) { //clear old graph on close of provenance view
             this.provEdges = [];
             this.provNodes = [];

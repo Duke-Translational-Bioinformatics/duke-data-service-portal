@@ -82,6 +82,11 @@ class App extends React.Component {
         this.showToasts();
     }
 
+    componentWillReceiveProps(nextProps) {
+        const routeChanged = nextProps.location !== this.props.location;
+        mainStore.toggleBackButtonVisibility(routeChanged);
+    }
+
     handleResize() {
         mainStore.getScreenSize(window.innerHeight, window.innerWidth);
     }
