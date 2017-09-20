@@ -156,6 +156,7 @@ class AccountTreeList extends Component {
           open={true}
           width={400}
           zDepth={1}
+          containerStyle={{height: 'calc(100% - 76px)', top: 76}}
           >
           {treeListJSX}
         </Drawer>
