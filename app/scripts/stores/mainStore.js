@@ -38,6 +38,7 @@ export class MainStore {
     @observable isListItem
     @observable isSafari
     @observable itemsSelected
+    @observable treeListItems
     @observable listItems
     @observable loading
     @observable metadataTemplate
@@ -176,7 +177,7 @@ export class MainStore {
         this.userKey = {};
         this.versionModal = false;
         this.warnUserBeforeLeavingPage = false;
-
+        this.treeListItems = [ {"depth": 0, "children": []} ];
         this.transportLayer = transportLayer;
     }
 
@@ -184,6 +185,63 @@ export class MainStore {
         return checkStatus(response, authStore);
     }
 
+    @action getProjectsTreeListItems(page, perPage) {
+      this.loading = true;
+      if (page == null) page = 1;
+      if (perPage == null) perPage = 25;
+      this.transportLayer.getProjects(page, perPage)
+          .then(this.checkResponse).then((response) => {
+          const results = response.json();
+          const headers = response.headers;
+          return Promise.all([results, headers]);
+      }).then((json) => {
+          let results = json[0].results;
+          let headers = json[1].map;
+          let projectListItems = results.map((project) => {
+            return (
+              {
+                "title": project.name,
+                "depth": 1,
+                "parentIndex": 0,
+                "children": [],
+                "disabled": false
+              }
+            );
+          });
+          this.treeListItems = [...this.treeListItems, ...projectListItems];
+          // const userId = authStore.currentUser.id !== undefined ? authStore.currentUser.id : this.currentUser.id !== undefined ? this.currentUser.id : null;
+          // this.projects.forEach((p) => {
+          //     userId !== null ? this.getAllProjectPermissions(p.id, authStore.currentUser.id) : null;
+          // });
+          this.responseHeaders = headers;
+          this.loading = false;
+      }).catch(ex => this.handleErrors(ex))
+    }
+    
+    // @action getTreeListItemsChildren(id, path, page) {
+    //     if(this.listItems.length && page === null) this.listItems = [];
+    //     this.loading = true;
+    //     if (page == null) page = 1;
+    //     this.transportLayer.getChildren(id, path, page)
+    //         .then(this.checkResponse)
+    //         .then((response) => {
+    //             const results = response.json();
+    //             const headers = response.headers;
+    //             return Promise.all([results, headers]);
+    //         })
+    //         .then((json) => {
+    //             let results = json[0].results;
+    //             let headers = json[1].map;
+    //             if(page <= 1) { // Todo: Convert to proper 
+    //                 this.listItems = results;
+    //             } else {
+    //                 this.listItems = [...this.listItems, ...results];
+    //             }
+    //             this.responseHeaders = headers;
+    //             this.loading = false;
+    //         }).catch(ex =>this.handleErrors(ex))
+    // }
+    
     @action toggleAllItemsSelected (bool) {
         this.allItemsSelected = bool;
     }

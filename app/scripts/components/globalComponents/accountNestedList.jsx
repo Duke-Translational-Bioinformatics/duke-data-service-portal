@@ -18,8 +18,9 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Toggle from 'material-ui/Toggle';
 import Subheader from 'material-ui/Subheader';
 import AccountTreeList from './accountTreeList.jsx';
+// import AccountTreeListPure from './accountTreeListPure.jsx';
 
-const listItems = [
+const projectListItems = [
   {
   	"depth": 0,
   	"children": []
@@ -113,44 +114,46 @@ const listItems = [
 @observer
 class AccountNestedList extends React.Component {
     render() {
-        const { loading, responseHeaders, projects, projectRoles, usage } = mainStore;
+        // const { projectListItems } = mainStore;
+        // const listItemBase = [
+        //   {
+        //     "depth": 0,
+        //     "children": []
+        //   }
+        // ];
 
-        // let listItems = projects.map((project) => {
+
+        // let listProjects = projects.length && projects.map((project) => {
         //   return (
         //     {
         //       "title": project.name,
         //       "depth": 1,
         //       "parentIndex": 0,
+        //       "children": [],
         //       "disabled": false
         //     }
         //   );
-        // })
+        // });
 
+        // let listItems = [...listItemBase, ...listProjects];
 
-        // let projectListItem = projects ? projects.map((project) => {
-        //     let role = projectRoles.get(project.id);
+        // let setListItems = (listItems) => {
+        //   if (listItems.length > 1) {
         //     return (
-        //       <ListItem
-        //         key={ project.id }
-        //         primaryText={project.name}
-        //         leftIcon={<FontIcon className="material-icons">content_paste</FontIcon>}
-        //         initiallyOpen={false}
-        //         primaryTogglesNestedList={true}
-        //         nestedItems={[
-        //           <ListItem
-        //             key={1}
-        //             primaryText="Starred"
-        //             leftIcon={<ActionGrade />}
-        //           />,
-        //         ]}
+        //       <AccountTreeList
+        //         listItems={listItems}
+        //         mainStore={mainStore}
         //       />
-        //     );
-        // }) : null;
+        //     )
+        //   }
+        // };
 
         return (
-          <AccountTreeList
-            listItems={listItems}
-          />
+          <div>
+            <AccountTreeList
+              // listItems={projectListItems}
+            />
+          </div>
         );
     }
 }
