@@ -84,7 +84,7 @@ class App extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         const routeChanged = nextProps.location !== this.props.location;
-        mainStore.toggleBackButtonVisibility(routeChanged);
+        mainStore.toggleBackButtonVisibility(routeChanged, this.props.location);
     }
 
     handleResize() {

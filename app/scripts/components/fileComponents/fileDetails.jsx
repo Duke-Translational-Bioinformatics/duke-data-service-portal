@@ -24,7 +24,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 class FileDetails extends React.Component {
 
     render() {
-        const {entityObj, fileVersions, loading, objectMetadata, projPermissions, screenSize, uploads} = mainStore;
+        const {entityObj, fileVersions, loading, objectMetadata, projPermissions, screenSize, showBackButton, uploads} = mainStore;
         const { showProvAlert } = provenanceStore;
         let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         let dlButton = null;
@@ -68,7 +68,7 @@ class FileDetails extends React.Component {
                 style={styles.provAlert.alertButton}
                 hoverColor="#4CAF50"
                 onTouchTap={() => this.openProv()}
-                />
+            />
         </Paper> : '';
 
         if(fileVersions && fileVersions != null && fileVersions.length > 1) {
@@ -80,10 +80,10 @@ class FileDetails extends React.Component {
                     versionCount.push(versions[i]);
                     if (versionCount.length > 1) {
                         versionsButton = <RaisedButton
-                                            label="FILE VERSIONS"
-                                            style={styles.button}
-                                            labelStyle={{color: Color.blue}}
-                                            onTouchTap={() => this.openModal('fileVersions')} />
+                            label="FILE VERSIONS"
+                            style={styles.button}
+                            labelStyle={{color: Color.blue}}
+                            onTouchTap={() => this.openModal('fileVersions')} />
                     }
                 }
             }
@@ -236,7 +236,7 @@ class FileDetails extends React.Component {
     }
 
     handleDownload(){
-        let id = this.props.params.id;
+        const id = this.props.params.id;
         mainStore.getDownloadUrl(id, Path.FILE);
     }
 
@@ -245,7 +245,7 @@ class FileDetails extends React.Component {
     }
 
     openProv() {
-        let versionId = mainStore.entityObj.current_version.id;
+        const versionId = mainStore.entityObj.current_version.id;
         provenanceStore.getWasGeneratedByNode(versionId);
         provenanceStore.toggleProvView();
         provenanceStore.toggleProvEditor();
@@ -253,8 +253,8 @@ class FileDetails extends React.Component {
     }
 
     setSelectedEntity() {
-        let id = this.props.params.id;
-        let isListItem = false;
+        const id = this.props.params.id;
+        const isListItem = false;
         mainStore.setSelectedEntity(id, Path.FILE, isListItem);
     }
 }
@@ -269,7 +269,8 @@ const styles = {
         verticalAlign:-7
     },
     back: {
-        verticalAlign:-7
+        verticalAlign:-7,
+        cursor: 'pointer'
     },
     breadcrumbs: {
         textAlign: 'left',

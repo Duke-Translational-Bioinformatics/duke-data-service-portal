@@ -53,6 +53,7 @@ export class MainStore {
     @observable openTagManager
     @observable openUploadManager
     @observable parent
+    @observable prevLocation
     @observable projects
     @observable project
     @observable projPermissions
@@ -141,6 +142,7 @@ export class MainStore {
         this.openTagManager = false;
         this.openUploadManager = false;
         this.parent = {};
+        this.prevLocation = null;
         this.projects = [];
         this.project = {};
         this.projPermissions = null;
@@ -192,8 +194,9 @@ export class MainStore {
         return checkStatus(response, authStore);
     }
 
-    @action toggleBackButtonVisibility(bool){
+    @action toggleBackButtonVisibility(bool, prevLocation){
         this.showBackButton = bool;
+        this.prevLocation = prevLocation;
     }
 
     @action toggleAllItemsSelected(bool) {
@@ -1227,7 +1230,7 @@ export class MainStore {
         }
     }
 
-    @action  getDownloadUrl(id, kind) {
+    @action getDownloadUrl(id, kind) {
         this.loading = true;
         this.transportLayer.getDownloadUrl(id, kind)
             .then(this.checkResponse)
@@ -1504,15 +1507,19 @@ export class MainStore {
     }
 
     @action searchObjects(query, filter, projectPostFilter, tagPostFilter) {
-        if (projectPostFilter !== null && !this.searchProjectsPostFilters['project.name'].includes(projectPostFilter)) {
-            this.searchProjectsPostFilters['project.name'].push(projectPostFilter);
-        } else {
-            this.searchProjectsPostFilters['project.name'] = this.searchProjectsPostFilters['project.name'].filter(f => f !== projectPostFilter);
+        if (projectPostFilter !== null) {
+            if(!this.searchProjectsPostFilters['project.name'].includes(projectPostFilter)) {
+                this.searchProjectsPostFilters['project.name'].push(projectPostFilter)
+            } else {
+                this.searchProjectsPostFilters['project.name'] = this.searchProjectsPostFilters['project.name'].filter(f => f !== projectPostFilter);
+            }
         }
-        if (tagPostFilter !== null && !this.searchTagsPostFilters['tags.label'].includes(tagPostFilter)) {
-            this.searchTagsPostFilters['tags.label'].push(tagPostFilter);
-        } else {
-            this.searchTagsPostFilters['tags.label'] = this.searchTagsPostFilters['tags.label'].filter(f => f !== tagPostFilter);
+        if (tagPostFilter !== null) {
+            if (!this.searchTagsPostFilters['tags.label'].includes(tagPostFilter)) {
+                this.searchTagsPostFilters['tags.label'].push(tagPostFilter)
+            } else {
+                this.searchTagsPostFilters['tags.label'] = this.searchTagsPostFilters['tags.label'].filter(f => f !== tagPostFilter);
+            }
         }
         if (filter !== null) {
             this.searchFilters.includes(filter) ? this.searchFilters = this.searchFilters.filter(f => f !== filter) : this.searchFilters.push(filter);

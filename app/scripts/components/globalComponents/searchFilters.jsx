@@ -46,7 +46,7 @@ class SearchFilters extends React.Component {
             let text = <span style={styles.checkbox.label}>{`${obj.key} `}<span style={styles.checkbox.count}>{` (${obj.doc_count})`}</span></span>;
             return <ListItem key={obj.key}
                     primaryText={text}
-                    leftCheckbox={<Checkbox style={styles.checkbox} onCheck={() => mainStore.searchObjects(searchValue, null, tagPostFilter, null)}/>}
+                    leftCheckbox={<Checkbox style={styles.checkbox} onCheck={() => mainStore.searchObjects(searchValue, null, null, tagPostFilter)}/>}
                     style={styles.listItem}/>
         });
 
@@ -77,14 +77,10 @@ class SearchFilters extends React.Component {
                 <Drawer open={showFilters} width={showFilters ? 270 : null} zDepth={1}>
                     <div style={styles.spacer}></div>
                         <div style={styles.drawer}>
-                            {projects.length || searchResultsFolders.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.filterWrapper}>
-                                {/*<p style={styles.listHeader}>Type</p>*/}
-                                {/*<Divider style={styles.listDivider}/>*/}
+                            {projects.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.filterWrapper}>
                                 {kindFilter}
                             </div> : null}
                             {projects.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.filterWrapper}>
-                                {/*<p style={styles.listHeader}>Projects</p>*/}
-                                {/*<Divider style={styles.listDivider}/>*/}
                                 <List style={styles.list}>
                                     <ListItem
                                         primaryText="Projects"
@@ -97,12 +93,9 @@ class SearchFilters extends React.Component {
                                         style={{ fontSize: 14, borderBottom: '1px solid' + Color.ltGrey2}}
                                         nestedListStyle={{marginLeft: -18}}
                                     />
-                                    {/*<Divider style={styles.listDivider}/>*/}
                                 </List>
                             </div> : null}
                             {tags.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.filterWrapper}>
-                                {/*<p style={styles.listHeader}>Tags</p>*/}
-                                {/*<Divider style={styles.listDivider}/>*/}
                                 <List style={styles.list}>
                                     <ListItem
                                         primaryText="Tags"

@@ -373,7 +373,9 @@ const transportLayer = {
             ],
             "post_filters": postFilters
         };
-        return fetch(DDS_BASE_URI+apiPrefix+'search/folders_files', getFetchParams('post', authStore.appConfig.apiToken, body))
+        console.log(JSON.stringify(body, null, 2))
+
+        return fetch(DDS_BASE_URI+apiPrefix+'search/folders_files?per_page=1000', getFetchParams('post', authStore.appConfig.apiToken, body))
     },
 };
 

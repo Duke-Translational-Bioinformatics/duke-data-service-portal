@@ -60,7 +60,7 @@ class SearchResults extends React.Component {
             <div className="list-items-container">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
                     {<div style={styles.searchText}>Showing{" "+pageResults+" "}results{' '+srchValue}</div>}
-                    {searchResults.length ? <IconButton
+                    {searchResults.length || showFilters ? <IconButton
                              iconClassName="material-icons"
                              tooltip="filter results"
                              style={{float: 'right'}}

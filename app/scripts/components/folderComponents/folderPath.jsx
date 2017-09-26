@@ -12,7 +12,7 @@ import FontIcon from 'material-ui/FontIcon';
 
 @observer
 class FolderPath extends React.Component {
-    
+
     render() {
         const {entityObj, projPermissions} = mainStore;
         let ancestors = entityObj ? entityObj.ancestors : null;
