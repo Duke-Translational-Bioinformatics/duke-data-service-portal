@@ -198,9 +198,11 @@ export class MainStore {
           let results = json[0].results;
           let headers = json[1].map;
           let projectListItems = results.map((project) => {
+            console.log("project", project);
             return (
               {
                 "title": project.name,
+                "id": project.id,
                 "depth": 1,
                 "parentIndex": 0,
                 "children": [],
@@ -218,29 +220,41 @@ export class MainStore {
       }).catch(ex => this.handleErrors(ex))
     }
     
-    // @action getTreeListItemsChildren(id, path, page) {
-    //     if(this.listItems.length && page === null) this.listItems = [];
-    //     this.loading = true;
-    //     if (page == null) page = 1;
-    //     this.transportLayer.getChildren(id, path, page)
-    //         .then(this.checkResponse)
-    //         .then((response) => {
-    //             const results = response.json();
-    //             const headers = response.headers;
-    //             return Promise.all([results, headers]);
-    //         })
-    //         .then((json) => {
-    //             let results = json[0].results;
-    //             let headers = json[1].map;
-    //             if(page <= 1) { // Todo: Convert to proper 
-    //                 this.listItems = results;
-    //             } else {
-    //                 this.listItems = [...this.listItems, ...results];
-    //             }
-    //             this.responseHeaders = headers;
-    //             this.loading = false;
-    //         }).catch(ex =>this.handleErrors(ex))
-    // }
+    @action getChildrenTreeListItems(id, path, page) {
+        this.loading = true;
+        if (page == null) page = 1;
+        this.transportLayer.getChildren(id, path, page)
+            .then(this.checkResponse)
+            .then((response) => {
+                const results = response.json();
+                const headers = response.headers;
+                return Promise.all([results, headers]);
+            })
+            .then((json) => {
+                let results = json[0].results;
+                let headers = json[1].map;
+                let parientsListItem = this.treeListItems.find((obj) => { return (obj.id === id) });
+                let parientsListItemIndex = this.treeListItems.findIndex((obj) => { return (obj.id === id) });
+                let parientsListItems = results.map((child) => {
+                  console.log("child", child);
+                  return (
+                    {
+                      "title": child.name,
+                      "id": child.id,
+                      "depth": parientsListItem.depth + 1,
+                      "parentIndex": parientsListItemIndex,
+                      "children": [],
+                      "disabled": false
+                    }
+                  );
+                });
+                parientsListItem.children = [parientsListItemIndex + 1, parientsListItems.length + parientsListItemIndex + 1]
+                let newTreeListItems = [parientsListItem, ...parientsListItems]
+                this.treeListItems.splice(parientsListItemIndex, 1 , ...newTreeListItems)
+                this.responseHeaders = headers;
+                this.loading = false;
+            }).catch(ex =>this.handleErrors(ex))
+    }
     
     @action toggleAllItemsSelected (bool) {
         this.allItemsSelected = bool;

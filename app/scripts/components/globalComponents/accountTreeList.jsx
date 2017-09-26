@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import { observer } from 'mobx-react'
 import authStore from '../../stores/authStore';
-import mainStore from '../../stores/mainStore'
+import mainStore from '../../stores/mainStore';
+import {Path} from '../../util/urlEnum';
 import Drawer from 'material-ui/Drawer'
 import Subheader from 'material-ui/Subheader'
 import RaisedButton from 'material-ui/RaisedButton'
@@ -17,6 +18,13 @@ class AccountTreeList extends Component {
 
 	componentDidMount() {
 			mainStore.getProjectsTreeListItems(null, null);
+	}
+	
+	handleTouchTap(listItem, index) {
+		if (!listItem.children[0]) {
+			let path = Path.PROJECT;
+			mainStore.getChildrenTreeListItems(listItem.id, path);
+		}
 	}
 
   render() {
@@ -39,6 +47,7 @@ class AccountTreeList extends Component {
 					<MuiTreeList
 						listItems={treeListItems}
 						contentKey={'title'}
+						handleTouchTap={this.handleTouchTap}
 						>
 						<Subheader>User-Name-Here</Subheader>
 					</MuiTreeList>
