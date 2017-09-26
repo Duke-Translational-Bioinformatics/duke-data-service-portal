@@ -21,8 +21,13 @@ class AccountTreeList extends Component {
 	}
 	
 	handleTouchTap(listItem, index) {
-		if (!listItem.children[0]) {
-			let path = Path.PROJECT;
+		let path
+		if (listItem.itemKind == 'dds-project') {
+			path = Path.PROJECT
+		} else if (listItem.itemKind == 'dds-folder') {
+			path = Path.FOLDER
+		}
+		if (!listItem.children[0] && path) {
 			mainStore.getChildrenTreeListItems(listItem.id, path);
 		}
 	}

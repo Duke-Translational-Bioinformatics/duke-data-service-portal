@@ -205,6 +205,7 @@ export class MainStore {
                 "id": project.id,
                 "depth": 1,
                 "parentIndex": 0,
+                "itemKind": 'dds-project',
                 "children": [],
                 "disabled": false
               }
@@ -243,6 +244,7 @@ export class MainStore {
                       "id": child.id,
                       "depth": parientsListItem.depth + 1,
                       "parentIndex": parientsListItemIndex,
+                      "itemKind": child.kind,
                       "children": [],
                       "disabled": false
                     }
