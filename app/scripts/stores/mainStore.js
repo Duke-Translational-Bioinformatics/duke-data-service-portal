@@ -39,7 +39,7 @@ export class MainStore {
     @observable metaProps
     @observable metaTemplates
     @observable modal
-    @observable modalOpen
+    @observable phiModalOpen
     @observable moveItemList
     @observable moveItemLoading
     @observable moveToObj
@@ -115,7 +115,7 @@ export class MainStore {
         this.metaProps = [];
         this.metaTemplates = [];
         this.modal = false;
-        this.modalOpen = cookie.load('modalOpen');
+        this.phiModalOpen = cookie.load('phiModalOpen');
         this.moveItemList = [];
         this.moveItemLoading = false;
         this.moveToObj = {};
@@ -1476,8 +1476,8 @@ export class MainStore {
 
     @action closePhiModal() {
         let expiresAt = new Date(Date.now() + (7 * 24 * 60 * 60 * 1000));
-        this.modalOpen = false;
-        cookie.save('modalOpen', this.modalOpen, {expires: expiresAt});
+        this.phiModalOpen = false;
+        cookie.save('phiModalOpen', this.phiModalOpen, {expires: expiresAt});
     }
 
     @action failedUpload(failedUploads) {
