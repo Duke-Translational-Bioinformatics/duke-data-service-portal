@@ -52,6 +52,7 @@ class AccountTreeList extends Component {
 					<MuiTreeList
 						listItems={treeListItems}
 						contentKey={'title'}
+						useFolderIcons={true}
 						handleTouchTap={this.handleTouchTap}
 						>
 						<Subheader>User-Name-Here</Subheader>

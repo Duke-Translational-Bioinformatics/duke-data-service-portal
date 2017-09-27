@@ -238,17 +238,16 @@ export class MainStore {
                 let parientsListItemIndex = this.treeListItems.findIndex((obj) => { return (obj.id === id) });
                 let parientsListItems = results.map((child) => {
                   console.log("child", child);
-                  return (
-                    {
-                      "title": child.name,
-                      "id": child.id,
-                      "depth": parientsListItem.depth + 1,
-                      "parentIndex": parientsListItemIndex,
-                      "itemKind": child.kind,
-                      "children": [],
-                      "disabled": false
-                    }
-                  );
+                  let childListItem = {
+                    "title": child.name,
+                    "id": child.id,
+                    "depth": parientsListItem.depth + 1,
+                    "parentIndex": parientsListItemIndex,
+                    "itemKind": child.kind,
+                    "disabled": false
+                  };
+                  if (child.kind == 'dds-folder') {( childListItem["children"] = [] )};
+                  return ( childListItem );
                 });
                 parientsListItem.children = [parientsListItemIndex + 1, parientsListItems.length + parientsListItemIndex + 1]
                 let newTreeListItems = [parientsListItem, ...parientsListItems]
