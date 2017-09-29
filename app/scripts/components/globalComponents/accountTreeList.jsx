@@ -57,7 +57,6 @@ class AccountTreeList extends Component {
 						useFolderIcons={true}
 						handleTouchTap={this.handleTouchTap}
 						>
-						<Subheader>User-Name-Here</Subheader>
 					</MuiTreeList>
         </Drawer>
       </MuiThemeProvider>
