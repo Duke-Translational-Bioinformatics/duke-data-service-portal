@@ -28,17 +28,7 @@ class FileListItems extends React.Component {
         let totalChildren = headers !== null && !!headers['x-total'] ? headers['x-total'][0] : null;
         let newFolderModal = null;
         let uploadManager = null;
-        let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         let checkboxStyle = { maxWidth: 24, float: 'left', marginRight: isSafari ? 16 : 0 };
-        if (prjPrm !== null) {
-            newFolderModal = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <AddFolderModal {...this.props}/>;
-            uploadManager = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <RaisedButton label="Upload Files"
-                                                                                                    labelPosition="before"
-                                                                                                    labelStyle={{color: Color.blue}}
-                                                                                                    style={styles.uploadFilesBtn}
-                                                                                                    icon={<FileUpload color={Color.pink} />}
-                                                                                                    onTouchTap={() => this.toggleUploadManager()}/>;
-        }
         let children = fileListItems.length ? fileListItems.map((child) => {
             let icon = 'description';
             let itemsChecked = filesChecked;
@@ -115,7 +105,6 @@ class FileListItems extends React.Component {
         let files = mainStore.filesChecked;
         let folders = [];
         let allItemsSelected = mainStore.allItemsSelected;
-        let prjPrm = mainStore.projPermissions;
         if(id === true || id === false) {
             files = [];
             mainStore.toggleAllItemsSelected(id);
@@ -126,7 +115,7 @@ class FileListItems extends React.Component {
             !files.includes(id) ? files = [...files, id] : files = files.filter(f => f !== id);
             allItemsSelected ? mainStore.toggleAllItemsSelected(!allItemsSelected) : null;
         }
-        if(prjPrm !== 'viewOnly' && prjPrm !== 'flUpload') mainStore.handleBatch(files, folders);
+        mainStore.handleBatch(files, folders);
     }
 
     checkForAllItemsSelected(e) {
