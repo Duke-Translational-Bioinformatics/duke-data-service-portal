@@ -101,17 +101,6 @@ class FileListItems extends React.Component {
                             {children}
                         </TableBody>
                     </Table>}
-                    {fileListItems.length < totalChildren && totalChildren > 25 &&
-                    <div className="mdl-cell mdl-cell--12-col">
-                        <RaisedButton
-                            label={loading ? "Loading..." : "Load More"}
-                            secondary={true}
-                            disabled={!!loading}
-                            onTouchTap={()=>this.loadMore(nextPage)}
-                            fullWidth={true}
-                            style={loading ? {backgroundColor: Color.ltBlue2} : {}}
-                            labelStyle={loading ? {color: Color.blue} : {fontWeight: '100'}}/>
-                    </div>}
                 </Paper>
             </div>
         );
