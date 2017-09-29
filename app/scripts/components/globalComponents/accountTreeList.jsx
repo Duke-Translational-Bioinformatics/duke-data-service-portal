@@ -47,7 +47,7 @@ class AccountTreeList extends Component {
       <MuiThemeProvider>
         <Drawer
           open={true}
-          width={400}
+          width={300}
           zDepth={1}
           containerStyle={{height: 'calc(100% - 76px)', top: 76}}
           >

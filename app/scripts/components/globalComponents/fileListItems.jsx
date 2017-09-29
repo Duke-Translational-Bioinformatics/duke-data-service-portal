@@ -94,6 +94,7 @@ class FileListItems extends React.Component {
                                     onCheck={()=> this.check(!allItemsSelected, null)}
                                     checked={allItemsSelected}
                                 />}
+                                Name
                                 </TableHeaderColumn>
                                 {screenSize && screenSize.width >= 680 ? <TableHeaderColumn>Project</TableHeaderColumn> : null}
                                 {screenSize && screenSize.width >= 680 ? <TableHeaderColumn>Last Updated</TableHeaderColumn> : null}

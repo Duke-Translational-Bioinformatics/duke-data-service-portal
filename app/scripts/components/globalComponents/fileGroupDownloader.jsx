@@ -32,9 +32,8 @@ class FileGroupDownloader extends Component {
 
     return (
 			<div className="mdl-grid">
-				<div className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet"></div>
-				<Card className="mdl-cell mdl-cell--8-col mdl-cell--8-col-tablet" style={styles.card}>
-						<FontIcon className="material-icons" style={styles.icon}>content_paste</FontIcon>
+				<div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet"></div>
+				<Card className="mdl-cell mdl-cell--9-col mdl-cell--8-col-tablet" style={styles.card}>
 						<CardTitle title='Downloader' titleColor="#424242" style={styles.cardTitle}/>
 						<CardText>
 							<FileListItems {...this.props} />
