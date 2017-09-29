@@ -6,11 +6,9 @@ import BaseUtils from '../../util/baseUtils.js';
 import { UrlGen, Path, Kind } from '../../util/urlEnum';
 import { Color } from '../../theme/customTheme';
 import BatchOps from '../../components/globalComponents/batchOps.jsx';
-import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
 import FileOptionsMenu from '../../components/fileComponents/fileOptionsMenu.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import Checkbox from 'material-ui/Checkbox';
-import FileUpload from 'material-ui/svg-icons/file/file-upload'
 import FontIcon from 'material-ui/FontIcon';
 import RaisedButton from 'material-ui/RaisedButton';
 import Paper from 'material-ui/Paper';
@@ -20,14 +18,10 @@ import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColu
 class FileListItems extends React.Component {
 
     render() {
-        const { allItemsSelected, filesChecked, foldersChecked, isSafari, fileListItems, loading, projPermissions, responseHeaders, screenSize, tableBodyRenderKey, uploads } = mainStore;
-        let showBatchOps = !!(filesChecked.length || foldersChecked.length);
+        const { allItemsSelected, filesChecked, isSafari, fileListItems, loading, responseHeaders, screenSize, tableBodyRenderKey } = mainStore;
+        let showBatchOps = !!(filesChecked.length);
         let menuWidth = screenSize.width > 1230 ? 35 : 28;
         let headers = responseHeaders && responseHeaders !== null ? responseHeaders : null;
-        let nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
-        let totalChildren = headers !== null && !!headers['x-total'] ? headers['x-total'][0] : null;
-        let newFolderModal = null;
-        let uploadManager = null;
         let checkboxStyle = { maxWidth: 24, float: 'left', marginRight: isSafari ? 16 : 0 };
         let children = fileListItems.length ? fileListItems.map((child) => {
             let icon = 'description';
@@ -59,11 +53,6 @@ class FileListItems extends React.Component {
                         {screenSize && screenSize.width >= 840 && <TableRowColumn onTouchTap={()=>this.check(child.id, child.kind)} style={{width: 100}}>
                             {child.kind === Kind.DDS_FILE && child.current_version ? BaseUtils.bytesToSize(child.current_version.upload.size) : '---'}
                         </TableRowColumn>}
-                        <TableRowColumn style={{textAlign: 'right', width: menuWidth}}>
-                            <div onClick={(e) => {e.stopPropagation()}}>
-                                { fileOptionsMenu }
-                            </div>
-                        </TableRowColumn>
                     </TableRow>
 
                 );
@@ -83,13 +72,10 @@ class FileListItems extends React.Component {
                                     style={checkboxStyle}
                                     onCheck={()=> this.check(!allItemsSelected, null)}
                                     checked={allItemsSelected}
-                                />}
-                                Name
-                                </TableHeaderColumn>
+                                />}Name</TableHeaderColumn>
                                 {screenSize && screenSize.width >= 680 ? <TableHeaderColumn>Project</TableHeaderColumn> : null}
                                 {screenSize && screenSize.width >= 680 ? <TableHeaderColumn>Last Updated</TableHeaderColumn> : null}
                                 {screenSize && screenSize.width >= 840 ? <TableHeaderColumn style={{width: 100}}>Size</TableHeaderColumn> : null}
-                                <TableHeaderColumn style={{textAlign: 'right', width: menuWidth}}></TableHeaderColumn>
                             </TableRow>
                         </TableHeader>
                         <TableBody key={tableBodyRenderKey} showRowHover={true} displayRowCheckbox={false} deselectOnClickaway={false}>
@@ -133,12 +119,6 @@ class FileListItems extends React.Component {
     setSelectedEntity(id, path, isListItem) {
         mainStore.setSelectedEntity(id, path, isListItem);
     }
-
-    toggleUploadManager() {
-        mainStore.toggleUploadManager();
-        mainStore.defineTagsToAdd([]);
-        mainStore.processFilesToUpload([], []);
-    }
 }
 
 FileListItems.contextTypes = {
@@ -170,13 +150,10 @@ const styles = {
 
 FileListItems.propTypes = {
     filesChecked: array,
-    foldersChecked: array,
     fileListItems: array,
     entityObj: object,
-    projPermissions: object,
     responseHeaders: object,
     screenSize: object,
-    uploads: object,
     loading: bool
 };
 
