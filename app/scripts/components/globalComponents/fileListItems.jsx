@@ -39,10 +39,10 @@ class FileListItems extends React.Component {
                                                                                                     icon={<FileUpload color={Color.pink} />}
                                                                                                     onTouchTap={() => this.toggleUploadManager()}/>;
         }
-        let children = fileListItems && fileListItems.length ? fileListItems.map((child) => {
-            let icon = child.kind === Kind.DDS_FOLDER ? 'folder' : 'description';
-            let itemsChecked = child.kind === Kind.DDS_FOLDER ? foldersChecked : filesChecked;
-            const route = child.kind === Kind.DDS_FOLDER ? UrlGen.routes.folder(child.id) : UrlGen.routes.file(child.id);
+        let children = fileListItems.length ? fileListItems.map((child) => {
+            let icon = 'description';
+            let itemsChecked = filesChecked;
+            const route = UrlGen.routes.file(child.id);
             let fileOptionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FILE, true)}/>;
                 return (
                     <TableRow key={child.id} selectable={false}>
@@ -60,6 +60,9 @@ class FileListItems extends React.Component {
                                 </div>
                             </a>
                         </TableRowColumn>
+                        {screenSize && screenSize.width >= 680 && <TableRowColumn onTouchTap={()=>this.check(child.id, child.kind)}>
+                            <span>{child.project.name}</span>
+                        </TableRowColumn>}
                         {screenSize && screenSize.width >= 680 && <TableRowColumn onTouchTap={()=>this.check(child.id, child.kind)}>
                             <span>{child.audit.last_updated_on !== null ? BaseUtils.formatDate(child.audit.last_updated_on)+' by '+child.audit.last_updated_by.full_name : BaseUtils.formatDate(child.audit.created_on)+' by '+child.audit.created_by.full_name}</span>
                         </TableRowColumn>}
@@ -92,6 +95,7 @@ class FileListItems extends React.Component {
                                     checked={allItemsSelected}
                                 />}
                                 </TableHeaderColumn>
+                                {screenSize && screenSize.width >= 680 ? <TableHeaderColumn>Project</TableHeaderColumn> : null}
                                 {screenSize && screenSize.width >= 680 ? <TableHeaderColumn>Last Updated</TableHeaderColumn> : null}
                                 {screenSize && screenSize.width >= 840 ? <TableHeaderColumn style={{width: 100}}>Size</TableHeaderColumn> : null}
                                 <TableHeaderColumn style={{textAlign: 'right', width: menuWidth}}></TableHeaderColumn>
