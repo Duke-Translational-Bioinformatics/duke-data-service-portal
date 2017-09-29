@@ -8,7 +8,6 @@ import { Color } from '../../theme/customTheme';
 import BatchOps from '../../components/globalComponents/batchOps.jsx';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
 import FileOptionsMenu from '../../components/fileComponents/fileOptionsMenu.jsx';
-import FolderOptionsMenu from '../../components/folderComponents/folderOptionsMenu.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import Checkbox from 'material-ui/Checkbox';
 import FileUpload from 'material-ui/svg-icons/file/file-upload'
@@ -29,7 +28,6 @@ class FileListItems extends React.Component {
         let totalChildren = headers !== null && !!headers['x-total'] ? headers['x-total'][0] : null;
         let newFolderModal = null;
         let uploadManager = null;
-        let showChecks = null;
         let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
         let checkboxStyle = { maxWidth: 24, float: 'left', marginRight: isSafari ? 16 : 0 };
         if (prjPrm !== null) {
@@ -40,18 +38,16 @@ class FileListItems extends React.Component {
                                                                                                     style={styles.uploadFilesBtn}
                                                                                                     icon={<FileUpload color={Color.pink} />}
                                                                                                     onTouchTap={() => this.toggleUploadManager()}/>;
-            showChecks = (prjPrm !== 'viewOnly' && prjPrm !== 'flUpload');
         }
         let children = fileListItems && fileListItems.length ? fileListItems.map((child) => {
             let icon = child.kind === Kind.DDS_FOLDER ? 'folder' : 'description';
             let itemsChecked = child.kind === Kind.DDS_FOLDER ? foldersChecked : filesChecked;
             const route = child.kind === Kind.DDS_FOLDER ? UrlGen.routes.folder(child.id) : UrlGen.routes.file(child.id);
-            let fileOptionsMenu = showChecks && <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FILE, true)}/>;
-            let folderOptionsMenu = showChecks && <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FOLDER, true)}/>;
+            let fileOptionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FILE, true)}/>;
                 return (
                     <TableRow key={child.id} selectable={false}>
                         <TableRowColumn>
-                            {showChecks && <Checkbox
+                            {<Checkbox
                                 style={checkboxStyle}
                                 onCheck={()=>this.check(child.id, child.kind)}
                                 checked={itemsChecked.includes(child.id)}
@@ -72,7 +68,7 @@ class FileListItems extends React.Component {
                         </TableRowColumn>}
                         <TableRowColumn style={{textAlign: 'right', width: menuWidth}}>
                             <div onClick={(e) => {e.stopPropagation()}}>
-                                {child.kind === Kind.DDS_FILE ? fileOptionsMenu : folderOptionsMenu }
+                                { fileOptionsMenu }
                             </div>
                         </TableRowColumn>
                     </TableRow>
@@ -83,18 +79,14 @@ class FileListItems extends React.Component {
         return (
             <div className="list-items-container">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
-                    {!showBatchOps && <div className="mdl-cell mdl-cell--12-col">
-                        {uploadManager}
-                        {newFolderModal}
-                    </div>}
                     {showBatchOps && <BatchOps {...this.props}/>}
                 </div>
-                {uploads || loading ? <Loaders {...this.props}/> : null}
+                {loading ? <Loaders {...this.props}/> : null}
                 <Paper className="mdl-cell mdl-cell--12-col" style={styles.list}>
                     {fileListItems.length > 0 && <Table fixedHeader={true}>
                         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                             <TableRow>
-                                <TableHeaderColumn>{showChecks && <Checkbox
+                                <TableHeaderColumn>{<Checkbox
                                     style={checkboxStyle}
                                     onCheck={()=> this.check(!allItemsSelected, null)}
                                     checked={allItemsSelected}
@@ -127,21 +119,17 @@ class FileListItems extends React.Component {
 
     check(id, kind) {
         let files = mainStore.filesChecked;
-        let folders = mainStore.foldersChecked;
+        let folders = [];
         let allItemsSelected = mainStore.allItemsSelected;
         let prjPrm = mainStore.projPermissions;
         if(id === true || id === false) {
             files = [];
-            folders = [];
             mainStore.toggleAllItemsSelected(id);
             mainStore.fileListItems.forEach((i) => {
-                i.kind === Kind.DDS_FILE ? id === true && !files.includes(i.id) ? files.push(i.id) : files = [] : id === true && !folders.includes(i.id) ? folders.push(i.id) : folders = [];
+                id === true && !files.includes(i.id) ? files.push(i.id) : files = []
             })
         } else if (kind !== null && kind === Kind.DDS_FILE) {
             !files.includes(id) ? files = [...files, id] : files = files.filter(f => f !== id);
-            allItemsSelected ? mainStore.toggleAllItemsSelected(!allItemsSelected) : null;
-        } else {
-            !folders.includes(id) ? folders = [...folders, id] : folders = folders.filter(f => f !== id);
             allItemsSelected ? mainStore.toggleAllItemsSelected(!allItemsSelected) : null;
         }
         if(prjPrm !== 'viewOnly' && prjPrm !== 'flUpload') mainStore.handleBatch(files, folders);
