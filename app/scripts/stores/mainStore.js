@@ -38,8 +38,9 @@ export class MainStore {
     @observable isListItem
     @observable isSafari
     @observable itemsSelected
-    @observable treeListItems
     @observable listItems
+    @observable fileListItems
+    @observable treeListItems
     @observable loading
     @observable metadataTemplate
     @observable metaProps
@@ -177,6 +178,7 @@ export class MainStore {
         this.userKey = {};
         this.versionModal = false;
         this.warnUserBeforeLeavingPage = false;
+        this.fileListItems = [];
         this.treeListItems = [ {"depth": 0, "children": []} ];
         this.transportLayer = transportLayer;
     }
@@ -246,7 +248,14 @@ export class MainStore {
                     "itemKind": child.kind,
                     "disabled": false
                   };
-                  if (child.kind == 'dds-folder') {( childListItem["children"] = [] )};
+                  if (child.kind == 'dds-folder') {
+                    childListItem["children"] = []
+                  } else if (child.kind == 'dds-file') {
+                    // let oldFile = this.files.find((obj) => { return (obj.id === child.id) });
+                    // if (oldFile == undefined) {
+                      this.fileListItems = [...this.fileListItems, child]
+                    // }
+                  };
                   return ( childListItem );
                 });
                 parientsListItem.children = [parientsListItemIndex + 1, parientsListItems.length + parientsListItemIndex + 1]

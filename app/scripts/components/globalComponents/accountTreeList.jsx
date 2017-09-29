@@ -34,7 +34,6 @@ class AccountTreeList extends Component {
 
   render() {
     const {treeListItems} = mainStore;
-		console.log(treeListItems.length);
 
 		const icons = {
 			leftIconCollapsed: <i style={{height: 16, width: 16, color: '#CCCCCC'}} className="fa fa-caret-right" />,
@@ -50,7 +49,7 @@ class AccountTreeList extends Component {
           containerStyle={{height: 'calc(100% - 76px)', top: 76}}
           >
 					<MuiTreeList
-						listItems={treeListItems}
+						listItems={treeListItems.length ? treeListItems : []}
 						contentKey={'title'}
 						useFolderIcons={true}
 						handleTouchTap={this.handleTouchTap}

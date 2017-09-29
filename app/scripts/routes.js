@@ -11,6 +11,7 @@ import PublicPrivacy from './pages/publicPrivacy.jsx';
 import Project from './pages/project.jsx';
 import Folder from './pages/folder.jsx';
 import File from './pages/file.jsx';
+import FileManager from './pages/fileManager.jsx';
 import Agents from './pages/agents.jsx';
 import Agent from './pages/agent.jsx';
 import Results from './pages/results.jsx';
@@ -29,6 +30,7 @@ const routes = (
             <Route path="project/:id" component={ Project }/>
             <Route path="folder/:id" component={ Folder } />
             <Route path="file/:id" component={ File } />
+            <Route path="file_manager" component={ FileManager } />
             <Route path="agents" component={ Agents } />
             <Route path="agent/:id" component={ Agent } />
             <Route path="results" component={ Results } />

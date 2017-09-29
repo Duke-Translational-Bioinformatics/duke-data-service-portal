@@ -4,7 +4,6 @@ import authStore from '../stores/authStore';
 import mainStore from '../stores/mainStore';
 import { Color } from '../theme/customTheme';
 import ProjectList from '../components/projectComponents/projectList.jsx';
-import AccountNestedList from '../components/globalComponents/accountNestedList.jsx';
 import ProjectOptions from '../components/projectComponents/projectOptions.jsx';
 import AccountOverview from '../components/globalComponents/accountOverview.jsx';
 import FlatButton from 'material-ui/FlatButton';
@@ -61,7 +60,6 @@ class Home extends React.Component {
             <div>
                 <AccountOverview { ...this.props } />
                 <ProjectList { ...this.props } />
-                <AccountNestedList { ...this.props } />
                 <ProjectOptions { ...this.props } />
                 {modal}
             </div>
