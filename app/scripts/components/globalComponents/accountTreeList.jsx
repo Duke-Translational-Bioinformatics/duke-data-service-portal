@@ -17,7 +17,10 @@ import {TreeList} from 'react-treeview-mui'
 class AccountTreeList extends Component {
 
 	componentDidMount() {
-			mainStore.getProjectsTreeListItems(null, null);
+		// TODO Preventing treeListItems from over population on refresh or redirect
+			if (mainStore.treeListItems.length == 1) {
+				mainStore.getProjectsTreeListItems(null, null);
+			};
 	}
 	
 	handleTouchTap(listItem, index) {
