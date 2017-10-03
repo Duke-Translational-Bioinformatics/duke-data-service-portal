@@ -1656,13 +1656,10 @@ export class MainStore {
     }
 
     @action serviceWarningModal(dontShow) {
-        if(dontShow) {
-            let expiresAt = new Date(Date.now() + (7 * 24 * 60 * 60 * 1000));
-            this.serviceOutageNoticeModalOpen = false;
-            cookie.save('serviceOutageNoticeModalOpen', this.serviceOutageNoticeModalOpen, {expires: expiresAt});
-        } else {
-            this.serviceOutageNoticeModalOpen = false;
-        }
+        let time = !dontShow ? 72*100*1000 : 7*24*60*60*1000;
+        let expiresAt = new Date(Date.now() + (time));
+        this.serviceOutageNoticeModalOpen = false;
+        cookie.save('serviceOutageNoticeModalOpen', this.serviceOutageNoticeModalOpen, {expires: expiresAt});
     }
 
     @action failedUpload(failedUploads) {
