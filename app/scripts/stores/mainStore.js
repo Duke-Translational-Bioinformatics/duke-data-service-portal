@@ -65,6 +65,7 @@ export class MainStore {
     @observable searchResultsProjects
     @observable searchValue
     @observable selectedEntity
+    @observable serviceOutageNoticeModalOpen
     @observable showFilters
     @observable showPropertyCreator
     @observable showTagCloud
@@ -141,6 +142,7 @@ export class MainStore {
         this.searchResultsFolders = [];
         this.searchResultsProjects = [];
         this.searchValue = null;
+        this.serviceOutageNoticeModalOpen = cookie.load('serviceOutageNoticeModalOpen');
         this.selectedEntity = null;
         this.showFilters = false;
         this.showPropertyCreator = false;
@@ -1478,6 +1480,16 @@ export class MainStore {
         let expiresAt = new Date(Date.now() + (7 * 24 * 60 * 60 * 1000));
         this.phiModalOpen = false;
         cookie.save('phiModalOpen', this.phiModalOpen, {expires: expiresAt});
+    }
+
+    @action serviceWarningModal(dontShow) {
+        if(dontShow) {
+            let expiresAt = new Date(Date.now() + (7 * 24 * 60 * 60 * 1000));
+            this.serviceOutageNoticeModalOpen = false;
+            cookie.save('serviceOutageNoticeModalOpen', this.serviceOutageNoticeModalOpen, {expires: expiresAt});
+        } else {
+            this.serviceOutageNoticeModalOpen = false;
+        }
     }
 
     @action failedUpload(failedUploads) {

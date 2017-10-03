@@ -89,7 +89,7 @@ class App extends React.Component {
     };
 
     render() {
-        const {errorModals, phiModalOpen, toasts, screenSize} = mainStore;
+        const {errorModals, phiModalOpen, toasts, screenSize, serviceOutageNoticeModalOpen} = mainStore;
         const {appConfig} = authStore;
         const {location} = this.props;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
@@ -151,11 +151,11 @@ class App extends React.Component {
         if (!location.pathname.includes('/login') && (phiModalOpen === undefined || phiModalOpen)) {
             const actions = [
                 <FlatButton
-                    label="Cancel"
+                    label="I Don't Agree"
                     secondary={true}
                     onTouchTap={() => this.handleDeclineButton()} />,
                 <FlatButton
-                    label="ACCEPT"
+                    label="I Agree"
                     secondary={true}
                     onTouchTap={() => this.handleAcceptButton()} />
             ];
@@ -179,31 +179,36 @@ class App extends React.Component {
                     </div>
                 </Dialog>
         }
-        // if (serviceOutageNoticeModalOpen && !location.pathname.includes('/login') && !phiModalOpen) {
-        //    const actions = [
-        //         <FlatButton
-        //             label="Cancel"
-        //             secondary={true}
-        //             onTouchTap={() => this.handleDeclineButton()} />,
-        //         <FlatButton
-        //             label="ACCEPT"
-        //             secondary={true}
-        //             onTouchTap={() => this.handleAcceptButton()} />
-        //     ];
-        //     dialogs = <Dialog
-        //         style={styles.dialogStyles}
-        //         contentStyle={dialogWidth}
-        //         title="System Maintenance Schedule"
-        //         actions={actions}
-        //         autoDetectWindowHeight={true}
-        //         open={ true }
-        //         modal={true}>
-        //         <div style={{height: '100px'}}>
-        //
-        //         </div>
-        //     </Dialog>
-        //     setTimeout(()=>{ return dialogs },4000)
-        // }
+        if (!location.pathname.includes('/login') && !phiModalOpen && (serviceOutageNoticeModalOpen === undefined || serviceOutageNoticeModalOpen)) {
+           const actions = [
+                <FlatButton
+                    label="Don't show this again"
+                    keyboardFocused={true}
+                    secondary={true}
+                    onTouchTap={() => this.handleDontShowButton(true)} />,
+                <FlatButton
+                    label="okay"
+                    secondary={true}
+                    onTouchTap={() => this.handleDontShowButton(false)} />
+            ];
+            dialogs = <Dialog
+                style={styles.dialogStyles}
+                contentStyle={dialogWidth}
+                titleStyle={{padding: '24px 24px 4px 24px'}}
+                title="System Maintenance Schedule"
+                actions={actions}
+                autoDetectWindowHeight={true}
+                open={true}
+                modal={true}>
+                <i className="material-icons" style={styles.icon}>info_outline</i>
+                <div style={{height: '80px', textAlign: 'left'}}>
+                    The Data Service at Duke development team is working to improve performance and provide new features,
+                    more frequently. <br/> To allow for these updates and upgrades, the Service may be unavailable during a
+                    one-hour period every Wednesday from 8:30pm-9:30pm EST.
+                </div>
+            </Dialog>
+            setTimeout(()=>{ return dialogs },4000)
+        }
         return (
             <span>
                 <div className="statusbar-overlay"></div>
@@ -231,6 +236,10 @@ class App extends React.Component {
                 </div>
             </span>
         );
+    }
+
+    handleDontShowButton(bool) {
+        mainStore.serviceWarningModal(bool);
     }
 
     handleAcceptButton() {
@@ -267,6 +276,11 @@ const styles = {
         textAlign: 'center',
         fontColor: Color.dkBlue,
         zIndex: '9999'
+    },
+    icon: {
+    fontSize: 48,
+        textAlign: 'center',
+        color: Color.green
     },
     main: {
         textAlign: 'left'
