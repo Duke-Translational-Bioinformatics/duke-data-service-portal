@@ -1,39 +1,32 @@
-import React, { Component } from 'react'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-import { observer } from 'mobx-react'
-import authStore from '../../stores/authStore';
+import React, { Component } from 'react';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import {Path} from '../../util/urlEnum';
-import Drawer from 'material-ui/Drawer'
-import Subheader from 'material-ui/Subheader'
-import RaisedButton from 'material-ui/RaisedButton'
-import SelectField from 'material-ui/SelectField'
-import MenuItem from 'material-ui/MenuItem'
-import {Card, CardTitle, CardText} from 'material-ui/Card'
-import {MuiTreeList} from 'react-treeview-mui'
-import {TreeList} from 'react-treeview-mui'
+import Drawer from 'material-ui/Drawer';
+import {MuiTreeList} from 'react-treeview-mui';
 
 @observer
 class AccountTreeList extends Component {
 
-	componentDidMount() {
-		// TODO Preventing treeListItems from over population on refresh or redirect
-			if (mainStore.treeListItems.length == 1) {
-				mainStore.getProjectsTreeListItems(null, null);
-			};
-	}
+		componentDidMount() {
+			// TODO Preventing treeListItems from over population on refresh or redirect
+				if (mainStore.treeListItems.length == 1) {
+					mainStore.getProjectsTreeListItems(null, null);
+				};
+		}
 	
-	handleTouchTap(listItem, index) {
-		let path
-		if (listItem.itemKind == 'dds-project') {
-			path = Path.PROJECT
-		} else if (listItem.itemKind == 'dds-folder') {
-			path = Path.FOLDER
+		handleTouchTap(listItem, index) {
+			let path
+			if (listItem.itemKind == 'dds-project') {
+				path = Path.PROJECT
+			} else if (listItem.itemKind == 'dds-folder') {
+				path = Path.FOLDER
+			}
+			if (!listItem.children[0] && path) {
+				mainStore.getChildrenTreeListItems(listItem.id, path);
+			}
 		}
-		if (!listItem.children[0] && path) {
-			mainStore.getChildrenTreeListItems(listItem.id, path);
-		}
-	}
 
   render() {
     const {treeListItems} = mainStore;

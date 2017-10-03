@@ -10,7 +10,6 @@ import FileOptionsMenu from '../../components/fileComponents/fileOptionsMenu.jsx
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import Checkbox from 'material-ui/Checkbox';
 import FontIcon from 'material-ui/FontIcon';
-import RaisedButton from 'material-ui/RaisedButton';
 import Paper from 'material-ui/Paper';
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 
@@ -72,10 +71,18 @@ class FileListItems extends React.Component {
                                     style={checkboxStyle}
                                     onCheck={()=> this.check(!allItemsSelected, null)}
                                     checked={allItemsSelected}
-                                />}Name</TableHeaderColumn>
-                                {screenSize && screenSize.width >= 680 ? <TableHeaderColumn>Project</TableHeaderColumn> : null}
-                                {screenSize && screenSize.width >= 680 ? <TableHeaderColumn>Last Updated</TableHeaderColumn> : null}
-                                {screenSize && screenSize.width >= 840 ? <TableHeaderColumn style={{width: 100}}>Size</TableHeaderColumn> : null}
+                                />}
+                                Name
+                              </TableHeaderColumn>
+                                {screenSize && screenSize.width >= 680 ? <TableHeaderColumn>
+                                  <div onClick={() => mainStore.toggleSortFileListItems('PROJECT')}>Project</div>
+                                </TableHeaderColumn> : null}
+                                {screenSize && screenSize.width >= 680 ? <TableHeaderColumn>
+                                  <div onClick={() => mainStore.toggleSortFileListItems('UPDATED')}>Last Updated</div>
+                                </TableHeaderColumn> : null}
+                                {screenSize && screenSize.width >= 840 ? <TableHeaderColumn style={{width: 100}}>
+                                  <div onClick={() => mainStore.toggleSortFileListItems('SIZE')}>Size</div>
+                                </TableHeaderColumn> : null}
                             </TableRow>
                         </TableHeader>
                         <TableBody key={tableBodyRenderKey} showRowHover={true} displayRowCheckbox={false} deselectOnClickaway={false}>
