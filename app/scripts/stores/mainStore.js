@@ -41,6 +41,8 @@ export class MainStore {
     @observable listItems
     @observable fileListItems
     @observable treeListItems
+    @observable treeListItemsCustom
+    @observable treeListItemSelected
     @observable loading
     @observable metadataTemplate
     @observable metaProps
@@ -180,6 +182,8 @@ export class MainStore {
         this.warnUserBeforeLeavingPage = false;
         this.fileListItems = [];
         this.treeListItems = [ {"depth": 0, "children": []} ];
+        this.treeListItemsCustom = [];
+        this.treeListItemSelected = '';
         this.transportLayer = transportLayer;
     }
 
@@ -264,6 +268,84 @@ export class MainStore {
                 this.responseHeaders = headers;
                 this.loading = false;
             }).catch(ex =>this.handleErrors(ex))
+    }
+
+    @action getTreeListProjects(page, perPage) {
+      this.loading = true;
+      if (page == null) page = 1;
+      if (perPage == null) perPage = 25;
+      this.transportLayer.getProjects(page, perPage)
+          .then(this.checkResponse).then((response) => {
+          const results = response.json();
+          const headers = response.headers;
+          return Promise.all([results, headers]);
+      }).then((json) => {
+          let results = json[0].results;
+          let headers = json[1].map;
+          let projectListItems = results.map((project) => {
+            return (
+              {
+                "title": project.name,
+                "id": project.id,
+                "depth": 1,
+                "parentIndex": 0,
+                "itemKind": 'dds-project',
+                "children": [],
+                "disabled": false
+              }
+            );
+          });
+          this.treeListItemsCustom = [...this.treeListItemsCustom, ...projectListItems];
+          this.responseHeaders = headers;
+          this.loading = false;
+      }).catch(ex => this.handleErrors(ex))
+    }
+    
+    @action getTreeListChildren(parient, path) {
+        let id = parient.id
+        this.loading = true;
+        let page = 1
+        this.transportLayer.getChildren(id, path, page)
+            .then(this.checkResponse)
+            .then((response) => {
+                const results = response.json();
+                const headers = response.headers;
+                return Promise.all([results, headers]);
+            })
+            .then((json) => {
+                let results = json[0].results;
+                let headers = json[1].map;
+                let parientsListItems = results.map((child) => {
+                  let childListItem = {
+                    "title": child.name,
+                    "id": child.id,
+                    "depth": parient.depth + 1,
+                    "itemKind": child.kind,
+                    "disabled": false,
+                    "children": []
+                  };
+                  return ( childListItem );
+                });
+                parient.children = parientsListItems
+                this.treeListItemsCustom = JSON.parse(JSON.stringify(this.treeListItemsCustom))
+                this.responseHeaders = headers;
+                this.loading = false;
+            }).catch(ex =>this.handleErrors(ex))
+    }
+    
+    @action toggleTreeListItem(listItem) {
+      let deepUpdate = (tree) => {
+        return (
+          tree.forEach((branch) => {
+            if (branch.id == listItem.id) {
+              branch.open = !listItem.open
+            } else if (branch.children && branch.children.length > 0) {
+              deepUpdate(branch.children)
+            }
+          })
+        )
+      }
+      deepUpdate(this.treeListItemsCustom)
     }
     
     @action toggleAllItemsSelected (bool) {
