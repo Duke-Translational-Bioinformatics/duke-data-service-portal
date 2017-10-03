@@ -1,5 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
+import { Color } from '../theme/customTheme';
 import authStore from '../stores/authStore';
 import mainStore from '../stores/mainStore';
 import Header from '../components/globalComponents/header.jsx';
@@ -96,8 +97,9 @@ class App extends React.Component {
     };
 
     render() {
-        const {errorModals, toasts, screenSize} = mainStore;
+        const {errorModals, phiModalOpen, toasts, screenSize, serviceOutageNoticeModalOpen} = mainStore;
         const {appConfig} = authStore;
+        const {location} = this.props;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let dialogs, tsts = null;
         if (toasts) {
@@ -107,7 +109,7 @@ class App extends React.Component {
         }
         if (appConfig.apiToken && errorModals.length) {
             dialogs = errorModals.map(obj => {
-                let actions = <FlatButton
+                const actions = <FlatButton
                     key={obj.ref}
                     ref={obj.ref}
                     label="Okay"
@@ -130,7 +132,7 @@ class App extends React.Component {
             });
         }
         if (authStore.sessionTimeoutWarning) {
-            let actions = [
+            const actions = [
                 <FlatButton
                     label="Logout"
                     secondary={true}
@@ -153,6 +155,67 @@ class App extends React.Component {
                 <i className="material-icons" style={styles.warning}>warning</i>
                 <h6>If you want to stay logged in, please refresh your session.</h6>
             </Dialog>
+        }
+        if (!location.pathname.includes('/login') && (phiModalOpen === undefined || phiModalOpen)) {
+            const actions = [
+                <FlatButton
+                    label="I Don't Agree"
+                    secondary={true}
+                    onTouchTap={() => this.handleDeclineButton()} />,
+                <FlatButton
+                    label="I Agree"
+                    secondary={true}
+                    onTouchTap={() => this.handleAcceptButton()} />
+            ];
+            dialogs = <Dialog
+                    style={styles.dialogStyles}
+                    contentStyle={dialogWidth}
+                    title="Terms of Use - Protected Health Information"
+                    actions={actions}
+                    autoDetectWindowHeight={true}
+                    open={phiModalOpen === undefined ? true : phiModalOpen}
+                    modal={true}>
+                    <div style={{height: '300px'}}>
+                        <p style={styles.main}><b>The Health Insurance Portability and Accountability Act of 1996 (HIPAA)
+                            established standards
+                            for health information that must be kept private and secure, called Protected Health Information
+                            (PHI).</b><br/>The use of PHI within the Duke Data Service is prohibited in this Alpha release. By clicking “accept”
+                            below, you
+                            attest that you will not enter PHI. If you are unclear about what constitutes PHI, or are
+                            uncertain about the nature of the data you use, click “decline” and contact the Duke University
+                            IT Security Office (security@duke.edu) for further information.</p>
+                    </div>
+                </Dialog>
+        }
+        if (!location.pathname.includes('/login') && !phiModalOpen && (serviceOutageNoticeModalOpen === undefined || serviceOutageNoticeModalOpen)) {
+           const actions = [
+                <FlatButton
+                    label="Don't show this again"
+                    keyboardFocused={true}
+                    secondary={true}
+                    onTouchTap={() => this.handleDontShowButton(true)} />,
+                <FlatButton
+                    label="okay"
+                    secondary={true}
+                    onTouchTap={() => this.handleDontShowButton(false)} />
+            ];
+            dialogs = <Dialog
+                style={styles.dialogStyles}
+                contentStyle={dialogWidth}
+                titleStyle={{padding: '24px 24px 4px 24px'}}
+                title="System Maintenance Schedule"
+                actions={actions}
+                autoDetectWindowHeight={true}
+                open={true}
+                modal={true}>
+                <i className="material-icons" style={styles.icon}>info_outline</i>
+                <div style={{height: '80px', textAlign: 'left'}}>
+                    The Data Service at Duke development team is working to improve performance and provide new features,
+                    more frequently. <br/> To allow for these updates and upgrades, the Service may be unavailable during a
+                    one-hour period every Wednesday from 8:30pm-9:30pm EST.
+                </div>
+            </Dialog>
+            setTimeout(()=>{ return dialogs },4000)
         }
         return (
             <span>
@@ -183,6 +246,18 @@ class App extends React.Component {
         );
     }
 
+    handleDontShowButton(bool) {
+        mainStore.serviceWarningModal(bool);
+    }
+
+    handleAcceptButton() {
+        mainStore.closePhiModal();
+    }
+
+    handleDeclineButton() {
+        authStore.handleLogout();
+    }
+
     closeErrorModal(refId) {
         mainStore.removeErrorModal(refId);
         this.setState({errorModal: false});
@@ -205,9 +280,18 @@ class App extends React.Component {
 
 const styles = {
     dialogStyles: {
+        marginTop: 0,
         textAlign: 'center',
-        fontColor: '#303F9F',
+        fontColor: Color.dkBlue,
         zIndex: '9999'
+    },
+    icon: {
+    fontSize: 48,
+        textAlign: 'center',
+        color: Color.green
+    },
+    main: {
+        textAlign: 'left'
     },
     loginWrapper: {
         width: '90vw',
