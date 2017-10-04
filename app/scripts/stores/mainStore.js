@@ -1650,13 +1650,13 @@ export class MainStore {
     }
 
     @action closePhiModal() {
-        let expiresAt = new Date(Date.now() + (7 * 24 * 60 * 60 * 1000));
+        let expiresAt = new Date(Date.now() + (9 * 24 * 60 * 60 * 10000));
         this.phiModalOpen = false;
         cookie.save('phiModalOpen', this.phiModalOpen, {expires: expiresAt});
     }
 
     @action serviceWarningModal(dontShow) {
-        let time = !dontShow ? 72*100*1000 : 7*24*60*60*1000;
+        let time = !dontShow ? 72 * 100 * 1000 : 18 * 24 * 60 * 60 * 10000;
         let expiresAt = new Date(Date.now() + (time));
         this.serviceOutageNoticeModalOpen = false;
         cookie.save('serviceOutageNoticeModalOpen', this.serviceOutageNoticeModalOpen, {expires: expiresAt});
