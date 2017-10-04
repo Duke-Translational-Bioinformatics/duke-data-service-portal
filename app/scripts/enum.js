@@ -8,6 +8,6 @@ export const StatusEnum = Object.freeze({
 });
 
 export const ChunkSize = Object.freeze({
-    BYTES_PER_CHUNK : 5000000,
+    BYTES_PER_CHUNK : 25000000,
     BYTES_PER_HASHING_CHUNK : 5000000,
 });
