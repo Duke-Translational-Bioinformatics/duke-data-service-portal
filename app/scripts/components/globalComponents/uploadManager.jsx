@@ -53,7 +53,7 @@ class UploadManager extends React.Component {
         let rejectedFiles = filesRejectedForUpload.length ? filesRejectedForUpload.map((file)=>{
             return <div key={BaseUtils.generateUniqueKey()}>
                 <div className="mdl-cell mdl-cell--6-col" style={styles.rejectedFileList}>{'Exceeds maximum size of' +
-                ' 5 GB. Cannot upload: '+file.name}</div>
+                ' 7 GB. Cannot upload: '+file.name}</div>
             </div>
         }) : null;
         let autoCompleteData = tagAutoCompleteList && tagAutoCompleteList.length > 0 ? tagAutoCompleteList : [];
@@ -80,7 +80,7 @@ class UploadManager extends React.Component {
                                           onMouseEnter={(e)=>this.onHoverDropzone(e)}
                                           onMouseLeave={(e)=>this.onHoverDropzone(e)}
                                           onDrop={this.onDrop.bind(this)}
-                                          maxSize={5*1024*1024*1024}
+                                          maxSize={7*1024*1024*1024}
                                           style={{width: '100%', border: '2px dashed #BDBDBD', backgroundColor: dropzoneColor}}>
                                     <div style={styles.dropzoneText}>Drag and drop files here, or click to select files to upload<br/>Folders cannot be uploaded unless they are<br/> compressed into a .zip file first</div>
                                 </Dropzone>

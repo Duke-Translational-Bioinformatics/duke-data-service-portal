@@ -182,12 +182,12 @@ class App extends React.Component {
         if (!location.pathname.includes('/login') && !phiModalOpen && (serviceOutageNoticeModalOpen === undefined || serviceOutageNoticeModalOpen)) {
            const actions = [
                 <FlatButton
-                    label="Don't show this again"
+                    label="Don't Show This Again"
                     keyboardFocused={true}
                     secondary={true}
                     onTouchTap={() => this.handleDontShowButton(true)} />,
                 <FlatButton
-                    label="okay"
+                    label="Remind Me Later"
                     secondary={true}
                     onTouchTap={() => this.handleDontShowButton(false)} />
             ];
