@@ -323,7 +323,7 @@ const styles = {
         marginRight: 17,
         right: '2%',
         zIndex: '2',
-        color: '#ffffff'
+        color: Color.white
     },
     heading: {
         textAlign: 'left',
@@ -344,9 +344,10 @@ const styles = {
         textAlign: 'center'
     },
     rejectedFileList: {
-        margin: '0 auto',
+        margin: '1.5px auto',
         textAlign: 'left',
         padding: 5,
+        color: Color.white,
         backgroundColor: Color.red
     },
     tagLabels: {
