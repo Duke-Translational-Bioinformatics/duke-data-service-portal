@@ -17,7 +17,7 @@ class Search extends React.Component {
 
     render() {
         const { screenSize, showSearch, searchValue } = mainStore;
-        return (showSearch ? <Paper style={styles.searchBar} zDepth={2}>
+        return (showSearch ? <Paper className="navbar" style={styles.searchBar} zDepth={2}>
             <i className="material-icons"
                style={styles.searchBar.searchIcon}
                onTouchTap={()=>this.showSearch()}>arrow_back</i>
@@ -27,7 +27,7 @@ class Search extends React.Component {
                 defaultValue={searchValue ? searchValue : null}
                 hintStyle={styles.searchBar.hintText}
                 onKeyDown={(e) => this.search(e)}
-                style={{width: '90%',position: 'absolute',top: '20%', left: screenSize.width < 680 ? '11%' : '8%'}}
+                style={{width: '90%',position: 'absolute',top: '10%', left: screenSize.width < 680 ? '11%' : '8%'}}
                 underlineStyle={styles.searchBar.textFieldUnderline}
                 underlineFocusStyle={styles.searchBar.textFieldUnderline} />
             <i className="material-icons"
@@ -55,11 +55,12 @@ class Search extends React.Component {
 
 const styles = {
     searchBar: {
-        height: 76,
+        height: 56,
+        borderRadius: 0,
         closeSearchIcon: {
             position: 'absolute',
-            right: '3.66%',
-            bottom: '34%',
+            right: '2.96%',
+            bottom: '29%',
             cursor: 'pointer'
         },
         hintText: {
@@ -67,8 +68,8 @@ const styles = {
         },
         searchIcon: {
             position: 'absolute',
-            left: '4%',
-            bottom: '36%',
+            left: '2.96%',
+            bottom: '29%',
             cursor: 'pointer'
         },
         textFieldUnderline: {

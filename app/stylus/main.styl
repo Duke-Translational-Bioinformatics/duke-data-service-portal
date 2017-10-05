@@ -37,7 +37,21 @@ body
   padding-top 100px
 
 .page-content
-  padding-top 100px
+  padding-top 76px
+
+.slide-right
+  @media screen and (min-width 700px) and (max-width 1536px)
+    transform: scale(1);
+    transition: 0.10s linear
+    padding-left 290px
+  @media screen and (min-width 1536px) and (max-width 1640px)
+    transform: scale(1);
+    transition: 0.10s all linear;
+    padding-left 240px
+  @media screen and (min-width 1640px) and (max-width 1800px)
+    transform: scale(1);
+    transition: 0.10s all linear;
+    padding-left 200px
 
 .group:after
   content: "";

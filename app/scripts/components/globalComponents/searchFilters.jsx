@@ -7,11 +7,9 @@ import { Kind } from '../../util/urlEnum';
 import { Color } from '../../theme/customTheme';
 import Checkbox from 'material-ui/Checkbox';
 import Drawer from 'material-ui/Drawer';
+import FontIcon from 'material-ui/FontIcon';
 import RaisedButton from 'material-ui/RaisedButton';
 import {List, ListItem} from 'material-ui/List';
-import Divider from 'material-ui/Divider';
-
-import FontIcon from 'material-ui/FontIcon';
 
 @observer
 class SearchFilters extends React.Component {
@@ -24,12 +22,12 @@ class SearchFilters extends React.Component {
             kindListToggleIcon: true
         }
     }
-    componentDidUpdate(prevProps) {
-        // if(mainStore.showFilters && (!mainStore.searchResultsFiles.length && !mainStore.searchResultsFolders.length || !mainStore.searchResultsProjects.length)) this.toggleFilters();
+    componentDidUpdate() {
+        if(mainStore.showFilters && (!mainStore.searchResultsProjects.length)) this.toggleFilters();
     }
 
     render() {
-        const { screenSize, searchFilters, searchResults, searchResultsFolders, searchResultsFiles, searchResultsProjects, searchResultsTags, searchValue, showFilters } = mainStore;
+        const { screenSize, searchFilters, searchProjectsPostFilters, searchTagsPostFilters, searchResultsProjects, searchResultsTags, searchValue, showFilters } = mainStore;
 
         let projects = searchResultsProjects.map((obj) => {
             const projectPostFilter = obj.key;
@@ -77,6 +75,14 @@ class SearchFilters extends React.Component {
                 <Drawer open={showFilters} width={showFilters ? 270 : null} zDepth={1}>
                     <div style={styles.spacer}></div>
                         <div style={styles.drawer}>
+                            {screenSize.width <= 700 ? <div className="mdl-cell mdl-cell--12-col">
+                                <RaisedButton
+                                    label="Hide Filters"
+                                    labelStyle={styles.button.label}
+                                    style={styles.button}
+                                    secondary={true}
+                                    onTouchTap={() => this.toggleFilters()}/>
+                            </div> : null}
                             {projects.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.filterWrapper}>
                                 {kindFilter}
                             </div> : null}
@@ -116,15 +122,7 @@ class SearchFilters extends React.Component {
                             {/*{searchResultsFolders.length ? <ListItem primaryText={"Folders ("+searchResultsFolders.length+")"}*/}
                                                                      {/*leftCheckbox={<Checkbox style={styles.checkbox} checked={includedKinds.includes('dds-folder')}/>}*/}
                                                                      {/*style={{textAlign: 'right'}} onClick={() => this.setIncludeKinds('dds-folder')}/> : null}*/}
-                            {screenSize.width < 580 ? <div className="mdl-cell mdl-cell--12-col">
-                                <RaisedButton
-                                    label="Hide Filters"
-                                    labelStyle={styles.button.label}
-                                    style={styles.button}
-                                    secondary={true}
-                                    onTouchTap={() => this.toggleFilters()}/>
-                            </div> : null}
-                            {/*{includedKinds.length || includeProjects.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>*/}
+                            {/*{searchProjectsPostFilters['project.name'] && searchProjectsPostFilters['project.name'].length || searchTagsPostFilters.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>*/}
                                 {/*<RaisedButton*/}
                                     {/*label="Clear Filters"*/}
                                     {/*labelStyle={styles.button.label}*/}
@@ -139,7 +137,7 @@ class SearchFilters extends React.Component {
     }
 
     // clearFilters(searchValue) {
-    //     mainStore.searchObjects(searchValue, null, null, null);
+    //     mainStore.searchObjects(searchValue, [], [], []);
     //     if(mainStore.screenSize.width < 580) this.toggleFilters();
     // }
 
@@ -155,7 +153,6 @@ class SearchFilters extends React.Component {
 const styles = {
     button: {
         minWidth: 240,
-        marginRight: 7,
         label: {
             fontWeight: 100
         }
@@ -212,9 +209,6 @@ SearchFilters.propTypes = {
     includeKinds: array,
     includeProjects: array,
     screenSize: object,
-    searchResults: array,
-    searchResultsFolders: array,
-    searchResultsFiles: array,
     searchResultsProjects: array,
     searchValue: string,
     showFilters: bool

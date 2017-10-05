@@ -1536,10 +1536,10 @@ export class MainStore {
                 this.searchResultsProjects = json.aggs.project_names.buckets;
                 this.searchResultsTags = json.aggs.tags.buckets;
                 console.log(JSON.stringify(this.searchResultsProjects, null, 2))
-                this.searchResultsFiles =  this.searchResults.filter((obj)=>{
+                this.searchResultsFiles =  this.searchResults.filter((obj)=>{ // Todo: Remove this if not using!!!!!!!!!!
                     return obj.kind === 'dds-file';
                 });
-                this.searchResultsFolders =  this.searchResults.filter((obj)=>{
+                this.searchResultsFolders =  this.searchResults.filter((obj)=>{ // Todo: Remove this if not using!!!!!!!!!!
                     return obj.kind === 'dds-folder';
                 });
                 this.loading = false;

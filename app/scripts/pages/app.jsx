@@ -96,10 +96,11 @@ class App extends React.Component {
     };
 
     render() {
-        const {errorModals, toasts, screenSize} = mainStore;
+        const {errorModals, toasts, screenSize, showFilters} = mainStore;
         const {appConfig} = authStore;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let dialogs, tsts = null;
+        let slideContentClass = showFilters ? 'page-content slide-right' : 'page-content';
         if (toasts) {
             tsts = toasts.map(obj => {
                 return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} open={true}/>
@@ -156,7 +157,6 @@ class App extends React.Component {
         }
         return (
             <span>
-                <div className="statusbar-overlay"></div>
                 <div className="panel-overlay"></div>
                 {!appConfig.apiToken ? '' : <LeftMenu {...this.props}/>}
                 <div className="views">
@@ -165,14 +165,11 @@ class App extends React.Component {
                         <div className="pages navbar-through toolbar-through">
                             <div data-page="index" className="page">
                                 <div className="searchbar-overlay"></div>
-                                <div className="page-content">
+                                <div className={slideContentClass}>
                                     {this.props.children}
                                     {tsts}
                                     {dialogs}
                                     <RetryUploads {...this.props} {...this.state}/>
-                                    <div className="content-block searchbar-not-found">
-                                        <div className="content-block-inner">Nothing Found</div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
