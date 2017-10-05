@@ -43,15 +43,15 @@ class UploadManager extends React.Component {
         });
         let files = filesToUpload.length ? filesToUpload.map((file, i)=>{
             return <div key={BaseUtils.generateUniqueKey()} className="mdl-cell mdl-cell--6-col" style={styles.fileList}>
-                    <i className="material-icons" style={styles.deleteIcon} onTouchTap={() => this.removeFileFromList(i)}>cancel</i>
-                    {file.name}
-                </div>
+                <i className="material-icons" style={styles.deleteIcon} onTouchTap={() => this.removeFileFromList(i)}>cancel</i>
+                {file.name}
+            </div>
 
         }) : null;
         let rejectedFiles = filesRejectedForUpload.length ? filesRejectedForUpload.map((file)=>{
-            return <div key={BaseUtils.generateUniqueKey()} className="mdl-cell mdl-cell--6-col" style={styles.rejectedFileList}>
-                    {file.name+' exceeds the maximum size of 5 GB.'}
-                </div>
+            return <div key={BaseUtils.generateUniqueKey()} className="mdl-cell mdl-cell--12-col" style={styles.rejectedFileList}>
+                {file.name+' exceeds the maximum size of 12 GB.'}
+            </div>
         }) : null;
 
         let autoCompleteData = tagAutoCompleteList && tagAutoCompleteList.length > 0 ? tagAutoCompleteList : [];
@@ -76,8 +76,8 @@ class UploadManager extends React.Component {
                                 {filesToUpload.length ? <h6 className="mdl-color-text--grey-600" style={styles.fileListHeader}>Preparing to upload {filesToUpload.length} file{filesToUpload.length > 1 ? 's' : ''}</h6> : null}
                             </div>
                             <div className="mdl-cell mdl-cell--6-col" style={{margin: '0 auto'}}>
-                            {files}
-                            {rejectedFiles}
+                                {files}
+                                {rejectedFiles}
                             </div>
                         </div>
                         <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.wrapper}>
@@ -331,6 +331,7 @@ const styles = {
     rejectedFileList: {
         margin: '1.5px auto',
         textAlign: 'left',
+        float: 'left',
         padding: 5,
         color: Color.white,
         backgroundColor: Color.red
