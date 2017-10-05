@@ -4,5 +4,10 @@ export const StatusEnum = Object.freeze({
     STATUS_RETRY : 2,
     STATUS_UPLOADING : 3,
     STATUS_FAILED : 4,
-    MAX_RETRY : 5
+    MAX_RETRY : 5,
+});
+
+export const ChunkSize = Object.freeze({
+    BYTES_PER_CHUNK : 25000000,
+    BYTES_PER_HASHING_CHUNK : 5000000,
 });

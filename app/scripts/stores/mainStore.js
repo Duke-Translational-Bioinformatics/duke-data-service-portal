@@ -5,7 +5,7 @@ import authStore from '../stores/authStore';
 import provenanceStore from '../stores/provenanceStore';
 import transportLayer from '../transportLayer';
 import BaseUtils from '../util/baseUtils.js';
-import { StatusEnum } from '../enum';
+import { StatusEnum, ChunkSize } from '../enum';
 import { Kind, Path } from '../util/urlEnum';
 import { checkStatus, checkStatusAndConsistency } from '../util/fetchUtil';
 
@@ -39,7 +39,7 @@ export class MainStore {
     @observable metaProps
     @observable metaTemplates
     @observable modal
-    @observable modalOpen
+    @observable phiModalOpen
     @observable moveItemList
     @observable moveItemLoading
     @observable moveToObj
@@ -65,6 +65,7 @@ export class MainStore {
     @observable searchResultsProjects
     @observable searchValue
     @observable selectedEntity
+    @observable serviceOutageNoticeModalOpen
     @observable showFilters
     @observable showPropertyCreator
     @observable showTagCloud
@@ -115,7 +116,7 @@ export class MainStore {
         this.metaProps = [];
         this.metaTemplates = [];
         this.modal = false;
-        this.modalOpen = cookie.load('modalOpen');
+        this.phiModalOpen = cookie.load('phiModalOpen');
         this.moveItemList = [];
         this.moveItemLoading = false;
         this.moveToObj = {};
@@ -141,6 +142,7 @@ export class MainStore {
         this.searchResultsFolders = [];
         this.searchResultsProjects = [];
         this.searchValue = null;
+        this.serviceOutageNoticeModalOpen = cookie.load('serviceOutageNoticeModalOpen');
         this.selectedEntity = null;
         this.showFilters = false;
         this.showPropertyCreator = false;
@@ -690,7 +692,7 @@ export class MainStore {
             contentType = blob.type,
             slicedFile = null,
             BYTES_PER_CHUNK, SIZE, start, end;
-            BYTES_PER_CHUNK = 2500000;
+            BYTES_PER_CHUNK = ChunkSize.BYTES_PER_CHUNK;
             SIZE = blob.size;
             start = 0;
             end = BYTES_PER_CHUNK;
@@ -769,7 +771,7 @@ export class MainStore {
         function postHash(hash) {
             mainStore.fileHashes.push(hash);
         }
-        if (file.blob.size < 5000000) {
+        if (file.blob.size <= 5000000) {
             function calculateMd5(blob, id) {
                 let reader = new FileReader();
                 reader.readAsArrayBuffer(blob);
@@ -828,12 +830,10 @@ export class MainStore {
                 blob = blob.getBlob();
             }
             let worker = new Worker(URL.createObjectURL(blob));
-            let chunksize = 2500000;
+            let chunksize = ChunkSize.BYTES_PER_HASHING_CHUNK;
             let f = file.blob; // FileList object
-            let i = 0,
-                chunks = Math.ceil(f.size / chunksize),
-                chunkTasks = [],
-                startTime = (new Date()).getTime();
+            let chunks = Math.ceil(f.size / chunksize),
+                chunkTasks = [];
             worker.onmessage = function (e) {
                 // create callback
                 for (let j = 0; j < chunks; j++) {
@@ -1475,9 +1475,16 @@ export class MainStore {
     }
 
     @action closePhiModal() {
-        let expiresAt = new Date(Date.now() + (7 * 24 * 60 * 60 * 1000));
-        this.modalOpen = false;
-        cookie.save('modalOpen', this.modalOpen, {expires: expiresAt});
+        let expiresAt = new Date(Date.now() + (9 * 24 * 60 * 60 * 10000));
+        this.phiModalOpen = false;
+        cookie.save('phiModalOpen', this.phiModalOpen, {expires: expiresAt});
+    }
+
+    @action serviceWarningModal(dontShow) {
+        let time = !dontShow ? 72 * 100 * 1000 : 18 * 24 * 60 * 60 * 10000;
+        let expiresAt = new Date(Date.now() + (time));
+        this.serviceOutageNoticeModalOpen = false;
+        cookie.save('serviceOutageNoticeModalOpen', this.serviceOutageNoticeModalOpen, {expires: expiresAt});
     }
 
     @action failedUpload(failedUploads) {
