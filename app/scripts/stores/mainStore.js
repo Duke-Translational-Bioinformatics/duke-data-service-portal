@@ -901,7 +901,7 @@ export class MainStore {
                     if (chunkUpdates.status !== undefined) chunks[i].chunkUpdates.status = chunkUpdates.status;
                     if (chunks[i].chunkUpdates.status === StatusEnum.STATUS_RETRY && chunks[i].retry > StatusEnum.MAX_RETRY) {
                         chunks[i].chunkUpdates.status = StatusEnum.STATUS_FAILED;
-                        this.uploadError(uploadId, chunks[i].number);
+                        this.uploadError(uploadId);
                         return;
                     }
                     if (chunks[i].chunkUpdates.status === StatusEnum.STATUS_RETRY) chunks[i].retry++;
@@ -915,7 +915,7 @@ export class MainStore {
             let chunk = chunks[i];
             if (chunk.chunkUpdates.status === StatusEnum.STATUS_WAITING_FOR_UPLOAD || chunk.chunkUpdates.status === StatusEnum.STATUS_RETRY) {
                 chunk.chunkUpdates.status = StatusEnum.STATUS_UPLOADING;
-                this.getChunkUrl(uploadId, upload, upload.blob.slice(chunk.start, chunk.end), chunk);
+                this.getChunkUrl(uploadId, upload.blob.slice(chunk.start, chunk.end), chunk);
                 return;
             }
             if (chunk.chunkUpdates.status !== StatusEnum.STATUS_SUCCESS) allDone = false;
@@ -926,9 +926,9 @@ export class MainStore {
         };
     }
 
-    @action uploadChunk(uploadId, upload, presignedUrl, chunkBlob, chunkNum, fileName, chunkUpdates) {
+    @action uploadChunk(uploadId, presignedUrl, chunkBlob, chunkNum, chunkUpdates) {
         window.addEventListener('offline', function () {
-            mainStore.uploadError(uploadId, fileName)
+            mainStore.uploadError(uploadId)
         });
         var xhr = new XMLHttpRequest();
         xhr.upload.onprogress = uploadProgress;
@@ -942,8 +942,7 @@ export class MainStore {
         function onComplete() {
             if (xhr.status >= 200 && xhr.status < 300) {
                 chunkUpdates.status = StatusEnum.STATUS_SUCCESS;
-            }
-            else {
+            } else {
                 chunkUpdates.status = StatusEnum.STATUS_RETRY;
             }
             mainStore.updateAndProcessChunks(uploadId, chunkNum, {status: chunkUpdates.status});
@@ -951,18 +950,17 @@ export class MainStore {
 
         xhr.onerror = onError;
         function onError() {
-            mainStore.uploadError(uploadId, fileName, upload.projectId)
+            mainStore.uploadError(uploadId)
         }
 
         xhr.open('PUT', presignedUrl, true);
         xhr.send(chunkBlob);
     }
 
-    getChunkUrl(uploadId, upload, chunkBlob, chunk) {
-        var chunkNum = chunk.number;
-        var fileName = upload.name;
-        var chunkUpdates = chunk.chunkUpdates;
-        var fileReader = new FileReader();
+    getChunkUrl(uploadId, chunkBlob, chunk) {
+        let chunkNum = chunk.number;
+        let chunkUpdates = chunk.chunkUpdates;
+        const fileReader = new FileReader();
         fileReader.onload = function (event) {
             var arrayBuffer = event.target.result;
             var wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
@@ -975,7 +973,7 @@ export class MainStore {
                     let chunkObj = json;
                     if (chunkObj && chunkObj.url && chunkObj.host) {
                         // upload chunks
-                        mainStore.uploadChunk(uploadId, upload, chunkObj.host + chunkObj.url, chunkBlob, chunkNum, fileName, chunkUpdates)
+                        mainStore.uploadChunk(uploadId, chunkObj.host + chunkObj.url, chunkBlob, chunkNum, chunkUpdates)
                     } else {
                         throw 'Unexpected response';
                     }
@@ -984,7 +982,7 @@ export class MainStore {
         fileReader.readAsArrayBuffer(chunkBlob);
     }
 
-    allChunksUploaded(uploadId, parentId, parentKind, fileName, label, fileId, hash, projectId) {
+    allChunksUploaded(uploadId, parentId, parentKind, fileName, label, fileId, hash) {
         let algorithm = 'MD5';
         this.transportLayer.allChunksUploaded(uploadId, hash, algorithm)
             .then(this.checkResponse)
@@ -995,7 +993,7 @@ export class MainStore {
                 } else {
                     this.addFileVersion(uploadId, label, fileId);
                 }
-            }).catch(ex => this.uploadError(uploadId, fileName, projectId))
+            }).catch(ex => this.uploadError(uploadId))
     }
 
     @action addFile(uploadId, parentId, parentKind, fileName) {
@@ -1007,7 +1005,7 @@ export class MainStore {
                 this.addFileSuccess(parentId, parentKind, uploadId, json.id)
             }).catch((ex) => {
                 this.addToast('Failed to upload ' + fileName + '!');
-                this.handleErrors(ex)
+                this.uploadError(uploadId);
             })
     }
 
@@ -1032,8 +1030,7 @@ export class MainStore {
                 this.addFileVersionSuccess(fileId, uploadId)
             }).catch((ex) => {
                 this.addToast('Failed to Create New Version');
-                this.uploadError(uploadId, label);
-                this.handleErrors(ex);
+                this.uploadError(uploadId);
             });
     }
 
@@ -1066,13 +1063,14 @@ export class MainStore {
         }
     }
 
-    @action uploadError(uploadId, fileName, projectId) {
+    @action uploadError(uploadId) {
         if (this.uploads.has(uploadId)) {
+            const upload = this.uploads.get(uploadId);
             this.failedUploads.push({
-                upload: this.uploads.get(uploadId),
-                fileName: fileName,
+                upload: upload,
+                fileName: upload.name,
                 id: uploadId,
-                projectId: projectId
+                projectId: upload.projectId
             });
             this.uploads.delete(uploadId);
             this.failedUpload(this.failedUploads);
