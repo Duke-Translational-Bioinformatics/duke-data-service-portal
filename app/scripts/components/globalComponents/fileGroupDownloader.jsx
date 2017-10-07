@@ -14,7 +14,7 @@ import {Card, CardTitle, CardText} from 'material-ui/Card'
 import {MuiTreeList} from 'react-treeview-mui'
 import {TreeList} from 'react-treeview-mui'
 import FontIcon from 'material-ui/FontIcon'
-import FileListItems from './fileListItems.jsx';
+import AccountListItems from './accountListItems.jsx';
 import {
   Table,
   TableBody,
@@ -36,7 +36,7 @@ class FileGroupDownloader extends Component {
 				<Card className="mdl-cell mdl-cell--9-col mdl-cell--8-col-tablet" style={styles.card}>
 						<CardTitle title='Downloader' titleColor="#424242" style={styles.cardTitle}/>
 						<CardText>
-							<FileListItems {...this.props} />
+							<AccountListItems {...this.props} />
 						</CardText>
 				</Card>
 			</div>

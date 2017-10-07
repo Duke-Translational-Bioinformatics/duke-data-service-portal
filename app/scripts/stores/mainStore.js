@@ -39,10 +39,10 @@ export class MainStore {
     @observable isSafari
     @observable itemsSelected
     @observable listItems
-    @observable fileListItems
-    @observable treeListItems
-    @observable treeListItemsCustom
-    @observable treeListItemSelected
+    // @observable fileListItems
+    // @observable treeListItems
+    // @observable treeListItemsCustom
+    // @observable treeListItemSelected
     @observable loading
     @observable metadataTemplate
     @observable metaProps
@@ -94,6 +94,7 @@ export class MainStore {
     @observable users
     @observable userKey
     @observable versionModal
+    @observable downloadedItems
 
     constructor() {
         this.agents = [];
@@ -180,10 +181,12 @@ export class MainStore {
         this.userKey = {};
         this.versionModal = false;
         this.warnUserBeforeLeavingPage = false;
-        this.fileListItems = [];
-        this.treeListItems = [ {"depth": 0, "children": []} ];
-        this.treeListItemsCustom = [];
-        this.treeListItemSelected = '';
+        // this.fileListItems = [];
+        // this.treeListItems = [ {"depth": 0, "children": []} ];
+        // this.treeListItems = [];
+        this.downloadedItems = observable.map();
+        // this.treeListItemsCustom = [];
+        // this.treeListItemSelected = '';
         this.transportLayer = transportLayer;
     }
 
@@ -191,121 +194,76 @@ export class MainStore {
         return checkStatus(response, authStore);
     }
 
-    @action getProjectsTreeListItems(page, perPage) {
-      this.loading = true;
-      if (page == null) page = 1;
-      if (perPage == null) perPage = 25;
-      this.transportLayer.getProjects(page, perPage)
-          .then(this.checkResponse).then((response) => {
-          const results = response.json();
-          const headers = response.headers;
-          return Promise.all([results, headers]);
-      }).then((json) => {
-          let results = json[0].results;
-          let headers = json[1].map;
-          let projectListItems = results.map((project) => {
-            console.log("project", project);
-            return (
-              {
-                "title": project.name,
-                "id": project.id,
-                "depth": 1,
-                "parentIndex": 0,
-                "itemKind": 'dds-project',
-                "children": [],
-                "disabled": false
-              }
-            );
-          });
-          this.treeListItems = [...this.treeListItems, ...projectListItems];
-          // const userId = authStore.currentUser.id !== undefined ? authStore.currentUser.id : this.currentUser.id !== undefined ? this.currentUser.id : null;
-          // this.projects.forEach((p) => {
-          //     userId !== null ? this.getAllProjectPermissions(p.id, authStore.currentUser.id) : null;
-          // });
-          this.responseHeaders = headers;
-          this.loading = false;
-      }).catch(ex => this.handleErrors(ex))
-    }
+    // @action getProjectsTreeListItems(page, perPage) {
+    //   this.loading = true;
+    //   if (page == null) page = 1;
+    //   if (perPage == null) perPage = 25;
+    //   this.transportLayer.getProjects(page, perPage)
+    //       .then(this.checkResponse).then((response) => {
+    //       const results = response.json();
+    //       const headers = response.headers;
+    //       return Promise.all([results, headers]);
+    //   }).then((json) => {
+    //       let results = json[0].results;
+    //       let headers = json[1].map;
+    //       let projectListItems = results
+    //       this.treeListItems = [...this.treeListItems, ...projectListItems];
+    //       this.responseHeaders = headers;
+    //       this.loading = false;
+    //   }).catch(ex => this.handleErrors(ex))
+    // }
     
-    @action getChildrenTreeListItems(id, path, page) {
-        this.loading = true;
-        if (page == null) page = 1;
-        this.transportLayer.getChildren(id, path, page)
-            .then(this.checkResponse)
-            .then((response) => {
-                const results = response.json();
-                const headers = response.headers;
-                return Promise.all([results, headers]);
-            })
-            .then((json) => {
-                let results = json[0].results;
-                let headers = json[1].map;
-                let parientsListItem = this.treeListItems.find((obj) => { return (obj.id === id) });
-                let parientsListItemIndex = this.treeListItems.findIndex((obj) => { return (obj.id === id) });
-                let parientsListItems = results.map((child) => {
-                  console.log("child", child);
-                  let childListItem = {
-                    "title": child.name,
-                    "id": child.id,
-                    "depth": parientsListItem.depth + 1,
-                    "parentIndex": parientsListItemIndex,
-                    "itemKind": child.kind,
-                    "disabled": false
-                  };
-                  if (child.kind == 'dds-folder') {
-                    childListItem["children"] = []
-                  } else if (child.kind == 'dds-file') {
-                    // let oldFile = this.files.find((obj) => { return (obj.id === child.id) });
-                    // if (oldFile == undefined) {
-                      this.fileListItems = [...this.fileListItems, child]
-                    // }
-                  };
-                  return ( childListItem );
-                });
-                parientsListItem.children = [parientsListItemIndex + 1, parientsListItems.length + parientsListItemIndex + 1]
-                let newTreeListItems = [parientsListItem, ...parientsListItems]
-                this.treeListItems.splice(parientsListItemIndex, 1 , ...newTreeListItems)
-                this.responseHeaders = headers;
-                this.loading = false;
-            }).catch(ex =>this.handleErrors(ex))
-    }
-
-    @action getTreeListProjects(page, perPage) {
-      this.loading = true;
-      if (page == null) page = 1;
-      if (perPage == null) perPage = 25;
-      this.transportLayer.getProjects(page, perPage)
-          .then(this.checkResponse).then((response) => {
-          const results = response.json();
-          const headers = response.headers;
-          return Promise.all([results, headers]);
-      }).then((json) => {
-          let results = json[0].results;
-          let headers = json[1].map;
-          let projectListItems = results.map((project) => {
-            return (
-              {
-                "title": project.name,
-                "id": project.id,
-                "depth": 1,
-                "parentIndex": 0,
-                "itemKind": 'dds-project',
-                "children": [],
-                "disabled": false
-              }
-            );
-          });
-          this.treeListItemsCustom = [...this.treeListItemsCustom, ...projectListItems];
-          this.responseHeaders = headers;
-          this.loading = false;
-      }).catch(ex => this.handleErrors(ex))
-    }
+    // @action getChildrenTreeListItems(id, path, page) {
+    //     this.loading = true;
+    //     if (page == null) page = 1;
+    //     this.transportLayer.getChildren(id, path, page)
+    //         .then(this.checkResponse)
+    //         .then((response) => {
+    //             const results = response.json();
+    //             const headers = response.headers;
+    //             return Promise.all([results, headers]);
+    //         })
+    //         .then((json) => {
+    //             let results = json[0].results;
+    //             let headers = json[1].map;
+    //             let parentsListItem = this.treeListItems.find((obj) => { return (obj.id === id) });
+    //             let parentsListItemIndex = this.treeListItems.findIndex((obj) => { return (obj.id === id) });
+    //             let parentsListItems = results.map((child) => {
+    //               console.log("child", child);
+    //               let childListItem = {
+    //                 "title": child.name,
+    //                 "id": child.id,
+    //                 "depth": parentsListItem.depth + 1,
+    //                 "parentIndex": parentsListItemIndex,
+    //                 "itemKind": child.kind,
+    //                 "disabled": false
+    //               };
+    //               if (child.kind == 'dds-folder') {
+    //                 childListItem["children"] = []
+    //               } else if (child.kind == 'dds-file') {
+    //                   this.fileListItems = [...this.fileListItems, child]
+    //               };
+    //               return ( childListItem );
+    //             });
+    //             parentsListItem.children = [parentsListItemIndex + 1, parentsListItems.length + parentsListItemIndex + 1]
+    //             let newTreeListItems = [parentsListItem, ...parentsListItems]
+    //             this.treeListItems.splice(parentsListItemIndex, 1 , ...newTreeListItems)
+    //             this.responseHeaders = headers;
+    //             this.loading = false;
+    //         }).catch(ex =>this.handleErrors(ex))
+    // }
     
-    @action getTreeListChildren(parient, path) {
-        let id = parient.id
+    @action setDownloadedItems() {
+        this.projects.forEach((project) => {            
+            this.downloadedItems.set(project.id, project)
+        })
+    }
+  
+    @action getTreeListChildren(parent, path) {
+        let parentId = parent.id
         this.loading = true;
         let page = 1
-        this.transportLayer.getChildren(id, path, page)
+        this.transportLayer.getChildren(parentId, path, page)
             .then(this.checkResponse)
             .then((response) => {
                 const results = response.json();
@@ -315,37 +273,42 @@ export class MainStore {
             .then((json) => {
                 let results = json[0].results;
                 let headers = json[1].map;
-                let parientsListItems = results.map((child) => {
-                  let childListItem = {
-                    "title": child.name,
-                    "id": child.id,
-                    "depth": parient.depth + 1,
-                    "itemKind": child.kind,
-                    "disabled": false,
-                    "children": []
-                  };
-                  return ( childListItem );
+                let childrenIds = []
+                let folderIds = []
+                let parentsChildren = results.map((child) => {
+                    if (child.kind == 'dds-folder') {
+                        child.children = []
+                    };
+                    this.downloadedItems.set(child.id, child)
+                    childrenIds.push(child.id)
+                    child.kind === 'dds-folder' ? folderIds.push(child.id) : null;
+                    return ( child );
                 });
-                parient.children = parientsListItems
-                this.treeListItemsCustom = JSON.parse(JSON.stringify(this.treeListItemsCustom))
+                let downloadedParent = this.downloadedItems.get(parent.id)
+                downloadedParent.childrenIds = childrenIds
+                downloadedParent.folderIds = folderIds   
+                this.listItems = parentsChildren
                 this.responseHeaders = headers;
                 this.loading = false;
             }).catch(ex =>this.handleErrors(ex))
     }
     
-    @action toggleTreeListItem(listItem) {
-      let deepUpdate = (tree) => {
-        return (
-          tree.forEach((branch) => {
-            if (branch.id == listItem.id) {
-              branch.open = !listItem.open
-            } else if (branch.children && branch.children.length > 0) {
-              deepUpdate(branch.children)
-            }
-          })
-        )
-      }
-      deepUpdate(this.treeListItemsCustom)
+    @action toggleTreeListItem(listItem, listPosition) {
+        this.loading = true
+        let item = this.downloadedItems.get(listItem.id)
+        item.open = !item.open
+        if (item.childrenIds) {
+            let newListItems = []
+            item.childrenIds.forEach((childId) => {
+                newListItems = [...newListItems, this.downloadedItems.get(childId)]
+            })
+            this.listItems = newListItems
+
+            // this.listItems = item.childrenIds.map((childId) => {
+            //     this.downloadedItems.get(childId)
+            // })
+        }
+        this.loading = false
     }
     
     @action toggleAllItemsSelected (bool) {
