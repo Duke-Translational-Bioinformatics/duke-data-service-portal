@@ -236,16 +236,24 @@ export class MainStore {
         this.loading = false
     }
     
-    @action selectItem(listItem) {
-      this.loading = true
-        let item = this.downloadedItems.get(listItem.id);
-        if (item.childrenIds) {
-            this.listItems = item.childrenIds.map((childId) => {
-                return this.downloadedItems.get(childId)
+    @action selectItem(itemId) {
+        this.loading = true
+        let item = this.downloadedItems.get(itemId);
+        if (item) {
+            if (item.childrenIds) {
+                this.listItems = item.childrenIds.map((childId) => {
+                    return this.downloadedItems.get(childId)
+                })
+            }
+            this.selectedItem = item.id;
+            item.open = true
+        } else {
+            this.listItems = []
+            this.selectedItem = ''
+            this.downloadedItems.forEach((item) => {
+                item.open = false
             })
         }
-        this.selectedItem = item.id;
-        item.open = true
         this.loading = false
     }
     

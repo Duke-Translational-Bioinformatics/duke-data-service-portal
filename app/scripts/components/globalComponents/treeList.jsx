@@ -34,7 +34,7 @@ class TreeList extends Component {
     }
     
     handleTouchTap(item) {
-        mainStore.selectItem(item);
+        mainStore.selectItem(item.id);
         let path = this.pathFinder(item.kind)
         if (!item.folderIds && path) {
             mainStore.getTreeListChildren(item, path);

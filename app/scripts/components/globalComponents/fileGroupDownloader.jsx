@@ -7,6 +7,7 @@ import { Color } from '../../theme/customTheme';
 import {Path} from '../../util/urlEnum';
 import Drawer from 'material-ui/Drawer'
 import Subheader from 'material-ui/Subheader'
+import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton'
 import SelectField from 'material-ui/SelectField'
 import MenuItem from 'material-ui/MenuItem'
@@ -15,33 +16,52 @@ import {MuiTreeList} from 'react-treeview-mui'
 import {TreeList} from 'react-treeview-mui'
 import FontIcon from 'material-ui/FontIcon'
 import AccountListItems from './accountListItems.jsx';
-import {
-  Table,
-  TableBody,
-  TableHeader,
-  TableHeaderColumn,
-  TableRow,
-  TableRowColumn,
-} from 'material-ui/Table';
 
 @observer
 class FileGroupDownloader extends Component {
+    render() {
+        const {fileMultiSelect, files} = mainStore;
 
-  render() {
-    const {fileMultiSelect, files} = mainStore;
+        return (
+        		<div className="mdl-grid">
+          			<div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet"></div>
+          			<Card className="mdl-cell mdl-cell--9-col mdl-cell--8-col-tablet" style={styles.card}>
+          					<CardTitle titleColor="#424242" style={styles.cardTitle}>
+                        <FlatButton
+                            label="Home"
+                            primary={true}
+                            onClick={() => mainStore.selectItem(null)}
+                        />
+                        {this.breadCrumb()}
+                    </CardTitle>
+          					<CardText>
+                        <AccountListItems {...this.props} />
+          					</CardText>
+          			</Card>
+        		</div>
+        );
+    }
 
-    return (
-			<div className="mdl-grid">
-				<div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet"></div>
-				<Card className="mdl-cell mdl-cell--9-col mdl-cell--8-col-tablet" style={styles.card}>
-						<CardTitle title='Downloader' titleColor="#424242" style={styles.cardTitle}/>
-						<CardText>
-							<AccountListItems {...this.props} />
-						</CardText>
-				</Card>
-			</div>
-    );
-  }
+    breadCrumb() {
+        let item = mainStore.downloadedItems.get(mainStore.selectedItem)
+        if (item) {
+            let ancestorPath = [item]
+            if (item.ancestors) {
+                ancestorPath = [...item.ancestors, item]
+            }
+            return (
+                ancestorPath.map((bc) => {
+                    return (
+                        <FlatButton
+                            label={bc.name}
+                            primary={true}
+                            onClick={() => mainStore.selectItem(bc.id)}
+                        >/</FlatButton>
+                    )
+                })
+            )
+        }
+    }
 }
 
 const styles = {
