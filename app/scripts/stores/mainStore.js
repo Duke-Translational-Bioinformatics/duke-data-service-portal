@@ -39,10 +39,6 @@ export class MainStore {
     @observable isSafari
     @observable itemsSelected
     @observable listItems
-    // @observable fileListItems
-    // @observable treeListItems
-    // @observable treeListItemsCustom
-    // @observable treeListItemSelected
     @observable loading
     @observable metadataTemplate
     @observable metaProps
@@ -181,12 +177,7 @@ export class MainStore {
         this.userKey = {};
         this.versionModal = false;
         this.warnUserBeforeLeavingPage = false;
-        // this.fileListItems = [];
-        // this.treeListItems = [ {"depth": 0, "children": []} ];
-        // this.treeListItems = [];
         this.downloadedItems = observable.map();
-        // this.treeListItemsCustom = [];
-        // this.treeListItemSelected = '';
         this.transportLayer = transportLayer;
     }
 
@@ -194,65 +185,6 @@ export class MainStore {
         return checkStatus(response, authStore);
     }
 
-    // @action getProjectsTreeListItems(page, perPage) {
-    //   this.loading = true;
-    //   if (page == null) page = 1;
-    //   if (perPage == null) perPage = 25;
-    //   this.transportLayer.getProjects(page, perPage)
-    //       .then(this.checkResponse).then((response) => {
-    //       const results = response.json();
-    //       const headers = response.headers;
-    //       return Promise.all([results, headers]);
-    //   }).then((json) => {
-    //       let results = json[0].results;
-    //       let headers = json[1].map;
-    //       let projectListItems = results
-    //       this.treeListItems = [...this.treeListItems, ...projectListItems];
-    //       this.responseHeaders = headers;
-    //       this.loading = false;
-    //   }).catch(ex => this.handleErrors(ex))
-    // }
-    
-    // @action getChildrenTreeListItems(id, path, page) {
-    //     this.loading = true;
-    //     if (page == null) page = 1;
-    //     this.transportLayer.getChildren(id, path, page)
-    //         .then(this.checkResponse)
-    //         .then((response) => {
-    //             const results = response.json();
-    //             const headers = response.headers;
-    //             return Promise.all([results, headers]);
-    //         })
-    //         .then((json) => {
-    //             let results = json[0].results;
-    //             let headers = json[1].map;
-    //             let parentsListItem = this.treeListItems.find((obj) => { return (obj.id === id) });
-    //             let parentsListItemIndex = this.treeListItems.findIndex((obj) => { return (obj.id === id) });
-    //             let parentsListItems = results.map((child) => {
-    //               console.log("child", child);
-    //               let childListItem = {
-    //                 "title": child.name,
-    //                 "id": child.id,
-    //                 "depth": parentsListItem.depth + 1,
-    //                 "parentIndex": parentsListItemIndex,
-    //                 "itemKind": child.kind,
-    //                 "disabled": false
-    //               };
-    //               if (child.kind == 'dds-folder') {
-    //                 childListItem["children"] = []
-    //               } else if (child.kind == 'dds-file') {
-    //                   this.fileListItems = [...this.fileListItems, child]
-    //               };
-    //               return ( childListItem );
-    //             });
-    //             parentsListItem.children = [parentsListItemIndex + 1, parentsListItems.length + parentsListItemIndex + 1]
-    //             let newTreeListItems = [parentsListItem, ...parentsListItems]
-    //             this.treeListItems.splice(parentsListItemIndex, 1 , ...newTreeListItems)
-    //             this.responseHeaders = headers;
-    //             this.loading = false;
-    //         }).catch(ex =>this.handleErrors(ex))
-    // }
-    
     @action setDownloadedItems() {
         this.projects.forEach((project) => {            
             this.downloadedItems.set(project.id, project)
@@ -303,10 +235,6 @@ export class MainStore {
                 newListItems = [...newListItems, this.downloadedItems.get(childId)]
             })
             this.listItems = newListItems
-
-            // this.listItems = item.childrenIds.map((childId) => {
-            //     this.downloadedItems.get(childId)
-            // })
         }
         this.loading = false
     }
