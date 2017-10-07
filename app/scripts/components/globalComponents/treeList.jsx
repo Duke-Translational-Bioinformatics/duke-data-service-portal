@@ -17,7 +17,7 @@ class TreeList extends Component {
     }
 
     render() {
-    		const {downloadedItems, projects, loading} = mainStore;	
+    		const {downloadedItems, projects, loading, selectedItem} = mainStore;	
         const projectIds = projects.map((project) => { return project.id })
 
         return (
@@ -27,18 +27,17 @@ class TreeList extends Component {
         				zDepth={1}
         				containerStyle={{height: 'calc(100% - 76px)', top: 76}}
         				>
-        				<SelectableList defaultValue={'1'}>
-        				      {this.buildTree(projectIds)}
-        				</SelectableList>
+                <br />
+  				      {this.buildTree(projectIds)}
       			</Drawer>
         );
     }
     
-    handleTouchTap(listItem, listPosition) {
-        mainStore.toggleTreeListItem(listItem, listPosition);
-        let path = this.pathFinder(listItem.kind)
-        if (!listItem.folderIds && path) {
-            mainStore.getTreeListChildren(listItem, path);
+    handleTouchTap(item) {
+        mainStore.selectItem(item);
+        let path = this.pathFinder(item.kind)
+        if (!item.folderIds && path) {
+            mainStore.getTreeListChildren(item, path);
         }
     }
     
@@ -76,50 +75,21 @@ class TreeList extends Component {
                             leftIcon={this.iconPicker(child.kind)}
                             nestedItems={grandChildren}
                             open={child.open}
+                            onNestedListToggle={() => {mainStore.toggleTreeListItem(child)}}
                             onClick={() => {this.handleTouchTap(child)}}
+                            style={mainStore.selectedItem === child.id ? styles.selected : null}
                         />
                     )
                 }
             })
         )
     }
-}
+};
 
-let SelectableList = makeSelectable(List);
-
-function wrapState(ComposedComponent) {
-    return class SelectableList extends Component {
-        static propTypes = {
-            children: PropTypes.node.isRequired,
-            defaultValue: PropTypes.string.isRequired,
-        };
-
-        componentWillMount() {
-            this.setState({
-                selectedIndex: this.props.defaultValue,
-            });
-        }
-
-        handleRequestChange = (event, index) => {
-            this.setState({
-                selectedIndex: index,
-            });
-        };
-
-        render() {
-          return (
-              <ComposedComponent
-                  value={this.state.selectedIndex}
-                  onChange={this.handleRequestChange}
-              >
-                  {this.props.children}
-              </ComposedComponent>
-          );
-      }
-    };
-}
-
-SelectableList = wrapState(SelectableList);
-
+const styles = {
+    selected: {
+        backgroundColor: 'rgba(0, 0, 0, 0.2)'
+    }
+};
 
 export default TreeList;

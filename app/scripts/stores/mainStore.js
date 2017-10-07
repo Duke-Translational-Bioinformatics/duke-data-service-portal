@@ -21,6 +21,7 @@ export class MainStore {
     @observable destination
     @observable destinationKind
     @observable device
+    @observable downloadedItems
     @observable drawerLoading
     @observable entityObj
     @observable errorModals
@@ -70,6 +71,7 @@ export class MainStore {
     @observable searchResultsProjects
     @observable searchValue
     @observable selectedEntity
+    @observable selectedItem
     @observable showFilters
     @observable showPropertyCreator
     @observable showTagCloud
@@ -90,7 +92,6 @@ export class MainStore {
     @observable users
     @observable userKey
     @observable versionModal
-    @observable downloadedItems
 
     constructor() {
         this.agents = [];
@@ -105,6 +106,7 @@ export class MainStore {
         this.device = {};
         this.destination = null;
         this.destinationKind = null;
+        this.downloadedItems = observable.map();
         this.drawerLoading = false;
         this.entityObj = null;
         this.errorModals = [];
@@ -156,6 +158,7 @@ export class MainStore {
         this.searchResultsProjects = [];
         this.searchValue = null;
         this.selectedEntity = null;
+        this.selectedItem = '';
         this.showFilters = false;
         this.showPropertyCreator = false;
         this.showTagCloud = false;
@@ -177,7 +180,6 @@ export class MainStore {
         this.userKey = {};
         this.versionModal = false;
         this.warnUserBeforeLeavingPage = false;
-        this.downloadedItems = observable.map();
         this.transportLayer = transportLayer;
     }
 
@@ -217,6 +219,7 @@ export class MainStore {
                     return ( child );
                 });
                 let downloadedParent = this.downloadedItems.get(parent.id)
+                downloadedParent.open = true
                 downloadedParent.childrenIds = childrenIds
                 downloadedParent.folderIds = folderIds   
                 this.listItems = parentsChildren
@@ -228,14 +231,21 @@ export class MainStore {
     @action toggleTreeListItem(listItem, listPosition) {
         this.loading = true
         let item = this.downloadedItems.get(listItem.id)
+        this.selectedItem = item.id;
         item.open = !item.open
+        this.loading = false
+    }
+    
+    @action selectItem(listItem) {
+      this.loading = true
+        let item = this.downloadedItems.get(listItem.id);
         if (item.childrenIds) {
-            let newListItems = []
-            item.childrenIds.forEach((childId) => {
-                newListItems = [...newListItems, this.downloadedItems.get(childId)]
+            this.listItems = item.childrenIds.map((childId) => {
+                return this.downloadedItems.get(childId)
             })
-            this.listItems = newListItems
         }
+        this.selectedItem = item.id;
+        item.open = true
         this.loading = false
     }
     
