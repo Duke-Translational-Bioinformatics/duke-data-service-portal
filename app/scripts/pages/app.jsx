@@ -96,11 +96,11 @@ class App extends React.Component {
     };
 
     render() {
-        const {errorModals, toasts, screenSize, showFilters} = mainStore;
+        const {errorModals, toasts, screenSize, showFilters, toggleNav} = mainStore;
         const {appConfig} = authStore;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let dialogs, tsts = null;
-        let slideContentClass = showFilters ? 'page-content slide-right' : 'page-content';
+        let slideContentClass = showFilters || toggleNav ? 'page-content slide-right' : 'page-content';
         if (toasts) {
             tsts = toasts.map(obj => {
                 return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} open={true}/>
@@ -157,14 +157,12 @@ class App extends React.Component {
         }
         return (
             <span>
-                <div className="panel-overlay"></div>
-                {!appConfig.apiToken ? '' : <LeftMenu {...this.props}/>}
                 <div className="views">
                     <div className="view view-main">
+                        {!appConfig.apiToken ? '' : <LeftMenu {...this.props}/>}
                         <Header {...this.props} {...this.state}/>
-                        <div className="pages navbar-through toolbar-through">
+                        <div className="pages">
                             <div data-page="index" className="page">
-                                <div className="searchbar-overlay"></div>
                                 <div className={slideContentClass}>
                                     {this.props.children}
                                     {tsts}

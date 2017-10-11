@@ -36,6 +36,7 @@ export class MainStore {
     @observable isListItem
     @observable isSafari
     @observable itemsSelected
+    @observable leftNavIndex
     @observable listItems
     @observable loading
     @observable metadataTemplate
@@ -87,6 +88,7 @@ export class MainStore {
     @observable templateProperties
     @observable toasts
     @observable totalItems
+    @observable toggleNav
     @observable toggleModal
     @observable totalUploads
     @observable uploadCount
@@ -125,6 +127,7 @@ export class MainStore {
         this.isListItem = false;
         this.isSafari = false;
         this.itemsSelected = null;
+        this.leftNavIndex = null;
         this.listItems = [];
         this.loading = false;
         this.metadataTemplate = {};
@@ -177,6 +180,7 @@ export class MainStore {
         this.templateProperties = [];
         this.toasts = [];
         this.totalItems = null;
+        this.toggleNav = false;
         this.toggleModal = {open: false, id: null};
         this.totalUploads = {inProcess: 0, complete: 0};
         this.uploadCount = [];
@@ -192,6 +196,14 @@ export class MainStore {
 
     checkResponse(response) {
         return checkStatus(response, authStore);
+    }
+
+    @action setLeftNavIndex(index) {
+        this.leftNavIndex = index;
+    }
+
+    @action toggleNavDrawer() {
+        this.toggleNav = !this.toggleNav;
     }
 
     @action toggleBackButtonVisibility(bool, prevLocation){

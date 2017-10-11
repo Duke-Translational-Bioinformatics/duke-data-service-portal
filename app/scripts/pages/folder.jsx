@@ -14,6 +14,7 @@ class Folder extends React.Component {
 
     componentDidMount() {
         if(mainStore.openTagManager) mainStore.toggleTagManager();
+        mainStore.toggleNav ? mainStore.toggleNavDrawer() : null;
         this._loadFolder();
     }
 

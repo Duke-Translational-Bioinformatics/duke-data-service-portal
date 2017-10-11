@@ -15,6 +15,10 @@ import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColu
 @observer
 class SearchResults extends React.Component {
 
+    componentDidMount() {
+        mainStore.toggleNav ? mainStore.toggleNavDrawer() : null;
+    }
+
     render() {
         const { loading, nextPage, screenSize, searchResults, searchResultsProjects, searchResultsTags, searchValue, showFilters, tableBodyRenderKey, totalItems, uploads } = mainStore;
         let menuWidth = screenSize.width > 1230 ? 35 : 28;

@@ -17,11 +17,11 @@ class Header extends React.Component {
         const { showSearch } = mainStore;
         let header = !showSearch ? <Toolbar className="navbar" style={styles.toolbar}>
             <ToolbarGroup firstChild={true} style={styles.toolbar.firstToolbarGroup}>
-                {!appConfig.apiToken ? '' : <a href="#" className="open-panel"><FontIcon className="material-icons" style={styles.openIcon}>menu</FontIcon></a>}
+                {!appConfig.apiToken ? '' : <a href="#" onTouchTap={()=>this.toggleNav()}><FontIcon className="material-icons" style={styles.openIcon}>menu</FontIcon></a>}
                 {!appConfig.apiToken ? '' : <img src="/images/dukeDSVertical.png" style={styles.logo}/>}
             </ToolbarGroup>
             <ToolbarGroup lastChild={true}>
-                <FontIcon className="material-icons" style={styles.searchIcon} onTouchTap={()=>this.showSearch()}>
+                <FontIcon className="material-icons" style={styles.searchIcon} onTouchTap={()=>this.toggleSearch()}>
                     search
                 </FontIcon>
                 <CurrentUser {...this.props} />
@@ -35,8 +35,14 @@ class Header extends React.Component {
         }
     }
 
-    showSearch() {
+    toggleNav() {
+        mainStore.toggleNavDrawer();
+        mainStore.setLeftNavIndex(this.props.router.location.pathname)
+    }
+
+    toggleSearch() {
         mainStore.toggleSearch();
+        mainStore.toggleNav ? mainStore.toggleNavDrawer() : null;
     }
 }
 

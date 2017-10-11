@@ -34,6 +34,7 @@ export const Color = {
     ltRed: '#EF5350',
     ltGrey: '#BDBDBD',
     ltGrey2: '#E0E0E0',
+    ltGrey3: '#F5F5F5',
     dkGrey: '#757575',
     dkGrey2: '#616161',
     white: '#FFF',
