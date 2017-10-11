@@ -89,7 +89,7 @@ class FileDetails extends React.Component {
             }
         }
 
-        let file = <Card className="project-container mdl-color--white content mdl-color-text--grey-800" style={styles.card}>
+        let file = <Card className="project-container mdl-cell mdl-cell--12-col" style={styles.card}>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
                     <a href={'/#/' + BaseUtils.getUrlPath(parentKind) + parentId } style={styles.back} className="mdl-color-text--grey-800 external" onTouchTap={() => this.goBack()}>
@@ -288,8 +288,9 @@ const styles = {
     },
     card: {
         paddingBottom: 30,
-        overflow: 'visible',
-        padding: '10px 0px 10px 0px'
+        overflow: 'auto',
+        padding: '10px 0px 10px 0px',
+        margin: '0 auto'
     },
     detailsTitle: {
         textAlign: 'left',

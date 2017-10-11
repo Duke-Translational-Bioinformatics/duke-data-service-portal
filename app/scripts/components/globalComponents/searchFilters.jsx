@@ -27,7 +27,7 @@ class SearchFilters extends React.Component {
     }
 
     render() {
-        const { screenSize, searchFilters, searchProjectsPostFilters, searchTagsPostFilters, searchResultsProjects, searchResultsTags, searchValue, showFilters } = mainStore;
+        const { screenSize, searchFilters, searchProjectsPostFilters, searchTagsPostFilters, searchResultsFiles, searchResultsFolders, searchResultsProjects, searchResultsTags, searchValue, showFilters } = mainStore;
 
         let projects = searchResultsProjects.map((obj) => {
             const projectPostFilter = obj.key;
@@ -57,11 +57,11 @@ class SearchFilters extends React.Component {
                 nestedItems={[
                     <ListItem key={BaseUtils.generateUniqueKey()}
                         primaryText={<span style={styles.checkbox.label}>Files</span>}
-                        leftCheckbox={<Checkbox style={styles.checkbox} checked={searchFilters.includes(Kind.DDS_FILE)} onCheck={() => mainStore.searchObjects(searchValue, Kind.DDS_FILE, null, null)}/>}
+                        leftCheckbox={<Checkbox style={styles.checkbox} disabled={!searchResultsFiles.length} checked={searchFilters.includes(Kind.DDS_FILE)} onCheck={() => mainStore.searchObjects(searchValue, Kind.DDS_FILE, null, null)}/>}
                         style={styles.listItem}/>,
                     <ListItem key={BaseUtils.generateUniqueKey()}
                         primaryText={<span style={styles.checkbox.label}>Folders</span>}
-                        leftCheckbox={<Checkbox style={styles.checkbox} checked={searchFilters.includes(Kind.DDS_FOLDER)} onCheck={() => mainStore.searchObjects(searchValue, Kind.DDS_FOLDER, null, null)}/>}
+                        leftCheckbox={<Checkbox style={styles.checkbox} disabled={!searchResultsFolders.length} checked={searchFilters.includes(Kind.DDS_FOLDER)} onCheck={() => mainStore.searchObjects(searchValue, Kind.DDS_FOLDER, null, null)}/>}
                         style={styles.listItem}/>
                 ]}
                 initiallyOpen={true}
@@ -72,7 +72,7 @@ class SearchFilters extends React.Component {
 
         return (
             <div>
-                <Drawer open={showFilters} width={showFilters ? 270 : null} zDepth={1}>
+                <Drawer open={showFilters} width={showFilters ? 240 : null} zDepth={1}>
                     <div style={styles.spacer}></div>
                         <div style={styles.drawer}>
                             {screenSize.width <= 700 ? <div className="mdl-cell mdl-cell--12-col">

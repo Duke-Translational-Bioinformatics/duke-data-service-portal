@@ -4,6 +4,7 @@ import authStore from '../../stores/authStore';
 import mainStore from '../../stores/mainStore';
 import {Color} from '../../theme/customTheme';
 import Drawer from 'material-ui/Drawer';
+import Divider from 'material-ui/Divider';
 import FontIcon from 'material-ui/FontIcon';
 import {List, ListItem, makeSelectable} from 'material-ui/List';
 import {Toolbar, ToolbarGroup} from 'material-ui/Toolbar';
@@ -24,7 +25,7 @@ function wrapState(ComposedComponent) {
         render() {
             const { leftNavIndex } = mainStore;
             return (
-                <ComposedComponent value={leftNavIndex} onChange={this.handleRequestChange}>
+                <ComposedComponent style={styles.listContainer} value={leftNavIndex} onChange={this.handleRequestChange}>
                     {this.props.children}
                 </ComposedComponent>
             );
@@ -60,6 +61,7 @@ class LeftMenu extends React.Component {
                     primaryText="Software Agents"
                     leftIcon={<i className="material-icons" style={styles.navIcon}>build</i>}
                 />
+                <Divider/>
                 <ListItem
                     value={0}
                     onClick={() => this.linkToBlog('https://medium.com/@dukedataservice')}
@@ -72,6 +74,7 @@ class LeftMenu extends React.Component {
                     primaryText="Privacy Policy"
                     leftIcon={<i className="material-icons" style={styles.navIcon}>lock</i>}
                 />
+                <Divider/>
                 <ListItem
                     value={1}
                     onClick={() => this.handleLogout()}
@@ -128,6 +131,9 @@ const styles = {
         minWidth: 58,
         minHeight: 46,
         marginBottom: 4
+    },
+    listContainer: {
+        padding: '8px 4px'
     },
     navIcon: {
         paddingRight: 5,

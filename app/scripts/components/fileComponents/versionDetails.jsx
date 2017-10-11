@@ -41,7 +41,7 @@ class VersionDetails extends React.Component {
         let hash = entityObj && entityObj.upload && entityObj.upload.hashes.length ? entityObj.upload.hashes[0].algorithm +': '+ entityObj.upload.hashes[0].value : null;
         let versNumber = entityObj && entityObj.version ? entityObj.version : '';
 
-        let version = <Card className="project-container mdl-color--white content mdl-color-text--grey-800" style={styles.card}>
+        let version = <Card className="project-container mdl-cell mdl-cell--12-col" style={styles.card}>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
                     <a href={UrlGen.routes.file(parentId)} style={styles.back} className="mdl-color-text--grey-800 external" onTouchTap={() => this.goBack()}>
@@ -206,8 +206,9 @@ const styles = {
     },
     card: {
         paddingBottom: 30,
-        overflow: 'visible',
-        padding: '10px 0px 10px 0px'
+        overflow: 'auto',
+        padding: '10px 0px 10px 0px',
+        margin: '0 auto'
     },
     detailsTitle: {
         textAlign: 'left',
