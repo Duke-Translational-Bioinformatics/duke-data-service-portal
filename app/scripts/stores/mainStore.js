@@ -173,6 +173,7 @@ export class MainStore {
         this.toasts = [];
         this.toggleModal = {open: false, id: null};
         this.totalUploads = {inProcess: 0, complete: 0};
+        // this.treeList = [];
         this.uploadCount = [];
         this.uploads = observable.map();
         this.usage = null;
@@ -188,14 +189,18 @@ export class MainStore {
     }
 
     @action setDownloadedItems() {
-        this.projects.forEach((project) => {            
+        let projectIds = []
+        this.projects.forEach((project, index) => {
             this.downloadedItems.set(project.id, project)
+            projectIds.push(project.id)
         })
+        this.downloadedItems.set('projectIds', projectIds);
     }
   
     @action getTreeListChildren(parent, path) {
-        let parentId = parent.id
         this.loading = true;
+        this.downloadedItems.set('loading': true)
+        let parentId = parent.id
         let page = 1
         this.transportLayer.getChildren(parentId, path, page)
             .then(this.checkResponse)
@@ -209,52 +214,65 @@ export class MainStore {
                 let headers = json[1].map;
                 let childrenIds = []
                 let folderIds = []
+                let folderChildren = []
                 let parentsChildren = results.map((child) => {
                     if (child.kind == 'dds-folder') {
                         child.children = []
                     };
-                    this.downloadedItems.set(child.id, child)
                     childrenIds.push(child.id)
-                    child.kind === 'dds-folder' ? folderIds.push(child.id) : null;
+                    if (child.kind === 'dds-folder') {
+                        folderIds.push(child.id)
+                        child.open = true
+                        folderChildren.push(child)
+                    }
+                    this.downloadedItems.set(child.id, child)
                     return ( child );
                 });
                 let downloadedParent = this.downloadedItems.get(parent.id)
                 downloadedParent.open = true
                 downloadedParent.childrenIds = childrenIds
-                downloadedParent.folderIds = folderIds   
+                downloadedParent.folderIds = folderIds
+                this.downloadedItems.set(parent.id, downloadedParent)
                 this.listItems = parentsChildren
                 this.responseHeaders = headers;
+                this.downloadedItems.delete('loading')
                 this.loading = false;
             }).catch(ex =>this.handleErrors(ex))
     }
     
     @action toggleTreeListItem(listItem, listPosition) {
-        this.loading = true
+        this.downloadedItems.set('loading': true)
         let item = this.downloadedItems.get(listItem.id)
         this.selectedItem = item.id;
         item.open = !item.open
-        this.loading = false
+        this.downloadedItems.set(listItem.id, item)
+        this.downloadedItems.delete('loading')
     }
-    
-    @action selectItem(itemId) {
-        this.loading = true
+
+    @action selectItem(itemId, path) {
         let item = this.downloadedItems.get(itemId);
+        let childrenIds = item.childrenIds
         if (item) {
-            if (item.childrenIds) {
-                this.listItems = item.childrenIds.map((childId) => {
-                    return this.downloadedItems.get(childId)
-                })
+            if (!childrenIds && path) {
+                this.getTreeListChildren(item, path)
+            } else if (childrenIds.length > 0){
+                this.downloadedItems.set('loading': true)
+                let newListItems = childrenIds.map((id) => {return(this.downloadedItems.get(id))})
+                this.listItems = newListItems
+                item.open = true
+                this.downloadedItems.set(itemId, item)
+                this.downloadedItems.delete('loading')
             }
             this.selectedItem = item.id;
-            item.open = true
-        } else {
-            this.listItems = []
-            this.selectedItem = ''
-            this.downloadedItems.forEach((item) => {
-                item.open = false
-            })
         }
-        this.loading = false
+    }
+    
+    @action collapseTree() {
+        this.listItems = []
+        this.selectedItem = ''
+        this.downloadedItems.forEach((item) => {
+            item.open = false
+        })
     }
     
     @action toggleAllItemsSelected (bool) {

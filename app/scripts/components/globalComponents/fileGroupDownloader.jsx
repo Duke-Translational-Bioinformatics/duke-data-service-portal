@@ -30,7 +30,7 @@ class FileGroupDownloader extends Component {
                         <FlatButton
                             label="Home"
                             primary={true}
-                            onClick={() => mainStore.selectItem(null)}
+                            onClick={() => mainStore.collapseTree()}
                         />
                         {this.breadCrumb()}
                     </CardTitle>
@@ -40,6 +40,14 @@ class FileGroupDownloader extends Component {
           			</Card>
         		</div>
         );
+    }
+
+    pathFinder(kind) {
+        let kinds = {
+            'dds-project': Path.PROJECT,
+            'dds-folder': Path.FOLDER
+        }
+        return (kinds[kind])
     }
 
     breadCrumb() {
@@ -53,9 +61,10 @@ class FileGroupDownloader extends Component {
                 ancestorPath.map((bc) => {
                     return (
                         <FlatButton
-                            label={bc.name}
+                            key={bc.id}
+                            label={bc.name.length > 20 ? bc.name.substring(0, 20) + '...' : bc.name}
                             primary={true}
-                            onClick={() => mainStore.selectItem(bc.id)}
+                            onClick={() => mainStore.selectItem(bc.id, this.pathFinder(bc.kind))}
                         >/</FlatButton>
                     )
                 })

@@ -22,7 +22,6 @@ class AccountListItems extends React.Component {
 
     render() {
         const { allItemsSelected, filesChecked, foldersChecked, isSafari, listItems, loading, projPermissions, projectRoles, responseHeaders, screenSize, tableBodyRenderKey, uploads, projects, project } = mainStore;
-        // console.log("listItems", JSON.stringify(listItems, null, 2));
         let showBatchOps = !!(filesChecked.length || foldersChecked.length);
         let menuWidth = screenSize.width > 1230 ? 35 : 28;
         let headers = responseHeaders && responseHeaders !== null ? responseHeaders : null;
@@ -49,36 +48,36 @@ class AccountListItems extends React.Component {
             const route = child.kind === Kind.DDS_FOLDER ? UrlGen.routes.folder(child.id) : UrlGen.routes.file(child.id);
             let fileOptionsMenu = showChecks && <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FILE, true)}/>;
             let folderOptionsMenu = showChecks && <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FOLDER, true)}/>;
-                return (
-                    <TableRow key={child.id} selectable={false}>
-                        <TableRowColumn>
-                            {showChecks && <Checkbox
-                                style={checkboxStyle}
-                                onCheck={()=>this.check(child.id, child.kind)}
-                                checked={itemsChecked.includes(child.id)}
-                            />}
-                            <a href={route} className="external" onClick={(e) => this.checkForAllItemsSelected(e)}>
-                                <div style={styles.linkColor}>
-                                    <FontIcon className="material-icons" style={styles.icon}>{icon}</FontIcon>
-                                    {child.name.length > 82 ? child.name.substring(0, 82) + '...' : child.name}
-                                    {child.kind === Kind.DDS_FILE && ' (version '+ child.current_version.version+')'}
-                                </div>
-                            </a>
-                        </TableRowColumn>
-                        {screenSize && screenSize.width >= 680 && <TableRowColumn onTouchTap={()=>this.check(child.id, child.kind)}>
-                            <span>{child.audit.last_updated_on !== null ? BaseUtils.formatDate(child.audit.last_updated_on)+' by '+child.audit.last_updated_by.full_name : BaseUtils.formatDate(child.audit.created_on)+' by '+child.audit.created_by.full_name}</span>
-                        </TableRowColumn>}
-                        {screenSize && screenSize.width >= 840 && <TableRowColumn onTouchTap={()=>this.check(child.id, child.kind)} style={{width: 100}}>
-                            {child.kind === Kind.DDS_FILE && child.current_version ? BaseUtils.bytesToSize(child.current_version.upload.size) : '---'}
-                        </TableRowColumn>}
-                        <TableRowColumn style={{textAlign: 'right', width: menuWidth}}>
-                            <div onClick={(e) => {e.stopPropagation()}}>
-                                {child.kind === Kind.DDS_FILE ? fileOptionsMenu : folderOptionsMenu }
+            return (
+                <TableRow key={child.id} selectable={false}>
+                    <TableRowColumn>
+                        {showChecks && <Checkbox
+                            style={checkboxStyle}
+                            onCheck={()=>this.check(child.id, child.kind)}
+                            checked={itemsChecked.includes(child.id)}
+                        />}
+                        <div onClick={() => mainStore.selectItem(child.id, this.pathFinder(child.kind))}>
+                            <div style={styles.linkColor}>
+                                <FontIcon className="material-icons" style={styles.icon}>{icon}</FontIcon>
+                                {child.name.length > 82 ? child.name.substring(0, 82) + '...' : child.name}
+                                {child.kind === Kind.DDS_FILE && ' (version '+ child.current_version.version+')'}
                             </div>
-                        </TableRowColumn>
-                    </TableRow>
+                        </div>
+                    </TableRowColumn>
+                    {screenSize && screenSize.width >= 680 && <TableRowColumn onTouchTap={()=>this.check(child.id, child.kind)}>
+                        <span>{child.audit.last_updated_on !== null ? BaseUtils.formatDate(child.audit.last_updated_on)+' by '+child.audit.last_updated_by.full_name : BaseUtils.formatDate(child.audit.created_on)+' by '+child.audit.created_by.full_name}</span>
+                    </TableRowColumn>}
+                    {screenSize && screenSize.width >= 840 && <TableRowColumn onTouchTap={()=>this.check(child.id, child.kind)} style={{width: 100}}>
+                        {child.kind === Kind.DDS_FILE && child.current_version ? BaseUtils.bytesToSize(child.current_version.upload.size) : '---'}
+                    </TableRowColumn>}
+                    <TableRowColumn style={{textAlign: 'right', width: menuWidth}}>
+                        <div onClick={(e) => {e.stopPropagation()}}>
+                            {child.kind === Kind.DDS_FILE ? fileOptionsMenu : folderOptionsMenu }
+                        </div>
+                    </TableRowColumn>
+                </TableRow>
 
-                );
+            );
         }) : null;
 
         return (
@@ -124,6 +123,14 @@ class AccountListItems extends React.Component {
                 </Paper>
             </div>
         );
+    }
+
+    pathFinder(kind) {
+        let kinds = {
+            'dds-project': Path.PROJECT,
+            'dds-folder': Path.FOLDER
+        }
+        return (kinds[kind])
     }
 
     check(id, kind) {
