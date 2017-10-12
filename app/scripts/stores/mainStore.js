@@ -691,15 +691,14 @@ export class MainStore {
             fileName = blob.name,
             contentType = blob.type,
             slicedFile = null,
-            BYTES_PER_CHUNK, NUMBER_OF_CHUNKS, SIZE, start, end;
+            BYTES_PER_CHUNK, SIZE, start, end;
             SIZE = blob.size;
-            NUMBER_OF_CHUNKS = Math.ceil(SIZE / ChunkSize.BYTES_PER_CHUNK);
-            BYTES_PER_CHUNK = Math.ceil(SIZE / NUMBER_OF_CHUNKS);
+            BYTES_PER_CHUNK = ChunkSize.BYTES_PER_CHUNK;
             start = 0;
             end = BYTES_PER_CHUNK;
 
         const retryArgs = [projId, blob, parentId, parentKind, label, fileId, tags];
-        var fileReader = new FileReader();
+        const fileReader = new FileReader();
 
         let details = {
             name: fileName,
@@ -715,7 +714,7 @@ export class MainStore {
             chunks: []
         };
         // describe chunk details
-        while (start < SIZE) {
+        while (start <= SIZE) {
             slicedFile = blob.slice(start, end);
             details.chunks.push({
                 number: chunkNum,
