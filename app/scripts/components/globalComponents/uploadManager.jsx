@@ -50,7 +50,7 @@ class UploadManager extends React.Component {
         }) : null;
         let rejectedFiles = filesRejectedForUpload.length ? filesRejectedForUpload.map((file)=>{
             return <div key={BaseUtils.generateUniqueKey()} className="mdl-cell mdl-cell--12-col" style={styles.rejectedFileList}>
-                {file.name+' exceeds the maximum size of 12 GB.'}
+                {file.name+' exceeds the maximum size of 18 GB.'}
             </div>
         }) : null;
 
