@@ -807,7 +807,7 @@ export class MainStore {
                 reader.onloadend = function () {
                     let wordArray = CryptoJS.lib.WordArray.create(reader.result),
                         hash = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
-                    // postHash({id: id, hash: hash});
+                    postHash({id: id, hash: hash});
                 };
             }
             calculateMd5(file.blob, id);
