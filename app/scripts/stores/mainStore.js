@@ -15,6 +15,7 @@ export class MainStore {
     @observable agentApiToken
     @observable autoCompleteLoading
     @observable audit
+    @observable counter
     @observable currentUser
     @observable destination
     @observable destinationKind
@@ -92,6 +93,7 @@ export class MainStore {
         this.agentApiToken = {};
         this.autoCompleteLoading = false;
         this.audit = {};
+        this.counter = observable.map();
         this.currentUser = {};
         this.device = {};
         this.destination = null;
@@ -163,7 +165,6 @@ export class MainStore {
         this.users = [];
         this.userKey = {};
         this.versionModal = false;
-        this.counter = 0;
 
         this.transportLayer = transportLayer;
     }
@@ -172,17 +173,33 @@ export class MainStore {
         return checkStatus(response, authStore);
     }
 
-    tryAsyncAgain(func, args) {
-        mainStore.counter++;
-        mainStore.loading = true;
-        if(mainStore.counter < StatusEnum.MAX_RETRY) {
-            mainStore.addToast(`The resource you're requesting is temporarily unavailable. Retrying...`);
-            setTimeout(() => func(...args),3000)
+    tryAsyncAgain(func, args, delay, counterId, message, isUpload) {
+        const sleep = (ms) => {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        };
+        if(!this.counter.has(counterId)) {
+            this.counter.set(counterId, 0);
         } else {
-            mainStore.counter = 0;
-            mainStore.addToast(`Failed to get resource. Please try again in a few minutes`);
+            let c = this.counter.get(counterId);
+            c++;
+            this.counter.set(counterId, c);
+        }
+        if(this.counter.get(counterId) < StatusEnum.MAX_RETRY) {
+            mainStore.addToast(`${message}. Retrying in ${BaseUtils.msToMinSecs(delay)}...`);
+            const tryAgain = async () => {
+                await sleep(delay);
+                func(...args);
+            };
+            tryAgain();
+        } else {
+            this.counter.delete(counterId);
+            mainStore.addToast(`Failed to complete operation. Please try again in a few minutes`);
             mainStore.loading = false;
-            if(location.href.includes('file') || location.href.includes('folder')) window.location.href = window.location.protocol + '//' + window.location.host + '/#/home';
+            if(!isUpload && (location.href.includes('file') || location.href.includes('folder'))) {
+                window.location.href = window.location.protocol + '//' + window.location.host + '/#/home';
+            } else {
+                mainStore.uploadError(counterId)
+            }
         }
     }
 
@@ -486,7 +503,13 @@ export class MainStore {
                     if (mainStore.projPermissions === null && json.kind === 'dds-file-version') mainStore.getUser(json.file.project.id);
                     mainStore.loading = false;
                 } else {
-                    json.code === 'resource_not_consistent' ? mainStore.tryAsyncAgain(mainStore.getEntity, retryArgs) : mainStore.handleErrors(json);
+                    if(json.code === 'resource_not_consistent') {
+                        this.loading = false;
+                        const msg = "The resource you're requesting is temporarily unavailable...";
+                        mainStore.tryAsyncAgain(mainStore.getEntity, retryArgs, 5000, id, msg, false )
+                    } else {
+                        mainStore.handleErrors(json);
+                    }
                 }
             }).catch(ex => mainStore.handleErrors(ex))
     }
@@ -753,7 +776,13 @@ export class MainStore {
                             }
                         };
                     } else {
-                        json.code === 'resource_not_consistent' ? mainStore.tryAsyncAgain(mainStore.startUpload, retryArgs) : mainStore.handleErrors(json);
+                        if(json.code === 'resource_not_consistent') {
+                            this.loading = false;
+                            const msg = "The resource you're requesting is temporarily unavailable...";
+                            mainStore.tryAsyncAgain(mainStore.startUpload, retryArgs, 5000, fileId, msg, false)
+                        } else {
+                            mainStore.handleErrors(json);
+                        }
                     }
                 })
                 .catch(ex => mainStore.handleErrors(ex))
@@ -778,7 +807,7 @@ export class MainStore {
                 reader.onloadend = function () {
                     let wordArray = CryptoJS.lib.WordArray.create(reader.result),
                         hash = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
-                    postHash({id: id, hash: hash});
+                    // postHash({id: id, hash: hash});
                 };
             }
             calculateMd5(file.blob, id);
@@ -1053,13 +1082,16 @@ export class MainStore {
     }
 
     checkForHash(uploadId, parentId, parentKind, name, label, fileId, projectId) {
-        let hash = this.fileHashes.find((fileHash) => {
+        const hash = mainStore.fileHashes.find((fileHash) => {
             return fileHash.id === uploadId;
         });
         if(!hash) {
-            this.updateAndProcessChunks(uploadId, null, null);
-        }else{
-            this.allChunksUploaded(uploadId, parentId, parentKind, name, label, fileId, hash.hash, projectId);
+            const msg = `Waiting for the file ${name} to process, this may take a while...`;
+            const isUpload = true;
+            const retryArgs = [uploadId, parentId, parentKind, name, label, fileId, projectId];
+            mainStore.tryAsyncAgain(mainStore.checkForHash, retryArgs, 90000, uploadId, msg, isUpload)
+        } else {
+            mainStore.allChunksUploaded(uploadId, parentId, parentKind, name, label, fileId, hash.hash, projectId);
         }
     }
 
