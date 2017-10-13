@@ -1,5 +1,5 @@
 import React from 'react';
-import { observable, computed, action, map } from 'mobx';
+import { observable, action } from 'mobx';
 import transportLayer from '../transportLayer';
 import authStore from '../stores/authStore';
 import mainStore from '../stores/mainStore';
@@ -12,11 +12,13 @@ export class AgentStore {
     @observable agentApiToken
     @observable agentKey
     @observable agents
+    @observable userKey
 
     constructor() {
         this.agentApiToken = {};
         this.agentKey = {};
         this.agents = [];
+        this.userKey = {};
 
         this.transportLayer = transportLayer;
     }
@@ -48,45 +50,49 @@ export class AgentStore {
 
     @action getAgentApiToken(id) {
         mainStore.toggleLoading();
-        if(authStore.userKey.key === undefined) {
-            this.transportLayer.createUserKey()
-                .then(this.checkResponse)
-                .then(response => response.json())
-                .then((json) => {
-                    authStore.userKey = json;
-                    this.getAgentApiToken(id);
-                })
-                .catch((ex) => mainStore.handleErrors(ex));
-        } else {
-            let userKey = this.transportLayer.getUserKey()
-                .then(this.checkResponse)
-                .then(response => response.json())
-                .then((json) => authStore.userKey = json)
-                .catch((ex) => {
-                    ex.response.status !== 404 ? mainStore.handleErrors(ex) : authStore.createUserKey()
-                });
-            let agentKey = this.transportLayer.getAgentKey(id)
-                .then(this.checkResponse)
-                .then(response => response.json())
-                .then((json) => { return agentStore.agentKey = json })
-                .catch(ex => mainStore.handleErrors(ex));
-            Promise.all([userKey, agentKey]).then((values) => {
-                userKey = values[0].key;
-                agentKey = values[1].key;
-                agentStore.transportLayer.getAgentApiToken(agentKey, userKey)
-                    .then(agentStore.checkResponse)
+        this.transportLayer.getUserKey()
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => {
+                this.userKey = json;
+                authStore.userKey = json;
+                this.transportLayer.getAgentKey(id)
+                    .then(this.checkResponse)
                     .then(response => response.json())
                     .then((json) => {
-                        agentStore.agentApiToken = json;
-                        mainStore.toggleModals('agentCred');
-                        if(mainStore.loading) mainStore.toggleLoading();
+                        this.agentKey = json;
+                        agentStore.transportLayer.getAgentApiToken(this.agentKey.key, this.userKey.key)
+                            .then(agentStore.checkResponse)
+                            .then(response => response.json())
+                            .then((json) => {
+                                agentStore.agentApiToken = json;
+                                mainStore.toggleModals('agentCred');
+                                if (mainStore.loading) mainStore.toggleLoading();
+                            })
+                            .catch((ex) => {
+                                mainStore.addToast('Failed to generate an API token');
+                                mainStore.handleErrors(ex);
+                            })
                     })
-                    .catch((ex) => {
-                        mainStore.addToast('Failed to generate an API token');
-                        mainStore.handleErrors(ex);
+                    .catch(ex => mainStore.handleErrors(ex));
+            })
+            .catch((ex) => {
+                if (ex.response.status !== 404) {
+                    mainStore.handleErrors(ex)
+                } else {
+                    this.transportLayer.createUserKey()
+                        .then(mainStore.checkResponse)
+                        .then(response => response.json())
+                        .then((json) => {
+                            this.userKey = json;
+                            authStore.userKey = json;
+                            agentStore.getAgentApiToken(id)
+                        }).catch((ex) => {
+                        mainStore.addToast('Failed to create new User key');
+                        mainStore.handleErrors(ex)
                     })
+                }
             });
-        }
     }
 
     @action loadAgents() {
