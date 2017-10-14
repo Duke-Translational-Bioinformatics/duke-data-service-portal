@@ -764,6 +764,7 @@ export class MainStore {
                         this.loading = false;
                         let uploadObj = json;
                         if (!uploadObj.id && !uploadObj.error) throw "no upload was created";
+                        details.uploadId = uploadObj.id;
                         mainStore.uploads.set(uploadObj.id, details);
                         mainStore.hashFile(mainStore.uploads.get(uploadObj.id), uploadObj.id);
                         mainStore.updateAndProcessChunks(uploadObj.id, null, null);
@@ -795,102 +796,27 @@ export class MainStore {
         fileReader.readAsArrayBuffer(slicedFile);
     }
 
-    // File Hashing
     @action hashFile(file, id) {
-        function postHash(hash) {
-            mainStore.fileHashes.push(hash);
-        }
         if (file.blob.size <= 5000000) {
             function calculateMd5(blob, id) {
-                let reader = new FileReader();
+                const md5 = new SparkMD5.ArrayBuffer();
+                const reader = new FileReader();
                 reader.readAsArrayBuffer(blob);
                 reader.onloadend = function () {
-                    let wordArray = CryptoJS.lib.WordArray.create(reader.result),
-                        hash = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
-                    postHash({id: id, hash: hash});
+                    md5.append(reader.result);
+                    const hash = md5.end();
+                    mainStore.fileHashes.push({id: id, hash: hash});
                 };
             }
             calculateMd5(file.blob, id);
         } else {
-            function series(tasks, done) {
-                if (!tasks || tasks.length === 0) {
-                    done();
-                } else {
-                    tasks[0](function () {
-                        series(tasks.slice(1), done);
-                    });
+            const hashWorker = new Worker('lib/fileHashingWorker.js');
+            hashWorker.postMessage(file);
+            hashWorker.onmessage = (e) => {
+                if(e.data.complete) {
+                    mainStore.fileHashes.push({id: e.data.id, hash: e.data.hash});
                 }
-            }
-            function webWorkerOnMessage(e) {
-                function arrayBufferToWordArray(ab) {
-                    let i8a = new Uint8Array(ab);
-                    let a = [];
-                    for (let i = 0; i < i8a.length; i += 4) {
-                        a.push(i8a[i] << 24 | i8a[i + 1] << 16 | i8a[i + 2] << 8 | i8a[i + 3]);
-                    }
-                    return CryptoJS.lib.WordArray.create(a, i8a.length);
-                }
-                if (e.data.type === "create") {
-                    md5 = CryptoJS.algo.MD5.create();
-                    postMessage({type: "create"});
-                } else if (e.data.type === "update") {
-                    md5.update(arrayBufferToWordArray(e.data.chunk));
-                    postMessage({type: "update"});
-                } else if (e.data.type === "finish") {
-                    postMessage({type: "finish", id: e.data.id, hash: "" + md5.finalize()});
-                }
-            }
-            // URL.createObjectURL
-            window.URL = window.URL || window.webkitURL;
-            // "Server response"
-            let assetPath = location.protocol + '//' + location.host + '/lib/md5.js';
-            let response =
-                "importScripts(" + "'" + assetPath + "'" + ");" +
-                "var md5, cryptoType;" +
-                "self.onmessage = " + webWorkerOnMessage.toString();
-
-            let blob;
-            try {
-                blob = new Blob([response], {type: 'application/javascript'});
-            } catch (e) { // Backwards-compatibility
-                window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
-                blob = new BlobBuilder();
-                blob.append(response);
-                blob = blob.getBlob();
-            }
-            let worker = new Worker(URL.createObjectURL(blob));
-            let chunksize = ChunkSize.BYTES_PER_HASHING_CHUNK;
-            let f = file.blob; // FileList object
-            let chunks = Math.ceil(f.size / chunksize),
-                chunkTasks = [];
-            worker.onmessage = function (e) {
-                // create callback
-                for (let j = 0; j < chunks; j++) {
-                    (function (j, f) {
-                        chunkTasks.push(function (next) {
-                            let blob = f.slice(j * chunksize, Math.min((j + 1) * chunksize, f.size));
-                            let reader = new FileReader();
-                            reader.onload = function (e) {
-                                let chunk = e.target.result;
-                                worker.onmessage = function (e) {
-                                    // update callback
-                                    next();
-                                };
-                                worker.postMessage({type: "update", chunk: chunk});
-                            };
-                            reader.readAsArrayBuffer(blob);
-                        });
-                    })(j, f);
-                }
-                series(chunkTasks, function () {
-                    worker.onmessage = function (e) {
-                        // finish callback
-                        postHash({id: e.data.id, hash: e.data.hash});
-                    };
-                    worker.postMessage({type: "finish", id: id});
-                });
             };
-            worker.postMessage({type: "create"});
         }
     }
 
