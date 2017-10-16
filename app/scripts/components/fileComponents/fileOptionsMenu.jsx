@@ -77,11 +77,16 @@ class FileOptionsMenu extends React.Component {
     }
 
     toggleProv(id, versionId) {
+        const { currentGraph } = provenanceStore;
         let projId = this.props.router.location.pathname.includes('project') ? this.props.params.id : mainStore.entityObj.ancestors[0].id;
         mainStore.searchFiles('', projId);
-        provenanceStore.getWasGeneratedByNode(versionId);
+        if(currentGraph === null || (currentGraph !== null && currentGraph.id !== this.props.params.id)) {
+            provenanceStore.getWasGeneratedByNode(versionId);
+        } else if (currentGraph !== null && currentGraph.id === this.props.params.id) {
+            provenanceStore.shouldRenderGraph();
+        }
         provenanceStore.toggleProvView();
-        this.props.router.push('/file/'+id);
+        !this.props.router.location.pathname.includes(id) ? this.props.router.push('/file/'+id) : null;
     }
 
     openTagManager(id) {

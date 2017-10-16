@@ -25,6 +25,7 @@ describe('Main Store', () => {
     const TEMPLATE_NAME = 'TEMPLATE_1';
     const TEMPLATE_DESCRIPTION = 'TEMPLATE 1 DESCRIPTION';
     const TEMPLATE_LABEL = 'TEMPLATE 1';
+    const TEMPLATE_PROPERTY = 'TEMPLATE PROPERTY 1';
     const TEST_USER_NAME = 'TEST USER NAME';
     const TEST_UID = 'TEST01';
     const USER_ROLE = 'USER_ROLE';
@@ -262,9 +263,9 @@ describe('Main Store', () => {
 
     it('@action uploadError - sets an array of failed uploads that can be retried', () => {
         mainStore.uploads = observable.map();
-        mainStore.uploads.set(UPLOAD_ID);
+        mainStore.uploads.set(UPLOAD_ID, {name: 'FILE_NAME', projectId: '123'});
         expect(mainStore.uploads.has(UPLOAD_ID)).toBe(true);
-        mainStore.uploadError(UPLOAD_ID, fake.file_json.name, PROJECT_ID);
+        mainStore.uploadError(UPLOAD_ID);
         expect(mainStore.failedUploads.length).toBe(1);
         expect(mainStore.failedUploads[0].id).toBe(UPLOAD_ID);
         expect(mainStore.uploads.has(UPLOAD_ID)).toBe(false);
@@ -273,9 +274,9 @@ describe('Main Store', () => {
 
     it('@action removeFailedUploads - removes failed uploads', () => {
         mainStore.uploads = observable.map();
-        mainStore.uploads.set(UPLOAD_ID);
+        mainStore.uploads.set(UPLOAD_ID, {name: 'FILE_NAME', projectId: '123'});
         expect(mainStore.uploads.has(UPLOAD_ID)).toBe(true);
-        mainStore.uploadError(UPLOAD_ID, fake.file_json.name, PROJECT_ID);
+        mainStore.uploadError(UPLOAD_ID);
         expect(mainStore.failedUploads.length).toBe(1);
         mainStore.removeFailedUploads();
         expect(mainStore.failedUploads.length).toBe(0);
@@ -491,7 +492,7 @@ describe('Main Store', () => {
 
     it('@action createMetadataObjectSuccess - creates a new metadata object for a file', () => {
         mainStore.objectMetadata = [];
-        mainStore.createMetadataObjectSuccess(FILE_ID, DDS_FILE, fake.metadata_object_json);
+        mainStore.createMetadataObjectSuccess(fake.metadata_object_json);
         expect(mainStore.drawerLoading).toBe(false);
         expect(mainStore.showBatchOps).toBe(false);
         expect(mainStore.showTemplateDetails).toBe(false);
@@ -963,6 +964,18 @@ describe('Main Store', () => {
             expect(mainStore.objectMetadata[0]).toHaveProperty('properties');
             expect(mainStore.metaObjProps[0][0].key).toBe('TEST_TEMPLATE_PROPERTY_KEY_1');
             expect(mainStore.metaObjProps[0][0].value).toBe('TEST_TEMPLATE_PROPERTY_VALUE');
+        });
+    });
+
+    it('@action deleteObjectMetadata - should delete a metadata object for file', () => {
+        mainStore.objectMetadata = fake.object_metadata_json.results;
+        expect(mainStore.objectMetadata.length).toBe(1);
+        transportLayer.deleteObjectMetadata = jest.fn(() => respondOK());
+        mainStore.deleteObjectMetadata(fake.file_json, fake.object_metadata_json.results[0].template);
+        return sleep(1).then(() => {
+            expect(transportLayer.deleteObjectMetadata).toHaveBeenCalledTimes(1);
+            expect(transportLayer.deleteObjectMetadata).toHaveBeenCalledWith(fake.file_json, fake.object_metadata_json.results[0].template.id);
+            expect(mainStore.objectMetadata.length).toBe(0);
         });
     });
 

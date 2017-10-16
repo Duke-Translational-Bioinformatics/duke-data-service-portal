@@ -21,12 +21,9 @@ import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColu
 class ListItems extends React.Component {
 
     render() {
-        const { allItemsSelected, filesChecked, foldersChecked, isSafari, listItems, loading, projPermissions, responseHeaders, screenSize, tableBodyRenderKey, uploads } = mainStore;
+        const { allItemsSelected, filesChecked, foldersChecked, isSafari, listItems, loading, nextPage, projPermissions, screenSize, tableBodyRenderKey, totalItems, uploads } = mainStore;
         let showBatchOps = !!(filesChecked.length || foldersChecked.length);
         let menuWidth = screenSize.width > 1230 ? 35 : 28;
-        let headers = responseHeaders && responseHeaders !== null ? responseHeaders : null;
-        let nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
-        let totalChildren = headers !== null && !!headers['x-total'] ? headers['x-total'][0] : null;
         let newFolderModal = null;
         let uploadManager = null;
         let showChecks = null;
@@ -109,7 +106,7 @@ class ListItems extends React.Component {
                             {children}
                         </TableBody>
                     </Table>}
-                    {listItems.length < totalChildren && totalChildren > 25 &&
+                    {listItems.length < totalItems && totalItems > 25 &&
                     <div className="mdl-cell mdl-cell--12-col">
                         <RaisedButton
                             label={loading ? "Loading..." : "Load More"}

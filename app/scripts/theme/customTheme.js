@@ -30,6 +30,7 @@ export const Color = {
     pink: '#EC407A',
     ltPink: '#F58C8C',
     green: '#66BB6A',
+    ltGreen: '#C8E6C9',
     red: '#F44336',
     ltRed: '#EF5350',
     ltGrey: '#BDBDBD',
@@ -37,3 +38,4 @@ export const Color = {
     dkGrey2: '#616161',
     white: '#FFF',
 };
+

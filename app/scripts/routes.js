@@ -1,7 +1,5 @@
 import React from 'react';
 import { Router, Route, IndexRoute, Redirect, hashHistory } from 'react-router';
-import authStore from './stores/authStore';
-import mainStore from './stores/mainStore';
 import App from './pages/app.jsx';
 import Login from './pages/login.jsx';
 import Home from './pages/home.jsx';
@@ -12,6 +10,7 @@ import Project from './pages/project.jsx';
 import Folder from './pages/folder.jsx';
 import File from './pages/file.jsx';
 import FileManager from './pages/fileManager.jsx';
+import Activity from './pages/activity.jsx';
 import Agents from './pages/agents.jsx';
 import Agent from './pages/agent.jsx';
 import Results from './pages/results.jsx';
@@ -31,6 +30,7 @@ const routes = (
             <Route path="folder/:id" component={ Folder } />
             <Route path="file/:id" component={ File } />
             <Route path="file_manager" component={ FileManager } />
+            <Route path="activity/:id" component={ Activity } />
             <Route path="agents" component={ Agents } />
             <Route path="agent/:id" component={ Agent } />
             <Route path="results" component={ Results } />
