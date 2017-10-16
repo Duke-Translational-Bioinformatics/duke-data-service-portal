@@ -16,6 +16,7 @@ export class MainStore {
     @observable allItemsSelected
     @observable autoCompleteLoading
     @observable audit
+    @observable counter
     @observable currentUser
     @observable currentLocation
     @observable destination
@@ -102,8 +103,8 @@ export class MainStore {
         this.allItemsSelected = false;
         this.autoCompleteLoading = false;
         this.audit = {};
-        this.counter = 0;
         this.currentLocation = null;
+        this.counter = observable.map();
         this.currentUser = {};
         this.device = {};
         this.destination = null;
@@ -208,17 +209,33 @@ export class MainStore {
         this.expandUploadProgressCard = !this.expandUploadProgressCard;
     }
 
-    @action tryAsyncAgain(func, args) {
-        mainStore.counter++;
-        mainStore.loading = true;
-        if(mainStore.counter < StatusEnum.MAX_RETRY) {
-            mainStore.addToast(`The resource you're requesting is temporarily unavailable. Retrying...`);
-            setTimeout(() => func(...args),3000)
+    tryAsyncAgain(func, args, delay, counterId, message, isUpload) {
+        const sleep = (ms) => {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        };
+        if(!this.counter.has(counterId)) {
+            this.counter.set(counterId, 0);
         } else {
-            mainStore.counter = 0;
-            mainStore.addToast(`Failed to get resource. Please try again in a few minutes`);
+            let c = this.counter.get(counterId);
+            c++;
+            this.counter.set(counterId, c);
+        }
+        if(this.counter.get(counterId) < StatusEnum.MAX_RETRY) {
+            mainStore.addToast(`${message}. Retrying in ${BaseUtils.msToMinSecs(delay)}...`);
+            const tryAgain = async () => {
+                await sleep(delay);
+                func(...args);
+            };
+            tryAgain();
+        } else {
+            this.counter.delete(counterId);
+            mainStore.addToast(`Failed to complete operation. Please try again in a few minutes`);
             mainStore.loading = false;
-            if(location.href.includes('file') || location.href.includes('folder')) window.location.href = window.location.protocol + '//' + window.location.host + '/#/home';
+            if(!isUpload && (location.href.includes('file') || location.href.includes('folder'))) {
+                window.location.href = window.location.protocol + '//' + window.location.host + '/#/home';
+            } else {
+                mainStore.uploadError(counterId)
+            }
         }
     }
 
@@ -560,7 +577,13 @@ export class MainStore {
                     if (mainStore.projPermissions === null && json.kind === 'dds-file-version') mainStore.getUser(json.file.project.id);
                     mainStore.loading = false;
                 } else {
-                    json.code === 'resource_not_consistent' ? mainStore.tryAsyncAgain(mainStore.getEntity, retryArgs) : mainStore.handleErrors(json);
+                    if(json.code === 'resource_not_consistent') {
+                        this.loading = false;
+                        const msg = "The resource you're requesting is temporarily unavailable...";
+                        mainStore.tryAsyncAgain(mainStore.getEntity, retryArgs, 5000, id, msg, false )
+                    } else {
+                        mainStore.handleErrors(json);
+                    }
                 }
             }).catch(ex => mainStore.handleErrors(ex))
     }
@@ -845,10 +868,9 @@ export class MainStore {
             fileName = blob.name,
             contentType = blob.type,
             slicedFile = null,
-            BYTES_PER_CHUNK, NUMBER_OF_CHUNKS, SIZE, start, end;
+            BYTES_PER_CHUNK, SIZE, start, end;
             SIZE = blob.size;
-            NUMBER_OF_CHUNKS = Math.ceil(SIZE / ChunkSize.BYTES_PER_CHUNK);
-            BYTES_PER_CHUNK = Math.ceil(SIZE / NUMBER_OF_CHUNKS);
+            BYTES_PER_CHUNK = ChunkSize.BYTES_PER_CHUNK;
             start = 0;
             end = BYTES_PER_CHUNK;
 
@@ -869,7 +891,7 @@ export class MainStore {
             chunks: []
         };
         // describe chunk details
-        while (start < SIZE) {
+        while (start <= SIZE) {
             slicedFile = blob.slice(start, end);
             details.chunks.push({
                 number: chunkNum,
@@ -896,6 +918,7 @@ export class MainStore {
                         this.loading = false;
                         let uploadObj = json;
                         if (!uploadObj.id && !uploadObj.error) throw "no upload was created";
+                        details.uploadId = uploadObj.id;
                         mainStore.uploads.set(uploadObj.id, details);
                         mainStore.totalUploads.inProcess++;
                         mainStore.hashFile(mainStore.uploads.get(uploadObj.id), uploadObj.id);
@@ -909,7 +932,13 @@ export class MainStore {
                             }
                         };
                     } else {
-                        json.code === 'resource_not_consistent' ? mainStore.tryAsyncAgain(mainStore.startUpload, retryArgs) : mainStore.handleErrors(json);
+                        if(json.code === 'resource_not_consistent') {
+                            this.loading = false;
+                            const msg = "The resource you're requesting is temporarily unavailable...";
+                            mainStore.tryAsyncAgain(mainStore.startUpload, retryArgs, 5000, fileId, msg, false)
+                        } else {
+                            mainStore.handleErrors(json);
+                        }
                     }
                 })
                 .catch(ex => mainStore.handleErrors(ex))
@@ -922,102 +951,31 @@ export class MainStore {
         fileReader.readAsArrayBuffer(slicedFile);
     }
 
-    // File Hashing
     @action hashFile(file, id) {
-        function postHash(hash) {
-            mainStore.fileHashes.push(hash);
-        }
         if (file.blob.size <= 5000000) {
             function calculateMd5(blob, id) {
-                let reader = new FileReader();
+                const md5 = new SparkMD5.ArrayBuffer();
+                const reader = new FileReader();
                 reader.readAsArrayBuffer(blob);
                 reader.onloadend = function () {
-                    let wordArray = CryptoJS.lib.WordArray.create(reader.result),
-                        hash = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
-                    postHash({id: id, hash: hash});
+                    md5.append(reader.result);
+                    const hash = md5.end();
+                    mainStore.fileHashes.push({id: id, hash: hash});
                 };
             }
             calculateMd5(file.blob, id);
         } else {
-            function series(tasks, done) {
-                if (!tasks || tasks.length === 0) {
-                    done();
-                } else {
-                    tasks[0](function () {
-                        series(tasks.slice(1), done);
-                    });
+            const hashWorker = new Worker('lib/fileHashingWorker.js');
+            hashWorker.postMessage(file);
+            hashWorker.onmessage = (e) => {
+                if(e.data.complete) {
+                    mainStore.fileHashes.push({id: e.data.id, hash: e.data.hash});
                 }
-            }
-            function webWorkerOnMessage(e) {
-                function arrayBufferToWordArray(ab) {
-                    let i8a = new Uint8Array(ab);
-                    let a = [];
-                    for (let i = 0; i < i8a.length; i += 4) {
-                        a.push(i8a[i] << 24 | i8a[i + 1] << 16 | i8a[i + 2] << 8 | i8a[i + 3]);
-                    }
-                    return CryptoJS.lib.WordArray.create(a, i8a.length);
+                if(e.data.error) {
+                    console.log(e.msg);
+                    mainStore.uploadError(file.uploadId)
                 }
-                if (e.data.type === "create") {
-                    md5 = CryptoJS.algo.MD5.create();
-                    postMessage({type: "create"});
-                } else if (e.data.type === "update") {
-                    md5.update(arrayBufferToWordArray(e.data.chunk));
-                    postMessage({type: "update"});
-                } else if (e.data.type === "finish") {
-                    postMessage({type: "finish", id: e.data.id, hash: "" + md5.finalize()});
-                }
-            }
-            // URL.createObjectURL
-            window.URL = window.URL || window.webkitURL;
-            // "Server response"
-            let assetPath = location.protocol + '//' + location.host + '/lib/md5.js';
-            let response =
-                "importScripts(" + "'" + assetPath + "'" + ");" +
-                "var md5, cryptoType;" +
-                "self.onmessage = " + webWorkerOnMessage.toString();
-
-            let blob;
-            try {
-                blob = new Blob([response], {type: 'application/javascript'});
-            } catch (e) { // Backwards-compatibility
-                window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
-                blob = new BlobBuilder();
-                blob.append(response);
-                blob = blob.getBlob();
-            }
-            let worker = new Worker(URL.createObjectURL(blob));
-            let chunksize = ChunkSize.BYTES_PER_HASHING_CHUNK;
-            let f = file.blob; // FileList object
-            let chunks = Math.ceil(f.size / chunksize),
-                chunkTasks = [];
-            worker.onmessage = function (e) {
-                // create callback
-                for (let j = 0; j < chunks; j++) {
-                    (function (j, f) {
-                        chunkTasks.push(function (next) {
-                            let blob = f.slice(j * chunksize, Math.min((j + 1) * chunksize, f.size));
-                            let reader = new FileReader();
-                            reader.onload = function (e) {
-                                let chunk = e.target.result;
-                                worker.onmessage = function (e) {
-                                    // update callback
-                                    next();
-                                };
-                                worker.postMessage({type: "update", chunk: chunk});
-                            };
-                            reader.readAsArrayBuffer(blob);
-                        });
-                    })(j, f);
-                }
-                series(chunkTasks, function () {
-                    worker.onmessage = function (e) {
-                        // finish callback
-                        postHash({id: e.data.id, hash: e.data.hash});
-                    };
-                    worker.postMessage({type: "finish", id: id});
-                });
             };
-            worker.postMessage({type: "create"});
         }
     }
 
@@ -1114,21 +1072,20 @@ export class MainStore {
     }
 
     getChunkUrl(uploadId, chunkBlob, chunk) {
-        let chunkNum = chunk.number;
-        let chunkUpdates = chunk.chunkUpdates;
+        const chunkNum = chunk.number;
+        const chunkUpdates = chunk.chunkUpdates;
+        const md5 = new SparkMD5.ArrayBuffer();
         const fileReader = new FileReader();
-        fileReader.onload = function (event) {
-            let arrayBuffer = event.target.result;
-            let wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
-            let md5crc = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
-            let algorithm = 'MD5';
-            mainStore.transportLayer.getChunkUrl(uploadId, chunkNum, chunkBlob.size, md5crc, algorithm)
+        fileReader.onload = function (e) {
+            md5.append(e.target.result);
+            const hash = md5.end();
+            const algorithm = 'MD5';
+            mainStore.transportLayer.getChunkUrl(uploadId, chunkNum, chunkBlob.size, hash, algorithm)
                 .then(this.checkResponse)
                 .then(response => response.json())
                 .then((json) => {
-                    let chunkObj = json;
+                    const chunkObj = json;
                     if (chunkObj && chunkObj.url && chunkObj.host) {
-                        // upload chunks
                         mainStore.uploadChunk(uploadId, chunkObj.host + chunkObj.url, chunkBlob, chunkNum, chunkUpdates)
                     } else {
                         throw 'Unexpected response';
@@ -1217,13 +1174,16 @@ export class MainStore {
     }
 
     checkForHash(uploadId, parentId, parentKind, name, label, fileId, projectId) {
-        let hash = this.fileHashes.find((fileHash) => {
+        const hash = mainStore.fileHashes.find((fileHash) => {
             return fileHash.id === uploadId;
         });
         if(!hash) {
-            this.updateAndProcessChunks(uploadId, null, null);
-        }else{
-            this.allChunksUploaded(uploadId, parentId, parentKind, name, label, fileId, hash.hash, projectId);
+            const msg = `Waiting for the file ${name} to process, this may take a while...`;
+            const isUpload = true;
+            const retryArgs = [uploadId, parentId, parentKind, name, label, fileId, projectId];
+            mainStore.tryAsyncAgain(mainStore.checkForHash, retryArgs, 90000, uploadId, msg, isUpload)
+        } else {
+            mainStore.allChunksUploaded(uploadId, parentId, parentKind, name, label, fileId, hash.hash, projectId);
         }
     }
 
