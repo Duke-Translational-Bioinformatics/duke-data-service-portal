@@ -21,7 +21,7 @@ function calcMD5(f, id) {
         }
     };
     fr.onerror = function(e) {
-        postMessage({id: id, hash: e.message, complete: false});
+        postMessage({id: id, msg: e.message, error: true});
     };
     fr.readAsArrayBuffer(blobSlice.call(f,currentChunk + chunkSize, chunkSize));
 }

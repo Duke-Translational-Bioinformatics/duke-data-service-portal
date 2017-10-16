@@ -816,6 +816,10 @@ export class MainStore {
                 if(e.data.complete) {
                     mainStore.fileHashes.push({id: e.data.id, hash: e.data.hash});
                 }
+                if(e.data.error) {
+                    console.log(e.msg);
+                    mainStore.uploadError(file.uploadId)
+                }
             };
         }
     }
@@ -913,21 +917,20 @@ export class MainStore {
     }
 
     getChunkUrl(uploadId, chunkBlob, chunk) {
-        let chunkNum = chunk.number;
-        let chunkUpdates = chunk.chunkUpdates;
+        const chunkNum = chunk.number;
+        const chunkUpdates = chunk.chunkUpdates;
+        const md5 = new SparkMD5.ArrayBuffer();
         const fileReader = new FileReader();
-        fileReader.onload = function (event) {
-            var arrayBuffer = event.target.result;
-            var wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
-            var md5crc = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
-            var algorithm = 'MD5';
-            mainStore.transportLayer.getChunkUrl(uploadId, chunkNum, chunkBlob.size, md5crc, algorithm)
+        fileReader.onload = function (e) {
+            md5.append(e.target.result);
+            const hash = md5.end();
+            const algorithm = 'MD5';
+            mainStore.transportLayer.getChunkUrl(uploadId, chunkNum, chunkBlob.size, hash, algorithm)
                 .then(this.checkResponse)
                 .then(response => response.json())
                 .then((json) => {
-                    let chunkObj = json;
+                    const chunkObj = json;
                     if (chunkObj && chunkObj.url && chunkObj.host) {
-                        // upload chunks
                         mainStore.uploadChunk(uploadId, chunkObj.host + chunkObj.url, chunkBlob, chunkNum, chunkUpdates)
                     } else {
                         throw 'Unexpected response';
