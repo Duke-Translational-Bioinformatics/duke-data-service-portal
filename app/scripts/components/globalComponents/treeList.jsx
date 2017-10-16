@@ -53,16 +53,7 @@ class TreeList extends Component {
     }
     
     handleTouchTap(item) {
-        let path = this.pathFinder(item.kind)
-        mainStore.selectItem(item.id, path);
-    }
-    
-    pathFinder(kind) {
-        let kinds = {
-            'dds-project': Path.PROJECT,
-            'dds-folder': Path.FOLDER
-        }
-        return (kinds[kind])
+        mainStore.selectItem(item.id);
     }
     
     iconPicker(kind) {

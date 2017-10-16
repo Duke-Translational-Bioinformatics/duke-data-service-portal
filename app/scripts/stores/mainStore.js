@@ -187,6 +187,14 @@ export class MainStore {
     checkResponse(response) {
         return checkStatus(response, authStore);
     }
+    
+    pathFinder(kind) {
+        let kinds = {
+            'dds-project': Path.PROJECT,
+            'dds-folder': Path.FOLDER
+        }
+        return (kinds[kind])
+    }
 
     @action setDownloadedItems() {
         let projectIds = []
@@ -197,10 +205,11 @@ export class MainStore {
         this.downloadedItems.set('projectIds', projectIds);
     }
   
-    @action getTreeListChildren(parent, path) {
+    @action getTreeListChildren(parent) {
         this.loading = true;
         this.downloadedItems.set('loading': true)
         let parentId = parent.id
+        let path = this.pathFinder(parent.kind)
         let page = 1
         this.transportLayer.getChildren(parentId, path, page)
             .then(this.checkResponse)
@@ -249,12 +258,12 @@ export class MainStore {
         this.downloadedItems.delete('loading')
     }
 
-    @action selectItem(itemId, path) {
+    @action selectItem(itemId) {
         let item = this.downloadedItems.get(itemId);
         let childrenIds = item.childrenIds
         if (item) {
-            if (!childrenIds && path) {
-                this.getTreeListChildren(item, path)
+            if (!childrenIds) {
+                this.getTreeListChildren(item)
             } else if (childrenIds.length > 0){
                 this.downloadedItems.set('loading': true)
                 let newListItems = childrenIds.map((id) => {return(this.downloadedItems.get(id))})
@@ -264,6 +273,7 @@ export class MainStore {
                 this.downloadedItems.delete('loading')
             }
             this.selectedItem = item.id;
+            this.project = item.kind === 'dds-project' ? item : this.downloadedItems.get(item.project.id);
         }
     }
     

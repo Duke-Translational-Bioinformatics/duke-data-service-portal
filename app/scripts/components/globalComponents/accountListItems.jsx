@@ -43,40 +43,14 @@ class AccountListItems extends React.Component {
             showChecks = (projectRole !== 'Project Viewer' && projectRole !== 'File Uploader');
         }
         let children = listItems && listItems.length ? listItems.map((child) => {
-            let icon = child.kind === Kind.DDS_FOLDER ? 'folder' : 'description';
-            let itemsChecked = child.kind === Kind.DDS_FOLDER ? foldersChecked : filesChecked;
-            const route = child.kind === Kind.DDS_FOLDER ? UrlGen.routes.folder(child.id) : UrlGen.routes.file(child.id);
-            let fileOptionsMenu = showChecks && <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FILE, true)}/>;
-            let folderOptionsMenu = showChecks && <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FOLDER, true)}/>;
             return (
                 <TableRow key={child.id} selectable={false}>
-                    <TableRowColumn>
-                        {showChecks && <Checkbox
-                            style={checkboxStyle}
-                            onCheck={()=>this.check(child.id, child.kind)}
-                            checked={itemsChecked.includes(child.id)}
-                        />}
-                        <div onClick={() => mainStore.selectItem(child.id, this.pathFinder(child.kind))}>
-                            <div style={styles.linkColor}>
-                                <FontIcon className="material-icons" style={styles.icon}>{icon}</FontIcon>
-                                {child.name.length > 82 ? child.name.substring(0, 82) + '...' : child.name}
-                                {child.kind === Kind.DDS_FILE && ' (version '+ child.current_version.version+')'}
-                            </div>
-                        </div>
-                    </TableRowColumn>
-                    {screenSize && screenSize.width >= 680 && <TableRowColumn onTouchTap={()=>this.check(child.id, child.kind)}>
-                        <span>{child.audit.last_updated_on !== null ? BaseUtils.formatDate(child.audit.last_updated_on)+' by '+child.audit.last_updated_by.full_name : BaseUtils.formatDate(child.audit.created_on)+' by '+child.audit.created_by.full_name}</span>
-                    </TableRowColumn>}
-                    {screenSize && screenSize.width >= 840 && <TableRowColumn onTouchTap={()=>this.check(child.id, child.kind)} style={{width: 100}}>
-                        {child.kind === Kind.DDS_FILE && child.current_version ? BaseUtils.bytesToSize(child.current_version.upload.size) : '---'}
-                    </TableRowColumn>}
-                    <TableRowColumn style={{textAlign: 'right', width: menuWidth}}>
-                        <div onClick={(e) => {e.stopPropagation()}}>
-                            {child.kind === Kind.DDS_FILE ? fileOptionsMenu : folderOptionsMenu }
-                        </div>
-                    </TableRowColumn>
+                    {this.tableRowColumnCheckBox(child, showChecks, checkboxStyle)}
+                    {this.tableRowColumnName(child, showChecks)}
+                    {this.tableRowColumnLastUpdated(child, screenSize)}
+                    {this.tableRowColumnSize(child, screenSize)}
+                    {this.tableRowColumnMenu(child, showChecks, menuWidth)}
                 </TableRow>
-
             );
         }) : null;
 
@@ -94,12 +68,13 @@ class AccountListItems extends React.Component {
                     {listItems.length > 0 && <Table fixedHeader={true}>
                         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                             <TableRow>
-                                <TableHeaderColumn>{showChecks && <Checkbox
+                                <TableHeaderColumn style={styles.checkbox}>{showChecks && <Checkbox
                                     style={checkboxStyle}
                                     onCheck={()=> this.check(!allItemsSelected, null)}
                                     checked={allItemsSelected}
                                 />}
                                 </TableHeaderColumn>
+                                <TableHeaderColumn>Name</TableHeaderColumn>
                                 {screenSize && screenSize.width >= 680 ? <TableHeaderColumn>Last Updated</TableHeaderColumn> : null}
                                 {screenSize && screenSize.width >= 840 ? <TableHeaderColumn style={{width: 100}}>Size</TableHeaderColumn> : null}
                                 <TableHeaderColumn style={{textAlign: 'right', width: menuWidth}}></TableHeaderColumn>
@@ -124,13 +99,114 @@ class AccountListItems extends React.Component {
             </div>
         );
     }
-
-    pathFinder(kind) {
-        let kinds = {
-            'dds-project': Path.PROJECT,
-            'dds-folder': Path.FOLDER
+    
+    tableRowColumnCheckBox(child, showChecks, checkboxStyle) {
+        const { filesChecked, foldersChecked } = mainStore;
+        
+        let itemsChecked = child.kind === Kind.DDS_FOLDER ? foldersChecked : filesChecked;
+        if (child.kind === Kind.DDS_FILE) {
+            return (
+                <TableRowColumn style={styles.checkbox} onTouchTap={()=>this.check(child.id, child.kind)}>
+                    {showChecks && <Checkbox
+                        style={checkboxStyle}
+                        checked={itemsChecked.includes(child.id)}
+                    />}
+                </TableRowColumn>
+            )
+        } else {
+            return (
+                <TableRowColumn style={styles.checkbox} onTouchTap={() => mainStore.selectItem(child.id)}/>
+            )
         }
-        return (kinds[kind])
+    }
+
+    tableRowColumnName(child, showChecks) {        
+        let icon = child.kind === Kind.DDS_FOLDER ? 'folder' : 'description';
+        let nameInfo = <div style={styles.linkColor}>
+            <FontIcon className="material-icons" style={styles.icon}>{icon}</FontIcon>
+            {child.name.length > 82 ? child.name.substring(0, 82) + '...' : child.name}
+            {child.kind === Kind.DDS_FILE && ' (version '+ child.current_version.version+')'}
+        </div>
+        if (child.kind === Kind.DDS_FILE) {
+            return (
+                <TableRowColumn onTouchTap={()=>this.check(child.id, child.kind)}>
+                    {nameInfo}
+                </TableRowColumn>
+            )
+        } else {
+            return (
+                <TableRowColumn onTouchTap={() => mainStore.selectItem(child.id)}>
+                    {nameInfo}
+                </TableRowColumn>
+            )
+        }
+    }
+    
+    tableRowColumnLastUpdated(child, screenSize) {
+        if (screenSize && screenSize.width >= 680) {
+            let updatedInfo
+            if (child.audit.last_updated_on !== null) {
+                updatedInfo = BaseUtils.formatDate(child.audit.last_updated_on)+' by '+child.audit.last_updated_by.full_name
+            } else {
+                updatedInfo = BaseUtils.formatDate(child.audit.created_on)+' by '+child.audit.created_by.full_name
+            }
+            if (child.kind === Kind.DDS_FILE) {
+                return (
+                    <TableRowColumn onTouchTap={()=>this.check(child.id, child.kind)}>
+                      <span>{updatedInfo}</span>
+                    </TableRowColumn>
+                )
+            } else {
+                return (
+                    <TableRowColumn onTouchTap={() => mainStore.selectItem(child.id)}>
+                      <span>{updatedInfo}</span>
+                    </TableRowColumn>
+                )
+            }
+        }
+    }
+    
+    tableRowColumnSize(child, screenSize) {
+        if (screenSize && screenSize.width >= 840) {
+            let sizeInfo
+            if (child.kind === Kind.DDS_FILE && child.current_version) {
+                sizeInfo = BaseUtils.bytesToSize(child.current_version.upload.size)
+            } else {
+                sizeInfo = '---'
+            }
+            
+            if (child.kind === Kind.DDS_FILE) {
+                return (
+                    <TableRowColumn onTouchTap={()=>this.check(child.id, child.kind)} style={{width: 100}}>
+                        {sizeInfo}
+                    </TableRowColumn>
+                )
+            } else {
+                return (
+                    <TableRowColumn onTouchTap={() => mainStore.selectItem(child.id)} style={{width: 100}}>
+                        {sizeInfo}
+                    </TableRowColumn>
+                )
+            }
+        }
+    }
+    
+    tableRowColumnMenu(child, showChecks, menuWidth) {
+        if (showChecks) {
+            let optionsMenu
+            if (child.kind === Kind.DDS_FILE) {
+                optionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FILE, true)}/>
+            } else {
+                optionsMenu = <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FOLDER, true)}/>
+            }
+            return (
+                <TableRowColumn style={{textAlign: 'right', width: menuWidth}}>
+                    <div onClick={(e) => {e.stopPropagation()}}>
+                        {optionsMenu}
+                    </div>
+                </TableRowColumn>
+            )
+        }
     }
 
     check(id, kind) {
@@ -203,6 +279,9 @@ const styles = {
         fontWeight: 200,
         float: 'right',
         margin: '0px -8px 0px 18px'
+    },
+    checkbox: {
+        width: 5
     }
 };
 
