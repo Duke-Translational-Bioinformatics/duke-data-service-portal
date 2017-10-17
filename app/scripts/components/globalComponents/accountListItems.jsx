@@ -21,8 +21,8 @@ import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColu
 class AccountListItems extends React.Component {
 
     render() {
-        const { allItemsSelected, filesChecked, foldersChecked, isSafari, listItems, loading, projPermissions, projectRoles, responseHeaders, screenSize, tableBodyRenderKey, uploads, projects, project } = mainStore;
-        let showBatchOps = !!(filesChecked.length || foldersChecked.length);
+        const { allItemsSelected, filesChecked, isSafari, listItems, loading, projPermissions, projectRoles, responseHeaders, screenSize, tableBodyRenderKey, uploads, projects, project } = mainStore;
+        let showBatchOps = filesChecked.length > 0;
         let menuWidth = screenSize.width > 1230 ? 35 : 28;
         let headers = responseHeaders && responseHeaders !== null ? responseHeaders : null;
         let nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
@@ -101,15 +101,14 @@ class AccountListItems extends React.Component {
     }
     
     tableRowColumnCheckBox(child, showChecks, checkboxStyle) {
-        const { filesChecked, foldersChecked } = mainStore;
+        const { filesChecked } = mainStore;
         
-        let itemsChecked = child.kind === Kind.DDS_FOLDER ? foldersChecked : filesChecked;
         if (child.kind === Kind.DDS_FILE) {
             return (
                 <TableRowColumn style={styles.checkbox} onTouchTap={()=>this.check(child.id, child.kind)}>
                     {showChecks && <Checkbox
                         style={checkboxStyle}
-                        checked={itemsChecked.includes(child.id)}
+                        checked={filesChecked.includes(child.id)}
                     />}
                 </TableRowColumn>
             )
@@ -211,22 +210,17 @@ class AccountListItems extends React.Component {
 
     check(id, kind) {
         let files = mainStore.filesChecked;
-        let folders = mainStore.foldersChecked;
+        let folders = [];
         let allItemsSelected = mainStore.allItemsSelected;
-        // let prjPrm = mainStore.projPermissions;
         let projectRole = mainStore.projectRoles.get(mainStore.project.id);
         if(id === true || id === false) {
             files = [];
-            folders = [];
             mainStore.toggleAllItemsSelected(id);
             mainStore.listItems.forEach((i) => {
-                i.kind === Kind.DDS_FILE ? id === true && !files.includes(i.id) ? files.push(i.id) : files = [] : id === true && !folders.includes(i.id) ? folders.push(i.id) : folders = [];
+                i.kind === Kind.DDS_FILE && id === true && !files.includes(i.id) ? files.push(i.id) : null
             })
         } else if (kind !== null && kind === Kind.DDS_FILE) {
             !files.includes(id) ? files = [...files, id] : files = files.filter(f => f !== id);
-            allItemsSelected ? mainStore.toggleAllItemsSelected(!allItemsSelected) : null;
-        } else {
-            !folders.includes(id) ? folders = [...folders, id] : folders = folders.filter(f => f !== id);
             allItemsSelected ? mainStore.toggleAllItemsSelected(!allItemsSelected) : null;
         }
         if(projectRole !== 'Project Viewer' && projectRole !== 'File Uploader') mainStore.handleBatch(files, folders);
@@ -287,7 +281,6 @@ const styles = {
 
 AccountListItems.propTypes = {
     filesChecked: array,
-    foldersChecked: array,
     listItems: array,
     entityObj: object,
     projPermissions: object,
