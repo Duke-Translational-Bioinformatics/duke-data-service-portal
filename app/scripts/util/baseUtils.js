@@ -3,6 +3,13 @@ import moment from 'moment';
 import { Color } from '../theme/customTheme';
 
 let BaseUtils = {
+
+        msToMinSecs(millis) {
+            const minutes = Math.floor(millis / 60000);
+            const seconds = ((millis % 60000) / 1000).toFixed(0);
+            return (seconds === 60 ? (minutes+1) + " minute" : minutes + " minute" + (seconds < 10 ? "0 seconds" : " and ") + seconds + " seconds");
+        },
+
         bytesToSize(bytes){
             if (bytes == 0) return '0 Byte';
             var i = Math.floor(Math.log(bytes) / Math.log(1024));

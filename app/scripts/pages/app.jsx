@@ -104,7 +104,7 @@ class App extends React.Component {
         let dialogs, tsts = null;
         if (toasts) {
             tsts = toasts.map(obj => {
-                return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} open={true}/>
+                return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} open={true} bodyStyle={{height: 'auto'}}/>
             });
         }
         if (appConfig.apiToken && errorModals.length) {
@@ -267,7 +267,7 @@ class App extends React.Component {
     showToasts() {
         if (mainStore.toasts) {
             mainStore.toasts.map(obj => {
-                setTimeout(() => mainStore.removeToast(obj.ref), 2500);
+                setTimeout(() => mainStore.removeToast(obj.ref), 3500);
             });
         }
     }
