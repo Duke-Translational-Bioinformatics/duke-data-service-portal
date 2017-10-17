@@ -5,7 +5,7 @@ import authStore from '../stores/authStore';
 import provenanceStore from '../stores/provenanceStore';
 import transportLayer from '../transportLayer';
 import BaseUtils from '../util/baseUtils.js';
-import { StatusEnum } from '../enum';
+import { StatusEnum, ChunkSize } from '../enum';
 import { Kind, Path } from '../util/urlEnum';
 import { checkStatus, checkStatusAndConsistency } from '../util/fetchUtil';
 
@@ -16,6 +16,7 @@ export class MainStore {
     @observable allItemsSelected
     @observable autoCompleteLoading
     @observable audit
+    @observable counter
     @observable currentUser
     @observable currentLocation
     @observable destination
@@ -43,7 +44,7 @@ export class MainStore {
     @observable metaProps
     @observable metaTemplates
     @observable modal
-    @observable modalOpen
+    @observable phiModalOpen
     @observable moveItemList
     @observable moveItemLoading
     @observable moveToObj
@@ -75,6 +76,7 @@ export class MainStore {
     @observable searchValue
     @observable selectedEntity
     @observable showBackButton
+    @observable serviceOutageNoticeModalOpen
     @observable showFilters
     @observable showPropertyCreator
     @observable showTagCloud
@@ -105,8 +107,8 @@ export class MainStore {
         this.allItemsSelected = false;
         this.autoCompleteLoading = false;
         this.audit = {};
-        this.counter = 0;
         this.currentLocation = null;
+        this.counter = observable.map();
         this.currentUser = {};
         this.device = {};
         this.destination = null;
@@ -134,7 +136,7 @@ export class MainStore {
         this.metaProps = [];
         this.metaTemplates = [];
         this.modal = false;
-        this.modalOpen = cookie.load('modalOpen');
+        this.phiModalOpen = cookie.load('phiModalOpen');
         this.moveItemList = [];
         this.moveItemLoading = false;
         this.moveToObj = {};
@@ -165,6 +167,7 @@ export class MainStore {
         this.searchResultsProjects = [];
         this.searchResultsTags = [];
         this.searchValue = null;
+        this.serviceOutageNoticeModalOpen = cookie.load('serviceOutageNoticeModalOpen');
         this.selectedEntity = null;
         this.showBackButton = true;
         this.showFilters = false;
@@ -223,17 +226,33 @@ export class MainStore {
         this.expandUploadProgressCard = !this.expandUploadProgressCard;
     }
 
-    @action tryAsyncAgain(func, args) {
-        mainStore.counter++;
-        mainStore.loading = true;
-        if(mainStore.counter < StatusEnum.MAX_RETRY) {
-            mainStore.addToast(`The resource you're requesting is temporarily unavailable. Retrying...`);
-            setTimeout(() => func(...args),3000)
+    tryAsyncAgain(func, args, delay, counterId, message, isUpload) {
+        const sleep = (ms) => {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        };
+        if(!this.counter.has(counterId)) {
+            this.counter.set(counterId, 0);
         } else {
-            mainStore.counter = 0;
-            mainStore.addToast(`Failed to get resource. Please try again in a few minutes`);
+            let c = this.counter.get(counterId);
+            c++;
+            this.counter.set(counterId, c);
+        }
+        if(this.counter.get(counterId) < StatusEnum.MAX_RETRY) {
+            mainStore.addToast(`${message}. Retrying in ${BaseUtils.msToMinSecs(delay)}...`);
+            const tryAgain = async () => {
+                await sleep(delay);
+                func(...args);
+            };
+            tryAgain();
+        } else {
+            this.counter.delete(counterId);
+            mainStore.addToast(`Failed to complete operation. Please try again in a few minutes`);
             mainStore.loading = false;
-            if(location.href.includes('file') || location.href.includes('folder')) window.location.href = window.location.protocol + '//' + window.location.host + '/#/home';
+            if(!isUpload && (location.href.includes('file') || location.href.includes('folder'))) {
+                window.location.href = window.location.protocol + '//' + window.location.host + '/#/home';
+            } else {
+                mainStore.uploadError(counterId)
+            }
         }
     }
 
@@ -549,7 +568,13 @@ export class MainStore {
                     if (mainStore.projPermissions === null && json.kind === 'dds-file-version') mainStore.getUser(json.file.project.id);
                     mainStore.loading = false;
                 } else {
-                    json.code === 'resource_not_consistent' ? mainStore.tryAsyncAgain(mainStore.getEntity, retryArgs) : mainStore.handleErrors(json);
+                    if(json.code === 'resource_not_consistent') {
+                        this.loading = false;
+                        const msg = "The resource you're requesting is temporarily unavailable...";
+                        mainStore.tryAsyncAgain(mainStore.getEntity, retryArgs, 5000, id, msg, false )
+                    } else {
+                        mainStore.handleErrors(json);
+                    }
                 }
             }).catch(ex => mainStore.handleErrors(ex))
     }
@@ -835,10 +860,10 @@ export class MainStore {
             contentType = blob.type,
             slicedFile = null,
             BYTES_PER_CHUNK, SIZE, start, end;
-            BYTES_PER_CHUNK =  10000000;
-            SIZE = blob.size;
-            start = 0;
-            end = BYTES_PER_CHUNK;
+        SIZE = blob.size;
+        BYTES_PER_CHUNK = ChunkSize.BYTES_PER_CHUNK;
+        start = 0;
+        end = BYTES_PER_CHUNK;
 
         const retryArgs = [projId, blob, parentId, parentKind, label, fileId, tags];
         const fileReader = new FileReader();
@@ -874,7 +899,7 @@ export class MainStore {
             end = start + BYTES_PER_CHUNK;
             chunkNum++;
         }
-        fileReader.onload = function (e, files) {
+        fileReader.onload = function (event, files) {
             // create project upload
             mainStore.transportLayer.startUpload(projId, fileName, contentType, SIZE)
                 .then(checkStatusAndConsistency)
@@ -884,20 +909,26 @@ export class MainStore {
                         this.loading = false;
                         let uploadObj = json;
                         if (!uploadObj.id && !uploadObj.error) throw "no upload was created";
+                        details.uploadId = uploadObj.id;
                         mainStore.uploads.set(uploadObj.id, details);
-                        mainStore.totalUploads.inProcess++;
                         mainStore.hashFile(mainStore.uploads.get(uploadObj.id), uploadObj.id);
                         mainStore.updateAndProcessChunks(uploadObj.id, null, null);
-                        window.onbeforeunload = function () {// If uploading files and user navigates away from page, send them warning
-                            mainStore.warnUserBeforeLeavingPage = true;
-                            if (mainStore.warnUserBeforeLeavingPage) {
+                        window.onbeforeunload = function (e) {// If uploading files and user navigates away from page, send them warning
+                            let preventLeave = true;
+                            if (preventLeave) {
                                 return "If you refresh the page or close your browser, files being uploaded will be lost and you" +
                                     " will have to start again. Are" +
                                     " you sure you want to do this?";
                             }
                         };
                     } else {
-                        json.code === 'resource_not_consistent' ? mainStore.tryAsyncAgain(mainStore.startUpload, retryArgs) : mainStore.handleErrors(json);
+                        if(json.code === 'resource_not_consistent') {
+                            this.loading = false;
+                            const msg = "The resource you're requesting is temporarily unavailable...";
+                            mainStore.tryAsyncAgain(mainStore.startUpload, retryArgs, 5000, fileId, msg, false)
+                        } else {
+                            mainStore.handleErrors(json);
+                        }
                     }
                 })
                 .catch(ex => mainStore.handleErrors(ex))
@@ -910,102 +941,31 @@ export class MainStore {
         fileReader.readAsArrayBuffer(slicedFile);
     }
 
-    // File Hashing
     @action hashFile(file, id) {
-        function postHash(hash) {
-            mainStore.fileHashes.push(hash);
-        }
-        if (file.blob.size < 5000000) {
+        if (file.blob.size <= 5000000) {
             function calculateMd5(blob, id) {
-                let reader = new FileReader();
+                const md5 = new SparkMD5.ArrayBuffer();
+                const reader = new FileReader();
                 reader.readAsArrayBuffer(blob);
                 reader.onloadend = function () {
-                    let wordArray = CryptoJS.lib.WordArray.create(reader.result),
-                        hash = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
-                    postHash({id: id, hash: hash});
+                    md5.append(reader.result);
+                    const hash = md5.end();
+                    mainStore.fileHashes.push({id: id, hash: hash});
                 };
             }
             calculateMd5(file.blob, id);
         } else {
-            function series(tasks, done) {
-                if (!tasks || tasks.length === 0) {
-                    done();
-                } else {
-                    tasks[0](function () {
-                        series(tasks.slice(1), done);
-                    });
+            const hashWorker = new Worker('lib/fileHashingWorker.js');
+            hashWorker.postMessage(file);
+            hashWorker.onmessage = (e) => {
+                if(e.data.complete) {
+                    mainStore.fileHashes.push({id: e.data.id, hash: e.data.hash});
                 }
-            }
-            function webWorkerOnMessage(e) {
-                function arrayBufferToWordArray(ab) {
-                    let i8a = new Uint8Array(ab);
-                    let a = [];
-                    for (let i = 0; i < i8a.length; i += 4) {
-                        a.push(i8a[i] << 24 | i8a[i + 1] << 16 | i8a[i + 2] << 8 | i8a[i + 3]);
-                    }
-                    return CryptoJS.lib.WordArray.create(a, i8a.length);
+                if(e.data.error) {
+                    console.log(e.msg);
+                    mainStore.uploadError(file.uploadId)
                 }
-                if (e.data.type === "create") {
-                    md5 = CryptoJS.algo.MD5.create();
-                    postMessage({type: "create"});
-                } else if (e.data.type === "update") {
-                    md5.update(arrayBufferToWordArray(e.data.chunk));
-                    postMessage({type: "update"});
-                } else if (e.data.type === "finish") {
-                    postMessage({type: "finish", id: e.data.id, hash: "" + md5.finalize()});
-                }
-            }
-            // URL.createObjectURL
-            window.URL = window.URL || window.webkitURL;
-            // "Server response"
-            let assetPath = location.protocol + '//' + location.host + '/lib/md5.js';
-            let response =
-                "importScripts(" + "'" + assetPath + "'" + ");" +
-                "var md5, cryptoType;" +
-                "self.onmessage = " + webWorkerOnMessage.toString();
-
-            let blob;
-            try {
-                blob = new Blob([response], {type: 'application/javascript'});
-            } catch (e) { // Backwards-compatibility
-                window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
-                blob = new BlobBuilder();
-                blob.append(response);
-                blob = blob.getBlob();
-            }
-            let worker = new Worker(URL.createObjectURL(blob));
-            let chunksize = 2500000;
-            let f = file.blob; // FileList object
-            let chunks = Math.ceil(f.size / chunksize),
-                chunkTasks = [];
-            worker.onmessage = function (e) {
-                // create callback
-                for (let j = 0; j < chunks; j++) {
-                    (function (j, f) {
-                        chunkTasks.push(function (next) {
-                            let blob = f.slice(j * chunksize, Math.min((j + 1) * chunksize, f.size));
-                            let reader = new FileReader();
-                            reader.onload = function (e) {
-                                let chunk = e.target.result;
-                                worker.onmessage = function (e) {
-                                    // update callback
-                                    next();
-                                };
-                                worker.postMessage({type: "update", chunk: chunk});
-                            };
-                            reader.readAsArrayBuffer(blob);
-                        });
-                    })(j, f);
-                }
-                series(chunkTasks, function () {
-                    worker.onmessage = function (e) {
-                        // finish callback
-                        postHash({id: e.data.id, hash: e.data.hash});
-                    };
-                    worker.postMessage({type: "finish", id: id});
-                });
             };
-            worker.postMessage({type: "create"});
         }
     }
 
@@ -1045,7 +1005,7 @@ export class MainStore {
                     if (chunkUpdates.status !== undefined) chunks[i].chunkUpdates.status = chunkUpdates.status;
                     if (chunks[i].chunkUpdates.status === StatusEnum.STATUS_RETRY && chunks[i].retry > StatusEnum.MAX_RETRY) {
                         chunks[i].chunkUpdates.status = StatusEnum.STATUS_FAILED;
-                        this.uploadError(uploadId, chunks[i].number);
+                        this.uploadError(uploadId);
                         return;
                     }
                     if (chunks[i].chunkUpdates.status === StatusEnum.STATUS_RETRY) chunks[i].retry++;
@@ -1059,7 +1019,7 @@ export class MainStore {
             let chunk = chunks[i];
             if (chunk.chunkUpdates.status === StatusEnum.STATUS_WAITING_FOR_UPLOAD || chunk.chunkUpdates.status === StatusEnum.STATUS_RETRY) {
                 chunk.chunkUpdates.status = StatusEnum.STATUS_UPLOADING;
-                this.getChunkUrl(uploadId, upload, upload.blob.slice(chunk.start, chunk.end), chunk);
+                this.getChunkUrl(uploadId, upload.blob.slice(chunk.start, chunk.end), chunk);
                 return;
             }
             if (chunk.chunkUpdates.status !== StatusEnum.STATUS_SUCCESS) allDone = false;
@@ -1070,9 +1030,9 @@ export class MainStore {
         };
     }
 
-    @action uploadChunk(uploadId, upload, presignedUrl, chunkBlob, chunkNum, fileName, chunkUpdates) {
+    @action uploadChunk(uploadId, presignedUrl, chunkBlob, chunkNum, chunkUpdates) {
         window.addEventListener('offline', function () {
-            mainStore.uploadError(uploadId, fileName)
+            mainStore.uploadError(uploadId)
         });
         const xhr = new XMLHttpRequest();
         xhr.upload.onprogress = uploadProgress;
@@ -1086,8 +1046,7 @@ export class MainStore {
         function onComplete() {
             if (xhr.status >= 200 && xhr.status < 300) {
                 chunkUpdates.status = StatusEnum.STATUS_SUCCESS;
-            }
-            else {
+            } else {
                 chunkUpdates.status = StatusEnum.STATUS_RETRY;
             }
             mainStore.updateAndProcessChunks(uploadId, chunkNum, {status: chunkUpdates.status});
@@ -1095,31 +1054,29 @@ export class MainStore {
 
         xhr.onerror = onError;
         function onError() {
-            mainStore.uploadError(uploadId, fileName, upload.projectId)
+            mainStore.uploadError(uploadId)
         }
 
         xhr.open('PUT', presignedUrl, true);
         xhr.send(chunkBlob);
     }
 
-    getChunkUrl(uploadId, upload, chunkBlob, chunk) {
-        let chunkNum = chunk.number;
-        let fileName = upload.name;
-        let chunkUpdates = chunk.chunkUpdates;
+    getChunkUrl(uploadId, chunkBlob, chunk) {
+        const chunkNum = chunk.number;
+        const chunkUpdates = chunk.chunkUpdates;
+        const md5 = new SparkMD5.ArrayBuffer();
         const fileReader = new FileReader();
-        fileReader.onload = function (event) {
-            let arrayBuffer = event.target.result;
-            let wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
-            let md5crc = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
-            let algorithm = 'MD5';
-            mainStore.transportLayer.getChunkUrl(uploadId, chunkNum, chunkBlob.size, md5crc, algorithm)
+        fileReader.onload = function (e) {
+            md5.append(e.target.result);
+            const hash = md5.end();
+            const algorithm = 'MD5';
+            mainStore.transportLayer.getChunkUrl(uploadId, chunkNum, chunkBlob.size, hash, algorithm)
                 .then(this.checkResponse)
                 .then(response => response.json())
                 .then((json) => {
-                    let chunkObj = json;
+                    const chunkObj = json;
                     if (chunkObj && chunkObj.url && chunkObj.host) {
-                        // upload chunks
-                        mainStore.uploadChunk(uploadId, upload, chunkObj.host + chunkObj.url, chunkBlob, chunkNum, fileName, chunkUpdates)
+                        mainStore.uploadChunk(uploadId, chunkObj.host + chunkObj.url, chunkBlob, chunkNum, chunkUpdates)
                     } else {
                         throw 'Unexpected response';
                     }
@@ -1128,7 +1085,7 @@ export class MainStore {
         fileReader.readAsArrayBuffer(chunkBlob);
     }
 
-    allChunksUploaded(uploadId, parentId, parentKind, fileName, label, fileId, hash, projectId) {
+    allChunksUploaded(uploadId, parentId, parentKind, fileName, label, fileId, hash) {
         let algorithm = 'MD5';
         this.transportLayer.allChunksUploaded(uploadId, hash, algorithm)
             .then(this.checkResponse)
@@ -1139,7 +1096,7 @@ export class MainStore {
                 } else {
                     this.addFileVersion(uploadId, label, fileId);
                 }
-            }).catch(ex => this.uploadError(uploadId, fileName, projectId))
+            }).catch(ex => this.uploadError(uploadId))
     }
 
     @action addFile(uploadId, parentId, parentKind, fileName) {
@@ -1150,9 +1107,9 @@ export class MainStore {
                 this.addToast(fileName + ' uploaded successfully');
                 this.addFileSuccess(parentId, parentKind, uploadId, json.id)
             }).catch((ex) => {
-            this.addToast('Failed to upload ' + fileName + '!');
-            this.handleErrors(ex)
-        })
+                this.addToast('Failed to upload ' + fileName + '!');
+                this.uploadError(uploadId);
+            })
     }
 
     @action addFileSuccess(parentId, parentKind, uploadId, fileId) {
@@ -1183,10 +1140,9 @@ export class MainStore {
                 this.addToast('Created New File Version!');
                 this.addFileVersionSuccess(fileId, uploadId)
             }).catch((ex) => {
-            this.addToast('Failed to Create New Version');
-            this.uploadError(uploadId, label);
-            this.handleErrors(ex);
-        });
+                this.addToast('Failed to Create New Version');
+                this.uploadError(uploadId);
+            });
     }
 
     @action addFileVersionSuccess(id, uploadId) {
@@ -1208,23 +1164,27 @@ export class MainStore {
     }
 
     checkForHash(uploadId, parentId, parentKind, name, label, fileId, projectId) {
-        let hash = this.fileHashes.find((fileHash) => {
+        const hash = mainStore.fileHashes.find((fileHash) => {
             return fileHash.id === uploadId;
         });
         if(!hash) {
-            this.updateAndProcessChunks(uploadId, null, null);
-        }else{
-            this.allChunksUploaded(uploadId, parentId, parentKind, name, label, fileId, hash.hash, projectId);
+            const msg = `Waiting for the file ${name} to process, this may take a while...`;
+            const isUpload = true;
+            const retryArgs = [uploadId, parentId, parentKind, name, label, fileId, projectId];
+            mainStore.tryAsyncAgain(mainStore.checkForHash, retryArgs, 90000, uploadId, msg, isUpload)
+        } else {
+            mainStore.allChunksUploaded(uploadId, parentId, parentKind, name, label, fileId, hash.hash, projectId);
         }
     }
 
-    @action uploadError(uploadId, fileName, projectId) {
+    @action uploadError(uploadId) {
         if (this.uploads.has(uploadId)) {
+            const upload = this.uploads.get(uploadId);
             this.failedUploads.push({
-                upload: this.uploads.get(uploadId),
-                fileName: fileName,
+                upload: upload,
+                fileName: upload.name,
                 id: uploadId,
-                projectId: projectId
+                projectId: upload.projectId
             });
             this.uploads.delete(uploadId);
             this.failedUpload(this.failedUploads);
@@ -1659,9 +1619,16 @@ export class MainStore {
     }
 
     @action closePhiModal() {
-        let expiresAt = new Date(Date.now() + (7 * 24 * 60 * 60 * 1000));
-        this.modalOpen = false;
-        cookie.save('modalOpen', this.modalOpen, {expires: expiresAt});
+        let expiresAt = new Date(Date.now() + (9 * 24 * 60 * 60 * 10000));
+        this.phiModalOpen = false;
+        cookie.save('phiModalOpen', this.phiModalOpen, {expires: expiresAt});
+    }
+
+    @action serviceWarningModal(dontShow) {
+        let time = !dontShow ? 72 * 100 * 1000 : 18 * 24 * 60 * 60 * 10000;
+        let expiresAt = new Date(Date.now() + (time));
+        this.serviceOutageNoticeModalOpen = false;
+        cookie.save('serviceOutageNoticeModalOpen', this.serviceOutageNoticeModalOpen, {expires: expiresAt});
     }
 
     @action failedUpload(failedUploads) {
