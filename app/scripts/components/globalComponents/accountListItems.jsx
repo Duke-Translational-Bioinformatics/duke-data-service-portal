@@ -25,6 +25,7 @@ class AccountListItems extends React.Component {
             projPermissions, projectRoles, responseHeaders, screenSize,
             tableBodyRenderKey, uploads, projects, project
         } = mainStore;
+        console.log('Kind.DDS_PROJECT', JSON.stringify(Kind, null, 2));
         let showBatchOps = filesChecked.length > 0;
         let menuWidth = screenSize.width > 1230 ? 35 : 28;
         let headers = responseHeaders && responseHeaders !== null ? responseHeaders : null;
@@ -197,6 +198,7 @@ class AccountListItems extends React.Component {
         if (showChecks && child.kind !== Kind.DDS_PROJECT) {
             let optionsMenu
             if (child.kind === Kind.DDS_FILE) {
+                console.log('child', child.name, child.kind);
                 optionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FILE, true)}/>
             } else {
                 optionsMenu = <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FOLDER, true)}/>

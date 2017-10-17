@@ -284,8 +284,18 @@ export class MainStore {
                 this.downloadedItems.delete('loading')
             }
             this.selectedItem = item.id;
+            mainStore.entityObj = item;
             router.push({pathname: ('/file_manager/' + this.pathFinder(item.kind) + item.id)})
             this.project = item.kind === 'dds-project' ? item : this.downloadedItems.get(item.project.id);
+            let projPermissionsCoversion = {
+                'Project Admin': 'prjCrud',
+                'System Admin': 'prjCrud',
+                'Project Viewer': 'viewOnly',
+                'File Editor': 'flCrud',
+                'File Uploader': 'flUpload',
+                'File Downloader': 'flDownload'
+            }
+            this.projPermissions = projPermissionsCoversion[this.projectRoles.get(this.project.id)]
         }
     }
     
@@ -808,6 +818,7 @@ export class MainStore {
 
     @action toggleUploadManager() {
         this.openUploadManager = !this.openUploadManager;
+        console.log('this.openUploadManager', this.openUploadManager);
     }
 
     @action processFilesToUpload(files, rejectedFiles) {
