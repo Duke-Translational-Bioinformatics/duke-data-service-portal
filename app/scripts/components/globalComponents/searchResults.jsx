@@ -23,7 +23,6 @@ class SearchResults extends React.Component {
         const { loading, nextPage, screenSize, searchResults, searchResultsProjects, searchResultsTags, searchValue, showFilters, tableBodyRenderKey, totalItems, uploads } = mainStore;
         let menuWidth = screenSize.width > 1230 ? 35 : 28;
         let srchValue = searchValue !== null ? 'for ' +'"'+searchValue+'"' : '';
-        // let containerClass = showFilters ? ' show-filters-transition' : ' hide-filters-transition';
         let pageResults = searchResults.length > searchResults.length ? searchResults.length+' out of '+searchResults.length : searchResults.length;
         let results = searchResults && searchResults.length ? searchResults.map((child) => {
             let icon = child.kind === Kind.DDS_FOLDER ? 'folder' : 'description';
@@ -63,7 +62,7 @@ class SearchResults extends React.Component {
         return (
             <div className="list-items-container">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
-                    {<div style={styles.searchText}>Showing{" "+pageResults+" "}results{' '+srchValue}</div>}
+                    {<div style={styles.searchText}>Showing{' '+pageResults+' '}{totalItems !== null && totalItems > searchResults.length ? 'of '+totalItems+' total ' : ''} results{' '+srchValue}</div>}
                     {searchResults.length || showFilters ? <IconButton
                              iconClassName="material-icons"
                              tooltip="filter results"
@@ -100,7 +99,7 @@ class SearchResults extends React.Component {
                                 label={loading ? "Loading..." : "Load More"}
                                 secondary={true}
                                 disabled={!!loading}
-                                onTouchTap={()=>this.loadMore(nextPage)}
+                                onTouchTap={()=>this.loadMore(searchValue, nextPage)}
                                 fullWidth={true}
                                 style={loading ? {backgroundColor: Color.ltBlue2} : {}}
                                 labelStyle={loading ? {color: Color.blue} : {fontWeight: '100'}}/>
@@ -139,10 +138,8 @@ class SearchResults extends React.Component {
         e.stopPropagation();
     }
 
-    loadMore(page) {
-        const id = this.props.params.id;
-        const kind = this.props.router.location.pathname.includes('project') ? Path.PROJECT : Path.FOLDER;
-        mainStore.getChildren(id, kind, page);
+    loadMore(query, page) {
+        mainStore.searchObjects(query, null, null, null, page);
     }
 
     toggleFilters() {

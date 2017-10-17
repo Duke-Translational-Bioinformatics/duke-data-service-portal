@@ -40,7 +40,7 @@ class Search extends React.Component {
     search(e) {
         if(e.keyCode === 13) {
             let query = this.refs.searchInput.getValue();
-            mainStore.searchObjects(query, null, null, null);
+            mainStore.searchObjects(query, null, null, null, null);
             !this.props.location.pathname.includes('results') ? this.props.router.push('/results') : null;
         }
     }

@@ -34,7 +34,7 @@ class SearchFilters extends React.Component {
             let text = <span style={styles.checkbox.label}>{`${obj.key} `}<span style={styles.checkbox.count}>{` (${obj.doc_count})`}</span></span>;
             return <ListItem key={obj.key}
                         primaryText={text}
-                        leftCheckbox={<Checkbox style={styles.checkbox} onCheck={() => mainStore.searchObjects(searchValue, null, projectPostFilter, null)}/>}
+                        leftCheckbox={<Checkbox style={styles.checkbox} onCheck={() => mainStore.searchObjects(searchValue, null, projectPostFilter, null, null)}/>}
                         style={styles.listItem}
             />;
         });
@@ -44,7 +44,7 @@ class SearchFilters extends React.Component {
             let text = <span style={styles.checkbox.label}>{`${obj.key} `}<span style={styles.checkbox.count}>{` (${obj.doc_count})`}</span></span>;
             return <ListItem key={obj.key}
                     primaryText={text}
-                    leftCheckbox={<Checkbox style={styles.checkbox} onCheck={() => mainStore.searchObjects(searchValue, null, null, tagPostFilter)}/>}
+                    leftCheckbox={<Checkbox style={styles.checkbox} onCheck={() => mainStore.searchObjects(searchValue, null, null, tagPostFilter, null)}/>}
                     style={styles.listItem}/>
         });
 
@@ -57,11 +57,11 @@ class SearchFilters extends React.Component {
                 nestedItems={[
                     <ListItem key={BaseUtils.generateUniqueKey()}
                         primaryText={<span style={styles.checkbox.label}>Files</span>}
-                        leftCheckbox={<Checkbox style={styles.checkbox} disabled={!searchResultsFiles.length} checked={searchFilters.includes(Kind.DDS_FILE)} onCheck={() => mainStore.searchObjects(searchValue, Kind.DDS_FILE, null, null)}/>}
+                        leftCheckbox={<Checkbox style={styles.checkbox} disabled={!searchResultsFiles.length} checked={searchFilters.includes(Kind.DDS_FILE)} onCheck={() => mainStore.searchObjects(searchValue, Kind.DDS_FILE, null, null, null)}/>}
                         style={styles.listItem}/>,
                     <ListItem key={BaseUtils.generateUniqueKey()}
                         primaryText={<span style={styles.checkbox.label}>Folders</span>}
-                        leftCheckbox={<Checkbox style={styles.checkbox} disabled={!searchResultsFolders.length} checked={searchFilters.includes(Kind.DDS_FOLDER)} onCheck={() => mainStore.searchObjects(searchValue, Kind.DDS_FOLDER, null, null)}/>}
+                        leftCheckbox={<Checkbox style={styles.checkbox} disabled={!searchResultsFolders.length} checked={searchFilters.includes(Kind.DDS_FOLDER)} onCheck={() => mainStore.searchObjects(searchValue, Kind.DDS_FOLDER, null, null, null)}/>}
                         style={styles.listItem}/>
                 ]}
                 initiallyOpen={true}

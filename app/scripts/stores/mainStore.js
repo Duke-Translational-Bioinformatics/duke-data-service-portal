@@ -1518,42 +1518,57 @@ export class MainStore {
         this.showTemplateDetails = true;
     }
 
-    @action searchObjects(query, filter, projectPostFilter, tagPostFilter) {
-        if (projectPostFilter !== null) {
-            if(!this.searchProjectsPostFilters['project.name'].includes(projectPostFilter)) {
-                this.searchProjectsPostFilters['project.name'].push(projectPostFilter)
-            } else {
-                this.searchProjectsPostFilters['project.name'] = this.searchProjectsPostFilters['project.name'].filter(f => f !== projectPostFilter);
+    @action searchObjects(query, filter, projectPostFilter, tagPostFilter, page) {
+        let filters;
+        if(page !== null) {
+            filters = [this.searchFilters, this.searchProjectsPostFilters, this.searchTagsPostFilters]
+        } else {
+            if (projectPostFilter !== null) {
+                if (!this.searchProjectsPostFilters['project.name'].includes(projectPostFilter)) {
+                    this.searchProjectsPostFilters['project.name'].push(projectPostFilter)
+                } else {
+                    this.searchProjectsPostFilters['project.name'] = this.searchProjectsPostFilters['project.name'].filter(f => f !== projectPostFilter);
+                }
             }
-        }
-        if (tagPostFilter !== null) {
-            if (!this.searchTagsPostFilters['tags.label'].includes(tagPostFilter)) {
-                this.searchTagsPostFilters['tags.label'].push(tagPostFilter)
-            } else {
-                this.searchTagsPostFilters['tags.label'] = this.searchTagsPostFilters['tags.label'].filter(f => f !== tagPostFilter);
+            if (tagPostFilter !== null) {
+                if (!this.searchTagsPostFilters['tags.label'].includes(tagPostFilter)) {
+                    this.searchTagsPostFilters['tags.label'].push(tagPostFilter)
+                } else {
+                    this.searchTagsPostFilters['tags.label'] = this.searchTagsPostFilters['tags.label'].filter(f => f !== tagPostFilter);
+                }
             }
+            if (filter !== null) {
+                this.searchFilters.includes(filter) ? this.searchFilters = this.searchFilters.filter(f => f !== filter) : this.searchFilters.push(filter);
+            }
+            filters = [this.searchFilters, this.searchProjectsPostFilters, this.searchTagsPostFilters]
         }
-        if (filter !== null) {
-            this.searchFilters.includes(filter) ? this.searchFilters = this.searchFilters.filter(f => f !== filter) : this.searchFilters.push(filter);
-        }
+        if(page == null) page = 1;
         this.searchValue = query;
         query = encodeURI(query).replace(/#/,"%23");
         this.loading = true;
-        this.transportLayer.searchObjects(query, this.searchFilters, this.searchProjectsPostFilters, this.searchTagsPostFilters)
+        this.transportLayer.searchObjects(query, ...filters, page)
             .then(this.checkResponse)
-            .then(response => response.json())
-            .then((json) => {
-            console.log(JSON.stringify(json, null, 2))
-                this.searchResults = json.results.filter(r => !r.is_deleted);
-                this.searchResultsProjects = json.aggs.project_names.buckets;
-                this.searchResultsTags = json.aggs.tags.buckets;
-                console.log(JSON.stringify(this.searchResultsProjects, null, 2))
+            .then(response => {
+                const results = response.json();
+                const headers = response.headers;
+                return Promise.all([results, headers]);
+            }).then((json) => {
+                if(page <= 1) {
+                    this.searchResults = json[0].results;
+                } else {
+                    this.searchResults = [...this.searchResults, ...json[0].results];
+                }
+                this.searchResultsProjects = json[0].aggs.project_names.buckets;
+                this.searchResultsTags = json[0].aggs.tags.buckets;
                 this.searchResultsFiles =  this.searchResults.filter((obj)=>{ // Todo: Remove this if not using!!!!!!!!!!
                     return obj.kind === 'dds-file';
                 });
                 this.searchResultsFolders =  this.searchResults.filter((obj)=>{ // Todo: Remove this if not using!!!!!!!!!!
                     return obj.kind === 'dds-folder';
                 });
+                this.responseHeaders = json[1].map;
+                this.nextPage = this.responseHeaders !== null && !!this.responseHeaders['x-next-page'] ? this.responseHeaders['x-next-page'][0] : null;
+                this.totalItems = this.responseHeaders !== null && !!this.responseHeaders['x-total'] ? parseInt(this.responseHeaders['x-total'][0], 10) : null;
                 this.loading = false;
             }).catch(ex =>this.handleErrors(ex))
     }

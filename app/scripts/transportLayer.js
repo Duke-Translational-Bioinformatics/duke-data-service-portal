@@ -347,7 +347,7 @@ const transportLayer = {
         };
         return fetch(DDS_BASE_URI+apiPrefix+Path.TEMPLATES+id+Path.PROPERTIES, getFetchParams('post', authStore.appConfig.apiToken, body))
     },
-    searchObjects: (query, kindFilter, projectPostFilter, tagPostFilter) => {
+    searchObjects: (query, kindFilter, projectPostFilter, tagPostFilter, page) => {
         const kind = kindFilter.length ? kindFilter : [Kind.DDS_FILE, Kind.DDS_FOLDER];
         const postFilters = [];
         projectPostFilter['project.name'].length ? postFilters.push(projectPostFilter) : null;
@@ -373,9 +373,7 @@ const transportLayer = {
             ],
             "post_filters": postFilters
         };
-        console.log(JSON.stringify(body, null, 2))
-
-        return fetch(DDS_BASE_URI+apiPrefix+'search/folders_files?per_page=1000', getFetchParams('post', authStore.appConfig.apiToken, body))
+        return fetch(`${DDS_BASE_URI+apiPrefix}search/folders_files?page=${page}&per_page=25`, getFetchParams('post', authStore.appConfig.apiToken, body))
     },
 };
 
