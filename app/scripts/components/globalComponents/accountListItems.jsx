@@ -21,7 +21,10 @@ import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColu
 class AccountListItems extends React.Component {
 
     render() {
-        const { allItemsSelected, filesChecked, isSafari, listItems, loading, projPermissions, projectRoles, responseHeaders, screenSize, tableBodyRenderKey, uploads, projects, project } = mainStore;
+        const { allItemsSelected, filesChecked, isSafari, listItems, loading,
+            projPermissions, projectRoles, responseHeaders, screenSize,
+            tableBodyRenderKey, uploads, projects, project
+        } = mainStore;
         let showBatchOps = filesChecked.length > 0;
         let menuWidth = screenSize.width > 1230 ? 35 : 28;
         let headers = responseHeaders && responseHeaders !== null ? responseHeaders : null;
@@ -32,7 +35,7 @@ class AccountListItems extends React.Component {
         let projectRole = projectRoles.get(project.id);
         let showChecks = (projectRole && projectRole !== 'View Only' && projectRole !== 'File Uploader');
         let checkboxStyle = { maxWidth: 24, float: 'left', marginRight: isSafari ? 16 : 0 };
-        if (projectRole !== null) {
+        if (this.props.params.id && projectRole !== null) {
             newFolderModal = projectRole === 'Project Viewer' || projectRole === 'File Downloader' ? null : <AddFolderModal {...this.props}/>;
             uploadManager = projectRole === 'Project Viewer' || projectRole === 'File Downloader' ? null : <RaisedButton label="Upload Files"
                                                                                                     labelPosition="before"
@@ -114,7 +117,7 @@ class AccountListItems extends React.Component {
             )
         } else {
             return (
-                <TableRowColumn style={styles.checkbox} onTouchTap={() => mainStore.selectItem(child.id)}/>
+                <TableRowColumn style={styles.checkbox} onTouchTap={() => mainStore.selectItem(child.id, this.props.router)}/>
             )
         }
     }
@@ -134,7 +137,7 @@ class AccountListItems extends React.Component {
             )
         } else {
             return (
-                <TableRowColumn onTouchTap={() => mainStore.selectItem(child.id)}>
+                <TableRowColumn onTouchTap={() => mainStore.selectItem(child.id, this.props.router)}>
                     {nameInfo}
                 </TableRowColumn>
             )
@@ -157,7 +160,7 @@ class AccountListItems extends React.Component {
                 )
             } else {
                 return (
-                    <TableRowColumn onTouchTap={() => mainStore.selectItem(child.id)}>
+                    <TableRowColumn onTouchTap={() => mainStore.selectItem(child.id, this.props.router)}>
                       <span>{updatedInfo}</span>
                     </TableRowColumn>
                 )
@@ -182,7 +185,7 @@ class AccountListItems extends React.Component {
                 )
             } else {
                 return (
-                    <TableRowColumn onTouchTap={() => mainStore.selectItem(child.id)} style={{width: 100}}>
+                    <TableRowColumn onTouchTap={() => mainStore.selectItem(child.id, this.props.router)} style={{width: 100}}>
                         {sizeInfo}
                     </TableRowColumn>
                 )

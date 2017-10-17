@@ -30,6 +30,7 @@ const routes = (
             <Route path="folder/:id" component={ Folder } />
             <Route path="file/:id" component={ File } />
             <Route path="file_manager" component={ FileManager } />
+            <Route path="file_manager/:path/:id" component={ FileManager } />
             <Route path="activity/:id" component={ Activity } />
             <Route path="agents" component={ Agents } />
             <Route path="agent/:id" component={ Agent } />

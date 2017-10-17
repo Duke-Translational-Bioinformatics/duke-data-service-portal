@@ -30,7 +30,7 @@ class FileGroupDownloader extends Component {
                         <FlatButton
                             label="Home"
                             primary={true}
-                            onClick={() => mainStore.collapseTree()}
+                            onClick={() => mainStore.collapseTree(this.props.router)}
                         />
                         {this.breadCrumb()}
                     </CardTitle>

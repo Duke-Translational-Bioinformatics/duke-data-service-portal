@@ -269,7 +269,7 @@ export class MainStore {
         this.downloadedItems.delete('loading')
     }
 
-    @action selectItem(itemId) {
+    @action selectItem(itemId, router) {
         let item = this.downloadedItems.get(itemId);
         let childrenIds = item.childrenIds
         if (item) {
@@ -284,16 +284,18 @@ export class MainStore {
                 this.downloadedItems.delete('loading')
             }
             this.selectedItem = item.id;
+            router.push({pathname: ('/file_manager/' + this.pathFinder(item.kind) + item.id)})
             this.project = item.kind === 'dds-project' ? item : this.downloadedItems.get(item.project.id);
         }
     }
     
-    @action collapseTree() {
+    @action collapseTree(router) {
         this.listItems = this.projects
         this.selectedItem = ''
         this.downloadedItems.forEach((item) => {
             item.open = false
         })
+        router.push({pathname: ("/file_manager")})
     }
 
     @action toggleBackButtonVisibility(bool){

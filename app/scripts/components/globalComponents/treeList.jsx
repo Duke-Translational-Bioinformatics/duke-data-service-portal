@@ -54,7 +54,8 @@ class TreeList extends Component {
     }
     
     handleTouchTap(item) {
-        mainStore.selectItem(item.id);
+        console.log('params', JSON.stringify(this.props, null, 2));
+        mainStore.selectItem(item.id, this.props.router);
     }
     
     iconPicker(kind) {
