@@ -181,7 +181,6 @@ export class MainStore {
         this.totalItems = null;
         this.toggleModal = {open: false, id: null};
         this.totalUploads = {inProcess: 0, complete: 0};
-        // this.treeList = [];
         this.uploadCount = [];
         this.uploads = observable.map();
         this.usage = null;
@@ -204,13 +203,17 @@ export class MainStore {
         return (kinds[kind])
     }
 
-    @action setDownloadedItems() {
+    @action setDownloadedItems(projects) {
         let projectIds = []
-        this.projects.forEach((project, index) => {
+        projects.forEach((project) => {
             this.downloadedItems.set(project.id, project)
             projectIds.push(project.id)
         })
         this.downloadedItems.set('projectIds', projectIds);
+    }
+    
+    @action setListItems(items) {
+        this.listItems = items
     }
   
     @action getTreeListChildren(parent) {
@@ -286,7 +289,7 @@ export class MainStore {
     }
     
     @action collapseTree() {
-        this.listItems = []
+        this.listItems = this.projects
         this.selectedItem = ''
         this.downloadedItems.forEach((item) => {
             item.open = false

@@ -24,7 +24,8 @@ class TreeList extends Component {
     componentDidUpdate() {
         const {downloadedItems, projects} = mainStore;
         if (projects && projects.length && downloadedItems.size === 0) {
-            mainStore.setDownloadedItems();
+            mainStore.setDownloadedItems(projects);
+            mainStore.setListItems(projects);
         };
     }
 

@@ -144,7 +144,7 @@ class AccountListItems extends React.Component {
     tableRowColumnLastUpdated(child, screenSize) {
         if (screenSize && screenSize.width >= 680) {
             let updatedInfo
-            if (child.audit.last_updated_on !== null) {
+            if (child.audit.last_updated_on !== null && child.audit.last_updated_by !== null) {
                 updatedInfo = BaseUtils.formatDate(child.audit.last_updated_on)+' by '+child.audit.last_updated_by.full_name
             } else {
                 updatedInfo = BaseUtils.formatDate(child.audit.created_on)+' by '+child.audit.created_by.full_name
@@ -191,7 +191,7 @@ class AccountListItems extends React.Component {
     }
     
     tableRowColumnMenu(child, showChecks, menuWidth) {
-        if (showChecks) {
+        if (showChecks && child.kind !== Kind.DDS_PROJECT) {
             let optionsMenu
             if (child.kind === Kind.DDS_FILE) {
                 optionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FILE, true)}/>
@@ -204,6 +204,10 @@ class AccountListItems extends React.Component {
                         {optionsMenu}
                     </div>
                 </TableRowColumn>
+            )
+        } else {
+            return (
+                <TableRowColumn style={{textAlign: 'right', width: menuWidth}}/>
             )
         }
     }
