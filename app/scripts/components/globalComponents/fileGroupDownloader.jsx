@@ -16,29 +16,32 @@ import {MuiTreeList} from 'react-treeview-mui'
 import {TreeList} from 'react-treeview-mui'
 import FontIcon from 'material-ui/FontIcon'
 import AccountListItems from './accountListItems.jsx';
+import Paper from 'material-ui/Paper';
 
 @observer
 class FileGroupDownloader extends Component {
     render() {
-        const {fileMultiSelect, files} = mainStore;
+        const {fileMultiSelect, files, drawer} = mainStore;
+        const contentStyle = drawer.get('contentStyle')
+        const drawerDirection = drawer.get('open') ? '<' : '>'
 
         return (
-        		<div className="mdl-grid">
-          			<div className="mdl-cell mdl-cell--3-col mdl-cell--8-col-tablet"></div>
-          			<Card className="mdl-cell mdl-cell--9-col mdl-cell--8-col-tablet" style={styles.card}>
-          					<CardTitle titleColor="#424242" style={styles.cardTitle}>
-                        <FlatButton
-                            label="Home"
-                            primary={true}
-                            onClick={() => mainStore.collapseTree(this.props.router)}
-                        />
-                        {this.breadCrumb()}
-                    </CardTitle>
-          					<CardText>
-                        <AccountListItems {...this.props} />
-          					</CardText>
-          			</Card>
-        		</div>
+            <div style={contentStyle}>
+                <Paper style={styles.breadCrumb}>
+                    <FlatButton
+                        label={drawerDirection}
+                        onClick={() => mainStore.toggleDrawer()}
+                        style={{minWidth: '36px', minHeight: styles.breadCrumb.minHeight}}
+                    />
+                    <FlatButton
+                        label="Home"
+                        style={{minHeight: styles.breadCrumb.minHeight}}
+                        onClick={() => mainStore.collapseTree(this.props.router)}
+                    />
+                    {this.breadCrumb()}
+                </Paper>
+                <AccountListItems {...this.props} />    
+          	</div>
         );
     }
 
@@ -63,9 +66,9 @@ class FileGroupDownloader extends Component {
                         <FlatButton
                             key={bc.id}
                             label={bc.name.length > 20 ? bc.name.substring(0, 20) + '...' : bc.name}
-                            primary={true}
+                            style={{minHeight: styles.breadCrumb.minHeight}}
                             onClick={() => mainStore.selectItem(bc.id, this.pathFinder(bc.kind))}
-                        >/</FlatButton>
+                        >\</FlatButton>
                     )
                 })
             )
@@ -87,6 +90,10 @@ const styles = {
         fontWeight: 200,
         marginBottom: -15,
         padding: '4px 4px 4px 16px'
+    },
+    breadCrumb: {
+        width: '100%',
+        minHeight: '48px'
     },
     icon: {
         fontSize: 36,

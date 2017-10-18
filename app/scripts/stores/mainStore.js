@@ -18,6 +18,7 @@ export class MainStore {
     @observable audit
     @observable currentUser
     @observable currentLocation
+    @observable drawer
     @observable destination
     @observable destinationKind
     @observable device
@@ -107,6 +108,7 @@ export class MainStore {
         this.counter = 0;
         this.currentLocation = null;
         this.currentUser = {};
+        this.drawer = observable.map();
         this.device = {};
         this.destination = null;
         this.destinationKind = null;
@@ -307,7 +309,24 @@ export class MainStore {
         })
         router.push({pathname: ("/file_manager")})
     }
-
+    
+    @action toggleDrawer() {
+        let drawerPosition = !this.drawer.get('open')
+        let contentStyle = { transition: 'margin-left 450ms cubic-bezier(0.23, 1, 0.32, 1)' };
+        drawerPosition ? contentStyle.marginLeft = this.drawer.get('width') : null
+        this.drawer.set('open', drawerPosition)
+        this.drawer.set('contentStyle', contentStyle)
+    }
+    
+    @action setDrawer() {
+      let width = 350;
+      let contentStyle = { transition: 'margin-left 450ms cubic-bezier(0.23, 1, 0.32, 1)' };
+      contentStyle.marginLeft = width;
+      this.drawer.set('open', true);
+      this.drawer.set('width', width);
+      this.drawer.set('contentStyle', contentStyle);
+    }
+    
     @action toggleBackButtonVisibility(bool){
         this.showBackButton = bool;
     }

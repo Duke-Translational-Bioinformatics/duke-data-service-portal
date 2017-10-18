@@ -7,6 +7,7 @@ import {List, ListItem, makeSelectable} from 'material-ui/List';
 import ProjectIcon from 'material-ui/svg-icons/content/content-paste.js';
 import FolderIcon from 'material-ui/svg-icons/file/folder';
 import FileIcon from 'material-ui/svg-icons/action/description';
+import RaisedButton from 'material-ui/RaisedButton';
 
 
 const styles = {
@@ -30,17 +31,16 @@ class TreeList extends Component {
     }
 
     render() {
-    		const {downloadedItems, selectedItem, projects} = mainStore;
+    		const {downloadedItems, selectedItem, projects, drawer} = mainStore;
         return (
-      			<Drawer
-        				open={true}
-        				width={350}
-        				zDepth={1}
-        				containerStyle={{height: 'calc(100% - 76px)', top: 76}}
-        				>
-                <br/>
+            <Drawer
+                open={drawer.get('open')}
+                width={drawer.get('width')}
+                zDepth={1}
+                containerStyle={{height: 'calc(100% - 76px)', top: 76}}
+                >
                 {this.buildTree(downloadedItems)}
-      			</Drawer>
+            </Drawer>
         );
     };
 

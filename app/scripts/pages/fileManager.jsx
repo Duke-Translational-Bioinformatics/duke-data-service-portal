@@ -17,6 +17,7 @@ class FileManager extends React.Component {
         };
         if(mainStore.openTagManager) mainStore.toggleTagManager();
         mainStore.getTagLabels(); // Used to generate a list of tag labels
+        mainStore.setDrawer();
     }
 
     render() {
