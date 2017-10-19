@@ -15,7 +15,7 @@ import FileUpload from 'material-ui/svg-icons/file/file-upload'
 import FontIcon from 'material-ui/FontIcon';
 import RaisedButton from 'material-ui/RaisedButton';
 import Paper from 'material-ui/Paper';
-import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
 
 @observer
 class AccountListItems extends React.Component {
@@ -25,7 +25,6 @@ class AccountListItems extends React.Component {
             projPermissions, projectRoles, responseHeaders, screenSize,
             tableBodyRenderKey, uploads, projects, project
         } = mainStore;
-        console.log('Kind.DDS_PROJECT', JSON.stringify(Kind, null, 2));
         let showBatchOps = filesChecked.length > 0;
         let menuWidth = screenSize.width > 1230 ? 35 : 28;
         let headers = responseHeaders && responseHeaders !== null ? responseHeaders : null;

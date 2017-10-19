@@ -301,13 +301,21 @@ export class MainStore {
         }
     }
     
-    @action collapseTree(router) {
-        this.listItems = this.projects
-        this.selectedItem = ''
-        this.downloadedItems.forEach((item) => {
-            item.open = false
-        })
-        router.push({pathname: ("/file_manager")})
+    @action toggleCollapseTree(router) {
+        if (this.drawer.get('collapsed')) {
+            this.downloadedItems.forEach((item) => {
+                item.open = true
+            })
+            this.drawer.set('collapsed', false);
+        } else {
+            this.listItems = this.projects
+            this.selectedItem = ''
+            this.downloadedItems.forEach((item) => {
+                item.open = false
+            })
+            router.push({pathname: ("/file_manager")})
+            this.drawer.set('collapsed', true);
+        }
     }
     
     @action toggleDrawer() {

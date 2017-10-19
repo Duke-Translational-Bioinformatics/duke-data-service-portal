@@ -1,29 +1,19 @@
 import React, { Component, PropTypes } from 'react';
+const { object, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
-import {Path} from '../../util/urlEnum';
+import { Path } from '../../util/urlEnum';
 import Drawer from 'material-ui/Drawer';
-import {List, ListItem, makeSelectable} from 'material-ui/List';
-import ProjectIcon from 'material-ui/svg-icons/content/content-paste.js';
-import FolderIcon from 'material-ui/svg-icons/file/folder';
 import FileIcon from 'material-ui/svg-icons/action/description';
-import RaisedButton from 'material-ui/RaisedButton';
-
-
-const styles = {
-    selected: {
-        backgroundColor: 'rgba(0, 0, 0, 0.2)'
-    },
-    hover: {
-        backgroundColor: 'rgba(0, 0, 0, 0.1)'
-    }
-}
+import FolderIcon from 'material-ui/svg-icons/file/folder';
+import { List, ListItem } from 'material-ui/List';
+import ProjectIcon from 'material-ui/svg-icons/content/content-paste.js';
 
 @observer
 class TreeList extends Component {
     
     componentDidUpdate() {
-        const {downloadedItems, projects} = mainStore;
+        const { downloadedItems, projects } = mainStore;
         if (projects && projects.length && downloadedItems.size === 0) {
             mainStore.setDownloadedItems(projects);
             mainStore.setListItems(projects);
@@ -31,15 +21,17 @@ class TreeList extends Component {
     }
 
     render() {
-    		const {downloadedItems, selectedItem, projects, drawer} = mainStore;
+    		const { downloadedItems, drawer, projects, selectedItem } = mainStore;
         return (
             <Drawer
                 open={drawer.get('open')}
                 width={drawer.get('width')}
                 zDepth={1}
-                containerStyle={{height: 'calc(100% - 76px)', top: 76}}
+                containerStyle={styles.drawer}
                 >
-                {this.buildTree(downloadedItems)}
+                  <List>
+                      {this.buildTree(downloadedItems)}
+                  </List>
             </Drawer>
         );
     };
@@ -70,8 +62,6 @@ class TreeList extends Component {
     listItemStyle(itemId) {
         if (mainStore.selectedItem === itemId) {
             return (styles.selected)
-        } else if (mainStore.hoveredItem === itemId) {
-            return (styles.hover)
         }
     }
 
@@ -108,6 +98,23 @@ class TreeList extends Component {
         let projectTree = projectIds ? looper(projectIds) : null
         return projectTree
     }
+};
+
+const styles = {
+    drawer: {
+        height: 'calc(100% - 76px)',
+        top: 76
+    },
+    selected: {
+        backgroundColor: 'rgba(0, 0, 0, 0.2)'
+    }
+}
+
+TreeList.propTypes = {
+    downloadedItems: object,
+    drawer: object,
+    projects: array,
+    selectedItem: string
 };
 
 export default TreeList;
