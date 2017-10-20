@@ -8,6 +8,7 @@ import { UrlGen } from '../../util/urlEnum';
 import AddProjectModal from '../projectComponents/addProjectModal.jsx';
 import Loaders from '../globalComponents/loaders.jsx';
 import ProjectOptionsMenu from './projectOptionsMenu.jsx';
+import ProjectOptions from './projectOptions.jsx';
 import {Card, CardTitle, CardText} from 'material-ui/Card';
 import FontIcon from 'material-ui/FontIcon';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -43,6 +44,7 @@ class ProjectList extends React.Component {
                     </div>
                     <AddProjectModal {...this.props} />
                     <Loaders {...this.props} />
+                    <ProjectOptions {...this.props} />
                 </div>
                 { projectList }
                 {projects && projects.length < totalItems ? <div className="mdl-cell mdl-cell--12-col">
