@@ -6,6 +6,7 @@ import BaseUtils from '../../util/baseUtils.js';
 import { UrlGen, Path, Kind } from '../../util/urlEnum';
 import { Color } from '../../theme/customTheme';
 import Loaders from '../../components/globalComponents/loaders.jsx';
+import Chip from 'material-ui/Chip';
 import FontIcon from 'material-ui/FontIcon';
 import IconButton from 'material-ui/IconButton';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -20,7 +21,20 @@ class SearchResults extends React.Component {
     }
 
     render() {
-        const { loading, nextPage, screenSize, searchResults, searchResultsProjects, searchResultsTags, searchValue, showFilters, tableBodyRenderKey, totalItems, uploads } = mainStore;
+        const { loading, nextPage, screenSize, searchResults, searchProjectsPostFilters, searchTagsPostFilters, searchResultsProjects, searchResultsTags, searchValue, showFilters, tableBodyRenderKey, totalItems, uploads } = mainStore;
+        const renderChips = () => {
+            let pFilters = searchProjectsPostFilters['project.name'].map(filter => {
+                return <Chip key={BaseUtils.generateUniqueKey()} style={styles.chip} onRequestDelete={() => mainStore.searchObjects(searchValue, null, filter, null, null)}>
+                    {filter}
+                </Chip>
+            });
+            let tFilters = searchTagsPostFilters['tags.label'].map(filter => {
+                return <Chip key={BaseUtils.generateUniqueKey()} style={styles.chip} onRequestDelete={() => mainStore.searchObjects(searchValue, null, null, filter, null)}>
+                    {filter}
+                </Chip>
+            });
+            return [...pFilters, ...tFilters].map(f => f);
+        };
         let menuWidth = screenSize.width > 1230 ? 35 : 28;
         let srchValue = searchValue !== null ? 'for ' +'"'+searchValue+'"' : '';
         let pageResults = searchResults.length > searchResults.length ? searchResults.length+' out of '+searchResults.length : searchResults.length;
@@ -37,7 +51,7 @@ class SearchResults extends React.Component {
                             {/*checked={itemsChecked.includes(child.id)}*/}
                         {/*/>}*/}
                         <a href={route} className="external" onClick={(e) => this.checkForAllItemsSelected(e)}>
-                            <div style={styles.linkColor}>
+                            <div style={styles.linkColor} onClick={() => this.toggleFiltersBeforeTransition()}>
                                 <FontIcon className="material-icons" style={styles.icon}>{icon}</FontIcon>
                                 {child.name.length > 82 ? child.name.substring(0, 82) + '...' : child.name}
                                 {child.kind === Kind.DDS_FILE && ' (version '+ child.current_version.version+')'}
@@ -71,6 +85,9 @@ class SearchResults extends React.Component {
                              >
                              tune
                         </IconButton> : null}
+                </div>
+                <div className="mdl-cell mdl-cell--12-col" style={styles.chip.wrapper}>
+                    {renderChips()}
                 </div>
                 {uploads || loading ? <Loaders {...this.props}/> : null}
                 <Paper className="mdl-cell mdl-cell--12-col" style={styles.list}>
@@ -133,9 +150,15 @@ class SearchResults extends React.Component {
     }
 
     checkForAllItemsSelected(e) {
-        const allItemsSelected = mainStore.allItemsSelected;
+        const {allItemsSelected} = mainStore;
         allItemsSelected ? mainStore.toggleAllItemsSelected(!allItemsSelected) : null;
         e.stopPropagation();
+    }
+
+    toggleFiltersBeforeTransition() {
+        const {showFilters} = mainStore;
+        if(showFilters) this.toggleFilters();
+        mainStore.resetSearchFilters();
     }
 
     loadMore(query, page) {
@@ -168,6 +191,14 @@ SearchResults.contextTypes = {
 const styles = {
     batchOpsWrapper: {
         marginBottom: 0
+    },
+    chip: {
+        margin: 4,
+        backgroundColor: Color.ltGreen2,
+        wrapper: {
+            display: 'flex',
+            flexWrap: 'wrap',
+        }
     },
     icon: {
         marginLeft: -4,

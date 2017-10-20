@@ -911,6 +911,7 @@ export class MainStore {
                         if (!uploadObj.id && !uploadObj.error) throw "no upload was created";
                         details.uploadId = uploadObj.id;
                         mainStore.uploads.set(uploadObj.id, details);
+                        mainStore.totalUploads.inProcess = mainStore.uploads.size;
                         mainStore.hashFile(mainStore.uploads.get(uploadObj.id), uploadObj.id);
                         mainStore.updateAndProcessChunks(uploadObj.id, null, null);
                         window.onbeforeunload = function (e) {// If uploading files and user navigates away from page, send them warning
@@ -1193,6 +1194,7 @@ export class MainStore {
 
     @action cancelUpload(uploadId, name) {
         if(this.uploads.has(uploadId)) this.uploads.delete(uploadId);
+        this.totalUploads.inProcess = this.uploads.size;
         this.addToast('Canceled upload of '+name);
         if(!this.uploads.size && this.warnUserBeforeLeavingPage) this.warnUserBeforeLeavingPage = false;
         if(!this.uploads.size) { // If user cancels last uploads, make sure that page loads with new list items
@@ -1544,6 +1546,8 @@ export class MainStore {
 
     @action resetSearchFilters() {
         this.searchFilters = [];
+        this.searchProjectsPostFilters = {"project.name": []};
+        this.searchTagsPostFilters = {"tags.label": []};
     }
 
     @action clearSearchFilesData() {

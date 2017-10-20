@@ -28,13 +28,12 @@ class SearchFilters extends React.Component {
 
     render() {
         const { screenSize, searchFilters, searchProjectsPostFilters, searchTagsPostFilters, searchResultsFiles, searchResultsFolders, searchResultsProjects, searchResultsTags, searchValue, showFilters } = mainStore;
-
         let projects = searchResultsProjects.map((obj) => {
             const projectPostFilter = obj.key;
             let text = <span style={styles.checkbox.label}>{`${obj.key} `}<span style={styles.checkbox.count}>{` (${obj.doc_count})`}</span></span>;
             return <ListItem key={obj.key}
                         primaryText={text}
-                        leftCheckbox={<Checkbox style={styles.checkbox} onCheck={() => mainStore.searchObjects(searchValue, null, projectPostFilter, null, null)}/>}
+                        leftCheckbox={<Checkbox style={styles.checkbox} checked={searchProjectsPostFilters['project.name'].includes(obj.key)} onCheck={() => mainStore.searchObjects(searchValue, null, projectPostFilter, null, null)}/>}
                         style={styles.listItem}
             />;
         });
@@ -44,7 +43,7 @@ class SearchFilters extends React.Component {
             let text = <span style={styles.checkbox.label}>{`${obj.key} `}<span style={styles.checkbox.count}>{` (${obj.doc_count})`}</span></span>;
             return <ListItem key={obj.key}
                     primaryText={text}
-                    leftCheckbox={<Checkbox style={styles.checkbox} onCheck={() => mainStore.searchObjects(searchValue, null, null, tagPostFilter, null)}/>}
+                    leftCheckbox={<Checkbox style={styles.checkbox} checked={searchTagsPostFilters['tags.label'].includes(obj.key)} onCheck={() => mainStore.searchObjects(searchValue, null, null, tagPostFilter, null)}/>}
                     style={styles.listItem}/>
         });
 
@@ -116,30 +115,25 @@ class SearchFilters extends React.Component {
                                     />
                                 </List>
                             </div> : null}
-                            {/*{searchResultsFiles.length ? <ListItem primaryText={"Files ("+searchResultsFiles.length+")"}*/}
-                                                                   {/*leftCheckbox={<Checkbox style={styles.checkbox} checked={includedKinds.includes('dds-file')}/>}*/}
-                                                                   {/*style={{textAlign: 'right'}} onClick={() => this.setIncludeKinds('dds-file')}/> : null}*/}
-                            {/*{searchResultsFolders.length ? <ListItem primaryText={"Folders ("+searchResultsFolders.length+")"}*/}
-                                                                     {/*leftCheckbox={<Checkbox style={styles.checkbox} checked={includedKinds.includes('dds-folder')}/>}*/}
-                                                                     {/*style={{textAlign: 'right'}} onClick={() => this.setIncludeKinds('dds-folder')}/> : null}*/}
-                            {/*{searchProjectsPostFilters['project.name'] && searchProjectsPostFilters['project.name'].length || searchTagsPostFilters.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>*/}
-                                {/*<RaisedButton*/}
-                                    {/*label="Clear Filters"*/}
-                                    {/*labelStyle={styles.button.label}*/}
-                                    {/*style={styles.button}*/}
-                                    {/*secondary={true}*/}
-                                    {/*onTouchTap={()=>this.clearFilters(searchValue)}/>*/}
-                            {/*</div> : null}*/}
+                            {searchProjectsPostFilters['project.name'] && searchProjectsPostFilters['project.name'].length || searchTagsPostFilters.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
+                                <RaisedButton
+                                    label="Clear Filters"
+                                    labelStyle={styles.button.label}
+                                    style={styles.button}
+                                    secondary={true}
+                                    onTouchTap={()=>this.clearFilters(searchValue)}/>
+                            </div> : null}
                     </div>
                 </Drawer>
             </div>
         );
     }
 
-    // clearFilters(searchValue) {
-    //     mainStore.searchObjects(searchValue, [], [], []);
-    //     if(mainStore.screenSize.width < 580) this.toggleFilters();
-    // }
+    clearFilters(searchValue) {
+        mainStore.resetSearchFilters();
+        mainStore.searchObjects(searchValue, null, null, null, null);
+        if(mainStore.screenSize.width < 580) this.toggleFilters();
+    }
 
     toggleFilters() {
         mainStore.toggleSearchFilters();

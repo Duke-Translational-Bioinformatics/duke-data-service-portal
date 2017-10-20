@@ -31,6 +31,7 @@ export const Color = {
     ltPink: '#F58C8C',
     green: '#66BB6A',
     ltGreen: '#C8E6C9',
+    ltGreen2: '#A5D6A7',
     red: '#F44336',
     ltRed: '#EF5350',
     ltGrey: '#BDBDBD',
