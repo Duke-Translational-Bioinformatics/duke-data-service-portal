@@ -21,10 +21,12 @@ import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowCol
 class AccountListItems extends React.Component {
 
     render() {
-        const { allItemsSelected, filesChecked, isSafari, listItems, loading,
+        const { allItemsSelected, drawer, filesChecked, isSafari, listItems, loading,
             projPermissions, projectRoles, responseHeaders, screenSize,
             tableBodyRenderKey, uploads, projects, project
         } = mainStore;
+        const contentStyle = drawer.get('contentStyle')
+
         let showBatchOps = filesChecked.length > 0;
         let menuWidth = screenSize.width > 1230 ? 35 : 28;
         let headers = responseHeaders && responseHeaders !== null ? responseHeaders : null;
@@ -58,7 +60,7 @@ class AccountListItems extends React.Component {
         }) : null;
 
         return (
-            <div className="list-items-container">
+            <div style={contentStyle} className="list-items-container">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
                     {!showBatchOps && <div className="mdl-cell mdl-cell--12-col">
                         {uploadManager}
@@ -197,7 +199,6 @@ class AccountListItems extends React.Component {
         if (showChecks && child.kind !== Kind.DDS_PROJECT) {
             let optionsMenu
             if (child.kind === Kind.DDS_FILE) {
-                console.log('child', child.name, child.kind);
                 optionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FILE, true)}/>
             } else {
                 optionsMenu = <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FOLDER, true)}/>

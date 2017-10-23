@@ -1,16 +1,17 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import mainStore from '../stores/mainStore';
-import FileGroupDownloader from '../components/globalComponents/fileGroupDownloader.jsx';
+import TreeList from '../components/dashboardComponents/treeList.jsx';
+import Breadcrumbs from '../components/dashboardComponents/breadcrumbs.jsx';
+import AccountListItems from '../components/dashboardComponents/accountListItems.jsx';
 import FileOptions from '../components/fileComponents/fileOptions.jsx';
 import FolderOptions from '../components/folderComponents/folderOptions.jsx';
 import TagManager from '../components/globalComponents/tagManager.jsx'
-import TreeList from '../components/globalComponents/treeList.jsx';
 import UploadManager from '../components/globalComponents/uploadManager.jsx';
 import VersionUpload from '../components/fileComponents/versionUpload.jsx';
 
 @observer
-class FileManager extends React.Component {
+class Dashboard extends React.Component {
     componentDidMount() {
         if (mainStore.projects.length === 0) {
             mainStore.getProjects(null, null);
@@ -23,11 +24,12 @@ class FileManager extends React.Component {
     render() {
         return (
             <div>
-                <FileGroupDownloader {...this.props} />
+                <TreeList {...this.props} />
+                <Breadcrumbs {...this.props} />
+                <AccountListItems {...this.props} />
                 <FileOptions {...this.props} />
                 <FolderOptions {...this.props} />
                 <TagManager {...this.props} />
-                <TreeList {...this.props} />
                 <UploadManager {...this.props} />
                 <VersionUpload {...this.props} />
             </div>
@@ -35,4 +37,4 @@ class FileManager extends React.Component {
     }
 }
 
-export default FileManager;
+export default Dashboard;

@@ -286,9 +286,13 @@ export class MainStore {
                 this.downloadedItems.delete('loading')
             }
             this.selectedItem = item.id;
-            mainStore.entityObj = item;
-            router.push({pathname: ('/file_manager/' + this.pathFinder(item.kind) + item.id)})
-            this.project = item.kind === 'dds-project' ? item : this.downloadedItems.get(item.project.id);
+            router.push({pathname: ('/dashboard/' + this.pathFinder(item.kind) + item.id)})
+            if (item.kind === 'dds-project') {
+                this.project = item
+            } else {
+                this.project = this.downloadedItems.get(item.project.id)
+                mainStore.entityObj = item
+            }
             let projPermissionsCoversion = {
                 'Project Admin': 'prjCrud',
                 'System Admin': 'prjCrud',
@@ -313,7 +317,7 @@ export class MainStore {
             this.downloadedItems.forEach((item) => {
                 item.open = false
             })
-            router.push({pathname: ("/file_manager")})
+            router.push({pathname: ("/dashboard")})
             this.drawer.set('collapsed', true);
         }
     }
@@ -845,7 +849,6 @@ export class MainStore {
 
     @action toggleUploadManager() {
         this.openUploadManager = !this.openUploadManager;
-        console.log('this.openUploadManager', this.openUploadManager);
     }
 
     @action processFilesToUpload(files, rejectedFiles) {

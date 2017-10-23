@@ -1,16 +1,15 @@
 import React, { Component, PropTypes } from 'react'
 const { object, string } = PropTypes;
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-import { observer } from 'mobx-react'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
-import AccountListItems from './accountListItems.jsx';
 import { Color } from '../../theme/customTheme';
 import { Path } from '../../util/urlEnum';
 import FlatButton from 'material-ui/FlatButton';
 import Paper from 'material-ui/Paper';
 
 @observer
-class FileGroupDownloader extends Component {
+class Breadcrumbs extends Component {
     render() {
         const { drawer, selectedItem } = mainStore;
         const contentStyle = drawer.get('contentStyle')
@@ -30,8 +29,7 @@ class FileGroupDownloader extends Component {
                         onClick={() => mainStore.toggleCollapseTree(this.props.router)}
                     />
                     {this.breadCrumb()}
-                </Paper>
-                <AccountListItems {...this.props} />    
+                </Paper> 
           	</div>
         );
     }
@@ -60,7 +58,9 @@ class FileGroupDownloader extends Component {
                             label={bc.name.length > 20 ? bc.name.substring(0, 20) + '...' : bc.name}
                             style={selectedItem === bc.id ? styles.breadCrumbSelected : styles.breadCrumb}
                             onClick={() => mainStore.selectItem(bc.id, this.pathFinder(bc.kind))}
-                        >/</FlatButton>
+                        >
+                            <span style={{color: styles.breadCrumb.color}}>/</span>
+                        </FlatButton>
                     )
                 })
             )
@@ -76,41 +76,15 @@ const styles = {
     breadCrumbSelected: {
         minHeight: '48px'
     },
-    // card: {
-    //     minHeight: 260,
-    //     padding: 10
-    // },
-    // cardTitle: {
-    //     fontWeight: 200,
-    //     marginBottom: -15,
-    //     marginRight: 24
-    // },
-    // cardTitle2: {
-    //     fontWeight: 200,
-    //     marginBottom: -15,
-    //     padding: '4px 4px 4px 16px'
-    // },
     drawerToggle: {
         minHeight: '48px',
         minWidth: '36px'
-    },
-    // listTitle: {
-    //     margin: '0px 0px 0px 0px',
-    //     textAlign: 'left',
-    //     float: 'left',
-    //     paddingLeft: 20
-    // },
-    // title: {
-    //     margin: '-10px 0px 0px 0px',
-    //     textAlign: 'left',
-    //     float: 'left',
-    //     marginLeft: -14
-    // }
+    }
 };
 
-FileGroupDownloader.propTypes = {
+Breadcrumbs.propTypes = {
     drawer: object,
     selectedItem: string
 };
 
-export default FileGroupDownloader;
+export default Breadcrumbs;
