@@ -16,6 +16,7 @@ class Search extends React.Component {
                 search.select();
             }
         }
+        this.search = _.debounce(this.search , 300);
     }
 
     render() {
@@ -30,23 +31,21 @@ class Search extends React.Component {
                 hintText="Search"
                 defaultValue={searchValue && searchResults.length && router.location.pathname.includes('search') ? searchValue : null}
                 hintStyle={styles.searchBar.hintText}
-                onKeyDown={(e) => this.search(e, false)}
+                onKeyUp={() => this.search()}
                 style={{width: '90%',position: 'absolute',top: '10%', left: screenSize.width < 680 ? '11%' : '8%'}}
                 underlineStyle={styles.searchBar.textFieldUnderline}
                 underlineFocusStyle={styles.searchBar.textFieldUnderline} />
             <i className="material-icons"
                style={styles.searchBar.closeSearchIcon}
-               onTouchTap={(e) => this.search(e, true)}>search</i>
+               onTouchTap={() => this.search()}>search</i>
         </Paper> : null)
     }
 
-    search(e, isClick) {
-        if(e.keyCode === 13 || isClick) {
-            let query = this.refs.searchInput.getValue();
-            if(query.length) {
-                mainStore.searchObjects(query, null, null, null, null);
-                !this.props.location.pathname.includes('search') ? this.props.router.push('/search') : null;
-            }
+    search() {
+        let query = this.refs.searchInput.getValue();
+        if(query.length) {
+            mainStore.searchObjects(query, null, null, null, null);
+            !this.props.location.pathname.includes('search') ? this.props.router.push('/search') : null;
         }
     }
 
