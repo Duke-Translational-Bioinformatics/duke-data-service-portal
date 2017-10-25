@@ -19,6 +19,7 @@ class Dashboard extends React.Component {
         if(mainStore.openTagManager) mainStore.toggleTagManager();
         mainStore.getTagLabels(); // Used to generate a list of tag labels
         mainStore.setDrawer();
+        mainStore.setRouter(this.props.router);
     }
 
     render() {

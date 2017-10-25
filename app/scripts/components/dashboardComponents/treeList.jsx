@@ -46,7 +46,7 @@ class TreeList extends Component {
     }
     
     handleTouchTap(item) {
-        mainStore.selectItem(item.id, this.props.router);
+        mainStore.selectItem(item.id);
     }
     
     iconPicker(kind) {
@@ -82,7 +82,7 @@ class TreeList extends Component {
                                 leftIcon={this.iconPicker(child.kind)}
                                 nestedItems={grandChildren}
                                 open={child.open}
-                                onNestedListToggle={() => {mainStore.toggleTreeListItem(child)}}
+                                onNestedListToggle={() => {mainStore.toggleTreeListItem(child.id)}}
                                 onClick={() => {this.handleTouchTap(child)}}
                                 onKeyDown={(e) => {this.handleKeyDown(e, child)} }
                                 style={this.listItemStyle(child.id)}
@@ -92,7 +92,6 @@ class TreeList extends Component {
                 })
             )
         }
-        downloadedItems.has('loading') // Required to refresh buildTree after loading is finished
         let projectIds = downloadedItems.get('projectIds')
         let projectTree = projectIds ? looper(projectIds) : null
         return projectTree

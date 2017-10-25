@@ -1,5 +1,5 @@
 import React from 'react';
-import { observable, computed, action, map } from 'mobx';
+import { observable, computed, action, map, extendObservable } from 'mobx';
 import cookie from 'react-cookie';
 import authStore from '../stores/authStore';
 import provenanceStore from '../stores/provenanceStore';
@@ -64,6 +64,7 @@ export class MainStore {
     @observable projectRole
     @observable metaObjProps
     @observable responseHeaders
+    @observable router
     @observable screenSize
     @observable searchFilesList
     @observable searchFilters
@@ -156,6 +157,7 @@ export class MainStore {
         this.projectRoles = observable.map();
         this.metaObjProps = [];
         this.responseHeaders = {};
+        this.router = null;
         this.screenSize = {width: 0, height: 0};
         this.searchFilesList = [];
         this.searchFilters = [];
@@ -166,7 +168,7 @@ export class MainStore {
         this.searchValue = null;
         this.serviceOutageNoticeModalOpen = cookie.load('serviceOutageNoticeModalOpen');
         this.selectedEntity = null;
-        this.selectedItem = '';
+        this.selectedItem = null;
         this.showBackButton = true;
         this.showFilters = false;
         this.showPropertyCreator = false;
@@ -204,6 +206,54 @@ export class MainStore {
         }
         return (kinds[kind])
     }
+    
+    @action setRouter(router) {
+        this.router = router
+    }
+    
+    @action moveDownloadedItem(id, newParentId) {
+        let item = this.downloadedItems.get(id)
+        if (item && item.parentId) {
+            this.removeDownloadedItem(id, item.parentId)
+            this.addDownloadedItem(item, newParentId)
+            this.selectItem(newParentId)
+        }
+    }
+
+    @action removeDownloadedItem(id, parentId) {
+        let parent = this.downloadedItems.get(parentId)
+        let ci = parent.childrenIds.indexOf(id)
+        if(ci > -1) parent.childrenIds.splice(ci, 1)
+        let fi = parent.folderIds.indexOf(id)
+        if(fi > -1) parent.folderIds.splice(fi, 1)
+        this.downloadedItems.delete(parentId)
+        this.downloadedItems.set(parentId, parent)
+        
+        let recursiveDelete = (itemId) => {
+            let item = this.downloadedItems.get(itemId)
+            if (item) {
+                if (item.childrenIds && item.childrenIds.length > 0) {
+                    item.childrenIds.map((childId) => {
+                        recursiveDelete(childId)
+                    })
+                }
+                this.downloadedItems.delete(itemId)
+            }
+        }
+        recursiveDelete(id)
+    }
+    
+    @action addDownloadedItem(item, parentId) {
+        let parent = this.downloadedItems.get(parentId)
+        parent.open = true
+        if(parent.childrenIds) parent.childrenIds = [item.id, ...parent.childrenIds]
+        if(parent.folderIds) parent.folderIds = [item.id, ...parent.folderIds]
+        this.downloadedItems.delete(parentId)
+        this.downloadedItems.set(parentId, parent)
+        item.parentId = parentId
+        item.reload = true
+        this.downloadedItems.set(item.id, item)
+    }
 
     @action setDownloadedItems(projects) {
         let projectIds = []
@@ -220,7 +270,6 @@ export class MainStore {
   
     @action getTreeListChildren(parent) {
         this.loading = true;
-        this.downloadedItems.set('loading': true)
         let parentId = parent.id
         let path = this.pathFinder(parent.kind)
         let page = 1
@@ -236,57 +285,56 @@ export class MainStore {
                 let headers = json[1].map;
                 let childrenIds = []
                 let folderIds = []
-                let folderChildren = []
                 let parentsChildren = results.map((child) => {
-                    if (child.kind == 'dds-folder') {
-                        child.children = []
-                    };
                     childrenIds.push(child.id)
                     if (child.kind === 'dds-folder') {
                         folderIds.push(child.id)
                         child.open = true
-                        folderChildren.push(child)
                     }
+                    child.parentId = parentId
                     this.downloadedItems.set(child.id, child)
                     return ( child );
                 });
-                let downloadedParent = this.downloadedItems.get(parent.id)
+                let downloadedParent = this.downloadedItems.get(parentId)
                 downloadedParent.open = true
                 downloadedParent.childrenIds = childrenIds
                 downloadedParent.folderIds = folderIds
-                this.downloadedItems.set(parent.id, downloadedParent)
+                this.downloadedItems.delete(parentId)
+                this.downloadedItems.set(parentId, downloadedParent)
                 this.listItems = parentsChildren
                 this.responseHeaders = headers;
-                this.downloadedItems.delete('loading')
                 this.loading = false;
             }).catch(ex =>this.handleErrors(ex))
     }
     
-    @action toggleTreeListItem(listItem, listPosition) {
-        this.downloadedItems.set('loading': true)
-        let item = this.downloadedItems.get(listItem.id)
-        this.selectedItem = item.id;
+    @action toggleTreeListItem(id) {
+        this.selectedItem = id;
+        let item = this.downloadedItems.get(id)
         item.open = !item.open
-        this.downloadedItems.set(listItem.id, item)
-        this.downloadedItems.delete('loading')
+        this.downloadedItems.delete(id)
+        this.downloadedItems.set(id, item)
     }
 
-    @action selectItem(itemId, router) {
+    // @action selectItem(itemId, router) {
+    @action selectItem(itemId) {
+        console.log('selectItem');
         let item = this.downloadedItems.get(itemId);
-        let childrenIds = item.childrenIds
         if (item) {
+            let childrenIds = item.childrenIds
+            this.selectedItem = item.id;
             if (!childrenIds) {
                 this.getTreeListChildren(item)
+                item.reload = false
             } else if (childrenIds.length > 0){
-                this.downloadedItems.set('loading': true)
                 let newListItems = childrenIds.map((id) => {return(this.downloadedItems.get(id))})
                 this.listItems = newListItems
                 item.open = true
-                this.downloadedItems.set(itemId, item)
-                this.downloadedItems.delete('loading')
+            } else {
+                this.listItems = []
             }
-            this.selectedItem = item.id;
-            router.push({pathname: ('/dashboard/' + this.pathFinder(item.kind) + item.id)})
+            this.downloadedItems.delete(itemId)
+            this.downloadedItems.set(itemId, item)
+
             if (item.kind === 'dds-project') {
                 this.project = item
             } else {
@@ -302,6 +350,10 @@ export class MainStore {
                 'File Downloader': 'flDownload'
             }
             this.projPermissions = projPermissionsCoversion[this.projectRoles.get(this.project.id)]
+
+            if (this.router) {
+                this.router.push({pathname: ('/dashboard/' + this.pathFinder(item.kind) + item.id)})
+            }
         }
     }
     
@@ -331,12 +383,12 @@ export class MainStore {
     }
     
     @action setDrawer() {
-      let width = 350;
-      let contentStyle = { transition: 'margin-left 450ms cubic-bezier(0.23, 1, 0.32, 1)' };
-      contentStyle.marginLeft = width;
-      this.drawer.set('open', true);
-      this.drawer.set('width', width);
-      this.drawer.set('contentStyle', contentStyle);
+        let width = 350;
+        let contentStyle = { transition: 'margin-left 450ms cubic-bezier(0.23, 1, 0.32, 1)' };
+        contentStyle.marginLeft = width;
+        this.drawer.set('open', true);
+        this.drawer.set('width', width);
+        this.drawer.set('contentStyle', contentStyle);
     }
     
     @action toggleBackButtonVisibility(bool){
@@ -543,6 +595,7 @@ export class MainStore {
             .then((json) => {
                 this.addToast('Folder Added');
                 this.listItems = [json, ...this.listItems];
+                this.addDownloadedItem(json, id)
                 this.loading = false;
             }).catch((ex) => {
             this.addToast('Failed to Add a New Folder');
@@ -580,6 +633,7 @@ export class MainStore {
 
     @action deleteItemSuccess(id, parentId, path) {
         this.loading = false;
+        this.removeDownloadedItem(id, parentId)
         this.listItems = this.listItems.filter(l => l.id !== id);
         this.totalItems--;
         if(this.listItems.length === 0) this.getChildren(parentId, path)
@@ -639,6 +693,7 @@ export class MainStore {
                     this.listItems.splice(index, 1, json);
                 }
                 if(this.entityObj && this.entityObj.id === id) this.entityObj = json;
+                this.downloadedItems.set(id, json);
                 this.loading = false;
             }).catch((ex) => {
             this.addToast('Failed to update item');
@@ -681,6 +736,7 @@ export class MainStore {
                 } else if(!this.isListItem) {
                     this.entityObj = json;
                 }
+                this.moveDownloadedItem(id, destination)
                 this.loading = false;
             }).catch((ex) => {
             this.addToast('Failed to move ' + type + ' to new location');
