@@ -363,12 +363,12 @@ const transportLayer = {
                 {
                     "field": "project.name",
                     "name": "project_names",
-                    "size": 20
+                    "size": 50
                 },
                 {
                     "field": "tags.label",
                     "name": "tags",
-                    "size": 20
+                    "size": 50
                 },
             ],
             "post_filters": postFilters

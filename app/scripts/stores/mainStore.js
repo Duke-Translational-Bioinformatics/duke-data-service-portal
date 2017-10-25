@@ -1522,10 +1522,10 @@ export class MainStore {
                 }
                 this.searchResultsProjects = json[0].aggs.project_names.buckets;
                 this.searchResultsTags = json[0].aggs.tags.buckets;
-                this.searchResultsFiles =  this.searchResults.filter((obj)=>{ // Todo: Remove this if not using!!!!!!!!!!
+                this.searchResultsFiles =  this.searchResults.filter((obj)=>{
                     return obj.kind === 'dds-file';
                 });
-                this.searchResultsFolders =  this.searchResults.filter((obj)=>{ // Todo: Remove this if not using!!!!!!!!!!
+                this.searchResultsFolders =  this.searchResults.filter((obj)=>{
                     return obj.kind === 'dds-folder';
                 });
                 this.responseHeaders = json[1].map;
@@ -1536,7 +1536,6 @@ export class MainStore {
     }
 
     @action toggleSearch() {
-        this.searchValue = null;
         this.showSearch = !this.showSearch;
     }
 

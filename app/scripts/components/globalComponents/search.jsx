@@ -11,45 +11,57 @@ class Search extends React.Component {
     componentDidMount() {
         if (this.refs.searchInput) { // Check if searchInput is in DOM and focus
             let search = this.refs.searchInput ? this.refs.searchInput : null;
-            if(mainStore.showSearch && search !== null) search.focus();
+            if(mainStore.showSearch && search !== null) {
+                search.focus();
+                search.select();
+            }
         }
     }
 
     render() {
-        const { screenSize, showSearch, searchValue } = mainStore;
+        const { screenSize, searchValue, searchResults, showSearch } = mainStore;
+        const { router } = this.props;
         return (showSearch ? <Paper className="navbar" style={styles.searchBar} zDepth={2}>
             <i className="material-icons"
                style={styles.searchBar.searchIcon}
-               onTouchTap={()=>this.showSearch()}>arrow_back</i>
+               onTouchTap={()=>this.showSearch()}>close</i>
             <TextField
                 ref="searchInput"
                 hintText="Search"
-                defaultValue={searchValue ? searchValue : null}
+                defaultValue={searchValue && searchResults.length && router.location.pathname.includes('search') ? searchValue : null}
                 hintStyle={styles.searchBar.hintText}
-                onKeyDown={(e) => this.search(e)}
+                onKeyDown={(e) => this.search(e, false)}
                 style={{width: '90%',position: 'absolute',top: '10%', left: screenSize.width < 680 ? '11%' : '8%'}}
                 underlineStyle={styles.searchBar.textFieldUnderline}
                 underlineFocusStyle={styles.searchBar.textFieldUnderline} />
             <i className="material-icons"
                style={styles.searchBar.closeSearchIcon}
-               onTouchTap={()=>this.showSearch()}>
-                close</i>
+               onTouchTap={(e) => this.search(e, true)}>search</i>
         </Paper> : null)
     }
 
-    search(e) {
-        if(e.keyCode === 13) {
+    search(e, isClick) {
+        if(e.keyCode === 13 || isClick) {
             let query = this.refs.searchInput.getValue();
-            mainStore.searchObjects(query, null, null, null, null);
-            !this.props.location.pathname.includes('results') ? this.props.router.push('/results') : null;
+            if(query.length) {
+                mainStore.searchObjects(query, null, null, null, null);
+                !this.props.location.pathname.includes('search') ? this.props.router.push('/search') : null;
+            }
         }
     }
 
     showSearch() {
-        if(this.props.location.pathname === '/results') this.props.router.goBack();
+        if(mainStore.prevLocation === (undefined || null) || this.props.location.pathname === '/search') {
+            if(mainStore.showSearch) mainStore.toggleSearch();
+            this.props.router.goBack();
+        } else {
+            if(mainStore.prevLocation.pathname !== '/search') {
+                mainStore.resetSearchFilters();
+                if(mainStore.showSearch) mainStore.toggleSearch();
+            }
+            if(mainStore.prevLocation === null || mainStore.prevLocation.pathname === '/search' && mainStore.showSearch) mainStore.toggleSearch();
+        }
         if(mainStore.showFilters) mainStore.toggleSearchFilters();
-        mainStore.resetSearchFilters();
-        mainStore.toggleSearch();
     }
 }
 

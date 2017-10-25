@@ -21,6 +21,7 @@ describe('Main Store', () => {
     const FILE_PATH = 'files/';
     const LOCATION_ID = 'LOCATION_ID';
     const LOCATION_PATH = '/folder/LOCATION_ID';
+    const TAG_LABEL = 'TAG_LABEL';
     const TEMPLATE_ID = 'TEMPLATE_ID';
     const TEMPLATE_NAME = 'TEMPLATE_1';
     const TEMPLATE_DESCRIPTION = 'TEMPLATE 1 DESCRIPTION';
@@ -566,22 +567,18 @@ describe('Main Store', () => {
         expect(mainStore.showSearch).toBe(false);
     });
 
-    //Todo: These methods may not be used with the new search service. Write tests after new service is implemented.
-    // @action setIncludedSearchKinds(includeKinds) {
-    //     this.includeKinds = includeKinds;
-    //     this.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
-    // }
-    //
-    // @action setSearchFilters() {
-    //     this.searchFilters = [];
-    //     this.includeProjects.forEach((projectId) => {this.searchFilters.push({"match":{"project.id": projectId}})});
-    //     this.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
-    // }
-    //
-    // @action clearSearchFilesData() {
-    //     this.searchFilesList = [];
-    //}
-    // Todo: ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    it('@action resetSearchFilters - clears search filters', () => {
+        mainStore.searchFilters = [FILE_ID];
+        mainStore.searchProjectsPostFilters = {"project.name": [PROJECT_ID]};
+        mainStore.searchTagsPostFilters = {"tags.label": [TAG_LABEL]};
+        expect(mainStore.searchFilters[0]).toBe(FILE_ID);
+        expect(mainStore.searchProjectsPostFilters["project.name"][0]).toBe(PROJECT_ID);
+        expect(mainStore.searchTagsPostFilters["tags.label"][0]).toBe(TAG_LABEL);
+        mainStore.resetSearchFilters();
+        expect(mainStore.searchFilters.length).toBe(0);
+        expect(mainStore.searchProjectsPostFilters["project.name"].length).toBe(0);
+        expect(mainStore.searchTagsPostFilters["tags.label"].length).toBe(0);
+    });
 
     it('@action toggleModals - toggles a modal', () => {
         mainStore.toggleModals(fake.modal_json.id);

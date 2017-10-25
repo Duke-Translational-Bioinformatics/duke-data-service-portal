@@ -34,8 +34,7 @@ class SearchFilters extends React.Component {
             return <ListItem key={obj.key}
                         primaryText={text}
                         leftCheckbox={<Checkbox style={styles.checkbox} checked={searchProjectsPostFilters['project.name'].includes(obj.key)} onCheck={() => mainStore.searchObjects(searchValue, null, projectPostFilter, null, null)}/>}
-                        style={styles.listItem}
-            />;
+                        style={styles.listItem}/>;
         });
 
         let tags = searchResultsTags.map((obj) => {
@@ -44,7 +43,7 @@ class SearchFilters extends React.Component {
             return <ListItem key={obj.key}
                     primaryText={text}
                     leftCheckbox={<Checkbox style={styles.checkbox} checked={searchTagsPostFilters['tags.label'].includes(obj.key)} onCheck={() => mainStore.searchObjects(searchValue, null, null, tagPostFilter, null)}/>}
-                    style={styles.listItem}/>
+                    style={styles.listItem}/>;
         });
 
         let kindFilter = projects.length ? <List style={styles.list}>
@@ -115,7 +114,7 @@ class SearchFilters extends React.Component {
                                     />
                                 </List>
                             </div> : null}
-                            {searchProjectsPostFilters['project.name'] && searchProjectsPostFilters['project.name'].length || searchTagsPostFilters.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
+                            {searchProjectsPostFilters['project.name'].length || searchTagsPostFilters['tags.label'].length || searchFilters.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
                                 <RaisedButton
                                     label="Clear Filters"
                                     labelStyle={styles.button.label}
@@ -146,7 +145,7 @@ class SearchFilters extends React.Component {
 
 const styles = {
     button: {
-        minWidth: 240,
+        minWidth: 210,
         label: {
             fontWeight: 100
         }
