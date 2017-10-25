@@ -14,6 +14,7 @@ export class MainStore {
     @observable agentKey
     @observable agentApiToken
     @observable allItemsSelected
+    @observable ancestorStatus
     @observable autoCompleteLoading
     @observable audit
     @observable currentUser
@@ -104,6 +105,7 @@ export class MainStore {
         this.agentKey = {};
         this.agentApiToken = {};
         this.allItemsSelected = false;
+        this.ancestorStatus = observable.map();
         this.autoCompleteLoading = false;
         this.audit = {};
         this.counter = 0;
@@ -267,6 +269,40 @@ export class MainStore {
     @action setListItems(items) {
         this.listItems = items
     }
+    
+    @action updateAncestorStatus(ancestors) {
+        let ancestorsDownloaded = 0
+        ancestors.forEach((ancestor) => {
+            if(this.downloadedItems.has(ancestor.id)) ancestorsDownloaded++
+        })
+        if (ancestorsDownloaded === 1) {
+            this.ancestorStatus.set('download', true)
+        } else if (ancestorsDownloaded === ancestors.length) {
+            this.ancestorStatus.set('downloadChildren', true)
+        }
+    }
+    
+    @action getAncestors(ancestors) {
+        ancestors.forEach((ancestor) => {
+            let {id, kind} = ancestor
+            if(!this.downloadedItems.has(id) && kind !== 'dds-project') {
+                this.getItem(id, this.pathFinder(kind))
+            }
+        })
+        this.ancestorStatus.set('download', false)
+    }
+    
+    @action getAncestorsChildren(ancestors) {
+        ancestors.forEach((a) => {
+            let {id, kind} = a
+            let ancestor = this.downloadedItems.get(id)
+            if(ancestor && !ancestor.childrenIds) {
+                this.getTreeListChildren(ancestor)
+            }
+        })
+        this.ancestorStatus.set('downloadComplete', true)
+        this.ancestorStatus.set('downloadChildren', false)
+    }
   
     @action getTreeListChildren(parent) {
         this.loading = true;
@@ -292,15 +328,17 @@ export class MainStore {
                         child.open = true
                     }
                     child.parentId = parentId
-                    this.downloadedItems.set(child.id, child)
+                    if(!this.downloadedItems.has(child.id)) this.downloadedItems.set(child.id, child)
                     return ( child );
                 });
                 let downloadedParent = this.downloadedItems.get(parentId)
-                downloadedParent.open = true
-                downloadedParent.childrenIds = childrenIds
-                downloadedParent.folderIds = folderIds
-                this.downloadedItems.delete(parentId)
-                this.downloadedItems.set(parentId, downloadedParent)
+                if (downloadedParent) {
+                    downloadedParent.open = true
+                    downloadedParent.childrenIds = childrenIds
+                    downloadedParent.folderIds = folderIds
+                    this.downloadedItems.delete(parentId)
+                    this.downloadedItems.set(parentId, downloadedParent)
+                }
                 this.listItems = parentsChildren
                 this.responseHeaders = headers;
                 this.loading = false;
@@ -315,7 +353,41 @@ export class MainStore {
         this.downloadedItems.set(id, item)
     }
 
-    // @action selectItem(itemId, router) {
+    @action getItem(id, path, isSelected) {
+        mainStore.loading = true;
+        mainStore.transportLayer.getEntity(id, path)
+            .then(checkStatusAndConsistency)
+            .then(response => response.json())
+            .then((json) => {
+                if(!json.error) {
+                    let item = this.downloadedItems.get(id)
+                    if(item) {
+                        json.open = true
+                        json.childrenIds = item.childrenIds
+                        json.folderIds = item.folderIds
+                        this.downloadedItems.delete(id)
+                    }
+                    this.downloadedItems.set(id, json)
+                    if(isSelected) this.selectedItem = id
+                    mainStore.loading = false;
+                } else {
+                    json.code === 'resource_not_consistent' ? mainStore.tryAsyncAgain(getItem, [id, path, isSelected]) : mainStore.handleErrors(json);
+                }
+            }).catch(ex => mainStore.handleErrors(ex))
+    }
+
+    @action setSelectedItem() {
+        console.log('setSelectedItem');
+        let {id, path} = this.router.params
+        if (id && path) {
+            if (this.downloadedItems.has(id)) {
+                this.selectedItem = id
+            } else {
+                this.getItem(id, `${path}/`, true)
+            }
+        }
+    }
+
     @action selectItem(itemId) {
         console.log('selectItem');
         let item = this.downloadedItems.get(itemId);

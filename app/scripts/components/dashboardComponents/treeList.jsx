@@ -13,11 +13,23 @@ import ProjectIcon from 'material-ui/svg-icons/content/content-paste.js';
 class TreeList extends Component {
     
     componentDidUpdate() {
-        const { downloadedItems, projects } = mainStore;
+        const { ancestorStatus, downloadedItems, projects, selectedItem } = mainStore;
+        
         if (projects && projects.length && downloadedItems.size === 0) {
             mainStore.setDownloadedItems(projects);
             mainStore.setListItems(projects);
+            mainStore.setSelectedItem();
         };
+        
+        let item = downloadedItems.get(selectedItem)
+        if (item && !ancestorStatus.get('downloadComplete')) {
+            if(!item.childrenIds) mainStore.getTreeListChildren(item)
+            if (item.ancestors && item.ancestors.length > 0) {
+                mainStore.updateAncestorStatus(item.ancestors)
+                if(ancestorStatus.get('download')) mainStore.getAncestors(item.ancestors)
+                if(ancestorStatus.get('downloadChildren')) mainStore.getAncestorsChildren(item.ancestors)
+            }
+        }
     }
 
     render() {
@@ -92,6 +104,7 @@ class TreeList extends Component {
                 })
             )
         }
+        console.log('buildTree downloadedItems.size', downloadedItems.size);
         let projectIds = downloadedItems.get('projectIds')
         let projectTree = projectIds ? looper(projectIds) : null
         return projectTree
