@@ -1,16 +1,9 @@
 import React from 'react';
 import { observable, action, map } from 'mobx';
 import mainStore from './mainStore';
-// import { computed, extendObservable } from 'mobx';
-// import cookie from 'react-cookie';
-// import authStore from '../stores/authStore';
 import transportLayer from '../transportLayer';
-// import BaseUtils from '../util/baseUtils.js';
-// import { StatusEnum, ChunkSize } from '../enum';
 import { Path } from '../util/urlEnum';
-// import { Kind } from '../util/urlEnum';
 import { checkStatusAndConsistency } from '../util/fetchUtil';
-// import { checkStatus } from '../util/fetchUtil';
 
 export class DashboardStore {
     @observable ancestorStatus
@@ -71,7 +64,7 @@ export class DashboardStore {
         }
         recursiveDelete(id)
     }
-    
+
     @action addDownloadedItem(item, parentId) {
         let parent = this.downloadedItems.get(parentId)
         parent.open = true
