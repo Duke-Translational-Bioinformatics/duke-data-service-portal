@@ -68,17 +68,12 @@ class DashboardListItems extends React.Component {
         return (
             <div style={contentStyle} className="list-items-container">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
-                    {/* {!showBatchOps && <div className="mdl-cell mdl-cell--12-col">
+                    {!showBatchOps && <div className="mdl-cell mdl-cell--12-col">
                         {addProject}
                         {uploadManager}
                         {newFolderModal}
-                    </div>} */}
-                    <div className="mdl-cell mdl-cell--12-col">
-                        {addProject}
-                        {uploadManager}
-                        {newFolderModal}
-                    </div>
-                    {/* {showBatchOps && <BatchOps {...this.props}/>} */}
+                    </div>}
+                    {showBatchOps && <BatchOps {...this.props}/>}
                 </div>
                 {uploads || loading ? <Loaders {...this.props}/> : null}
                 <Paper className="mdl-cell mdl-cell--12-col" style={styles.list}>
