@@ -4,10 +4,9 @@ import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import dashboardStore from '../../stores/dashboardStore';
 import { Path } from '../../util/urlEnum';
+import { Color } from '../../theme/customTheme';
 import Drawer from 'material-ui/Drawer';
-import FileIcon from 'material-ui/svg-icons/action/description';
-import FolderIcon from 'material-ui/svg-icons/file/folder';
-import ProjectIcon from 'material-ui/svg-icons/content/content-paste.js';
+import FontIcon from 'material-ui/FontIcon';
 import { List, ListItem } from 'material-ui/List';
 
 @observer
@@ -65,18 +64,47 @@ class TreeList extends Component {
         dashboardStore.selectItem(item.id);
     }
     
-    iconPicker(kind) {
-        let kinds = {
-            'dds-project': <ProjectIcon />,
-            'dds-folder': <FolderIcon />,
-            'dds-file': <FileIcon />
-        }
-        return (kinds[kind])
-    }
     
-    listItemStyle(itemId) {
-        if (dashboardStore.selectedItem === itemId) {
+    iconPicker(child) {
+        let kinds = {
+            'dds-project': 'content_paste',
+            'dds-folder': 'folder',
+            'dds-file': 'description'
+        }
+
+        return (
+            <FontIcon className="material-icons" style={styles.icon}>
+                {kinds[child.kind]}
+            </FontIcon>
+        )
+    }
+
+    // iconPicker(child) {
+    //     let kinds = {
+    //         'open': {
+    //             'dds-project': 'content_paste',
+    //             'dds-folder': 'folder_open',
+    //             'dds-file': 'description'
+    //         },
+    //         'closed': {
+    //             'dds-project': 'content_paste',
+    //             'dds-folder': 'folder',
+    //             'dds-file': 'description'
+    //         }
+    //     }
+    //     let iconKind = child.childrenDownloaded ? kinds.open[child.kind] : kinds.closed[child.kind]
+    //     return (
+    //         <FontIcon className="material-icons" style={styles.icon}>
+    //             {iconKind}
+    //         </FontIcon>
+    //     )
+    // }
+    
+    listItemStyle(child) {
+        if (dashboardStore.selectedItem === child.id) {
             return (styles.selected)
+        } else if (child.childrenDownloaded) {
+            return (styles.childrenDownloaded)
         }
     }
 
@@ -95,13 +123,13 @@ class TreeList extends Component {
                                 key={child.id}
                                 value={child.id}
                                 primaryText={child.name}
-                                leftIcon={this.iconPicker(child.kind)}
+                                leftIcon={this.iconPicker(child)}
                                 nestedItems={grandChildren}
                                 open={child.open}
                                 onNestedListToggle={() => {dashboardStore.toggleTreeListItem(child.id)}}
                                 onClick={() => {this.handleTouchTap(child)}}
                                 onKeyDown={(e) => {this.handleKeyDown(e, child)} }
-                                style={this.listItemStyle(child.id)}
+                                style={this.listItemStyle(child)}
                                 nestedListStyle={styles.nestedListStyle}
                             />
                         )
@@ -122,11 +150,15 @@ const styles = {
         top: 76
     },
     selected: {
-        backgroundColor: 'rgba(0, 0, 0, 0.2)'
+        backgroundColor: 'rgba(0, 0, 0, 0.2)',
+        color: Color.ltBlue
+    },
+    childrenDownloaded: {
+        color: Color.ltBlue
     },
     nestedListStyle: {
         padding: '0px'
-    } 
+    }
 }
 
 TreeList.propTypes = {

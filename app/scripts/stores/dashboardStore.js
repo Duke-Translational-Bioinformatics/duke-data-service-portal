@@ -153,6 +153,7 @@ export class DashboardStore {
                 let downloadedParent = this.downloadedItems.get(parentId)
                 if (downloadedParent) {
                     downloadedParent.open = true
+                    downloadedParent.childrenDownloaded = true
                     downloadedParent.childrenIds = childrenIds
                     downloadedParent.folderIds = folderIds
                     this.downloadedItems.delete(parentId)
