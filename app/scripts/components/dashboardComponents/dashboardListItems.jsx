@@ -19,7 +19,7 @@ import Paper from 'material-ui/Paper';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
 
 @observer
-class AccountListItems extends React.Component {
+class DashboardListItems extends React.Component {
 
     render() {
         const { allItemsSelected, filesChecked, isSafari, listItems, loading,
@@ -260,7 +260,7 @@ class AccountListItems extends React.Component {
     }
 }
 
-AccountListItems.contextTypes = {
+DashboardListItems.contextTypes = {
     muiTheme: React.PropTypes.object
 };
 
@@ -290,7 +290,7 @@ const styles = {
     }
 };
 
-AccountListItems.propTypes = {
+DashboardListItems.propTypes = {
     filesChecked: array,
     listItems: array,
     entityObj: object,
@@ -301,4 +301,4 @@ AccountListItems.propTypes = {
     loading: bool
 };
 
-export default AccountListItems;
+export default DashboardListItems;
