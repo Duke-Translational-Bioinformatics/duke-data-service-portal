@@ -11,6 +11,10 @@ import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx
 import AddProjectModal from '../../components/projectComponents/addProjectModal.jsx';
 import FileOptionsMenu from '../../components/fileComponents/fileOptionsMenu.jsx';
 import FolderOptionsMenu from '../../components/folderComponents/folderOptionsMenu.jsx';
+import ProjectOptionsMenu from '../../components/projectComponents/projectOptionsMenu.jsx';
+import FileIcon from 'material-ui/svg-icons/action/description';
+import FolderIcon from 'material-ui/svg-icons/file/folder';
+import ProjectIcon from 'material-ui/svg-icons/content/content-paste.js';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import Checkbox from 'material-ui/Checkbox';
 import FileUpload from 'material-ui/svg-icons/file/file-upload'
@@ -131,16 +135,15 @@ class DashboardListItems extends React.Component {
         }
     }
 
-    tableRowColumnName(child, showChecks) {        
-        let icon = child.kind === Kind.DDS_FOLDER ? 'folder' : 'description';
+    tableRowColumnName(child, showChecks) {
         let nameInfo = <div style={styles.linkColor}>
-            <FontIcon className="material-icons" style={styles.icon}>{icon}</FontIcon>
+            {this.iconPicker(child.kind)}
             {child.name.length > 82 ? child.name.substring(0, 82) + '...' : child.name}
             {child.kind === Kind.DDS_FILE && ' (version '+ child.current_version.version+')'}
         </div>
         if (child.kind === Kind.DDS_FILE) {
             return (
-                <TableRowColumn onTouchTap={()=>this.check(child.id, child.kind)}>
+                <TableRowColumn onTouchTap={() => this.check(child.id, child.kind)}>
                     {nameInfo}
                 </TableRowColumn>
             )
@@ -203,12 +206,14 @@ class DashboardListItems extends React.Component {
     }
     
     tableRowColumnMenu(child, showChecks, menuWidth) {
-        if (showChecks && child.kind !== Kind.DDS_PROJECT) {
+        // if (showChecks) {
             let optionsMenu
             if (child.kind === Kind.DDS_FILE) {
                 optionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FILE, true)}/>
-            } else {
+            } else if (child.kind === Kind.DDS_FOLDER) {
                 optionsMenu = <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FOLDER, true)}/>
+            } else if (child.kind === Kind.DDS_PROJECT) {
+                optionsMenu = <ProjectOptionsMenu {...this.props} clickHandler={()=>mainStore.setSelectedProject(child.id)}/>
             }
             return (
                 <TableRowColumn style={{textAlign: 'right', width: menuWidth}}>
@@ -217,11 +222,25 @@ class DashboardListItems extends React.Component {
                     </div>
                 </TableRowColumn>
             )
-        } else {
-            return (
-                <TableRowColumn style={{textAlign: 'right', width: menuWidth}}/>
-            )
+        // } else {
+        //     return (
+        //         <TableRowColumn style={{textAlign: 'right', width: menuWidth}}/>
+        //     )
+        // }
+    }
+    
+    iconPicker(kind) {
+        let kinds = {
+            'dds-project': 'content_paste',
+            'dds-folder': 'folder',
+            'dds-file': 'description'
         }
+
+        return (
+            <FontIcon className="material-icons" style={styles.icon}>
+                {kinds[kind]}
+            </FontIcon>
+        )
     }
 
     check(id, kind) {

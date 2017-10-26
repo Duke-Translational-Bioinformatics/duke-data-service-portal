@@ -15,7 +15,7 @@ export class DashboardStore {
     constructor() {
         this.ancestorStatus = observable.map();
         this.downloadedItems = observable.map();
-        this.drawer = observable.map();
+        this.drawer = observable.map({'toggleLable': 'Home'});
         this.router = null;
         this.selectedItem = null;
         this.transportLayer = transportLayer
@@ -43,14 +43,16 @@ export class DashboardStore {
     }
 
     @action removeDownloadedItem(id, parentId) {
-        let parent = this.downloadedItems.get(parentId)
-        let ci = parent.childrenIds.indexOf(id)
-        if(ci > -1) parent.childrenIds.splice(ci, 1)
-        let fi = parent.folderIds.indexOf(id)
-        if(fi > -1) parent.folderIds.splice(fi, 1)
-        this.downloadedItems.delete(parentId)
-        this.downloadedItems.set(parentId, parent)
-        
+        if (parentId) {
+            let parent = this.downloadedItems.get(parentId)
+            let ci = parent.childrenIds.indexOf(id)
+            if(ci > -1) parent.childrenIds.splice(ci, 1)
+            let fi = parent.folderIds.indexOf(id)
+            if(fi > -1) parent.folderIds.splice(fi, 1)
+            this.downloadedItems.delete(parentId)
+            this.downloadedItems.set(parentId, parent)
+        }
+
         let recursiveDelete = (itemId) => {
             let item = this.downloadedItems.get(itemId)
             if (item) {
@@ -185,6 +187,7 @@ export class DashboardStore {
                 item.open = true
             })
             this.drawer.set('collapsed', false);
+            this.drawer.set('toggleLable', 'Home');
         } else {
             mainStore.listItems = mainStore.projects
             this.selectedItem = null
@@ -193,6 +196,7 @@ export class DashboardStore {
             })
             router.push({pathname: ("/dashboard")})
             this.drawer.set('collapsed', true);
+            this.drawer.set('toggleLable', 'Expand');
         }
     }
     
@@ -239,6 +243,7 @@ export class DashboardStore {
     }
 
     @action selectItem(itemId) {
+        this.drawer.set('toggleLable', 'Home');
         let item = this.downloadedItems.get(itemId);
         if (item) {
             let childrenIds = item.childrenIds

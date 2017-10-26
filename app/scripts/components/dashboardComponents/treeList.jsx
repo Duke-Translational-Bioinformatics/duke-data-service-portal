@@ -7,8 +7,8 @@ import { Path } from '../../util/urlEnum';
 import Drawer from 'material-ui/Drawer';
 import FileIcon from 'material-ui/svg-icons/action/description';
 import FolderIcon from 'material-ui/svg-icons/file/folder';
-import { List, ListItem } from 'material-ui/List';
 import ProjectIcon from 'material-ui/svg-icons/content/content-paste.js';
+import { List, ListItem } from 'material-ui/List';
 
 @observer
 class TreeList extends Component {

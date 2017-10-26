@@ -365,6 +365,8 @@ export class MainStore {
                 this.project = json;
                 let index = this.projects.findIndex((p) => p.id === id);
                 this.projects.splice(index, 1, json);
+                dashboardStore.downloadedItems.set(json.id, json);
+                dashboardStore.setDownloadedItems(this.projects);
             }).catch((ex) => {
             this.addToast('Project Update Failed');
             this.handleErrors(ex)
@@ -378,6 +380,8 @@ export class MainStore {
             .then(() => {
                 this.addToast('Project Deleted');
                 this.projects = this.projects.filter(p => p.id !== id);
+                dashboardStore.removeDownloadedItem(id)
+                dashboardStore.setDownloadedItems(this.projects);
                 this.totalItems--;
             }).catch((ex) => {
             this.addToast('Project Delete Failed');

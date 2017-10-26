@@ -25,7 +25,7 @@ class Breadcrumbs extends Component {
                         style={styles.drawerToggle}
                     />
                     <FlatButton
-                        label={drawer.get('collapsed') ? 'Expand' : 'Home'}
+                        label={drawer.get('toggleLable')}
                         style={selectedItem ? styles.breadCrumb : styles.breadCrumbSelected}
                         onClick={() => dashboardStore.toggleCollapseTree(this.props.router)}
                     />
