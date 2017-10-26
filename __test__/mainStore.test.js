@@ -230,9 +230,9 @@ describe('Main Store', () => {
 
     it('@action uploadError - sets an array of failed uploads that can be retried', () => {
         mainStore.uploads = observable.map();
-        mainStore.uploads.set(UPLOAD_ID);
+        mainStore.uploads.set(UPLOAD_ID, {name: 'FILE_NAME', projectId: '123'});
         expect(mainStore.uploads.has(UPLOAD_ID)).toBe(true);
-        mainStore.uploadError(UPLOAD_ID, fake.file_json.name, PROJECT_ID);
+        mainStore.uploadError(UPLOAD_ID);
         expect(mainStore.failedUploads.length).toBe(1);
         expect(mainStore.failedUploads[0].id).toBe(UPLOAD_ID);
         expect(mainStore.uploads.has(UPLOAD_ID)).toBe(false);
@@ -241,9 +241,9 @@ describe('Main Store', () => {
 
     it('@action removeFailedUploads - removes failed uploads', () => {
         mainStore.uploads = observable.map();
-        mainStore.uploads.set(UPLOAD_ID);
+        mainStore.uploads.set(UPLOAD_ID, {name: 'FILE_NAME', projectId: '123'});
         expect(mainStore.uploads.has(UPLOAD_ID)).toBe(true);
-        mainStore.uploadError(UPLOAD_ID, fake.file_json.name, PROJECT_ID);
+        mainStore.uploadError(UPLOAD_ID);
         expect(mainStore.failedUploads.length).toBe(1);
         mainStore.removeFailedUploads();
         expect(mainStore.failedUploads.length).toBe(0);
