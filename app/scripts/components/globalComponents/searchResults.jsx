@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array } = PropTypes;
+const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../util/baseUtils.js';
@@ -47,11 +47,10 @@ class SearchResults extends React.Component {
         let results = searchResults && searchResults.length ? searchResults.map((child) => {
             let icon = child.kind === Kind.DDS_FOLDER ? 'folder' : 'description';
             const route = child.kind === Kind.DDS_FOLDER ? UrlGen.routes.folder(child.id) : UrlGen.routes.file(child.id);
-
             return (
-                !child.is_deleted && <TableRow key={child.id} selectable={false}>
+                <TableRow key={child.id} selectable={false}>
                     <TableRowColumn>
-                        <a href={route} className="external" onClick={(e) => this.checkForAllItemsSelected(e)}>
+                        <a href={route} className="external">
                             <div style={styles.linkColor} onClick={() => this.toggleFiltersBeforeTransition()}>
                                 <FontIcon className="material-icons" style={styles.icon}>{icon}</FontIcon>
                                 {child.name.length > 82 ? child.name.substring(0, 82) + '...' : child.name}
@@ -156,6 +155,11 @@ const styles = {
             alignItems: 'center'
         }
     },
+    icon: {
+        marginLeft: -4,
+        marginRight: 10,
+        verticalAlign: -6
+    },
     linkColor: {
         color: Color.blue
     },
@@ -171,15 +175,15 @@ const styles = {
 };
 
 SearchResults.propTypes = {
-    filesChecked: array,
-    foldersChecked: array,
     searchResults: array,
-    entityObj: object,
-    projPermissions: object,
-    responseHeaders: object,
     screenSize: object,
-    uploads: object,
-    loading: bool
+    loading: bool,
+    searchFilters: array,
+    searchProjectsPostFilters: object,
+    searchTagsPostFilters: object,
+    searchValue: string,
+    showFilters: bool,
+    uploads: object
 };
 
 export default SearchResults;
