@@ -244,6 +244,9 @@ export class DashboardStore {
 
     @action selectItem(itemId) {
         this.drawer.set('toggleLable', 'Home');
+        mainStore.filesChecked = []
+        mainStore.foldersChecked = []
+        mainStore.allItemsSelected = false
         let item = this.downloadedItems.get(itemId);
         if (item) {
             let childrenIds = item.childrenIds

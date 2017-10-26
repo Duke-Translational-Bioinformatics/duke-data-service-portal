@@ -12,9 +12,6 @@ import AddProjectModal from '../../components/projectComponents/addProjectModal.
 import FileOptionsMenu from '../../components/fileComponents/fileOptionsMenu.jsx';
 import FolderOptionsMenu from '../../components/folderComponents/folderOptionsMenu.jsx';
 import ProjectOptionsMenu from '../../components/projectComponents/projectOptionsMenu.jsx';
-import FileIcon from 'material-ui/svg-icons/action/description';
-import FolderIcon from 'material-ui/svg-icons/file/folder';
-import ProjectIcon from 'material-ui/svg-icons/content/content-paste.js';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import Checkbox from 'material-ui/Checkbox';
 import FileUpload from 'material-ui/svg-icons/file/file-upload'
@@ -31,8 +28,9 @@ class DashboardListItems extends React.Component {
             listItems, loading, projPermissions, projectRoles, responseHeaders,
             screenSize, tableBodyRenderKey, uploads, projects, project
         } = mainStore;
-        const { drawer } = dashboardStore;
+        const { drawer, selectedItem } = dashboardStore;
         const contentStyle = drawer.get('contentStyle')
+        const displayingProjects = !!(selectedItem)
 
         let showBatchOps = !!(filesChecked.length || foldersChecked.length);
         let menuWidth = screenSize.width > 1230 ? 35 : 28;
@@ -64,7 +62,7 @@ class DashboardListItems extends React.Component {
                     {this.tableRowColumnName(child, showChecks)}
                     {this.tableRowColumnLastUpdated(child, screenSize)}
                     {this.tableRowColumnSize(child, screenSize)}
-                    {this.tableRowColumnMenu(child, showChecks, menuWidth)}
+                    {this.tableRowColumnMenu(child, menuWidth)}
                 </TableRow>
             );
         }) : null;
@@ -84,12 +82,13 @@ class DashboardListItems extends React.Component {
                     {listItems.length > 0 && <Table fixedHeader={true}>
                         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                             <TableRow>
-                                <TableHeaderColumn style={styles.checkbox}>{showChecks && <Checkbox
-                                    style={checkboxStyle}
-                                    onCheck={()=> this.check(!allItemsSelected, null)}
-                                    checked={allItemsSelected}
-                                />}
-                                </TableHeaderColumn>
+                                {selectedItem && <TableHeaderColumn style={styles.checkbox}>
+                                    {showChecks && <Checkbox
+                                        style={checkboxStyle}
+                                        onCheck={()=> this.check(!allItemsSelected, null)}
+                                        checked={allItemsSelected}
+                                    />}
+                                </TableHeaderColumn>}
                                 <TableHeaderColumn>Name</TableHeaderColumn>
                                 {screenSize && screenSize.width >= 680 ? <TableHeaderColumn>Last Updated</TableHeaderColumn> : null}
                                 {screenSize && screenSize.width >= 840 ? <TableHeaderColumn style={{width: 100}}>Size</TableHeaderColumn> : null}
@@ -128,10 +127,10 @@ class DashboardListItems extends React.Component {
                     />}
                 </TableRowColumn>
             )
-        } else {
-            return (
-                <TableRowColumn style={styles.checkbox} onTouchTap={() => dashboardStore.selectItem(child.id, this.props.router)}/>
-            )
+        // } else {
+        //     return (
+        //         <TableRowColumn style={styles.checkbox} onTouchTap={() => dashboardStore.selectItem(child.id, this.props.router)}/>
+        //     )
         }
     }
 
@@ -205,41 +204,21 @@ class DashboardListItems extends React.Component {
         }
     }
     
-    tableRowColumnMenu(child, showChecks, menuWidth) {
-        // if (showChecks) {
-            let optionsMenu
-            if (child.kind === Kind.DDS_FILE) {
-                optionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FILE, true)}/>
-            } else if (child.kind === Kind.DDS_FOLDER) {
-                optionsMenu = <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FOLDER, true)}/>
-            } else if (child.kind === Kind.DDS_PROJECT) {
-                optionsMenu = <ProjectOptionsMenu {...this.props} clickHandler={()=>mainStore.setSelectedProject(child.id)}/>
-            }
-            return (
-                <TableRowColumn style={{textAlign: 'right', width: menuWidth}}>
-                    <div onClick={(e) => {e.stopPropagation()}}>
-                        {optionsMenu}
-                    </div>
-                </TableRowColumn>
-            )
-        // } else {
-        //     return (
-        //         <TableRowColumn style={{textAlign: 'right', width: menuWidth}}/>
-        //     )
-        // }
-    }
-    
-    iconPicker(kind) {
-        let kinds = {
-            'dds-project': 'content_paste',
-            'dds-folder': 'folder',
-            'dds-file': 'description'
+    tableRowColumnMenu(child, menuWidth) {
+        let optionsMenu
+        if (child.kind === Kind.DDS_FILE) {
+            optionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FILE, true)}/>
+        } else if (child.kind === Kind.DDS_FOLDER) {
+            optionsMenu = <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FOLDER, true)}/>
+        } else if (child.kind === Kind.DDS_PROJECT) {
+            optionsMenu = <ProjectOptionsMenu {...this.props} clickHandler={()=>mainStore.setSelectedProject(child.id)}/>
         }
-
         return (
-            <FontIcon className="material-icons" style={styles.icon}>
-                {kinds[kind]}
-            </FontIcon>
+            <TableRowColumn style={{textAlign: 'right', width: menuWidth}}>
+                <div onClick={(e) => {e.stopPropagation()}}>
+                    {optionsMenu}
+                </div>
+            </TableRowColumn>
         )
     }
 
@@ -269,6 +248,20 @@ class DashboardListItems extends React.Component {
         const allItemsSelected = mainStore.allItemsSelected;
         allItemsSelected ? mainStore.toggleAllItemsSelected(!allItemsSelected) : null;
         e.stopPropagation();
+    }
+    
+    iconPicker(kind) {
+        let kinds = {
+            'dds-project': 'content_paste',
+            'dds-folder': 'folder',
+            'dds-file': 'description'
+        }
+
+        return (
+            <FontIcon className="material-icons" style={styles.icon}>
+                {kinds[kind]}
+            </FontIcon>
+        )
     }
 
     loadMore(page) {
