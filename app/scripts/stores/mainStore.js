@@ -694,7 +694,12 @@ export class MainStore {
             .then(response => {})
             .then(() => {
                 this.addToast(userName + ' ' + 'has been removed from this project');
-                if(!removeSelf) this.getProjectMembers(id);
+                if(!removeSelf) {
+                    this.getProjectMembers(id);
+                } else {
+                    this.projects = this.projects.filter(p => p.id !== id);
+                    window.location.href = window.location.protocol + '//' + window.location.host + '/';
+                }
             }).catch((ex) => {
             this.addToast('Unable to remove ' + userName + ' from this project');
             this.handleErrors(ex)
