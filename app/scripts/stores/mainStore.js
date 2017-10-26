@@ -61,6 +61,7 @@ export class MainStore {
     @observable projPermissions
     @observable projectMembers
     @observable projectRole
+    @observable projectRoles
     @observable metaObjProps
     @observable responseHeaders
     @observable screenSize
@@ -687,13 +688,13 @@ export class MainStore {
         });
     }
 
-    @action deleteProjectMember(id, userId, userName) {
+    @action deleteProjectMember(id, userId, userName, removeSelf) {
         this.transportLayer.deleteProjectMember(id, userId)
             .then(this.checkResponse)
             .then(response => {})
             .then(() => {
                 this.addToast(userName + ' ' + 'has been removed from this project');
-                this.getProjectMembers(id);
+                if(!removeSelf) this.getProjectMembers(id);
             }).catch((ex) => {
             this.addToast('Unable to remove ' + userName + ' from this project');
             this.handleErrors(ex)
