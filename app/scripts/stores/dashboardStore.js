@@ -83,6 +83,7 @@ export class DashboardStore {
             this.downloadedItems.set(project.id, project)
             projectIds.push(project.id)
         })
+        mainStore.listItems = projects
         this.downloadedItems.set('projectIds', projectIds);
     }
 

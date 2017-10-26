@@ -347,6 +347,8 @@ export class MainStore {
                 this.projects.forEach((p) => {
                     userId !== null ? this.getAllProjectPermissions(p.id, authStore.currentUser.id) : null;
                 });
+                dashboardStore.downloadedItems.set(json.id, json);
+                dashboardStore.setDownloadedItems(this.projects);
                 this.loading = false;
             }).catch((ex) => {
             this.addToast('Failed to add new project');
