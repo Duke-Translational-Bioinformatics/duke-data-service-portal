@@ -3,6 +3,7 @@ const { object, string } = PropTypes;
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
+import dashboardStore from '../../stores/dashboardStore';
 import { Color } from '../../theme/customTheme';
 import { Path } from '../../util/urlEnum';
 import FlatButton from 'material-ui/FlatButton';
@@ -11,7 +12,8 @@ import Paper from 'material-ui/Paper';
 @observer
 class Breadcrumbs extends Component {
     render() {
-        const { drawer, selectedItem } = mainStore;
+        const { selectedItem } = mainStore;
+        const { drawer } = dashboardStore;
         const contentStyle = drawer.get('contentStyle')
         const drawerDirection = drawer.get('open') ? '<' : '>'
 
@@ -20,13 +22,13 @@ class Breadcrumbs extends Component {
                 <Paper style={styles.breadCrumb}>
                     <FlatButton
                         label={drawerDirection}
-                        onClick={() => mainStore.toggleDrawer()}
+                        onClick={() => dashboardStore.toggleDrawer()}
                         style={styles.drawerToggle}
                     />
                     <FlatButton
                         label={drawer.get('collapsed') ? 'Expand' : 'Home'}
                         style={selectedItem ? styles.breadCrumb : styles.breadCrumbSelected}
-                        onClick={() => mainStore.toggleCollapseTree(this.props.router)}
+                        onClick={() => dashboardStore.toggleCollapseTree(this.props.router)}
                     />
                     {this.breadCrumb()}
                 </Paper> 

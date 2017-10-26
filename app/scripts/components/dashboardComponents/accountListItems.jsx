@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 const { object, bool, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
+import dashboardStore from '../../stores/dashboardStore';
 import BaseUtils from '../../util/baseUtils.js';
 import { UrlGen, Path, Kind } from '../../util/urlEnum';
 import { Color } from '../../theme/customTheme';
@@ -21,10 +22,11 @@ import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowCol
 class AccountListItems extends React.Component {
 
     render() {
-        const { allItemsSelected, drawer, filesChecked, isSafari, listItems, loading,
+        const { allItemsSelected, filesChecked, isSafari, listItems, loading,
             projPermissions, projectRoles, responseHeaders, screenSize,
             tableBodyRenderKey, uploads, projects, project
         } = mainStore;
+        const { drawer } = dashboardStore;
         const contentStyle = drawer.get('contentStyle')
 
         let showBatchOps = filesChecked.length > 0;

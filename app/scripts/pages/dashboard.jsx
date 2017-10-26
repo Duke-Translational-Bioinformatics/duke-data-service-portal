@@ -1,6 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import mainStore from '../stores/mainStore';
+import dashboardStore from '../stores/dashboardStore';
 import TreeList from '../components/dashboardComponents/treeList.jsx';
 import Breadcrumbs from '../components/dashboardComponents/breadcrumbs.jsx';
 import AccountListItems from '../components/dashboardComponents/accountListItems.jsx';
@@ -18,7 +19,7 @@ class Dashboard extends React.Component {
         };
         if(mainStore.openTagManager) mainStore.toggleTagManager();
         mainStore.getTagLabels(); // Used to generate a list of tag labels
-        mainStore.setDrawer();
+        dashboardStore.setDrawer();
         mainStore.setRouter(this.props.router);
     }
 

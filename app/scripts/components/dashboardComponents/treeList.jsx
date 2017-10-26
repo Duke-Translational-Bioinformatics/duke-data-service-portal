@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 const { object, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
+import dashboardStore from '../../stores/dashboardStore';
 import { Path } from '../../util/urlEnum';
 import Drawer from 'material-ui/Drawer';
 import FileIcon from 'material-ui/svg-icons/action/description';
@@ -33,7 +34,8 @@ class TreeList extends Component {
     }
 
     render() {
-    		const { downloadedItems, drawer, projects, selectedItem } = mainStore;
+        const { downloadedItems, projects, selectedItem } = mainStore;
+        const { drawer } = dashboardStore;
         return (
             <Drawer
                 open={drawer.get('open')}
