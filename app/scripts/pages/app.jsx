@@ -85,7 +85,7 @@ class App extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         const routeChanged = nextProps.location !== this.props.location;
-        mainStore.toggleBackButtonVisibility(routeChanged);
+        mainStore.toggleBackButtonVisibility(routeChanged, this.props.location);
     }
 
     handleResize() {
@@ -97,11 +97,12 @@ class App extends React.Component {
     };
 
     render() {
-        const {errorModals, phiModalOpen, toasts, screenSize, serviceOutageNoticeModalOpen} = mainStore;
+        const {errorModals, phiModalOpen, toasts, toggleNav, showFilters, screenSize, serviceOutageNoticeModalOpen} = mainStore;
         const {appConfig} = authStore;
         const {location} = this.props;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let dialogs, tsts = null;
+        let slideContentClass = showFilters || toggleNav ? 'page-content slide-right' : 'page-content';
         if (toasts) {
             tsts = toasts.map(obj => {
                 return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} open={true} bodyStyle={{height: 'auto'}}/>
@@ -219,23 +220,17 @@ class App extends React.Component {
         }
         return (
             <span>
-                <div className="statusbar-overlay"></div>
-                <div className="panel-overlay"></div>
-                {!appConfig.apiToken ? '' : <LeftMenu {...this.props}/>}
                 <div className="views">
                     <div className="view view-main">
+                        {!appConfig.apiToken ? '' : <LeftMenu {...this.props}/>}
                         <Header {...this.props} {...this.state}/>
-                        <div className="pages navbar-through toolbar-through">
+                        <div className="pages">
                             <div data-page="index" className="page">
-                                <div className="searchbar-overlay"></div>
-                                <div className="page-content">
+                                <div className={slideContentClass}>
                                     {this.props.children}
                                     {tsts}
                                     {dialogs}
                                     <RetryUploads {...this.props} {...this.state}/>
-                                    <div className="content-block searchbar-not-found">
-                                        <div className="content-block-inner">Nothing Found</div>
-                                    </div>
                                 </div>
                             </div>
                         </div>

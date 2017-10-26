@@ -76,7 +76,8 @@ const styles = {
     cardTitle: {
         fontWeight: 200,
         marginBottom: -15,
-        marginRight: 24
+        marginRight: 24,
+        wordWrap: 'break-word'
     },
     cardTitle2: {
         fontWeight: 200,

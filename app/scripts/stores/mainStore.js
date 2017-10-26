@@ -34,11 +34,10 @@ export class MainStore {
     @observable foldersChecked
     @observable fileVersions
     @observable hideUploadProgress
-    @observable includeKinds
-    @observable includeProjects
     @observable isListItem
     @observable isSafari
     @observable itemsSelected
+    @observable leftNavIndex
     @observable listItems
     @observable loading
     @observable metadataTemplate
@@ -56,6 +55,7 @@ export class MainStore {
     @observable openTagManager
     @observable openUploadManager
     @observable parent
+    @observable prevLocation
     @observable projects
     @observable project
     @observable projPermissions
@@ -66,10 +66,13 @@ export class MainStore {
     @observable screenSize
     @observable searchFilesList
     @observable searchFilters
+    @observable searchProjectsPostFilters
+    @observable searchTagsPostFilters
     @observable searchResults
     @observable searchResultsFiles
     @observable searchResultsFolders
     @observable searchResultsProjects
+    @observable searchResultsTags
     @observable searchValue
     @observable selectedEntity
     @observable showBackButton
@@ -87,6 +90,7 @@ export class MainStore {
     @observable templateProperties
     @observable toasts
     @observable totalItems
+    @observable toggleNav
     @observable toggleModal
     @observable totalUploads
     @observable uploadCount
@@ -121,12 +125,11 @@ export class MainStore {
         this.foldersChecked = [];
         this.fileVersions = [];
         this.hideUploadProgress = false;
-        this.includeKinds = [];
-        this.includeProjects = [];
         this.isFolderUpload = false;
         this.isListItem = false;
         this.isSafari = false;
         this.itemsSelected = null;
+        this.leftNavIndex = null;
         this.listItems = [];
         this.loading = false;
         this.metadataTemplate = {};
@@ -144,6 +147,7 @@ export class MainStore {
         this.openTagManager = false;
         this.openUploadManager = false;
         this.parent = {};
+        this.prevLocation = null;
         this.projects = [];
         this.project = {};
         this.projPermissions = null;
@@ -155,10 +159,13 @@ export class MainStore {
         this.screenSize = {width: 0, height: 0};
         this.searchFilesList = [];
         this.searchFilters = [];
+        this.searchProjectsPostFilters = {"project.name": []};
+        this.searchTagsPostFilters = {"tags.label": []};
         this.searchResults = [];
         this.searchResultsFiles = [];
         this.searchResultsFolders = [];
         this.searchResultsProjects = [];
+        this.searchResultsTags = [];
         this.searchValue = null;
         this.serviceOutageNoticeModalOpen = cookie.load('serviceOutageNoticeModalOpen');
         this.selectedEntity = null;
@@ -176,6 +183,7 @@ export class MainStore {
         this.templateProperties = [];
         this.toasts = [];
         this.totalItems = null;
+        this.toggleNav = false;
         this.toggleModal = {open: false, id: null};
         this.totalUploads = {inProcess: 0, complete: 0};
         this.uploadCount = [];
@@ -193,8 +201,17 @@ export class MainStore {
         return checkStatus(response, authStore);
     }
 
-    @action toggleBackButtonVisibility(bool){
+    @action setLeftNavIndex(index) {
+        this.leftNavIndex = index;
+    }
+
+    @action toggleNavDrawer() {
+        this.toggleNav = !this.toggleNav;
+    }
+
+    @action toggleBackButtonVisibility(bool, prevLocation){
         this.showBackButton = bool;
+        this.prevLocation = prevLocation;
     }
 
     @action toggleAllItemsSelected(bool) {
@@ -255,32 +272,6 @@ export class MainStore {
             .then((json) => {
                 this.usage = json;
             }).catch(ex => this.handleErrors(ex))
-    }
-
-    @action getProjects(page, perPage) {
-        this.loading = true;
-        if (page == null) page = 1;
-        if (perPage == null) perPage = 25;
-        this.transportLayer.getProjects(page, perPage)
-            .then(this.checkResponse).then((response) => {
-            const results = response.json();
-            const headers = response.headers;
-            return Promise.all([results, headers]);
-        }).then((json) => {
-            let results = json[0].results;
-            let headers = json[1].map;
-            if(page <= 1) {
-                this.projects = results;
-            } else {
-                this.projects = [...this.projects, ...results];
-            }
-            const userId = authStore.currentUser.id !== undefined ? authStore.currentUser.id : this.currentUser.id !== undefined ? this.currentUser.id : null;
-            this.projects.forEach((p) => {
-                userId !== null ? this.getAllProjectPermissions(p.id, userId) : null;
-            });
-            this.responseHeaders = headers;
-            this.loading = false;
-        }).catch(ex => this.handleErrors(ex))
     }
 
     @action getProjects(page, perPage) {
@@ -869,10 +860,10 @@ export class MainStore {
             contentType = blob.type,
             slicedFile = null,
             BYTES_PER_CHUNK, SIZE, start, end;
-            SIZE = blob.size;
-            BYTES_PER_CHUNK = ChunkSize.BYTES_PER_CHUNK;
-            start = 0;
-            end = BYTES_PER_CHUNK;
+        SIZE = blob.size;
+        BYTES_PER_CHUNK = ChunkSize.BYTES_PER_CHUNK;
+        start = 0;
+        end = BYTES_PER_CHUNK;
 
         const retryArgs = [projId, blob, parentId, parentKind, label, fileId, tags];
         const fileReader = new FileReader();
@@ -908,7 +899,7 @@ export class MainStore {
             end = start + BYTES_PER_CHUNK;
             chunkNum++;
         }
-        fileReader.onload = function (e, files) {
+        fileReader.onload = function (event, files) {
             // create project upload
             mainStore.transportLayer.startUpload(projId, fileName, contentType, SIZE)
                 .then(checkStatusAndConsistency)
@@ -920,12 +911,12 @@ export class MainStore {
                         if (!uploadObj.id && !uploadObj.error) throw "no upload was created";
                         details.uploadId = uploadObj.id;
                         mainStore.uploads.set(uploadObj.id, details);
-                        mainStore.totalUploads.inProcess++;
+                        mainStore.totalUploads.inProcess = mainStore.uploads.size;
                         mainStore.hashFile(mainStore.uploads.get(uploadObj.id), uploadObj.id);
                         mainStore.updateAndProcessChunks(uploadObj.id, null, null);
-                        window.onbeforeunload = function () {// If uploading files and user navigates away from page, send them warning
-                            mainStore.warnUserBeforeLeavingPage = true;
-                            if (mainStore.warnUserBeforeLeavingPage) {
+                        window.onbeforeunload = function (e) {// If uploading files and user navigates away from page, send them warning
+                            let preventLeave = true;
+                            if (preventLeave) {
                                 return "If you refresh the page or close your browser, files being uploaded will be lost and you" +
                                     " will have to start again. Are" +
                                     " you sure you want to do this?";
@@ -1203,6 +1194,7 @@ export class MainStore {
 
     @action cancelUpload(uploadId, name) {
         if(this.uploads.has(uploadId)) this.uploads.delete(uploadId);
+        this.totalUploads.inProcess = this.uploads.size;
         this.addToast('Canceled upload of '+name);
         if(!this.uploads.size && this.warnUserBeforeLeavingPage) this.warnUserBeforeLeavingPage = false;
         if(!this.uploads.size) { // If user cancels last uploads, make sure that page loads with new list items
@@ -1212,7 +1204,7 @@ export class MainStore {
         }
     }
 
-    @action  getDownloadUrl(id, kind) {
+    @action getDownloadUrl(id, kind) {
         this.loading = true;
         this.transportLayer.getDownloadUrl(id, kind)
             .then(this.checkResponse)
@@ -1488,31 +1480,62 @@ export class MainStore {
         this.showTemplateDetails = true;
     }
 
-    @action searchObjects(value, includeKinds, includeProjects) {
-        this.searchValue = value;
+    @action searchObjects(query, filter, projectPostFilter, tagPostFilter, page) {
+        let filters;
+        if(page !== null) {
+            filters = [this.searchFilters, this.searchProjectsPostFilters, this.searchTagsPostFilters]
+        } else {
+            if (projectPostFilter !== null) {
+                if (!this.searchProjectsPostFilters['project.name'].includes(projectPostFilter)) {
+                    this.searchProjectsPostFilters['project.name'].push(projectPostFilter)
+                } else {
+                    this.searchProjectsPostFilters['project.name'] = this.searchProjectsPostFilters['project.name'].filter(f => f !== projectPostFilter);
+                }
+            }
+            if (tagPostFilter !== null) {
+                if (!this.searchTagsPostFilters['tags.label'].includes(tagPostFilter)) {
+                    this.searchTagsPostFilters['tags.label'].push(tagPostFilter)
+                } else {
+                    this.searchTagsPostFilters['tags.label'] = this.searchTagsPostFilters['tags.label'].filter(f => f !== tagPostFilter);
+                }
+            }
+            if (filter !== null) {
+                this.searchFilters.includes(filter) ? this.searchFilters = this.searchFilters.filter(f => f !== filter) : this.searchFilters.push(filter);
+            }
+            filters = [this.searchFilters, this.searchProjectsPostFilters, this.searchTagsPostFilters]
+        }
+        if(page == null) page = 1;
+        this.searchValue = query;
+        query = encodeURI(query).replace(/#/,"%23");
         this.loading = true;
-        if (includeKinds === null || !includeKinds.length) includeKinds = ['dds-file', 'dds-folder'];
-        this.transportLayer.searchObjects(value, includeKinds, includeProjects)
+        this.transportLayer.searchObjects(query, ...filters, page)
             .then(this.checkResponse)
-            .then(response => response.json())
-            .then((json) => {
-                this.searchResults = json.results;
-                this.searchResultsFiles = json.results.filter((obj)=>{
+            .then(response => {
+                const results = response.json();
+                const headers = response.headers;
+                return Promise.all([results, headers]);
+            }).then((json) => {
+                if(page <= 1) {
+                    this.searchResults = json[0].results;
+                } else {
+                    this.searchResults = [...this.searchResults, ...json[0].results];
+                }
+                this.searchResultsProjects = json[0].aggs.project_names.buckets;
+                this.searchResultsTags = json[0].aggs.tags.buckets;
+                this.searchResultsFiles =  this.searchResults.filter((obj)=>{
                     return obj.kind === 'dds-file';
                 });
-                this.searchResultsFolders = json.results.filter((obj)=>{
+                this.searchResultsFolders =  this.searchResults.filter((obj)=>{
                     return obj.kind === 'dds-folder';
                 });
-                let p = json.results.map((obj) => {
-                    return {name: obj.ancestors[0].name, id: obj.ancestors[0].id};
-                });
-                this.searchResultsProjects = BaseUtils.removeDuplicates(p, 'id');
+                this.responseHeaders = json[1].map;
+                this.nextPage = this.responseHeaders !== null && !!this.responseHeaders['x-next-page'] ? this.responseHeaders['x-next-page'][0] : null;
+                this.totalItems = this.responseHeaders !== null && !!this.responseHeaders['x-total'] ? parseInt(this.responseHeaders['x-total'][0], 10) : null;
                 this.loading = false;
             }).catch(ex =>this.handleErrors(ex))
     }
 
     @action toggleSearch() {
-        this.searchValue = null;
         this.showSearch = !this.showSearch;
     }
 
@@ -1520,20 +1543,10 @@ export class MainStore {
         this.showFilters = !this.showFilters;
     }
 
-    @action setIncludedSearchKinds(includeKinds) {
-        this.includeKinds = includeKinds;
-        this.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
-    }
-
-    @action setIncludedSearchProjects(includeProjects) {
-        this.includeProjects = includeProjects;
-        this.setSearchFilters();
-    }
-
-    @action setSearchFilters() {
+    @action resetSearchFilters() {
         this.searchFilters = [];
-        this.includeProjects.forEach((projectId) => {this.searchFilters.push({"match":{"project.id": projectId}})});
-        this.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
+        this.searchProjectsPostFilters = {"project.name": []};
+        this.searchTagsPostFilters = {"tags.label": []};
     }
 
     @action clearSearchFilesData() {

@@ -3,82 +3,124 @@ const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../util/baseUtils';
+import { Kind } from '../../util/urlEnum';
+import { Color } from '../../theme/customTheme';
 import Checkbox from 'material-ui/Checkbox';
 import Drawer from 'material-ui/Drawer';
+import FontIcon from 'material-ui/FontIcon';
 import RaisedButton from 'material-ui/RaisedButton';
 import {List, ListItem} from 'material-ui/List';
-import Divider from 'material-ui/Divider';
 
 @observer
 class SearchFilters extends React.Component {
 
     constructor(props) {
         super(props);
-        this.setIncludeKinds = _.debounce(this.setIncludeKinds ,100);
-        this.setIncludeProjects = _.debounce(this.setIncludeProjects ,100);
+        this.state = {
+            projectListToggleIcon: true,
+            tagListToggleIcon: true,
+            kindListToggleIcon: true
+        }
     }
-
-    componentDidUpdate(prevProps) {
-        if(mainStore.showFilters && (!mainStore.searchResultsFiles.length && !mainStore.searchResultsFolders.length || !mainStore.searchResultsProjects.length)) this.toggleFilters();
+    componentDidUpdate() {
+        if(mainStore.showFilters && (!mainStore.searchResultsProjects.length)) this.toggleFilters();
     }
 
     render() {
-        const { includeKinds, includeProjects, screenSize, searchResults, searchResultsFolders, searchResultsFiles, searchResultsProjects, searchValue, showFilters } = mainStore;
-        let includedKinds = includeKinds && includeKinds !== null ? includeKinds : [];
-        let projectCount = searchResults.reduce((sums,obj) => {
-            sums[obj.ancestors[0].id] = (sums[obj.ancestors[0].id] || 0) + 1;
-            return sums;
-        },{});
+        const { screenSize, searchFilters, searchProjectsPostFilters, searchTagsPostFilters, searchResultsFiles, searchResultsFolders, searchResultsProjects, searchResultsTags, searchValue, showFilters } = mainStore;
         let projects = searchResultsProjects.map((obj) => {
-            let count = projectCount.hasOwnProperty(obj.id) ? projectCount[obj.id] : 0;
-            return <span key={obj.id}>
-                <ListItem primaryText={obj.name + " ("+count+")"}
-                          leftCheckbox={<Checkbox style={styles.checkbox} checked={includeProjects.includes(obj.id)}/>}
-                          style={{textAlign: 'right'}}
-                          onClick={() => this.setIncludeProjects(obj.id)}/>
-            </span>
+            const projectPostFilter = obj.key;
+            let text = <span style={styles.checkbox.label}>{`${obj.key} `}<span style={styles.checkbox.count}>{` (${obj.doc_count})`}</span></span>;
+            return <ListItem key={obj.key}
+                        primaryText={text}
+                        leftCheckbox={<Checkbox style={styles.checkbox} checked={searchProjectsPostFilters['project.name'].includes(obj.key)} onCheck={() => mainStore.searchObjects(searchValue, null, projectPostFilter, null, null)}/>}
+                        style={styles.listItem}/>;
         });
 
+        let tags = searchResultsTags.map((obj) => {
+            const tagPostFilter = obj.key;
+            let text = <span style={styles.checkbox.label}>{`${obj.key} `}<span style={styles.checkbox.count}>{` (${obj.doc_count})`}</span></span>;
+            return <ListItem key={obj.key}
+                    primaryText={text}
+                    leftCheckbox={<Checkbox style={styles.checkbox} checked={searchTagsPostFilters['tags.label'].includes(obj.key)} onCheck={() => mainStore.searchObjects(searchValue, null, null, tagPostFilter, null)}/>}
+                    style={styles.listItem}/>;
+        });
+
+        let kindFilter = projects.length ? <List style={styles.list}>
+            <ListItem
+                primaryText="Type"
+                rightToggle={<FontIcon className="material-icons" style={{width: 24}}>{this.state.kindListToggleIcon ? 'remove' : 'add'}</FontIcon>}
+                primaryTogglesNestedList={true}
+                onNestedListToggle={() => this.toggleNestedList('kindListToggleIcon')}
+                nestedItems={[
+                    <ListItem key={BaseUtils.generateUniqueKey()}
+                        primaryText={<span style={styles.checkbox.label}>Files</span>}
+                        leftCheckbox={<Checkbox style={styles.checkbox} disabled={!searchResultsFiles.length} checked={searchFilters.includes(Kind.DDS_FILE)} onCheck={() => mainStore.searchObjects(searchValue, Kind.DDS_FILE, null, null, null)}/>}
+                        style={styles.listItem}/>,
+                    <ListItem key={BaseUtils.generateUniqueKey()}
+                        primaryText={<span style={styles.checkbox.label}>Folders</span>}
+                        leftCheckbox={<Checkbox style={styles.checkbox} disabled={!searchResultsFolders.length} checked={searchFilters.includes(Kind.DDS_FOLDER)} onCheck={() => mainStore.searchObjects(searchValue, Kind.DDS_FOLDER, null, null, null)}/>}
+                        style={styles.listItem}/>
+                ]}
+                initiallyOpen={true}
+                innerDivStyle={{paddingLeft: 4}}
+                style={{ fontSize: 14, borderBottom: '1px solid' + Color.ltGrey2}}
+                nestedListStyle={{marginLeft: -18}}/>
+        </List> : null;
 
         return (
             <div>
-                <Drawer open={showFilters} width={showFilters ? 320 : null} zDepth={1}>
+                <Drawer open={showFilters} width={showFilters ? 240 : null} zDepth={1}>
                     <div style={styles.spacer}></div>
                         <div style={styles.drawer}>
-                            {projects.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
-                                <p style={styles.listHeader}>Project</p>
-                                <Divider style={styles.listDivider}/>
-                                <List>
-                                    {projects}
-                                </List>
-                            </div> : null}
-                            {searchResultsFiles.length || searchResultsFolders.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
-                                <p style={styles.listHeader}>Type</p>
-                                <Divider style={styles.listDivider}/>
-                                <List>
-                                    {searchResultsFiles.length ? <ListItem primaryText={"Files ("+searchResultsFiles.length+")"}
-                                              leftCheckbox={<Checkbox style={styles.checkbox} checked={includedKinds.includes('dds-file')}/>}
-                                              style={{textAlign: 'right'}} onClick={() => this.setIncludeKinds('dds-file')}/> : null}
-                                    {searchResultsFolders.length ? <ListItem primaryText={"Folders ("+searchResultsFolders.length+")"}
-                                              leftCheckbox={<Checkbox style={styles.checkbox} checked={includedKinds.includes('dds-folder')}/>}
-                                              style={{textAlign: 'right'}} onClick={() => this.setIncludeKinds('dds-folder')}/> : null}
-                                </List>
-                            </div> : null}
-                            {screenSize.width < 580 ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
+                            {screenSize.width <= 700 ? <div className="mdl-cell mdl-cell--12-col">
                                 <RaisedButton
                                     label="Hide Filters"
                                     labelStyle={styles.button.label}
                                     style={styles.button}
                                     secondary={true}
-                                    onTouchTap={()=>this.toggleFilters()}/>
+                                    onTouchTap={() => this.toggleFilters()}/>
                             </div> : null}
-                            {includedKinds.length || includeProjects.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
+                            {projects.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.filterWrapper}>
+                                {kindFilter}
+                            </div> : null}
+                            {projects.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.filterWrapper}>
+                                <List style={styles.list}>
+                                    <ListItem
+                                        primaryText="Projects"
+                                        rightToggle={<FontIcon className="material-icons" style={{width: 24}}>{this.state.projectListToggleIcon ? 'remove' : 'add'}</FontIcon>}
+                                        primaryTogglesNestedList={true}
+                                        onNestedListToggle={() => this.toggleNestedList('projectListToggleIcon')}
+                                        nestedItems={projects}
+                                        initiallyOpen={true}
+                                        innerDivStyle={{paddingLeft: 4}}
+                                        style={{ fontSize: 14, borderBottom: '1px solid' + Color.ltGrey2}}
+                                        nestedListStyle={{marginLeft: -18}}
+                                    />
+                                </List>
+                            </div> : null}
+                            {tags.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.filterWrapper}>
+                                <List style={styles.list}>
+                                    <ListItem
+                                        primaryText="Tags"
+                                        rightToggle={<FontIcon className="material-icons" style={{width: 24}}>{this.state.tagListToggleIcon ? 'remove' : 'add'}</FontIcon>}
+                                        primaryTogglesNestedList={true}
+                                        onNestedListToggle={() => this.toggleNestedList('tagListToggleIcon')}
+                                        nestedItems={tags}
+                                        initiallyOpen={true}
+                                        innerDivStyle={{paddingLeft: 4}}
+                                        style={{ fontSize: 14, borderBottom: '1px solid' + Color.ltGrey2}}
+                                        nestedListStyle={{marginLeft: -18}}
+                                    />
+                                </List>
+                            </div> : null}
+                            {searchProjectsPostFilters['project.name'].length || searchTagsPostFilters['tags.label'].length || searchFilters.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
                                 <RaisedButton
                                     label="Clear Filters"
                                     labelStyle={styles.button.label}
                                     style={styles.button}
                                     secondary={true}
-                                    onTouchTap={()=>this.clearFilters(includedKinds, includeProjects, searchValue)}/>
+                                    onTouchTap={()=>this.clearFilters(searchValue)}/>
                             </div> : null}
                     </div>
                 </Drawer>
@@ -86,41 +128,40 @@ class SearchFilters extends React.Component {
         );
     }
 
-    clearFilters(includedKinds, includeProjects, searchValue) {
-        mainStore.searchObjects(searchValue, null);
-        if(includedKinds.length) mainStore.setIncludedSearchKinds([]);
-        if(includeProjects.length) mainStore.setIncludedSearchProjects([]);
+    clearFilters(searchValue) {
+        mainStore.resetSearchFilters();
+        mainStore.searchObjects(searchValue, null, null, null, null);
         if(mainStore.screenSize.width < 580) this.toggleFilters();
-    }
-
-    setIncludeKinds(id) {
-        let includeKinds = BaseUtils.removeDuplicatesFromArray(mainStore.includeKinds.slice(), id);
-        mainStore.setIncludedSearchKinds(includeKinds);
-    }
-
-    setIncludeProjects(id) {
-        let includeProjects = BaseUtils.removeDuplicatesFromArray(mainStore.includeProjects.slice(), id);
-        mainStore.setIncludedSearchProjects(includeProjects);
     }
 
     toggleFilters() {
         mainStore.toggleSearchFilters();
     }
+
+    toggleNestedList(element) {
+        this.setState({ [element] : !this.state[element] })
+    }
 }
 
 const styles = {
     button: {
-        minWidth: 270,
+        minWidth: 210,
         label: {
             fontWeight: 100
-        },
-        wrapper: {
-            textAlign: 'center'
         }
     },
     checkbox: {
         height: 0,
-        width: 0
+        width: 0,
+        left: 0,
+        count: {
+            color: Color.ltPink,
+            fontSize: 14
+        },
+        label: {
+            fontSize: 14,
+            wordWrap: 'break-word'
+        }
     },
     drawer: {
         display: 'flex',
@@ -131,18 +172,25 @@ const styles = {
         WebkitJustifyContent: 'center',
         justifyContent: 'center'
     },
+    filterWrapper: {
+        margin: '0px 8px'
+    },
+    list: {
+        padding: 0
+    },
     listDivider: {
-        width: 270,
-        marginLeft: 17
+        width: 250
     },
     listHeader: {
         textAlign: 'left',
-        marginLeft: 17,
         marginBottom: 8
     },
+    listItem: {
+        textAlign: 'left',
+        paddingLeft: 32
+    },
     spacer: {
-        height: 76,
-        marginBottom: 20
+        height: 86
     }
 };
 
@@ -154,9 +202,6 @@ SearchFilters.propTypes = {
     includeKinds: array,
     includeProjects: array,
     screenSize: object,
-    searchResults: array,
-    searchResultsFolders: array,
-    searchResultsFiles: array,
     searchResultsProjects: array,
     searchValue: string,
     showFilters: bool
