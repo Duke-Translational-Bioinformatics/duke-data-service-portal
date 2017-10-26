@@ -102,6 +102,7 @@ class TreeList extends Component {
                                 onClick={() => {this.handleTouchTap(child)}}
                                 onKeyDown={(e) => {this.handleKeyDown(e, child)} }
                                 style={this.listItemStyle(child.id)}
+                                nestedListStyle={styles.nestedListStyle}
                             />
                         )
                     }
@@ -122,7 +123,10 @@ const styles = {
     },
     selected: {
         backgroundColor: 'rgba(0, 0, 0, 0.2)'
-    }
+    },
+    nestedListStyle: {
+        padding: '0px'
+    } 
 }
 
 TreeList.propTypes = {

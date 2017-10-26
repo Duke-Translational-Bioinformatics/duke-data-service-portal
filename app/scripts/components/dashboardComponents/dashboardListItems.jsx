@@ -22,14 +22,14 @@ import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowCol
 class DashboardListItems extends React.Component {
 
     render() {
-        const { allItemsSelected, filesChecked, isSafari, listItems, loading,
-            projPermissions, projectRoles, responseHeaders, screenSize,
-            tableBodyRenderKey, uploads, projects, project
+        const { allItemsSelected, filesChecked, foldersChecked, isSafari, 
+            listItems, loading, projPermissions, projectRoles, responseHeaders,
+            screenSize, tableBodyRenderKey, uploads, projects, project
         } = mainStore;
         const { drawer } = dashboardStore;
         const contentStyle = drawer.get('contentStyle')
 
-        let showBatchOps = filesChecked.length > 0;
+        let showBatchOps = !!(filesChecked.length || foldersChecked.length);
         let menuWidth = screenSize.width > 1230 ? 35 : 28;
         let headers = responseHeaders && responseHeaders !== null ? responseHeaders : null;
         let nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
@@ -108,14 +108,14 @@ class DashboardListItems extends React.Component {
     }
     
     tableRowColumnCheckBox(child, showChecks, checkboxStyle) {
-        const { filesChecked } = mainStore;
-        
-        if (child.kind === Kind.DDS_FILE) {
+        const { filesChecked, foldersChecked } = mainStore;
+        if (child.kind === Kind.DDS_FILE || child.kind === Kind.DDS_FOLDER) {
+            let itemsChecked = child.kind === Kind.DDS_FOLDER ? foldersChecked : filesChecked;
             return (
                 <TableRowColumn style={styles.checkbox} onTouchTap={()=>this.check(child.id, child.kind)}>
                     {showChecks && <Checkbox
                         style={checkboxStyle}
-                        checked={filesChecked.includes(child.id)}
+                        checked={itemsChecked.includes(child.id)}
                     />}
                 </TableRowColumn>
             )
@@ -221,22 +221,26 @@ class DashboardListItems extends React.Component {
 
     check(id, kind) {
         let files = mainStore.filesChecked;
-        let folders = [];
+        let folders = mainStore.foldersChecked;
         let allItemsSelected = mainStore.allItemsSelected;
         let projectRole = mainStore.projectRoles.get(mainStore.project.id);
         if(id === true || id === false) {
             files = [];
+            folders = [];
             mainStore.toggleAllItemsSelected(id);
             mainStore.listItems.forEach((i) => {
-                i.kind === Kind.DDS_FILE && id === true && !files.includes(i.id) ? files.push(i.id) : null
+                i.kind === Kind.DDS_FILE ? id === true && !files.includes(i.id) ? files.push(i.id) : files = [] : id === true && !folders.includes(i.id) ? folders.push(i.id) : folders = [];
             })
         } else if (kind !== null && kind === Kind.DDS_FILE) {
             !files.includes(id) ? files = [...files, id] : files = files.filter(f => f !== id);
             allItemsSelected ? mainStore.toggleAllItemsSelected(!allItemsSelected) : null;
+        } else {
+            !folders.includes(id) ? folders = [...folders, id] : folders = folders.filter(f => f !== id);
+            allItemsSelected ? mainStore.toggleAllItemsSelected(!allItemsSelected) : null;
         }
         if(projectRole !== 'Project Viewer' && projectRole !== 'File Uploader') mainStore.handleBatch(files, folders);
     }
-
+    
     checkForAllItemsSelected(e) {
         const allItemsSelected = mainStore.allItemsSelected;
         allItemsSelected ? mainStore.toggleAllItemsSelected(!allItemsSelected) : null;
@@ -292,6 +296,7 @@ const styles = {
 
 DashboardListItems.propTypes = {
     filesChecked: array,
+    foldersChecked: array,
     listItems: array,
     entityObj: object,
     projPermissions: object,

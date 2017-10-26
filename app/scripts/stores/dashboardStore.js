@@ -180,14 +180,14 @@ export class DashboardStore {
     
     @action toggleCollapseTree(router) {
         if (this.drawer.get('collapsed')) {
-            mainStore.downloadedItems.forEach((item) => {
+            this.downloadedItems.forEach((item) => {
                 item.open = true
             })
             this.drawer.set('collapsed', false);
         } else {
             mainStore.listItems = mainStore.projects
-            mainStore.selectedItem = ''
-            mainStore.downloadedItems.forEach((item) => {
+            this.selectedItem = null
+            this.downloadedItems.forEach((item) => {
                 item.open = false
             })
             router.push({pathname: ("/dashboard")})
