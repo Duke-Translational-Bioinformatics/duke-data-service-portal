@@ -8,6 +8,7 @@ import { UrlGen, Path, Kind } from '../../util/urlEnum';
 import { Color } from '../../theme/customTheme';
 import BatchOps from '../../components/globalComponents/batchOps.jsx';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
+import AddProjectModal from '../../components/projectComponents/addProjectModal.jsx';
 import FileOptionsMenu from '../../components/fileComponents/fileOptionsMenu.jsx';
 import FolderOptionsMenu from '../../components/folderComponents/folderOptionsMenu.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
@@ -36,6 +37,7 @@ class DashboardListItems extends React.Component {
         let totalChildren = headers !== null && !!headers['x-total'] ? headers['x-total'][0] : null;
         let newFolderModal = null;
         let uploadManager = null;
+        let addProject = null;
         let projectRole = projectRoles.get(project.id);
         let showChecks = (projectRole && projectRole !== 'View Only' && projectRole !== 'File Uploader');
         let checkboxStyle = { maxWidth: 24, float: 'left', marginRight: isSafari ? 16 : 0 };
@@ -48,6 +50,8 @@ class DashboardListItems extends React.Component {
                                                                                                     icon={<FileUpload color={Color.pink} />}
                                                                                                     onTouchTap={() => this.toggleUploadManager()}/>;
             showChecks = (projectRole !== 'Project Viewer' && projectRole !== 'File Uploader');
+        } else {
+            addProject = <AddProjectModal {...this.props} />
         }
         let children = listItems && listItems.length ? listItems.map((child) => {
             return (
@@ -64,11 +68,17 @@ class DashboardListItems extends React.Component {
         return (
             <div style={contentStyle} className="list-items-container">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
-                    {!showBatchOps && <div className="mdl-cell mdl-cell--12-col">
+                    {/* {!showBatchOps && <div className="mdl-cell mdl-cell--12-col">
+                        {addProject}
                         {uploadManager}
                         {newFolderModal}
-                    </div>}
-                    {showBatchOps && <BatchOps {...this.props}/>}
+                    </div>} */}
+                    <div className="mdl-cell mdl-cell--12-col">
+                        {addProject}
+                        {uploadManager}
+                        {newFolderModal}
+                    </div>
+                    {/* {showBatchOps && <BatchOps {...this.props}/>} */}
                 </div>
                 {uploads || loading ? <Loaders {...this.props}/> : null}
                 <Paper className="mdl-cell mdl-cell--12-col" style={styles.list}>

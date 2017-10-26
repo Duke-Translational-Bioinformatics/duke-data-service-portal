@@ -114,9 +114,7 @@ class AddProjectModal extends React.Component {
 
 const styles = {
     addProject: {
-        float: 'right',
-        position: 'relative',
-        margin: '12px -9px 0px 0px'
+        float: 'right'
     },
     dialogStyles: {
         textAlign: 'center',

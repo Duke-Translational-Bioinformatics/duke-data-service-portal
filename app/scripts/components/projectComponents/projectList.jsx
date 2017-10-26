@@ -41,7 +41,9 @@ class ProjectList extends React.Component {
                     <div style={styles.title}>
                         <h4>Projects</h4>
                     </div>
-                    <AddProjectModal {...this.props} />
+                    <div style={styles.buttonRow}>
+                        <AddProjectModal {...this.props} />
+                    </div>
                     <Loaders {...this.props} />
                 </div>
                 { projectList }
@@ -82,6 +84,10 @@ const styles = {
         fontWeight: 200,
         marginBottom: -15,
         padding: '4px 4px 4px 16px'
+    },
+    buttonRow: {
+        position: 'relative',
+        margin: '12px -9px 0px 0px'
     },
     icon: {
         fontSize: 36,
