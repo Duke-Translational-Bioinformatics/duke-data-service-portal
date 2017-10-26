@@ -12,8 +12,7 @@ import Paper from 'material-ui/Paper';
 @observer
 class Breadcrumbs extends Component {
     render() {
-        const { selectedItem } = mainStore;
-        const { drawer } = dashboardStore;
+        const { drawer, selectedItem } = dashboardStore;
         const contentStyle = drawer.get('contentStyle')
         const drawerDirection = drawer.get('open') ? '<' : '>'
 
@@ -45,8 +44,8 @@ class Breadcrumbs extends Component {
     }
 
     breadCrumb() {
-        const { selectedItem } = mainStore
-        let item = mainStore.downloadedItems.get(selectedItem)
+        const { selectedItem, downloadedItems } = dashboardStore;
+        let item = downloadedItems.get(selectedItem)
         if (item) {
             let ancestorPath = [item]
             if (item.ancestors) {
@@ -59,7 +58,7 @@ class Breadcrumbs extends Component {
                             key={bc.id}
                             label={bc.name.length > 20 ? bc.name.substring(0, 20) + '...' : bc.name}
                             style={selectedItem === bc.id ? styles.breadCrumbSelected : styles.breadCrumb}
-                            onClick={() => mainStore.selectItem(bc.id, this.pathFinder(bc.kind))}
+                            onClick={() => dashboardStore.selectItem(bc.id, this.pathFinder(bc.kind))}
                         >
                             <span style={{color: styles.breadCrumb.color}}>/</span>
                         </FlatButton>
@@ -85,6 +84,7 @@ const styles = {
 };
 
 Breadcrumbs.propTypes = {
+    downloadedItems: object,
     drawer: object,
     selectedItem: string
 };

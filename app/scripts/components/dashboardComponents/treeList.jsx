@@ -14,28 +14,30 @@ import ProjectIcon from 'material-ui/svg-icons/content/content-paste.js';
 class TreeList extends Component {
     
     componentDidUpdate() {
-        const { ancestorStatus, downloadedItems, projects, selectedItem } = mainStore;
+        const { projects } = mainStore;
+        const { ancestorStatus, downloadedItems, selectedItem } = dashboardStore;
         
         if (projects && projects.length && downloadedItems.size === 0) {
-            mainStore.setDownloadedItems(projects);
+            dashboardStore.setDownloadedItems(projects);
             mainStore.setListItems(projects);
-            mainStore.setSelectedItem();
+            dashboardStore.setSelectedItem();
         };
         
         let item = downloadedItems.get(selectedItem)
         if (item && !ancestorStatus.get('downloadComplete')) {
-            if(!item.childrenIds) mainStore.getTreeListChildren(item)
+            if(!item.childrenIds) dashboardStore.getTreeListChildren(item)
             if (item.ancestors && item.ancestors.length > 0) {
-                mainStore.updateAncestorStatus(item.ancestors)
-                if(ancestorStatus.get('download')) mainStore.getAncestors(item.ancestors)
-                if(ancestorStatus.get('downloadChildren')) mainStore.getAncestorsChildren(item.ancestors)
+                dashboardStore.updateAncestorStatus(item.ancestors)
+                if(ancestorStatus.get('download')) dashboardStore.getAncestors(item.ancestors)
+                if(ancestorStatus.get('downloadChildren')) dashboardStore.getAncestorsChildren(item.ancestors)
             }
         }
     }
 
     render() {
-        const { downloadedItems, projects, selectedItem } = mainStore;
-        const { drawer } = dashboardStore;
+        const { projects } = mainStore;
+        const { downloadedItems, drawer, selectedItem } = dashboardStore;
+        
         return (
             <Drawer
                 open={drawer.get('open')}
@@ -60,7 +62,7 @@ class TreeList extends Component {
     }
     
     handleTouchTap(item) {
-        mainStore.selectItem(item.id);
+        dashboardStore.selectItem(item.id);
     }
     
     iconPicker(kind) {
@@ -73,7 +75,7 @@ class TreeList extends Component {
     }
     
     listItemStyle(itemId) {
-        if (mainStore.selectedItem === itemId) {
+        if (dashboardStore.selectedItem === itemId) {
             return (styles.selected)
         }
     }
@@ -82,7 +84,7 @@ class TreeList extends Component {
         let looper = (itemIds) => {
             return (
                 itemIds.map((id) => {
-                    let child = mainStore.downloadedItems.get(id)
+                    let child = downloadedItems.get(id)
                     if (child && child.kind !== 'dds-file') {
                         let grandChildren = []
                         if (child.folderIds && child.folderIds.length > 0) {
@@ -96,7 +98,7 @@ class TreeList extends Component {
                                 leftIcon={this.iconPicker(child.kind)}
                                 nestedItems={grandChildren}
                                 open={child.open}
-                                onNestedListToggle={() => {mainStore.toggleTreeListItem(child.id)}}
+                                onNestedListToggle={() => {dashboardStore.toggleTreeListItem(child.id)}}
                                 onClick={() => {this.handleTouchTap(child)}}
                                 onKeyDown={(e) => {this.handleKeyDown(e, child)} }
                                 style={this.listItemStyle(child.id)}

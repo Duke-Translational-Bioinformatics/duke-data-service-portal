@@ -121,7 +121,7 @@ class AccountListItems extends React.Component {
             )
         } else {
             return (
-                <TableRowColumn style={styles.checkbox} onTouchTap={() => mainStore.selectItem(child.id, this.props.router)}/>
+                <TableRowColumn style={styles.checkbox} onTouchTap={() => dashboardStore.selectItem(child.id, this.props.router)}/>
             )
         }
     }
@@ -141,7 +141,7 @@ class AccountListItems extends React.Component {
             )
         } else {
             return (
-                <TableRowColumn onTouchTap={() => mainStore.selectItem(child.id, this.props.router)}>
+                <TableRowColumn onTouchTap={() => dashboardStore.selectItem(child.id, this.props.router)}>
                     {nameInfo}
                 </TableRowColumn>
             )
@@ -164,7 +164,7 @@ class AccountListItems extends React.Component {
                 )
             } else {
                 return (
-                    <TableRowColumn onTouchTap={() => mainStore.selectItem(child.id, this.props.router)}>
+                    <TableRowColumn onTouchTap={() => dashboardStore.selectItem(child.id, this.props.router)}>
                       <span>{updatedInfo}</span>
                     </TableRowColumn>
                 )
@@ -189,7 +189,7 @@ class AccountListItems extends React.Component {
                 )
             } else {
                 return (
-                    <TableRowColumn onTouchTap={() => mainStore.selectItem(child.id, this.props.router)} style={{width: 100}}>
+                    <TableRowColumn onTouchTap={() => dashboardStore.selectItem(child.id, this.props.router)} style={{width: 100}}>
                         {sizeInfo}
                     </TableRowColumn>
                 )
