@@ -202,7 +202,6 @@ class Details extends React.Component {
             userId: null,
             userName: null
         });
-        if(removeSelf) this.props.router.push('/');
     }
 
     handleMemberButton() {
