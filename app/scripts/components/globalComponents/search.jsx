@@ -43,7 +43,11 @@ class Search extends React.Component {
 
     search() {
         let query = this.refs.searchInput.getValue();
-        mainStore.searchObjects(query, null, null, null, null);
+        if(query.length){
+            mainStore.searchObjects(query, null, null, null, null);
+        } else {
+            mainStore.resetSearchResults();
+        }
         !this.props.location.pathname.includes('search') ? this.props.router.push('/search') : null;
     }
 

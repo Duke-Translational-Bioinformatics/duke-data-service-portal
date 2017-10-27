@@ -7,7 +7,6 @@ import { UrlGen } from '../../util/urlEnum';
 import ProjectOptionsMenu from './projectOptionsMenu.jsx';
 import ProjectOptions from './projectOptions.jsx';
 import Details from './details.jsx';
-import UploadManager from '../globalComponents/uploadManager.jsx';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import Card from 'material-ui/Card';
@@ -30,15 +29,12 @@ class ProjectDetails extends React.Component {
         let createdBy = project && project.audit ? project.audit.created_by.full_name : '';
         let projectName = project ? project.name : '';
         let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
-        let uploadMdl = null;
         let optionsMenu = null;
         if (prjPrm !== null) {
-            uploadMdl = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <UploadManager {...this.props}/>;
             optionsMenu = prjPrm === 'prjCrud' ? <ProjectOptionsMenu {...this.props} /> : null;
         }
         return (
             <Card className="mdl-cell mdl-cell--12-col" style={styles.container}>
-                { uploadMdl }
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
                         <a href={UrlGen.routes.home()} style={styles.back} className="external mdl-color-text--grey-800">
