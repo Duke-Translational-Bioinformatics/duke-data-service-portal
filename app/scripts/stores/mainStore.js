@@ -1555,6 +1555,18 @@ export class MainStore {
         this.searchTagsPostFilters = {"tags.label": []};
     }
 
+    @action resetSearchResults() {
+        this.searchResults = [];
+        this.searchResultsProjects = [];
+        this.searchResultsTags = [];
+        this.searchResultsFiles = [];
+        this.searchResultsFolders = [];
+        this.searchValue = null;
+        this.responseHeaders = {};
+        this.nextPage = null;
+        this.totalItems = null;
+    }
+
     @action clearSearchFilesData() {
         this.searchFilesList = [];
     }

@@ -7,6 +7,7 @@ import Header from '../components/globalComponents/header.jsx';
 import Footer from '../components/globalComponents/footer.jsx';
 import LeftMenu from '../components/globalComponents/leftMenu.jsx';
 import RetryUploads from '../components/globalComponents/retryUploads.jsx';
+import UploadManager from '../components/globalComponents/uploadManager.jsx';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import Snackbar from 'material-ui/Snackbar';
@@ -230,6 +231,7 @@ class App extends React.Component {
                                     {this.props.children}
                                     {tsts}
                                     {dialogs}
+                                    <UploadManager {...this.props}/>
                                     <RetryUploads {...this.props} {...this.state}/>
                                 </div>
                             </div>

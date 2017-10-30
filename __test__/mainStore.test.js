@@ -555,10 +555,6 @@ describe('Main Store', () => {
         expect(mainStore.showTemplateDetails).toBe(true);
     });
 
-    // it('@action searchObjects - searches files and folders', () => {
-    //  Todo: This service is being rebuilt. Implement tests after new service is in place
-    // });
-
     it('@action toggleSearch - toggles search field', () => {
         mainStore.toggleSearch();
         expect(mainStore.searchValue).toBeNull();
@@ -578,6 +574,30 @@ describe('Main Store', () => {
         expect(mainStore.searchFilters.length).toBe(0);
         expect(mainStore.searchProjectsPostFilters["project.name"].length).toBe(0);
         expect(mainStore.searchTagsPostFilters["tags.label"].length).toBe(0);
+    });
+
+    it('@action resetSearchResults - clears search results', () => {
+        mainStore.searchResults = fake.list_items_json.results;
+        mainStore.searchResultsProjects = fake.list_items_json.results;
+        mainStore.searchResultsTags = fake.list_items_json.results;
+        mainStore.searchResultsFiles = fake.list_items_json.results;
+        mainStore.searchResultsFolders = fake.list_items_json.results;
+        mainStore.totalItems = 2;
+        expect(mainStore.searchResults.length).toBe(2);
+        expect(mainStore.searchResultsProjects.length).toBe(2);
+        expect(mainStore.searchResultsTags.length).toBe(2);
+        expect(mainStore.searchResultsFiles.length).toBe(2);
+        expect(mainStore.searchResultsFolders.length).toBe(2);
+        expect(mainStore.totalItems).toBe(2);
+        mainStore.resetSearchResults();
+        expect(mainStore.searchResults.length).toBe(0);
+        expect(mainStore.searchResultsProjects.length).toBe(0);
+        expect(mainStore.searchResultsTags.length).toBe(0);
+        expect(mainStore.searchResultsFiles.length).toBe(0);
+        expect(mainStore.searchResultsFolders.length).toBe(0);
+        expect(mainStore.searchValue).toBe(null);
+        expect(mainStore.totalItems).toBe(null);
+        expect(mainStore.nextPage).toBe(null);
     });
 
     it('@action toggleModals - toggles a modal', () => {

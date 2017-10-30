@@ -5,7 +5,6 @@ import mainStore from '../../stores/mainStore';
 import { Color } from '../../theme/customTheme';
 import { Path } from '../../util/urlEnum';
 import FolderOptionsMenu from './folderOptionsMenu.jsx';
-import UploadManager from '../globalComponents/uploadManager.jsx';
 import BaseUtils from '../../util/baseUtils';
 import Card from 'material-ui/Card';
 import FontIcon from 'material-ui/FontIcon';
@@ -20,16 +19,13 @@ class FolderPath extends React.Component {
         let parentId = entityObj ? entityObj.parent.id : null;
         let name = entityObj ? entityObj.name : '';
         let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
-        let uploadMdl = null;
         let optionsMenu = null;
         if (prjPrm !== null) {
-            uploadMdl = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <UploadManager {...this.props}/>;
             optionsMenu = prjPrm === 'prjCrud' || prjPrm === 'flCrud' ? optionsMenu = <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity()} /> : null;
         }
         let path = ancestors !== null ? BaseUtils.getFilePath(ancestors) : '';
         return (
             <Card className="project-container mdl-cell mdl-cell--12-col" style={styles.container}>
-                { uploadMdl }
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
                         <a href={'/#/' + BaseUtils.getUrlPath(parentKind) + parentId } className="mdl-color-text--grey-800 external" onTouchTap={() => this.goBack()}>

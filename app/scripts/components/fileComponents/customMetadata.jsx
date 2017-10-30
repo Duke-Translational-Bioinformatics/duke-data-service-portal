@@ -40,16 +40,15 @@ class CustomMetadata extends React.Component {
                     </div>
                </span>
         }) : null;
-        let customMetadata = <Card className="project-container mdl-color--white content mdl-color-text--grey-800"
-                                   style={styles.card}>
-            <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
+        let customMetadata = <Card style={styles.card}>
+            <div className="mdl-cell mdl-cell--12-col" style={styles.list}>
                 <div className="list-block">
                     {metadataItems}
                 </div>
             </div>
         </Card>;
         return (
-            <div className="project-container" style={styles.wrapper}>
+            <div className="project-container mdl-cell mdl-cell--12-col" style={styles.wrapper}>
                 <h5 className="mdl-color-text--grey-800" style={styles.heading}>Custom Metadata</h5>
                 {customMetadata}
             </div>
@@ -89,7 +88,7 @@ const styles = {
         paddingRight: 0
     },
     wrapper: {
-        marginTop: 0
+        margin: '0 auto'
     }
 };
 

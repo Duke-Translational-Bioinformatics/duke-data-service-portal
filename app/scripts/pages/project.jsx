@@ -1,5 +1,5 @@
 import React from 'react';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import mainStore from '../stores/mainStore';
 import ListItems from '../components/globalComponents/listItems.jsx';
 import ProjectDetails from '../components/projectComponents/projectDetails.jsx';
@@ -7,7 +7,7 @@ import FileOptions from '../components/fileComponents/fileOptions.jsx';
 import FolderOptions from '../components/folderComponents/folderOptions.jsx';
 import TagManager from '../components/globalComponents/tagManager.jsx'
 import VersionUpload from '../components/fileComponents/versionUpload.jsx';
-import { Path, Kind } from '../util/urlEnum';
+import { Path } from '../util/urlEnum';
 
 @observer
 class Project extends React.Component {
