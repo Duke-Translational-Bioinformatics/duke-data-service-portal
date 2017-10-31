@@ -31,8 +31,7 @@ class SearchFilters extends React.Component {
         let projects = searchResultsProjects.map((obj) => {
             const projectPostFilter = obj.key;
             let text = <span style={styles.checkbox.label}>{`${obj.key} `}<span style={styles.checkbox.count}>{` (${obj.doc_count})`}</span></span>;
-            return <ListItem key={obj.key}
-                        onClick={() => mainStore.searchObjects(searchValue, null, projectPostFilter, null, null)}
+            return <ListItem key={obj.key} onClick={(e) => this.search(e, searchValue, null, projectPostFilter, null, null)}
                         primaryText={text}
                         leftCheckbox={<Checkbox style={styles.checkbox} checked={searchProjectsPostFilters['project.name'].includes(obj.key)} />}
                         style={styles.listItem}/>;
@@ -41,8 +40,7 @@ class SearchFilters extends React.Component {
         let tags = searchResultsTags.map((obj) => {
             const tagPostFilter = obj.key;
             let text = <span style={styles.checkbox.label}>{`${obj.key} `}<span style={styles.checkbox.count}>{` (${obj.doc_count})`}</span></span>;
-            return <ListItem key={obj.key}
-                    onClick={() => mainStore.searchObjects(searchValue, null, null, tagPostFilter, null)}
+            return <ListItem key={obj.key} onClick={(e) => this.search(e, searchValue, null, null, tagPostFilter, null)}
                     primaryText={text}
                     leftCheckbox={<Checkbox style={styles.checkbox} checked={searchTagsPostFilters['tags.label'].includes(obj.key)} />}
                     style={styles.listItem}/>;
@@ -55,13 +53,11 @@ class SearchFilters extends React.Component {
                 primaryTogglesNestedList={true}
                 onNestedListToggle={() => this.toggleNestedList('kindListToggleIcon')}
                 nestedItems={[
-                    <ListItem key={BaseUtils.generateUniqueKey()}
-                        onClick={() => mainStore.searchObjects(searchValue, Kind.DDS_FILE, null, null, null)}
+                    <ListItem key={BaseUtils.generateUniqueKey()} onClick={(e) => this.search(e, searchValue, Kind.DDS_FILE, null, null, null)}
                         primaryText={<span style={styles.checkbox.label}>Files</span>}
                         leftCheckbox={<Checkbox style={styles.checkbox} disabled={!searchResultsFiles.length} checked={searchFilters.includes(Kind.DDS_FILE)} />}
                         style={styles.listItem}/>,
-                    <ListItem key={BaseUtils.generateUniqueKey()}
-                        onClick={() => mainStore.searchObjects(searchValue, Kind.DDS_FOLDER, null, null, null)}
+                    <ListItem key={BaseUtils.generateUniqueKey()} onClick={(e) => this.search(e, searchValue, Kind.DDS_FOLDER, null, null, null)}
                         primaryText={<span style={styles.checkbox.label}>Folders</span>}
                         leftCheckbox={<Checkbox style={styles.checkbox} disabled={!searchResultsFolders.length} checked={searchFilters.includes(Kind.DDS_FOLDER)} />}
                         style={styles.listItem}/>
@@ -130,6 +126,11 @@ class SearchFilters extends React.Component {
                 </Drawer>
             </div>
         );
+    }
+
+    search(e, arg1, arg2, arg3, arg4, arg5) {
+        e.preventDefault(); // Prevents ghostclick on listItem (https://github.com/callemall/material-ui/issues/5070)
+        mainStore.searchObjects(arg1, arg2, arg3, arg4, arg5);
     }
 
     clearFilters(searchValue) {
