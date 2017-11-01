@@ -129,7 +129,7 @@ class SearchFilters extends React.Component {
     }
 
     search(e, arg1, arg2, arg3, arg4, arg5) {
-        e.preventDefault(); // Prevents ghostclick on listItem (https://github.com/callemall/material-ui/issues/5070)
+        e.preventDefault(); // Prevents "ghostclick" on listItem (https://github.com/callemall/material-ui/issues/5070)
         mainStore.searchObjects(arg1, arg2, arg3, arg4, arg5);
     }
 
