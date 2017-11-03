@@ -86,13 +86,15 @@ class ListItems extends React.Component {
                         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                             <TableRow>
                                 <TableHeaderColumn>{showChecks && <Checkbox
+                                    label="SELECT ALL"
+                                    labelStyle={{fontSize: 14, color: Color.ltPink}}
                                     style={checkboxStyle}
                                     onCheck={()=> this.check(!allItemsSelected, null)}
                                     checked={allItemsSelected}
                                 />}
                                 </TableHeaderColumn>
-                                {screenSize && screenSize.width >= 680 ? <TableHeaderColumn>Last Updated</TableHeaderColumn> : null}
-                                {screenSize && screenSize.width >= 840 ? <TableHeaderColumn style={{width: 100}}>Size</TableHeaderColumn> : null}
+                                {screenSize && screenSize.width >= 680 ? <TableHeaderColumn style={{fontSize: 14}}>LAST UPDATED</TableHeaderColumn> : null}
+                                {screenSize && screenSize.width >= 840 ? <TableHeaderColumn style={{width: 100, fontSize: 14}}>SIZE</TableHeaderColumn> : null}
                                 <TableHeaderColumn style={{textAlign: 'right', width: menuWidth}}></TableHeaderColumn>
                             </TableRow>
                         </TableHeader>
