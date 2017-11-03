@@ -91,8 +91,8 @@ class SearchResults extends React.Component {
                             <TableRow>
                                 <TableHeaderColumn>
                                 </TableHeaderColumn>
-                                {screenSize && screenSize.width >= 680 ? <TableHeaderColumn>Last Updated</TableHeaderColumn> : null}
-                                {screenSize && screenSize.width >= 840 ? <TableHeaderColumn style={{width: 100}}>Size</TableHeaderColumn> : null}
+                                {screenSize && screenSize.width >= 680 ? <TableHeaderColumn style={{fontSize: 14}}>LAST UPDATED</TableHeaderColumn> : null}
+                                {screenSize && screenSize.width >= 840 ? <TableHeaderColumn style={{width: 100, fontSize: 14}}>SIZE</TableHeaderColumn> : null}
                             </TableRow>
                         </TableHeader>
                         <TableBody key={tableBodyRenderKey} showRowHover={true} displayRowCheckbox={false} deselectOnClickaway={false}>
