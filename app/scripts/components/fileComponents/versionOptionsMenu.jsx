@@ -1,8 +1,9 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import provenanceStore from '../../stores/provenanceStore';
+import { Roles } from '../../enum';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -23,51 +24,11 @@ class VersionsOptionsMenu extends React.Component {
     }
 
     render() {
-        const { entityObj, projPermissions, screenSize, toggleModal } = mainStore;
+        const { entityObj, projectRole, screenSize, toggleModal } = mainStore;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let fileId = mainStore.entityObj && mainStore.entityObj.file ? mainStore.entityObj.file.id : null;
         let id = this.props.params.id;
-        let labelText = entityObj ? entityObj.label : null;
-        let menu = null;
-        let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
-        
-        if (prjPrm !== null) {
-            if(prjPrm === 'viewOnly' || prjPrm === 'flDownload'){
-                menu = <IconMenu
-                            iconButtonElement={<IconButton iconClassName="material-icons" style={{marginRight: -10}}>more_vert</IconButton>}
-                            anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-                            targetOrigin={{horizontal: 'right', vertical: 'top'}}>
-                            <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
-                                         onTouchTap={() => this.openProv(id, fileId)}/>
-                </IconMenu>;
-            }
-            if (prjPrm === 'flUpload') {
-                menu = <IconMenu
-                            iconButtonElement={<IconButton iconClassName="material-icons" style={{marginRight: -10}}>more_vert</IconButton>}
-                            anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-                            targetOrigin={{horizontal: 'right', vertical: 'top'}}>
-                            <MenuItem primaryText="Edit Version Label" leftIcon={<i className="material-icons">mode_edit</i>}
-                                         onTouchTap={() => this.toggleModal('editVersion')}/>
-                            <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
-                                      onTouchTap={() => this.openProv(id, fileId)}/>
-                </IconMenu>;
-            }
-            if (prjPrm === 'prjCrud' || prjPrm === 'flCrud') {
-                menu = <IconMenu
-                            iconButtonElement={<IconButton iconClassName="material-icons" style={{marginRight: -10}}>more_vert</IconButton>}
-                            anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-                            targetOrigin={{horizontal: 'right', vertical: 'top'}}>
-                            <MenuItem primaryText="Delete Version" leftIcon={<i className="material-icons">delete</i>}
-                                      onTouchTap={() => this.toggleModal('dltVersion')}/>
-                            <MenuItem primaryText="Edit Version Label"
-                                      leftIcon={<i className="material-icons">mode_edit</i>}
-                                      onTouchTap={() => this.toggleModal('editVersion')}/>
-                            <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
-                                   onTouchTap={() => this.openProv(id, fileId)}/>
-                </IconMenu>;
-            }
-        }
-        
+
         const deleteActions = [
             <FlatButton
                 label="CANCEL"
@@ -118,7 +79,7 @@ class VersionsOptionsMenu extends React.Component {
                             autoFocus={true}
                             onFocus={()=>this.selectText()}
                             hintText="Version Label"
-                            defaultValue={labelText}
+                            defaultValue={entityObj ? entityObj.label : ''}
                             errorText={this.state.floatingErrorText}
                             ref={(input) => this.versionLabelText = input}
                             floatingLabelText="Version Label"
@@ -127,7 +88,18 @@ class VersionsOptionsMenu extends React.Component {
                             onChange={(e)=>this.validateText(e)}/> <br/>
                     </form>
                 </Dialog>
-                { menu }
+                { <IconMenu
+                    iconButtonElement={<IconButton iconClassName="material-icons" style={{marginRight: -10}}>more_vert</IconButton>}
+                    anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+                    targetOrigin={{horizontal: 'right', vertical: 'top'}}>
+                    { projectRole === Roles.project_admin || projectRole === Roles.file_editor || projectRole === Roles.system_admin ? <MenuItem primaryText="Delete Version" leftIcon={<i className="material-icons">delete</i>}
+                              onTouchTap={() => this.toggleModal('dltVersion')}/> : null }
+                    { projectRole !== Roles.project_viewer && projectRole !== Roles.file_downloader ? <MenuItem primaryText="Edit Version Label"
+                              leftIcon={<i className="material-icons">mode_edit</i>}
+                              onTouchTap={() => this.toggleModal('editVersion')}/> : null }
+                    <MenuItem primaryText="Provenance" leftIcon={<i className="material-icons">device_hub</i>}
+                              onTouchTap={() => this.openProv(id, fileId)}/>
+                </IconMenu> }
             </div>
         );
     }
@@ -190,7 +162,7 @@ VersionsOptionsMenu.propTypes = {
     entityObj: object,
     toggleModal: object,
     screenSize: object,
-    projPermissions: string
+    projectRole: string
 };
 
 export default VersionsOptionsMenu;

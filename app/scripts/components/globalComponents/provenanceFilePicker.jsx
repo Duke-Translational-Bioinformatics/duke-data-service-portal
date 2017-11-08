@@ -222,7 +222,6 @@ const styles = {
 ProvenanceFilePicker.propTypes = {
     entityObj: object,
     onClickProvNode: object,
-    projPermissions: object,
     provEditorModal: object,
     screenSize: object,
     autoCompleteLoading: bool,

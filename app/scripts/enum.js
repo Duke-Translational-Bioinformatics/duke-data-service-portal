@@ -11,3 +11,12 @@ export const ChunkSize = Object.freeze({
     BYTES_PER_CHUNK : 25000000,
     BYTES_PER_HASHING_CHUNK : 5000000,
 });
+
+export const Roles = Object.freeze({
+    project_admin : 'project_admin',
+    system_admin : 'system_admin',
+    project_viewer : 'project_viewer',
+    file_uploader : 'file_uploader',
+    file_downloader : 'file_downloader',
+    file_editor : 'file_editor',
+});

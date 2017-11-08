@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react';
-const { object, array, string } = PropTypes;
+const { object, array, string, bool } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
-import { Path, Kind } from '../../util/urlEnum';
+import { Path } from '../../util/urlEnum';
 import { Color } from '../../theme/customTheme';
 import MoveItemModal from '../globalComponents/moveItemModal.jsx';
 import Card from 'material-ui/Card';
@@ -18,13 +18,12 @@ import LocalOffer from 'material-ui/svg-icons/maps/local-offer';
 class BatchOps extends React.Component {
 
     render() {
-        const { filesChecked, foldersChecked, itemsSelected, projPermissions, screenSize, toggleModal } = mainStore;
+        const { filesChecked, foldersChecked, itemsSelected, isSafari, projectRole, screenSize, toggleModal } = mainStore;
+
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let dlMsg = '';
         let msg = '';
-        let dltIcon = null;
-        let tagIcon = null;
-        let moveIcon = null;
+
         if(filesChecked.length > 1 || foldersChecked.length > 1 || foldersChecked.length + filesChecked.length > 1){
             msg = "Are you sure you want to delete these items?";
         }else{
@@ -36,24 +35,7 @@ class BatchOps extends React.Component {
             let f = filesChecked.length > 1  ? " files?" : " file?";
             dlMsg = "Are you sure you want to download "+filesChecked.length+f;
         }
-        let isSafari = navigator.vendor && navigator.vendor.indexOf('Apple') > -1 && navigator.userAgent && !navigator.userAgent.match('CriOS');
-        let downloadIcon = filesChecked.length ? <IconButton onTouchTap={() => this.openModal('dwnLoad')} style={styles.downloadBtn}><GetAppIcon color={Color.pink}/></IconButton> : null;
-        let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
 
-        if (prjPrm !== null) {
-            dltIcon = prjPrm === 'flDownload' ? null :
-                <IconButton onTouchTap={() => this.openModal('dlt')} style={styles.dltBtn}>
-                    <DeleteForeverIcon color={Color.pink}/>
-                </IconButton>;
-            moveIcon = prjPrm === 'flDownload' ? null :
-                <IconButton onTouchTap={() => this.moveFile()} style={styles.moveBtn}>
-                    <LowPriority color={Color.pink}/>
-                </IconButton>;
-            tagIcon = prjPrm === 'flDownload' || !filesChecked.length ? null :
-                <IconButton onTouchTap={() => this.openTagManager()} style={styles.tagBtn}>
-                    <LocalOffer color={Color.pink}/>
-                </IconButton>;
-        }
         const deleteActions = [
             <FlatButton
                 label="Cancel"
@@ -65,27 +47,18 @@ class BatchOps extends React.Component {
                 keyboardFocused={true}
                 onTouchTap={() => this.handleDelete()}/>
         ];
-        let downloadActions = [];
-        if(!filesChecked.length){
-            downloadActions = [
-                <FlatButton
-                    label="Cancel"
-                    secondary={true}
-                    onTouchTap={() => this.handleClose('dwnLoad')}/>
-            ]
-        } else {
-            downloadActions = [
-                <FlatButton
-                    label="Cancel"
-                    secondary={true}
-                    onTouchTap={() => this.handleClose('dwnLoad')}/>,
-                <FlatButton
-                    label="Download"
-                    secondary={true}
-                    keyboardFocused={true}
-                    onTouchTap={() => this.handleDownload()}/>
-            ];
-        }
+
+        const downloadActions = [
+            <FlatButton
+                label="Cancel"
+                secondary={true}
+                onTouchTap={() => this.handleClose('dwnLoad')}/>,
+            <FlatButton
+                label="Download"
+                secondary={true}
+                keyboardFocused={true}
+                onTouchTap={() => this.handleDownload()}/>
+        ];
 
         const moveActions = [
             <FlatButton
@@ -95,19 +68,28 @@ class BatchOps extends React.Component {
         ];
 
         return (
-            <Card style={styles.card}>
+             projectRole !== 'project_viewer' ? <Card style={styles.card}>
                 <h6 style={styles.numSelected}>{itemsSelected} selected</h6>
                 <div style={styles.iconBtn} title="Tag files">
-                    { tagIcon }
+                    { projectRole === 'file_downloader' || !filesChecked.length ? null :
+                        <IconButton onTouchTap={() => this.openTagManager()} style={styles.tagBtn}>
+                            <LocalOffer color={Color.pink}/>
+                        </IconButton> }
                 </div>
                 <div style={styles.iconBtn} title="Download files">
-                    { downloadIcon }
+                    { filesChecked.length && projectRole !== 'project_viewer' && projectRole !== 'file_uploader' ? <IconButton onTouchTap={() => this.openModal('dwnLoad')} style={styles.downloadBtn}><GetAppIcon color={Color.pink}/></IconButton> : null }
                 </div>
                 <div style={styles.iconBtn} title="Delete selected items">
-                    { dltIcon }
+                    { projectRole === 'file_downloader' ? null :
+                        <IconButton onTouchTap={() => this.openModal('dlt')} style={styles.dltBtn}>
+                            <DeleteForeverIcon color={Color.pink}/>
+                        </IconButton> }
                 </div>
                 <div style={styles.iconBtn} title="Move selected items">
-                    { moveIcon }
+                    { projectRole === 'file_downloader' ? null :
+                        <IconButton onTouchTap={() => this.moveFile()} style={styles.moveBtn}>
+                            <LowPriority color={Color.pink}/>
+                        </IconButton> }
                 </div>
                 <Dialog
                     style={styles.dialogStyles}
@@ -142,7 +124,7 @@ class BatchOps extends React.Component {
                     onRequestClose={() => this.handleCloseMoveModal()}>
                     <MoveItemModal {...this.props}/>
                 </Dialog>
-            </Card>
+            </Card> : null
         );
     }
 
@@ -252,8 +234,9 @@ BatchOps.contextTypes = {
 
 BatchOps.propTypes = {
     entityObj: object,
+    isSafari: bool,
     project: object,
-    projPermissions: object,
+    projectRole: string,
     toggleModal: object,
     filesChecked: array,
     foldersChecked: array,

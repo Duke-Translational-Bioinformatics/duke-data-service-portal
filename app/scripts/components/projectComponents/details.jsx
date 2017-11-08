@@ -5,6 +5,7 @@ import mainStore from '../../stores/mainStore';
 import authStore from '../../stores/authStore';
 import BaseUtils from '../../util/baseUtils.js';
 import { Color } from '../../theme/customTheme';
+import { Roles } from '../../enum';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import MenuItem from 'material-ui/MenuItem';
@@ -53,10 +54,10 @@ class Details extends React.Component {
         ];
 
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
-        let admins = projectMembers.filter((m) => m.auth_role.id === 'project_admin');
+        let admins = projectMembers.filter((m) => m.auth_role.id === Roles.project_admin);
 
         let members = projectMembers.map((users)=> {
-            let showIcons = admins.length > 1 && projectRole === 'project_admin' || (projectRole === 'project_admin' && users.user.id !== currentUser.id);
+            let showIcons = admins.length > 1 && projectRole === Roles.project_admin || (projectRole === Roles.project_admin && users.user.id !== currentUser.id);
             let removeSelf = users.user.id === currentUser.id;
             return <li key={users.user.id}>
                 <div style={styles.iconContainer}>
@@ -151,13 +152,13 @@ class Details extends React.Component {
                     <ul>
                         <li className="item-divider" style={styles.button.listItem}>
                             Project Members
-                            <FlatButton style={styles.button}
+                            { projectRole === (Roles.project_admin || Roles.system_admin) && <FlatButton style={styles.button}
                                 onTouchTap={() => this.toggleModal('addMember')}
                                 label="Add Project Members"
                                 labelPosition="before"
                                 secondary={true}
                                 icon={<i className="material-icons">person_add</i>}
-                            />
+                            /> }
                         </li>
                         { members }
                     </ul>
@@ -211,19 +212,19 @@ class Details extends React.Component {
         let role = null;
         switch(this.state.value){
             case 0:
-                role = 'project_admin';
+                role = Roles.project_admin;
                 break;
             case 1:
-                role = 'project_viewer';
+                role = Roles.project_viewer;
                 break;
             case 2:
-                role = 'file_downloader';
+                role = Roles.file_downloader;
                 break;
             case 3:
-                role = 'file_uploader';
+                role = Roles.file_uploader;
                 break;
             case 4:
-                role = 'file_editor';
+                role = Roles.file_editor;
                 break;
         }
         if(this.state.value !== null) {
@@ -306,9 +307,9 @@ Details.contextTypes = {
 Details.propTypes = {
     project: object,
     projectMembers: array,
+    projectRole: string,
     currentUser: object,
-    screenSize: object,
-    projPermissions: string,
+    screenSize: object
 };
 
 export default Details;
