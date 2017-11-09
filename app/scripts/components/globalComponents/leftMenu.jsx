@@ -41,48 +41,6 @@ class LeftMenu extends React.Component {
     render() {
         const { screenSize, showSearch, toggleNav } = mainStore;
         const drawerWidth = screenSize.width >= 700 ? 240 : screenSize.width;
-        const menuItems = (
-            <SelectableList router={this.props.router}>
-                <ListItem
-                    value={'/'}
-                    onClick={() => this.setNavIndex('/')}
-                    leftIcon={<i className="material-icons" style={styles.navIcon}>home</i>}
-                    primaryText="Home"
-                />
-                <ListItem
-                    value={'/metadata'}
-                    onClick={() => this.setNavIndex('/metadata')}
-                    leftIcon={<i className="material-icons" style={styles.navIcon}>local_offer</i>}
-                    primaryText="Advanced Metadata"
-                />
-                <ListItem
-                    value={'/agents'}
-                    onClick={() => this.setNavIndex('/agents')}
-                    primaryText="Software Agents"
-                    leftIcon={<i className="material-icons" style={styles.navIcon}>build</i>}
-                />
-                <Divider/>
-                <ListItem
-                    value={0}
-                    onClick={() => this.linkToBlog('https://medium.com/@dukedataservice')}
-                    primaryText="Duke DS Blog"
-                    leftIcon={<i className="material-icons" style={styles.navIcon}>rate_review</i>}
-                />
-                <ListItem
-                    value={'/privacy'}
-                    onClick={() => this.setNavIndex('/privacy')}
-                    primaryText="Privacy Policy"
-                    leftIcon={<i className="material-icons" style={styles.navIcon}>lock</i>}
-                />
-                <Divider/>
-                <ListItem
-                    value={1}
-                    onClick={() => this.handleLogout()}
-                    primaryText="Log Out"
-                    leftIcon={<i className="material-icons" style={styles.navIcon}>exit_to_app</i>}
-                />
-            </SelectableList>
-        );
 
         return (
             <Drawer width={drawerWidth} open={toggleNav && !showSearch} zDepth={0} containerStyle={styles.drawer}>
@@ -92,7 +50,46 @@ class LeftMenu extends React.Component {
                         <img src="/images/dukeDSVertical.png" style={styles.logo}/>
                     </ToolbarGroup>
                 </Toolbar>
-                {menuItems}
+                <SelectableList router={this.props.router}>
+                    <ListItem
+                        value={'/'}
+                        onClick={() => this.setNavIndex('/')}
+                        leftIcon={<i className="material-icons" style={styles.navIcon}>home</i>}
+                        primaryText="Home"
+                    />
+                    <ListItem
+                        value={'/metadata'}
+                        onClick={() => this.setNavIndex('/metadata')}
+                        leftIcon={<i className="material-icons" style={styles.navIcon}>local_offer</i>}
+                        primaryText="Advanced Metadata"
+                    />
+                    <ListItem
+                        value={'/agents'}
+                        onClick={() => this.setNavIndex('/agents')}
+                        primaryText="Software Agents"
+                        leftIcon={<i className="material-icons" style={styles.navIcon}>build</i>}
+                    />
+                    <Divider/>
+                    <ListItem
+                        value={0}
+                        onClick={() => this.linkToBlog('https://medium.com/@dukedataservice')}
+                        primaryText="Duke DS Blog"
+                        leftIcon={<i className="material-icons" style={styles.navIcon}>rate_review</i>}
+                    />
+                    <ListItem
+                        value={'/privacy'}
+                        onClick={() => this.setNavIndex('/privacy')}
+                        primaryText="Privacy Policy"
+                        leftIcon={<i className="material-icons" style={styles.navIcon}>lock</i>}
+                    />
+                    <Divider/>
+                    <ListItem
+                        value={1}
+                        onClick={() => this.handleLogout()}
+                        primaryText="Log Out"
+                        leftIcon={<i className="material-icons" style={styles.navIcon}>exit_to_app</i>}
+                    />
+                </SelectableList>
             </Drawer>
         );
     }

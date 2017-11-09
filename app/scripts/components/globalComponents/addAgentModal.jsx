@@ -81,15 +81,15 @@ class AddAgentModal extends React.Component {
     }
 
     addAgent() {
-        if (this.state.floatingErrorText) {
-            return null
-        } else {
+        if (!this.state.floatingErrorText && this.agentNameText.getValue().trim().length) {
             let name = this.agentNameText.getValue();
             let desc = this.agentDescriptionText.getValue();
             let repo = this.agentRepoText.getValue();
             if (!/^https?:\/\//i.test(repo)) repo = 'https://' + repo;
             agentStore.addAgent(name, desc, repo);
             this.toggleModal();
+        } else {
+            this.setState({floatingErrorText: 'This field is required.'});
         }
     }
 

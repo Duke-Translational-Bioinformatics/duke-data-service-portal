@@ -58,7 +58,6 @@ export class MainStore {
     @observable prevLocation
     @observable projects
     @observable project
-    @observable projPermissions
     @observable projectMembers
     @observable projectRole
     @observable projectRoles
@@ -151,7 +150,6 @@ export class MainStore {
         this.prevLocation = null;
         this.projects = [];
         this.project = {};
-        this.projPermissions = null;
         this.projectMembers = [];
         this.projectRole = null;
         this.projectRoles = observable.map();
@@ -565,8 +563,7 @@ export class MainStore {
                         mainStore.parent = json.parent;
                         mainStore.moveToObj = json;
                     }
-                    if (mainStore.projPermissions === null && (json.kind === 'dds-file' || json.kind === 'dds-folder')) mainStore.getUser(json.project.id);
-                    if (mainStore.projPermissions === null && json.kind === 'dds-file-version') mainStore.getUser(json.file.project.id);
+                    this.project = json.project;
                     mainStore.loading = false;
                 } else {
                     if(json.code === 'resource_not_consistent') {
@@ -1261,23 +1258,7 @@ export class MainStore {
             .then(response => response.json())
             .then((json) => {
                 this.currentUser = json;
-                if(id) this.getPermissions(id, json.id);
             }).catch(ex => this.handleErrors(ex));
-    }
-
-    @action getPermissions(id, userId) {
-        this.transportLayer.getPermissions(id, userId)
-            .then(this.checkResponse)
-            .then(response => response.json())
-            .then((json) => {
-                let id = json.auth_role.id;
-                this.projectRole = json.auth_role.id;
-                if (id === 'project_viewer') this.projPermissions = 'viewOnly';
-                if (id === 'project_admin' || id === 'system_admin') this.projPermissions = 'prjCrud';
-                if (id === 'file_editor') this.projPermissions = 'flCrud';
-                if (id === 'file_uploader') this.projPermissions = 'flUpload';
-                if (id === 'file_downloader') this.projPermissions = 'flDownload';
-            }).catch(ex =>this.handleErrors(ex))
     }
 
     @action searchFiles(text, id) {

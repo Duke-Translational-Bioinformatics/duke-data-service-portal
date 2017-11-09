@@ -28,11 +28,8 @@ class MetadataPropertyManager extends React.Component {
 
     render() {
         const { metadataTemplate, screenSize } = mainStore;
-        let templateCreator = metadataTemplate && metadataTemplate !== null ? metadataTemplate.audit.created_by.id : null;
-        let templateDesc = metadataTemplate && metadataTemplate !== null ? metadataTemplate.description : null;
         let templateId = metadataTemplate && metadataTemplate !== null ? metadataTemplate.id : null;
         let templateLabel = metadataTemplate && metadataTemplate !== null ? metadataTemplate.label : null;
-        let templateName = metadataTemplate && metadataTemplate !== null ? metadataTemplate.name : null;
         let width = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.width : window.innerWidth;
 
         return (

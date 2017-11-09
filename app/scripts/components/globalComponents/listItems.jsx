@@ -1,9 +1,10 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array } = PropTypes;
+const { object, bool, array, string, number } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../util/baseUtils.js';
 import { UrlGen, Path, Kind } from '../../util/urlEnum';
+import { Roles } from '../../enum';
 import { Color } from '../../theme/customTheme';
 import BatchOps from '../../components/globalComponents/batchOps.jsx';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
@@ -21,23 +22,16 @@ import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColu
 class ListItems extends React.Component {
 
     render() {
-        const { allItemsSelected, filesChecked, foldersChecked, isSafari, listItems, loading, nextPage, projPermissions, screenSize, tableBodyRenderKey, totalItems, uploads } = mainStore;
+        const { allItemsSelected, filesChecked, foldersChecked, isSafari, listItems, loading, nextPage, projectRole, screenSize, tableBodyRenderKey, totalItems, uploads } = mainStore;
         let showBatchOps = !!(filesChecked.length || foldersChecked.length);
         let menuWidth = screenSize.width > 1230 ? 35 : 28;
         let checkboxStyle = { maxWidth: 24, float: 'left', marginRight: isSafari ? 16 : 0 };
-        let newFolderModal = projPermissions !== null && (projPermissions === 'viewOnly' || projPermissions === 'flDownload') ? null : <AddFolderModal {...this.props}/>;
-        let uploadManager = projPermissions !== null && (projPermissions === 'viewOnly' || projPermissions === 'flDownload') ? null : <RaisedButton label="Upload Files"
-                                                                                                                                            labelPosition="before"
-                                                                                                                                            labelStyle={{color: Color.blue}}
-                                                                                                                                            style={styles.uploadFilesBtn}
-                                                                                                                                            icon={<FileUpload color={Color.pink} />}
-                                                                                                                                            onTouchTap={() => this.toggleUploadManager()}/>;
-        let showChecks = (projPermissions !== null && (projPermissions !== 'viewOnly' || projPermissions !== 'flUpload'));
+        let showChecks = projectRole !== null && projectRole !== Roles.project_viewer && projectRole !== Roles.file_uploader  && projectRole !== Roles.file_downloader;
         let children = listItems && listItems.length ? listItems.map((child) => {
             let icon = child.kind === Kind.DDS_FOLDER ? 'folder' : 'description';
             let itemsChecked = child.kind === Kind.DDS_FOLDER ? foldersChecked : filesChecked;
             const route = child.kind === Kind.DDS_FOLDER ? UrlGen.routes.folder(child.id) : UrlGen.routes.file(child.id);
-            let fileOptionsMenu = showChecks && <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FILE, true)}/>;
+            let fileOptionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FILE, true)}/>;
             let folderOptionsMenu = showChecks && <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FOLDER, true)}/>;
                 return (
                     <TableRow key={child.id} selectable={false}>
@@ -75,8 +69,14 @@ class ListItems extends React.Component {
             <div className="list-items-container">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
                     {!showBatchOps && <div className="mdl-cell mdl-cell--12-col">
-                        {uploadManager}
-                        {newFolderModal}
+                        { projectRole !== null && projectRole !== (Roles.file_downloader && Roles.project_viewer && Roles.file_downloader) ? <RaisedButton
+                                                                                                label="Upload Files"
+                                                                                                labelPosition="before"
+                                                                                                labelStyle={{color: Color.blue}}
+                                                                                                style={styles.uploadFilesBtn}
+                                                                                                icon={<FileUpload color={Color.pink} />}
+                                                                                                onTouchTap={() => this.toggleUploadManager()}/> : null }
+                        <AddFolderModal {...this.props}/>
                     </div>}
                     {showBatchOps && <BatchOps {...this.props}/>}
                 </div>
@@ -121,8 +121,7 @@ class ListItems extends React.Component {
     check(id, kind) {
         let files = mainStore.filesChecked;
         let folders = mainStore.foldersChecked;
-        let allItemsSelected = mainStore.allItemsSelected;
-        let prjPrm = mainStore.projPermissions;
+        let { allItemsSelected, projectRole } = mainStore;
         if(id === true || id === false) {
             files = [];
             folders = [];
@@ -137,7 +136,7 @@ class ListItems extends React.Component {
             !folders.includes(id) ? folders = [...folders, id] : folders = folders.filter(f => f !== id);
             allItemsSelected ? mainStore.toggleAllItemsSelected(!allItemsSelected) : null;
         }
-        if(prjPrm !== 'viewOnly' && prjPrm !== 'flUpload') mainStore.handleBatch(files, folders);
+        if(projectRole !== Roles.project_viewer && projectRole !== Roles.file_uploader) mainStore.handleBatch(files, folders);
     }
 
     checkForAllItemsSelected(e) {
@@ -191,13 +190,18 @@ const styles = {
 };
 
 ListItems.propTypes = {
+    allItemsSelected: bool,
     filesChecked: array,
     foldersChecked: array,
     listItems: array,
     entityObj: object,
-    projPermissions: object,
+    isSafari: bool,
+    nextPage: number,
+    projectRole: string,
     responseHeaders: object,
     screenSize: object,
+    tableBodyRenderKey: number,
+    totalItems: number,
     uploads: object,
     loading: bool
 };

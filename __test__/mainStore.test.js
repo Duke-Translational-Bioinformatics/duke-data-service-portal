@@ -322,17 +322,6 @@ describe('Main Store', () => {
         });
     });
 
-    it('@action getPermissions - gets current user project permissions', () => {
-        transportLayer.getPermissions = jest.fn((id, userId) => respondOK(fake.grant_project_permission_json));
-        mainStore.getPermissions(PROJECT_ID, TEST_UID);
-        return sleep(1).then(() => {
-            expect(transportLayer.getPermissions).toHaveBeenCalledTimes(1);
-            expect(transportLayer.getPermissions).toHaveBeenCalledWith(PROJECT_ID, TEST_UID);
-            expect(mainStore.projectRole).toBe('project_admin');
-            expect(mainStore.projPermissions).toBe('prjCrud');
-        });
-    });
-
     it('@action searchFiles - populates an autocomplete list with file names', () => {
         transportLayer.searchFiles = jest.fn((text, id) => respondOK(fake.list_items_json));
         mainStore.searchFiles(SEARCH_TEXT, PROJECT_ID);

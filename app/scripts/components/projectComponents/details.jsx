@@ -5,6 +5,7 @@ import mainStore from '../../stores/mainStore';
 import authStore from '../../stores/authStore';
 import BaseUtils from '../../util/baseUtils.js';
 import { Color } from '../../theme/customTheme';
+import { Roles } from '../../enum';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import MenuItem from 'material-ui/MenuItem';
@@ -53,29 +54,7 @@ class Details extends React.Component {
         ];
 
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
-        let admins = projectMembers.filter((m) => m.auth_role.id === 'project_admin');
-
-        let members = projectMembers.map((users)=> {
-            let showIcons = admins.length > 1 && projectRole === 'project_admin' || (projectRole === 'project_admin' && users.user.id !== currentUser.id);
-            let removeSelf = users.user.id === currentUser.id;
-            return <li key={users.user.id}>
-                <div style={styles.iconContainer}>
-                    <a href="#" onTouchTap={() => this.deleteUser(users.user.id, users.user.full_name, removeSelf)} style={styles.deleteIcon.wrapper}>
-                        {showIcons ? <i className="material-icons" style={styles.deleteIcon}>cancel</i> : ''}</a>
-                    <a href="#" onTouchTap={() => this.changeRole(users.user.id, users.user.full_name)}>
-                        {showIcons ? <i className="material-icons" style={styles.settingsIcon}>settings</i> : ''}</a>
-                </div>
-                <div className="item-content">
-                    <div className="item-media"><i className="material-icons">face</i></div>
-                    <div className="item-inner">
-                        <div className="item-title-row">
-                            <div className="item-title">{users.user.full_name}</div>
-                            <span className="mdl-color-text--grey-600">{ users.auth_role.name }</span>
-                        </div>
-                    </div>
-                </div>
-            </li>
-        });
+        let admins = projectMembers.filter((m) => m.auth_role.id === Roles.project_admin);
 
         return (
             <div>
@@ -151,15 +130,35 @@ class Details extends React.Component {
                     <ul>
                         <li className="item-divider" style={styles.button.listItem}>
                             Project Members
-                            <FlatButton style={styles.button}
+                            { projectRole === (Roles.project_admin || Roles.system_admin) && <FlatButton style={styles.button}
                                 onTouchTap={() => this.toggleModal('addMember')}
                                 label="Add Project Members"
                                 labelPosition="before"
                                 secondary={true}
                                 icon={<i className="material-icons">person_add</i>}
-                            />
+                            /> }
                         </li>
-                        { members }
+                        { projectMembers.map((users)=> {
+                            let showIcons = admins.length > 1 && projectRole === Roles.project_admin || (projectRole === Roles.project_admin && users.user.id !== currentUser.id);
+                            let removeSelf = users.user.id === currentUser.id;
+                            return <li key={users.user.id}>
+                                <div style={styles.iconContainer}>
+                                    <a href="#" onTouchTap={() => this.deleteUser(users.user.id, users.user.full_name, removeSelf)} style={styles.deleteIcon.wrapper}>
+                                        {showIcons ? <i className="material-icons" style={styles.deleteIcon}>cancel</i> : ''}</a>
+                                    <a href="#" onTouchTap={() => this.changeRole(users.user.id, users.user.full_name)}>
+                                        {showIcons ? <i className="material-icons" style={styles.settingsIcon}>settings</i> : ''}</a>
+                                </div>
+                                <div className="item-content">
+                                    <div className="item-media"><i className="material-icons">face</i></div>
+                                    <div className="item-inner">
+                                        <div className="item-title-row">
+                                            <div className="item-title">{users.user.full_name}</div>
+                                            <span className="mdl-color-text--grey-600">{ users.auth_role.name }</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        }) }
                     </ul>
                 </div>
             </div>
@@ -211,19 +210,19 @@ class Details extends React.Component {
         let role = null;
         switch(this.state.value){
             case 0:
-                role = 'project_admin';
+                role = Roles.project_admin;
                 break;
             case 1:
-                role = 'project_viewer';
+                role = Roles.project_viewer;
                 break;
             case 2:
-                role = 'file_downloader';
+                role = Roles.file_downloader;
                 break;
             case 3:
-                role = 'file_uploader';
+                role = Roles.file_uploader;
                 break;
             case 4:
-                role = 'file_editor';
+                role = Roles.file_editor;
                 break;
         }
         if(this.state.value !== null) {
@@ -306,9 +305,9 @@ Details.contextTypes = {
 Details.propTypes = {
     project: object,
     projectMembers: array,
+    projectRole: string,
     currentUser: object,
-    screenSize: object,
-    projPermissions: string,
+    screenSize: object
 };
 
 export default Details;

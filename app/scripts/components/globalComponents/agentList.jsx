@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+const { object, bool, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import agentStore from '../../stores/agentStore';
@@ -58,31 +58,6 @@ class AgentList extends React.Component {
             </form>
         </Dialog>;
 
-        let agentList = agents.map((agent) => {
-            if (agent.audit.created_by.id === currentUser.id) {
-                return (
-                    <li key={ agent.id } className="hover">
-                        <FlatButton label="credentials" primary={true} style={styles.getKeyButton} onTouchTap={() => this.getCredentials(agent.id)}/>
-                        <a href={UrlGen.routes.agent(agent.id)} className="item-content external">
-                            <div className="item-media">
-                                <FontIcon className="material-icons" style={styles.icon}>laptop_mac</FontIcon>
-                            </div>
-                            <div className="item-inner">
-                                <div className="item-title-row">
-                                    <div className="item-text mdl-color-text--grey-800" style={styles.title}>{ agent.name }</div>
-                                </div>
-                                <div className="item-text mdl-color-text--grey-600">{ agent.description }</div>
-                            </div>
-                        </a>
-                    </li>
-                );
-            } else {
-                return (
-                    null
-                );
-            }
-        });
-
         return (
             <div className="list-container" >
                 {modal}
@@ -96,7 +71,24 @@ class AgentList extends React.Component {
                 <div className="mdl-cell mdl-cell--12-col content-block" style={styles.list}>
                     <div className="list-block list-block-search searchbar-found media-list">
                         <ul>
-                            {agentList}
+                            {agents.filter(a => a.audit.created_by.id === currentUser.id).map((agent) => {
+                                return (
+                                    <li key={ agent.id } className="hover">
+                                        <FlatButton label="credentials" primary={true} style={styles.getKeyButton} onTouchTap={() => this.getCredentials(agent.id)}/>
+                                        <a href={UrlGen.routes.agent(agent.id)} className="item-content external">
+                                            <div className="item-media">
+                                                <FontIcon className="material-icons" style={styles.icon}>laptop_mac</FontIcon>
+                                            </div>
+                                            <div className="item-inner">
+                                                <div className="item-title-row">
+                                                    <div className="item-text mdl-color-text--grey-800" style={styles.title}>{ agent.name }</div>
+                                                </div>
+                                                <div className="item-text mdl-color-text--grey-600">{ agent.description }</div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                );
+                            })}
                         </ul>
                     </div>
                 </div>
