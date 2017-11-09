@@ -113,7 +113,7 @@ class VersionsOptionsMenu extends React.Component {
 
     handleUpdateButton(id) {
         let label = this.versionLabelText.getValue();
-        if (this.state.floatingErrorText != '') {
+        if (this.state.floatingErrorText !== '') {
             return null
         } else {
             mainStore.editVersionLabel(id, label);

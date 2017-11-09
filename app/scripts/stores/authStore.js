@@ -88,7 +88,7 @@ export class AuthStore {
     }
 
     @action getUserKey() {
-        this.userKey.key !== undefined ? this.transportLayer.getUserKey() : this.transportLayer.createUserKey()
+        this.transportLayer.getUserKey()
             .then(mainStore.checkResponse)
             .then(response => response.json())
             .then((json) => this.userKey = json)

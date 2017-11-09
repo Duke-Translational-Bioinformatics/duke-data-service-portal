@@ -19,7 +19,10 @@ export const Theme = {
         borderColor: Colors.grey300,
         pickerHeaderColor: Colors.cyan500,
         shadowColor: Colors.fullBlack
-    }
+    },
+    textField: {
+        floatingLabelColor: Colors.grey400,
+    },
 };
 
 export const Color = {

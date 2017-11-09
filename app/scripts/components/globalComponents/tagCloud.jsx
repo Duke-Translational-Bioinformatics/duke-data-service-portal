@@ -3,6 +3,7 @@ const { array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import { Color } from '../../theme/customTheme';
+import { Roles } from '../../enum';
 import IconButton from 'material-ui/IconButton';
 import LocalOffer from 'material-ui/svg-icons/maps/local-offer';
 
@@ -23,7 +24,7 @@ class TagCloud extends React.Component {
                 </span>
                     </div>)
                 }) }
-                { projectRole !== 'project_viewer' && projectRole !== 'file_downloader' ? <IconButton tooltip="Add new tags" tooltipPosition="bottom-right"
+                { projectRole !== Roles.project_viewer && projectRole !== Roles.file_downloader ? <IconButton tooltip="Add new tags" tooltipPosition="bottom-right"
                             style={styles.addTagButton}
                             tooltipStyles={{marginTop: -20}}
                             onTouchTap={() => this.openTagManager()}>

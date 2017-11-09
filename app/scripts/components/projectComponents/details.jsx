@@ -56,28 +56,6 @@ class Details extends React.Component {
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let admins = projectMembers.filter((m) => m.auth_role.id === Roles.project_admin);
 
-        let members = projectMembers.map((users)=> {
-            let showIcons = admins.length > 1 && projectRole === Roles.project_admin || (projectRole === Roles.project_admin && users.user.id !== currentUser.id);
-            let removeSelf = users.user.id === currentUser.id;
-            return <li key={users.user.id}>
-                <div style={styles.iconContainer}>
-                    <a href="#" onTouchTap={() => this.deleteUser(users.user.id, users.user.full_name, removeSelf)} style={styles.deleteIcon.wrapper}>
-                        {showIcons ? <i className="material-icons" style={styles.deleteIcon}>cancel</i> : ''}</a>
-                    <a href="#" onTouchTap={() => this.changeRole(users.user.id, users.user.full_name)}>
-                        {showIcons ? <i className="material-icons" style={styles.settingsIcon}>settings</i> : ''}</a>
-                </div>
-                <div className="item-content">
-                    <div className="item-media"><i className="material-icons">face</i></div>
-                    <div className="item-inner">
-                        <div className="item-title-row">
-                            <div className="item-title">{users.user.full_name}</div>
-                            <span className="mdl-color-text--grey-600">{ users.auth_role.name }</span>
-                        </div>
-                    </div>
-                </div>
-            </li>
-        });
-
         return (
             <div>
                 <Dialog
@@ -160,7 +138,27 @@ class Details extends React.Component {
                                 icon={<i className="material-icons">person_add</i>}
                             /> }
                         </li>
-                        { members }
+                        { projectMembers.map((users)=> {
+                            let showIcons = admins.length > 1 && projectRole === Roles.project_admin || (projectRole === Roles.project_admin && users.user.id !== currentUser.id);
+                            let removeSelf = users.user.id === currentUser.id;
+                            return <li key={users.user.id}>
+                                <div style={styles.iconContainer}>
+                                    <a href="#" onTouchTap={() => this.deleteUser(users.user.id, users.user.full_name, removeSelf)} style={styles.deleteIcon.wrapper}>
+                                        {showIcons ? <i className="material-icons" style={styles.deleteIcon}>cancel</i> : ''}</a>
+                                    <a href="#" onTouchTap={() => this.changeRole(users.user.id, users.user.full_name)}>
+                                        {showIcons ? <i className="material-icons" style={styles.settingsIcon}>settings</i> : ''}</a>
+                                </div>
+                                <div className="item-content">
+                                    <div className="item-media"><i className="material-icons">face</i></div>
+                                    <div className="item-inner">
+                                        <div className="item-title-row">
+                                            <div className="item-title">{users.user.full_name}</div>
+                                            <span className="mdl-color-text--grey-600">{ users.auth_role.name }</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        }) }
                     </ul>
                 </div>
             </div>

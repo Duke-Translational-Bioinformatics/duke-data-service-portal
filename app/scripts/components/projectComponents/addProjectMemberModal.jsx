@@ -32,7 +32,8 @@ class AddProjectMemberModal extends React.Component {
         const { currentUser, project, screenSize, toggleModal, users } = mainStore;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let userName = currentUser ? currentUser.full_name : null;
-        let id = this.props.router.location.pathname.includes('project') ? this.props.params.id : project.id;
+        let id = this.props.router.location.pathname.includes('project') ? this.props.params.id : project ? project.id : null;
+
         let autoCompleteData = users.map((user)=>{
             return {text: user.full_name, value: user.full_name, id: user.uid}
         });
