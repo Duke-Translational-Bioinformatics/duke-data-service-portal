@@ -80,7 +80,7 @@ const transportLayer = {
         };
         return fetch(`${DDS_BASE_URI+apiPrefix+Path.AGENT}api_token`, getFetchParams('post', authStore.appConfig.apiToken, body))
     },
-    loadAgents: () => {
+    getAgents: () => {
         return fetch(DDS_BASE_URI+apiPrefix+Path.AGENT,getFetchParams('get', authStore.appConfig.apiToken))
     },
     addAgent: (name, desc, repo) => {

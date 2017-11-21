@@ -29,7 +29,7 @@ class ProjectDetails extends React.Component {
         const { project, projectRole } = mainStore;
 
         return (
-            <Card className="mdl-cell mdl-cell--12-col" style={styles.container}>
+            project !== undefined && <Card className="mdl-cell mdl-cell--12-col" style={styles.container}>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
                         <a href={UrlGen.routes.home()} style={styles.back} className="external mdl-color-text--grey-800">
