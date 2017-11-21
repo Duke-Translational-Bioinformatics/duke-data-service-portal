@@ -329,6 +329,15 @@ export class MainStore {
             }).catch(ex => this.handleErrors(ex))
     }
 
+    @action getPermissions(id, userId) {
+        this.transportLayer.getPermissions(id, userId)
+           .then(this.checkResponse)
+           .then(response => response.json())
+           .then((json) => {
+               this.projectRole = json.auth_role.id;
+        }).catch(ex =>this.handleErrors(ex))
+    }
+
     @action getProjectMembers(id) {
         this.transportLayer.getProjectMembers(id)
             .then(this.checkResponse)
@@ -564,6 +573,7 @@ export class MainStore {
                         mainStore.moveToObj = json;
                     }
                     this.project = json.project;
+                    if(!this.currentUser.id) this.getUser(json.project.id);
                     mainStore.loading = false;
                 } else {
                     if(json.code === 'resource_not_consistent') {
@@ -1258,6 +1268,7 @@ export class MainStore {
             .then(response => response.json())
             .then((json) => {
                 this.currentUser = json;
+                this.getPermissions(id, json.id)
             }).catch(ex => this.handleErrors(ex));
     }
 

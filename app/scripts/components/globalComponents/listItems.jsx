@@ -2,6 +2,8 @@ import React, { PropTypes } from 'react';
 const { object, bool, array, string, number } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
+import agentStore from '../../stores/agentStore';
+import authStore from '../../stores/authStore';
 import BaseUtils from '../../util/baseUtils.js';
 import { UrlGen, Path, Kind } from '../../util/urlEnum';
 import { Roles } from '../../enum';
@@ -12,6 +14,7 @@ import FileOptionsMenu from '../../components/fileComponents/fileOptionsMenu.jsx
 import FolderOptionsMenu from '../../components/folderComponents/folderOptionsMenu.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import Checkbox from 'material-ui/Checkbox';
+import FlatButton from 'material-ui/FlatButton'
 import FileUpload from 'material-ui/svg-icons/file/file-upload'
 import FontIcon from 'material-ui/FontIcon';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -23,46 +26,57 @@ class ListItems extends React.Component {
 
     render() {
         const { allItemsSelected, filesChecked, foldersChecked, isSafari, listItems, loading, nextPage, projectRole, screenSize, tableBodyRenderKey, totalItems, uploads } = mainStore;
+        const { agents } = agentStore;
+        const { currentUser } = authStore;
+        let items = this.props.router && this.props.router.location.pathname.includes('agents') ? agents.filter(a => a.audit.created_by.id === currentUser.id) : listItems;
         let showBatchOps = !!(filesChecked.length || foldersChecked.length);
-        let menuWidth = screenSize.width > 1230 ? 35 : 28;
+        let menuWidth = this.props.router.location.pathname.includes('agents') ? 118 : screenSize.width > 1230 ? 35 : 28;
         let checkboxStyle = { maxWidth: 24, float: 'left', marginRight: isSafari ? 16 : 0 };
-        let showChecks = projectRole !== null && projectRole !== Roles.project_viewer && projectRole !== Roles.file_uploader  && projectRole !== Roles.file_downloader;
-        let children = listItems && listItems.length ? listItems.map((child) => {
-            let icon = child.kind === Kind.DDS_FOLDER ? 'folder' : 'description';
-            let itemsChecked = child.kind === Kind.DDS_FOLDER ? foldersChecked : filesChecked;
-            const route = child.kind === Kind.DDS_FOLDER ? UrlGen.routes.folder(child.id) : UrlGen.routes.file(child.id);
-            let fileOptionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FILE, true)}/>;
-            let folderOptionsMenu = showChecks && <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FOLDER, true)}/>;
+        let showChecks = projectRole !== null && projectRole !== Roles.project_viewer && projectRole !== Roles.file_uploader && projectRole !== Roles.file_downloader;
+        let children = items && items.length ? items.map((child) => {
+            if(!child.is_deleted) {
+                let icon = child.kind === undefined ? 'laptop_mac' : child.kind === Kind.DDS_FOLDER ? 'folder' : 'description';
+                let itemsChecked = child.kind === undefined ? null : child.kind === Kind.DDS_FOLDER ? foldersChecked : filesChecked;
+                const route = child.kind === undefined ? UrlGen.routes.agent(child.id) : child.kind === Kind.DDS_FOLDER ? UrlGen.routes.folder(child.id) : UrlGen.routes.file(child.id);
+                let fileOptionsMenu = <FileOptionsMenu {...this.props}
+                                                       clickHandler={() => this.setSelectedEntity(child.id, Path.FILE, true)}/>;
+                let folderOptionsMenu = showChecks && <FolderOptionsMenu {...this.props}
+                                                                         clickHandler={() => this.setSelectedEntity(child.id, Path.FOLDER, true)}/>;
                 return (
                     <TableRow key={child.id} selectable={false}>
                         <TableRowColumn>
-                            {showChecks && <Checkbox
+                            {showChecks && child.kind !== undefined ? <Checkbox
                                 style={checkboxStyle}
-                                onCheck={()=>this.check(child.id, child.kind)}
+                                onCheck={() => this.check(child.id, child.kind)}
                                 checked={itemsChecked.includes(child.id)}
-                            />}
+                            /> : ''}
                             <a href={route} className="external" onClick={(e) => this.checkForAllItemsSelected(e)}>
                                 <div style={styles.linkColor}>
                                     <FontIcon className="material-icons" style={styles.icon}>{icon}</FontIcon>
                                     {child.name.length > 82 ? child.name.substring(0, 82) + '...' : child.name}
-                                    {child.kind === Kind.DDS_FILE && ' (version '+ child.current_version.version+')'}
+                                    {child.kind !== undefined && child.kind === Kind.DDS_FILE ? ' (version ' + child.current_version.version + ')' : ''}
                                 </div>
                             </a>
                         </TableRowColumn>
-                        {screenSize && screenSize.width >= 680 && <TableRowColumn onTouchTap={()=>this.check(child.id, child.kind)}>
-                            <span>{child.audit.last_updated_on !== null ? BaseUtils.formatDate(child.audit.last_updated_on)+' by '+child.audit.last_updated_by.full_name : BaseUtils.formatDate(child.audit.created_on)+' by '+child.audit.created_by.full_name}</span>
+                        {screenSize && screenSize.width >= 680 &&
+                        <TableRowColumn onTouchTap={() => this.check(child.id, child.kind)}>
+                            <span>{child.audit.last_updated_on !== null ? BaseUtils.formatDate(child.audit.last_updated_on) + ' by ' + child.audit.last_updated_by.full_name : BaseUtils.formatDate(child.audit.created_on) + ' by ' + child.audit.created_by.full_name}</span>
                         </TableRowColumn>}
-                        {screenSize && screenSize.width >= 840 && <TableRowColumn onTouchTap={()=>this.check(child.id, child.kind)} style={{width: 100}}>
-                            {child.kind === Kind.DDS_FILE && child.current_version ? BaseUtils.bytesToSize(child.current_version.upload.size) : '---'}
-                        </TableRowColumn>}
+                        {screenSize && screenSize.width >= 840 && child.kind !== undefined ?
+                            <TableRowColumn onTouchTap={() => this.check(child.id, child.kind)} style={{width: 100}}>
+                                {child.kind === Kind.DDS_FILE && child.current_version ? BaseUtils.bytesToSize(child.current_version.upload.size) : '---'}
+                            </TableRowColumn> : null}
                         <TableRowColumn style={{textAlign: 'right', width: menuWidth}}>
-                            <div onClick={(e) => {e.stopPropagation()}}>
-                                {child.kind === Kind.DDS_FILE ? fileOptionsMenu : folderOptionsMenu }
+                            <div onClick={(e) => {
+                                e.stopPropagation()
+                            }}>
+                                {child.kind === undefined ? <FlatButton label="credentials" primary={true} onTouchTap={() => this.getCredentials(child.id)}/> : child.kind === Kind.DDS_FILE ? fileOptionsMenu : folderOptionsMenu }
                             </div>
                         </TableRowColumn>
                     </TableRow>
 
                 );
+            }
         }) : null;
 
         return (
@@ -78,11 +92,11 @@ class ListItems extends React.Component {
                                                                                                 onTouchTap={() => this.toggleUploadManager()}/> : null }
                         <AddFolderModal {...this.props}/>
                     </div>}
-                    {showBatchOps && <BatchOps {...this.props}/>}
+                    {showBatchOps && !this.props.router.location.pathname.includes('agents') ? <BatchOps {...this.props}/> : ''}
                 </div>
                 {uploads || loading ? <Loaders {...this.props}/> : null}
                 <Paper className="mdl-cell mdl-cell--12-col" style={styles.list}>
-                    {listItems.length > 0 && <Table fixedHeader={true}>
+                    {items.length > 0 && <Table fixedHeader={true}>
                         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                             <TableRow>
                                 <TableHeaderColumn>{showChecks && <Checkbox
@@ -94,7 +108,7 @@ class ListItems extends React.Component {
                                 />}
                                 </TableHeaderColumn>
                                 {screenSize && screenSize.width >= 680 ? <TableHeaderColumn style={{fontSize: 14}}>LAST UPDATED</TableHeaderColumn> : null}
-                                {screenSize && screenSize.width >= 840 ? <TableHeaderColumn style={{width: 100, fontSize: 14}}>SIZE</TableHeaderColumn> : null}
+                                {screenSize && screenSize.width >= 840 && !this.props.router.location.pathname.includes('agents') ? <TableHeaderColumn style={{width: 100, fontSize: 14}}>SIZE</TableHeaderColumn> : null}
                                 <TableHeaderColumn style={{textAlign: 'right', width: menuWidth}}></TableHeaderColumn>
                             </TableRow>
                         </TableHeader>
@@ -102,7 +116,7 @@ class ListItems extends React.Component {
                             {children}
                         </TableBody>
                     </Table>}
-                    {listItems.length < totalItems && totalItems > 25 &&
+                    {items.length < totalItems && totalItems > 25 &&
                     <div className="mdl-cell mdl-cell--12-col">
                         <RaisedButton
                             label={loading ? "Loading..." : "Load More"}
@@ -143,6 +157,10 @@ class ListItems extends React.Component {
         const allItemsSelected = mainStore.allItemsSelected;
         allItemsSelected ? mainStore.toggleAllItemsSelected(!allItemsSelected) : null;
         e.stopPropagation();
+    }
+
+    getCredentials(id) {
+        agentStore.getAgentApiToken(id)
     }
 
     loadMore(page) {
@@ -190,6 +208,7 @@ const styles = {
 };
 
 ListItems.propTypes = {
+    agents: array,
     allItemsSelected: bool,
     filesChecked: array,
     foldersChecked: array,

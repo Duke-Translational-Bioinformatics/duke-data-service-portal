@@ -50,6 +50,7 @@ export class AgentStore {
 
     @action getAgentApiToken(id) {
         mainStore.toggleLoading();
+        mainStore.toggleModals('agentCred');
         this.transportLayer.getUserKey()
             .then(this.checkResponse)
             .then(response => response.json())
@@ -66,7 +67,7 @@ export class AgentStore {
                             .then(response => response.json())
                             .then((json) => {
                                 agentStore.agentApiToken = json;
-                                mainStore.toggleModals('agentCred');
+                                // mainStore.toggleModals('agentCred');
                                 if (mainStore.loading) mainStore.toggleLoading();
                             })
                             .catch((ex) => {
@@ -95,9 +96,9 @@ export class AgentStore {
             });
     }
 
-    @action loadAgents() {
+    @action getAgents() {
         mainStore.toggleLoading();
-        this.transportLayer.loadAgents()
+        this.transportLayer.getAgents()
             .then(this.checkResponse)
             .then(response => response.json())
                 .then((json) => {
