@@ -70,7 +70,7 @@ class SearchFilters extends React.Component {
 
         return (
             <div>
-                <Drawer open={showFilters} width={showFilters ? 240 : null} zDepth={1}>
+                <Drawer open={showFilters} width={showFilters ? 240 : null} zDepth={1} openSecondary={true}>
                     <div style={styles.spacer}></div>
                         <div style={styles.drawer}>
                             {screenSize.width <= 700 ? <div className="mdl-cell mdl-cell--12-col">
