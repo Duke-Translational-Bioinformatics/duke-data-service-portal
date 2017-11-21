@@ -39,6 +39,7 @@ body
 .page-content
   padding-top 76px
 
+ // Slide content right if menu is opened
 .slide-right
   @media screen and (min-width 700px) and (max-width 1280px)
     transform: scale(1);
@@ -52,6 +53,21 @@ body
     transform: scale(1);
     transition: 0.10s all linear;
     padding-left 220px
+
+ //Slide content left if search filters are opened
+.slide-left
+  @media screen and (min-width 700px) and (max-width 1280px)
+    transform: scale(1);
+    transition: 0.10s linear
+    padding-right 250px
+  @media screen and (min-width 1280px) and (max-width 1470px)
+    transform: scale(1);
+    transition: 0.10s all linear;
+    padding-right 240px
+  @media screen and (min-width 1470px) and (max-width 1800px)
+    transform: scale(1);
+    transition: 0.10s all linear;
+    padding-right 220px
 
 .group:after
   content: "";
