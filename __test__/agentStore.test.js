@@ -60,15 +60,15 @@ describe('Agent Store', () => {
         });
     });
 
-    it('@action loadAgents - loads a list of software agents', () => {
+    it('@action getAgents - gets a list of software agents', () => {
         let mainStore = require('../app/scripts/stores/mainStore').default;
         mainStore.loading = false;
-        transportLayer.loadAgents = jest.fn(() => respondOK(fake.agent_list_json));
-        agentStore.loadAgents();
+        transportLayer.getAgents = jest.fn(() => respondOK(fake.agent_list_json));
+        agentStore.getAgents();
         expect(mainStore.loading).toBe(true);
         return sleep(1).then(() => {
-            expect(transportLayer.loadAgents).toHaveBeenCalledTimes(1);
-            expect(transportLayer.loadAgents).toHaveBeenCalledWith();
+            expect(transportLayer.getAgents).toHaveBeenCalledTimes(1);
+            expect(transportLayer.getAgents).toHaveBeenCalledWith();
             expect(agentStore.agents.length).toBe(2);
             expect(agentStore.agents[0].id).toBe(AGENT_ID);
             expect(agentStore.agents[0].name).toBe(AGENT_NAME);
