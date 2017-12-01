@@ -13,16 +13,19 @@ export class MainStore {
     @observable agents
     @observable agentKey
     @observable agentApiToken
+    @observable allItemsSelected
     @observable autoCompleteLoading
     @observable audit
     @observable counter
     @observable currentUser
+    @observable currentLocation
     @observable destination
     @observable destinationKind
     @observable device
     @observable drawerLoading
     @observable entityObj
     @observable errorModals
+    @observable expandUploadProgressCard
     @observable failedUploads
     @observable filesChecked
     @observable filesToUpload
@@ -30,10 +33,11 @@ export class MainStore {
     @observable fileHashes
     @observable foldersChecked
     @observable fileVersions
-    @observable includeKinds
-    @observable includeProjects
+    @observable hideUploadProgress
     @observable isListItem
+    @observable isSafari
     @observable itemsSelected
+    @observable leftNavIndex
     @observable listItems
     @observable loading
     @observable metadataTemplate
@@ -44,28 +48,34 @@ export class MainStore {
     @observable moveItemList
     @observable moveItemLoading
     @observable moveToObj
+    @observable nextPage
     @observable objectMetadata
     @observable objectTags
     @observable openMetadataManager
     @observable openTagManager
     @observable openUploadManager
     @observable parent
+    @observable prevLocation
     @observable projects
     @observable project
-    @observable projPermissions
     @observable projectMembers
     @observable projectRole
+    @observable projectRoles
     @observable metaObjProps
     @observable responseHeaders
     @observable screenSize
     @observable searchFilesList
     @observable searchFilters
+    @observable searchProjectsPostFilters
+    @observable searchTagsPostFilters
     @observable searchResults
     @observable searchResultsFiles
     @observable searchResultsFolders
     @observable searchResultsProjects
+    @observable searchResultsTags
     @observable searchValue
     @observable selectedEntity
+    @observable showBackButton
     @observable serviceOutageNoticeModalOpen
     @observable showFilters
     @observable showPropertyCreator
@@ -79,7 +89,10 @@ export class MainStore {
     @observable tagsToAdd
     @observable templateProperties
     @observable toasts
+    @observable totalItems
+    @observable toggleNav
     @observable toggleModal
+    @observable totalUploads
     @observable uploadCount
     @observable uploads
     @observable usage
@@ -91,8 +104,10 @@ export class MainStore {
         this.agents = [];
         this.agentKey = {};
         this.agentApiToken = {};
+        this.allItemsSelected = false;
         this.autoCompleteLoading = false;
         this.audit = {};
+        this.currentLocation = null;
         this.counter = observable.map();
         this.currentUser = {};
         this.device = {};
@@ -101,6 +116,7 @@ export class MainStore {
         this.drawerLoading = false;
         this.entityObj = null;
         this.errorModals = [];
+        this.expandUploadProgressCard = true;
         this.failedUploads = [];
         this.filesChecked = [];
         this.filesToUpload = [];
@@ -108,10 +124,12 @@ export class MainStore {
         this.fileHashes = [];
         this.foldersChecked = [];
         this.fileVersions = [];
-        this.includeKinds = [];
-        this.includeProjects = [];
+        this.hideUploadProgress = false;
+        this.isFolderUpload = false;
         this.isListItem = false;
+        this.isSafari = false;
         this.itemsSelected = null;
+        this.leftNavIndex = null;
         this.listItems = [];
         this.loading = false;
         this.metadataTemplate = {};
@@ -122,15 +140,16 @@ export class MainStore {
         this.moveItemList = [];
         this.moveItemLoading = false;
         this.moveToObj = {};
+        this.nextPage = null;
         this.objectMetadata = [];
         this.objectTags = [];
         this.openMetadataManager = false;
         this.openTagManager = false;
         this.openUploadManager = false;
         this.parent = {};
+        this.prevLocation = null;
         this.projects = [];
         this.project = {};
-        this.projPermissions = null;
         this.projectMembers = [];
         this.projectRole = null;
         this.projectRoles = observable.map();
@@ -139,13 +158,17 @@ export class MainStore {
         this.screenSize = {width: 0, height: 0};
         this.searchFilesList = [];
         this.searchFilters = [];
+        this.searchProjectsPostFilters = {"project.name": []};
+        this.searchTagsPostFilters = {"tags.label": []};
         this.searchResults = [];
         this.searchResultsFiles = [];
         this.searchResultsFolders = [];
         this.searchResultsProjects = [];
+        this.searchResultsTags = [];
         this.searchValue = null;
         this.serviceOutageNoticeModalOpen = cookie.load('serviceOutageNoticeModalOpen');
         this.selectedEntity = null;
+        this.showBackButton = true;
         this.showFilters = false;
         this.showPropertyCreator = false;
         this.showTagCloud = false;
@@ -158,19 +181,48 @@ export class MainStore {
         this.tagsToAdd = [];
         this.templateProperties = [];
         this.toasts = [];
+        this.totalItems = null;
+        this.toggleNav = false;
         this.toggleModal = {open: false, id: null};
+        this.totalUploads = {inProcess: 0, complete: 0};
         this.uploadCount = [];
         this.uploads = observable.map();
         this.usage = null;
         this.users = [];
         this.userKey = {};
         this.versionModal = false;
+        this.warnUserBeforeLeavingPage = false;
 
         this.transportLayer = transportLayer;
     }
 
     checkResponse(response) {
         return checkStatus(response, authStore);
+    }
+
+    @action setLeftNavIndex(index) {
+        this.leftNavIndex = index;
+    }
+
+    @action toggleNavDrawer() {
+        this.toggleNav = !this.toggleNav;
+    }
+
+    @action toggleBackButtonVisibility(bool, prevLocation){
+        this.showBackButton = bool;
+        this.prevLocation = prevLocation;
+    }
+
+    @action toggleAllItemsSelected(bool) {
+        this.allItemsSelected = bool;
+    }
+
+    @action setCurrentRouteLocation(location) {
+        this.currentLocation = location;
+    }
+
+    @action toggleUploadProgressCard() {
+        this.expandUploadProgressCard = !this.expandUploadProgressCard;
     }
 
     tryAsyncAgain(func, args, delay, counterId, message, isUpload) {
@@ -227,25 +279,28 @@ export class MainStore {
         if (perPage == null) perPage = 25;
         this.transportLayer.getProjects(page, perPage)
             .then(this.checkResponse).then((response) => {
-                const results = response.json();
-                const headers = response.headers;
-                return Promise.all([results, headers]);
-            }).then((json) => {
-                let results = json[0].results;
-                let headers = json[1].map;
-                if(page <= 1) {
-                    this.projects = results;
-                } else {
-                    this.projects = [...this.projects, ...results];
-                }
-                const userId = authStore.currentUser.id !== undefined ? authStore.currentUser.id : this.currentUser.id !== undefined ? this.currentUser.id : null;
-                this.projects.forEach((p) => {
-                    userId !== null ? this.getAllProjectPermissions(p.id, userId) : null;
-                });
-                this.responseHeaders = headers;
-                this.loading = false;
-            }).catch(ex => this.handleErrors(ex))
+            const results = response.json();
+            const headers = response.headers;
+            return Promise.all([results, headers]);
+        }).then((json) => {
+            let results = json[0].results;
+            let headers = json[1].map;
+            if(page <= 1) {
+                this.projects = results;
+            } else {
+                this.projects = [...this.projects, ...results];
+            }
+            const userId = authStore.currentUser.id !== undefined ? authStore.currentUser.id : this.currentUser.id !== undefined ? this.currentUser.id : null;
+            this.projects.forEach((p) => {
+                userId !== null ? this.getAllProjectPermissions(p.id, userId) : null;
+            });
+            this.responseHeaders = headers;
+            this.nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
+            this.totalItems = headers !== null && !!headers['x-total'] ? parseInt(headers['x-total'][0], 10) : null;
+            this.loading = false;
+        }).catch(ex => this.handleErrors(ex))
     }
+
 
     @action getProjectListForProvenanceEditor() {
         this.loading = true;
@@ -274,6 +329,15 @@ export class MainStore {
             }).catch(ex => this.handleErrors(ex))
     }
 
+    @action getPermissions(id, userId) {
+        this.transportLayer.getPermissions(id, userId)
+           .then(this.checkResponse)
+           .then(response => response.json())
+           .then((json) => {
+               this.projectRole = json.auth_role.id;
+        }).catch(ex =>this.handleErrors(ex))
+    }
+
     @action getProjectMembers(id) {
         this.transportLayer.getProjectMembers(id)
             .then(this.checkResponse)
@@ -291,11 +355,15 @@ export class MainStore {
             .then((json) => {
                 this.addToast('Project Added');
                 this.projects = [json, ...this.projects];
+                const userId = authStore.currentUser.id !== undefined ? authStore.currentUser.id : this.currentUser.id !== undefined ? this.currentUser.id : null;
+                this.projects.forEach((p) => {
+                    userId !== null ? this.getAllProjectPermissions(p.id, authStore.currentUser.id) : null;
+                });
                 this.loading = false;
             }).catch((ex) => {
-                this.addToast('Failed to add new project');
-                this.handleErrors(ex)
-            })
+            this.addToast('Failed to add new project');
+            this.handleErrors(ex)
+        })
     }
 
     @action editProject(id, name, desc) {
@@ -305,23 +373,26 @@ export class MainStore {
             .then((json) => {
                 this.addToast('Project Updated');
                 this.project = json;
+                let index = this.projects.findIndex((p) => p.id === id);
+                this.projects.splice(index, 1, json);
             }).catch((ex) => {
-                this.addToast('Project Update Failed');
-                this.handleErrors(ex)
-            });
+            this.addToast('Project Update Failed');
+            this.handleErrors(ex)
+        });
     }
 
     @action deleteProject(id) {
         this.transportLayer.deleteProject(id)
             .then(this.checkResponse)
             .then(response => {})
-            .then((json) => {
+            .then(() => {
                 this.addToast('Project Deleted');
-                BaseUtils.removeObjByKey(this.projects, {key: 'id', value: id})
+                this.projects = this.projects.filter(p => p.id !== id);
+                this.totalItems--;
             }).catch((ex) => {
-                this.addToast('Project Delete Failed');
-                this.handleErrors(ex)
-            });
+            this.addToast('Project Delete Failed');
+            this.handleErrors(ex)
+        });
     }
 
     @action getProjectDetails(id) {
@@ -343,9 +414,9 @@ export class MainStore {
                 this.listItems = [json, ...this.listItems];
                 this.loading = false;
             }).catch((ex) => {
-                this.addToast('Failed to Add a New Folder');
-                this.handleErrors(ex)
-            })
+            this.addToast('Failed to Add a New Folder');
+            this.handleErrors(ex)
+        })
     }
 
     @action deleteFolder(id, parentId, path) {
@@ -357,9 +428,9 @@ export class MainStore {
                 this.addToast('Folder(s) Deleted!');
                 this.deleteItemSuccess(id, parentId, path)
             }).catch((ex) => {
-                this.addToast('Folder Deleted Failed!');
-                this.handleErrors(ex)
-            });
+            this.addToast('Folder Deleted Failed!');
+            this.handleErrors(ex)
+        });
     }
 
     @action deleteFile(id, parentId, path) {
@@ -371,26 +442,28 @@ export class MainStore {
                 this.addToast('File(s) Deleted!');
                 this.deleteItemSuccess(id, parentId, path)
             }).catch((ex) => {
-                this.addToast('Failed to Delete File!');
-                this.handleErrors(ex)
-            });
+            this.addToast('Failed to Delete File!');
+            this.handleErrors(ex)
+        });
     }
 
     @action deleteItemSuccess(id, parentId, path) {
         this.loading = false;
-        this.listItems = BaseUtils.removeObjByKey(this.listItems.slice(), {key: 'id', value: id});
+        this.listItems = this.listItems.filter(l => l.id !== id);
+        this.totalItems--;
         if(this.listItems.length === 0) this.getChildren(parentId, path)
     }
 
     @action batchDeleteItems(parentId, path) {
         for (let id of this.filesChecked) {
             this.deleteFile(id, parentId, path);
-            this.filesChecked = this.filesChecked.filter(file => file !== id)
+            this.filesChecked = this.filesChecked.filter(file => file !== id);
         }
         for (let id of this.foldersChecked) {
             this.deleteFolder(id, parentId, path);
-            this.foldersChecked = this.foldersChecked.filter(folder => folder !== id)
+            this.foldersChecked = this.foldersChecked.filter(folder => folder !== id);
         }
+        if(this.allItemsSelected) this.toggleAllItemsSelected(!this.allItemsSelected);
         this.incrementTableBodyRenderKey();
     }
 
@@ -404,9 +477,9 @@ export class MainStore {
                 this.entityObj = json;
                 this.loading = false;
             }).catch((ex) => {
-                this.addToast('Failed to Update Label');
-                this.handleErrors(ex)
-            });
+            this.addToast('Failed to Update Label');
+            this.handleErrors(ex)
+        });
     }
 
     @action deleteVersion(id) {
@@ -418,9 +491,9 @@ export class MainStore {
                 this.addToast('Version Deleted!');
                 this.loading = false;
             }).catch((ex) => {
-                this.addToast('Failed to Delete Version!');
-                this.handleErrors(ex)
-            });
+            this.addToast('Failed to Delete Version!');
+            this.handleErrors(ex)
+        });
     }
 
     @action editItem(id, name, path) {
@@ -430,16 +503,16 @@ export class MainStore {
             .then(response => response.json())
             .then((json) => {
                 this.addToast('Item name updated to ' + name);
-                if(BaseUtils.objectPropInArray(this.listItems.slice(), 'id', id)) {
-                    this.listItems = this.listItems.filter(obj => obj.id !== id);
-                    this.listItems.unshift(json);
-                    if(this.entityObj.id === id) this.entityObj = json;
+                if(this.listItems.some(l => l.id === id)) {
+                    let index = this.listItems.findIndex(p => p.id === id);
+                    this.listItems.splice(index, 1, json);
                 }
+                if(this.entityObj && this.entityObj.id === id) this.entityObj = json;
                 this.loading = false;
             }).catch((ex) => {
-                this.addToast('Failed to update item');
-                this.handleErrors(ex)
-            });
+            this.addToast('Failed to update item');
+            this.handleErrors(ex)
+        });
     }
 
     @action getMoveItemList(id, path) {
@@ -479,9 +552,9 @@ export class MainStore {
                 }
                 this.loading = false;
             }).catch((ex) => {
-                this.addToast('Failed to move ' + type + ' to new location');
-                this.handleErrors(ex)
-            })
+            this.addToast('Failed to move ' + type + ' to new location');
+            this.handleErrors(ex)
+        })
     }
 
     @action getEntity(id, path, requester) {
@@ -499,8 +572,8 @@ export class MainStore {
                         mainStore.parent = json.parent;
                         mainStore.moveToObj = json;
                     }
-                    if (mainStore.projPermissions === null && (json.kind === 'dds-file' || json.kind === 'dds-folder')) mainStore.getUser(json.project.id);
-                    if (mainStore.projPermissions === null && json.kind === 'dds-file-version') mainStore.getUser(json.file.project.id);
+                    this.project = json.project;
+                    if(!this.currentUser.id) this.getUser(json.project.id);
                     mainStore.loading = false;
                 } else {
                     if(json.code === 'resource_not_consistent') {
@@ -528,6 +601,15 @@ export class MainStore {
         }
     }
 
+    @action setSelectedProject(id) {
+        this.transportLayer.getProjectDetails(id)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => {
+                this.project = json;
+            }).catch(ex => this.handleErrors(ex))
+    }
+
     @action getObjectMetadata(id, kind) {
         this.transportLayer.getObjectMetadata(id, kind)
             .then(this.checkResponse)
@@ -536,10 +618,28 @@ export class MainStore {
                 this.objectMetadata = json.results;
                 this.metaObjProps = json.results.map((prop) => {
                     return prop.properties.map((prop) => {
-                        return {key: prop.template_property.key, id: prop.template_property.id, value: prop.value};
+                        return {
+                            key: prop.template_property.key, id: prop.template_property.id, value: prop.value
+                        }
                     })
                 });
             }).catch(ex => this.handleErrors(ex))
+    }
+
+    @action deleteObjectMetadata(object, template) {
+        const index = this.objectMetadata.findIndex(o => o.template.id === template.id);
+        const itemToDelete = this.objectMetadata.filter((o) => {return o.template.id === template.id});
+        this.objectMetadata = this.objectMetadata.filter((o) => o.template.id !== template.id);
+        this.transportLayer.deleteObjectMetadata(object, template.id)
+            .then(this.checkResponse)
+            .then(response => {})
+            .then(() => {
+                this.addToast(`Resource metadata from ${template.name} has been deleted`);
+            }).catch((ex) => {
+            this.addToast(`Failed to delete resource metadata from ${template.name}`);
+            this.objectMetadata.splice(index, 1, itemToDelete);
+            this.handleErrors(ex)
+        });
     }
 
     @action getUserNameFromAuthProvider(text, id) {
@@ -585,27 +685,32 @@ export class MainStore {
         this.transportLayer.addProjectMember(id, userId, role)
             .then(this.checkResponse)
             .then(response => response.json())
-            .then((json) => {
+            .then(() => {
                 this.addToast(name + ' ' + 'has been added as a ' + newRole + ' to this project');
                 this.getProjectMembers(id);
                 this.loading = false;
             }).catch((ex) => {
-                this.addToast('Could not add member to this project or member does not exist');
-                this.handleErrors(ex)
-            });
+            this.addToast('Could not add member to this project or member does not exist');
+            this.handleErrors(ex)
+        });
     }
 
-    @action deleteProjectMember(id, userId, userName) {
+    @action deleteProjectMember(id, userId, userName, removeSelf) {
         this.transportLayer.deleteProjectMember(id, userId)
             .then(this.checkResponse)
             .then(response => {})
-            .then((json) => {
+            .then(() => {
                 this.addToast(userName + ' ' + 'has been removed from this project');
-                this.getProjectMembers(id);
+                if(!removeSelf) {
+                    this.getProjectMembers(id);
+                } else {
+                    this.projects = this.projects.filter(p => p.id !== id);
+                    window.location.href = window.location.protocol + '//' + window.location.host + '/';
+                }
             }).catch((ex) => {
-                this.addToast('Unable to remove ' + userName + ' from this project');
-                this.handleErrors(ex)
-            });
+            this.addToast('Unable to remove ' + userName + ' from this project');
+            this.handleErrors(ex)
+        });
     }
 
     @action handleBatch (files, folders) {
@@ -627,9 +732,62 @@ export class MainStore {
     }
 
     @action processFilesToUpload(files, rejectedFiles) {
-        this.filesToUpload = files.length ? [...this.filesToUpload, ...files] : [];
-        this.filesToUpload = this.filesToUpload.filter((file, index, self) => self.findIndex(f => f.name === file.name && f.size === file.size && f.lastModified === file.lastModified) === index);
-        this.filesRejectedForUpload = rejectedFiles.length ? [...this.filesRejectedForUpload, ...rejectedFiles] : [];
+        if(files.length) mainStore.isFolderUpload = Object.keys(files[0]).some(v => v === 'fullPath');
+        this.filesToUpload = files.length || rejectedFiles.length ? [...this.filesToUpload, ...files] : [];
+        this.filesToUpload = this.filesToUpload.filter((file, index, self) => self.findIndex(f => f.name === file.name && f.size === file.size && f.lastModified === file.lastModified) === index); // Checking and removing duplicate files in file list before starting upload
+        this.filesRejectedForUpload = rejectedFiles.length || files.length ? [...this.filesRejectedForUpload, ...rejectedFiles] : [];
+        if(this.filesToUpload.length > 5) this.hideUploadProgress = true;
+    }
+
+    @action processFilesToUploadDepthFirst(files, parentId, parentKind, projectId) {
+        this.loading = true;
+        let fileList = files.map((file) => { return {path: file.fullPath, filename: file.name , file: file} });
+        const hierarchy = {}; // {folder_name} = { name: <name of folder>, children: {...just like hierarchy...}, files: [] }
+        // build tree
+        fileList.map(file => {
+            const paths = file.path.split('/').slice(0, -1);
+            let parentFolder = null;
+            // builds the hierarchy of folders.
+            paths.map(path => {
+                if (!parentFolder) {
+                    if (!hierarchy[path]) {
+                        hierarchy[path] = {
+                            name: path,
+                            children: {},
+                            files: [],
+                        };
+                    }
+                    parentFolder = hierarchy[path]
+                } else {
+                    if (!parentFolder.children[path]) {
+                        parentFolder.children[path] = {
+                            name: path,
+                            children: {},
+                            files: [],
+                        };
+                    }
+                    parentFolder = parentFolder.children[path];
+                }
+            });
+            parentFolder.files.push(file);
+        });
+
+        Object.keys(hierarchy).map(folderName => this.uploadFilesDepthFirst(parentId, parentKind, hierarchy[folderName], projectId));
+    }
+
+    @action uploadFilesDepthFirst(parentId, parentKind, folderInfo, projectId) {
+        this.transportLayer.addFolder(parentId, parentKind, folderInfo.name)
+            .then()
+            .then(response => response.json())
+            .then((ddsFolder) => {
+                Object.keys(folderInfo.children).forEach(childFolderName => this.uploadFilesDepthFirst(ddsFolder.id, ddsFolder.kind, folderInfo.children[childFolderName], projectId));
+                folderInfo.files.map(file => {
+                    this.startUpload(projectId, file.file, ddsFolder.id, ddsFolder.kind, null, null, this.tagsToAdd);
+                });
+            }).catch((ex) => {
+            this.addToast('Failed to add a new folder');
+            this.handleErrors(ex)
+        })
     }
 
     @action removeFileFromUploadList(index) {
@@ -671,11 +829,11 @@ export class MainStore {
             .then(response => response.json())
             .then((json) => {
                 this.addToast('Added ' + json.label + ' tag');
-                this.getTags(id, Kind.DDS_FILE);
+                this.objectTags.push(json);
             }).catch((ex) => {
-                this.addToast('Failed to add new tag');
-                this.handleErrors(ex)
-            })
+            this.addToast('Failed to add new tag');
+            this.handleErrors(ex)
+        })
     }
 
     @action appendTags(id, kind, tags) {
@@ -687,26 +845,26 @@ export class MainStore {
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
-                this.addToast('Added ' + msg + ' as tags to all selected files.');
-                this.getTags(id, Kind.DDS_FILE);
+                this.addToast('Added ' + msg + ' as tags to all selected resources.');
+                this.objectTags = [...this.objectTags, ...json.results];
                 this.loading = false;
             }).catch((ex) => {
-                this.addToast('Failed to add tags');
-                this.handleErrors(ex)
-            })
+            this.addToast('Failed to add tags');
+            this.handleErrors(ex)
+        })
     }
 
-    @action deleteTag(id, label, fileId) {
+    @action deleteTag(id, label) {
         this.transportLayer.deleteTag(id)
             .then(this.checkResponse)
             .then(response => {})
             .then(() => {
                 this.addToast(label + ' tag deleted!');
-                this.getTags(fileId, Kind.DDS_FILE);
+                this.objectTags = this.objectTags.filter(t => t.id !== id);
             }).catch((ex) => {
-                this.addToast('Failed to delete ' + label);
-                this.handleErrors(ex)
-            });
+            this.addToast('Failed to delete ' + label);
+            this.handleErrors(ex)
+        });
     }
 
     @action startUpload(projId, blob, parentId, parentKind, label, fileId, tags) {
@@ -715,10 +873,10 @@ export class MainStore {
             contentType = blob.type,
             slicedFile = null,
             BYTES_PER_CHUNK, SIZE, start, end;
-            SIZE = blob.size;
-            BYTES_PER_CHUNK = ChunkSize.BYTES_PER_CHUNK;
-            start = 0;
-            end = BYTES_PER_CHUNK;
+        SIZE = blob.size;
+        BYTES_PER_CHUNK = ChunkSize.BYTES_PER_CHUNK;
+        start = 0;
+        end = BYTES_PER_CHUNK;
 
         const retryArgs = [projId, blob, parentId, parentKind, label, fileId, tags];
         const fileReader = new FileReader();
@@ -766,6 +924,7 @@ export class MainStore {
                         if (!uploadObj.id && !uploadObj.error) throw "no upload was created";
                         details.uploadId = uploadObj.id;
                         mainStore.uploads.set(uploadObj.id, details);
+                        mainStore.totalUploads.inProcess = mainStore.uploads.size;
                         mainStore.hashFile(mainStore.uploads.get(uploadObj.id), uploadObj.id);
                         mainStore.updateAndProcessChunks(uploadObj.id, null, null);
                         window.onbeforeunload = function (e) {// If uploading files and user navigates away from page, send them warning
@@ -881,7 +1040,7 @@ export class MainStore {
         }
         if (allDone === true) this.checkForHash(uploadId, upload.parentId, upload.parentKind, upload.name, upload.label, upload.fileId, upload.projectId);
         window.onbeforeunload = function () { // If done, set to false so no warning is sent.
-            preventLeave = false;
+            this.warnUserBeforeLeavingPage = false;
         };
     }
 
@@ -889,7 +1048,7 @@ export class MainStore {
         window.addEventListener('offline', function () {
             mainStore.uploadError(uploadId)
         });
-        var xhr = new XMLHttpRequest();
+        const xhr = new XMLHttpRequest();
         xhr.upload.onprogress = uploadProgress;
         function uploadProgress(e) {
             if (e.lengthComputable) {
@@ -945,7 +1104,7 @@ export class MainStore {
         this.transportLayer.allChunksUploaded(uploadId, hash, algorithm)
             .then(this.checkResponse)
             .then(response => response.json())
-            .then((json) => {
+            .then(() => {
                 if (fileId == null) {
                     this.addFile(uploadId, parentId, parentKind, fileName, label);
                 } else {
@@ -968,15 +1127,23 @@ export class MainStore {
     }
 
     @action addFileSuccess(parentId, parentKind, uploadId, fileId) {
-        if (this.uploads.get(uploadId).tags.length) this.appendTags(fileId, 'dds-file', this.uploads.get(uploadId).tags);
-        if(this.uploads.size === 1) {
-            if (parentKind === 'dds-project') {
-                this.getChildren(parentId, Path.PROJECT);
-            } else {
-                this.getChildren(parentId, Path.FOLDER);
-            }
+        if (this.uploads.get(uploadId).tags.length) this.appendTags(fileId, Kind.DDS_FILE, this.uploads.get(uploadId).tags);
+        if (this.uploads.size === 1 && !this.isFolderUpload) {
+            let path = parentKind === 'dds-project' ? Path.PROJECT : Path.FOLDER;
+            this.getChildren(parentId, path);
+            this.getChildren(parentId, path);
+        } else if (this.uploads.size === 1 && this.isFolderUpload) {
+            this.isFolderUpload = false;
+            let id = this.currentLocation.id;
+            let path = this.currentLocation.path.includes('project') ? Path.PROJECT : Path.FOLDER;
+            this.getChildren(id, path);
         }
         if(this.uploads.has(uploadId)) this.uploads.delete(uploadId);
+        this.totalUploads.complete++;
+        if(this.uploads.size < 1) {
+           if(this.hideUploadProgress) this.hideUploadProgress = false;
+           this.totalUploads = {inProcess: 0, complete: 0};
+        }
     }
 
     @action addFileVersion(uploadId, label, fileId) {
@@ -1040,10 +1207,17 @@ export class MainStore {
 
     @action cancelUpload(uploadId, name) {
         if(this.uploads.has(uploadId)) this.uploads.delete(uploadId);
+        this.totalUploads.inProcess = this.uploads.size;
         this.addToast('Canceled upload of '+name);
+        if(!this.uploads.size && this.warnUserBeforeLeavingPage) this.warnUserBeforeLeavingPage = false;
+        if(!this.uploads.size) { // If user cancels last uploads, make sure that page loads with new list items
+            let id = this.currentLocation.id;
+            let path = this.currentLocation.path.includes('project') ? Path.PROJECT : Path.FOLDER;
+            this.getChildren(id, path);
+        }
     }
 
-    @action  getDownloadUrl(id, kind) {
+    @action getDownloadUrl(id, kind) {
         this.loading = true;
         this.transportLayer.getDownloadUrl(id, kind)
             .then(this.checkResponse)
@@ -1051,7 +1225,7 @@ export class MainStore {
             .then((json) => {
                 let host = json.host;
                 let url = json.url;
-                var win = window.open(host + url, '_blank');
+                let win = window.open(host + url, '_blank');
                 if (win) {
                     win.focus();
                 } else { // if browser blocks popups use location.href instead
@@ -1082,6 +1256,8 @@ export class MainStore {
                     this.listItems = [...this.listItems, ...results];
                 }
                 this.responseHeaders = headers;
+                this.nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
+                this.totalItems = headers !== null && !!headers['x-total'] ? parseInt(headers['x-total'][0], 10) : null;
                 this.loading = false;
             }).catch(ex =>this.handleErrors(ex))
     }
@@ -1092,23 +1268,8 @@ export class MainStore {
             .then(response => response.json())
             .then((json) => {
                 this.currentUser = json;
-                if(id) this.getPermissions(id, json.id);
+                this.getPermissions(id, json.id)
             }).catch(ex => this.handleErrors(ex));
-    }
-
-    @action getPermissions(id, userId) {
-        this.transportLayer.getPermissions(id, userId)
-            .then(this.checkResponse)
-            .then(response => response.json())
-            .then((json) => {
-                let id = json.auth_role.id;
-                this.projectRole = json.auth_role.id;
-                if (id === 'project_viewer') this.projPermissions = 'viewOnly';
-                if (id === 'project_admin' || id === 'system_admin') this.projPermissions = 'prjCrud';
-                if (id === 'file_editor') this.projPermissions = 'flCrud';
-                if (id === 'file_uploader') this.projPermissions = 'flUpload';
-                if (id === 'file_downloader') this.projPermissions = 'flDownload';
-            }).catch(ex =>this.handleErrors(ex))
     }
 
     @action searchFiles(text, id) {
@@ -1153,9 +1314,9 @@ export class MainStore {
                 this.showTemplateDetails = true;
                 this.drawerLoading = false;
             }).catch((ex) => {
-                this.addToast('Failed to add new template');
-                this.handleErrors(ex)
-            })
+            this.addToast('Failed to add new template');
+            this.handleErrors(ex)
+        })
     }
 
     @action getMetadataTemplateDetails(id) {
@@ -1196,67 +1357,67 @@ export class MainStore {
                 this.drawerLoading = false;
                 this.loadMetadataTemplates('');
             }).catch((ex) => {
-                this.addToast('Failed to update ' + label);
-                this.handleErrors(ex)
-            })
+            this.addToast('Failed to update ' + label);
+            this.handleErrors(ex)
+        })
     }
 
     @action deleteTemplate(id, label) {
         this.transportLayer.deleteTemplate(id)
             .then(this.checkResponse)
             .then(response => {})
-            .then((json) => {
+            .then(() => {
                 this.addToast('The ' + label + ' template has been deleted');
                 this.toggleMetadataManager();
                 this.loadMetadataTemplates('');
             }).catch((ex) => {
-                this.addToast('Failed to delete ' + label);
-                this.handleErrors(ex)
-            });
+            this.addToast('Failed to delete ' + label);
+            this.handleErrors(ex)
+        });
     }
 
     @action deleteMetadataProperty(id, label) {
         this.transportLayer.deleteMetadataProperty(id)
             .then(this.checkResponse)
             .then(response => {})
-            .then((json) => {
+            .then(() => {
                 this.addToast('The ' + label + ' property has been deleted');
                 this.templateProperties = BaseUtils.removeObjByKey(this.templateProperties.slice(), {key: 'id', value: id});
             }).catch((ex) => {
-                this.addToast('Failed to delete ' + label);
-                this.handleErrors(ex)
-            });
+            this.addToast('Failed to delete ' + label);
+            this.handleErrors(ex)
+        });
     }
 
-    @action createMetadataObject(kind, fileId, templateId, properties) {
+    @action createMetadataObject(kind, id, templateId, properties) {
         this.drawerLoading = true;
-        this.transportLayer.createMetadataObject(kind, fileId, templateId, properties)
+        this.transportLayer.createMetadataObject(kind, id, templateId, properties)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
                 this.addToast('A new metadata object was created.');
-                this.createMetadataObjectSuccess(fileId, kind, json);
+                this.createMetadataObjectSuccess(json);
             }).catch((ex) => {
-                if (ex.response.status === 409) {
-                    this.updateMetadataObject(kind, fileId, templateId, properties);
-                } else {
-                    this.addToast('Failed to add new metadata object');
-                    this.handleErrors(ex)
-                }
-            })
+            if (ex.response.status === 409) {
+                this.updateMetadataObject(kind, id, templateId, properties);
+            } else {
+                this.addToast('Failed to add new metadata object');
+                this.handleErrors(ex)
+            }
+        })
     }
 
-    @action updateMetadataObject(kind, fileId, templateId, properties) {
-        this.transportLayer.updateMetadataObject(kind, fileId, templateId, properties)
+    @action updateMetadataObject(kind, id, templateId, properties) {
+        this.transportLayer.updateMetadataObject(kind, id, templateId, properties)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
                 this.addToast('This metadata object was updated.');
-                this.createMetadataObjectSuccess(fileId, kind, json);
+                this.createMetadataObjectSuccess(json);
             }).catch((ex) => {
-                this.addToast('Failed to update metadata object');
-                this.handleErrors(ex)
-            })
+            this.addToast('Failed to update metadata object');
+            this.handleErrors(ex)
+        })
     }
 
     @action createMetadataProperty(id, name, label, desc, type) {
@@ -1269,19 +1430,22 @@ export class MainStore {
                 this.templateProperties.push(json);
                 this.drawerLoading = false;
             }).catch((ex) => {
-                this.addToast('Failed to add new template property');
-                this.handleErrors(ex)
-            })
+            this.addToast('Failed to add new template property');
+            this.handleErrors(ex)
+        })
     }
 
-    @action createMetadataObjectSuccess(id, kind, json) {
+    @action createMetadataObjectSuccess(json) {
         this.drawerLoading = false;
         this.showBatchOps = false;
         this.showTemplateDetails = false;
+        this.objectMetadata = this.objectMetadata.filter((o) => o.template.id !== json.template.id);
         this.objectMetadata.push(json);
         this.metaObjProps = this.objectMetadata.map((prop) => {
             return prop.properties.map((prop) => {
-                return {key: prop.template_property.key, id: prop.template_property.id, value: prop.value};
+                return {
+                    key: prop.template_property.key, id: prop.template_property.id, value: prop.value
+                }
             })
         });
     }
@@ -1314,31 +1478,62 @@ export class MainStore {
         this.showTemplateDetails = true;
     }
 
-    @action searchObjects(value, includeKinds, includeProjects) {
-        this.searchValue = value;
+    @action searchObjects(query, filter, projectPostFilter, tagPostFilter, page) {
+        let filters;
+        if(page !== null) {
+            filters = [this.searchFilters, this.searchProjectsPostFilters, this.searchTagsPostFilters]
+        } else {
+            if (projectPostFilter !== null) {
+                if (!this.searchProjectsPostFilters['project.name'].includes(projectPostFilter)) {
+                    this.searchProjectsPostFilters['project.name'].push(projectPostFilter)
+                } else {
+                    this.searchProjectsPostFilters['project.name'] = this.searchProjectsPostFilters['project.name'].filter(f => f !== projectPostFilter);
+                }
+            }
+            if (tagPostFilter !== null) {
+                if (!this.searchTagsPostFilters['tags.label'].includes(tagPostFilter)) {
+                    this.searchTagsPostFilters['tags.label'].push(tagPostFilter)
+                } else {
+                    this.searchTagsPostFilters['tags.label'] = this.searchTagsPostFilters['tags.label'].filter(f => f !== tagPostFilter);
+                }
+            }
+            if (filter !== null) {
+                this.searchFilters.includes(filter) ? this.searchFilters = this.searchFilters.filter(f => f !== filter) : this.searchFilters.push(filter);
+            }
+            filters = [this.searchFilters, this.searchProjectsPostFilters, this.searchTagsPostFilters]
+        }
+        if(page == null) page = 1;
+        this.searchValue = query;
+        query = encodeURI(query).replace(/#/,"%23");
         this.loading = true;
-        if (includeKinds === null || !includeKinds.length) includeKinds = ['dds-file', 'dds-folder'];
-        this.transportLayer.searchObjects(value, includeKinds, includeProjects)
+        this.transportLayer.searchObjects(query, ...filters, page)
             .then(this.checkResponse)
-            .then(response => response.json())
-            .then((json) => {
-                this.searchResults = json.results;
-                this.searchResultsFiles = json.results.filter((obj)=>{
+            .then(response => {
+                const results = response.json();
+                const headers = response.headers;
+                return Promise.all([results, headers]);
+            }).then((json) => {
+                if(page <= 1) {
+                    this.searchResults = json[0].results;
+                } else {
+                    this.searchResults = [...this.searchResults, ...json[0].results];
+                }
+                this.searchResultsProjects = json[0].aggs.project_names.buckets;
+                this.searchResultsTags = json[0].aggs.tags.buckets;
+                this.searchResultsFiles =  this.searchResults.filter((obj)=>{
                     return obj.kind === 'dds-file';
                 });
-                this.searchResultsFolders = json.results.filter((obj)=>{
+                this.searchResultsFolders =  this.searchResults.filter((obj)=>{
                     return obj.kind === 'dds-folder';
                 });
-                let p = json.results.map((obj) => {
-                    return {name: obj.ancestors[0].name, id: obj.ancestors[0].id};
-                });
-                this.searchResultsProjects = BaseUtils.removeDuplicates(p, 'id');
+                this.responseHeaders = json[1].map;
+                this.nextPage = this.responseHeaders !== null && !!this.responseHeaders['x-next-page'] ? this.responseHeaders['x-next-page'][0] : null;
+                this.totalItems = this.responseHeaders !== null && !!this.responseHeaders['x-total'] ? parseInt(this.responseHeaders['x-total'][0], 10) : null;
                 this.loading = false;
             }).catch(ex =>this.handleErrors(ex))
     }
 
     @action toggleSearch() {
-        this.searchValue = null;
         this.showSearch = !this.showSearch;
     }
 
@@ -1346,20 +1541,22 @@ export class MainStore {
         this.showFilters = !this.showFilters;
     }
 
-    @action setIncludedSearchKinds(includeKinds) {
-        this.includeKinds = includeKinds;
-        this.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
-    }
-
-    @action setIncludedSearchProjects(includeProjects) {
-        this.includeProjects = includeProjects;
-        this.setSearchFilters();
-    }
-
-    @action setSearchFilters() {
+    @action resetSearchFilters() {
         this.searchFilters = [];
-        this.includeProjects.forEach((projectId) => {this.searchFilters.push({"match":{"project.id": projectId}})});
-        this.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
+        this.searchProjectsPostFilters = {"project.name": []};
+        this.searchTagsPostFilters = {"tags.label": []};
+    }
+
+    @action resetSearchResults() {
+        this.searchResults = [];
+        this.searchResultsProjects = [];
+        this.searchResultsTags = [];
+        this.searchResultsFiles = [];
+        this.searchResultsFolders = [];
+        this.searchValue = null;
+        this.responseHeaders = {};
+        this.nextPage = null;
+        this.totalItems = null;
     }
 
     @action clearSearchFilesData() {
@@ -1390,6 +1587,7 @@ export class MainStore {
 
     @action getDeviceType(device) {
         this.device = device;
+        this.isSafari = /constructor/i.test(window.HTMLElement);
     }
 
     @action getScreenSize(height, width) {

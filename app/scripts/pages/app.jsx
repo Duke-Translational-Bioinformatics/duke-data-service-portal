@@ -7,6 +7,7 @@ import Header from '../components/globalComponents/header.jsx';
 import Footer from '../components/globalComponents/footer.jsx';
 import LeftMenu from '../components/globalComponents/leftMenu.jsx';
 import RetryUploads from '../components/globalComponents/retryUploads.jsx';
+import UploadManager from '../components/globalComponents/uploadManager.jsx';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import Snackbar from 'material-ui/Snackbar';
@@ -54,6 +55,8 @@ class App extends React.Component {
         mainStore.getDeviceType(device);
         if(authStore.appConfig.apiToken) {
             authStore.getCurrentUser();
+            mainStore.getProjects(null, null);
+            mainStore.getUsageDetails();
             mainStore.loadMetadataTemplates(null);
             authStore.removeLoginCookie();
         }
@@ -76,8 +79,16 @@ class App extends React.Component {
     componentDidUpdate(prevProps) {
         if(authStore.appConfig.apiToken && !Object.keys(authStore.currentUser).length) authStore.getCurrentUser();
         if(authStore.sessionTimeoutWarning) authStore.setRedirectUrl(location.href);
-        if(prevProps.location.pathname !== this.props.location.pathname) this.$$('.page-content').scrollTo(0, 0);
+        if(prevProps.location.pathname !== this.props.location.pathname || mainStore.currentLocation === null) {
+            this.$$('.page-content').scrollTo(0, 0);
+            mainStore.setCurrentRouteLocation({path: this.props.location.pathname, id: this.props.params.id});
+        }
         this.showToasts();
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const routeChanged = nextProps.location !== this.props.location;
+        mainStore.toggleBackButtonVisibility(routeChanged, this.props.location);
     }
 
     handleResize() {
@@ -89,11 +100,12 @@ class App extends React.Component {
     };
 
     render() {
-        const {errorModals, phiModalOpen, toasts, screenSize, serviceOutageNoticeModalOpen} = mainStore;
+        const {errorModals, phiModalOpen, toasts, toggleNav, showFilters, screenSize, serviceOutageNoticeModalOpen} = mainStore;
         const {appConfig} = authStore;
         const {location} = this.props;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let dialogs, tsts = null;
+        let slideContentClass = toggleNav ? 'page-content slide-right' : showFilters ? 'page-content slide-left' : 'page-content';
         if (toasts) {
             tsts = toasts.map(obj => {
                 return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} open={true} bodyStyle={{height: 'auto'}}/>
@@ -211,23 +223,18 @@ class App extends React.Component {
         }
         return (
             <span>
-                <div className="statusbar-overlay"></div>
-                <div className="panel-overlay"></div>
-                {!appConfig.apiToken ? '' : <LeftMenu {...this.props}/>}
                 <div className="views">
                     <div className="view view-main">
+                        {!appConfig.apiToken ? '' : <LeftMenu {...this.props}/>}
                         <Header {...this.props} {...this.state}/>
-                        <div className="pages navbar-through toolbar-through">
+                        <div className="pages">
                             <div data-page="index" className="page">
-                                <div className="searchbar-overlay"></div>
-                                <div className="page-content">
+                                <div className={slideContentClass}>
                                     {this.props.children}
                                     {tsts}
                                     {dialogs}
+                                    <UploadManager {...this.props}/>
                                     <RetryUploads {...this.props} {...this.state}/>
-                                    <div className="content-block searchbar-not-found">
-                                        <div className="content-block-inner">Nothing Found</div>
-                                    </div>
                                 </div>
                             </div>
                         </div>

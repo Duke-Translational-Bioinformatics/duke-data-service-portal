@@ -1069,3 +1069,95 @@ export const edge_data = {
     "from": "FILE_NODE_1",
     "to": "ACTIVITY_ID"
 }
+
+export const location = {
+    "id": "LOCATION_ID",
+    "path": "/folder/LOCATION_ID"
+}
+
+export const droppedFolder = [
+    {
+        "fullPath": "FOLDER_1/FILE_1",
+        "upload": {
+            "progress": 0,
+            "total": 24910,
+            "bytesSent": 0,
+            "filename": "FILE_1"
+        },
+        "status": "queued",
+        "accepted": true
+    },
+    {
+        "fullPath": "FOLDER_1/FOLDER_2/FOLDER_3/FILE_2",
+        "upload": {
+            "progress": 0,
+            "total": 30983,
+            "bytesSent": 0,
+            "filename": "FILE_2"
+        },
+        "status": "queued",
+        "accepted": true,
+        "dataURL": "data:image/png;base64",
+        "width": 410,
+        "height": 677
+    }
+]
+
+export const hierarchy = {
+    "FOLDER_1": {
+        "name": "FOLDER_1",
+        "children": {
+            "FOLDER_2": {
+                "name": "FOLDER_2",
+                "children": {
+                    "FOLDER_3": {
+                        "name": "FOLDER_3",
+                        "children": {
+
+                        },
+                        "files": [
+                            {
+                                "path": "FOLDER_1/FOLDER_2/FOLDER_3/FILE_2",
+                                "filename": "FILE_1)",
+                                "file": {
+                                    "fullPath": "FOLDER_1/FOLDER_2/FOLDER_3/FILE_2",
+                                    "upload": {
+                                        "progress": 0,
+                                        "total": 30983,
+                                        "bytesSent": 0,
+                                        "filename": "FILE_2"
+                                    },
+                                    "status": "queued",
+                                    "accepted": true,
+                                    "dataURL": "data:image/png;",
+                                    "width": 410,
+                                    "height": 677
+                                }
+                            }
+                        ]
+                    }
+                },
+                "files": [
+
+                ]
+            }
+        },
+        "files": [
+            {
+                "path": "FOLDER_1/FILE_1",
+                "filename": "FILE_1",
+                "file": {
+                    "fullPath": "FOLDER_1/FILE_1",
+                    "upload": {
+                        "progress": 0,
+                        "total": 24910,
+                        "bytesSent": 0,
+                        "filename": "FILE_1"
+                    },
+                    "status": "queued",
+                    "accepted": true
+                }
+            }
+        ]
+    }
+}

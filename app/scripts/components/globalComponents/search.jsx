@@ -11,59 +11,69 @@ class Search extends React.Component {
     componentDidMount() {
         if (this.refs.searchInput) { // Check if searchInput is in DOM and focus
             let search = this.refs.searchInput ? this.refs.searchInput : null;
-            if(mainStore.showSearch && search !== null) search.focus();
+            if(mainStore.showSearch && search !== null) {
+                search.focus();
+                search.select();
+            }
         }
+        this.search = _.debounce(this.search , 300);
     }
 
     render() {
-        const { screenSize, showSearch, searchValue } = mainStore;
-        return (showSearch ? <Paper style={styles.searchBar} zDepth={2}>
+        const { screenSize, searchValue, searchResults, showSearch } = mainStore;
+        const { router } = this.props;
+        return (showSearch ? <Paper className="navbar" style={styles.searchBar} zDepth={2}>
             <i className="material-icons"
                style={styles.searchBar.searchIcon}
-               onTouchTap={()=>this.showSearch()}>arrow_back</i>
+               onTouchTap={()=>this.showSearch()}>close</i>
             <TextField
                 ref="searchInput"
                 hintText="Search"
-                defaultValue={searchValue ? searchValue : null}
+                defaultValue={searchValue && searchResults.length && router.location.pathname.includes('search') ? searchValue : null}
                 hintStyle={styles.searchBar.hintText}
-                onKeyDown={(e)=>this.search(e)}
-                style={{width: '90%',position: 'absolute',top: '20%', left: screenSize.width < 680 ? '11%' : '8%'}}
+                onKeyUp={() => this.search()}
+                style={{width: '90%',position: 'absolute',top: '10%', left: screenSize.width < 680 ? '11%' : '8%'}}
                 underlineStyle={styles.searchBar.textFieldUnderline}
                 underlineFocusStyle={styles.searchBar.textFieldUnderline} />
             <i className="material-icons"
                style={styles.searchBar.closeSearchIcon}
-               onTouchTap={()=>this.showSearch()}>
-                close</i>
+               onTouchTap={() => this.search()}>search</i>
         </Paper> : null)
     }
 
-    search(e) {
-        let includeKinds = mainStore.includeKinds;
-        let includeProjects = mainStore.includeProjects;
-        let searchInput = this.refs.searchInput;
-        if(e.keyCode === 13) {
-            let value = searchInput.getValue();
-            mainStore.searchObjects(value, includeKinds, includeProjects);
-            this.props.router.push('/results')
+    search() {
+        let query = this.refs.searchInput.getValue();
+        if(query.length){
+            mainStore.searchObjects(query, null, null, null, null);
+        } else {
+            mainStore.resetSearchResults();
         }
+        !this.props.location.pathname.includes('search') ? this.props.router.push('/search') : null;
     }
 
     showSearch() {
-        if(this.props.location.pathname === '/results') this.props.router.goBack();
+        if(mainStore.prevLocation === (undefined || null) || this.props.location.pathname === '/search') {
+            if(mainStore.showSearch) mainStore.toggleSearch();
+            this.props.router.goBack();
+        } else {
+            if(mainStore.prevLocation.pathname !== '/search') {
+                mainStore.resetSearchFilters();
+                if(mainStore.showSearch) mainStore.toggleSearch();
+            }
+            if(mainStore.prevLocation === null || mainStore.prevLocation.pathname === '/search' && mainStore.showSearch) mainStore.toggleSearch();
+        }
         if(mainStore.showFilters) mainStore.toggleSearchFilters();
-        if(mainStore.includeKinds.length) mainStore.setIncludedSearchKinds([]);
-        if(mainStore.includeProjects.length) mainStore.setIncludedSearchProjects([]);
-        mainStore.toggleSearch();
     }
 }
 
 const styles = {
     searchBar: {
-        height: 76,
+        height: 56,
+        borderRadius: 0,
         closeSearchIcon: {
             position: 'absolute',
-            right: '3.66%',
-            bottom: '34%',
+            right: '2.96%',
+            bottom: '29%',
             cursor: 'pointer'
         },
         hintText: {
@@ -71,8 +81,8 @@ const styles = {
         },
         searchIcon: {
             position: 'absolute',
-            left: '4%',
-            bottom: '36%',
+            left: '2.96%',
+            bottom: '29%',
             cursor: 'pointer'
         },
         textFieldUnderline: {

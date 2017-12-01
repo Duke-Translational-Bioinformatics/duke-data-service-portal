@@ -19,8 +19,11 @@ export const Theme = {
         borderColor: Colors.grey300,
         pickerHeaderColor: Colors.cyan500,
         shadowColor: Colors.fullBlack
-    }
-}
+    },
+    textField: {
+        floatingLabelColor: Colors.grey400,
+    },
+};
 
 export const Color = {
     blue:  '#235F9C',
@@ -31,10 +34,14 @@ export const Color = {
     ltPink: '#F58C8C',
     green: '#66BB6A',
     ltGreen: '#C8E6C9',
+    ltGreen2: '#A5D6A7',
     red: '#F44336',
     ltRed: '#EF5350',
     ltGrey: '#BDBDBD',
+    ltGrey2: '#E0E0E0',
+    ltGrey3: '#F5F5F5',
     dkGrey: '#757575',
     dkGrey2: '#616161',
     white: '#FFF',
-}
+};
+

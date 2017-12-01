@@ -19,7 +19,7 @@ class Agent extends React.Component {
         let id = this.props.params.id;
         mainStore.getEntity(id, Path.AGENT);
         agentStore.getAgentKey(id);
-        if(authStore.userKey.key) authStore.getUserKey();
+        authStore.getUserKey();
     }
 
     render() {
