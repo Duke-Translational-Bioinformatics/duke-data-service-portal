@@ -1,6 +1,7 @@
 import React from 'react';
 import { observable, computed, action, map } from 'mobx';
 import cookie from 'react-cookie';
+import UAParser from 'ua-parser-js';
 import authStore from '../stores/authStore';
 import provenanceStore from '../stores/provenanceStore';
 import transportLayer from '../transportLayer';
@@ -36,6 +37,7 @@ export class MainStore {
     @observable hideUploadProgress
     @observable isListItem
     @observable isSafari
+    @observable isFirefox
     @observable itemsSelected
     @observable leftNavIndex
     @observable listItems
@@ -128,6 +130,7 @@ export class MainStore {
         this.isFolderUpload = false;
         this.isListItem = false;
         this.isSafari = false;
+        this.isFirefox = false;
         this.itemsSelected = null;
         this.leftNavIndex = null;
         this.listItems = [];
@@ -1587,7 +1590,8 @@ export class MainStore {
 
     @action getDeviceType(device) {
         this.device = device;
-        this.isSafari = /constructor/i.test(window.HTMLElement);
+        this.isSafari = UAParser().browser.name === 'Safari';
+        this.isFirefox = UAParser().browser.name === 'Firefox';
     }
 
     @action getScreenSize(height, width) {

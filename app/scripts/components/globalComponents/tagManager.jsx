@@ -30,6 +30,7 @@ class TagManager extends React.Component {
             timeout: null,
             searchText: ''
         };
+        this.focusAutocomplete = _.debounce(this.focusAutocomplete ,500);
     }
 
     componentDidMount() {
@@ -41,7 +42,7 @@ class TagManager extends React.Component {
     }
 
     componentDidUpdate() {
-        if(mainStore.openTagManager) this.autocomplete.focus();
+        if(mainStore.openTagManager && !mainStore.isFirefox) this.focusAutocomplete(); // Using _.debouce() here to avoid this being called twice from list item menu
     }
 
     render() {
@@ -102,7 +103,7 @@ class TagManager extends React.Component {
                                 </div>
                                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.autoCompleteContainer}>
                                     <AutoComplete
-                                        ref={(input) => this.autocomplete = input}
+                                        ref={(input) => this.tagAutocomplete = input}
                                         fullWidth={true}
                                         style={styles.autoComplete}
                                         floatingLabelText="Type a label or comma separated list of labels"
@@ -112,7 +113,7 @@ class TagManager extends React.Component {
                                         onNewRequest={(value) => this.addTagToCloud(value)}
                                         onUpdateInput={this.handleUpdateInput.bind(this)}
                                         underlineStyle={styles.autoCompleteUnderline}/>
-                                    <IconButton onTouchTap={() => this.addTagToCloud(this.autocomplete.state.searchText)}
+                                    <IconButton onTouchTap={() => this.addTagToCloud(this.tagAutocomplete.state.searchText)}
                                                 iconStyle={styles.addTagIconBtn.size}
                                                 style={styles.addTagIconBtn}>
                                         <AddCircle color={Color.blue}/>
@@ -171,6 +172,10 @@ class TagManager extends React.Component {
         )
     }
 
+    focusAutocomplete() {
+        this.tagAutocomplete.refs.searchTextField.input.focus()
+    }
+
     activeTab() {
         if(mainStore.tagsToAdd.length) mainStore.toggleModals('discardTags');
         if(!mainStore.metaTemplates.length) mainStore.loadMetadataTemplates('');
@@ -179,8 +184,8 @@ class TagManager extends React.Component {
     checkIfTagAlreadyUsed(tag) {
         let tags = mainStore.tagsToAdd;
         let clearText = ()=> {
-            this.autocomplete.setState({searchText:''});
-            this.autocomplete.focus();
+            this.tagAutocomplete.setState({searchText:''});
+            this.tagAutocomplete.refs.searchTextField.input.focus()
         };
         if (tags.some((el) => { return el.label === tag.trim(); })) {
             this.setState({floatingErrorText: tag + ' tag is already in the list'});
@@ -267,7 +272,7 @@ class TagManager extends React.Component {
         mainStore.toggleTagManager();
         mainStore.defineTagsToAdd([]);
         if(mainStore.showTagCloud) this.toggleTagCloud();
-        if(this.autocomplete.state.searchText !== '') this.autocomplete.setState({searchText:''});
+        if(this.tagAutocomplete.state.searchText !== '') this.tagAutocomplete.setState({searchText:''});
     }
 }
 
@@ -393,7 +398,7 @@ const styles = {
 
 TagManager.propTypes = {
     drawerLoading: bool,
-    openTagManager: bool,
+    openTagsManager: bool,
     showTemplateDetails: bool,
     screenSize: object,
     entityObj: object,
