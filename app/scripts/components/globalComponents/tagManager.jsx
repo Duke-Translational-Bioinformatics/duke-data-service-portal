@@ -398,7 +398,7 @@ const styles = {
 
 TagManager.propTypes = {
     drawerLoading: bool,
-    openTagsManager: bool,
+    openTagManager: bool,
     showTemplateDetails: bool,
     screenSize: object,
     entityObj: object,
