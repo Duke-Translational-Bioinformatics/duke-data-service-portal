@@ -82,7 +82,8 @@
     "react-cookie": "^0.3.4",
     "react-dom": "15.4.2",
     "react-router": "^3.0.0",
-    "react-tap-event-plugin": "^2.0.1"
+    "react-tap-event-plugin": "^2.0.1",
+    "ua-parser-js": "^0.7.17"
   },
   "jest": {
     "verbose": true,
