@@ -63,6 +63,7 @@ export class MainStore {
     @observable projectMembers
     @observable projectRole
     @observable projectRoles
+    @observable projectTeams
     @observable metaObjProps
     @observable responseHeaders
     @observable screenSize
@@ -156,6 +157,7 @@ export class MainStore {
         this.projectMembers = [];
         this.projectRole = null;
         this.projectRoles = observable.map();
+        this.projectTeams = observable.map();
         this.metaObjProps = [];
         this.responseHeaders = {};
         this.screenSize = {width: 0, height: 0};
@@ -276,7 +278,7 @@ export class MainStore {
             }).catch(ex => this.handleErrors(ex))
     }
 
-    @action getProjects(page, perPage) {
+    @action getProjects(page, perPage, getAll) {
         this.loading = true;
         if (page == null) page = 1;
         if (perPage == null) perPage = 25;
@@ -297,6 +299,11 @@ export class MainStore {
             this.projects.forEach((p) => {
                 userId !== null ? this.getAllProjectPermissions(p.id, userId) : null;
             });
+            if(getAll) {
+                this.projects.forEach((p) => {
+                    this.getProjectMembers(p.id, getAll);
+                });
+            }
             this.responseHeaders = headers;
             this.nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
             this.totalItems = headers !== null && !!headers['x-total'] ? parseInt(headers['x-total'][0], 10) : null;
@@ -341,12 +348,14 @@ export class MainStore {
         }).catch(ex =>this.handleErrors(ex))
     }
 
-    @action getProjectMembers(id) {
+    @action getProjectMembers(id, getAll) {
         this.transportLayer.getProjectMembers(id)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
                 this.projectMembers = json.results;
+                if(getAll && !this.projectTeams.has(id)) this.projectTeams.set(id, {name: json.results[0].project.name, members: json.results});
+                console.log(this.projectTeams)
             }).catch(ex => this.handleErrors(ex))
     }
 
