@@ -29,10 +29,11 @@ class AddProjectMemberModal extends React.Component {
     }
 
     render() {
-        const { currentUser, screenSize, toggleModal, users } = mainStore;
+        const { currentUser, project, screenSize, toggleModal, users } = mainStore;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let userName = currentUser ? currentUser.full_name : null;
-        let id = this.props.params.id;
+        let id = this.props.router.location.pathname.includes('project') ? this.props.params.id : project ? project.id : null;
+
         let autoCompleteData = users.map((user)=>{
             return {text: user.full_name, value: user.full_name, id: user.uid}
         });
@@ -46,7 +47,7 @@ class AddProjectMemberModal extends React.Component {
                 label="ADD"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={() => this.handleMemberButton(userName, id)} />
+                onTouchTap={() => this.addUser(userName, id)} />
         ];
 
         return (
@@ -112,7 +113,7 @@ class AddProjectMemberModal extends React.Component {
         }
     }
 
-    handleMemberButton(userName, id) {
+    addUser(userName, id) {
         let  fullName = this.fullName.state.searchText;
         let role = null;
         switch(this.state.value){

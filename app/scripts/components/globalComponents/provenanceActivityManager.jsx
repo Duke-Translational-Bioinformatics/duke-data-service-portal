@@ -6,6 +6,7 @@ import provenanceStore from '../../stores/provenanceStore';
 import { Color } from '../../theme/customTheme';
 import AutoComplete from 'material-ui/AutoComplete';
 import BaseUtils from '../../util/baseUtils.js';
+import { Kind } from '../../util/urlEnum';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -95,6 +96,12 @@ class ProvenanceActivityManager extends React.Component {
                             style={{zIndex: 9999, margin: '10px 0px 10px 0px', minWidth: 168, width: '100%', display: showBtns}}
                             onTouchTap={() => this.openModal('editAct')}/>
                         <RaisedButton
+                            label="Tag Activity"
+                            primary={true}
+                            labelStyle={styles.btn.label}
+                            style={{zIndex: 9999, margin: '20px 0px 10px 0px', minWidth: 168, width: '100%', display: showBtns}}
+                            onTouchTap={() => this.toggleTagManager()}/>
+                        <RaisedButton
                             label="Delete Activity"
                             primary={true}
                             labelStyle={styles.btn.label}
@@ -138,15 +145,14 @@ class ProvenanceActivityManager extends React.Component {
                                 <h2 style={styles.tabHeadline}>Add an Existing Activity</h2>
                                 <AutoComplete
                                     fullWidth={true}
-                                    menuStyle={{maxHeight: 200}}
+                                    menuStyle={styles.autoComplete}
                                     errorText={this.state.floatingErrorText}
                                     floatingLabelText="Type an Existing Activity Name"
                                     dataSource={autoCompleteData}
                                     filter={AutoComplete.caseInsensitiveFilter}
                                     ref={(input) => this.activityNameSearch = input}
                                     openOnFocus={true}
-                                    onNewRequest={(value) => this.chooseActivity(value)}
-                                    underlineStyle={styles.autoCompleteUnderline}/>
+                                    onNewRequest={(value) => this.chooseActivity(value)}/>
                             </Tab>
                         </Tabs>
                 </Dialog>
@@ -280,9 +286,19 @@ class ProvenanceActivityManager extends React.Component {
     toggleTab2() {
         this.activityNameSearch.focus();
     }
+
+    toggleTagManager() {
+        let id = provenanceStore.selectedNode.id;
+        mainStore.getObjectMetadata(id, Kind.DDS_ACTIVITY);
+        mainStore.toggleTagManager();
+    }
 }
 
 const styles = {
+    autoComplete: {
+        maxHeight: 200,
+        overflowY: 'auto'
+    },
     provEditor:{
         display: 'flex',
         justifyContent: 'center',

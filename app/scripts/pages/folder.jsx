@@ -14,6 +14,7 @@ class Folder extends React.Component {
 
     componentDidMount() {
         if(mainStore.openTagManager) mainStore.toggleTagManager();
+        mainStore.toggleNav ? mainStore.toggleNavDrawer() : null;
         this._loadFolder();
     }
 
@@ -21,6 +22,11 @@ class Folder extends React.Component {
         if(prevProps.params.id !== this.props.params.id) {
             this._loadFolder();
         }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const routeChanged = nextProps.location !== this.props.location;
+        mainStore.toggleBackButtonVisibility(routeChanged);
     }
 
     _loadFolder() {

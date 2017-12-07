@@ -70,7 +70,9 @@ export class AuthStore {
                     setTimeout(() => {
                         this.sessionTimeoutWarning = true;
                         setTimeout(() => this.handleLogout(), 178800)
-                    }, 7020000)
+                    }, 7020000);
+                    mainStore.getProjects(null, null); // Get initial projects and permissions
+                    mainStore.getUsageDetails();
                 } else {
                     throw "An error has occurred while trying to authenticate";
                 }
@@ -86,7 +88,7 @@ export class AuthStore {
     }
 
     @action getUserKey() {
-        this.userKey.key !== undefined ? this.transportLayer.getUserKey() : this.transportLayer.createUserKey()
+        this.transportLayer.getUserKey()
             .then(mainStore.checkResponse)
             .then(response => response.json())
             .then((json) => this.userKey = json)

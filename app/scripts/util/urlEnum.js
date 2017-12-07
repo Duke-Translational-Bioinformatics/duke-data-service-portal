@@ -10,6 +10,7 @@ export const UrlGen = {
         folder: (folderId) => '/#/folder/' + folderId,
         file: (fileId) => '/#/file/' + fileId,
         version: (versionId) => '/#/version/' + versionId,
+        activities: (activityId) => '/#/activity/' + activityId,
         agents: () => '/#/agents',
         agent: (agentId) => '/#/agent/' + agentId
     }
@@ -41,5 +42,6 @@ export const Path = Object.freeze({
 export const Kind = Object.freeze({
     DDS_FILE: 'dds-file',
     DDS_FOLDER: 'dds-folder',
-    DDS_PROJECT: 'dds-project'
+    DDS_PROJECT: 'dds-project',
+    DDS_ACTIVITY: 'dds-activity'
 });

@@ -11,6 +11,7 @@ import TagManager from '../components/globalComponents/tagManager.jsx';
 class File extends React.Component {
 
     componentDidMount() {
+        mainStore.toggleNav ? mainStore.toggleNavDrawer() : null;
         this._loadFile();
     }
 
@@ -18,6 +19,11 @@ class File extends React.Component {
         if(prevProps.params.id !== this.props.params.id) {
             this._loadFile();
         }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const routeChanged = nextProps.location !== this.props.location;
+        mainStore.toggleBackButtonVisibility(routeChanged);
     }
 
     _loadFile() {
