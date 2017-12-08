@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import { Link } from 'react-router';
 const { object, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -32,10 +33,10 @@ class ProjectDetails extends React.Component {
             project !== undefined && <Card className="mdl-cell mdl-cell--12-col" style={styles.container}>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                        <a href={UrlGen.routes.home()} style={styles.back} className="external mdl-color-text--grey-800">
+                        <Link to={UrlGen.routes.home()} style={styles.back} className="external mdl-color-text--grey-800">
                             <i className="material-icons mdl-color-text--grey-800" style={styles.backIcon}>keyboard_backspace</i>
                             Back
-                        </a>
+                        </Link>
                         <div style={styles.menuIcon}>
                             { projectRole === Roles.project_admin || projectRole === Roles.system_admin ? <ProjectOptionsMenu {...this.props} /> : null}
                             <ProjectOptions {...this.props}/>
