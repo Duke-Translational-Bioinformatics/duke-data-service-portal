@@ -44,6 +44,22 @@ describe('Main Store', () => {
         mainStore.listItems = [];
     });
 
+    it('@action toggleAlert - should be true or false', () => {
+        expect(mainStore.showAlert).toBe(false);
+        mainStore.toggleAlert();
+        expect(mainStore.showAlert).toBe(true);
+        mainStore.toggleAlert();
+        expect(mainStore.showAlert).toBe(false);
+    });
+
+    it('@action toggleTeamManager - should be true or false', () => {
+        expect(mainStore.showTeamManager).toBe(false);
+        mainStore.toggleTeamManager();
+        expect(mainStore.showTeamManager).toBe(true);
+        mainStore.toggleTeamManager();
+        expect(mainStore.showTeamManager).toBe(false);
+    });
+
     it('@action toggleAllItemsSelected - should be true or false and should be the bool arg passed in', () => {
         expect(mainStore.allItemsSelected).toBe(false);
         mainStore.toggleAllItemsSelected(true);

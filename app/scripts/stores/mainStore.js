@@ -78,11 +78,14 @@ export class MainStore {
     @observable searchResultsTags
     @observable searchValue
     @observable selectedEntity
+    @observable selectedTeam
+    @observable showAlert
     @observable showBackButton
     @observable serviceOutageNoticeModalOpen
     @observable showFilters
     @observable showPropertyCreator
     @observable showTagCloud
+    @observable showTeamManager
     @observable showTemplateCreator
     @observable showTemplateDetails
     @observable showUserInfoPanel
@@ -173,10 +176,13 @@ export class MainStore {
         this.searchValue = null;
         this.serviceOutageNoticeModalOpen = cookie.load('serviceOutageNoticeModalOpen');
         this.selectedEntity = null;
+        this.selectedTeam = [];
+        this.showAlert = false;
         this.showBackButton = true;
         this.showFilters = false;
         this.showPropertyCreator = false;
         this.showTagCloud = false;
+        this.showTeamManager = false;
         this.showTemplateCreator = false;
         this.showTemplateDetails = false;
         this.showUserInfoPanel = false;
@@ -203,6 +209,18 @@ export class MainStore {
 
     checkResponse(response) {
         return checkStatus(response, authStore);
+    }
+
+    @action setSelectedTeam (id) {
+        this.selectedTeam = id ? [id] : [];
+    }
+
+    @action toggleTeamManager() {
+        this.showTeamManager = !this.showTeamManager;
+    }
+
+    @action toggleAlert() {
+        this.showAlert = !this.showAlert;
     }
 
     @action setLeftNavIndex(index) {
@@ -301,7 +319,7 @@ export class MainStore {
             });
             if(getAll) {
                 this.projects.forEach((p) => {
-                    this.getProjectMembers(p.id, getAll);
+                    this.getProjectTeams(p.id, getAll);
                 });
             }
             this.responseHeaders = headers;
@@ -348,14 +366,21 @@ export class MainStore {
         }).catch(ex =>this.handleErrors(ex))
     }
 
-    @action getProjectMembers(id, getAll) {
+    @action getProjectMembers(id) {
         this.transportLayer.getProjectMembers(id)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
                 this.projectMembers = json.results;
+            }).catch(ex => this.handleErrors(ex))
+    }
+
+    @action getProjectTeams(id, getAll) { //Todo: Add test !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        this.transportLayer.getProjectMembers(id)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => {
                 if(getAll && !this.projectTeams.has(id)) this.projectTeams.set(id, {name: json.results[0].project.name, members: json.results});
-                console.log(this.projectTeams)
             }).catch(ex => this.handleErrors(ex))
     }
 
@@ -690,6 +715,20 @@ export class MainStore {
                 let name = getName.toString();
                 this.addProjectMember(id, userId, role, name);
             }).catch(ex => this.handleErrors(ex));
+    }
+
+    @action addProjectTeam(id, userId, role, projectName) { // Todo: Add test for this !!!!!!!!!!
+        this.transportLayer.addProjectMember(id, userId, role)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then(() => {
+                this.addToast(`All members from ${projectName} have been added as a to this project`);
+                this.getProjectMembers(id);
+                this.loading = false;
+            }).catch((ex) => {
+            this.addToast('Could not add member to this project or member does not exist');
+            this.handleErrors(ex)
+        });
     }
 
     @action addProjectMember(id, userId, role, name) {

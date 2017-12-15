@@ -20,7 +20,7 @@ class AddProjectMemberModal extends React.Component {
             errorText: null,
             floatingErrorText: '',
             value: null
-        }
+        };
         this.search = _.debounce(this.search ,500);
     }
 
@@ -60,32 +60,31 @@ class AddProjectMemberModal extends React.Component {
                     actions={memberActions}
                     onRequestClose={() => this.toggleModal()}
                     open={toggleModal && toggleModal.id === 'addMember' ? toggleModal.open : false}>
-                    <form action="#" id="newMemberForm">
-                        {mainStore.drawerLoading ? <CircularProgress size={50} thickness={4} style={styles.loading}/> : null}
-                        <AutoComplete
-                            style={{textAlign: 'left'}}
-                            ref={(input) => this.fullName = input}
-                            floatingLabelText="Name"
-                            filter={AutoComplete.caseInsensitiveFilter}
-                            dataSource={autoCompleteData}
-                            errorText={this.state.floatingErrorText}
-                            maxSearchResults={7}
-                            onNewRequest={(value, e) => this.chooseUser(value, e)}
-                            onUpdateInput={() => this.search()}/><br/>
-                        <SelectField value={this.state.value}
-                                     onChange={this.handleSelectValueChange.bind(this, 'value')}
-                                     floatingLabelText="Project Role"
-                                     floatingLabelStyle={{color: Color.blue}}
-                                     errorText={this.state.errorText}
-                                     errorStyle={styles.textStyles}
-                                     style={styles.textStyles}>
-                            <MenuItem value={0} primaryText='Project Administrator'/>
-                            <MenuItem value={1} primaryText='Project Viewer'/>
-                            <MenuItem value={2} primaryText='File Downloader'/>
-                            <MenuItem value={3} primaryText='File Uploader'/>
-                            <MenuItem value={4} primaryText='File Editor'/>
-                        </SelectField><br/>
-                    </form>
+                    {mainStore.drawerLoading ? <CircularProgress size={50} thickness={4} style={styles.loading}/> : null}
+                    <div>Add a team from a previous project</div>
+                    <AutoComplete
+                        style={{textAlign: 'left'}}
+                        ref={(input) => this.fullName = input}
+                        floatingLabelText="Name"
+                        filter={AutoComplete.caseInsensitiveFilter}
+                        dataSource={autoCompleteData}
+                        errorText={this.state.floatingErrorText}
+                        maxSearchResults={7}
+                        onNewRequest={(value, e) => this.chooseUser(value, e)}
+                        onUpdateInput={() => this.search()}/><br/>
+                    <SelectField value={this.state.value}
+                                 onChange={this.handleSelectValueChange.bind(this, 'value')}
+                                 floatingLabelText="Project Role"
+                                 floatingLabelStyle={{color: Color.blue}}
+                                 errorText={this.state.errorText}
+                                 errorStyle={styles.textStyles}
+                                 style={styles.textStyles}>
+                        <MenuItem value={0} primaryText='Project Administrator'/>
+                        <MenuItem value={1} primaryText='Project Viewer'/>
+                        <MenuItem value={2} primaryText='File Downloader'/>
+                        <MenuItem value={3} primaryText='File Uploader'/>
+                        <MenuItem value={4} primaryText='File Editor'/>
+                    </SelectField><br/>
                 </Dialog>
             </div>
         );

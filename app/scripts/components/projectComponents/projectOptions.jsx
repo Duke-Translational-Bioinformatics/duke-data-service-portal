@@ -109,7 +109,7 @@ class ProjectOptions extends React.Component {
                         />
                     </form>
                 </Dialog>
-                <AddProjectMemberModal {...this.props}/>
+                {/*<AddProjectMemberModal {...this.props}/>*/}
             </div>
         );
     }
