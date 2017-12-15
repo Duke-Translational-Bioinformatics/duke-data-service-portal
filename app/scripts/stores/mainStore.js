@@ -11,6 +11,7 @@ import { Kind, Path } from '../util/urlEnum';
 import { checkStatus, checkStatusAndConsistency } from '../util/fetchUtil';
 
 export class MainStore {
+    @observable addTeamAfterProjectCreation
     @observable agents
     @observable agentKey
     @observable agentApiToken
@@ -107,6 +108,7 @@ export class MainStore {
     @observable versionModal
 
     constructor() {
+        this.addTeamAfterProjectCreation = false;
         this.agents = [];
         this.agentKey = {};
         this.agentApiToken = {};
@@ -211,8 +213,13 @@ export class MainStore {
         return checkStatus(response, authStore);
     }
 
+    @action addTeamMembersPrompt () {
+        this.addTeamAfterProjectCreation = !this.addTeamAfterProjectCreation;
+    }
+
     @action setSelectedTeam (id) {
-        this.selectedTeam = id ? [id] : [];
+        this.selectedTeam = !this.selectedTeam.includes(id) ? [id] : [];
+        if(this.showAlert) this.toggleAlert();
     }
 
     @action toggleTeamManager() {
@@ -375,7 +382,7 @@ export class MainStore {
             }).catch(ex => this.handleErrors(ex))
     }
 
-    @action getProjectTeams(id, getAll) { //Todo: Add test !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    @action getProjectTeams(id, getAll) {
         this.transportLayer.getProjectMembers(id)
             .then(this.checkResponse)
             .then(response => response.json())
@@ -397,6 +404,11 @@ export class MainStore {
                     userId !== null ? this.getAllProjectPermissions(p.id, authStore.currentUser.id) : null;
                 });
                 this.loading = false;
+                if(this.addTeamAfterProjectCreation) {
+                    window.location.href = `${window.location.protocol}//${window.location.host}/#/project/${json.id}`;
+                    this.toggleTeamManager();
+                    this.addTeamMembersPrompt();
+                }
             }).catch((ex) => {
             this.addToast('Failed to add new project');
             this.handleErrors(ex)
@@ -717,7 +729,7 @@ export class MainStore {
             }).catch(ex => this.handleErrors(ex));
     }
 
-    @action addProjectTeam(id, userId, role, projectName) { // Todo: Add test for this !!!!!!!!!!
+    @action addProjectTeam(id, userId, role, projectName) {
         this.transportLayer.addProjectMember(id, userId, role)
             .then(this.checkResponse)
             .then(response => response.json())

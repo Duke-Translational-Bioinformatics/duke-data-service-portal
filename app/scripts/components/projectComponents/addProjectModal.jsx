@@ -4,6 +4,7 @@ import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import { Color } from '../../theme/customTheme';
 import FlatButton from 'material-ui/FlatButton';
+import Checkbox from 'material-ui/Checkbox';
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -21,14 +22,14 @@ class AddProjectModal extends React.Component {
     }
 
     render() {
-        const { screenSize } = mainStore;
+        const { addTeamAfterProjectCreation, screenSize } = mainStore;
         const actions = [
             <FlatButton
                 label="Cancel"
                 secondary={true}
                 onTouchTap={this.handleClose.bind(this)} />,
             <FlatButton
-                label="Submit"
+                label="Create Project"
                 secondary={true}
                 keyboardFocused={true}
                 onTouchTap={this.handleProjectButton.bind(this)} />
@@ -43,24 +44,28 @@ class AddProjectModal extends React.Component {
                     onTouchTap={this.handleTouchTap.bind(this)} />
                 <Dialog
                     style={styles.dialogStyles}
+                    titleStyle={styles.dialogStyles.title}
                     contentStyle={screenSize.width < 580 ? {width: '100%'} : {}}
                     title="Add New Project"
                     autoDetectWindowHeight={true}
                     actions={actions}
                     open={this.state.open}
                     onRequestClose={this.handleClose.bind(this)}>
-                    <form action="#" id="newProjectForm">
+                    <div className="mdl-cell mdl-cell--6-col" style={styles.wrapper}>
                         <TextField
                             style={styles.textStyles}
+                            fullWidth={true}
                             hintText="Project Name"
                             errorText={this.state.floatingErrorText}
                             floatingLabelText="Project Name"
                             ref={(input) => this.projectNameText = input}
                             type="text"
                             multiLine={true}
-                            onChange={this.handleFloatingErrorInputChange.bind(this)}/> <br/>
+                            onChange={this.handleFloatingErrorInputChange.bind(this)}
+                        /><br/>
                         <TextField
                             style={styles.textStyles}
+                            fullWidth={true}
                             hintText="Project Description"
                             errorText={this.state.floatingErrorText2}
                             floatingLabelText="Project Description"
@@ -68,11 +73,21 @@ class AddProjectModal extends React.Component {
                             type="text"
                             multiLine={true}
                             onChange={this.handleFloatingErrorInputChange2.bind(this)}
-                            />
-                    </form>
+                        />
+                        <Checkbox
+                            label="Add Project Team Members"
+                            style={styles.checkbox}
+                            onCheck={() => this.addTeamMembersPrompt()}
+                            checked={addTeamAfterProjectCreation}
+                        />
+                    </div>
                 </Dialog>
             </div>
         );
+    }
+
+    addTeamMembersPrompt() {
+        mainStore.addTeamMembersPrompt();
     }
 
     handleTouchTap() {
@@ -118,14 +133,23 @@ const styles = {
         position: 'relative',
         margin: '12px -9px 0px 0px'
     },
+    checkbox: {
+        marginTop: 20,
+        marginLeft: -2
+    },
     dialogStyles: {
-        textAlign: 'center',
         fontColor: Color.dkBlue,
-        zIndex: '9999'
+        zIndex: '9999',
+        title: {
+            textAlign: 'center'
+        }
     },
     textStyles: {
         textAlign: 'left',
         fontColor: Color.dkBlue
+    },
+    wrapper: {
+        margin: '0 auto'
     }
 };
 

@@ -43,7 +43,7 @@ class AddProjectTeamDrawer extends React.Component {
             return {text: user.full_name, value: user.full_name, id: user.uid}
         });
 
-        const teams = Array.from(projectTeams.values()).map((p)=>{
+        const teams = Array.from(projectTeams.values()).map((p) => {
             const members = p.members.map((m)=>{
                 return (
                         <li key={Math.random()} className="item-content">
@@ -56,7 +56,7 @@ class AddProjectTeamDrawer extends React.Component {
             });
 
             return (<Card key={Math.random()}>
-                <Checkbox style={{float: 'left', width: '8%', margin: '11px 0px 11px 10px'}}
+                <Checkbox style={styles.checkbox}
                           onCheck={() => this.setSelectedTeam(p.members[0].project.id)}
                           checked={selectedTeam.includes(p.members[0].project.id)}/>
                 <CardHeader
@@ -88,9 +88,9 @@ class AddProjectTeamDrawer extends React.Component {
                             <NavigationClose />
                         </IconButton>
                     </div>
-                    <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" style={{marginTop: 25}}>
-                    <div className="mdl-cell mdl-cell--8-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" style={{margin: '0 auto'}}>
-                    <h4 className="mdl-color-text--grey-800" style={{textAlign: 'center', fontSize: '1.3em', marginBottom: 50}}>Manage Project Team Members</h4>
+                    <div className="mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" style={styles.mainWrapper}>
+                    <div className="mdl-cell mdl-cell--8-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" style={styles.innerWrapper}>
+                    <h4 className="mdl-color-text--grey-800" style={styles.heading}>Manage Project Team Members</h4>
                         <Tabs inkBarStyle={styles.tabInkBar}>
                             <Tab label="Add a New Member" style={styles.tabStyles}>
                                     {mainStore.drawerLoading ? <CircularProgress size={30} thickness={4} style={styles.loading}/> : null}
@@ -108,7 +108,7 @@ class AddProjectTeamDrawer extends React.Component {
                                     <SelectField value={this.state.value}
                                                  onChange={this.handleSelectValueChange.bind(this, 'value')}
                                                  floatingLabelText="Project Role"
-                                                 floatingLabelStyle={{color: Color.blue}}
+                                                 floatingLabelStyle={styles.textStyles.floatingLabel}
                                                  errorText={this.state.errorText}
                                                  errorStyle={styles.textStyles}
                                                  style={styles.textStyles}
@@ -119,7 +119,7 @@ class AddProjectTeamDrawer extends React.Component {
                                         <MenuItem value={3} primaryText='File Uploader'/>
                                         <MenuItem value={4} primaryText='File Editor'/>
                                     </SelectField>
-                                <div style={{marginTop: 20}}>
+                                <div style={styles.buttonWrapper}>
                                     <RaisedButton label={'Add Team Member'}
                                                   labelStyle={styles.buttonLabel}
                                                   style={styles.addTeamBtn}
@@ -132,9 +132,9 @@ class AddProjectTeamDrawer extends React.Component {
                                 </div>
                             </Tab>
                             <Tab label="Use An Existing Team" style={styles.tabStyles}>
-                                {showAlert && <Paper style={{padding: 20, color: Color.white, backgroundColor: Color.red}}>You must select at least one team to add</Paper>}
                                 {teams}
-                                <div style={{marginTop: 20}}>
+                                {showAlert && <Paper style={styles.alert}>You must select at least one team to add</Paper>}
+                                <div style={styles.buttonWrapper}>
                                     <RaisedButton label={'Create Team'}
                                                   labelStyle={styles.buttonLabel}
                                                   style={styles.addTeamBtn}
@@ -239,12 +239,25 @@ class AddProjectTeamDrawer extends React.Component {
 }
 
 const styles = {
+    alert: {
+        padding: 20,
+        color: Color.white,
+        backgroundColor: Color.red
+    },
     cancelBtn: {
         margin: '12px 12px 12px 12px',
         float: 'right'
     },
+    checkbox: {
+        float: 'left',
+        width: '8%',
+        margin: '11px 0px 11px 10px'
+    },
     buttonLabel: {
         color: Color.blue
+    },
+    buttonWrapper: {
+        marginTop: 20
     },
     addTeamBtn: {
         margin: '12px 0px 12px 12px',
@@ -262,16 +275,30 @@ const styles = {
     tabStyles: {
         fontWeight: 200
     },
+    heading: {
+        textAlign: 'center',
+        fontSize: '1.3em',
+        marginBottom: 50
+    },
+    innerWrapper: {
+        margin: '0 auto'
+    },
     loading: {
         position: 'absolute',
         margin: '-10px auto',
         left: 0,
         right: 0
     },
+    mainWrapper: {
+        marginTop: 25
+    },
     textStyles: {
         textAlign: 'left',
         alignSelf: 'center',
-        marginTop: 30
+        marginTop: 30,
+        floatingLabel: {
+            color: Color.blue
+        }
     }
 };
 
