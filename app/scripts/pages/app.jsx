@@ -55,7 +55,7 @@ class App extends React.Component {
         mainStore.getDeviceType(device);
         if(authStore.appConfig.apiToken) {
             authStore.getCurrentUser();
-            mainStore.getProjects(null, null);
+            mainStore.getProjects(null, null, true);
             mainStore.getUsageDetails();
             mainStore.loadMetadataTemplates(null);
             authStore.removeLoginCookie();
