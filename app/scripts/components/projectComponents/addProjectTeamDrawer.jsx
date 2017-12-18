@@ -79,7 +79,7 @@ class AddProjectTeamDrawer extends React.Component {
                         disableSwipeToOpen={true}
                         width={window.innerWidth*.8}
                         openSecondary={true}
-                        onRequestClose={() => this.toggleTeamManager()}
+                        onRequestChange={() => this.toggleTeamManager()}
                         open={showTeamManager}>
                     <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" style={styles.closeIcon}>
                         <IconButton
