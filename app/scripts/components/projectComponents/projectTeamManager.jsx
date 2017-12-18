@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-const { object, array } = PropTypes;
+const { object, array, bool } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import authStore from '../../stores/authStore';
@@ -18,7 +18,7 @@ import SelectField from 'material-ui/SelectField';
 import {Tabs, Tab} from 'material-ui/Tabs';
 
 @observer
-class AddProjectTeamDrawer extends React.Component {
+class ProjectTeamManager extends React.Component {
 
     constructor(props) {
         super(props);
@@ -302,14 +302,17 @@ const styles = {
     }
 };
 
-AddProjectTeamDrawer.contextTypes = {
+ProjectTeamManager.contextTypes = {
     muiTheme: object
 };
-
-AddProjectTeamDrawer.propTypes = {
-    screenSize: object,
+ProjectTeamManager.propTypes = {
     currentUser: object,
+    project: object,
+    projectTeams: object,
+    selectedTeam: array,
+    showAlert: bool,
+    showTeamManager: bool,
     users: array,
 };
 
-export default AddProjectTeamDrawer;
+export default ProjectTeamManager;
