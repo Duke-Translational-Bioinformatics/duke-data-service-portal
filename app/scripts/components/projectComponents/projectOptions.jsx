@@ -3,6 +3,7 @@ const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import { Color } from '../../theme/customTheme';
+import ProjectTeamManager from './projectTeamManager.jsx';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -108,6 +109,7 @@ class ProjectOptions extends React.Component {
                         />
                     </form>
                 </Dialog>
+                <ProjectTeamManager {...this.props}/>
             </div>
         );
     }
