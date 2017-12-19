@@ -6,7 +6,6 @@ import mainStore from '../../stores/mainStore';
 import { Color } from '../../theme/customTheme';
 import { UrlGen } from '../../util/urlEnum';
 import { Roles } from '../../enum';
-import AddProjectTeamDrawer from './addProjectTeamDrawer.jsx';
 import ProjectOptionsMenu from './projectOptionsMenu.jsx';
 import ProjectOptions from './projectOptions.jsx';
 import Details from './details.jsx';
@@ -65,7 +64,6 @@ class ProjectDetails extends React.Component {
                         <div style={styles.moreDetails} className={this.state.showClass}>
                             { this.state.showDetails ? <Details {...this.props} {...this.state}/> : null }
                         </div>
-                        <AddProjectTeamDrawer {...this.props}/>
                     </div>
                 </div>
             </Card>
