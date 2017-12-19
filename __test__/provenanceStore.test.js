@@ -216,8 +216,8 @@ describe('Provenance Store', () => {
         return sleep(1).then(() => {
             expect(transportLayer.editProvActivity).toHaveBeenCalledTimes(1);
             expect(transportLayer.editProvActivity).toHaveBeenCalledWith(ACTIVITY_ID, ACTIVITY_NAME, ACTIVITY_DESCRIPTION);
-            expect(provenanceStore.provNodes.length).toBe(1);
-            expect(provenanceStore.provNodes[0].id).toBe(ACTIVITY_ID);
+            expect(provenanceStore.provNodes.length).toBe(2);
+            expect(provenanceStore.provNodes[1].id).toBe(ACTIVITY_ID);
             expect(provenanceStore.showProvCtrlBtns).toBe(false);
             expect(provenanceStore.renderGraph).toBe(true);
         });
@@ -232,8 +232,8 @@ describe('Provenance Store', () => {
         return sleep(1).then(() => {
             expect(transportLayer.addProvActivity).toHaveBeenCalledTimes(1);
             expect(transportLayer.addProvActivity).toHaveBeenCalledWith(ACTIVITY_NAME, ACTIVITY_DESCRIPTION);
-            expect(provenanceStore.provNodes.length).toBe(1);
-            expect(provenanceStore.provNodes[0].id).toBe(ACTIVITY_ID);
+            expect(provenanceStore.provNodes.length).toBe(3);
+            expect(provenanceStore.provNodes[2].id).toBe(ACTIVITY_ID);
             expect(provenanceStore.renderGraph).toBe(true);
         });
     });
