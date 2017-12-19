@@ -278,7 +278,6 @@ export class ProvenanceStore {
     @action startAddRelation(kind, from, to) {
         this.buildRelationBody(kind, from, to);
         this.provEditorModal = {open: false, id: 'confirmRel'}
-
     }
 
     @action buildRelationBody(kind, from, to) {
@@ -321,6 +320,7 @@ export class ProvenanceStore {
     }
 
     @action addProvRelation(kind, body) {
+        this.drawerLoading = true;
         this.transportLayer.addProvRelation(kind, body)
             .then(this.checkResponse)
             .then(response => response.json())
@@ -344,18 +344,20 @@ export class ProvenanceStore {
                         + edge.kind + '</span></div>'
                     };
                 });
-                let edges = this.provEdges.slice();
+                let edges = this.provEdges.length ? this.provEdges.slice() : this.currentGraph.edges;
                 edges.push(this.updatedGraphItem[0]);
                 this.shouldRenderGraph();
                 this.provEdges = edges;
                 this.currentGraph.edges = edges;
+                this.drawerLoading = false;
             }).catch((ex) => {
             mainStore.addToast('Failed to add new relation');
             mainStore.handleErrors(ex)
         })
     }
 
-    @action deleteProvItem(data, id) {
+    @action deleteProvItem(data) {
+        this.drawerLoading = true;
         let kind = data.hasOwnProperty('from') ? 'relations/' : 'activities/';
         let msg = kind === 'activities/' ? data.label : data.type;
         this.transportLayer.deleteProvItem(data.id, kind)
@@ -376,6 +378,7 @@ export class ProvenanceStore {
                     this.getActivities();
                 }
                 this.updatedGraphItem = item;
+                this.drawerLoading = false;
             }).catch((ex) => {
             mainStore.addToast('Failed to delete ' + msg);
             mainStore.handleErrors(ex)
@@ -383,6 +386,7 @@ export class ProvenanceStore {
     }
 
     @action addProvActivity(name, desc) {
+        this.drawerLoading = true;
         this.transportLayer.addProvActivity(name, desc)
             .then(this.checkResponse)
             .then(response => response.json())
@@ -411,15 +415,17 @@ export class ProvenanceStore {
                 '<span>'+'Started On: '+BaseUtils.formatLongDate(json.started_on)+'</span></div>'
             };
         });
-        let nodes = this.provNodes.slice();
+        let nodes = this.provNodes.length ? this.provNodes.slice() : this.currentGraph.nodes;
         nodes.push(this.updatedGraphItem[0]);
+        this.shouldRenderGraph();
         this.provNodes = nodes;
         this.currentGraph.nodes = nodes;
-        this.shouldRenderGraph();
+        this.drawerLoading = false;
         mainStore.addToast(json.name+' was added to the graph');
     }
 
     @action editProvActivity(id, name, desc, prevName) {
+        this.drawerLoading = true;
         this.transportLayer.editProvActivity(id, name, desc)
             .then(this.checkResponse)
             .then(response => response.json())
@@ -430,7 +436,7 @@ export class ProvenanceStore {
                     mainStore.addToast(prevName + ' was edited');
                 }
                 let act = [];
-                let nodes = this.provNodes.slice();
+                let nodes = this.provNodes.length ? this.provNodes.slice() : this.currentGraph.nodes;
                 nodes = nodes.filter(obj => obj.id !== json.id);
                 act.push(json);
                 this.updatedGraphItem = act.map((json) => {//Update dataset in client
@@ -452,10 +458,12 @@ export class ProvenanceStore {
                 this.provNodes = nodes;
                 this.currentGraph.nodes = nodes;
                 this.showProvCtrlBtns = false;
+                this.drawerLoading = false;
             }).catch(ex =>mainStore.handleErrors(ex))
     }
 
     @action deleteProvActivity(id, name) {
+        this.drawerLoading = true;
         this.transportLayer.deleteProvItem(id, Path.ACTIVITIES)
             .then(this.checkResponse)
             .then(response => {})
@@ -463,6 +471,9 @@ export class ProvenanceStore {
                 mainStore.addToast(`${name} activity was deleted!`);
                 this.provNodes = this.provNodes.filter(obj => obj.id !== id);
                 this.currentGraph.nodes = this.provNodes;
+                this.getActivities();
+                this.shouldRenderGraph();
+                this.drawerLoading = false;
             }).catch((ex) => {
             mainStore.addToast(`Failed to delete ${name}`);
             mainStore.handleErrors(ex)
@@ -503,7 +514,7 @@ export class ProvenanceStore {
                 };
             }
         });
-        let nodes = this.provNodes.slice();
+        let nodes = this.provNodes.length ? this.provNodes.slice() : this.currentGraph.nodes;
         nodes.push(this.updatedGraphItem[0]);
         this.shouldRenderGraph();
         this.provNodes = nodes;
@@ -725,7 +736,7 @@ export class ProvenanceStore {
     }
 
     @action onAddEdgeMode(data, callback) {
-        let nodes = this.provNodes.slice();
+        let nodes = this.provNodes.length ? this.provNodes.slice() : this.currentGraph.nodes;
         let relationKind = null;
         if(data.from == data.to) {
             callback(null);
