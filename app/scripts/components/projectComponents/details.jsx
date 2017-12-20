@@ -131,7 +131,7 @@ class Details extends React.Component {
                         <li className="item-divider" style={styles.button.listItem}>
                             Project Members
                             { projectRole === (Roles.project_admin || Roles.system_admin) && <FlatButton style={styles.button}
-                                onTouchTap={() => this.toggleModal('addMember')}
+                                onTouchTap={() => this.toggleTeamManager()}
                                 label="Add Project Members"
                                 labelPosition="before"
                                 secondary={true}
@@ -249,8 +249,8 @@ class Details extends React.Component {
         });
     }
 
-    toggleModal(id) {
-        mainStore.toggleModals(id)
+    toggleTeamManager() {
+        mainStore.toggleTeamManager()
     }
 }
 

@@ -44,6 +44,50 @@ describe('Main Store', () => {
         mainStore.listItems = [];
     });
 
+    it('@action addTeamMembersPrompt - should be true or false', () => {
+        expect(mainStore.addTeamAfterProjectCreation).toBe(false);
+        mainStore.addTeamMembersPrompt();
+        expect(mainStore.addTeamAfterProjectCreation).toBe(true);
+        mainStore.addTeamMembersPrompt();
+        expect(mainStore.addTeamAfterProjectCreation).toBe(false);
+    });
+
+    it('@action getProjectTeams - get all project teams', () => {
+        transportLayer.getProjectMembers = jest.fn((ID) => respondOK(fake.project_members_json));
+        mainStore.getProjectMembers(PROJECT_ID);
+        expect(transportLayer.getProjectMembers).toBeCalledWith(PROJECT_ID);
+        return sleep(1).then(() => {
+            expect(mainStore.projectMembers.length).toBe(1);
+            expect(mainStore.projectMembers[0].project.id).toBe(PROJECT_ID);
+            expect(mainStore.projectMembers[0].user.full_name).toBe(TEST_USER_NAME);
+        });
+    });
+
+    it('@action addProjectTeam - add each member from a team to a new project', () => {
+        transportLayer.addProjectMember = jest.fn((projectId, userId, role) => respondOK(fake.grant_project_permission_json));
+        mainStore.addProjectMember(PROJECT_ID, TEST_UID, USER_ROLE);
+        return sleep(1).then(() => {
+            expect(transportLayer.addProjectMember).toHaveBeenCalledTimes(1);
+            expect(transportLayer.addProjectMember).toHaveBeenCalledWith(PROJECT_ID, TEST_UID, USER_ROLE);
+        });
+    });
+
+    it('@action toggleAlert - should be true or false', () => {
+        expect(mainStore.showAlert).toBe(false);
+        mainStore.toggleAlert();
+        expect(mainStore.showAlert).toBe(true);
+        mainStore.toggleAlert();
+        expect(mainStore.showAlert).toBe(false);
+    });
+
+    it('@action toggleTeamManager - should be true or false', () => {
+        expect(mainStore.showTeamManager).toBe(false);
+        mainStore.toggleTeamManager();
+        expect(mainStore.showTeamManager).toBe(true);
+        mainStore.toggleTeamManager();
+        expect(mainStore.showTeamManager).toBe(false);
+    });
+
     it('@action toggleAllItemsSelected - should be true or false and should be the bool arg passed in', () => {
         expect(mainStore.allItemsSelected).toBe(false);
         mainStore.toggleAllItemsSelected(true);
