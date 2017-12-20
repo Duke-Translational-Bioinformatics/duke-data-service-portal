@@ -112,7 +112,7 @@ class Details extends React.Component {
                                         {showIcons ? <i className="material-icons" style={styles.settingsIcon}>settings</i> : ''}</a>
                                 </div>
                                 <div className="item-content">
-                                    <div className="item-media"><i className="material-icons">face</i></div>
+                                    <div className="item-media"><i className="material-icons">person</i></div>
                                     <div className="item-inner">
                                         <div className="item-title-row">
                                             <div className="item-title">{users.user.full_name}</div>
