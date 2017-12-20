@@ -336,7 +336,6 @@ export class MainStore {
         }).catch(ex => this.handleErrors(ex))
     }
 
-
     @action getProjectListForProvenanceEditor() {
         this.loading = true;
         const page = 1;
@@ -387,7 +386,7 @@ export class MainStore {
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
-                if(getAll && !this.projectTeams.has(id)) this.projectTeams.set(id, {name: json.results[0].project.name, members: json.results});
+                if(getAll && !this.projectTeams.has(id) && json.results.length > 1) this.projectTeams.set(id, {name: json.results[0].project.name, members: json.results});
             }).catch(ex => this.handleErrors(ex))
     }
 
