@@ -267,7 +267,7 @@ export class MainStore {
             this.counter.set(counterId, c);
         }
         if(this.counter.get(counterId) < StatusEnum.MAX_RETRY) {
-            mainStore.addToast(`${message}. Retrying in ${BaseUtils.msToMinSecs(delay)}...`);
+            mainStore.addToast(`${message}. Retrying in ${BaseUtils.timeConversion(delay)}...`);
             const tryAgain = async () => {
                 await sleep(delay);
                 func(...args);
