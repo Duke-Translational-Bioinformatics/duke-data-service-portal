@@ -476,13 +476,13 @@ const styles = {
     },
     closeEditorIcon: {
         position: 'absolute',
-        top: 88,
+        top: 68,
         left: 10,
         zIndex: 9999
     },
     closeGraphIcon: {
         position: 'absolute',
-        top: 88,
+        top: 68,
         left: 2,
         zIndex: 9999
     },
@@ -517,7 +517,7 @@ const styles = {
     },
     openEditorIcon: {
         position: 'absolute',
-        top: 90,
+        top: 70,
         right: 10,
         zIndex: 200
     },
