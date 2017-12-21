@@ -64,7 +64,7 @@ class UploadManager extends React.Component {
             <div style={styles.fileUpload}>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <Drawer docked={false} disableSwipeToOpen={true} width={width} openSecondary={true} open={openUploadManager} onRequestChange={() => this.toggleUploadManager()}>
-                        <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" style={{marginTop: 65}}>
+                        <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" style={styles.drawerTopMargin}>
                             <IconButton style={styles.toggleBtn}
                                         onTouchTap={() => this.toggleUploadManager()}>
                                 <NavigationClose />
@@ -278,6 +278,9 @@ const styles = {
         color: Color.red,
         verticalAlign: 'middle',
         marginRight: 3
+    },
+    drawerTopMargin: {
+        marginTop: 45
     },
     dropzoneContainer: {
         margin: '0 auto',

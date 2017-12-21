@@ -101,23 +101,37 @@ export class ProvenanceStore {
     }
 
     @action getWasGeneratedByNode(id, prevGraph) {
-        this.drawerLoading = true;
-        this.transportLayer.getWasGeneratedByNode(id)
-            .then(this.checkResponse)
+        const that = provenanceStore;
+        that.drawerLoading = true;
+        that.transportLayer.getWasGeneratedByNode(id)
+            .then(that.checkResponse)
             .then(response => response.json())
             .then((json) => {
-                this.getProvenanceSuccess(json.graph, prevGraph);
+                if(!json.graph.nodes.length) {
+                    const retryArgs = [id, prevGraph];
+                    const msg = "The provence graph you're requesting is unavailable...";
+                    mainStore.tryAsyncAgain(that.getWasGeneratedByNode, retryArgs, 15000, id, msg, false )
+                } else {
+                    that.getProvenanceSuccess(json.graph, prevGraph);
+                }
             }).catch(ex =>mainStore.handleErrors(ex))
     }
 
     @action getProvenance(id, kind, prevGraph) {
-        this.drawerLoading = true;
-        this.transportLayer.getProvenance(id, kind)
-            .then(this.checkResponse)
+        const that = provenanceStore;
+        that.drawerLoading = true;
+        that.transportLayer.getProvenance(id, kind)
+            .then(that.checkResponse)
             .then(response => response.json())
             .then((json) => {
-                this.getProvenanceSuccess(json.graph, prevGraph);
-            }).catch(ex =>mainStore.handleErrors(ex))
+                if(!json.graph.nodes.length) {
+                    const retryArgs = [id, kind, prevGraph];
+                    const msg = "The provence graph you're requesting is unavailable...";
+                    mainStore.tryAsyncAgain(that.getProvenance, retryArgs, 15000, id, msg, false )
+                } else {
+                    that.getProvenanceSuccess(json.graph, prevGraph);
+                }
+            }).catch(ex => mainStore.handleErrors(ex))
     }
 
     @action getProvenanceSuccess(prov, prevGraph) {
