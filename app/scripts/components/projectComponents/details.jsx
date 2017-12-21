@@ -23,13 +23,16 @@ class Details extends React.Component {
             removeSelf: false,
             userId: null,
             userName: null,
-            value: null
+            role: null
         }
     }
 
     render() {
         const { project, projectMembers, projectRole, screenSize } = mainStore;
+        const { deleteModal, errorText, memberModal, role, userName } = this.state;
         const { currentUser } = authStore;
+        const dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
+        const admins = projectMembers.filter((m) => m.auth_role.id === Roles.project_admin);
         const deleteActions = [
             <FlatButton
                 label="CANCEL"
@@ -50,48 +53,78 @@ class Details extends React.Component {
                 label="CHANGE ROLE"
                 secondary={true}
                 keyboardFocused={true}
-                onTouchTap={() => this.handleMemberButton()} />
+                onTouchTap={() => this.changeMemberRole()} />
         ];
-
-        let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
-        let admins = projectMembers.filter((m) => m.auth_role.id === Roles.project_admin);
 
         return (
             <div>
                 <Dialog
                     style={styles.dialogStyles}
                     contentStyle={dialogWidth}
-                    title={'Remove ' +this.state.userName+ ' from this project?'}
+                    title={`${userName} from this project?`}
                     autoDetectWindowHeight={true}
                     actions={deleteActions}
                     onRequestClose={() => this.handleClose()}
-                    open={this.state.deleteModal}>
+                    open={deleteModal}>
                     <i className="material-icons" style={styles.warning}>warning</i>
                 </Dialog>
                 <Dialog
                     style={styles.dialogStyles}
                     contentStyle={dialogWidth}
-                    title={"Change the project role for " + this.state.userName + '?' }
+                    title={`Change the project role for ${userName}?` }
                     autoDetectWindowHeight={true}
                     actions={memberActions}
                     onRequestClose={() => this.handleClose()}
-                    open={this.state.memberModal}>
-                    <form action="#" id="newMemberForm">
-                        <SelectField value={this.state.value}
-                                     onChange={this.handleSelectValueChange.bind(this, 'value')}
-                                     floatingLabelText="Project Role"
-                                     floatingLabelStyle={{color: Color.dkGrey}}
-                                     errorText={this.state.errorText}
-                                     style={styles.textStyles}>
-                            <MenuItem value={0} primaryText='Project Administrator'/>
-                            <MenuItem value={1} primaryText='Project Viewer'/>
-                            <MenuItem value={2} primaryText='File Downloader'/>
-                            <MenuItem value={3} primaryText='File Uploader'/>
-                            <MenuItem value={4} primaryText='File Editor'/>
-                        </SelectField><br/>
-                    </form>
+                    open={memberModal}>
+                    <SelectField value={role}
+                                 onChange={this.handleSelectValueChange.bind(this, 'value')}
+                                 floatingLabelText="Project Role"
+                                 floatingLabelStyle={{color: Color.dkGrey}}
+                                 errorText={errorText}
+                                 style={styles.textStyles}>
+                        <MenuItem value={'project_admin'} primaryText='Project Administrator'/>
+                        <MenuItem value={'project_viewer'} primaryText='Project Viewer'/>
+                        <MenuItem value={'file_downloader'} primaryText='File Downloader'/>
+                        <MenuItem value={'file_uploader'} primaryText='File Uploader'/>
+                        <MenuItem value={'file_editor'} primaryText='File Editor'/>
+                    </SelectField><br/>
                 </Dialog>
                 <div className="list-block" style={styles.firstListBlock}>
+                    <ul>
+                        <li className="item-divider" style={styles.button.listItem}>
+                            Project Members
+                            { projectRole === (Roles.project_admin || Roles.system_admin) && <FlatButton style={styles.button}
+                                                                                                         onTouchTap={() => this.toggleTeamManager()}
+                                                                                                         label="Add Project Members"
+                                                                                                         labelPosition="before"
+                                                                                                         secondary={true}
+                                                                                                         icon={<i className="material-icons">person_add</i>}
+                            /> }
+                        </li>
+                        { projectMembers.map((users)=> {
+                            let showIcons = admins.length > 1 && projectRole === Roles.project_admin || (projectRole === Roles.project_admin && users.user.id !== currentUser.id);
+                            let removeSelf = users.user.id === currentUser.id;
+                            return <li key={users.user.id}>
+                                <div style={styles.iconContainer}>
+                                    <a href="#" onTouchTap={() => this.deleteUser(users.user.id, users.user.full_name, removeSelf)} style={styles.deleteIcon.wrapper}>
+                                        {showIcons ? <i className="material-icons" style={styles.deleteIcon}>cancel</i> : ''}</a>
+                                    <a href="#" onTouchTap={() => this.changeRole(users.user.id, users.user.full_name, users.auth_role.id)}>
+                                        {showIcons ? <i className="material-icons" style={styles.settingsIcon}>settings</i> : ''}</a>
+                                </div>
+                                <div className="item-content">
+                                    <div className="item-media"><i className="material-icons">person</i></div>
+                                    <div className="item-inner">
+                                        <div className="item-title-row">
+                                            <div className="item-title">{users.user.full_name}</div>
+                                            <span className="mdl-color-text--grey-600">{ users.auth_role.name }</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        }) }
+                    </ul>
+                </div>
+                <div className="list-block" style={styles.secondListBlock}>
                     <ul>
                         <li className="item-divider">Description</li>
                         <li className="item-content">
@@ -125,42 +158,6 @@ class Details extends React.Component {
                         </li>
                     </ul>
                 </div>
-
-                <div className="list-block">
-                    <ul>
-                        <li className="item-divider" style={styles.button.listItem}>
-                            Project Members
-                            { projectRole === (Roles.project_admin || Roles.system_admin) && <FlatButton style={styles.button}
-                                onTouchTap={() => this.toggleTeamManager()}
-                                label="Add Project Members"
-                                labelPosition="before"
-                                secondary={true}
-                                icon={<i className="material-icons">person_add</i>}
-                            /> }
-                        </li>
-                        { projectMembers.map((users)=> {
-                            let showIcons = admins.length > 1 && projectRole === Roles.project_admin || (projectRole === Roles.project_admin && users.user.id !== currentUser.id);
-                            let removeSelf = users.user.id === currentUser.id;
-                            return <li key={users.user.id}>
-                                <div style={styles.iconContainer}>
-                                    <a href="#" onTouchTap={() => this.deleteUser(users.user.id, users.user.full_name, removeSelf)} style={styles.deleteIcon.wrapper}>
-                                        {showIcons ? <i className="material-icons" style={styles.deleteIcon}>cancel</i> : ''}</a>
-                                    <a href="#" onTouchTap={() => this.changeRole(users.user.id, users.user.full_name)}>
-                                        {showIcons ? <i className="material-icons" style={styles.settingsIcon}>settings</i> : ''}</a>
-                                </div>
-                                <div className="item-content">
-                                    <div className="item-media"><i className="material-icons">face</i></div>
-                                    <div className="item-inner">
-                                        <div className="item-title-row">
-                                            <div className="item-title">{users.user.full_name}</div>
-                                            <span className="mdl-color-text--grey-600">{ users.auth_role.name }</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                        }) }
-                    </ul>
-                </div>
             </div>
         )
     }
@@ -174,41 +171,34 @@ class Details extends React.Component {
         });
     }
 
-    changeRole(userId, userName) {
+    changeRole(userId, userName, role) {
         this.setState({
             memberModal: true,
             userId: userId,
-            userName: userName
+            userName: userName,
+            role: role
         });
     }
 
-    handleSelectValueChange (event, index, value) {
-        this.setState({
-            value,
-            errorText: null
-        });
+    changeMemberRole() {
+        const id = this.props.params.id;
+        const {userId, userName, role} = this.state;
+        if(role !== null) {
+            mainStore.addProjectMember(id, userId, role, userName);
+            this.setState({
+                memberModal: false,
+                value: null
+            });
+        } else {
+            this.setState({
+                errorText: 'Select a project role'
+            });
+        }
     }
 
-    handleDeleteButton() {
-        let id = this.props.params.id;
-        let name = this.state.userName;
-        let removeSelf = this.state.removeSelf;
-        let userId = this.state.userId;
-        mainStore.deleteProjectMember(id, userId, name, removeSelf);
-        this.setState({
-            deleteModal: false,
-            removeSelf: false,
-            userId: null,
-            userName: null
-        });
-    }
-
-    handleMemberButton() {
-        let id = this.props.params.id;
-        let name = this.state.userName;
-        let userId = this.state.userId;
-        let role = null;
-        switch(this.state.value){
+    getRole(value) {
+        let role;
+        switch(value){
             case 0:
                 role = Roles.project_admin;
                 break;
@@ -225,17 +215,27 @@ class Details extends React.Component {
                 role = Roles.file_editor;
                 break;
         }
-        if(this.state.value !== null) {
-            mainStore.addProjectMember(id, userId, role, name);
-            this.setState({
-                memberModal: false,
-                value: null
-            });
-        } else {
-            this.setState({
-                errorText: 'Select a project role'
-            });
-        }
+        return role;
+    }
+
+    handleSelectValueChange (event, index, value) {
+        const role = this.getRole(value);
+        this.setState({
+            role: role,
+            errorText: null
+        });
+    }
+
+    handleDeleteButton() {
+        const id = this.props.params.id;
+        const {userId, userName, removeSelf} = this.state;
+        mainStore.deleteProjectMember(id, userId, userName, removeSelf);
+        this.setState({
+            deleteModal: false,
+            removeSelf: false,
+            userId: null,
+            userName: null
+        });
     }
 
     handleClose() {
@@ -277,10 +277,13 @@ const styles = {
         zIndex: '5000'
     },
     firstListBlock: {
-        marginTop: 110
+        marginTop: 140
     },
     iconContainer: {
         float: 'right'
+    },
+   secondListBlock: {
+        marginTop: -33
     },
     settingsIcon: {
         fontSize: 18,

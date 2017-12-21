@@ -140,7 +140,7 @@ class TagManager extends React.Component {
                                     </div>
                                 </div>
                                 <div className="mdl-cell mdl-cell--12-col" style={styles.buttonWrapper}>
-                                    <RaisedButton label={'Apply'}
+                                    <RaisedButton label={'Add Tags'}
                                                   labelStyle={styles.buttonLabel}
                                                   style={styles.applyBtn}
                                                   onTouchTap={() => this.addTagsToResource(filesChecked, id, tagsToAdd, toggleModal)}/>
