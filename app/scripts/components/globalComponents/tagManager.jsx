@@ -329,7 +329,7 @@ const styles = {
         zIndex: '5000'
     },
     drawer: {
-        marginTop: 65
+        marginTop: 45
     },
     drawerLoader: {
         position: 'absolute',

@@ -115,7 +115,7 @@ const styles = {
     },
     menuIconBtn: {
         position: 'absolute',
-        top: 90 ,
+        top: 70,
         right: 5,
         zIndex: 200
     },
