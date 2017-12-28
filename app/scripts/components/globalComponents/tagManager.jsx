@@ -53,7 +53,7 @@ class TagManager extends React.Component {
         let id = selectedNode && selectedNode.properties !== undefined ? selectedNode.properties.id : selectedEntity !== null ? selectedEntity.id : this.props.params.id;
         let name = entityObj && filesChecked < 1 ? selectedNode && selectedNode.properties !== undefined ? selectedNode.properties.name : this.props.location.pathname.includes('activity') && activity !== null ? activity.name : entityObj.name : 'selected files';
         let openDiscardTagsModal = toggleModal && toggleModal.id === 'discardTags' ? toggleModal.open : false;
-        let width = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.width : window.innerWidth;
+        let width = window.innerWidth > 640 ? window.innerWidth*.8 : window.innerWidth;
         const modalActions = [
             <FlatButton
                 label="DISCARD TAGS"
@@ -65,12 +65,14 @@ class TagManager extends React.Component {
                 keyboardFocused={true}
                 onTouchTap={() => this.addTagsToResource(filesChecked, id, tagsToAdd, toggleModal)} />
         ];
+
         let tags = tagsToAdd && tagsToAdd.length > 0 ? tagsToAdd.map((tag)=>{
             return (<div key={BaseUtils.generateUniqueKey()} className="chip">
                 <span className="chip-text">{tag.label}</span>
                 <span className="closebtn" onTouchTap={() => this.deleteTag(tag.label)}>&times;</span>
             </div>)
         }) : null;
+
         let tagLbls = tagLabels.map((tag)=>{
             return (
                 <li key={BaseUtils.generateUniqueKey()} style={styles.tagLabels} onTouchTap={() => this.addTagToCloud(tag.label)}>{tag.label}
@@ -81,7 +83,7 @@ class TagManager extends React.Component {
 
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                <Drawer docked={false} disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openSecondary={true} open={openTagManager} onRequestChange={() => this.toggleTagManager()}>
+                <Drawer docked={false} disableSwipeToOpen={true} width={width} openSecondary={true} open={openTagManager} onRequestChange={() => this.toggleTagManager()}>
                     <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" style={styles.drawer}>
                         <IconButton style={styles.toggleBtn}
                                     onTouchTap={() => this.toggleTagManager()}>
@@ -138,7 +140,7 @@ class TagManager extends React.Component {
                                     </div>
                                 </div>
                                 <div className="mdl-cell mdl-cell--12-col" style={styles.buttonWrapper}>
-                                    <RaisedButton label={'Apply'}
+                                    <RaisedButton label={'Add Tags'}
                                                   labelStyle={styles.buttonLabel}
                                                   style={styles.applyBtn}
                                                   onTouchTap={() => this.addTagsToResource(filesChecked, id, tagsToAdd, toggleModal)}/>
@@ -327,7 +329,7 @@ const styles = {
         zIndex: '5000'
     },
     drawer: {
-        marginTop: 65
+        marginTop: 45
     },
     drawerLoader: {
         position: 'absolute',

@@ -251,9 +251,8 @@ class ProvenanceActivityManager extends React.Component {
     }
 
     deleteActivity(node) {
-        let id = this.props.params.id;
         provenanceStore.saveGraphZoomState(provenanceStore.network.getScale(), provenanceStore.network.getViewPosition());
-        provenanceStore.deleteProvItem(node, id);
+        provenanceStore.deleteProvActivity(node.id, node.properties.name);
         provenanceStore.closeProvEditorModal('dltAct');
         provenanceStore.showProvControlBtns();
         provenanceStore.toggleProvNodeDetails();

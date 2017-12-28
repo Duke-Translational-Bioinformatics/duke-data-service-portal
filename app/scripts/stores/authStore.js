@@ -71,7 +71,7 @@ export class AuthStore {
                         this.sessionTimeoutWarning = true;
                         setTimeout(() => this.handleLogout(), 178800)
                     }, 7020000);
-                    mainStore.getProjects(null, null); // Get initial projects and permissions
+                    mainStore.getProjects(null, null, true); // Get initial projects and permissions
                     mainStore.getUsageDetails();
                 } else {
                     throw "An error has occurred while trying to authenticate";

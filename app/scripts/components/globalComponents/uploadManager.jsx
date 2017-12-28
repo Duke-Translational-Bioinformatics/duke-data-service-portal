@@ -27,13 +27,14 @@ class UploadManager extends React.Component {
     }
 
     render() {
-        const {filesRejectedForUpload, filesToUpload, isFolderUpload, openUploadManager, screenSize, showTagCloud, tagAutoCompleteList, tagLabels, tagsToAdd} = mainStore;
+        const {filesRejectedForUpload, filesToUpload, isFolderUpload, openUploadManager, showTagCloud, tagAutoCompleteList, tagLabels, tagsToAdd} = mainStore;
         let tags = tagsToAdd && tagsToAdd.length > 0 ? tagsToAdd.map((tag)=>{
             return (<div key={BaseUtils.generateUniqueKey()} className="chip">
                 <span className="chip-text">{tag.label}</span>
                 <span className="closebtn" onTouchTap={() => this.deleteTag(tag.label, tagsToAdd)}>&times;</span>
             </div>)
         }) : null;
+
         let tagLbls = tagLabels.map((label)=>{
             return (
                 <li key={label.label+Math.random()} style={styles.tagLabels} onTouchTap={() => this.addTagToCloud(label.label, tagsToAdd)}>{label.label}
@@ -41,6 +42,7 @@ class UploadManager extends React.Component {
                 </li>
             )
         });
+
         let files = filesToUpload.length ? filesToUpload.map((file, i)=>{
             return <div key={BaseUtils.generateUniqueKey()} className="mdl-cell mdl-cell--6-col" style={styles.fileList}>
                 <i className="material-icons" style={styles.deleteIcon} onTouchTap={() => this.removeFileFromList(i)}>cancel</i>
@@ -48,6 +50,7 @@ class UploadManager extends React.Component {
             </div>
 
         }) : null;
+
         let rejectedFiles = filesRejectedForUpload.length ? filesRejectedForUpload.map((file)=>{
             return <div key={BaseUtils.generateUniqueKey()} className="mdl-cell mdl-cell--12-col" style={styles.rejectedFileList}>
                 {file.name+' exceeds the maximum size of 18 GB.'}
@@ -55,13 +58,13 @@ class UploadManager extends React.Component {
         }) : null;
 
         let autoCompleteData = tagAutoCompleteList && tagAutoCompleteList.length > 0 ? tagAutoCompleteList : [];
-        let width = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.width : window.innerWidth;
+        let width = window.innerWidth > 640 ? window.innerWidth*.8 : window.innerWidth;
 
         return (
             <div style={styles.fileUpload}>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                    <Drawer docked={false} disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openSecondary={true} open={openUploadManager}>
-                        <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" style={{marginTop: 65}}>
+                    <Drawer docked={false} disableSwipeToOpen={true} width={width} openSecondary={true} open={openUploadManager} onRequestChange={() => this.toggleUploadManager()}>
+                        <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" style={styles.drawerTopMargin}>
                             <IconButton style={styles.toggleBtn}
                                         onTouchTap={() => this.toggleUploadManager()}>
                                 <NavigationClose />
@@ -276,6 +279,9 @@ const styles = {
         verticalAlign: 'middle',
         marginRight: 3
     },
+    drawerTopMargin: {
+        marginTop: 45
+    },
     dropzoneContainer: {
         margin: '0 auto',
     },
@@ -387,7 +393,6 @@ UploadManager.contextTypes = {
 UploadManager.propTypes = {
     openUploadManager: bool,
     entityObj: object,
-    screenSize: object,
     selectedEntity: object,
     tagLabels: array,
     tagAutoCompleteList: array,

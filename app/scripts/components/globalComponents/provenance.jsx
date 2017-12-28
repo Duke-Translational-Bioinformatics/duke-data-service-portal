@@ -40,18 +40,17 @@ class Provenance extends React.Component {
     }
 
     componentDidMount() {
-        // Listen for resize changes when rotating device
         window.addEventListener('resize', this.handleResize);
         mainStore.getProjectListForProvenanceEditor();
         provenanceStore.getActivities();
     }
 
     componentWillUpdate() {
-        const {currentGraph, provEdges, provNodes, position, scale} = provenanceStore;
+        const {currentGraph, provEdges, provNodes, position, renderGraph, scale} = provenanceStore;
         const id = this.props.params.id;
         const edges = provEdges && provEdges.length > 0 ? provEdges.slice() : currentGraph !== null && currentGraph.id === id ? currentGraph.edges.slice() : [];
         const nodes = provNodes && provNodes.length > 0 ? provNodes.slice() : currentGraph !== null && currentGraph.id === id ? currentGraph.nodes.slice() : [];
-        if(provenanceStore.renderGraph) this.renderProvGraph(edges, nodes, scale, position);
+        if(renderGraph) this.renderProvGraph(edges, nodes, scale, position);
     }
 
     componentWillUnmount() {
@@ -389,9 +388,8 @@ class Provenance extends React.Component {
     }
 
     deleteRelation(edge) {
-        let id = this.props.params.id;
         provenanceStore.saveGraphZoomState(provenanceStore.network.getScale(), provenanceStore.network.getViewPosition());
-        provenanceStore.deleteProvItem(edge, id);
+        provenanceStore.deleteProvItem(edge);
         this.saveZoomState();
         this.handleClose('dltRel');
         provenanceStore.showDeleteRelationsBtn(provenanceStore.selectedEdge, provenanceStore.selectedNode);
@@ -478,13 +476,13 @@ const styles = {
     },
     closeEditorIcon: {
         position: 'absolute',
-        top: 88,
+        top: 68,
         left: 10,
         zIndex: 9999
     },
     closeGraphIcon: {
         position: 'absolute',
-        top: 88,
+        top: 68,
         left: 2,
         zIndex: 9999
     },
@@ -519,7 +517,7 @@ const styles = {
     },
     openEditorIcon: {
         position: 'absolute',
-        top: 90,
+        top: 70,
         right: 10,
         zIndex: 200
     },

@@ -11,6 +11,7 @@ import { Kind, Path } from '../util/urlEnum';
 import { checkStatus, checkStatusAndConsistency } from '../util/fetchUtil';
 
 export class MainStore {
+    @observable addTeamAfterProjectCreation
     @observable agents
     @observable agentKey
     @observable agentApiToken
@@ -63,6 +64,7 @@ export class MainStore {
     @observable projectMembers
     @observable projectRole
     @observable projectRoles
+    @observable projectTeams
     @observable metaObjProps
     @observable responseHeaders
     @observable screenSize
@@ -77,11 +79,14 @@ export class MainStore {
     @observable searchResultsTags
     @observable searchValue
     @observable selectedEntity
+    @observable selectedTeam
+    @observable showAlert
     @observable showBackButton
     @observable serviceOutageNoticeModalOpen
     @observable showFilters
     @observable showPropertyCreator
     @observable showTagCloud
+    @observable showTeamManager
     @observable showTemplateCreator
     @observable showTemplateDetails
     @observable showUserInfoPanel
@@ -103,6 +108,7 @@ export class MainStore {
     @observable versionModal
 
     constructor() {
+        this.addTeamAfterProjectCreation = false;
         this.agents = [];
         this.agentKey = {};
         this.agentApiToken = {};
@@ -156,6 +162,7 @@ export class MainStore {
         this.projectMembers = [];
         this.projectRole = null;
         this.projectRoles = observable.map();
+        this.projectTeams = observable.map();
         this.metaObjProps = [];
         this.responseHeaders = {};
         this.screenSize = {width: 0, height: 0};
@@ -171,10 +178,13 @@ export class MainStore {
         this.searchValue = null;
         this.serviceOutageNoticeModalOpen = cookie.load('serviceOutageNoticeModalOpen');
         this.selectedEntity = null;
+        this.selectedTeam = [];
+        this.showAlert = false;
         this.showBackButton = true;
         this.showFilters = false;
         this.showPropertyCreator = false;
         this.showTagCloud = false;
+        this.showTeamManager = false;
         this.showTemplateCreator = false;
         this.showTemplateDetails = false;
         this.showUserInfoPanel = false;
@@ -201,6 +211,23 @@ export class MainStore {
 
     checkResponse(response) {
         return checkStatus(response, authStore);
+    }
+
+    @action addTeamMembersPrompt () {
+        this.addTeamAfterProjectCreation = !this.addTeamAfterProjectCreation;
+    }
+
+    @action setSelectedTeam (id) {
+        this.selectedTeam = !this.selectedTeam.includes(id) ? [id] : [];
+        if(this.showAlert) this.toggleAlert();
+    }
+
+    @action toggleTeamManager() {
+        this.showTeamManager = !this.showTeamManager;
+    }
+
+    @action toggleAlert() {
+        this.showAlert = !this.showAlert;
     }
 
     @action setLeftNavIndex(index) {
@@ -276,7 +303,7 @@ export class MainStore {
             }).catch(ex => this.handleErrors(ex))
     }
 
-    @action getProjects(page, perPage) {
+    @action getProjects(page, perPage, getAll) {
         this.loading = true;
         if (page == null) page = 1;
         if (perPage == null) perPage = 25;
@@ -297,13 +324,17 @@ export class MainStore {
             this.projects.forEach((p) => {
                 userId !== null ? this.getAllProjectPermissions(p.id, userId) : null;
             });
+            if(getAll) {
+                this.projects.forEach((p) => {
+                    this.getProjectTeams(p.id, getAll);
+                });
+            }
             this.responseHeaders = headers;
             this.nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
             this.totalItems = headers !== null && !!headers['x-total'] ? parseInt(headers['x-total'][0], 10) : null;
             this.loading = false;
         }).catch(ex => this.handleErrors(ex))
     }
-
 
     @action getProjectListForProvenanceEditor() {
         this.loading = true;
@@ -350,6 +381,15 @@ export class MainStore {
             }).catch(ex => this.handleErrors(ex))
     }
 
+    @action getProjectTeams(id, getAll) {
+        this.transportLayer.getProjectMembers(id)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => {
+                if(getAll && !this.projectTeams.has(id) && json.results.length > 1) this.projectTeams.set(id, {name: json.results[0].project.name, members: json.results});
+            }).catch(ex => this.handleErrors(ex))
+    }
+
     @action addProject(name, desc) {
         this.loading = true;
         this.transportLayer.addProject(name, desc)
@@ -363,6 +403,11 @@ export class MainStore {
                     userId !== null ? this.getAllProjectPermissions(p.id, authStore.currentUser.id) : null;
                 });
                 this.loading = false;
+                if(this.addTeamAfterProjectCreation) {
+                    window.location.href = `${window.location.protocol}//${window.location.host}/#/project/${json.id}`;
+                    this.toggleTeamManager();
+                    this.addTeamMembersPrompt();
+                }
             }).catch((ex) => {
             this.addToast('Failed to add new project');
             this.handleErrors(ex)
@@ -681,6 +726,20 @@ export class MainStore {
                 let name = getName.toString();
                 this.addProjectMember(id, userId, role, name);
             }).catch(ex => this.handleErrors(ex));
+    }
+
+    @action addProjectTeam(id, userId, role, projectName) {
+        this.transportLayer.addProjectMember(id, userId, role)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then(() => {
+                this.addToast(`All members from ${projectName} have been added as a to this project`);
+                this.getProjectMembers(id);
+                this.loading = false;
+            }).catch((ex) => {
+            this.addToast('Could not add member to this project or member does not exist');
+            this.handleErrors(ex)
+        });
     }
 
     @action addProjectMember(id, userId, role, name) {
