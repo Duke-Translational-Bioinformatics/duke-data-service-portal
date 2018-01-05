@@ -46,7 +46,7 @@ class LeftMenu extends React.Component {
             <Drawer width={drawerWidth} open={toggleNav && !showSearch} zDepth={0} containerStyle={styles.drawer}>
                 <Toolbar style={styles.toolbar}>
                     <ToolbarGroup firstChild={true} style={styles.toolbar.firstToolbarGroup}>
-                        <a href="#" onTouchTap={()=>this.toggleNav()}><FontIcon className="material-icons" style={styles.openIcon}>menu</FontIcon></a>
+                        <a href="#" onTouchTap={()=>this.toggleNav()}><FontIcon className="material-icons" style={styles.openIcon}>{!toggleNav ? 'menu' : 'close'}</FontIcon></a>
                         <img src="/images/dukeDSVertical.png" style={styles.logo}/>
                     </ToolbarGroup>
                 </Toolbar>
