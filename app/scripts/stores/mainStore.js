@@ -1100,7 +1100,7 @@ export class MainStore {
             }
             if (chunk.chunkUpdates.status !== StatusEnum.STATUS_SUCCESS) allDone = false;
         }
-        if (allDone === true) this.checkForHash(uploadId, upload.parentId, upload.parentKind, upload.name, upload.label, upload.fileId, upload.projectId);
+        if (allDone) this.checkForHash(uploadId, upload.parentId, upload.parentKind, upload.name, upload.label, upload.fileId, upload.projectId);
         window.onbeforeunload = function () { // If done, set to false so no warning is sent.
             this.warnUserBeforeLeavingPage = false;
         };

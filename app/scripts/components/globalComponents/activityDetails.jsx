@@ -22,7 +22,7 @@ class ActivityDetails extends React.Component {
         const activityDetails = activity !== null && <Card className="project-container mdl-color--white content mdl-color-text--grey-800" style={styles.card}>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                        { showBackButton && <a href="#" style={styles.back} className="mdl-color-text--grey-800 external" onTouchTap={() => this.goBack()}>
+                        { showBackButton && <a style={styles.back} className="mdl-color-text--grey-800 external" onTouchTap={() => this.goBack()}>
                             <i className="material-icons" style={styles.backIcon}>keyboard_backspace</i>Back
                         </a> }
                         <div style={styles.menuIcon}>
@@ -106,7 +106,6 @@ class ActivityDetails extends React.Component {
 
     goBack() {
         this.props.router.goBack();
-        !provenanceStore.toggleProv && provenanceStore.currentGraph !== null ? provenanceStore.toggleProvView() : null;
         provenanceStore.currentGraph !== null ? provenanceStore.shouldRenderGraph() : null;
     }
 
@@ -118,10 +117,12 @@ const styles = {
         marginTop: -5
     },
     backIcon: {
+        cursor: 'pointer',
         fontSize: 24,
         verticalAlign:-7
     },
     back: {
+        cursor: 'pointer',
         verticalAlign:-7
     },
     card: {
