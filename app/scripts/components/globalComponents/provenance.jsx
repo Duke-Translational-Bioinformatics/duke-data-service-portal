@@ -188,7 +188,7 @@ class Provenance extends React.Component {
                 return version.is_deleted;
             });
             for (let i = 0; i < versions.length; i++) {
-                if(versions[i] === false) {
+                if(!versions[i]) {
                     versionCount.push(versions[i]);
                     if(versionCount.length > 1) {
                         versionsButton = <RaisedButton

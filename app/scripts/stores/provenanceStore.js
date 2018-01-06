@@ -18,6 +18,7 @@ export class ProvenanceStore {
     @observable doubleClicked
     @observable drawerLoading
     @observable dropdownSelectValue
+    @observable generatedByActivity
     @observable network
     @observable onClickProvNode
     @observable openConfirmRel
@@ -51,6 +52,7 @@ export class ProvenanceStore {
         this.doubleClicked = false;
         this.drawerLoading = false;
         this.dropdownSelectValue = null;
+        this.generatedByActivity = null;
         this.network = {};
         this.onClickProvNode = {};
         this.openConfirmRel = false;
@@ -115,6 +117,21 @@ export class ProvenanceStore {
                     that.getProvenanceSuccess(json.graph, prevGraph);
                 }
             }).catch(ex =>mainStore.handleErrors(ex))
+    }
+
+    @action getGeneratedByActivity(id) {
+        this.drawerLoading = true;
+        this.transportLayer.getWasGeneratedByNode(id)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => {
+                this.drawerLoading = false;
+                this.generatedByActivity = json.graph.relationships.find(r => r.type === 'WasGeneratedBy' && r.start_node === id);
+            }).catch(ex =>mainStore.handleErrors(ex))
+    }
+
+    @action resetGeneratedByActivity() {
+        this.generatedByActivity = null;
     }
 
     @action getProvenance(id, kind, prevGraph) {
@@ -614,7 +631,7 @@ export class ProvenanceStore {
     @action toggleProvView() {
         this.toggleProv = !this.toggleProv;
         this.selectedNode = {};
-        if(this.toggleProv !== true) { //clear old graph on close of provenance view
+        if(!this.toggleProv) { //clear old graph on close of provenance view
             this.provEdges = [];
             this.provNodes = [];
         }
