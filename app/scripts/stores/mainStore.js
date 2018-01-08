@@ -267,7 +267,7 @@ export class MainStore {
             this.counter.set(counterId, c);
         }
         if(this.counter.get(counterId) < StatusEnum.MAX_RETRY) {
-            mainStore.addToast(`${message}. Retrying in ${BaseUtils.msToMinSecs(delay)}...`);
+            mainStore.addToast(`${message}. Retrying in ${BaseUtils.timeConversion(delay)}...`);
             const tryAgain = async () => {
                 await sleep(delay);
                 func(...args);
@@ -1100,7 +1100,7 @@ export class MainStore {
             }
             if (chunk.chunkUpdates.status !== StatusEnum.STATUS_SUCCESS) allDone = false;
         }
-        if (allDone === true) this.checkForHash(uploadId, upload.parentId, upload.parentKind, upload.name, upload.label, upload.fileId, upload.projectId);
+        if (allDone) this.checkForHash(uploadId, upload.parentId, upload.parentKind, upload.name, upload.label, upload.fileId, upload.projectId);
         window.onbeforeunload = function () { // If done, set to false so no warning is sent.
             this.warnUserBeforeLeavingPage = false;
         };
