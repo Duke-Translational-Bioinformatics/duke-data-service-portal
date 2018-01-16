@@ -53,11 +53,11 @@ class SearchFilters extends React.Component {
                 primaryTogglesNestedList={true}
                 onNestedListToggle={() => this.toggleNestedList('kindListToggleIcon')}
                 nestedItems={[
-                    <ListItem key={BaseUtils.generateUniqueKey()} onClick={(e) => this.search(e, searchValue, Kind.DDS_FILE, null, null, null)}
+                    <ListItem key={BaseUtils.generateUniqueKey()} onClick={searchResultsFiles.length ? (e) => this.search(e, searchValue, Kind.DDS_FILE, null, null, null) : null}
                         primaryText={<span style={styles.checkbox.label}>Files</span>}
                         leftCheckbox={<Checkbox style={styles.checkbox} disabled={!searchResultsFiles.length} checked={searchFilters.includes(Kind.DDS_FILE)} />}
                         style={styles.listItem}/>,
-                    <ListItem key={BaseUtils.generateUniqueKey()} onClick={(e) => this.search(e, searchValue, Kind.DDS_FOLDER, null, null, null)}
+                    <ListItem key={BaseUtils.generateUniqueKey()} onClick={searchResultsFolders.length ? (e) => this.search(e, searchValue, Kind.DDS_FOLDER, null, null, null) : null}
                         primaryText={<span style={styles.checkbox.label}>Folders</span>}
                         leftCheckbox={<Checkbox style={styles.checkbox} disabled={!searchResultsFolders.length} checked={searchFilters.includes(Kind.DDS_FOLDER)} />}
                         style={styles.listItem}/>
