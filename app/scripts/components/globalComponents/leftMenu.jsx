@@ -67,14 +67,33 @@ class LeftMenu extends React.Component {
                         value={'/agents'}
                         onClick={() => this.setNavIndex('/agents')}
                         primaryText="Software Agents"
-                        leftIcon={<i className="material-icons" style={styles.navIcon}>build</i>}
+                        leftIcon={<i className="material-icons" style={styles.navIcon}>group_work</i>}
                     />
                     <Divider/>
                     <ListItem
                         value={0}
-                        onClick={() => this.linkToBlog('https://medium.com/@dukedataservice')}
-                        primaryText="Duke DS Blog"
-                        leftIcon={<i className="material-icons" style={styles.navIcon}>rate_review</i>}
+                        primaryText="Resources"
+                        leftIcon={<i className="material-icons" style={styles.navIcon}>build</i>}
+                        primaryTogglesNestedList={true}
+                        nestedItems={[
+                            <ListItem
+                                value={1}
+                                onClick={() => this.linkToOutsideResource('https://api.dataservice.duke.edu/apidocs/')}
+                                leftIcon={<i className="material-icons" style={styles.navIcon}>info</i>}
+                                primaryText="Duke DS API Docs"
+                            />,
+                            <ListItem
+                                value={2}
+                                onClick={() => this.linkToOutsideResource('https://github.com/Duke-Translational-Bioinformatics/duke-data-service')}
+                                leftIcon={<i className="material-icons" style={styles.navIcon}>code</i>}
+                                primaryText="Duke DS API Github"
+                            />,
+                            <ListItem
+                                value={3}
+                                onClick={() => this.linkToOutsideResource('https://github.com/Duke-Translational-Bioinformatics/duke-data-service-portal')}
+                                leftIcon={<i className="material-icons" style={styles.navIcon}>code</i>}
+                                primaryText="Duke DS Web Portal Github"
+                            />]}
                     />
                     <ListItem
                         value={'/privacy'}
@@ -94,7 +113,7 @@ class LeftMenu extends React.Component {
         );
     }
 
-    linkToBlog(link) {
+    linkToOutsideResource(link) {
         const { screenSize } = mainStore;
         screenSize.width < 700 ? this.toggleNav() : null;
         const win = window.open(link, '_blank');
