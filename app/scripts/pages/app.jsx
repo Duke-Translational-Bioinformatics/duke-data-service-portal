@@ -41,6 +41,7 @@ class App extends React.Component {
     }
 
     componentDidMount() {
+        const { appConfig } = authStore;
         authStore.getAuthProviders();
         mainStore.getScreenSize(window.innerHeight, window.innerWidth);
         window.addEventListener('resize', this.handleResize);
@@ -53,9 +54,8 @@ class App extends React.Component {
             iphone: app.device.iphone
         };
         mainStore.getDeviceType(device);
-        if(authStore.appConfig.apiToken) {
+        if(appConfig.apiToken) {
             authStore.getCurrentUser();
-            mainStore.getProjects(null, null, true);
             mainStore.getUsageDetails();
             mainStore.loadMetadataTemplates(null);
             authStore.removeLoginCookie();
@@ -68,20 +68,24 @@ class App extends React.Component {
     }
 
     componentWillMount() {
-        if(!authStore.appConfig.apiToken && !authStore.appConfig.isLoggedIn && this.props.location.pathname !== '/login') {
+        const { appConfig, redirectUrl } = authStore;
+        if(!appConfig.apiToken && !appConfig.isLoggedIn && this.props.location.pathname !== '/login') {
             if (location.hash !== '' && location.hash !== '#/login' && location.hash !== '#/public_privacy') {
-                if(!authStore.redirectUrl) authStore.setRedirectUrl(location.href);
+                if(!redirectUrl) authStore.setRedirectUrl(location.href);
                 this.props.router.push('/login');
             }
         }
     }
 
     componentDidUpdate(prevProps) {
-        if(authStore.appConfig.apiToken && !Object.keys(authStore.currentUser).length) authStore.getCurrentUser();
-        if(authStore.sessionTimeoutWarning) authStore.setRedirectUrl(location.href);
-        if(prevProps.location.pathname !== this.props.location.pathname || mainStore.currentLocation === null) {
+        const { appConfig, currentUser, sessionTimeoutWarning } = authStore;
+        const { params } = this.props;
+        const { pathname } = this.props.location;
+        if(appConfig.apiToken && !Object.keys(currentUser).length) authStore.getCurrentUser();
+        if(sessionTimeoutWarning) authStore.setRedirectUrl(location.href);
+        if(prevProps.location.pathname !== pathname || mainStore.currentLocation === null) {
             this.$$('.page-content').scrollTo(0, 0);
-            mainStore.setCurrentRouteLocation({path: this.props.location.pathname, id: this.props.params.id});
+            mainStore.setCurrentRouteLocation({path: pathname, id: params.id});
         }
         this.showToasts();
     }
@@ -96,7 +100,8 @@ class App extends React.Component {
     }
 
     createLoginUrl = () => {
-        return authStore.appConfig.authServiceUri+'&state='+authStore.appConfig.serviceId+'&redirect_uri='+window.location.href;
+        const { appConfig } = authStore;
+        return appConfig.authServiceUri+'&state='+appConfig.serviceId+'&redirect_uri='+window.location.href;
     };
 
     render() {
