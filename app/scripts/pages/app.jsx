@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import { Color } from '../theme/customTheme';
 import authStore from '../stores/authStore';
@@ -31,7 +33,7 @@ class App extends React.Component {
     }
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object,
+        muiTheme: object,
     };
 
     getChildContext() {

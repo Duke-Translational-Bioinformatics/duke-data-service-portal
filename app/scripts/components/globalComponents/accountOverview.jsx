@@ -50,8 +50,4 @@ const styles = {
     }
 };
 
-AccountOverview.contextTypes = {
-    muiTheme: React.PropTypes.object
-};
-
 export default AccountOverview;
