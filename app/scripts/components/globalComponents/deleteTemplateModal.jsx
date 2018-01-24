@@ -1,5 +1,6 @@
-import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+import React from 'react';
+import PropTypes from 'prop-types';
+const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../util/baseUtils'
@@ -65,10 +66,6 @@ const styles = {
         textAlign: 'center',
         color: '#F44336'
     }
-};
-
-DeleteTemplateModal.contextTypes = {
-    muiTheme: React.PropTypes.object
 };
 
 DeleteTemplateModal.propTypes = {

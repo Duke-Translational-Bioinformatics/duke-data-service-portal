@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -34,10 +35,6 @@ const styles = {
     openIcon: {
         margin: '-10px -12px 0px 0px'
     },
-};
-
-ProjectOptionsMenu.contextTypes = {
-    muiTheme: object
 };
 
 ProjectOptionsMenu.propTypes = {

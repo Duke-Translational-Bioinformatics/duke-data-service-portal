@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object, bool, array, string } = PropTypes;
 import ReactDOM from 'react-dom';
 import { observer } from 'mobx-react';

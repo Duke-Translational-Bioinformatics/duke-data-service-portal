@@ -96,6 +96,6 @@ const styles = {
         marginLeft: 8,
         color: Color.blue
     }
-}
+};
 
 export default PublicPrivacy;

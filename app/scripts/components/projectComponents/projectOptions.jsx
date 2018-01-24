@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -185,10 +186,6 @@ const styles = {
         textAlign: 'center',
         color: Color.red
     }
-};
-
-ProjectOptions.contextTypes = {
-    muiTheme: object
 };
 
 ProjectOptions.propTypes = {

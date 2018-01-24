@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object, bool, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -89,10 +90,6 @@ const styles = {
             display: 'none'
         }
     }
-};
-
-Search.childContextTypes = {
-    muiTheme: React.PropTypes.object
 };
 
 Search.propTypes = {

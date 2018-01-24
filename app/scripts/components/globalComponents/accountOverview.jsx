@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -47,10 +48,6 @@ const styles = {
         verticalAlign: 'center',
         color: '#616161'
     }
-};
-
-AccountOverview.propTypes = {
-    usage: object
 };
 
 AccountOverview.contextTypes = {

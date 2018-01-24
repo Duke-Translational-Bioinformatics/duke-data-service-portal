@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object, bool } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -84,10 +85,6 @@ const styles = {
         cursor:'pointer',
         color:'#FFF'
     }
-};
-
-CurrentUser.contextTypes = {
-    muiTheme: object
 };
 
 CurrentUser.propTypes = {

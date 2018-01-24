@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import { Color } from '../../theme/customTheme';
@@ -149,10 +150,6 @@ const styles = {
         minWidth: '48%',
         textAlign: 'left'
     }
-};
-
-VersionUpload.contextTypes = {
-    muiTheme: React.PropTypes.object
 };
 
 VersionUpload.propTypes = {

@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import provenanceStore from '../../stores/provenanceStore';
@@ -155,10 +156,6 @@ const styles = {
         padding: '0px 5px 0px 5px',
         fontSize: 12
     }
-};
-
-ProvenanceDetails.contextTypes = {
-    muiTheme: React.PropTypes.object
 };
 
 ProvenanceDetails.propTypes = {
