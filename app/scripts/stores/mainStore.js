@@ -1214,17 +1214,21 @@ export class MainStore {
             .then(response => response.json())
             .then((json) => {
                 this.addToast('Created New File Version!');
-                this.addFileVersionSuccess(fileId, uploadId)
+                this.addFileVersionSuccess(fileId, uploadId, json);
             }).catch((ex) => {
                 this.addToast('Failed to Create New Version');
                 this.uploadError(uploadId);
             });
     }
 
-    @action addFileVersionSuccess(id, uploadId) {
+    @action addFileVersionSuccess(id, uploadId, json) {
         provenanceStore.displayProvAlert();
         if(location.href.includes(id)) this.getEntity(id, Path.FILE);
         this.getFileVersions(id);
+        if(this.listItems.some(l => l.id === id)) {
+            let index = this.listItems.findIndex(p => p.id === id);
+            this.listItems.splice(index, 1, json);
+        }
         if (this.uploads.has(uploadId)) this.uploads.delete(uploadId);
     }
 

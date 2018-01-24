@@ -91,6 +91,9 @@ class VersionUpload extends React.Component {
                 let label = this.labelText.getValue();
                 mainStore.startUpload(projectId, blob, parentId, parentKind, label, fileId);
                 mainStore.toggleModals('newVersionModal');
+                this.setState({
+                    files: ''
+                })
             }
         } else {
             return null
