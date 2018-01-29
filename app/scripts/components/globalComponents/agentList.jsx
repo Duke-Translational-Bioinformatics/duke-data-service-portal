@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object, bool } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -47,7 +48,7 @@ class AgentList extends React.Component {
             {!loading ? <TextField
                 textareaStyle={styles.textArea}
                 style={styles.keyModal}
-                defaultValue={JSON.stringify({agent_key: agentKey.key, user_key: userKey.key, api_token: agentApiToken.api_token, api_url: DDS_PORTAL_CONFIG.baseUrl}, null, 4)}
+                defaultValue={JSON.stringify({agent_key: agentKey.key, user_key: userKey.key, api_token: agentApiToken.api_token, url: DDS_PORTAL_CONFIG.baseUrl+'/api/v1'}, null, 4)}
                 floatingLabelText="Agent Credentials"
                 id="keyText"
                 ref={(input) => this.keyText = input}
@@ -135,10 +136,6 @@ const styles = {
     title: {
         marginRight: 40
     }
-};
-
-AgentList.contextTypes = {
-    muiTheme: React.PropTypes.object
 };
 
 AgentList.propTypes = {

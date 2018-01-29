@@ -1,6 +1,7 @@
-import React, { PropTypes } from 'react';
-import { Link } from 'react-router';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object, string } = PropTypes;
+import { Link } from 'react-router';
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import { Color } from '../../theme/customTheme';
@@ -140,10 +141,6 @@ const styles = {
         float: 'left',
         textAlign: 'left'
     }
-};
-
-ProjectDetails.contextTypes = {
-    muiTheme: object
 };
 
 ProjectDetails.propTypes = {

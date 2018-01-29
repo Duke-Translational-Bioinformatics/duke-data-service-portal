@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+const { object, bool } = PropTypes;
 import { observer } from 'mobx-react';
 import authStore from '../../stores/authStore';
 import mainStore from '../../stores/mainStore';
@@ -169,6 +171,12 @@ const styles = {
             justifyContent: 'flex-start'
         }
     }
+};
+
+LeftMenu.propTypes = {
+    screenSize: object,
+    toggleNav: bool,
+    showSearch: bool
 };
 
 export default LeftMenu;

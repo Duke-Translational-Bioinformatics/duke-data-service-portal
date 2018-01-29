@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import { Color } from '../../theme/customTheme';
@@ -90,6 +91,9 @@ class VersionUpload extends React.Component {
                 let label = this.labelText.getValue();
                 mainStore.startUpload(projectId, blob, parentId, parentKind, label, fileId);
                 mainStore.toggleModals('newVersionModal');
+                this.setState({
+                    files: ''
+                })
             }
         } else {
             return null
@@ -149,10 +153,6 @@ const styles = {
         minWidth: '48%',
         textAlign: 'left'
     }
-};
-
-VersionUpload.contextTypes = {
-    muiTheme: React.PropTypes.object
 };
 
 VersionUpload.propTypes = {

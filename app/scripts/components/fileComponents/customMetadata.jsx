@@ -1,5 +1,6 @@
-import React, { PropTypes } from 'react';
-const { array } = PropTypes;
+import React from 'react';
+import PropTypes from 'prop-types';
+const { array, object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import { Color } from '../../theme/customTheme';
@@ -90,10 +91,6 @@ const styles = {
     wrapper: {
         margin: '0 auto'
     }
-};
-
-CustomMetadata.contextTypes = {
-    muiTheme: React.PropTypes.object
 };
 
 CustomMetadata.propTypes = {

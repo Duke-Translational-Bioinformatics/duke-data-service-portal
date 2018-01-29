@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -115,10 +116,6 @@ const styles = {
         fontColor: '#303F9F',
         zIndex: '5000'
     }
-};
-
-EditTemplateModal.contextTypes = {
-    muiTheme: React.PropTypes.object
 };
 
 EditTemplateModal.propTypes = {

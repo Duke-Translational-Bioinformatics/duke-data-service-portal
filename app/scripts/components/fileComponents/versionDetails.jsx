@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { bool, object, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -252,10 +253,6 @@ const styles = {
         fontSize: 24,
         wordWrap: 'break-word'
     }
-};
-
-VersionDetails.contextTypes = {
-    muiTheme: React.PropTypes.object
 };
 
 VersionDetails.propTypes = {

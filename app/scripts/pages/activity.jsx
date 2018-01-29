@@ -4,7 +4,6 @@ import mainStore from '../stores/mainStore';
 import provenanceStore from '../stores/provenanceStore';
 import { Kind, Path } from '../util/urlEnum';
 import ActivityDetails from '../components/globalComponents/activityDetails.jsx';
-import ActivityOptions from '../components/fileComponents/fileOptions.jsx';
 import TagManager from '../components/globalComponents/tagManager.jsx';
 
 @observer

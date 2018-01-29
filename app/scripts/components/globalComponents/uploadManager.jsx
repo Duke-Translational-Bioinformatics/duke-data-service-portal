@@ -1,6 +1,7 @@
-import React, { PropTypes } from 'react';
-import { observer } from 'mobx-react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object, bool, array } = PropTypes;
+import { observer } from 'mobx-react';
 import DropZone from '../globalComponents/dropzone.jsx';
 import mainStore from '../../stores/mainStore';
 import { Color } from '../../theme/customTheme';
@@ -384,10 +385,6 @@ const styles = {
         flexDirection: 'column',
         paddingLeft: 5
     }
-};
-
-UploadManager.contextTypes = {
-    muiTheme: React.PropTypes.object
 };
 
 UploadManager.propTypes = {

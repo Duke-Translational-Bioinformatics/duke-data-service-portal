@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object, array, string, bool } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -226,10 +227,6 @@ const styles = {
         textAlign: 'center',
         color: Color.red
     }
-};
-
-BatchOps.contextTypes = {
-    muiTheme: React.PropTypes.object
 };
 
 BatchOps.propTypes = {

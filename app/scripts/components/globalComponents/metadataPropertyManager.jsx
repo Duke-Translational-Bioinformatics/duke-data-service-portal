@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import { Color } from '../../theme/customTheme';
@@ -260,13 +262,9 @@ const styles = {
     }
 };
 
-MetadataPropertyManager.contextTypes = {
-    muiTheme: React.PropTypes.object
-};
-
 MetadataPropertyManager.propTypes = {
-    metadataTemplate: React.PropTypes.object,
-    screenSize: React.PropTypes.object
+    metadataTemplate: object,
+    screenSize: object
 };
 
 export default MetadataPropertyManager;

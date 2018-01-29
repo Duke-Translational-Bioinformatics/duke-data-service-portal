@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import authStore from '../../stores/authStore';
@@ -140,14 +142,10 @@ const styles = {
     }
 };
 
-MetadataTemplateOptions.contextTypes = {
-    muiTheme: React.PropTypes.object
-};
-
 MetadataTemplateOptions.propTypes = {
-    currentUser: React.PropTypes.object,
-    metadataTemplate: React.PropTypes.object,
-    screenSize: React.PropTypes.object
+    currentUser: object,
+    metadataTemplate: object,
+    screenSize: object
 };
 
 export default MetadataTemplateOptions;

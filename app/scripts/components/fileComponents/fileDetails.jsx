@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -346,10 +347,6 @@ const styles = {
     uploadProg: {
         marginBottom: -35
     }
-};
-
-FileDetails.contextTypes = {
-    muiTheme: React.PropTypes.object
 };
 
 FileDetails.propTypes = {
