@@ -17,7 +17,7 @@ export const Theme = {
         alternateTextColor: '#FFF',
         canvasColor: Colors.white,
         borderColor: Colors.grey300,
-        pickerHeaderColor: Colors.cyan500,
+        pickerHeaderColor: '#235F9C',
         shadowColor: Colors.fullBlack
     },
     textField: {
