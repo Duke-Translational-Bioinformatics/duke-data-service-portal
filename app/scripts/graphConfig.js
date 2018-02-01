@@ -17,6 +17,9 @@ export const graphOptions = {
         size: 14,
         borderWidth: 1,
         borderWidthSelected: 3,
+        widthConstraint: {
+            maximum: 200
+        },
         font: {
             color: '#343434',
             size: 10,
@@ -46,17 +49,27 @@ export const graphOptions = {
     }
 };
 
+export const shadow = {
+    activity: {
+        enabled: true,
+        color: 'rgba(0,0,0,0.74)',
+        size: 3,
+        x: 0,
+        y: 0
+    }
+};
+
 export const graphColors = {
-    activity : {
-        border: '#64DD17',
-        background: '#64DD17',
+    activity: {
+        border: '#BDBDBD',
+        background: '#FAFAFA',
         highlight: {
-            border: '#64DD17',
-            background: '#B2FF59'
+            border: '#9E9E9E',
+            background: '#FAFAFA'
         },
         hover: {
-            border: '#B2FF59',
-            background: '#B2FF59'
+            border: '#FAFAFA',
+            background: '#FAFAFA'
         }
     },
     fileVersion: {
@@ -103,9 +116,9 @@ export const graphColors = {
             opacity: 1
         },
         used: {
-            color: '#64DD17',
-            highlight: '#64DD17',
-            hover: '#64DD17',
+            color: '#1976D2',
+            highlight: '#1565C0',
+            hover: '#1565C0',
             opacity: 1
         }
     }

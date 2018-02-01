@@ -5,7 +5,7 @@ import authStore from '../stores/authStore';
 import mainStore from '../stores/mainStore';
 import BaseUtils from '../util/baseUtils';
 import { Path } from '../util/urlEnum';
-import { graphColors} from '../graphConfig';
+import { graphColors, shadow} from '../graphConfig';
 import { checkStatus } from '../util/fetchUtil';
 
 export class ProvenanceStore {
@@ -183,15 +183,16 @@ export class ProvenanceStore {
                 if (node.properties.kind === 'dds-activity') {
                     return {
                         id: node.id,
-                        label: 'Activity: \n' + node.properties.name,
+                        label: `Activity: ${node.properties.name}\nCreated By: ${node.properties.audit.created_by.full_name}`, margin: { top: 10, right: 10, bottom: 10, left: 10 },
                         labels: node.labels.toString(),
                         properties: node.properties,
                         shape: 'box',
                         color: graphColors.activity,
+                        shadow: shadow.activity,
                         title: '<div style="margin: 10px; color: #616161"><span>'
                         + 'Name: ' + node.properties.name + '</span><br/>' +
                         '<span>' + 'Created By: ' + node.properties.audit.created_by.full_name + '</span><br/>' +
-                        '<span>' + 'Started On: ' + BaseUtils.formatLongDate(node.properties.started_on) + '</span></div>'
+                        '<span>' + 'Started On: ' + BaseUtils.formatLongDate(node.properties.started_on) + '</span></div>',
                     }
                 }
                 if (node.properties.kind === 'dds-file-version') {
@@ -437,9 +438,10 @@ export class ProvenanceStore {
             return {
                 id: json.id,
                 label: 'Activity: \n'+json.name,
+                properties: json,
                 shape: 'box',
                 color: graphColors.activity,
-                properties: json,
+                shadow: shadow.activity,
                 title: '<div style="margin: 10px; color: #616161"><span>'
                 +'Name: '+json.name + '</span><br/>' +
                 '<span>'+'Created By: '+json.audit.created_by.full_name+'</span><br/>' +
@@ -474,9 +476,10 @@ export class ProvenanceStore {
                     return {
                         id: json.id,
                         label: 'Activity: \n'+json.name,
+                        properties: json,
                         shape: 'box',
                         color: graphColors.activity,
-                        properties: json,
+                        shadow: shadow.activity,
                         title: '<div style="margin: 10px; color: #616161"><span>'
                         +'Name: '+json.name + '</span><br/>' +
                         '<span>'+'Created By: '+json.audit.created_by.full_name+'</span><br/>' +
