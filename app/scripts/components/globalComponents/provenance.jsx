@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 const { object, bool, array, string } = PropTypes;
 import ReactDOM from 'react-dom';
+import vis from 'vis';
 import { observer } from 'mobx-react';
 import { graphOptions } from '../../graphConfig';
 import { Color } from '../../theme/customTheme';
