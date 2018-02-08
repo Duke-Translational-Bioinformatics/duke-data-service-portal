@@ -111,8 +111,24 @@ class DashboardListItems extends React.Component {
                             labelStyle={loading ? {color: Color.blue} : {fontWeight: '100'}}/>
                     </div>}
                 </Paper>
+                {this.emptyList(loading, selectedItem, listItems, projects)}
             </div>
         );
+    }
+    
+    emptyList(loading, selectedItem, listItems, projects) {
+        if (listItems.length === 0 && !loading) {
+            // let noProjects = "New Projects are only a click away"
+            let noProjects = "New Projects are only a click away... well a few clicks and some typing"
+            let noFilesFolders = 'Create a new Folder or upload a Files'
+            let message = selectedItem ? noFilesFolders : projects.length === 0 ? noProjects : null
+            return (
+                <div>
+                    <h4 style={{textAlign: 'center'}}>{message}</h4>
+                    <img src="/images/blackArrowCurved.png" style={styles.arrow}/>
+                </div>
+            )
+        }
     }
     
     tableRowColumnCheckBox(child, showChecks, checkboxStyle) {
@@ -286,6 +302,11 @@ DashboardListItems.contextTypes = {
 };
 
 const styles = {
+    arrow: {
+        width: '400px',
+        float: 'right',
+        paddingRight: '200px'
+    },
     batchOpsWrapper: {
         marginBottom: 0
     },
