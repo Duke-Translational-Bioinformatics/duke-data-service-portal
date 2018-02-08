@@ -15,7 +15,6 @@ class TreeList extends Component {
     componentDidUpdate() {
         const { projects } = mainStore;
         const { ancestorStatus, downloadedItems, selectedItem } = dashboardStore;
-        
         if (projects && projects.length && downloadedItems.size === 0) {
             dashboardStore.setDownloadedItems(projects);
             mainStore.setListItems(projects);
@@ -36,6 +35,13 @@ class TreeList extends Component {
     render() {
         const { projects } = mainStore;
         const { downloadedItems, drawer, selectedItem } = dashboardStore;
+        let ancestorIds = []
+        if (selectedItem) {
+            let item = downloadedItems.get(selectedItem)
+            if (item && item.ancestors && item.ancestors.length > 0) {
+                ancestorIds = item.ancestors.map((a) => {return(a.id)})
+            }
+        }
         
         return (
             <Drawer
@@ -45,7 +51,7 @@ class TreeList extends Component {
                 containerStyle={styles.drawer}
                 >
                   <List>
-                      {this.buildTree(downloadedItems)}
+                      {this.buildTree(downloadedItems, ancestorIds)}
                   </List>
             </Drawer>
         );
@@ -63,42 +69,28 @@ class TreeList extends Component {
     handleTouchTap(item) {
         dashboardStore.selectItem(item.id);
     }
-    
-    
-    iconPicker(child) {
-        let kinds = {
-            'dds-project': 'content_paste',
-            'dds-folder': 'folder',
-            'dds-file': 'description'
-        }
 
+    iconPicker(child, ancestorIds) {
+        let kinds = {
+            'open': {
+                'dds-project': 'content_paste',
+                'dds-folder': 'folder_open',
+                'dds-file': 'description'
+            },
+            'closed': {
+                'dds-project': 'content_paste',
+                'dds-folder': 'folder',
+                'dds-file': 'description'
+            }
+        }
+        let iconKind = ancestorIds.includes(child.id) || child.id === dashboardStore.selectedItem ? kinds.open[child.kind] : kinds.closed[child.kind]
+        
         return (
             <FontIcon className="material-icons" style={styles.icon}>
-                {kinds[child.kind]}
+                {iconKind}
             </FontIcon>
         )
     }
-
-    // iconPicker(child) {
-    //     let kinds = {
-    //         'open': {
-    //             'dds-project': 'content_paste',
-    //             'dds-folder': 'folder_open',
-    //             'dds-file': 'description'
-    //         },
-    //         'closed': {
-    //             'dds-project': 'content_paste',
-    //             'dds-folder': 'folder',
-    //             'dds-file': 'description'
-    //         }
-    //     }
-    //     let iconKind = child.childrenDownloaded ? kinds.open[child.kind] : kinds.closed[child.kind]
-    //     return (
-    //         <FontIcon className="material-icons" style={styles.icon}>
-    //             {iconKind}
-    //         </FontIcon>
-    //     )
-    // }
     
     listItemStyle(child) {
         if (dashboardStore.selectedItem === child.id) {
@@ -108,7 +100,7 @@ class TreeList extends Component {
         }
     }
 
-    buildTree(downloadedItems) {
+    buildTree(downloadedItems, ancestorIds) {
         let looper = (itemIds) => {
             return (
                 itemIds.map((id) => {
@@ -123,7 +115,7 @@ class TreeList extends Component {
                                 key={child.id}
                                 value={child.id}
                                 primaryText={child.name}
-                                leftIcon={this.iconPicker(child)}
+                                leftIcon={this.iconPicker(child, ancestorIds)}
                                 nestedItems={grandChildren}
                                 open={child.open}
                                 onNestedListToggle={() => {dashboardStore.toggleTreeListItem(child.id)}}

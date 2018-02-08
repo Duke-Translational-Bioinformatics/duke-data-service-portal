@@ -142,12 +142,9 @@ export class DashboardStore {
                 let folderIds = []
                 let parentsChildren = results.map((child) => {
                     childrenIds.push(child.id)
-                    if (child.kind === 'dds-folder') {
-                        folderIds.push(child.id)
-                        child.open = true
-                    }
+                    if (child.kind === 'dds-folder') folderIds.push(child.id)
                     child.parentId = parentId
-                    if(!this.downloadedItems.has(child.id)) this.downloadedItems.set(child.id, child)
+                    if (!this.downloadedItems.has(child.id)) this.downloadedItems.set(child.id, child)
                     return ( child );
                 });
                 let downloadedParent = this.downloadedItems.get(parentId)
