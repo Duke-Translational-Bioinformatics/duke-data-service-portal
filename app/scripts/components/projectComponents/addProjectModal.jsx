@@ -136,6 +136,10 @@ const styles = {
         marginTop: 20,
         marginLeft: -2
     },
+    checkbox: {
+        marginTop: 20,
+        marginLeft: -2
+    },
     dialogStyles: {
         fontColor: Color.dkBlue,
         zIndex: '9999',

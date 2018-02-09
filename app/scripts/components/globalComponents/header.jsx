@@ -16,21 +16,6 @@ class Header extends React.Component {
     render() {
         const { appConfig } = authStore;
         const { showSearch } = mainStore;
-        // let header = <div className="navbar" style={styles.navBar}>
-        //     <div className="navbar-inner" style={{display: showSearch ? 'none' : '', height: 76, paddingTop: 24}}>
-        //         <div className="left" style={styles.navBar.leftDiv}>
-        //             {!appConfig.apiToken ? '' : <a href="#" className="open-panel"><FontIcon className="material-icons" style={styles.openIcon}>menu</FontIcon></a>}
-        //             {!appConfig.apiToken ? '' : <img src="/images/dukeDSVertical.png" style={styles.logo}/>}
-        //         </div>
-        //         <div className="center" style={styles.navBar.centerDiv}></div>
-        //         <div className="right">
-        //         {/*<FontIcon className="material-icons"
-        //          style={styles.searchIcon}onTouchTap={()=>this.showSearch()}>search</FontIcon>*/}
-        //             <CurrentUser {...this.props} />
-        //         </div>
-        //     </div>
-        //     {/*showSearch ? <Search {...this.props} /> : null*/}
-        // </div>;
         let header = !showSearch ? <Toolbar className="navbar" style={styles.toolbar}>
             <ToolbarGroup firstChild={true} style={styles.toolbar.firstToolbarGroup}>
                 {!appConfig.apiToken ? '' : <a href="#" onTouchTap={()=>this.toggleNav()}><FontIcon className="material-icons" style={styles.openIcon}>menu</FontIcon></a>}
