@@ -1,8 +1,7 @@
 # Duke Data Service Portal
 
-This is a UI web portal built for use with the [Duke Data Service API](https://github
-.com/Duke-Translational-Bioinformatics/duke-data-service/tree/master). It is based on [gulp](https://github
-.com/gulpjs/gulp), [stylus](https://github.com/LearnBoost/stylus) and [webpack](https://github.com/webpack/webpack).
+This is a UI web portal built for use with the [Duke Data Service API](https://github.com/Duke-Translational-Bioinformatics/duke-data-service/tree/master).
+It is based on [gulp](https://github.com/gulpjs/gulp), [stylus](https://github.com/LearnBoost/stylus) and [webpack](https://github.com/webpack/webpack).
 The internal data flow is handled with [MobX](https://mobx.js.org/refguide/api.html) and the routing is managed with
  the
  [React-Router](https://github.com/rackt/react-router). The UI is handled by [material-ui](http://material-ui.com/)

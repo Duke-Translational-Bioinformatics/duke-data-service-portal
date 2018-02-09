@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object, bool, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -222,7 +223,6 @@ const styles = {
 ProvenanceFilePicker.propTypes = {
     entityObj: object,
     onClickProvNode: object,
-    projPermissions: object,
     provEditorModal: object,
     screenSize: object,
     autoCompleteLoading: bool,

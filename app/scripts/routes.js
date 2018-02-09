@@ -13,7 +13,7 @@ import Dashboard from './pages/dashboard.jsx';
 import Activity from './pages/activity.jsx';
 import Agents from './pages/agents.jsx';
 import Agent from './pages/agent.jsx';
-import Results from './pages/results.jsx';
+import Search from './pages/search.jsx';
 import Version from './pages/version.jsx';
 import NotFound from './pages/notFound.jsx';
 
@@ -34,7 +34,7 @@ const routes = (
             <Route path="activity/:id" component={ Activity } />
             <Route path="agents" component={ Agents } />
             <Route path="agent/:id" component={ Agent } />
-            <Route path="results" component={ Results } />
+            <Route path="search" component={ Search } />
             <Route path="version" component={ Version } />
             <Route path="version/:id" component={ Version } />
             <Route path="login" component={ Login } />

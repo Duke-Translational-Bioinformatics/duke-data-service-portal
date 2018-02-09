@@ -1,9 +1,10 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import { Color } from '../../theme/customTheme';
-import AddProjectMemberModal from '../projectComponents/addProjectMemberModal.jsx';
+import ProjectTeamManager from './projectTeamManager.jsx';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -26,7 +27,7 @@ class ProjectOptions extends React.Component {
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let prName = project ? project.name : null;
         let desc = project ? project.description : null;
-        let id = this.props.router.location.pathname.includes('project') ? this.props.params.id : project.id;
+        let id = this.props.router.location.pathname.includes('project') ? this.props.params.id : project ? project.id : null;
 
         let deleteActions = [
             <FlatButton
@@ -109,7 +110,7 @@ class ProjectOptions extends React.Component {
                         />
                     </form>
                 </Dialog>
-                <AddProjectMemberModal {...this.props}/>
+                <ProjectTeamManager {...this.props}/>
             </div>
         );
     }
@@ -185,10 +186,6 @@ const styles = {
         textAlign: 'center',
         color: Color.red
     }
-};
-
-ProjectOptions.contextTypes = {
-    muiTheme: object
 };
 
 ProjectOptions.propTypes = {

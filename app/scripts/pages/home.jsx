@@ -1,6 +1,5 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import authStore from '../stores/authStore';
 import mainStore from '../stores/mainStore';
 import ProjectList from '../components/projectComponents/projectList.jsx';
 import AccountOverview from '../components/globalComponents/accountOverview.jsx';
@@ -9,12 +8,11 @@ import AccountOverview from '../components/globalComponents/accountOverview.jsx'
 class Home extends React.Component {
 
     componentDidMount() {
-        if(authStore.appConfig.apiToken) {
-            mainStore.getProjects(null, null);
-            mainStore.getUsageDetails();
-        } else {
-            this.props.router.push('/login');
-        }
+        mainStore.getProjects(null, null, true);
+    }
+    
+    componentDidUpdate() {
+        mainStore.getProjects(null, null, true);
     }
 
     render() {

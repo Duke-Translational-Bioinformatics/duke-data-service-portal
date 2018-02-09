@@ -21,6 +21,7 @@ describe('Main Store', () => {
     const FILE_PATH = 'files/';
     const LOCATION_ID = 'LOCATION_ID';
     const LOCATION_PATH = '/folder/LOCATION_ID';
+    const TAG_LABEL = 'TAG_LABEL';
     const TEMPLATE_ID = 'TEMPLATE_ID';
     const TEMPLATE_NAME = 'TEMPLATE_1';
     const TEMPLATE_DESCRIPTION = 'TEMPLATE 1 DESCRIPTION';
@@ -41,6 +42,50 @@ describe('Main Store', () => {
         transportLayer = {};
         mainStore.transportLayer = transportLayer;
         mainStore.listItems = [];
+    });
+
+    it('@action addTeamMembersPrompt - should be true or false', () => {
+        expect(mainStore.addTeamAfterProjectCreation).toBe(false);
+        mainStore.addTeamMembersPrompt();
+        expect(mainStore.addTeamAfterProjectCreation).toBe(true);
+        mainStore.addTeamMembersPrompt();
+        expect(mainStore.addTeamAfterProjectCreation).toBe(false);
+    });
+
+    it('@action getProjectTeams - get all project teams', () => {
+        transportLayer.getProjectMembers = jest.fn((ID) => respondOK(fake.project_members_json));
+        mainStore.getProjectMembers(PROJECT_ID);
+        expect(transportLayer.getProjectMembers).toBeCalledWith(PROJECT_ID);
+        return sleep(1).then(() => {
+            expect(mainStore.projectMembers.length).toBe(1);
+            expect(mainStore.projectMembers[0].project.id).toBe(PROJECT_ID);
+            expect(mainStore.projectMembers[0].user.full_name).toBe(TEST_USER_NAME);
+        });
+    });
+
+    it('@action addProjectTeam - add each member from a team to a new project', () => {
+        transportLayer.addProjectMember = jest.fn((projectId, userId, role) => respondOK(fake.grant_project_permission_json));
+        mainStore.addProjectMember(PROJECT_ID, TEST_UID, USER_ROLE);
+        return sleep(1).then(() => {
+            expect(transportLayer.addProjectMember).toHaveBeenCalledTimes(1);
+            expect(transportLayer.addProjectMember).toHaveBeenCalledWith(PROJECT_ID, TEST_UID, USER_ROLE);
+        });
+    });
+
+    it('@action toggleAlert - should be true or false', () => {
+        expect(mainStore.showAlert).toBe(false);
+        mainStore.toggleAlert();
+        expect(mainStore.showAlert).toBe(true);
+        mainStore.toggleAlert();
+        expect(mainStore.showAlert).toBe(false);
+    });
+
+    it('@action toggleTeamManager - should be true or false', () => {
+        expect(mainStore.showTeamManager).toBe(false);
+        mainStore.toggleTeamManager();
+        expect(mainStore.showTeamManager).toBe(true);
+        mainStore.toggleTeamManager();
+        expect(mainStore.showTeamManager).toBe(false);
     });
 
     it('@action toggleAllItemsSelected - should be true or false and should be the bool arg passed in', () => {
@@ -321,17 +366,6 @@ describe('Main Store', () => {
         });
     });
 
-    it('@action getPermissions - gets current user project permissions', () => {
-        transportLayer.getPermissions = jest.fn((id, userId) => respondOK(fake.grant_project_permission_json));
-        mainStore.getPermissions(PROJECT_ID, TEST_UID);
-        return sleep(1).then(() => {
-            expect(transportLayer.getPermissions).toHaveBeenCalledTimes(1);
-            expect(transportLayer.getPermissions).toHaveBeenCalledWith(PROJECT_ID, TEST_UID);
-            expect(mainStore.projectRole).toBe('project_admin');
-            expect(mainStore.projPermissions).toBe('prjCrud');
-        });
-    });
-
     it('@action searchFiles - populates an autocomplete list with file names', () => {
         transportLayer.searchFiles = jest.fn((text, id) => respondOK(fake.list_items_json));
         mainStore.searchFiles(SEARCH_TEXT, PROJECT_ID);
@@ -554,10 +588,6 @@ describe('Main Store', () => {
         expect(mainStore.showTemplateDetails).toBe(true);
     });
 
-    // it('@action searchObjects - searches files and folders', () => {
-    //  Todo: This service is being rebuilt. Implement tests after new service is in place
-    // });
-
     it('@action toggleSearch - toggles search field', () => {
         mainStore.toggleSearch();
         expect(mainStore.searchValue).toBeNull();
@@ -566,27 +596,42 @@ describe('Main Store', () => {
         expect(mainStore.showSearch).toBe(false);
     });
 
-    //Todo: These methods may not be used with the new search service. Write tests after new service is implemented.
-    // @action setIncludedSearchKinds(includeKinds) {
-    //     this.includeKinds = includeKinds;
-    //     this.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
-    // }
-    //
-    // @action setIncludedSearchProjects(includeProjects) {
-    //     this.includeProjects = includeProjects;
-    //     this.setSearchFilters();
-    // }
-    //
-    // @action setSearchFilters() {
-    //     this.searchFilters = [];
-    //     this.includeProjects.forEach((projectId) => {this.searchFilters.push({"match":{"project.id": projectId}})});
-    //     this.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
-    // }
-    //
-    // @action clearSearchFilesData() {
-    //     this.searchFilesList = [];
-    //}
-    // Todo: ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    it('@action resetSearchFilters - clears search filters', () => {
+        mainStore.searchFilters = [FILE_ID];
+        mainStore.searchProjectsPostFilters = {"project.name": [PROJECT_ID]};
+        mainStore.searchTagsPostFilters = {"tags.label": [TAG_LABEL]};
+        expect(mainStore.searchFilters[0]).toBe(FILE_ID);
+        expect(mainStore.searchProjectsPostFilters["project.name"][0]).toBe(PROJECT_ID);
+        expect(mainStore.searchTagsPostFilters["tags.label"][0]).toBe(TAG_LABEL);
+        mainStore.resetSearchFilters();
+        expect(mainStore.searchFilters.length).toBe(0);
+        expect(mainStore.searchProjectsPostFilters["project.name"].length).toBe(0);
+        expect(mainStore.searchTagsPostFilters["tags.label"].length).toBe(0);
+    });
+
+    it('@action resetSearchResults - clears search results', () => {
+        mainStore.searchResults = fake.list_items_json.results;
+        mainStore.searchResultsProjects = fake.list_items_json.results;
+        mainStore.searchResultsTags = fake.list_items_json.results;
+        mainStore.searchResultsFiles = fake.list_items_json.results;
+        mainStore.searchResultsFolders = fake.list_items_json.results;
+        mainStore.totalItems = 2;
+        expect(mainStore.searchResults.length).toBe(2);
+        expect(mainStore.searchResultsProjects.length).toBe(2);
+        expect(mainStore.searchResultsTags.length).toBe(2);
+        expect(mainStore.searchResultsFiles.length).toBe(2);
+        expect(mainStore.searchResultsFolders.length).toBe(2);
+        expect(mainStore.totalItems).toBe(2);
+        mainStore.resetSearchResults();
+        expect(mainStore.searchResults.length).toBe(0);
+        expect(mainStore.searchResultsProjects.length).toBe(0);
+        expect(mainStore.searchResultsTags.length).toBe(0);
+        expect(mainStore.searchResultsFiles.length).toBe(0);
+        expect(mainStore.searchResultsFolders.length).toBe(0);
+        expect(mainStore.searchValue).toBe(null);
+        expect(mainStore.totalItems).toBe(null);
+        expect(mainStore.nextPage).toBe(null);
+    });
 
     it('@action toggleModals - toggles a modal', () => {
         mainStore.toggleModals(fake.modal_json.id);

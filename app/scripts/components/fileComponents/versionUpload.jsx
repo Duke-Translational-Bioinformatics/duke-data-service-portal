@@ -1,19 +1,28 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import { Color } from '../../theme/customTheme';
 import mainStore from '../../stores/mainStore';
+import FileUpload from 'material-ui/svg-icons/file/file-upload'
 import FlatButton from 'material-ui/FlatButton';
+import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 
 @observer
 class VersionUpload extends React.Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            files: ''
+        }
+    }
+
     render() {
         const { entityObj, toggleModal, screenSize, selectedEntity } = mainStore;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
-        let open = toggleModal && toggleModal.id === 'newVersionModal' ? toggleModal.open : false;
         let fileId = selectedEntity !== null ? selectedEntity.id : entityObj !== null ? entityObj.id : null;
         let parentId = selectedEntity !== null ?  selectedEntity.parent.id : entityObj !== null && entityObj.parent ? entityObj.parent.id : null;
         let projectId = entityObj && entityObj.ancestors ? entityObj.ancestors[0].id : selectedEntity !== null ? selectedEntity.ancestors[0].id : null;
@@ -38,23 +47,37 @@ class VersionUpload extends React.Component {
                     autoDetectWindowHeight={true}
                     actions={standardActions}
                     onRequestClose={this.handleClose.bind(this)}
-                    open={open}>
-                    <form action='#' id='newFileForm'>
-                        <div className="mdl-cell mdl-cell--6-col mdl-textfield mdl-textfield--file">
-                            <textarea className="mdl-textfield__input mdl-color-text--grey-800" placeholder="File" type="text" ref={(input) => this.fileList = input} rows="3" readOnly></textarea>
-                            <div className="mdl-button mdl-button--icon mdl-button--file">
-                                <i className="material-icons" style={styles.iconColor}>file_upload</i>
-                                <input type='file' ref={(input) => this.fileInput = input} onChange={this.handleFileName.bind(this)} />
-                            </div>
-                        </div> <br/>
-                        <TextField
-                            style={styles.textStyles}
-                            hintText="Optional Label"
-                            floatingLabelText="Label"
-                            ref={(input) => this.labelText = input}
-                            type="text"
-                            multiLine={true}/> <br/>
-                    </form>
+                    open={toggleModal && toggleModal.id === 'newVersionModal' ? toggleModal.open : false}>
+                        <div className="mdl-cell mdl-cell--6-col" style={styles.form}>
+                            <RaisedButton
+                                secondary={true}
+                                label="Select a File"
+                                labelPosition="before"
+                                style={styles.inputButton.btn}
+                                labelStyle={styles.inputButton.btn.label}
+                                containerElement="label"
+                                icon={<FileUpload color={Color.white} />}
+                            >
+                                <input ref={(input) => this.fileInput = input} type="file" style={styles.inputButton} onChange={this.handleFileName.bind(this)} />
+                            </RaisedButton>
+                            <TextField
+                                style={{opacity: this.state.files.length ? 1 : 0, textAlign: 'left', height: this.state.files.length ? 0 : 'auto', width: '100%'}}
+                                value={this.state.files}
+                                hintText="Files"
+                                floatingLabelText="Preparing to upload"
+                                floatingLabelFocusStyle={{color: Color.blue}}
+                                floatingLabelStyle={{color: Color.blue}}
+                                ref={(input) => this.fileList = input}
+                                multiLine={true}/>
+                            <TextField
+                                style={styles.textStyles}
+                                hintText="Optional Label"
+                                floatingLabelStyle={styles.hintLabel}
+                                floatingLabelText="Optional Label"
+                                ref={(input) => this.labelText = input}
+                                type="text"
+                                multiLine={true}/> <br/>
+                        </div>
                 </Dialog>
             </div>
         );
@@ -68,6 +91,9 @@ class VersionUpload extends React.Component {
                 let label = this.labelText.getValue();
                 mainStore.startUpload(projectId, blob, parentId, parentKind, label, fileId);
                 mainStore.toggleModals('newVersionModal');
+                this.setState({
+                    files: ''
+                })
             }
         } else {
             return null
@@ -75,13 +101,13 @@ class VersionUpload extends React.Component {
     }
 
     handleFileName() {
-        let fList = [];
-        let fl = this.fileInput.files;
-        for (var i = 0; i < fl.length; i++) {
-            fList.push(fl[i].name);
-            var fileList = fList.toString().split(',').join(', ');
+        let fileList = [];
+        for (let i = 0; i < this.fileInput.files.length; i++) {
+            fileList.push(this.fileInput.files[i].name);
+            fileList = fileList.toString().split(',').join(', ');
         }
         this.fileList.value = 'Preparing to upload: ' + fileList;
+        this.setState({files: fileList})
     }
 
     handleClose() {
@@ -90,40 +116,43 @@ class VersionUpload extends React.Component {
 }
 
 const styles = {
+    form: {
+        margin: '0px auto'
+    },
     fileUpload: {
         float: 'right',
         position: 'relative',
         margin: '12px 8px 0px 0px'
     },
-    iconColor: {
-        color: Color.pink
-    },
     dialogStyles: {
         zIndex: '9996',
         textAlign: 'center',
-        fontColor: Color.dkBlue
+        fontColor: Color.blue
+    },
+    hintLabel: {
+        color: Color.dkGrey
+    },
+    inputButton: {
+        cursor: 'pointer',
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        right: 0,
+        left: 0,
+        width: '100%',
+        opacity: 0,
+        btn: {
+            width: '100%',
+            label: {
+                fontWeight: 100
+            }
+        }
     },
     textStyles: {
+        width: '100%',
         minWidth: '48%',
-        textAlign: 'left',
-        fontColor: Color.dkBlue
-    },
-    floatingButton: {
-        position: 'absolute',
-        top: -50,
-        marginRight: 17,
-        right: '2%',
-        zIndex: '2',
-        color: '#fff'
-    },
-    msg: {
-        textAlign: 'center',
-        marginLeft: 30
+        textAlign: 'left'
     }
-};
-
-VersionUpload.contextTypes = {
-    muiTheme: React.PropTypes.object
 };
 
 VersionUpload.propTypes = {

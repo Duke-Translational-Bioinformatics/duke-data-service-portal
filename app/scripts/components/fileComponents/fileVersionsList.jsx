@@ -1,5 +1,6 @@
-import React, { PropTypes } from 'react';
-const { object, bool, array, string } = PropTypes;
+import React from 'react';
+import PropTypes from 'prop-types';
+const { object, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../util/baseUtils.js';
@@ -14,21 +15,6 @@ class FileVersionsList extends React.Component {
     render() {
         const { fileVersions, screenSize, toggleModal } = mainStore;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
-        let versions = null;
-        if (fileVersions && fileVersions != null) {
-            versions = fileVersions.map((version) => {
-                if (!version.is_deleted) {
-                    return <span key={version.id + Math.random()}>
-                            <ListItem primaryText={'Version: ' + version.version}
-                                      secondaryText={<p><span>{version.label}</span><br/> Created on: {' ' + BaseUtils.formatDate(version.audit.created_on)}</p>}
-                                      secondaryTextLines={2}
-                                      style={styles.listItem}
-                                      onTouchTap={() => this.goTo(version.id)}/>
-                            <Divider />
-                        </span>
-                }
-            });
-        }
 
         const actions = [
             <FlatButton
@@ -49,7 +35,18 @@ class FileVersionsList extends React.Component {
                     onRequestClose={() => this.handleClose()}>
                     <List>
                         <Divider />
-                        { versions }
+                        {
+                            fileVersions.filter(v => !v.is_deleted).map((v) => {
+                                return <span key={BaseUtils.generateUniqueKey()}>
+                                    <ListItem primaryText={'Version: ' + v.version}
+                                              secondaryText={<p><span>{v.label}</span><br/> Created on: {' ' + BaseUtils.formatDate(v.audit.created_on)}</p>}
+                                              secondaryTextLines={2}
+                                              style={styles.listItem}
+                                              onTouchTap={() => this.goTo(v.id)}/>
+                                    <Divider />
+                                </span>
+                            })
+                        }
                     </List>
                 </Dialog>
             </div>
@@ -57,7 +54,7 @@ class FileVersionsList extends React.Component {
     }
 
     goTo(versionId) {
-        this.props.router.push('/version/' + versionId)
+        this.props.router.push('/version/' + versionId);
         this.handleClose();
     }
 
@@ -84,10 +81,6 @@ const styles = {
         textAlign: 'left',
         fontColor: '#303F9F'
     }
-};
-
-FileVersionsList.contextTypes = {
-    muiTheme: React.PropTypes.object
 };
 
 FileVersionsList.propTypes = {

@@ -1,9 +1,10 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import { Color } from '../../theme/customTheme';
-import { Kind } from '../../util/urlEnum';
+import { Roles } from '../../enum';
 import IconButton from 'material-ui/IconButton';
 import LocalOffer from 'material-ui/svg-icons/maps/local-offer';
 
@@ -11,30 +12,25 @@ import LocalOffer from 'material-ui/svg-icons/maps/local-offer';
 class TagCloud extends React.Component {
 
     render() {
-        const { objectTags, projPermissions } = mainStore;
-        let addTagButton = null;
-        let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
-        if(prjPrm !== 'viewOnly' && prjPrm !== 'flDownload') {
-            addTagButton = <IconButton tooltip="Add new tags" tooltipPosition="bottom-right"
-                                       style={styles.addTagButton}
-                                       tooltipStyles={{marginTop: -20}}
-                                       onTouchTap={() => this.openTagManager()}>
-                                <LocalOffer color={Color.pink} />
-                           </IconButton>
-        }
-        let tags = objectTags.map((tag)=>{
-            return (<div key={tag.id} ref={(tag) => this.id = tag} className="chip">
-                <span className="chip-text">{tag.label}</span>
-                <span className="closebtn"
-                      onTouchTap={() => this.deleteTag(tag.id, tag.label)}>
-                    &times;
-                </span>
-            </div>)
-        });
+        const { objectTags, projectRole } = mainStore;
+
         return (
             <div className="chip-container mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                {tags}
-                {addTagButton}
+                { objectTags.map((tag) => {
+                    return (<div key={tag.id} ref={(tag) => this.id = tag} className="chip">
+                        <span className="chip-text">{tag.label}</span>
+                        <span className="closebtn"
+                              onTouchTap={() => this.deleteTag(tag.id, tag.label)}>
+                    &times;
+                </span>
+                    </div>)
+                }) }
+                { projectRole !== Roles.project_viewer && projectRole !== Roles.file_downloader ? <IconButton tooltip="Add new tags" tooltipPosition="bottom-right"
+                            style={styles.addTagButton}
+                            tooltipStyles={{marginTop: -20}}
+                            onTouchTap={() => this.openTagManager()}>
+                    <LocalOffer color={Color.pink} />
+                </IconButton> : null }
             </div>
         )
     }
@@ -59,12 +55,8 @@ const styles = {
     }
 };
 
-TagCloud.contextTypes = {
-    muiTheme: React.PropTypes.object
-};
-
 TagCloud.propTypes = {
-    projPermissions: string,
+    projectRole: string,
     objectTags: array
 };
 

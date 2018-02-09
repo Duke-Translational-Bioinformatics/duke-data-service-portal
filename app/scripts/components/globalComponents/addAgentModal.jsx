@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -81,15 +82,15 @@ class AddAgentModal extends React.Component {
     }
 
     addAgent() {
-        if (this.state.floatingErrorText) {
-            return null
-        } else {
+        if (!this.state.floatingErrorText && this.agentNameText.getValue().trim().length) {
             let name = this.agentNameText.getValue();
             let desc = this.agentDescriptionText.getValue();
             let repo = this.agentRepoText.getValue();
             if (!/^https?:\/\//i.test(repo)) repo = 'https://' + repo;
             agentStore.addAgent(name, desc, repo);
             this.toggleModal();
+        } else {
+            this.setState({floatingErrorText: 'This field is required.'});
         }
     }
 
@@ -118,10 +119,6 @@ const styles = {
         textAlign: 'left',
         fontColor: Color.dkBlue,
     }
-};
-
-AddAgentModal.contextTypes = {
-    muiTheme: React.PropTypes.object
 };
 
 AddAgentModal.propTypes = {

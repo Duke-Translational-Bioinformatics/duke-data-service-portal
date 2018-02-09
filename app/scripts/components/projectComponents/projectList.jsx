@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object, bool, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -8,6 +9,7 @@ import { UrlGen } from '../../util/urlEnum';
 import AddProjectModal from '../projectComponents/addProjectModal.jsx';
 import Loaders from '../globalComponents/loaders.jsx';
 import ProjectOptionsMenu from './projectOptionsMenu.jsx';
+import ProjectOptions from './projectOptions.jsx';
 import {Card, CardTitle, CardText} from 'material-ui/Card';
 import FontIcon from 'material-ui/FontIcon';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -17,23 +19,6 @@ class ProjectList extends React.Component {
 
     render() {
         const { loading, nextPage, projects, projectRoles, totalItems } = mainStore;
-        let projectList = projects ? projects.map((project) => {
-            let role = projectRoles.get(project.id);
-            return (
-                <Card key={ project.id } className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.card}>
-                    <FontIcon className="material-icons" style={styles.icon}>content_paste</FontIcon>
-                    {role && role === 'Project Admin' && <div style={styles.menuIcon} onClick={(e) => {e.stopPropagation()}}><ProjectOptionsMenu {...this.props} clickHandler={()=>this.setSelectedProject(project.id)}/></div>}
-                    <a href={UrlGen.routes.project(project.id)} className="external">
-                        <CardTitle title={project.name} titleColor="#424242" style={styles.cardTitle}/>
-                        <CardTitle subtitle={'Created On: ' + BaseUtils.formatDate(project.audit.created_on)} titleColor="#424242" style={styles.cardTitle}/>
-                        <CardTitle subtitle={role !== undefined ? 'Project Role: ' + role : 'Project Role:'} titleColor="#424242" style={styles.cardTitle2}/>
-                    </a>
-                    <CardText>
-                        <span className="mdl-color-text--grey-900">Description:</span>{ project.description.length > 300 ? ' ' + project.description.substring(0,300)+'...' : ' ' + project.description }
-                    </CardText>
-                </Card>
-            );
-        }) : null;
 
         return (
             <div className="project-container mdl-grid">
@@ -45,8 +30,25 @@ class ProjectList extends React.Component {
                         <AddProjectModal {...this.props} />
                     </div>
                     <Loaders {...this.props} />
+                    <ProjectOptions {...this.props} />
                 </div>
-                { projectList }
+                { projects ? projects.map((project) => {
+                    let role = projectRoles.get(project.id);
+                    return (
+                        <Card key={ project.id } className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet" style={styles.card}>
+                            <FontIcon className="material-icons" style={styles.icon}>content_paste</FontIcon>
+                            {role && role === 'Project Admin' && <div style={styles.menuIcon} onClick={(e) => {e.stopPropagation()}}><ProjectOptionsMenu {...this.props} clickHandler={()=>this.setSelectedProject(project.id)}/></div>}
+                            <a href={UrlGen.routes.project(project.id)} className="external">
+                                <CardTitle title={project.name} titleColor="#424242" style={styles.cardTitle}/>
+                                <CardTitle subtitle={'Created On: ' + BaseUtils.formatDate(project.audit.created_on)} titleColor="#424242" style={styles.cardTitle}/>
+                                <CardTitle subtitle={role !== undefined ? 'Project Role: ' + role : 'Project Role:'} titleColor="#424242" style={styles.cardTitle2}/>
+                            </a>
+                            <CardText>
+                                <span className="mdl-color-text--grey-900">Description:</span>{ project.description.length > 300 ? ' ' + project.description.substring(0,300)+'...' : ' ' + project.description }
+                            </CardText>
+                        </Card>
+                    );
+                }) : null }
                 {projects && projects.length < totalItems ? <div className="mdl-cell mdl-cell--12-col">
                     <RaisedButton
                         label={loading ? "Loading..." : "Load More"}
@@ -78,7 +80,8 @@ const styles = {
     cardTitle: {
         fontWeight: 200,
         marginBottom: -15,
-        marginRight: 24
+        marginRight: 24,
+        wordWrap: 'break-word'
     },
     cardTitle2: {
         fontWeight: 200,
@@ -112,10 +115,6 @@ const styles = {
         float: 'left',
         marginLeft: -14
     }
-};
-
-ProjectList.contextTypes = {
-    muiTheme: object
 };
 
 ProjectList.propTypes = {

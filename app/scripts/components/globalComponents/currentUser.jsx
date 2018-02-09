@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object, bool } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -62,9 +63,7 @@ const styles = {
     icon: {
         color: "#fff",
         fontSize: 24,
-        position: 'absolute',
-        bottom: 3,
-        right: 10
+        margin: '2px 10px'
     },
     popoverList: {
         padding: '0px 10px 0px 10px'
@@ -84,16 +83,8 @@ const styles = {
     },
     userOptions: {
         cursor:'pointer',
-        color:'#FFF',
-        position: 'absolute',
-        bottom: -1,
-        right: 0,
-        width: 34
+        color:'#FFF'
     }
-};
-
-CurrentUser.contextTypes = {
-    muiTheme: object
 };
 
 CurrentUser.propTypes = {

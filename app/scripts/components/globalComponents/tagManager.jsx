@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object, bool, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -30,6 +31,7 @@ class TagManager extends React.Component {
             timeout: null,
             searchText: ''
         };
+        this.focusAutocomplete = _.debounce(this.focusAutocomplete ,500);
     }
 
     componentDidMount() {
@@ -41,7 +43,7 @@ class TagManager extends React.Component {
     }
 
     componentDidUpdate() {
-        if(mainStore.openTagManager) this.autocomplete.focus();
+        if(mainStore.openTagManager && !mainStore.isFirefox) this.focusAutocomplete(); // Using _.debouce() here to avoid this being called twice from list item menu
     }
 
     render() {
@@ -52,7 +54,7 @@ class TagManager extends React.Component {
         let id = selectedNode && selectedNode.properties !== undefined ? selectedNode.properties.id : selectedEntity !== null ? selectedEntity.id : this.props.params.id;
         let name = entityObj && filesChecked < 1 ? selectedNode && selectedNode.properties !== undefined ? selectedNode.properties.name : this.props.location.pathname.includes('activity') && activity !== null ? activity.name : entityObj.name : 'selected files';
         let openDiscardTagsModal = toggleModal && toggleModal.id === 'discardTags' ? toggleModal.open : false;
-        let width = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.width : window.innerWidth;
+        let width = window.innerWidth > 640 ? window.innerWidth*.8 : window.innerWidth;
         const modalActions = [
             <FlatButton
                 label="DISCARD TAGS"
@@ -64,12 +66,14 @@ class TagManager extends React.Component {
                 keyboardFocused={true}
                 onTouchTap={() => this.addTagsToResource(filesChecked, id, tagsToAdd, toggleModal)} />
         ];
+
         let tags = tagsToAdd && tagsToAdd.length > 0 ? tagsToAdd.map((tag)=>{
             return (<div key={BaseUtils.generateUniqueKey()} className="chip">
                 <span className="chip-text">{tag.label}</span>
                 <span className="closebtn" onTouchTap={() => this.deleteTag(tag.label)}>&times;</span>
             </div>)
         }) : null;
+
         let tagLbls = tagLabels.map((tag)=>{
             return (
                 <li key={BaseUtils.generateUniqueKey()} style={styles.tagLabels} onTouchTap={() => this.addTagToCloud(tag.label)}>{tag.label}
@@ -80,7 +84,7 @@ class TagManager extends React.Component {
 
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                <Drawer docked={false} disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openSecondary={true} open={openTagManager} onRequestChange={() => this.toggleTagManager()}>
+                <Drawer docked={false} disableSwipeToOpen={true} width={width} openSecondary={true} open={openTagManager} onRequestChange={() => this.toggleTagManager()}>
                     <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" style={styles.drawer}>
                         <IconButton style={styles.toggleBtn}
                                     onTouchTap={() => this.toggleTagManager()}>
@@ -102,7 +106,7 @@ class TagManager extends React.Component {
                                 </div>
                                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-600" style={styles.autoCompleteContainer}>
                                     <AutoComplete
-                                        ref={(input) => this.autocomplete = input}
+                                        ref={(input) => this.tagAutocomplete = input}
                                         fullWidth={true}
                                         style={styles.autoComplete}
                                         floatingLabelText="Type a label or comma separated list of labels"
@@ -112,7 +116,7 @@ class TagManager extends React.Component {
                                         onNewRequest={(value) => this.addTagToCloud(value)}
                                         onUpdateInput={this.handleUpdateInput.bind(this)}
                                         underlineStyle={styles.autoCompleteUnderline}/>
-                                    <IconButton onTouchTap={() => this.addTagToCloud(this.autocomplete.state.searchText)}
+                                    <IconButton onTouchTap={() => this.addTagToCloud(this.tagAutocomplete.state.searchText)}
                                                 iconStyle={styles.addTagIconBtn.size}
                                                 style={styles.addTagIconBtn}>
                                         <AddCircle color={Color.blue}/>
@@ -137,7 +141,7 @@ class TagManager extends React.Component {
                                     </div>
                                 </div>
                                 <div className="mdl-cell mdl-cell--12-col" style={styles.buttonWrapper}>
-                                    <RaisedButton label={'Apply'}
+                                    <RaisedButton label={'Add Tags'}
                                                   labelStyle={styles.buttonLabel}
                                                   style={styles.applyBtn}
                                                   onTouchTap={() => this.addTagsToResource(filesChecked, id, tagsToAdd, toggleModal)}/>
@@ -171,6 +175,10 @@ class TagManager extends React.Component {
         )
     }
 
+    focusAutocomplete() {
+        this.tagAutocomplete.refs.searchTextField.input.focus()
+    }
+
     activeTab() {
         if(mainStore.tagsToAdd.length) mainStore.toggleModals('discardTags');
         if(!mainStore.metaTemplates.length) mainStore.loadMetadataTemplates('');
@@ -179,8 +187,8 @@ class TagManager extends React.Component {
     checkIfTagAlreadyUsed(tag) {
         let tags = mainStore.tagsToAdd;
         let clearText = ()=> {
-            this.autocomplete.setState({searchText:''});
-            this.autocomplete.focus();
+            this.tagAutocomplete.setState({searchText:''});
+            this.tagAutocomplete.refs.searchTextField.input.focus()
         };
         if (tags.some((el) => { return el.label === tag.trim(); })) {
             this.setState({floatingErrorText: tag + ' tag is already in the list'});
@@ -267,7 +275,7 @@ class TagManager extends React.Component {
         mainStore.toggleTagManager();
         mainStore.defineTagsToAdd([]);
         if(mainStore.showTagCloud) this.toggleTagCloud();
-        if(this.autocomplete.state.searchText !== '') this.autocomplete.setState({searchText:''});
+        if(this.tagAutocomplete.state.searchText !== '') this.tagAutocomplete.setState({searchText:''});
     }
 }
 
@@ -322,7 +330,7 @@ const styles = {
         zIndex: '5000'
     },
     drawer: {
-        marginTop: 65
+        marginTop: 45
     },
     drawerLoader: {
         position: 'absolute',
@@ -402,10 +410,6 @@ TagManager.propTypes = {
     tagAutoCompleteList: array,
     tagLabels: array,
     tagsToAdd: array,
-};
-
-TagManager.contextTypes = {
-    muiTheme: React.PropTypes.object
 };
 
 export default TagManager;

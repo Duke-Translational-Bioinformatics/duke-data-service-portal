@@ -1,9 +1,13 @@
-import React, { PropTypes } from 'react';
-const { object, bool, array } = PropTypes;
+import React from 'react';
+import PropTypes from 'prop-types';
+const { object, bool, array, string, number } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
+import agentStore from '../../stores/agentStore';
+import authStore from '../../stores/authStore';
 import BaseUtils from '../../util/baseUtils.js';
 import { UrlGen, Path, Kind } from '../../util/urlEnum';
+import { Roles } from '../../enum';
 import { Color } from '../../theme/customTheme';
 import BatchOps from '../../components/globalComponents/batchOps.jsx';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
@@ -11,6 +15,7 @@ import FileOptionsMenu from '../../components/fileComponents/fileOptionsMenu.jsx
 import FolderOptionsMenu from '../../components/folderComponents/folderOptionsMenu.jsx';
 import Loaders from '../../components/globalComponents/loaders.jsx';
 import Checkbox from 'material-ui/Checkbox';
+import FlatButton from 'material-ui/FlatButton'
 import FileUpload from 'material-ui/svg-icons/file/file-upload'
 import FontIcon from 'material-ui/FontIcon';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -21,84 +26,90 @@ import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColu
 class ListItems extends React.Component {
 
     render() {
-        const { allItemsSelected, filesChecked, foldersChecked, isSafari, listItems, loading, nextPage, projPermissions, screenSize, tableBodyRenderKey, totalItems, uploads } = mainStore;
+        const { allItemsSelected, filesChecked, foldersChecked, isSafari, listItems, loading, nextPage, projectRole, screenSize, tableBodyRenderKey, totalItems, uploads } = mainStore;
+        const { agents } = agentStore;
+        const { currentUser } = authStore;
+        let items = this.props.router && this.props.router.location.pathname.includes('agents') ? agents.filter(a => a.audit.created_by.id === currentUser.id) : listItems;
         let showBatchOps = !!(filesChecked.length || foldersChecked.length);
-        let menuWidth = screenSize.width > 1230 ? 35 : 28;
-        let newFolderModal = null;
-        let uploadManager = null;
-        let showChecks = null;
-        let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
+        let menuWidth = this.props.router.location.pathname.includes('agents') ? 118 : screenSize.width > 1230 ? 35 : 28;
         let checkboxStyle = { maxWidth: 24, float: 'left', marginRight: isSafari ? 16 : 0 };
-        if (prjPrm !== null) {
-            newFolderModal = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <AddFolderModal {...this.props}/>;
-            uploadManager = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <RaisedButton label="Upload Files"
-                                                                                                    labelPosition="before"
-                                                                                                    labelStyle={{color: Color.blue}}
-                                                                                                    style={styles.uploadFilesBtn}
-                                                                                                    icon={<FileUpload color={Color.pink} />}
-                                                                                                    onTouchTap={() => this.toggleUploadManager()}/>;
-            showChecks = (prjPrm !== 'viewOnly' && prjPrm !== 'flUpload');
-        }
-        let children = listItems && listItems.length ? listItems.map((child) => {
-            let icon = child.kind === Kind.DDS_FOLDER ? 'folder' : 'description';
-            let itemsChecked = child.kind === Kind.DDS_FOLDER ? foldersChecked : filesChecked;
-            const route = child.kind === Kind.DDS_FOLDER ? UrlGen.routes.folder(child.id) : UrlGen.routes.file(child.id);
-            let fileOptionsMenu = showChecks && <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FILE, true)}/>;
-            let folderOptionsMenu = showChecks && <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FOLDER, true)}/>;
+        let showChecks = projectRole !== null && projectRole !== Roles.project_viewer && projectRole !== Roles.file_uploader && projectRole !== Roles.file_downloader;
+        let children = items && items.length ? items.map((child) => {
+            if(!child.is_deleted) {
+                let icon = child.kind === undefined ? 'laptop_mac' : child.kind === Kind.DDS_FOLDER ? 'folder' : 'description';
+                let itemsChecked = child.kind === undefined ? null : child.kind === Kind.DDS_FOLDER ? foldersChecked : filesChecked;
+                const route = child.kind === undefined ? UrlGen.routes.agent(child.id) : child.kind === Kind.DDS_FOLDER ? UrlGen.routes.folder(child.id) : UrlGen.routes.file(child.id);
+                let fileOptionsMenu = <FileOptionsMenu {...this.props}
+                                                       clickHandler={() => this.setSelectedEntity(child.id, Path.FILE, true)}/>;
+                let folderOptionsMenu = showChecks && <FolderOptionsMenu {...this.props}
+                                                                         clickHandler={() => this.setSelectedEntity(child.id, Path.FOLDER, true)}/>;
                 return (
                     <TableRow key={child.id} selectable={false}>
                         <TableRowColumn>
-                            {showChecks && <Checkbox
+                            {showChecks && child.kind !== undefined ? <Checkbox
                                 style={checkboxStyle}
-                                onCheck={()=>this.check(child.id, child.kind)}
+                                onCheck={() => this.check(child.id, child.kind)}
                                 checked={itemsChecked.includes(child.id)}
-                            />}
+                            /> : ''}
                             <a href={route} className="external" onClick={(e) => this.checkForAllItemsSelected(e)}>
                                 <div style={styles.linkColor}>
                                     <FontIcon className="material-icons" style={styles.icon}>{icon}</FontIcon>
                                     {child.name.length > 82 ? child.name.substring(0, 82) + '...' : child.name}
-                                    {child.kind === Kind.DDS_FILE && ' (version '+ child.current_version.version+')'}
+                                    {child.kind !== undefined && child.kind === Kind.DDS_FILE ? ' (version ' + child.current_version.version + ')' : ''}
                                 </div>
                             </a>
                         </TableRowColumn>
-                        {screenSize && screenSize.width >= 680 && <TableRowColumn onTouchTap={()=>this.check(child.id, child.kind)}>
-                            <span>{child.audit.last_updated_on !== null ? BaseUtils.formatDate(child.audit.last_updated_on)+' by '+child.audit.last_updated_by.full_name : BaseUtils.formatDate(child.audit.created_on)+' by '+child.audit.created_by.full_name}</span>
+                        {screenSize && screenSize.width >= 680 &&
+                        <TableRowColumn onTouchTap={() => this.check(child.id, child.kind)}>
+                            <span>{child.audit.last_updated_on !== null ? BaseUtils.formatDate(child.audit.last_updated_on) + ' by ' + child.audit.last_updated_by.full_name : BaseUtils.formatDate(child.audit.created_on) + ' by ' + child.audit.created_by.full_name}</span>
                         </TableRowColumn>}
-                        {screenSize && screenSize.width >= 840 && <TableRowColumn onTouchTap={()=>this.check(child.id, child.kind)} style={{width: 100}}>
-                            {child.kind === Kind.DDS_FILE && child.current_version ? BaseUtils.bytesToSize(child.current_version.upload.size) : '---'}
-                        </TableRowColumn>}
+                        {screenSize && screenSize.width >= 840 && child.kind !== undefined ?
+                            <TableRowColumn onTouchTap={() => this.check(child.id, child.kind)} style={{width: 100}}>
+                                {child.kind === Kind.DDS_FILE && child.current_version ? BaseUtils.bytesToSize(child.current_version.upload.size) : '---'}
+                            </TableRowColumn> : null}
                         <TableRowColumn style={{textAlign: 'right', width: menuWidth}}>
-                            <div onClick={(e) => {e.stopPropagation()}}>
-                                {child.kind === Kind.DDS_FILE ? fileOptionsMenu : folderOptionsMenu }
+                            <div onClick={(e) => {
+                                e.stopPropagation()
+                            }}>
+                                {child.kind === undefined ? <FlatButton label="credentials" primary={true} onTouchTap={() => this.getCredentials(child.id)}/> : child.kind === Kind.DDS_FILE ? fileOptionsMenu : folderOptionsMenu }
                             </div>
                         </TableRowColumn>
                     </TableRow>
 
                 );
+            }
         }) : null;
 
         return (
             <div className="list-items-container">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
                     {!showBatchOps && <div className="mdl-cell mdl-cell--12-col">
-                        {uploadManager}
-                        {newFolderModal}
+                        { projectRole !== null && projectRole !== (Roles.file_downloader && Roles.project_viewer && Roles.file_downloader) ? <RaisedButton
+                                                                                                label="Upload Files"
+                                                                                                labelPosition="before"
+                                                                                                labelStyle={{color: Color.blue}}
+                                                                                                style={styles.uploadFilesBtn}
+                                                                                                icon={<FileUpload color={Color.pink} />}
+                                                                                                onTouchTap={() => this.toggleUploadManager()}/> : null }
+                        <AddFolderModal {...this.props}/>
                     </div>}
-                    {showBatchOps && <BatchOps {...this.props}/>}
+                    {showBatchOps && !this.props.router.location.pathname.includes('agents') ? <BatchOps {...this.props}/> : ''}
                 </div>
                 {uploads || loading ? <Loaders {...this.props}/> : null}
                 <Paper className="mdl-cell mdl-cell--12-col" style={styles.list}>
-                    {listItems.length > 0 && <Table fixedHeader={true}>
+                    {items.length > 0 && <Table fixedHeader={true}>
                         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                             <TableRow>
                                 <TableHeaderColumn>{showChecks && <Checkbox
+                                    label="SELECT ALL"
+                                    labelStyle={{fontSize: 14, color: Color.ltPink}}
                                     style={checkboxStyle}
                                     onCheck={()=> this.check(!allItemsSelected, null)}
                                     checked={allItemsSelected}
                                 />}
                                 </TableHeaderColumn>
-                                {screenSize && screenSize.width >= 680 ? <TableHeaderColumn>Last Updated</TableHeaderColumn> : null}
-                                {screenSize && screenSize.width >= 840 ? <TableHeaderColumn style={{width: 100}}>Size</TableHeaderColumn> : null}
+                                {screenSize && screenSize.width >= 680 ? <TableHeaderColumn style={{fontSize: 14}}>LAST UPDATED</TableHeaderColumn> : null}
+                                {screenSize && screenSize.width >= 840 && !this.props.router.location.pathname.includes('agents') ? <TableHeaderColumn style={{width: 100, fontSize: 14}}>SIZE</TableHeaderColumn> : null}
                                 <TableHeaderColumn style={{textAlign: 'right', width: menuWidth}}></TableHeaderColumn>
                             </TableRow>
                         </TableHeader>
@@ -106,7 +117,7 @@ class ListItems extends React.Component {
                             {children}
                         </TableBody>
                     </Table>}
-                    {listItems.length < totalItems && totalItems > 25 &&
+                    {items.length < totalItems && totalItems > 25 &&
                     <div className="mdl-cell mdl-cell--12-col">
                         <RaisedButton
                             label={loading ? "Loading..." : "Load More"}
@@ -125,8 +136,7 @@ class ListItems extends React.Component {
     check(id, kind) {
         let files = mainStore.filesChecked;
         let folders = mainStore.foldersChecked;
-        let allItemsSelected = mainStore.allItemsSelected;
-        let prjPrm = mainStore.projPermissions;
+        let { allItemsSelected, projectRole } = mainStore;
         if(id === true || id === false) {
             files = [];
             folders = [];
@@ -141,13 +151,17 @@ class ListItems extends React.Component {
             !folders.includes(id) ? folders = [...folders, id] : folders = folders.filter(f => f !== id);
             allItemsSelected ? mainStore.toggleAllItemsSelected(!allItemsSelected) : null;
         }
-        if(prjPrm !== 'viewOnly' && prjPrm !== 'flUpload') mainStore.handleBatch(files, folders);
+        if(projectRole !== Roles.project_viewer && projectRole !== Roles.file_uploader) mainStore.handleBatch(files, folders);
     }
 
     checkForAllItemsSelected(e) {
         const allItemsSelected = mainStore.allItemsSelected;
         allItemsSelected ? mainStore.toggleAllItemsSelected(!allItemsSelected) : null;
         e.stopPropagation();
+    }
+
+    getCredentials(id) {
+        agentStore.getAgentApiToken(id)
     }
 
     loadMore(page) {
@@ -166,10 +180,6 @@ class ListItems extends React.Component {
         mainStore.processFilesToUpload([], []);
     }
 }
-
-ListItems.contextTypes = {
-    muiTheme: React.PropTypes.object
-};
 
 const styles = {
     batchOpsWrapper: {
@@ -195,13 +205,19 @@ const styles = {
 };
 
 ListItems.propTypes = {
+    agents: array,
+    allItemsSelected: bool,
     filesChecked: array,
     foldersChecked: array,
     listItems: array,
     entityObj: object,
-    projPermissions: object,
+    isSafari: bool,
+    nextPage: number,
+    projectRole: string,
     responseHeaders: object,
     screenSize: object,
+    tableBodyRenderKey: number,
+    totalItems: number,
     uploads: object,
     loading: bool
 };

@@ -1,9 +1,11 @@
-import React, { PropTypes } from 'react';
-const { object } = PropTypes;
+import React from 'react';
+import PropTypes from 'prop-types';
+const { object, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import { Kind } from '../../util/urlEnum';
 import { Color } from '../../theme/customTheme';
+import { Roles } from '../../enum';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
@@ -20,7 +22,7 @@ class AddFolderModal extends React.Component {
     }
 
     render() {
-        const { screenSize, toggleModal } = mainStore;
+        const { projectRole, screenSize, toggleModal } = mainStore;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let open = toggleModal && toggleModal.id === 'addFolder' ? toggleModal.open : false;
 
@@ -37,7 +39,7 @@ class AddFolderModal extends React.Component {
         ];
 
         return (
-            <div>
+            projectRole !== null && projectRole !== Roles.file_downloader && projectRole !== Roles.project_viewer ? <div>
                 <RaisedButton
                     label="New Folder"
                     labelStyle={{color: Color.blue}}
@@ -63,7 +65,7 @@ class AddFolderModal extends React.Component {
                             onChange={(e)=>this.validateText(e)}/> <br/>
                     </form>
                 </Dialog>
-            </div>
+            </div> : null
         );
     }
 
@@ -108,12 +110,8 @@ const styles = {
     }
 };
 
-AddFolderModal.contextTypes = {
-    muiTheme: React.PropTypes.object
-};
-
 AddFolderModal.propTypes = {
-    entityObj: object,
+    projectRole: string,
     toggleModal: object,
     screenSize: object
 };

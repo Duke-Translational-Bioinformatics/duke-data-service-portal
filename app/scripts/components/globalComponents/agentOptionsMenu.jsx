@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -37,10 +38,6 @@ class AgentOptionsMenu extends React.Component {
         let agentName = entityObj ? entityObj.name : null;
         let desc = entityObj ? entityObj.description : null;
         let repoUrl = entityObj ? entityObj.repo_url : null;
-        let usrKey = userKey && userKey.key ? userKey.key : null;
-        if(userKey && !userKey.key) {
-            usrKey = 'No user key found. You must create a new one.';
-        }
 
         let deleteActions = [
             <FlatButton
@@ -212,7 +209,7 @@ class AgentOptionsMenu extends React.Component {
                         <TextField
                             style={styles.textStyles}
                             hintText="Software Agent Description"
-                            defaultValue={desc}
+                            defaultValue={entityObj ? entityObj.description : null}
                             floatingLabelText="Software Agent Description"
                             ref={(input) => this.agentDescriptionText = input}
                             type="text"
@@ -221,7 +218,7 @@ class AgentOptionsMenu extends React.Component {
                         <TextField
                             style={styles.textStyles}
                             hintText="Agent Repository URL"
-                            defaultValue={repoUrl}
+                            defaultValue={entityObj ? entityObj.repo_url : null}
                             floatingLabelText="Software Agent Repository URL"
                             ref={(input) => this.agentRepoText = input}
                             type="text"
@@ -243,7 +240,7 @@ class AgentOptionsMenu extends React.Component {
                         <TextField
                             textareaStyle={styles.textArea}
                             style={styles.keyModal}
-                            defaultValue={agKey}
+                            defaultValue={agentKey ? agentKey.key : null}
                             floatingLabelText="Current Agent Secret Key"
                             id="apiKey"
                             ref={(input) => this.apiKeyText = input}
@@ -265,7 +262,7 @@ class AgentOptionsMenu extends React.Component {
                         <TextField
                             textareaStyle={styles.textArea}
                             style={styles.keyModal}
-                            defaultValue={agKey}
+                            defaultValue={agentKey ? agentKey.key : null}
                             floatingLabelText="New Agent Secret Key"
                             id="newApiKeyOpen"
                             ref={(input) => this.secretKeyText = input}
@@ -288,7 +285,7 @@ class AgentOptionsMenu extends React.Component {
                         <TextField
                             textareaStyle={styles.textArea}
                             style={styles.keyModal}
-                            disabled={userKey && !userKey.key ? true : false}
+                            disabled={!!(userKey && !userKey.key)}
                             defaultValue={userKey.key}
                             floatingLabelText="Current User Secret Key"
                             id="userKey"
@@ -333,7 +330,7 @@ class AgentOptionsMenu extends React.Component {
                         <TextField
                             textareaStyle={styles.textArea}
                             style={styles.keyModal}
-                            defaultValue={apiToken}
+                            defaultValue={agentApiToken ? agentApiToken.api_token : null}
                             floatingLabelText="API Token"
                             id="apiToken"
                             ref={(input) => this.apiTokenText = input}
@@ -516,10 +513,6 @@ const styles = {
         textAlign: 'center',
         color: '#F44336'
     }
-};
-
-AgentOptionsMenu.contextTypes = {
-    muiTheme: object
 };
 
 AgentOptionsMenu.propTypes = {

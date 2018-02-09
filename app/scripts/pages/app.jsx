@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import { Color } from '../theme/customTheme';
 import authStore from '../stores/authStore';
@@ -7,6 +9,7 @@ import Header from '../components/globalComponents/header.jsx';
 import Footer from '../components/globalComponents/footer.jsx';
 import LeftMenu from '../components/globalComponents/leftMenu.jsx';
 import RetryUploads from '../components/globalComponents/retryUploads.jsx';
+import UploadManager from '../components/globalComponents/uploadManager.jsx';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import Snackbar from 'material-ui/Snackbar';
@@ -30,7 +33,7 @@ class App extends React.Component {
     }
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object,
+        muiTheme: object,
     };
 
     getChildContext() {
@@ -40,6 +43,7 @@ class App extends React.Component {
     }
 
     componentDidMount() {
+        const { appConfig } = authStore;
         authStore.getAuthProviders();
         mainStore.getScreenSize(window.innerHeight, window.innerWidth);
         window.addEventListener('resize', this.handleResize);
@@ -52,8 +56,9 @@ class App extends React.Component {
             iphone: app.device.iphone
         };
         mainStore.getDeviceType(device);
-        if(authStore.appConfig.apiToken) {
+        if(appConfig.apiToken) {
             authStore.getCurrentUser();
+            mainStore.getUsageDetails();
             mainStore.loadMetadataTemplates(null);
             authStore.removeLoginCookie();
         }
@@ -65,27 +70,31 @@ class App extends React.Component {
     }
 
     componentWillMount() {
-        if(!authStore.appConfig.apiToken && !authStore.appConfig.isLoggedIn && this.props.location.pathname !== '/login') {
+        const { appConfig, redirectUrl } = authStore;
+        if(!appConfig.apiToken && !appConfig.isLoggedIn && this.props.location.pathname !== '/login') {
             if (location.hash !== '' && location.hash !== '#/login' && location.hash !== '#/public_privacy') {
-                if(!authStore.redirectUrl) authStore.setRedirectUrl(location.href);
+                if(!redirectUrl) authStore.setRedirectUrl(location.href);
                 this.props.router.push('/login');
             }
         }
     }
 
     componentDidUpdate(prevProps) {
-        if(authStore.appConfig.apiToken && !Object.keys(authStore.currentUser).length) authStore.getCurrentUser();
-        if(authStore.sessionTimeoutWarning) authStore.setRedirectUrl(location.href);
-        if(prevProps.location.pathname !== this.props.location.pathname || mainStore.currentLocation === null) {
+        const { appConfig, currentUser, sessionTimeoutWarning } = authStore;
+        const { params } = this.props;
+        const { pathname } = this.props.location;
+        if(appConfig.apiToken && !Object.keys(currentUser).length) authStore.getCurrentUser();
+        if(sessionTimeoutWarning) authStore.setRedirectUrl(location.href);
+        if(prevProps.location.pathname !== pathname || mainStore.currentLocation === null) {
             this.$$('.page-content').scrollTo(0, 0);
-            mainStore.setCurrentRouteLocation({path: this.props.location.pathname, id: this.props.params.id});
+            mainStore.setCurrentRouteLocation({path: pathname, id: params.id});
         }
         this.showToasts();
     }
 
     componentWillReceiveProps(nextProps) {
         const routeChanged = nextProps.location !== this.props.location;
-        mainStore.toggleBackButtonVisibility(routeChanged);
+        mainStore.toggleBackButtonVisibility(routeChanged, this.props.location);
     }
 
     handleResize() {
@@ -93,18 +102,20 @@ class App extends React.Component {
     }
 
     createLoginUrl = () => {
-        return authStore.appConfig.authServiceUri+'&state='+authStore.appConfig.serviceId+'&redirect_uri='+window.location.href;
+        const { appConfig } = authStore;
+        return appConfig.authServiceUri+'&state='+appConfig.serviceId+'&redirect_uri='+window.location.href;
     };
 
     render() {
-        const {errorModals, phiModalOpen, toasts, screenSize, serviceOutageNoticeModalOpen} = mainStore;
+        const {errorModals, phiModalOpen, toasts, toggleNav, showFilters, screenSize, serviceOutageNoticeModalOpen} = mainStore;
         const {appConfig} = authStore;
         const {location} = this.props;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let dialogs, tsts = null;
+        let slideContentClass = toggleNav ? 'page-content slide-right' : showFilters ? 'page-content slide-left' : 'page-content';
         if (toasts) {
             tsts = toasts.map(obj => {
-                return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} open={true}/>
+                return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} open={true} bodyStyle={{height: 'auto'}}/>
             });
         }
         if (appConfig.apiToken && errorModals.length) {
@@ -219,23 +230,18 @@ class App extends React.Component {
         }
         return (
             <span>
-                <div className="statusbar-overlay"></div>
-                <div className="panel-overlay"></div>
-                {!appConfig.apiToken ? '' : <LeftMenu {...this.props}/>}
                 <div className="views">
                     <div className="view view-main">
+                        {!appConfig.apiToken ? '' : <LeftMenu {...this.props}/>}
                         <Header {...this.props} {...this.state}/>
-                        <div className="pages navbar-through toolbar-through">
+                        <div className="pages">
                             <div data-page="index" className="page">
-                                <div className="searchbar-overlay"></div>
-                                <div className="page-content">
+                                <div className={slideContentClass}>
                                     {this.props.children}
                                     {tsts}
                                     {dialogs}
+                                    <UploadManager {...this.props}/>
                                     <RetryUploads {...this.props} {...this.state}/>
-                                    <div className="content-block searchbar-not-found">
-                                        <div className="content-block-inner">Nothing Found</div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -267,7 +273,7 @@ class App extends React.Component {
     showToasts() {
         if (mainStore.toasts) {
             mainStore.toasts.map(obj => {
-                setTimeout(() => mainStore.removeToast(obj.ref), 2500);
+                setTimeout(() => mainStore.removeToast(obj.ref), 3500);
             });
         }
     }

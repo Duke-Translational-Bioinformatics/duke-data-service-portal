@@ -1,6 +1,7 @@
 import React from 'react';
 import { observable, computed, action, map, extendObservable } from 'mobx';
 import cookie from 'react-cookie';
+import UAParser from 'ua-parser-js';
 import authStore from '../stores/authStore';
 import dashboardStore from '../stores/dashboardStore';
 import provenanceStore from '../stores/provenanceStore';
@@ -11,12 +12,14 @@ import { Kind, Path } from '../util/urlEnum';
 import { checkStatus, checkStatusAndConsistency } from '../util/fetchUtil';
 
 export class MainStore {
+    @observable addTeamAfterProjectCreation
     @observable agents
     @observable agentKey
     @observable agentApiToken
     @observable allItemsSelected
     @observable autoCompleteLoading
     @observable audit
+    @observable counter
     @observable currentUser
     @observable currentLocation
     @observable destination
@@ -34,11 +37,11 @@ export class MainStore {
     @observable foldersChecked
     @observable fileVersions
     @observable hideUploadProgress
-    @observable includeKinds
-    @observable includeProjects
     @observable isListItem
     @observable isSafari
+    @observable isFirefox
     @observable itemsSelected
+    @observable leftNavIndex
     @observable listItems
     @observable loading
     @observable metadataTemplate
@@ -56,27 +59,35 @@ export class MainStore {
     @observable openTagManager
     @observable openUploadManager
     @observable parent
+    @observable prevLocation
     @observable projects
     @observable project
-    @observable projPermissions
     @observable projectMembers
     @observable projectRole
+    @observable projectRoles
+    @observable projectTeams
     @observable metaObjProps
     @observable responseHeaders
     @observable screenSize
     @observable searchFilesList
     @observable searchFilters
+    @observable searchProjectsPostFilters
+    @observable searchTagsPostFilters
     @observable searchResults
     @observable searchResultsFiles
     @observable searchResultsFolders
     @observable searchResultsProjects
+    @observable searchResultsTags
     @observable searchValue
     @observable selectedEntity
+    @observable selectedTeam
+    @observable showAlert
     @observable showBackButton
     @observable serviceOutageNoticeModalOpen
     @observable showFilters
     @observable showPropertyCreator
     @observable showTagCloud
+    @observable showTeamManager
     @observable showTemplateCreator
     @observable showTemplateDetails
     @observable showUserInfoPanel
@@ -87,6 +98,7 @@ export class MainStore {
     @observable templateProperties
     @observable toasts
     @observable totalItems
+    @observable toggleNav
     @observable toggleModal
     @observable totalUploads
     @observable uploadCount
@@ -97,14 +109,15 @@ export class MainStore {
     @observable versionModal
 
     constructor() {
+        this.addTeamAfterProjectCreation = false;
         this.agents = [];
         this.agentKey = {};
         this.agentApiToken = {};
         this.allItemsSelected = false;
         this.autoCompleteLoading = false;
         this.audit = {};
-        this.counter = 0;
         this.currentLocation = null;
+        this.counter = observable.map();
         this.currentUser = {};
         this.device = {};
         this.destination = null;
@@ -121,12 +134,12 @@ export class MainStore {
         this.foldersChecked = [];
         this.fileVersions = [];
         this.hideUploadProgress = false;
-        this.includeKinds = [];
-        this.includeProjects = [];
         this.isFolderUpload = false;
         this.isListItem = false;
         this.isSafari = false;
+        this.isFirefox = false;
         this.itemsSelected = null;
+        this.leftNavIndex = null;
         this.listItems = [];
         this.loading = false;
         this.metadataTemplate = {};
@@ -144,28 +157,35 @@ export class MainStore {
         this.openTagManager = false;
         this.openUploadManager = false;
         this.parent = {};
+        this.prevLocation = null;
         this.projects = [];
         this.project = {};
-        this.projPermissions = null;
         this.projectMembers = [];
         this.projectRole = null;
         this.projectRoles = observable.map();
+        this.projectTeams = observable.map();
         this.metaObjProps = [];
         this.responseHeaders = {};
         this.screenSize = {width: 0, height: 0};
         this.searchFilesList = [];
         this.searchFilters = [];
+        this.searchProjectsPostFilters = {"project.name": []};
+        this.searchTagsPostFilters = {"tags.label": []};
         this.searchResults = [];
         this.searchResultsFiles = [];
         this.searchResultsFolders = [];
         this.searchResultsProjects = [];
+        this.searchResultsTags = [];
         this.searchValue = null;
         this.serviceOutageNoticeModalOpen = cookie.load('serviceOutageNoticeModalOpen');
         this.selectedEntity = null;
+        this.selectedTeam = [];
+        this.showAlert = false;
         this.showBackButton = true;
         this.showFilters = false;
         this.showPropertyCreator = false;
         this.showTagCloud = false;
+        this.showTeamManager = false;
         this.showTemplateCreator = false;
         this.showTemplateDetails = false;
         this.showUserInfoPanel = false;
@@ -176,6 +196,7 @@ export class MainStore {
         this.templateProperties = [];
         this.toasts = [];
         this.totalItems = null;
+        this.toggleNav = false;
         this.toggleModal = {open: false, id: null};
         this.totalUploads = {inProcess: 0, complete: 0};
         this.uploadCount = [];
@@ -192,12 +213,38 @@ export class MainStore {
         return checkStatus(response, authStore);
     }
 
+    @action addTeamMembersPrompt () {
+        this.addTeamAfterProjectCreation = !this.addTeamAfterProjectCreation;
+    }
+
+    @action setSelectedTeam (id) {
+        this.selectedTeam = !this.selectedTeam.includes(id) ? [id] : [];
+        if(this.showAlert) this.toggleAlert();
+    }
+
+    @action toggleTeamManager() {
+        this.showTeamManager = !this.showTeamManager;
+    }
+
+    @action toggleAlert() {
+        this.showAlert = !this.showAlert;
+    }
+
+    @action setLeftNavIndex(index) {
+        this.leftNavIndex = index;
+    }
+
+    @action toggleNavDrawer() {
+        this.toggleNav = !this.toggleNav;
+    }
+
+    @action toggleBackButtonVisibility(bool, prevLocation){
+        this.showBackButton = bool;
+        this.prevLocation = prevLocation;
+    }
+
     @action setListItems(items) {
         this.listItems = items
-    }
-    
-    @action toggleBackButtonVisibility(bool){
-        this.showBackButton = bool;
     }
 
     @action toggleAllItemsSelected(bool) {
@@ -212,17 +259,33 @@ export class MainStore {
         this.expandUploadProgressCard = !this.expandUploadProgressCard;
     }
 
-    @action tryAsyncAgain(func, args) {
-        mainStore.counter++;
-        mainStore.loading = true;
-        if(mainStore.counter < StatusEnum.MAX_RETRY) {
-            mainStore.addToast(`The resource you're requesting is temporarily unavailable. Retrying...`);
-            setTimeout(() => func(...args),3000)
+    tryAsyncAgain(func, args, delay, counterId, message, isUpload) {
+        const sleep = (ms) => {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        };
+        if(!this.counter.has(counterId)) {
+            this.counter.set(counterId, 0);
         } else {
-            mainStore.counter = 0;
-            mainStore.addToast(`Failed to get resource. Please try again in a few minutes`);
+            let c = this.counter.get(counterId);
+            c++;
+            this.counter.set(counterId, c);
+        }
+        if(this.counter.get(counterId) < StatusEnum.MAX_RETRY) {
+            mainStore.addToast(`${message}. Retrying in ${BaseUtils.timeConversion(delay)}...`);
+            const tryAgain = async () => {
+                await sleep(delay);
+                func(...args);
+            };
+            tryAgain();
+        } else {
+            this.counter.delete(counterId);
+            mainStore.addToast(`Failed to complete operation. Please try again in a few minutes`);
             mainStore.loading = false;
-            if(location.href.includes('file') || location.href.includes('folder')) window.location.href = window.location.protocol + '//' + window.location.host + '/#/home';
+            if(!isUpload && (location.href.includes('file') || location.href.includes('folder'))) {
+                window.location.href = window.location.protocol + '//' + window.location.host + '/#/home';
+            } else {
+                mainStore.uploadError(counterId)
+            }
         }
     }
 
@@ -244,7 +307,7 @@ export class MainStore {
             }).catch(ex => this.handleErrors(ex))
     }
 
-    @action getProjects(page, perPage) {
+    @action getProjects(page, perPage, getAll) {
         this.loading = true;
         if (page == null) page = 1;
         if (perPage == null) perPage = 25;
@@ -265,39 +328,17 @@ export class MainStore {
             this.projects.forEach((p) => {
                 userId !== null ? this.getAllProjectPermissions(p.id, userId) : null;
             });
-            this.responseHeaders = headers;
-            this.loading = false;
-        }).catch(ex => this.handleErrors(ex))
-    }
-
-    @action getProjects(page, perPage) {
-        this.loading = true;
-        if (page == null) page = 1;
-        if (perPage == null) perPage = 25;
-        this.transportLayer.getProjects(page, perPage)
-            .then(this.checkResponse).then((response) => {
-            const results = response.json();
-            const headers = response.headers;
-            return Promise.all([results, headers]);
-        }).then((json) => {
-            let results = json[0].results;
-            let headers = json[1].map;
-            if(page <= 1) {
-                this.projects = results;
-            } else {
-                this.projects = [...this.projects, ...results];
+            if(getAll) {
+                this.projects.forEach((p) => {
+                    this.getProjectTeams(p.id, getAll);
+                });
             }
-            const userId = authStore.currentUser.id !== undefined ? authStore.currentUser.id : this.currentUser.id !== undefined ? this.currentUser.id : null;
-            this.projects.forEach((p) => {
-                userId !== null ? this.getAllProjectPermissions(p.id, userId) : null;
-            });
             this.responseHeaders = headers;
             this.nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
             this.totalItems = headers !== null && !!headers['x-total'] ? parseInt(headers['x-total'][0], 10) : null;
             this.loading = false;
         }).catch(ex => this.handleErrors(ex))
     }
-
 
     @action getProjectListForProvenanceEditor() {
         this.loading = true;
@@ -326,12 +367,30 @@ export class MainStore {
             }).catch(ex => this.handleErrors(ex))
     }
 
+    @action getPermissions(id, userId) {
+        this.transportLayer.getPermissions(id, userId)
+           .then(this.checkResponse)
+           .then(response => response.json())
+           .then((json) => {
+               this.projectRole = json.auth_role.id;
+        }).catch(ex =>this.handleErrors(ex))
+    }
+
     @action getProjectMembers(id) {
         this.transportLayer.getProjectMembers(id)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
                 this.projectMembers = json.results;
+            }).catch(ex => this.handleErrors(ex))
+    }
+
+    @action getProjectTeams(id, getAll) {
+        this.transportLayer.getProjectMembers(id)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => {
+                if(getAll && !this.projectTeams.has(id) && json.results.length > 1) this.projectTeams.set(id, {name: json.results[0].project.name, members: json.results});
             }).catch(ex => this.handleErrors(ex))
     }
 
@@ -350,6 +409,11 @@ export class MainStore {
                 dashboardStore.downloadedItems.set(json.id, json);
                 dashboardStore.setDownloadedItems(this.projects);
                 this.loading = false;
+                if(this.addTeamAfterProjectCreation) {
+                    window.location.href = `${window.location.protocol}//${window.location.host}/#/project/${json.id}`;
+                    this.toggleTeamManager();
+                    this.addTeamMembersPrompt();
+                }
             }).catch((ex) => {
             this.addToast('Failed to add new project');
             this.handleErrors(ex)
@@ -570,11 +634,17 @@ export class MainStore {
                         mainStore.parent = json.parent;
                         mainStore.moveToObj = json;
                     }
-                    if (mainStore.projPermissions === null && (json.kind === 'dds-file' || json.kind === 'dds-folder')) mainStore.getUser(json.project.id);
-                    if (mainStore.projPermissions === null && json.kind === 'dds-file-version') mainStore.getUser(json.file.project.id);
+                    this.project = json.project;
+                    if(!this.currentUser.id) this.getUser(json.project.id);
                     mainStore.loading = false;
                 } else {
-                    json.code === 'resource_not_consistent' ? mainStore.tryAsyncAgain(mainStore.getEntity, retryArgs) : mainStore.handleErrors(json);
+                    if(json.code === 'resource_not_consistent') {
+                        this.loading = false;
+                        const msg = "The resource you're requesting is temporarily unavailable...";
+                        mainStore.tryAsyncAgain(mainStore.getEntity, retryArgs, 5000, id, msg, false )
+                    } else {
+                        mainStore.handleErrors(json);
+                    }
                 }
             }).catch(ex => mainStore.handleErrors(ex))
     }
@@ -672,6 +742,20 @@ export class MainStore {
             }).catch(ex => this.handleErrors(ex));
     }
 
+    @action addProjectTeam(id, userId, role, projectName) {
+        this.transportLayer.addProjectMember(id, userId, role)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then(() => {
+                this.addToast(`All members from ${projectName} have been added as a to this project`);
+                this.getProjectMembers(id);
+                this.loading = false;
+            }).catch((ex) => {
+            this.addToast('Could not add member to this project or member does not exist');
+            this.handleErrors(ex)
+        });
+    }
+
     @action addProjectMember(id, userId, role, name) {
         let newRole = role.replace('_', ' ');
         this.transportLayer.addProjectMember(id, userId, role)
@@ -687,13 +771,18 @@ export class MainStore {
         });
     }
 
-    @action deleteProjectMember(id, userId, userName) {
+    @action deleteProjectMember(id, userId, userName, removeSelf) {
         this.transportLayer.deleteProjectMember(id, userId)
             .then(this.checkResponse)
             .then(response => {})
             .then(() => {
                 this.addToast(userName + ' ' + 'has been removed from this project');
-                this.getProjectMembers(id);
+                if(!removeSelf) {
+                    this.getProjectMembers(id);
+                } else {
+                    this.projects = this.projects.filter(p => p.id !== id);
+                    window.location.href = window.location.protocol + '//' + window.location.host + '/';
+                }
             }).catch((ex) => {
             this.addToast('Unable to remove ' + userName + ' from this project');
             this.handleErrors(ex)
@@ -859,12 +948,11 @@ export class MainStore {
             fileName = blob.name,
             contentType = blob.type,
             slicedFile = null,
-            BYTES_PER_CHUNK, NUMBER_OF_CHUNKS, SIZE, start, end;
-            SIZE = blob.size;
-            NUMBER_OF_CHUNKS = Math.ceil(SIZE / ChunkSize.BYTES_PER_CHUNK);
-            BYTES_PER_CHUNK = Math.ceil(SIZE / NUMBER_OF_CHUNKS);
-            start = 0;
-            end = BYTES_PER_CHUNK;
+            BYTES_PER_CHUNK, SIZE, start, end;
+        SIZE = blob.size;
+        BYTES_PER_CHUNK = ChunkSize.BYTES_PER_CHUNK;
+        start = 0;
+        end = BYTES_PER_CHUNK;
 
         const retryArgs = [projId, blob, parentId, parentKind, label, fileId, tags];
         const fileReader = new FileReader();
@@ -883,7 +971,7 @@ export class MainStore {
             chunks: []
         };
         // describe chunk details
-        while (start < SIZE) {
+        while (start <= SIZE) {
             slicedFile = blob.slice(start, end);
             details.chunks.push({
                 number: chunkNum,
@@ -900,7 +988,7 @@ export class MainStore {
             end = start + BYTES_PER_CHUNK;
             chunkNum++;
         }
-        fileReader.onload = function (e, files) {
+        fileReader.onload = function (event, files) {
             // create project upload
             mainStore.transportLayer.startUpload(projId, fileName, contentType, SIZE)
                 .then(checkStatusAndConsistency)
@@ -910,20 +998,27 @@ export class MainStore {
                         this.loading = false;
                         let uploadObj = json;
                         if (!uploadObj.id && !uploadObj.error) throw "no upload was created";
+                        details.uploadId = uploadObj.id;
                         mainStore.uploads.set(uploadObj.id, details);
-                        mainStore.totalUploads.inProcess++;
+                        mainStore.totalUploads.inProcess = mainStore.uploads.size;
                         mainStore.hashFile(mainStore.uploads.get(uploadObj.id), uploadObj.id);
                         mainStore.updateAndProcessChunks(uploadObj.id, null, null);
-                        window.onbeforeunload = function () {// If uploading files and user navigates away from page, send them warning
-                            mainStore.warnUserBeforeLeavingPage = true;
-                            if (mainStore.warnUserBeforeLeavingPage) {
+                        window.onbeforeunload = function (e) {// If uploading files and user navigates away from page, send them warning
+                            let preventLeave = true;
+                            if (preventLeave) {
                                 return "If you refresh the page or close your browser, files being uploaded will be lost and you" +
                                     " will have to start again. Are" +
                                     " you sure you want to do this?";
                             }
                         };
                     } else {
-                        json.code === 'resource_not_consistent' ? mainStore.tryAsyncAgain(mainStore.startUpload, retryArgs) : mainStore.handleErrors(json);
+                        if(json.code === 'resource_not_consistent') {
+                            this.loading = false;
+                            const msg = "The resource you're requesting is temporarily unavailable...";
+                            mainStore.tryAsyncAgain(mainStore.startUpload, retryArgs, 5000, fileId, msg, false)
+                        } else {
+                            mainStore.handleErrors(json);
+                        }
                     }
                 })
                 .catch(ex => mainStore.handleErrors(ex))
@@ -936,102 +1031,31 @@ export class MainStore {
         fileReader.readAsArrayBuffer(slicedFile);
     }
 
-    // File Hashing
     @action hashFile(file, id) {
-        function postHash(hash) {
-            mainStore.fileHashes.push(hash);
-        }
         if (file.blob.size <= 5000000) {
             function calculateMd5(blob, id) {
-                let reader = new FileReader();
+                const md5 = new SparkMD5.ArrayBuffer();
+                const reader = new FileReader();
                 reader.readAsArrayBuffer(blob);
                 reader.onloadend = function () {
-                    let wordArray = CryptoJS.lib.WordArray.create(reader.result),
-                        hash = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
-                    postHash({id: id, hash: hash});
+                    md5.append(reader.result);
+                    const hash = md5.end();
+                    mainStore.fileHashes.push({id: id, hash: hash});
                 };
             }
             calculateMd5(file.blob, id);
         } else {
-            function series(tasks, done) {
-                if (!tasks || tasks.length === 0) {
-                    done();
-                } else {
-                    tasks[0](function () {
-                        series(tasks.slice(1), done);
-                    });
+            const hashWorker = new Worker('lib/fileHashingWorker.js');
+            hashWorker.postMessage(file);
+            hashWorker.onmessage = (e) => {
+                if(e.data.complete) {
+                    mainStore.fileHashes.push({id: e.data.id, hash: e.data.hash});
                 }
-            }
-            function webWorkerOnMessage(e) {
-                function arrayBufferToWordArray(ab) {
-                    let i8a = new Uint8Array(ab);
-                    let a = [];
-                    for (let i = 0; i < i8a.length; i += 4) {
-                        a.push(i8a[i] << 24 | i8a[i + 1] << 16 | i8a[i + 2] << 8 | i8a[i + 3]);
-                    }
-                    return CryptoJS.lib.WordArray.create(a, i8a.length);
+                if(e.data.error) {
+                    console.log(e.msg);
+                    mainStore.uploadError(file.uploadId)
                 }
-                if (e.data.type === "create") {
-                    md5 = CryptoJS.algo.MD5.create();
-                    postMessage({type: "create"});
-                } else if (e.data.type === "update") {
-                    md5.update(arrayBufferToWordArray(e.data.chunk));
-                    postMessage({type: "update"});
-                } else if (e.data.type === "finish") {
-                    postMessage({type: "finish", id: e.data.id, hash: "" + md5.finalize()});
-                }
-            }
-            // URL.createObjectURL
-            window.URL = window.URL || window.webkitURL;
-            // "Server response"
-            let assetPath = location.protocol + '//' + location.host + '/lib/md5.js';
-            let response =
-                "importScripts(" + "'" + assetPath + "'" + ");" +
-                "var md5, cryptoType;" +
-                "self.onmessage = " + webWorkerOnMessage.toString();
-
-            let blob;
-            try {
-                blob = new Blob([response], {type: 'application/javascript'});
-            } catch (e) { // Backwards-compatibility
-                window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
-                blob = new BlobBuilder();
-                blob.append(response);
-                blob = blob.getBlob();
-            }
-            let worker = new Worker(URL.createObjectURL(blob));
-            let chunksize = ChunkSize.BYTES_PER_HASHING_CHUNK;
-            let f = file.blob; // FileList object
-            let chunks = Math.ceil(f.size / chunksize),
-                chunkTasks = [];
-            worker.onmessage = function (e) {
-                // create callback
-                for (let j = 0; j < chunks; j++) {
-                    (function (j, f) {
-                        chunkTasks.push(function (next) {
-                            let blob = f.slice(j * chunksize, Math.min((j + 1) * chunksize, f.size));
-                            let reader = new FileReader();
-                            reader.onload = function (e) {
-                                let chunk = e.target.result;
-                                worker.onmessage = function (e) {
-                                    // update callback
-                                    next();
-                                };
-                                worker.postMessage({type: "update", chunk: chunk});
-                            };
-                            reader.readAsArrayBuffer(blob);
-                        });
-                    })(j, f);
-                }
-                series(chunkTasks, function () {
-                    worker.onmessage = function (e) {
-                        // finish callback
-                        postHash({id: e.data.id, hash: e.data.hash});
-                    };
-                    worker.postMessage({type: "finish", id: id});
-                });
             };
-            worker.postMessage({type: "create"});
         }
     }
 
@@ -1090,7 +1114,7 @@ export class MainStore {
             }
             if (chunk.chunkUpdates.status !== StatusEnum.STATUS_SUCCESS) allDone = false;
         }
-        if (allDone === true) this.checkForHash(uploadId, upload.parentId, upload.parentKind, upload.name, upload.label, upload.fileId, upload.projectId);
+        if (allDone) this.checkForHash(uploadId, upload.parentId, upload.parentKind, upload.name, upload.label, upload.fileId, upload.projectId);
         window.onbeforeunload = function () { // If done, set to false so no warning is sent.
             this.warnUserBeforeLeavingPage = false;
         };
@@ -1128,21 +1152,20 @@ export class MainStore {
     }
 
     getChunkUrl(uploadId, chunkBlob, chunk) {
-        let chunkNum = chunk.number;
-        let chunkUpdates = chunk.chunkUpdates;
+        const chunkNum = chunk.number;
+        const chunkUpdates = chunk.chunkUpdates;
+        const md5 = new SparkMD5.ArrayBuffer();
         const fileReader = new FileReader();
-        fileReader.onload = function (event) {
-            let arrayBuffer = event.target.result;
-            let wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
-            let md5crc = CryptoJS.MD5(wordArray).toString(CryptoJS.enc.Hex);
-            let algorithm = 'MD5';
-            mainStore.transportLayer.getChunkUrl(uploadId, chunkNum, chunkBlob.size, md5crc, algorithm)
+        fileReader.onload = function (e) {
+            md5.append(e.target.result);
+            const hash = md5.end();
+            const algorithm = 'MD5';
+            mainStore.transportLayer.getChunkUrl(uploadId, chunkNum, chunkBlob.size, hash, algorithm)
                 .then(this.checkResponse)
                 .then(response => response.json())
                 .then((json) => {
-                    let chunkObj = json;
+                    const chunkObj = json;
                     if (chunkObj && chunkObj.url && chunkObj.host) {
-                        // upload chunks
                         mainStore.uploadChunk(uploadId, chunkObj.host + chunkObj.url, chunkBlob, chunkNum, chunkUpdates)
                     } else {
                         throw 'Unexpected response';
@@ -1205,17 +1228,21 @@ export class MainStore {
             .then(response => response.json())
             .then((json) => {
                 this.addToast('Created New File Version!');
-                this.addFileVersionSuccess(fileId, uploadId)
+                this.addFileVersionSuccess(fileId, uploadId, json);
             }).catch((ex) => {
                 this.addToast('Failed to Create New Version');
                 this.uploadError(uploadId);
             });
     }
 
-    @action addFileVersionSuccess(id, uploadId) {
+    @action addFileVersionSuccess(id, uploadId, json) {
         provenanceStore.displayProvAlert();
         if(location.href.includes(id)) this.getEntity(id, Path.FILE);
         this.getFileVersions(id);
+        if(this.listItems.some(l => l.id === id)) {
+            let index = this.listItems.findIndex(p => p.id === id);
+            this.listItems.splice(index, 1, json);
+        }
         if (this.uploads.has(uploadId)) this.uploads.delete(uploadId);
     }
 
@@ -1231,13 +1258,16 @@ export class MainStore {
     }
 
     checkForHash(uploadId, parentId, parentKind, name, label, fileId, projectId) {
-        let hash = this.fileHashes.find((fileHash) => {
+        const hash = mainStore.fileHashes.find((fileHash) => {
             return fileHash.id === uploadId;
         });
         if(!hash) {
-            this.updateAndProcessChunks(uploadId, null, null);
-        }else{
-            this.allChunksUploaded(uploadId, parentId, parentKind, name, label, fileId, hash.hash, projectId);
+            const msg = `Waiting for the file ${name} to process, this may take a while...`;
+            const isUpload = true;
+            const retryArgs = [uploadId, parentId, parentKind, name, label, fileId, projectId];
+            mainStore.tryAsyncAgain(mainStore.checkForHash, retryArgs, 90000, uploadId, msg, isUpload)
+        } else {
+            mainStore.allChunksUploaded(uploadId, parentId, parentKind, name, label, fileId, hash.hash, projectId);
         }
     }
 
@@ -1257,6 +1287,7 @@ export class MainStore {
 
     @action cancelUpload(uploadId, name) {
         if(this.uploads.has(uploadId)) this.uploads.delete(uploadId);
+        this.totalUploads.inProcess = this.uploads.size;
         this.addToast('Canceled upload of '+name);
         if(!this.uploads.size && this.warnUserBeforeLeavingPage) this.warnUserBeforeLeavingPage = false;
         if(!this.uploads.size) { // If user cancels last uploads, make sure that page loads with new list items
@@ -1266,7 +1297,7 @@ export class MainStore {
         }
     }
 
-    @action  getDownloadUrl(id, kind) {
+    @action getDownloadUrl(id, kind) {
         this.loading = true;
         this.transportLayer.getDownloadUrl(id, kind)
             .then(this.checkResponse)
@@ -1317,23 +1348,8 @@ export class MainStore {
             .then(response => response.json())
             .then((json) => {
                 this.currentUser = json;
-                if(id) this.getPermissions(id, json.id);
+                this.getPermissions(id, json.id)
             }).catch(ex => this.handleErrors(ex));
-    }
-
-    @action getPermissions(id, userId) {
-        this.transportLayer.getPermissions(id, userId)
-            .then(this.checkResponse)
-            .then(response => response.json())
-            .then((json) => {
-                let id = json.auth_role.id;
-                this.projectRole = json.auth_role.id;
-                if (id === 'project_viewer') this.projPermissions = 'viewOnly';
-                if (id === 'project_admin' || id === 'system_admin') this.projPermissions = 'prjCrud';
-                if (id === 'file_editor') this.projPermissions = 'flCrud';
-                if (id === 'file_uploader') this.projPermissions = 'flUpload';
-                if (id === 'file_downloader') this.projPermissions = 'flDownload';
-            }).catch(ex =>this.handleErrors(ex))
     }
 
     @action searchFiles(text, id) {
@@ -1542,31 +1558,62 @@ export class MainStore {
         this.showTemplateDetails = true;
     }
 
-    @action searchObjects(value, includeKinds, includeProjects) {
-        this.searchValue = value;
+    @action searchObjects(query, filter, projectPostFilter, tagPostFilter, page) {
+        let filters;
+        if(page !== null) {
+            filters = [this.searchFilters, this.searchProjectsPostFilters, this.searchTagsPostFilters]
+        } else {
+            if (projectPostFilter !== null) {
+                if (!this.searchProjectsPostFilters['project.name'].includes(projectPostFilter)) {
+                    this.searchProjectsPostFilters['project.name'].push(projectPostFilter)
+                } else {
+                    this.searchProjectsPostFilters['project.name'] = this.searchProjectsPostFilters['project.name'].filter(f => f !== projectPostFilter);
+                }
+            }
+            if (tagPostFilter !== null) {
+                if (!this.searchTagsPostFilters['tags.label'].includes(tagPostFilter)) {
+                    this.searchTagsPostFilters['tags.label'].push(tagPostFilter)
+                } else {
+                    this.searchTagsPostFilters['tags.label'] = this.searchTagsPostFilters['tags.label'].filter(f => f !== tagPostFilter);
+                }
+            }
+            if (filter !== null) {
+                this.searchFilters.includes(filter) ? this.searchFilters = this.searchFilters.filter(f => f !== filter) : this.searchFilters.push(filter);
+            }
+            filters = [this.searchFilters, this.searchProjectsPostFilters, this.searchTagsPostFilters]
+        }
+        if(page == null) page = 1;
+        this.searchValue = query;
+        query = encodeURI(query).replace(/#/,"%23");
         this.loading = true;
-        if (includeKinds === null || !includeKinds.length) includeKinds = ['dds-file', 'dds-folder'];
-        this.transportLayer.searchObjects(value, includeKinds, includeProjects)
+        this.transportLayer.searchObjects(query, ...filters, page)
             .then(this.checkResponse)
-            .then(response => response.json())
-            .then((json) => {
-                this.searchResults = json.results;
-                this.searchResultsFiles = json.results.filter((obj)=>{
+            .then(response => {
+                const results = response.json();
+                const headers = response.headers;
+                return Promise.all([results, headers]);
+            }).then((json) => {
+                if(page <= 1) {
+                    this.searchResults = json[0].results;
+                } else {
+                    this.searchResults = [...this.searchResults, ...json[0].results];
+                }
+                this.searchResultsProjects = json[0].aggs.project_names.buckets;
+                this.searchResultsTags = json[0].aggs.tags.buckets;
+                this.searchResultsFiles =  this.searchResults.filter((obj)=>{
                     return obj.kind === 'dds-file';
                 });
-                this.searchResultsFolders = json.results.filter((obj)=>{
+                this.searchResultsFolders =  this.searchResults.filter((obj)=>{
                     return obj.kind === 'dds-folder';
                 });
-                let p = json.results.map((obj) => {
-                    return {name: obj.ancestors[0].name, id: obj.ancestors[0].id};
-                });
-                this.searchResultsProjects = BaseUtils.removeDuplicates(p, 'id');
+                this.responseHeaders = json[1].map;
+                this.nextPage = this.responseHeaders !== null && !!this.responseHeaders['x-next-page'] ? this.responseHeaders['x-next-page'][0] : null;
+                this.totalItems = this.responseHeaders !== null && !!this.responseHeaders['x-total'] ? parseInt(this.responseHeaders['x-total'][0], 10) : null;
                 this.loading = false;
             }).catch(ex =>this.handleErrors(ex))
     }
 
     @action toggleSearch() {
-        this.searchValue = null;
         this.showSearch = !this.showSearch;
     }
 
@@ -1574,20 +1621,22 @@ export class MainStore {
         this.showFilters = !this.showFilters;
     }
 
-    @action setIncludedSearchKinds(includeKinds) {
-        this.includeKinds = includeKinds;
-        this.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
-    }
-
-    @action setIncludedSearchProjects(includeProjects) {
-        this.includeProjects = includeProjects;
-        this.setSearchFilters();
-    }
-
-    @action setSearchFilters() {
+    @action resetSearchFilters() {
         this.searchFilters = [];
-        this.includeProjects.forEach((projectId) => {this.searchFilters.push({"match":{"project.id": projectId}})});
-        this.searchObjects(this.searchValue, this.includeKinds, this.searchFilters);
+        this.searchProjectsPostFilters = {"project.name": []};
+        this.searchTagsPostFilters = {"tags.label": []};
+    }
+
+    @action resetSearchResults() {
+        this.searchResults = [];
+        this.searchResultsProjects = [];
+        this.searchResultsTags = [];
+        this.searchResultsFiles = [];
+        this.searchResultsFolders = [];
+        this.searchValue = null;
+        this.responseHeaders = {};
+        this.nextPage = null;
+        this.totalItems = null;
     }
 
     @action clearSearchFilesData() {
@@ -1618,7 +1667,8 @@ export class MainStore {
 
     @action getDeviceType(device) {
         this.device = device;
-        this.isSafari = /constructor/i.test(window.HTMLElement);
+        this.isSafari = UAParser().browser.name === 'Safari';
+        this.isFirefox = UAParser().browser.name === 'Firefox';
     }
 
     @action getScreenSize(height, width) {

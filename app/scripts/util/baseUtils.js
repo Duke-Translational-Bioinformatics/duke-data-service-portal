@@ -3,6 +3,18 @@ import moment from 'moment';
 import { Color } from '../theme/customTheme';
 
 let BaseUtils = {
+
+        timeConversion(millisec) {
+            let seconds = (millisec / 1000).toFixed(0);
+            let minutes = (millisec / (1000 * 60)).toFixed(1);
+            let hours = (millisec / (1000 * 60 * 60)).toFixed(1);
+            let days = (millisec / (1000 * 60 * 60 * 24)).toFixed(1);
+            if (seconds < 60) return `${seconds} seconds`;
+            else if (minutes < 60) return `${minutes} minutes`;
+            else if (hours < 24) return `${hours} hours`;
+            else return  `${days} days`
+        },
+
         bytesToSize(bytes){
             if (bytes == 0) return '0 Byte';
             var i = Math.floor(Math.log(bytes) / Math.log(1024));

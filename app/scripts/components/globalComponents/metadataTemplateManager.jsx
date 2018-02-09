@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object, bool } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -28,7 +29,7 @@ class MetadataTemplateManager extends React.Component {
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <Drawer disableSwipeToOpen={true} width={width > 640 ? width*.80 : width} openSecondary={true} open={openMetadataManager}>
                     <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800"
-                         style={{marginTop: 85}}>
+                         style={styles.drawerTopMargin}>
                         <IconButton style={styles.toggleBtn}
                                     onTouchTap={() => this.toggleMetadataManager()}>
                             <NavigationClose />
@@ -57,14 +58,13 @@ const styles = {
         left: 0,
         right: 0
     },
+    drawerTopMargin: {
+        marginTop: 65
+    },
     toggleBtn: {
         margin: '5px 0px 5px 0px',
         zIndex: 9999
     }
-};
-
-MetadataTemplateManager.contextTypes = {
-    muiTheme: React.PropTypes.object
 };
 
 MetadataTemplateManager.propTypes = {

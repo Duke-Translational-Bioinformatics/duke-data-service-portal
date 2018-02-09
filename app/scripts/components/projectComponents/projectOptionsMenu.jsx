@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -15,7 +16,7 @@ class ProjectOptionsMenu extends React.Component {
                       anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                       targetOrigin={{horizontal: 'right', vertical: 'top'}}>
                 <MenuItem primaryText="Edit Project Details" leftIcon={<i className="material-icons">mode_edit</i>} onTouchTap={() => this.toggleModal('editOpen')}/>
-                <MenuItem primaryText="Add Project Members" leftIcon={<i className="material-icons">person_add</i>} onTouchTap={() => this.toggleModal('addMember')}/>
+                <MenuItem primaryText="Add Project Members" leftIcon={<i className="material-icons">person_add</i>} onTouchTap={() => this.toggleTeamManager()}/>
                 <MenuItem primaryText="Delete Project" leftIcon={<i className="material-icons">delete</i>} onTouchTap={() => this.toggleModal('deleteOpen')}/>
             </IconMenu>
         );
@@ -24,16 +25,16 @@ class ProjectOptionsMenu extends React.Component {
     toggleModal(id) {
         mainStore.toggleModals(id);
     }
+
+    toggleTeamManager() {
+        mainStore.toggleTeamManager()
+    }
 }
 
 const styles = {
     openIcon: {
         margin: '-10px -12px 0px 0px'
     },
-};
-
-ProjectOptionsMenu.contextTypes = {
-    muiTheme: object
 };
 
 ProjectOptionsMenu.propTypes = {

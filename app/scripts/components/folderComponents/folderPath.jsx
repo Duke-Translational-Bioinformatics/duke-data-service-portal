@@ -1,55 +1,43 @@
-import React, { PropTypes } from 'react';
-const { object } = PropTypes;
+import React from 'react';
+import PropTypes from 'prop-types';
+const { object, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import { Color } from '../../theme/customTheme';
 import { Path } from '../../util/urlEnum';
+import { Roles } from '../../enum';
 import FolderOptionsMenu from './folderOptionsMenu.jsx';
-import UploadManager from '../globalComponents/uploadManager.jsx';
 import BaseUtils from '../../util/baseUtils';
 import Card from 'material-ui/Card';
 import FontIcon from 'material-ui/FontIcon';
 
 @observer
 class FolderPath extends React.Component {
-    
+
     render() {
-        const {entityObj, projPermissions} = mainStore;
-        let ancestors = entityObj ? entityObj.ancestors : null;
-        let parentKind = entityObj ? entityObj.parent.kind : null;
-        let parentId = entityObj ? entityObj.parent.id : null;
-        let name = entityObj ? entityObj.name : '';
-        let prjPrm = projPermissions && projPermissions !== null ? projPermissions : null;
-        let uploadMdl = null;
-        let optionsMenu = null;
-        if (prjPrm !== null) {
-            uploadMdl = prjPrm === 'viewOnly' || prjPrm === 'flDownload' ? null : <UploadManager {...this.props}/>;
-            optionsMenu = prjPrm === 'prjCrud' || prjPrm === 'flCrud' ? optionsMenu = <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity()} /> : null;
-        }
-        let path = ancestors !== null ? BaseUtils.getFilePath(ancestors) : '';
+        const {entityObj, projectRole} = mainStore;
+
         return (
-            <Card className="project-container group mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800"
-                  style={{overflow: 'visible', padding: '10px 0px 10px 0px'}}>
-                { uploadMdl }
+            entityObj !== null && entityObj.parent ? <Card className="project-container mdl-cell mdl-cell--12-col" style={styles.container}>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
-                        <a href={'/#/' + BaseUtils.getUrlPath(parentKind) + parentId } className="mdl-color-text--grey-800 external" onTouchTap={() => this.goBack()}>
+                        <a href={'/#/' + BaseUtils.getUrlPath(entityObj.parent.kind) + entityObj.parent.id } className="mdl-color-text--grey-800 external" onTouchTap={() => this.goBack()}>
                             <i className="material-icons" style={styles.backIcon}>keyboard_backspace</i>
                             Back
                         </a>
                         <div style={styles.menuIcon}>
-                            { optionsMenu }
+                            { projectRole !== Roles.project_viewer && projectRole !== Roles.file_uploader  && projectRole !== Roles.file_downloader ? <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity()} /> : null }
                         </div>
                     </div>
                     <div className="mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800"
                          style={styles.detailsTitle}>
-                        <h4 style={styles.heading}><FontIcon className="material-icons" style={styles.folderIcon}>folder_open</FontIcon>{ name }</h4>
+                        <h4 style={styles.heading}><FontIcon className="material-icons" style={styles.folderIcon}>folder_open</FontIcon>{ entityObj.name }</h4>
                     </div>
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.breadcrumbs}>
-                        <h6 style={styles.breadcrumbHeading}>{path}  {' '+name}</h6>
+                        <h6 style={styles.breadcrumbHeading}>{BaseUtils.getFilePath(entityObj.ancestors)}  {' '+entityObj.name}</h6>
                     </div>
                 </div>
-            </Card>
+            </Card> : null
         );
     }
 
@@ -78,6 +66,11 @@ const styles = {
     breadcrumbHeading: {
         margin: '0px 0px 6px 3px'
     },
+    container: {
+        overflow: 'auto',
+        padding: '10px 0px 10px 0px',
+        margin: '0 auto'
+    },
     detailsTitle: {
         textAlign: 'left',
         float: 'left'
@@ -101,7 +94,7 @@ const styles = {
 
 FolderPath.propTypes = {
     entityObj: object,
-    projPermissions: object
+    projectRole: string
 };
 
 export default FolderPath;

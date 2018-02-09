@@ -23,6 +23,28 @@ describe('Provenance Store', () => {
         provenanceStore.transportLayer = transportLayer;
     });
 
+    it('@action getGeneratedByActivity - gets the generating activity for a file or file version', () => {
+        provenanceStore.drawerLoading = false;
+        expect(provenanceStore.drawerLoading).toBe(false);
+        provenanceStore.generatedByActivity = null;
+        expect(provenanceStore.generatedByActivity).toBe(null);
+        transportLayer.getWasGeneratedByNode = jest.fn((id) => respondOK(fake.prov_activity_json));
+        provenanceStore.getGeneratedByActivity(FILE_ID);
+        expect(provenanceStore.drawerLoading).toBe(true);
+        return sleep(1).then(() => {
+            expect(transportLayer.getWasGeneratedByNode).toHaveBeenCalledTimes(1);
+            expect(transportLayer.getWasGeneratedByNode).toHaveBeenCalledWith(FILE_ID);
+            expect(provenanceStore.drawerLoading).toBe(false);
+        });
+    });
+
+    it('@action resetGeneratedByActivity - resets the generating activity to null', () => {
+        provenanceStore.generatedByActivity = 1;
+        expect(provenanceStore.generatedByActivity).toBe(1);
+        provenanceStore.resetGeneratedByActivity();
+        expect(provenanceStore.generatedByActivity).toBe(null);
+    });
+
     it('@action setDropdownSelectValue - sets the value of the relation type dropdown select field', () => {
         provenanceStore.setDropdownSelectValue(RELATION_KIND);
         expect(provenanceStore.dropdownSelectValue).toBe(RELATION_KIND);
@@ -216,8 +238,8 @@ describe('Provenance Store', () => {
         return sleep(1).then(() => {
             expect(transportLayer.editProvActivity).toHaveBeenCalledTimes(1);
             expect(transportLayer.editProvActivity).toHaveBeenCalledWith(ACTIVITY_ID, ACTIVITY_NAME, ACTIVITY_DESCRIPTION);
-            expect(provenanceStore.provNodes.length).toBe(1);
-            expect(provenanceStore.provNodes[0].id).toBe(ACTIVITY_ID);
+            expect(provenanceStore.provNodes.length).toBe(2);
+            expect(provenanceStore.provNodes[1].id).toBe(ACTIVITY_ID);
             expect(provenanceStore.showProvCtrlBtns).toBe(false);
             expect(provenanceStore.renderGraph).toBe(true);
         });
@@ -232,8 +254,8 @@ describe('Provenance Store', () => {
         return sleep(1).then(() => {
             expect(transportLayer.addProvActivity).toHaveBeenCalledTimes(1);
             expect(transportLayer.addProvActivity).toHaveBeenCalledWith(ACTIVITY_NAME, ACTIVITY_DESCRIPTION);
-            expect(provenanceStore.provNodes.length).toBe(1);
-            expect(provenanceStore.provNodes[0].id).toBe(ACTIVITY_ID);
+            expect(provenanceStore.provNodes.length).toBe(3);
+            expect(provenanceStore.provNodes[2].id).toBe(ACTIVITY_ID);
             expect(provenanceStore.renderGraph).toBe(true);
         });
     });

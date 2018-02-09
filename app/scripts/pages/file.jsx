@@ -1,6 +1,7 @@
 import React from 'react'
 import { observer } from 'mobx-react';
 import mainStore from '../stores/mainStore';
+import provenanceStore from '../stores/provenanceStore';
 import { Kind, Path } from '../util/urlEnum';
 import FileDetails from '../components/fileComponents/fileDetails.jsx';
 import FileOptions from '../components/fileComponents/fileOptions.jsx';
@@ -11,6 +12,7 @@ import TagManager from '../components/globalComponents/tagManager.jsx';
 class File extends React.Component {
 
     componentDidMount() {
+        mainStore.toggleNav ? mainStore.toggleNavDrawer() : null;
         this._loadFile();
     }
 
@@ -27,12 +29,13 @@ class File extends React.Component {
 
     _loadFile() {
         let id = this.props.params.id;
+        provenanceStore.resetGeneratedByActivity();
         mainStore.setSelectedEntity(null, null);
         mainStore.getEntity(id, Path.FILE);
         mainStore.getFileVersions(id);
         mainStore.getObjectMetadata(id, Kind.DDS_FILE);
         mainStore.getTags(id, Kind.DDS_FILE);
-        mainStore.getTagLabels(); // Used to generate a list of tag labels
+        mainStore.getTagLabels();
         if(mainStore.filesChecked || mainStore.foldersChecked) mainStore.handleBatch([],[]);
     }
 

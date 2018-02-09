@@ -1,4 +1,4 @@
-import { UrlGen, Path } from './util/urlEnum';
+import { UrlGen, Path, Kind } from './util/urlEnum';
 import { getFetchParams } from './util/fetchUtil';
 import authStore from './stores/authStore';
 
@@ -80,7 +80,7 @@ const transportLayer = {
         };
         return fetch(`${DDS_BASE_URI+apiPrefix+Path.AGENT}api_token`, getFetchParams('post', authStore.appConfig.apiToken, body))
     },
-    loadAgents: () => {
+    getAgents: () => {
         return fetch(DDS_BASE_URI+apiPrefix+Path.AGENT,getFetchParams('get', authStore.appConfig.apiToken))
     },
     addAgent: (name, desc, repo) => {
@@ -347,36 +347,33 @@ const transportLayer = {
         };
         return fetch(DDS_BASE_URI+apiPrefix+Path.TEMPLATES+id+Path.PROPERTIES, getFetchParams('post', authStore.appConfig.apiToken, body))
     },
-    searchObjects: (value, includeKinds, includeProjects) => {
-        const body = {
-            "include_kinds": includeKinds,
-            "search_query": {
-                "query": {
-                    "bool": {
-                        "must": {
-                            "multi_match": {
-                                "query": value,
-                                "type": "phrase_prefix",
-                                "fields": [
-                                    "label",
-                                    "meta",
-                                    "name",
-                                    "tags.*"
-                                ]
-                            }
-                        },
-                        "filter": {
-                            "bool": {
-                                "must_not": {"match": {"is_deleted": true}},
-                                "should": includeProjects
-                            }
-                        }
-                    }
+    searchObjects: (query, kindFilter, projectPostFilter, tagPostFilter, page) => {
+        const kind = kindFilter.length ? kindFilter : [Kind.DDS_FILE, Kind.DDS_FOLDER];
+        const postFilters = [];
+        projectPostFilter['project.name'].length ? postFilters.push(projectPostFilter) : null;
+        tagPostFilter['tags.label'].length ? postFilters.push(tagPostFilter) : null;
+        const body =  {
+            "query_string": {
+                "query": query
+            },
+            "filters": [
+                {"kind": kind}
+            ],
+            "aggs": [
+                {
+                    "field": "project.name",
+                    "name": "project_names",
+                    "size": 50
                 },
-                size: 1000
-            }
+                {
+                    "field": "tags.label",
+                    "name": "tags",
+                    "size": 50
+                },
+            ],
+            "post_filters": postFilters
         };
-        return fetch(DDS_BASE_URI+apiPrefix+Path.SEARCH, getFetchParams('post', authStore.appConfig.apiToken, body))
+        return fetch(`${DDS_BASE_URI+apiPrefix}search/folders_files?page=${page}&per_page=25`, getFetchParams('post', authStore.appConfig.apiToken, body))
     },
 };
 
