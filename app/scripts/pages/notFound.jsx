@@ -52,6 +52,6 @@ const styles = {
         backgroundColor: '#BBDEFB',
         marginTop: 100
     }
-}
+};
 
 export default NotFound;

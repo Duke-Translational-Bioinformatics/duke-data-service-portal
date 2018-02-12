@@ -10,6 +10,7 @@ import VersionDetails from '../components/fileComponents/versionDetails.jsx';
 class Version extends React.Component {
 
     componentDidMount() {
+        provenanceStore.resetGeneratedByActivity();
         this._loadVersion();
     }
 
@@ -25,7 +26,11 @@ class Version extends React.Component {
     }
 
     _loadVersion() {
-        let id = this.props.params.id;
+        const id = this.props.params.id;
+        const {drawerLoading, generatedByActivity} = provenanceStore;
+        if(!drawerLoading && !generatedByActivity) {
+            provenanceStore.getGeneratedByActivity(id);
+        }
         mainStore.setSelectedEntity(null, null);
         mainStore.getEntity(id, Path.FILE_VERSION);
         provenanceStore.getWasGeneratedByNode(id);

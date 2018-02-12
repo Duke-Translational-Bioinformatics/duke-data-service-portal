@@ -4,10 +4,15 @@ import { Color } from '../theme/customTheme';
 
 let BaseUtils = {
 
-        msToMinSecs(millis) {
-            const minutes = Math.floor(millis / 60000);
-            const seconds = ((millis % 60000) / 1000).toFixed(0);
-            return (seconds === 60 ? (minutes+1) + " minute" : minutes + " minute" + (seconds < 10 ? "0 seconds" : " and ") + seconds + " seconds");
+        timeConversion(millisec) {
+            let seconds = (millisec / 1000).toFixed(0);
+            let minutes = (millisec / (1000 * 60)).toFixed(1);
+            let hours = (millisec / (1000 * 60 * 60)).toFixed(1);
+            let days = (millisec / (1000 * 60 * 60 * 24)).toFixed(1);
+            if (seconds < 60) return `${seconds} seconds`;
+            else if (minutes < 60) return `${minutes} minutes`;
+            else if (hours < 24) return `${hours} hours`;
+            else return  `${days} days`
         },
 
         bytesToSize(bytes){

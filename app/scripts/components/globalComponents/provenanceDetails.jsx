@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import provenanceStore from '../../stores/provenanceStore';
@@ -33,17 +34,22 @@ class ProvenanceDetails extends React.Component {
                     onClickProvNode.properties.current_version.upload.storage_provider.description;
             }
             let link = null;
-            if (fileName !== null || activityName !== null) { // Todo: Create a link for activities as well!!!!!!!!
-                link = <span><i className="material-icons" style={styles.linkIcon}>link</i>
-                    <a href={fileName !== null ? UrlGen.routes.version(versionId) : UrlGen.routes.activities(activityId)} className="external link" onTouchTap={() => this.toggleProv()}>{fileName !== null ? fileName : activityName}</a></span>
+            if (fileName !== null || activityName !== null) {
+                link = <span>
+                    <i className="material-icons" style={styles.link.linkIcon}>link</i>
+                    <a href={fileName !== null ? UrlGen.routes.version(versionId) : UrlGen.routes.activities(activityId)}
+                       style={styles.link}
+                       className="external link"
+                    >
+                        {fileName !== null ? fileName : activityName}
+                    </a>
+                </span>
             }
             if (fileId === id || versionId === id) link = <span className="mdl-color-text--grey-800">{fileName}</span>;
-            // if (activityName !== null) link = <span className="mdl-color-text--grey-800">{activityName}</span>;
             let bytes = onClickProvNode !== null && onClickProvNode.properties.upload ? onClickProvNode.properties.upload.size : null;
             if (bytes === null && onClickProvNode !== null && onClickProvNode.properties.kind !== 'dds-activity') bytes = onClickProvNode.properties.current_version.upload.size;
             details = <div className="mdl-cell mdl-cell--12-col" style={styles.details}>
                 <h6 style={styles.listHeader}>
-                    {/*{fileName !== null ? link : <span className="mdl-color-text--grey-800">{activityName}</span>}*/}
                     {link}
                 </h6>
                 <div className="list-block" style={styles.listBlock}>
@@ -116,11 +122,6 @@ class ProvenanceDetails extends React.Component {
             </div>
         )
     }
-
-    toggleProv() {
-        if(provenanceStore.toggleProvEdit && provenanceStore.toggleProv) provenanceStore.toggleProvEditor();
-        provenanceStore.toggleProvView();
-    }
 }
 
 const styles = {
@@ -130,9 +131,12 @@ const styles = {
         margin: 0,
         color: Color.dkGrey
     },
-    linkIcon: {
-        verticalAlign: -6,
-        color: Color.blue
+    link: {
+        color: Color.blue,
+        linkIcon: {
+            verticalAlign: -6,
+            color: Color.blue
+        }
     },
     listBlock: {
         margin: 0
@@ -152,10 +156,6 @@ const styles = {
         padding: '0px 5px 0px 5px',
         fontSize: 12
     }
-};
-
-ProvenanceDetails.contextTypes = {
-    muiTheme: React.PropTypes.object
 };
 
 ProvenanceDetails.propTypes = {

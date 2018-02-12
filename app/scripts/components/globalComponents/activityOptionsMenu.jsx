@@ -1,5 +1,6 @@
-import React, { PropTypes } from 'react';
-const { object, bool } = PropTypes;
+import React from 'react';
+import PropTypes from 'prop-types';
+const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import provenanceStore from '../../stores/provenanceStore';

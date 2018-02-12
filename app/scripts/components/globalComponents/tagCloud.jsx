@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -52,10 +53,6 @@ const styles = {
         padding: 0,
         margin: '5px 5px 5px 9px'
     }
-};
-
-TagCloud.contextTypes = {
-    muiTheme: React.PropTypes.object
 };
 
 TagCloud.propTypes = {

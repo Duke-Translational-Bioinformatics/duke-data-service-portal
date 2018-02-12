@@ -1,6 +1,8 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object, bool, array, string } = PropTypes;
 import ReactDOM from 'react-dom';
+import vis from 'vis';
 import { observer } from 'mobx-react';
 import { graphOptions } from '../../graphConfig';
 import { Color } from '../../theme/customTheme';
@@ -188,7 +190,7 @@ class Provenance extends React.Component {
                 return version.is_deleted;
             });
             for (let i = 0; i < versions.length; i++) {
-                if(versions[i] === false) {
+                if(!versions[i]) {
                     versionCount.push(versions[i]);
                     if(versionCount.length > 1) {
                         versionsButton = <RaisedButton

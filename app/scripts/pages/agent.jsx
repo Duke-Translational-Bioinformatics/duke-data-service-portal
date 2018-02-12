@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../stores/mainStore';
@@ -151,10 +152,6 @@ const styles = {
         marginLeft: 16,
         marginTop: 20
     }
-};
-
-Agent.contextTypes = {
-    muiTheme: React.PropTypes.object
 };
 
 Agent.propTypes = {

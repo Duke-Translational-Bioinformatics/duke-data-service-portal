@@ -5,7 +5,7 @@ import authStore from '../stores/authStore';
 import mainStore from '../stores/mainStore';
 import BaseUtils from '../util/baseUtils';
 import { Path } from '../util/urlEnum';
-import { graphColors} from '../graphConfig';
+import { graphColors, shadow} from '../graphConfig';
 import { checkStatus } from '../util/fetchUtil';
 
 export class ProvenanceStore {
@@ -18,6 +18,7 @@ export class ProvenanceStore {
     @observable doubleClicked
     @observable drawerLoading
     @observable dropdownSelectValue
+    @observable generatedByActivity
     @observable network
     @observable onClickProvNode
     @observable openConfirmRel
@@ -51,6 +52,7 @@ export class ProvenanceStore {
         this.doubleClicked = false;
         this.drawerLoading = false;
         this.dropdownSelectValue = null;
+        this.generatedByActivity = null;
         this.network = {};
         this.onClickProvNode = {};
         this.openConfirmRel = false;
@@ -117,6 +119,21 @@ export class ProvenanceStore {
             }).catch(ex =>mainStore.handleErrors(ex))
     }
 
+    @action getGeneratedByActivity(id) {
+        this.drawerLoading = true;
+        this.transportLayer.getWasGeneratedByNode(id)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => {
+                this.drawerLoading = false;
+                this.generatedByActivity = json.graph.relationships.find(r => r.type === 'WasGeneratedBy' && r.start_node === id);
+            }).catch(ex =>mainStore.handleErrors(ex))
+    }
+
+    @action resetGeneratedByActivity() {
+        this.generatedByActivity = null;
+    }
+
     @action getProvenance(id, kind, prevGraph) {
         const that = provenanceStore;
         that.drawerLoading = true;
@@ -166,15 +183,16 @@ export class ProvenanceStore {
                 if (node.properties.kind === 'dds-activity') {
                     return {
                         id: node.id,
-                        label: 'Activity: \n' + node.properties.name,
+                        label: `Activity: ${node.properties.name}\nCreated By: ${node.properties.audit.created_by.full_name}`, margin: { top: 10, right: 10, bottom: 10, left: 10 },
                         labels: node.labels.toString(),
                         properties: node.properties,
                         shape: 'box',
                         color: graphColors.activity,
+                        shadow: shadow.activity,
                         title: '<div style="margin: 10px; color: #616161"><span>'
                         + 'Name: ' + node.properties.name + '</span><br/>' +
                         '<span>' + 'Created By: ' + node.properties.audit.created_by.full_name + '</span><br/>' +
-                        '<span>' + 'Started On: ' + BaseUtils.formatLongDate(node.properties.started_on) + '</span></div>'
+                        '<span>' + 'Started On: ' + BaseUtils.formatLongDate(node.properties.started_on) + '</span></div>',
                     }
                 }
                 if (node.properties.kind === 'dds-file-version') {
@@ -420,9 +438,10 @@ export class ProvenanceStore {
             return {
                 id: json.id,
                 label: 'Activity: \n'+json.name,
+                properties: json,
                 shape: 'box',
                 color: graphColors.activity,
-                properties: json,
+                shadow: shadow.activity,
                 title: '<div style="margin: 10px; color: #616161"><span>'
                 +'Name: '+json.name + '</span><br/>' +
                 '<span>'+'Created By: '+json.audit.created_by.full_name+'</span><br/>' +
@@ -457,9 +476,10 @@ export class ProvenanceStore {
                     return {
                         id: json.id,
                         label: 'Activity: \n'+json.name,
+                        properties: json,
                         shape: 'box',
                         color: graphColors.activity,
-                        properties: json,
+                        shadow: shadow.activity,
                         title: '<div style="margin: 10px; color: #616161"><span>'
                         +'Name: '+json.name + '</span><br/>' +
                         '<span>'+'Created By: '+json.audit.created_by.full_name+'</span><br/>' +
@@ -614,7 +634,7 @@ export class ProvenanceStore {
     @action toggleProvView() {
         this.toggleProv = !this.toggleProv;
         this.selectedNode = {};
-        if(this.toggleProv !== true) { //clear old graph on close of provenance view
+        if(!this.toggleProv) { //clear old graph on close of provenance view
             this.provEdges = [];
             this.provNodes = [];
         }

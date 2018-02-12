@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object, bool, array, string, number } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -179,10 +180,6 @@ class ListItems extends React.Component {
         mainStore.processFilesToUpload([], []);
     }
 }
-
-ListItems.contextTypes = {
-    muiTheme: React.PropTypes.object
-};
 
 const styles = {
     batchOpsWrapper: {

@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object, bool, array, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -140,10 +141,6 @@ class SearchResults extends React.Component {
         if(mainStore.showSearch) mainStore.toggleSearch();
     }
 }
-
-SearchResults.contextTypes = {
-    muiTheme: React.PropTypes.object
-};
 
 const styles = {
     chip: {

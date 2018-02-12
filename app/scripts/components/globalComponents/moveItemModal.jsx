@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object, bool, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -235,7 +236,7 @@ class MoveItemModal extends React.Component {
     selectedLocation(parentId, parentKind){
         mainStore.selectMoveLocation(parentId, parentKind)
     }
-};
+}
 
 const styles = {
     backButton: {
@@ -281,6 +282,6 @@ MoveItemModal.propTypes = {
     moveItemList: array,
     moveToObj: object,
     moveItemLoading: bool
-}
+};
 
 export default MoveItemModal;

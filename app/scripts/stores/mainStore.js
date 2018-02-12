@@ -267,7 +267,7 @@ export class MainStore {
             this.counter.set(counterId, c);
         }
         if(this.counter.get(counterId) < StatusEnum.MAX_RETRY) {
-            mainStore.addToast(`${message}. Retrying in ${BaseUtils.msToMinSecs(delay)}...`);
+            mainStore.addToast(`${message}. Retrying in ${BaseUtils.timeConversion(delay)}...`);
             const tryAgain = async () => {
                 await sleep(delay);
                 func(...args);
@@ -1100,7 +1100,7 @@ export class MainStore {
             }
             if (chunk.chunkUpdates.status !== StatusEnum.STATUS_SUCCESS) allDone = false;
         }
-        if (allDone === true) this.checkForHash(uploadId, upload.parentId, upload.parentKind, upload.name, upload.label, upload.fileId, upload.projectId);
+        if (allDone) this.checkForHash(uploadId, upload.parentId, upload.parentKind, upload.name, upload.label, upload.fileId, upload.projectId);
         window.onbeforeunload = function () { // If done, set to false so no warning is sent.
             this.warnUserBeforeLeavingPage = false;
         };
@@ -1214,17 +1214,21 @@ export class MainStore {
             .then(response => response.json())
             .then((json) => {
                 this.addToast('Created New File Version!');
-                this.addFileVersionSuccess(fileId, uploadId)
+                this.addFileVersionSuccess(fileId, uploadId, json);
             }).catch((ex) => {
                 this.addToast('Failed to Create New Version');
                 this.uploadError(uploadId);
             });
     }
 
-    @action addFileVersionSuccess(id, uploadId) {
+    @action addFileVersionSuccess(id, uploadId, json) {
         provenanceStore.displayProvAlert();
         if(location.href.includes(id)) this.getEntity(id, Path.FILE);
         this.getFileVersions(id);
+        if(this.listItems.some(l => l.id === id)) {
+            let index = this.listItems.findIndex(p => p.id === id);
+            this.listItems.splice(index, 1, json);
+        }
         if (this.uploads.has(uploadId)) this.uploads.delete(uploadId);
     }
 
