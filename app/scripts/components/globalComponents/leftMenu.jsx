@@ -60,6 +60,12 @@ class LeftMenu extends React.Component {
                         primaryText="Home"
                     />
                     <ListItem
+                       value={'/dashboard'}
+                       onClick={() => this.setNavIndex('/dashboard')}
+                       leftIcon={<i className="material-icons" style={styles.navIcon}>view_list</i>}
+                       primaryText="Dashboard"
+                    />
+                    <ListItem
                         value={'/metadata'}
                         onClick={() => this.setNavIndex('/metadata')}
                         leftIcon={<i className="material-icons" style={styles.navIcon}>local_offer</i>}
