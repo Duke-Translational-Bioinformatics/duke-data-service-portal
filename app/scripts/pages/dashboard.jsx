@@ -26,7 +26,7 @@ class Dashboard extends React.Component {
 
     render() {
         return (
-            <div>
+            <div style={styles.main}>
                 <TreeList {...this.props} />
                 <Breadcrumbs {...this.props} />
                 <DashboardListItems {...this.props} />
@@ -40,5 +40,11 @@ class Dashboard extends React.Component {
         );
     }
 }
+
+const styles = {
+    main: {
+        marginTop: -20
+    }
+};
 
 export default Dashboard;

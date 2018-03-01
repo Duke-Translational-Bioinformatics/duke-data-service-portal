@@ -20,7 +20,6 @@ class TreeList extends Component {
             mainStore.setListItems(projects);
             dashboardStore.setSelectedItem();
         };
-        
         let item = downloadedItems.get(selectedItem)
         if (item && !ancestorStatus.get('downloadComplete')) {
             if(!item.childrenIds) dashboardStore.getTreeListChildren(item)
@@ -33,7 +32,7 @@ class TreeList extends Component {
     }
 
     render() {
-        const { projects } = mainStore;
+        const {errorModals, phiModalOpen, toasts, showFilters, screenSize, serviceOutageNoticeModalOpen, projects} = mainStore;
         const { downloadedItems, drawer, selectedItem } = dashboardStore;
         let ancestorIds = []
         if (selectedItem) {
@@ -48,13 +47,24 @@ class TreeList extends Component {
                 open={drawer.get('open')}
                 width={drawer.get('width')}
                 zDepth={1}
-                containerStyle={styles.drawer}
+                containerStyle={this.drawerStyle()}
                 >
                   <List>
                       {this.buildTree(downloadedItems, ancestorIds)}
                   </List>
             </Drawer>
         );
+    };
+    
+    drawerStyle() {
+        const {leftMenuDrawer} = mainStore;
+        const {drawer} = dashboardStore;
+        let style;
+        if(leftMenuDrawer.get('open')) {
+            let leftPadding = window.innerWidth <= 720 ? 0 : leftMenuDrawer.get('width')
+            style = {marginLeft: leftPadding}
+        };
+        return style;
     };
 
     handleKeyDown(e, item) {
@@ -137,10 +147,6 @@ class TreeList extends Component {
 };
 
 const styles = {
-    drawer: {
-        height: 'calc(100% - 76px)',
-        top: 76
-    },
     selected: {
         backgroundColor: 'rgba(0, 0, 0, 0.2)',
         color: Color.ltBlue

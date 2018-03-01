@@ -21,7 +21,7 @@ class Project extends React.Component {
         mainStore.getTagLabels(); // Used to generate a list of tag labels
         mainStore.clearSelectedItems(); // Clear checked files and folders from list
         mainStore.getUser(id);
-        mainStore.toggleNav ? mainStore.toggleNavDrawer() : null;
+        mainStore.leftMenuDrawer.get('open') ? mainStore.toggleNavDrawer() : null;
     }
 
     render() {

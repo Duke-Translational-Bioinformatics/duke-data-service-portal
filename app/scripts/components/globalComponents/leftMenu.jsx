@@ -25,9 +25,9 @@ function wrapState(ComposedComponent) {
         };
 
         render() {
-            const { leftNavIndex } = mainStore;
+            const { leftNavIndex, leftMenuDrawer } = mainStore;
             return (
-                <ComposedComponent style={styles.listContainer} value={leftNavIndex} onChange={this.handleRequestChange}>
+                <ComposedComponent style={styles.listContainer} value={leftMenuDrawer.get('index')} onChange={this.handleRequestChange}>
                     {this.props.children}
                 </ComposedComponent>
             );
@@ -41,14 +41,14 @@ SelectableList = observer(wrapState(SelectableList));
 class LeftMenu extends React.Component {
 
     render() {
-        const { screenSize, showSearch, toggleNav } = mainStore;
+        const { leftMenuDrawer, screenSize, showSearch } = mainStore;
         const drawerWidth = screenSize.width >= 700 ? 240 : screenSize.width;
 
         return (
-            <Drawer width={drawerWidth} open={toggleNav && !showSearch} zDepth={0} containerStyle={styles.drawer}>
+            <Drawer width={leftMenuDrawer.get('width')} open={leftMenuDrawer.get('open') && !showSearch} zDepth={0} containerStyle={styles.drawer}>
                 <Toolbar style={styles.toolbar}>
                     <ToolbarGroup firstChild={true} style={styles.toolbar.firstToolbarGroup}>
-                        <a href="#" onTouchTap={()=>this.toggleNav()}><FontIcon className="material-icons" style={styles.openIcon}>{!toggleNav ? 'menu' : 'close'}</FontIcon></a>
+                        <a href="#" onTouchTap={()=>this.toggleNav()}><FontIcon className="material-icons" style={styles.openIcon}>{!leftMenuDrawer.get('open') ? 'menu' : 'close'}</FontIcon></a>
                         <img src="/images/dukeDSVertical.png" style={styles.logo}/>
                     </ToolbarGroup>
                 </Toolbar>
@@ -180,8 +180,8 @@ const styles = {
 };
 
 LeftMenu.propTypes = {
+    leftMenuDrawer: object,
     screenSize: object,
-    toggleNav: bool,
     showSearch: bool
 };
 

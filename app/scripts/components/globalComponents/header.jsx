@@ -43,7 +43,7 @@ class Header extends React.Component {
 
     toggleSearch() {
         mainStore.toggleSearch();
-        mainStore.toggleNav ? mainStore.toggleNavDrawer() : null;
+        mainStore.leftMenuDrawer.get('open') ? mainStore.toggleNavDrawer() : null;
     }
 }
 
