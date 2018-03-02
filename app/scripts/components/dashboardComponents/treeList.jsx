@@ -59,10 +59,9 @@ class TreeList extends Component {
     drawerStyle() {
         const {leftMenuDrawer} = mainStore;
         const {drawer} = dashboardStore;
-        let style;
+        let style = styles.drawer;
         if(leftMenuDrawer.get('open')) {
-            let leftPadding = window.innerWidth <= 720 ? 0 : leftMenuDrawer.get('width')
-            style = {marginLeft: leftPadding}
+            style.marginLeft = window.innerWidth <= 720 ? 0 : leftMenuDrawer.get('width')
         };
         return style;
     };
@@ -139,7 +138,7 @@ class TreeList extends Component {
                 })
             )
         }
-        console.log('buildTree downloadedItems.size', downloadedItems.size);
+        // console.log('buildTree downloadedItems.size', downloadedItems.size);
         let projectIds = downloadedItems.get('projectIds')
         let projectTree = projectIds ? looper(projectIds) : null
         return projectTree
@@ -147,15 +146,18 @@ class TreeList extends Component {
 };
 
 const styles = {
-    selected: {
-        backgroundColor: 'rgba(0, 0, 0, 0.2)',
-        color: Color.ltBlue
-    },
     childrenDownloaded: {
         color: Color.ltBlue
     },
+    drawer: {
+        top: '56px'
+    },
     nestedListStyle: {
         padding: '0px'
+    },
+    selected: {
+        backgroundColor: 'rgba(0, 0, 0, 0.2)',
+        color: Color.ltBlue
     }
 }
 
