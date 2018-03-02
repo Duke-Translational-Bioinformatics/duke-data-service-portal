@@ -45,13 +45,7 @@ class LeftMenu extends React.Component {
         const drawerWidth = screenSize.width >= 700 ? 240 : screenSize.width;
 
         return (
-            <Drawer width={leftMenuDrawer.get('width')} open={leftMenuDrawer.get('open') && !showSearch} zDepth={0} containerStyle={styles.drawer}>
-                <Toolbar style={styles.toolbar}>
-                    <ToolbarGroup firstChild={true} style={styles.toolbar.firstToolbarGroup}>
-                        <a href="#" onTouchTap={()=>this.toggleNav()}><FontIcon className="material-icons" style={styles.openIcon}>{!leftMenuDrawer.get('open') ? 'menu' : 'close'}</FontIcon></a>
-                        <img src="/images/dukeDSVertical.png" style={styles.logo}/>
-                    </ToolbarGroup>
-                </Toolbar>
+            <Drawer width={drawerWidth} open={leftMenuDrawer.get('open') && !showSearch} zDepth={0} containerStyle={styles.drawer}>
                 <SelectableList router={this.props.router}>
                     <ListItem
                         value={'/'}
@@ -144,10 +138,13 @@ class LeftMenu extends React.Component {
     }
 }
 
+const toolbarHeight = '56px'
 const styles = {
     drawer: {
         backgroundColor: Color.ltGrey3,
-        position: 'absolute'
+        position: 'absolute',
+        top: toolbarHeight,
+        zIndex: 1
     },
     logo: {
         width: '20%',
@@ -163,13 +160,8 @@ const styles = {
         paddingRight: 5,
         verticalAlign: -6
     },
-    openIcon: {
-        fontSize: 24,
-        color: Color.white,
-        margin: '4px 10px 0px 10px'
-    },
     toolbar: {
-        height: 56,
+        height: toolbarHeight,
         backgroundColor: Color.blue,
         boxShadow: 'rgba(0, 0, 0, 0.16) 0px 3px 10px, rgba(0, 0, 0, 0.23) 0px 3px 10px',
         firstToolbarGroup: {

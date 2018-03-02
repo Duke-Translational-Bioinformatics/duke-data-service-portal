@@ -16,24 +16,38 @@ class Header extends React.Component {
     render() {
         const { appConfig } = authStore;
         const { showSearch } = mainStore;
-        let header = !showSearch ? <Toolbar className="navbar" style={styles.toolbar}>
-            <ToolbarGroup firstChild={true} style={styles.toolbar.firstToolbarGroup}>
-                {!appConfig.apiToken ? '' : <a href="#" onTouchTap={()=>this.toggleNav()}><FontIcon className="material-icons" style={styles.openIcon}>menu</FontIcon></a>}
-                {!appConfig.apiToken ? '' : <img src="/images/dukeDSVertical.png" style={styles.logo}/>}
-            </ToolbarGroup>
-            <ToolbarGroup lastChild={true}>
-                <FontIcon className="material-icons" style={styles.searchIcon} onTouchTap={()=>this.toggleSearch()}>
-                    search
-                </FontIcon>
-                <CurrentUser {...this.props} />
-            </ToolbarGroup>
-        </Toolbar> : <Search {...this.props} />;
-
-        if(!appConfig.apiToken) {
-            return null;
-        } else {
-            return header
+        let header = null
+        if (!!appConfig.apiToken) {
+            header = !showSearch ? this.navBar() : <Search {...this.props} />;
         }
+        return header;
+    }
+
+    navBar() {
+        return (
+            <Toolbar className="navbar" style={styles.toolbar}>
+                <ToolbarGroup firstChild={true} style={styles.toolbar.firstToolbarGroup}>
+                    {this.menuButton()}
+                    <img src="/images/dukeDSVertical.png" style={styles.logo}/>
+                </ToolbarGroup>
+                <ToolbarGroup lastChild={true}>
+                    <FontIcon className="material-icons" style={styles.searchIcon} onTouchTap={()=>this.toggleSearch()}>
+                        search
+                    </FontIcon>
+                    <CurrentUser {...this.props} />
+                </ToolbarGroup>
+            </Toolbar>
+        )
+    }
+
+    menuButton() {
+        const { leftMenuDrawer } = mainStore;
+        let menuIcon = leftMenuDrawer.get('open') ? 'close' : 'menu'
+        return (
+            <a href="#" onTouchTap={()=>this.toggleNav()}>
+              <FontIcon className="material-icons" style={styles.menuIcon}>{menuIcon}</FontIcon>
+            </a>
+        );
     }
 
     toggleNav() {
@@ -65,13 +79,13 @@ const styles = {
             marginBottom: 35
         }
     },
-    openIcon: {
+    menuIcon: {
         fontSize: 24,
-        color: '#fff',
+        color: Color.white,
         margin: '4px 10px 0px 10px'
     },
     searchIcon: {
-        color: "#fff",
+        color: Color.white,
         cursor: 'pointer'
     },
     toolbar: {
@@ -85,8 +99,9 @@ const styles = {
 };
 
 Header.propTypes = {
-    showSearch: bool,
-    appConfig: object
+    appConfig: object,
+    leftMenuDrawer: object,
+    showSearch: bool
 };
 
 export default Header;
