@@ -177,8 +177,9 @@ export class DashboardStore {
         this.drawer.set('open', true);
         this.drawer.set('width', width);
         this.drawer.set('contentStyle', contentStyle);
+        mainStore.leftMenuDrawer.set('open', false)
     }
-    
+
     @action toggleCollapseTree(router) {
         if (this.drawer.get('collapsed')) {
             this.downloadedItems.forEach((item) => {
