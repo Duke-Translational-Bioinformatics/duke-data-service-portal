@@ -2,7 +2,7 @@ import React from 'react';
 import { observable, action, map } from 'mobx';
 import mainStore from './mainStore';
 import transportLayer from '../transportLayer';
-import { Path } from '../util/urlEnum';
+import { Kind, Path } from '../util/urlEnum';
 import { checkStatusAndConsistency } from '../util/fetchUtil';
 
 export class DashboardStore {
@@ -22,11 +22,16 @@ export class DashboardStore {
     }
     
     pathFinder(kind) {
-        let kinds = {
-            'dds-project': Path.PROJECT,
-            'dds-folder': Path.FOLDER
+        let path
+        switch (kind) {
+        case Kind.DDS_PROJECT:
+            path = Path.PROJECT;
+            break;
+        case Kind.DDS_FOLDER:
+            path = Path.FOLDER;
+            break;
         }
-        return (kinds[kind])
+        return (path)
     }
     
     @action setRouter(router) {

@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import dashboardStore from '../../stores/dashboardStore';
 import { Color } from '../../theme/customTheme';
-import { Path } from '../../util/urlEnum';
+import { Kind, Path } from '../../util/urlEnum';
 import FlatButton from 'material-ui/FlatButton';
 import Paper from 'material-ui/Paper';
 
@@ -36,11 +36,16 @@ class Breadcrumbs extends Component {
     }
 
     pathFinder(kind) {
-        let kinds = {
-            'dds-project': Path.PROJECT,
-            'dds-folder': Path.FOLDER
+        let path
+        switch (kind) {
+        case Kind.DDS_PROJECT:
+            path = Path.PROJECT;
+            break;
+        case Kind.DDS_FOLDER:
+            path = Path.FOLDER;
+            break;
         }
-        return (kinds[kind])
+        return (path)
     }
 
     breadCrumb() {
