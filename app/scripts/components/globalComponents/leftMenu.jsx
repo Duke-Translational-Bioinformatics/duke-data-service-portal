@@ -138,12 +138,11 @@ class LeftMenu extends React.Component {
     }
 }
 
-const toolbarHeight = '56px'
 const styles = {
     drawer: {
         backgroundColor: Color.ltGrey3,
         position: 'absolute',
-        top: toolbarHeight,
+        top: 56,
         zIndex: 1
     },
     logo: {
@@ -161,7 +160,7 @@ const styles = {
         verticalAlign: -6
     },
     toolbar: {
-        height: toolbarHeight,
+        height: 56,
         backgroundColor: Color.blue,
         boxShadow: 'rgba(0, 0, 0, 0.16) 0px 3px 10px, rgba(0, 0, 0, 0.23) 0px 3px 10px',
         firstToolbarGroup: {
