@@ -9,7 +9,6 @@ import FileOptions from '../components/fileComponents/fileOptions.jsx';
 import FolderOptions from '../components/folderComponents/folderOptions.jsx';
 import ProjectOptions from '../components/projectComponents/projectOptions.jsx';
 import TagManager from '../components/globalComponents/tagManager.jsx'
-import UploadManager from '../components/globalComponents/uploadManager.jsx';
 import VersionUpload from '../components/fileComponents/versionUpload.jsx';
 
 @observer
@@ -34,7 +33,6 @@ class Dashboard extends React.Component {
                 <FolderOptions {...this.props} />
                 <ProjectOptions {...this.props} />
                 <TagManager {...this.props} />
-                <UploadManager {...this.props} />
                 <VersionUpload {...this.props} />
             </div>
         );
