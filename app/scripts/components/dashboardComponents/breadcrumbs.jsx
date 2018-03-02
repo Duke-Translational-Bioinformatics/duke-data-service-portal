@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types';
 const { object, string } = PropTypes;
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { observer } from 'mobx-react';
@@ -10,7 +11,7 @@ import FlatButton from 'material-ui/FlatButton';
 import Paper from 'material-ui/Paper';
 
 @observer
-class Breadcrumbs extends Component {
+class Breadcrumbs extends React.Component {
     render() {
         const { drawer, selectedItem } = dashboardStore;
         const contentStyle = drawer.get('contentStyle')

@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 const { object, bool, array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
@@ -25,8 +26,8 @@ class DashboardListItems extends React.Component {
 
     render() {
         const { allItemsSelected, filesChecked, foldersChecked, isSafari, 
-            listItems, loading, projPermissions, projectRoles, responseHeaders,
-            screenSize, tableBodyRenderKey, uploads, projects, project
+            listItems, loading, project, projects, projectRoles, responseHeaders,
+            screenSize, tableBodyRenderKey, uploads
         } = mainStore;
         const { drawer, selectedItem } = dashboardStore;
         const contentStyle = drawer.get('contentStyle')
@@ -333,15 +334,20 @@ const styles = {
 };
 
 DashboardListItems.propTypes = {
+    drawer: object,
     filesChecked: array,
     foldersChecked: array,
+    isSafari: bool,
     listItems: array,
-    entityObj: object,
-    projPermissions: object,
+    loading: bool,
+    project: object,
+    projects: array,
+    projectRoles: object,
     responseHeaders: object,
     screenSize: object,
-    uploads: object,
-    loading: bool
+    selectedItem: string,
+    tableBodyRenderKey: number,
+    uploads: object
 };
 
 export default DashboardListItems;
