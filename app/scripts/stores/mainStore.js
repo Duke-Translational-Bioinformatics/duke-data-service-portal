@@ -1,5 +1,5 @@
 import React from 'react';
-import { observable, computed, action, map, extendObservable } from 'mobx';
+import { observable, computed, action, map } from 'mobx';
 import cookie from 'react-cookie';
 import UAParser from 'ua-parser-js';
 import authStore from '../stores/authStore';
@@ -235,8 +235,7 @@ export class MainStore {
     }
 
     @action toggleNavDrawer() {
-        let drawerOpen = this.leftMenuDrawer.get('open')
-        this.leftMenuDrawer.set('open', !drawerOpen)
+        this.leftMenuDrawer.set('open', !this.leftMenuDrawer.get('open'))
     }
 
     @action toggleBackButtonVisibility(bool, prevLocation){
