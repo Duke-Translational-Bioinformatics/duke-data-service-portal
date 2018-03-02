@@ -1,10 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router';
 const { object, bool } = PropTypes;
 import { observer } from 'mobx-react';
 import authStore from '../../stores/authStore';
 import mainStore from '../../stores/mainStore';
 import { Color } from '../../theme/customTheme';
+import { UrlGen } from '../../util/urlEnum';
 import CurrentUser from '../globalComponents/currentUser.jsx';
 import Search from '../globalComponents/search.jsx';
 import FontIcon from 'material-ui/FontIcon';
@@ -28,7 +30,9 @@ class Header extends React.Component {
             <Toolbar className="navbar" style={styles.toolbar}>
                 <ToolbarGroup firstChild={true} style={styles.toolbar.firstToolbarGroup}>
                     {this.menuButton()}
-                    <img src="/images/dukeDSVertical.png" style={styles.logo}/>
+                    <Link to={UrlGen.routes.home()}>
+                        <img src="/images/dukeDSVertical.png" style={styles.logo}/>
+                    </Link>
                 </ToolbarGroup>
                 <ToolbarGroup lastChild={true}>
                     <FontIcon className="material-icons" style={styles.searchIcon} onTouchTap={()=>this.toggleSearch()}>
@@ -45,7 +49,7 @@ class Header extends React.Component {
         let menuIcon = leftMenuDrawer.get('open') ? 'close' : 'menu'
         return (
             <a href="#" onTouchTap={()=>this.toggleNav()}>
-              <FontIcon className="material-icons" style={styles.menuIcon}>{menuIcon}</FontIcon>
+                <FontIcon className="material-icons" style={styles.menuIcon}>{menuIcon}</FontIcon>
             </a>
         );
     }
