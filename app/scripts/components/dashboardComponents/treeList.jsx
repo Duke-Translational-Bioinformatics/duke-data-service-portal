@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-const { object, array, string } = PropTypes;
+const { array, object, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import dashboardStore from '../../stores/dashboardStore';
-import { Path } from '../../util/urlEnum';
+import { Kind } from '../../util/urlEnum';
 import { Color } from '../../theme/customTheme';
 import Drawer from 'material-ui/Drawer';
 import FontIcon from 'material-ui/FontIcon';
@@ -81,20 +81,16 @@ class TreeList extends React.Component {
     }
 
     iconPicker(child, ancestorIds) {
-        let kinds = {
-            'open': {
-                'dds-project': 'content_paste',
-                'dds-folder': 'folder_open',
-                'dds-file': 'description'
-            },
-            'closed': {
-                'dds-project': 'content_paste',
-                'dds-folder': 'folder',
-                'dds-file': 'description'
-            }
+        let iconKind
+        let itemOpen = ancestorIds.includes(child.id) || child.id === dashboardStore.selectedItem
+        switch (child.kind) {
+        case Kind.DDS_PROJECT:
+            iconKind = 'content_paste';
+            break;
+        case Kind.DDS_FOLDER:
+            iconKind = itemOpen ? 'folder_open' : 'folder';
+            break;
         }
-        let iconKind = ancestorIds.includes(child.id) || child.id === dashboardStore.selectedItem ? kinds.open[child.kind] : kinds.closed[child.kind]
-        
         return (
             <FontIcon className="material-icons" style={styles.icon}>
                 {iconKind}
