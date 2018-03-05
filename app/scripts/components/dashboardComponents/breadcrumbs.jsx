@@ -15,27 +15,24 @@ import Paper from 'material-ui/Paper';
 class Breadcrumbs extends React.Component {
     render() {
         const { drawer, selectedItem } = dashboardStore;
-        const contentStyle = drawer.get('contentStyle')
         const drawerDirectionIcon = drawer.get('open') ? 'chevron_left' : 'chevron_right'
         return (
-            <div style={contentStyle}>
-                <Paper style={styles.breadCrumb}>
-                    <IconButton
-                        iconClassName="material-icons"
-                        onClick={() => dashboardStore.toggleDrawer()}
-                        style={styles.drawerToggle}
-                        hoveredStyle={styles.hover}
-                    >
-                        {drawerDirectionIcon}
-                    </IconButton>
-                    <FlatButton
-                        label={drawer.get('toggleLable')}
-                        style={selectedItem ? styles.breadCrumb : styles.breadCrumbSelected}
-                        onClick={() => dashboardStore.toggleCollapseTree(this.props.router)}
-                    />
-                    {this.breadCrumb()}
-                </Paper> 
-          	</div>
+            <Paper style={styles.breadCrumb}>
+                <IconButton
+                    iconClassName="material-icons"
+                    onClick={() => dashboardStore.toggleDrawer()}
+                    style={styles.drawerToggleButton}
+                    hoveredStyle={styles.hover}
+                >
+                    {drawerDirectionIcon}
+                </IconButton>
+                <FlatButton
+                    label={drawer.get('toggleLable')}
+                    style={selectedItem ? styles.breadCrumb : styles.breadCrumbSelected}
+                    onClick={() => dashboardStore.toggleCollapseTree(this.props.router)}
+                />
+                {this.breadCrumb()}
+            </Paper> 
         );
     }
 
@@ -88,7 +85,7 @@ const styles = {
         top: '-7px',
         height: '36px'
     },
-    drawerToggle: {
+    drawerToggleButton: {
         height: '36px',
         paddingTop: '6px'
     },

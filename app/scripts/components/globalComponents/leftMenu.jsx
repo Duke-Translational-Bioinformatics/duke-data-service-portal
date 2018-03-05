@@ -42,7 +42,7 @@ class LeftMenu extends React.Component {
 
     render() {
         const { leftMenuDrawer, screenSize, showSearch } = mainStore;
-        const drawerWidth = screenSize.width >= 700 ? 240 : screenSize.width;
+        const drawerWidth = screenSize.width >= 700 ? leftMenuDrawer.get('width') : screenSize.width;
 
         return (
             <Drawer width={drawerWidth} open={leftMenuDrawer.get('open') && !showSearch} zDepth={0} containerStyle={styles.drawer}>
@@ -129,7 +129,7 @@ class LeftMenu extends React.Component {
     }
 
     toggleNav() {
-        mainStore.toggleNavDrawer();
+        mainStore.toggleLeftMenuDrawer();
     }
 
     handleLogout() {

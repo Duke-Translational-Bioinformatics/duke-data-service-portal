@@ -233,9 +233,17 @@ export class MainStore {
     @action setLeftNavIndex(index) {
         this.leftMenuDrawer.set('index', index);
     }
-
-    @action toggleNavDrawer() {
+    
+    @action toggleLeftMenuDrawer() {
         this.leftMenuDrawer.set('open', !this.leftMenuDrawer.get('open'))
+    }
+
+    @action closeLeftMenuDrawer() {
+        this.leftMenuDrawer.set('open', false)
+    }
+    
+    @action openLeftMenuDrawer() {
+        this.leftMenuDrawer.set('open', true)
     }
 
     @action toggleBackButtonVisibility(bool, prevLocation){

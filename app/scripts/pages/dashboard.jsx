@@ -19,7 +19,7 @@ class Dashboard extends React.Component {
         };
         if(mainStore.openTagManager) mainStore.toggleTagManager();
         mainStore.getTagLabels(); // Used to generate a list of tag labels
-        dashboardStore.setDrawer();
+        mainStore.closeLeftMenuDrawer();
         dashboardStore.setRouter(this.props.router);
     }
 
@@ -27,16 +27,27 @@ class Dashboard extends React.Component {
         return (
             <div style={styles.main}>
                 <TreeList {...this.props} />
-                <Breadcrumbs {...this.props} />
-                <DashboardListItems {...this.props} />
-                <FileOptions {...this.props} />
-                <FolderOptions {...this.props} />
-                <ProjectOptions {...this.props} />
-                <TagManager {...this.props} />
-                <VersionUpload {...this.props} />
+                <div style={this.bodyStyle()}>
+                    <Breadcrumbs {...this.props} />
+                    <DashboardListItems {...this.props} />
+                    <FileOptions {...this.props} />
+                    <FolderOptions {...this.props} />
+                    <ProjectOptions {...this.props} />
+                    <TagManager {...this.props} />
+                    <VersionUpload {...this.props} />
+                </div>
             </div>
         );
     }
+    
+    bodyStyle() {
+        const {drawer} = dashboardStore;
+        let style = {}
+        if(window.innerWidth > 720) {
+            style.marginLeft = drawer.get('open') ? drawer.get('width') : 0
+        };
+        return style;
+    };
 }
 
 const styles = {

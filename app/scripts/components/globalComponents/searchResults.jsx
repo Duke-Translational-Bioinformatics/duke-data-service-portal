@@ -18,7 +18,7 @@ import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColu
 class SearchResults extends React.Component {
 
     componentDidMount() {
-        mainStore.leftMenuDrawer.get('open') ? mainStore.toggleNavDrawer() : null;
+        mainStore.leftMenuDrawer.get('open') ? mainStore.toggleLeftMenuDrawer() : null;
     }
 
     render() {

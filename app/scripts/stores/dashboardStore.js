@@ -15,7 +15,7 @@ export class DashboardStore {
     constructor() {
         this.ancestorStatus = observable.map();
         this.downloadedItems = observable.map();
-        this.drawer = observable.map({'toggleLable': 'Home'});
+        this.drawer = observable.map({'open': true, 'width': 350, 'toggleLable': 'Home'});
         this.router = null;
         this.selectedItem = null;
         this.transportLayer = transportLayer
@@ -168,21 +168,15 @@ export class DashboardStore {
     }
 
     @action toggleDrawer() {
-        let drawerPosition = !this.drawer.get('open')
-        let contentStyle = { transition: 'margin-left 450ms cubic-bezier(0.23, 1, 0.32, 1)' };
-        drawerPosition ? contentStyle.marginLeft = this.drawer.get('width') : null
-        this.drawer.set('open', drawerPosition)
-        this.drawer.set('contentStyle', contentStyle)
+        this.drawer.set('open', !this.drawer.get('open'))
     }
-    
-    @action setDrawer() {
-        let width = 350;
-        let contentStyle = { transition: 'margin-left 450ms cubic-bezier(0.23, 1, 0.32, 1)' };
-        contentStyle.marginLeft = width;
-        this.drawer.set('open', true);
-        this.drawer.set('width', width);
-        this.drawer.set('contentStyle', contentStyle);
-        mainStore.leftMenuDrawer.set('open', false)
+
+    @action closeDrawer() {
+        this.drawer.set('open', false)
+    }
+
+    @action openDrawer() {
+        this.drawer.set('open', true)
     }
 
     @action toggleCollapseTree(router) {

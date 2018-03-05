@@ -55,13 +55,13 @@ class Header extends React.Component {
     }
 
     toggleNav() {
-        mainStore.toggleNavDrawer();
+        mainStore.toggleLeftMenuDrawer();
         mainStore.setLeftNavIndex(this.props.router.location.pathname)
     }
 
     toggleSearch() {
         mainStore.toggleSearch();
-        mainStore.leftMenuDrawer.get('open') ? mainStore.toggleNavDrawer() : null;
+        mainStore.leftMenuDrawer.get('open') ? mainStore.toggleLeftMenuDrawer() : null;
     }
 }
 

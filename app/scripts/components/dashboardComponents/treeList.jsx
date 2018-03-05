@@ -59,10 +59,9 @@ class TreeList extends React.Component {
     
     drawerStyle() {
         const {leftMenuDrawer} = mainStore;
-        const {drawer} = dashboardStore;
         let style = styles.drawer;
-        if(leftMenuDrawer.get('open')) {
-            style.marginLeft = window.innerWidth <= 720 ? 0 : leftMenuDrawer.get('width')
+        if(window.innerWidth > 720) {
+            style.marginLeft = leftMenuDrawer.get('open') ? leftMenuDrawer.get('width') : 0
         };
         return style;
     };
@@ -147,7 +146,9 @@ const styles = {
         color: Color.ltBlue
     },
     drawer: {
-        top: '56px'
+        top: '56px',
+        transform: 'scale(1)',
+        transition: '0.10s linear'
     },
     nestedListStyle: {
         padding: '0px'

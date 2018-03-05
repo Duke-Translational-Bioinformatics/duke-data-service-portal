@@ -12,7 +12,7 @@ import TagManager from '../components/globalComponents/tagManager.jsx';
 class File extends React.Component {
 
     componentDidMount() {
-        mainStore.leftMenuDrawer.get('open') ? mainStore.toggleNavDrawer() : null;
+        mainStore.leftMenuDrawer.get('open') ? mainStore.toggleLeftMenuDrawer() : null;
         this._loadFile();
     }
 
