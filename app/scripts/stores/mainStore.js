@@ -61,8 +61,8 @@ export class MainStore {
     @observable openUploadManager
     @observable parent
     @observable prevLocation
-    @observable projects
     @observable project
+    @observable projects
     @observable projectMembers
     @observable projectRole
     @observable projectRoles
@@ -159,8 +159,8 @@ export class MainStore {
         this.openUploadManager = false;
         this.parent = {};
         this.prevLocation = null;
-        this.projects = [];
         this.project = {};
+        this.projects = [];
         this.projectMembers = [];
         this.projectRole = null;
         this.projectRoles = observable.map();
