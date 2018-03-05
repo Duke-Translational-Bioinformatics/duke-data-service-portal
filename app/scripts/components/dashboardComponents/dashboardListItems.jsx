@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-const { object, bool, array } = PropTypes;
+const { array, bool, number, object, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import dashboardStore from '../../stores/dashboardStore';
