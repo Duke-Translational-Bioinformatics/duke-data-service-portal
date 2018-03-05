@@ -8,6 +8,7 @@ import dashboardStore from '../../stores/dashboardStore';
 import { Color } from '../../theme/customTheme';
 import { Kind, Path } from '../../util/urlEnum';
 import FlatButton from 'material-ui/FlatButton';
+import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';
 
 @observer
@@ -15,16 +16,18 @@ class Breadcrumbs extends React.Component {
     render() {
         const { drawer, selectedItem } = dashboardStore;
         const contentStyle = drawer.get('contentStyle')
-        const drawerDirection = drawer.get('open') ? '<' : '>'
-
+        const drawerDirectionIcon = drawer.get('open') ? 'chevron_left' : 'chevron_right'
         return (
             <div style={contentStyle}>
                 <Paper style={styles.breadCrumb}>
-                    <FlatButton
-                        label={drawerDirection}
+                    <IconButton
+                        iconClassName="material-icons"
                         onClick={() => dashboardStore.toggleDrawer()}
                         style={styles.drawerToggle}
-                    />
+                        hoveredStyle={styles.hover}
+                    >
+                        {drawerDirectionIcon}
+                    </IconButton>
                     <FlatButton
                         label={drawer.get('toggleLable')}
                         style={selectedItem ? styles.breadCrumb : styles.breadCrumbSelected}
@@ -77,15 +80,20 @@ class Breadcrumbs extends React.Component {
 
 const styles = {
     breadCrumb: {
-        minHeight: '48px',
+        top: '-7px',
+        height: '36px',
         color: Color.ltGrey
     },
     breadCrumbSelected: {
-        minHeight: '48px'
+        top: '-7px',
+        height: '36px'
     },
     drawerToggle: {
-        minHeight: '48px',
-        minWidth: '36px'
+        height: '36px',
+        paddingTop: '6px'
+    },
+    hover: {
+        backgroundColor: Color.ltGrey3
     }
 };
 
