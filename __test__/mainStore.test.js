@@ -88,6 +88,40 @@ describe('Main Store', () => {
         expect(mainStore.showTeamManager).toBe(false);
     });
 
+    it('@action setLeftNavIndex - should set leftMenus index selected to the index possition', () => {
+        const indexValue = 1
+        expect(mainStore.leftMenuDrawer.get('index')).toBe(undefined);
+        mainStore.setLeftNavIndex(indexValue);
+        expect(mainStore.leftMenuDrawer.get('index')).toBe(indexValue);
+    });
+
+    it('@action toggleLeftMenuDrawer - should set open to be true or false', () => {
+        expect(mainStore.leftMenuDrawer.get('open')).toBe(false);
+        mainStore.toggleLeftMenuDrawer();
+        expect(mainStore.leftMenuDrawer.get('open')).toBe(true);
+        mainStore.toggleLeftMenuDrawer();
+        expect(mainStore.leftMenuDrawer.get('open')).toBe(false);
+    });
+
+    it('@action closeLeftMenuDrawer - should set open to be false', () => {
+        mainStore.leftMenuDrawer.set('open', true)
+        expect(mainStore.leftMenuDrawer.get('open')).toBe(true);
+        mainStore.closeLeftMenuDrawer();
+        expect(mainStore.leftMenuDrawer.get('open')).toBe(false);
+        // making sure it does not behave like toggle
+        mainStore.closeLeftMenuDrawer();
+        expect(mainStore.leftMenuDrawer.get('open')).toBe(false);
+    });
+
+    it('@action openLeftMenuDrawer - should set open to be false', () => {
+        expect(mainStore.leftMenuDrawer.get('open')).toBe(false);
+        mainStore.openLeftMenuDrawer();
+        expect(mainStore.leftMenuDrawer.get('open')).toBe(true);
+        // making sure it does not behave like toggle
+        mainStore.openLeftMenuDrawer();
+        expect(mainStore.leftMenuDrawer.get('open')).toBe(true);
+    });
+
     it('@action toggleAllItemsSelected - should be true or false and should be the bool arg passed in', () => {
         expect(mainStore.allItemsSelected).toBe(false);
         mainStore.toggleAllItemsSelected(true);
