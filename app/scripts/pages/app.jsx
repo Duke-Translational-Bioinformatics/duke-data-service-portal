@@ -107,12 +107,12 @@ class App extends React.Component {
     };
 
     render() {
-        const {errorModals, phiModalOpen, toasts, toggleNav, showFilters, screenSize, serviceOutageNoticeModalOpen} = mainStore;
+        const {errorModals, leftMenuDrawer, phiModalOpen, toasts, showFilters, screenSize, serviceOutageNoticeModalOpen} = mainStore;
         const {appConfig} = authStore;
         const {location} = this.props;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let dialogs, tsts = null;
-        let slideContentClass = toggleNav ? 'page-content slide-right' : showFilters ? 'page-content slide-left' : 'page-content';
+        let slideContentClass = leftMenuDrawer.get('open') ? 'page-content slide-right' : showFilters ? 'page-content slide-left' : 'page-content';
         if (toasts) {
             tsts = toasts.map(obj => {
                 return <Snackbar key={obj.ref} ref={obj.ref} message={obj.msg} open={true} bodyStyle={{height: 'auto'}}/>

@@ -1,10 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router';
 const { object, bool } = PropTypes;
 import { observer } from 'mobx-react';
 import authStore from '../../stores/authStore';
 import mainStore from '../../stores/mainStore';
 import { Color } from '../../theme/customTheme';
+import { UrlGen } from '../../util/urlEnum';
 import CurrentUser from '../globalComponents/currentUser.jsx';
 import Search from '../globalComponents/search.jsx';
 import FontIcon from 'material-ui/FontIcon';
@@ -16,34 +18,50 @@ class Header extends React.Component {
     render() {
         const { appConfig } = authStore;
         const { showSearch } = mainStore;
-        let header = !showSearch ? <Toolbar className="navbar" style={styles.toolbar}>
-            <ToolbarGroup firstChild={true} style={styles.toolbar.firstToolbarGroup}>
-                {!appConfig.apiToken ? '' : <a href="#" onTouchTap={()=>this.toggleNav()}><FontIcon className="material-icons" style={styles.openIcon}>menu</FontIcon></a>}
-                {!appConfig.apiToken ? '' : <img src="/images/dukeDSVertical.png" style={styles.logo}/>}
-            </ToolbarGroup>
-            <ToolbarGroup lastChild={true}>
-                <FontIcon className="material-icons" style={styles.searchIcon} onTouchTap={()=>this.toggleSearch()}>
-                    search
-                </FontIcon>
-                <CurrentUser {...this.props} />
-            </ToolbarGroup>
-        </Toolbar> : <Search {...this.props} />;
-
-        if(!appConfig.apiToken) {
-            return null;
-        } else {
-            return header
+        let header = null
+        if (!!appConfig.apiToken) {
+            header = !showSearch ? this.navBar() : <Search {...this.props} />;
         }
+        return header;
+    }
+
+    navBar() {
+        return (
+            <Toolbar className="navbar" style={styles.toolbar}>
+                <ToolbarGroup firstChild={true} style={styles.toolbar.firstToolbarGroup}>
+                    {this.menuButton()}
+                    <Link to={UrlGen.routes.home()}>
+                        <img src="/images/dukeDSVertical.png" style={styles.logo}/>
+                    </Link>
+                </ToolbarGroup>
+                <ToolbarGroup lastChild={true}>
+                    <FontIcon className="material-icons" style={styles.searchIcon} onTouchTap={()=>this.toggleSearch()}>
+                        search
+                    </FontIcon>
+                    <CurrentUser {...this.props} />
+                </ToolbarGroup>
+            </Toolbar>
+        )
+    }
+
+    menuButton() {
+        const { leftMenuDrawer } = mainStore;
+        let menuIcon = leftMenuDrawer.get('open') ? 'close' : 'menu'
+        return (
+            <a href="#" onTouchTap={()=>this.toggleNav()}>
+                <FontIcon className="material-icons" style={styles.menuIcon}>{menuIcon}</FontIcon>
+            </a>
+        );
     }
 
     toggleNav() {
-        mainStore.toggleNavDrawer();
+        mainStore.toggleLeftMenuDrawer();
         mainStore.setLeftNavIndex(this.props.router.location.pathname)
     }
 
     toggleSearch() {
         mainStore.toggleSearch();
-        mainStore.toggleNav ? mainStore.toggleNavDrawer() : null;
+        mainStore.leftMenuDrawer.get('open') ? mainStore.toggleLeftMenuDrawer() : null;
     }
 }
 
@@ -65,13 +83,13 @@ const styles = {
             marginBottom: 35
         }
     },
-    openIcon: {
+    menuIcon: {
         fontSize: 24,
-        color: '#fff',
+        color: Color.white,
         margin: '4px 10px 0px 10px'
     },
     searchIcon: {
-        color: "#fff",
+        color: Color.white,
         cursor: 'pointer'
     },
     toolbar: {
@@ -85,8 +103,9 @@ const styles = {
 };
 
 Header.propTypes = {
-    showSearch: bool,
-    appConfig: object
+    appConfig: object,
+    leftMenuDrawer: object,
+    showSearch: bool
 };
 
 export default Header;

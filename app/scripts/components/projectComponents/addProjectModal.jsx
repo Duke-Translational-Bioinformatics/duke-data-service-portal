@@ -130,9 +130,11 @@ class AddProjectModal extends React.Component {
 
 const styles = {
     addProject: {
-        float: 'right',
-        position: 'relative',
-        margin: '12px -9px 0px 0px'
+        float: 'right'
+    },
+    checkbox: {
+        marginTop: 20,
+        marginLeft: -2
     },
     checkbox: {
         marginTop: 20,

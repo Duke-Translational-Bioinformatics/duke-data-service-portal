@@ -3,6 +3,7 @@ import { observable, computed, action, map } from 'mobx';
 import cookie from 'react-cookie';
 import UAParser from 'ua-parser-js';
 import authStore from '../stores/authStore';
+import dashboardStore from '../stores/dashboardStore';
 import provenanceStore from '../stores/provenanceStore';
 import transportLayer from '../transportLayer';
 import BaseUtils from '../util/baseUtils.js';
@@ -41,6 +42,7 @@ export class MainStore {
     @observable isFirefox
     @observable itemsSelected
     @observable leftNavIndex
+    @observable leftMenuDrawer
     @observable listItems
     @observable loading
     @observable metadataTemplate
@@ -59,8 +61,8 @@ export class MainStore {
     @observable openUploadManager
     @observable parent
     @observable prevLocation
-    @observable projects
     @observable project
+    @observable projects
     @observable projectMembers
     @observable projectRole
     @observable projectRoles
@@ -97,7 +99,6 @@ export class MainStore {
     @observable templateProperties
     @observable toasts
     @observable totalItems
-    @observable toggleNav
     @observable toggleModal
     @observable totalUploads
     @observable uploadCount
@@ -139,6 +140,7 @@ export class MainStore {
         this.isFirefox = false;
         this.itemsSelected = null;
         this.leftNavIndex = null;
+        this.leftMenuDrawer = observable.map({'open': false, 'width': 240});
         this.listItems = [];
         this.loading = false;
         this.metadataTemplate = {};
@@ -157,8 +159,8 @@ export class MainStore {
         this.openUploadManager = false;
         this.parent = {};
         this.prevLocation = null;
-        this.projects = [];
         this.project = {};
+        this.projects = [];
         this.projectMembers = [];
         this.projectRole = null;
         this.projectRoles = observable.map();
@@ -195,7 +197,6 @@ export class MainStore {
         this.templateProperties = [];
         this.toasts = [];
         this.totalItems = null;
-        this.toggleNav = false;
         this.toggleModal = {open: false, id: null};
         this.totalUploads = {inProcess: 0, complete: 0};
         this.uploadCount = [];
@@ -205,7 +206,6 @@ export class MainStore {
         this.userKey = {};
         this.versionModal = false;
         this.warnUserBeforeLeavingPage = false;
-
         this.transportLayer = transportLayer;
     }
 
@@ -231,16 +231,28 @@ export class MainStore {
     }
 
     @action setLeftNavIndex(index) {
-        this.leftNavIndex = index;
+        this.leftMenuDrawer.set('index', index);
+    }
+    
+    @action toggleLeftMenuDrawer() {
+        this.leftMenuDrawer.set('open', !this.leftMenuDrawer.get('open'))
     }
 
-    @action toggleNavDrawer() {
-        this.toggleNav = !this.toggleNav;
+    @action closeLeftMenuDrawer() {
+        this.leftMenuDrawer.set('open', false)
+    }
+    
+    @action openLeftMenuDrawer() {
+        this.leftMenuDrawer.set('open', true)
     }
 
     @action toggleBackButtonVisibility(bool, prevLocation){
         this.showBackButton = bool;
         this.prevLocation = prevLocation;
+    }
+
+    @action setListItems(items) {
+        this.listItems = items
     }
 
     @action toggleAllItemsSelected(bool) {
@@ -402,6 +414,8 @@ export class MainStore {
                 this.projects.forEach((p) => {
                     userId !== null ? this.getAllProjectPermissions(p.id, authStore.currentUser.id) : null;
                 });
+                dashboardStore.downloadedItems.set(json.id, json);
+                dashboardStore.setDownloadedItems(this.projects);
                 this.loading = false;
                 if(this.addTeamAfterProjectCreation) {
                     window.location.href = `${window.location.protocol}//${window.location.host}/#/project/${json.id}`;
@@ -423,6 +437,8 @@ export class MainStore {
                 this.project = json;
                 let index = this.projects.findIndex((p) => p.id === id);
                 this.projects.splice(index, 1, json);
+                dashboardStore.downloadedItems.set(json.id, json);
+                dashboardStore.setDownloadedItems(this.projects);
             }).catch((ex) => {
             this.addToast('Project Update Failed');
             this.handleErrors(ex)
@@ -436,6 +452,8 @@ export class MainStore {
             .then(() => {
                 this.addToast('Project Deleted');
                 this.projects = this.projects.filter(p => p.id !== id);
+                dashboardStore.removeDownloadedItem(id)
+                dashboardStore.setDownloadedItems(this.projects);
                 this.totalItems--;
             }).catch((ex) => {
             this.addToast('Project Delete Failed');
@@ -460,6 +478,7 @@ export class MainStore {
             .then((json) => {
                 this.addToast('Folder Added');
                 this.listItems = [json, ...this.listItems];
+                dashboardStore.addDownloadedItem(json, id)
                 this.loading = false;
             }).catch((ex) => {
             this.addToast('Failed to Add a New Folder');
@@ -497,6 +516,7 @@ export class MainStore {
 
     @action deleteItemSuccess(id, parentId, path) {
         this.loading = false;
+        dashboardStore.removeDownloadedItem(id, parentId)
         this.listItems = this.listItems.filter(l => l.id !== id);
         this.totalItems--;
         if(this.listItems.length === 0) this.getChildren(parentId, path)
@@ -556,6 +576,7 @@ export class MainStore {
                     this.listItems.splice(index, 1, json);
                 }
                 if(this.entityObj && this.entityObj.id === id) this.entityObj = json;
+                dashboardStore.downloadedItems.set(id, json);
                 this.loading = false;
             }).catch((ex) => {
             this.addToast('Failed to update item');
@@ -598,6 +619,7 @@ export class MainStore {
                 } else if(!this.isListItem) {
                     this.entityObj = json;
                 }
+                dashboardStore.moveDownloadedItem(id, destination)
                 this.loading = false;
             }).catch((ex) => {
             this.addToast('Failed to move ' + type + ' to new location');

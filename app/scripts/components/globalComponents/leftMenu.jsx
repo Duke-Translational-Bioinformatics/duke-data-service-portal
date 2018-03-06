@@ -25,9 +25,9 @@ function wrapState(ComposedComponent) {
         };
 
         render() {
-            const { leftNavIndex } = mainStore;
+            const { leftNavIndex, leftMenuDrawer } = mainStore;
             return (
-                <ComposedComponent style={styles.listContainer} value={leftNavIndex} onChange={this.handleRequestChange}>
+                <ComposedComponent style={styles.listContainer} value={leftMenuDrawer.get('index')} onChange={this.handleRequestChange}>
                     {this.props.children}
                 </ComposedComponent>
             );
@@ -41,23 +41,23 @@ SelectableList = observer(wrapState(SelectableList));
 class LeftMenu extends React.Component {
 
     render() {
-        const { screenSize, showSearch, toggleNav } = mainStore;
-        const drawerWidth = screenSize.width >= 700 ? 240 : screenSize.width;
+        const { leftMenuDrawer, screenSize, showSearch } = mainStore;
+        const drawerWidth = screenSize.width >= 700 ? leftMenuDrawer.get('width') : screenSize.width;
 
         return (
-            <Drawer width={drawerWidth} open={toggleNav && !showSearch} zDepth={0} containerStyle={styles.drawer}>
-                <Toolbar style={styles.toolbar}>
-                    <ToolbarGroup firstChild={true} style={styles.toolbar.firstToolbarGroup}>
-                        <a href="#" onTouchTap={()=>this.toggleNav()}><FontIcon className="material-icons" style={styles.openIcon}>{!toggleNav ? 'menu' : 'close'}</FontIcon></a>
-                        <img src="/images/dukeDSVertical.png" style={styles.logo}/>
-                    </ToolbarGroup>
-                </Toolbar>
+            <Drawer width={drawerWidth} open={leftMenuDrawer.get('open') && !showSearch} zDepth={0} containerStyle={styles.drawer}>
                 <SelectableList router={this.props.router}>
                     <ListItem
                         value={'/'}
                         onClick={() => this.setNavIndex('/')}
                         leftIcon={<i className="material-icons" style={styles.navIcon}>home</i>}
                         primaryText="Home"
+                    />
+                    <ListItem
+                       value={'/dashboard'}
+                       onClick={() => this.setNavIndex('/dashboard')}
+                       leftIcon={<i className="material-icons" style={styles.navIcon}>view_list</i>}
+                       primaryText="Dashboard"
                     />
                     <ListItem
                         value={'/metadata'}
@@ -129,7 +129,7 @@ class LeftMenu extends React.Component {
     }
 
     toggleNav() {
-        mainStore.toggleNavDrawer();
+        mainStore.toggleLeftMenuDrawer();
     }
 
     handleLogout() {
@@ -141,7 +141,9 @@ class LeftMenu extends React.Component {
 const styles = {
     drawer: {
         backgroundColor: Color.ltGrey3,
-        position: 'absolute'
+        position: 'absolute',
+        top: 56,
+        zIndex: 1
     },
     logo: {
         width: '20%',
@@ -157,11 +159,6 @@ const styles = {
         paddingRight: 5,
         verticalAlign: -6
     },
-    openIcon: {
-        fontSize: 24,
-        color: Color.white,
-        margin: '4px 10px 0px 10px'
-    },
     toolbar: {
         height: 56,
         backgroundColor: Color.blue,
@@ -174,8 +171,8 @@ const styles = {
 };
 
 LeftMenu.propTypes = {
+    leftMenuDrawer: object,
     screenSize: object,
-    toggleNav: bool,
     showSearch: bool
 };
 
