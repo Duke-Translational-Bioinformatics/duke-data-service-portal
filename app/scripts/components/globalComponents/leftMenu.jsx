@@ -7,9 +7,7 @@ import mainStore from '../../stores/mainStore';
 import {Color} from '../../theme/customTheme';
 import Drawer from 'material-ui/Drawer';
 import Divider from 'material-ui/Divider';
-import FontIcon from 'material-ui/FontIcon';
 import {List, ListItem, makeSelectable} from 'material-ui/List';
-import {Toolbar, ToolbarGroup} from 'material-ui/Toolbar';
 
 let SelectableList = makeSelectable(List);
 
@@ -21,11 +19,11 @@ function wrapState(ComposedComponent) {
         }
 
         handleRequestChange = (event, index) => {
-            this.props.router.replace(index)
+            if(index !== 'resources') this.props.router.replace(index)
         };
 
         render() {
-            const { leftNavIndex, leftMenuDrawer } = mainStore;
+            const { leftMenuDrawer } = mainStore;
             return (
                 <ComposedComponent style={styles.listContainer} value={leftMenuDrawer.get('index')} onChange={this.handleRequestChange}>
                     {this.props.children}
@@ -53,12 +51,12 @@ class LeftMenu extends React.Component {
                         leftIcon={<i className="material-icons" style={styles.navIcon}>home</i>}
                         primaryText="Home"
                     />
-                    <ListItem
+                    {screenSize.width >= 1080 && <ListItem
                        value={'/dashboard'}
                        onClick={() => this.setNavIndex('/dashboard')}
                        leftIcon={<i className="material-icons" style={styles.navIcon}>view_list</i>}
                        primaryText="Dashboard"
-                    />
+                    />}
                     <ListItem
                         value={'/metadata'}
                         onClick={() => this.setNavIndex('/metadata')}
@@ -73,8 +71,9 @@ class LeftMenu extends React.Component {
                     />
                     <Divider/>
                     <ListItem
-                        value={0}
+                        value={'resources'}
                         primaryText="Resources"
+                        onClick={() => this.setNavIndex('resources')}
                         leftIcon={<i className="material-icons" style={styles.navIcon}>build</i>}
                         primaryTogglesNestedList={true}
                         nestedItems={[
@@ -145,28 +144,12 @@ const styles = {
         top: 56,
         zIndex: 1
     },
-    logo: {
-        width: '20%',
-        maxWidth: '20%',
-        minWidth: 58,
-        minHeight: 46,
-        marginBottom: 4
-    },
     listContainer: {
         padding: '8px 4px'
     },
     navIcon: {
         paddingRight: 5,
         verticalAlign: -6
-    },
-    toolbar: {
-        height: 56,
-        backgroundColor: Color.blue,
-        boxShadow: 'rgba(0, 0, 0, 0.16) 0px 3px 10px, rgba(0, 0, 0, 0.23) 0px 3px 10px',
-        firstToolbarGroup: {
-            backgroundColor: Color.blue,
-            justifyContent: 'flex-start'
-        }
     }
 };
 

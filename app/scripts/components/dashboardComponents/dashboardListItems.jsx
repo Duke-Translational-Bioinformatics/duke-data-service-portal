@@ -5,8 +5,9 @@ import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import dashboardStore from '../../stores/dashboardStore';
 import BaseUtils from '../../util/baseUtils.js';
-import { UrlGen, Path, Kind } from '../../util/urlEnum';
 import { Color } from '../../theme/customTheme';
+import { Path, Kind } from '../../util/urlEnum';
+import { Roles } from '../../enum';
 import BatchOps from '../../components/globalComponents/batchOps.jsx';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
 import AddProjectModal from '../../components/projectComponents/addProjectModal.jsx';
@@ -23,17 +24,23 @@ import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowCol
 
 @observer
 class DashboardListItems extends React.Component {
+    // Todo: This needs a refactor of project permissions. It is using "let projectRole = projectRoles.get(project.id);"
+    // todo: But "project" is never set when on the dashboard so it's always null.
+    // todo: Also, if you intend to show a list of projects in the listItems when a user first arrives at the dashboard
+    // todo: you'll need to apply project permissions to them as well. You can see how I do this in the projectList.jsx
+    // todo: component. It's something like this
+    // projects ? projects.map((project) => {let role = projectRoles.get(project.id); ... etc...
 
     render() {
-        const { allItemsSelected, filesChecked, foldersChecked, isSafari, 
+        const { allItemsSelected, filesChecked, foldersChecked, isSafari,
             listItems, loading, project, projects, projectRoles, responseHeaders,
             screenSize, tableBodyRenderKey, uploads
         } = mainStore;
+
         const { drawer, selectedItem } = dashboardStore;
         const contentStyle = drawer.get('contentStyle')
-        const displayingProjects = !!(selectedItem)
+        const displayingProjects = !!(selectedItem)  // Todo: Remove cruft
 
-        let showBatchOps = !!(filesChecked.length || foldersChecked.length);
         let menuWidth = screenSize.width > 1230 ? 35 : 28;
         let headers = responseHeaders && responseHeaders !== null ? responseHeaders : null;
         let nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
@@ -42,16 +49,12 @@ class DashboardListItems extends React.Component {
         let uploadManager = null;
         let addProject = null;
         let projectRole = projectRoles.get(project.id);
+        let showBatchOps = !!(filesChecked.length || foldersChecked.length);
         let showChecks = (projectRole && projectRole !== 'View Only' && projectRole !== 'File Uploader');
+        let showUploadButton = this.props.router.location.pathname !== '/dashboard' && projectRole !== null && (projectRole !== Roles.project_viewer && projectRole !== Roles.file_downloader);
         let checkboxStyle = { maxWidth: 24, float: 'left', marginRight: isSafari ? 16 : 0 };
         if (this.props.params.id && projectRole !== null) {
             newFolderModal = projectRole === 'Project Viewer' || projectRole === 'File Downloader' ? null : <AddFolderModal {...this.props}/>;
-            uploadManager = projectRole === 'Project Viewer' || projectRole === 'File Downloader' ? null : <RaisedButton label="Upload Files"
-                                                                                                    labelPosition="before"
-                                                                                                    labelStyle={{color: Color.blue}}
-                                                                                                    style={styles.uploadFilesBtn}
-                                                                                                    icon={<FileUpload color={Color.pink} />}
-                                                                                                    onTouchTap={() => this.toggleUploadManager()}/>;
             showChecks = (projectRole !== 'Project Viewer' && projectRole !== 'File Uploader');
         } else {
             addProject = <AddProjectModal {...this.props} />
@@ -73,8 +76,15 @@ class DashboardListItems extends React.Component {
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
                     {!showBatchOps && <div className="mdl-cell mdl-cell--12-col">
                         {addProject}
-                        {uploadManager}
+                        {/*{uploadManager}*/}
                         {newFolderModal}
+                        { showUploadButton ? <RaisedButton
+                                                label="Upload Files"
+                                                labelPosition="before"
+                                                labelStyle={{color: Color.blue}}
+                                                style={styles.uploadFilesBtn}
+                                                icon={<FileUpload color={Color.pink} />}
+                                                onTouchTap={() => this.toggleUploadManager()}/> : null }
                     </div>}
                     {showBatchOps && <BatchOps {...this.props}/>}
                 </div>
@@ -119,10 +129,9 @@ class DashboardListItems extends React.Component {
     
     emptyList(loading, selectedItem, listItems, projects) {
         if (listItems.length === 0 && !loading) {
-            // let noProjects = "New Projects are only a click away"
-            let noProjects = "New Projects are only a click away... well a few clicks and some typing"
-            let noFilesFolders = 'Create a new Folder or upload a Files'
-            let message = selectedItem ? noFilesFolders : projects.length === 0 ? noProjects : null
+            let noProjects = 'New projects are only a few clicks away';
+            let noFilesFolders = 'Create a new folder or upload files';
+            let message = selectedItem ? noFilesFolders : projects.length === 0 ? noProjects : null;
             return (
                 <div>
                     <h4 style={{textAlign: 'center'}}>{message}</h4>
@@ -144,14 +153,14 @@ class DashboardListItems extends React.Component {
                     />}
                 </TableRowColumn>
             )
-        // } else {
+        // } else { // Todo: remove cruft
         //     return (
         //         <TableRowColumn style={styles.checkbox} onTouchTap={() => dashboardStore.selectItem(child.id, this.props.router)}/>
         //     )
         }
     }
 
-    tableRowColumnName(child, showChecks) {
+    tableRowColumnName(child, showChecks) { // Todo: remove cruft
         let nameInfo = <div style={styles.linkColor}>
             {this.iconPicker(child.kind)}
             {child.name.length > 82 ? child.name.substring(0, 82) + '...' : child.name}
@@ -261,7 +270,7 @@ class DashboardListItems extends React.Component {
         if(projectRole !== 'Project Viewer' && projectRole !== 'File Uploader') mainStore.handleBatch(files, folders);
     }
     
-    checkForAllItemsSelected(e) {
+    checkForAllItemsSelected(e) { // Todo: remove cruft
         const allItemsSelected = mainStore.allItemsSelected;
         allItemsSelected ? mainStore.toggleAllItemsSelected(!allItemsSelected) : null;
         e.stopPropagation();
@@ -281,7 +290,7 @@ class DashboardListItems extends React.Component {
         )
     }
 
-    loadMore(page) {
+    loadMore(page) { // Todo: this breaks pagination
         const id = this.props.params.id;
         const kind = this.props.router.location.pathname.includes('project') ? Path.PROJECT : Path.FOLDER;
         mainStore.getChildren(id, kind, page);
