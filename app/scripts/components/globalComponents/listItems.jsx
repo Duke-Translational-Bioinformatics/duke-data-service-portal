@@ -33,8 +33,9 @@ class ListItems extends React.Component {
         let showBatchOps = !!(filesChecked.length || foldersChecked.length);
         let menuWidth = this.props.router.location.pathname.includes('agents') ? 118 : screenSize.width > 1230 ? 35 : 28;
         let checkboxStyle = { maxWidth: 24, float: 'left', marginRight: isSafari ? 16 : 0 };
+        let showUploadButton = projectRole !== null && (projectRole !== Roles.project_viewer && projectRole !== Roles.file_downloader);
         let showChecks = projectRole !== null && projectRole !== Roles.project_viewer && projectRole !== Roles.file_uploader && projectRole !== Roles.file_downloader;
-        let children = items && items.length ? items.map((child) => {
+        let children = items && items.length && !items.some(i => i.kind === Kind.DDS_PROJECT) ? items.map((child) => {
             if(!child.is_deleted) {
                 let icon = child.kind === undefined ? 'laptop_mac' : child.kind === Kind.DDS_FOLDER ? 'folder' : 'description';
                 let itemsChecked = child.kind === undefined ? null : child.kind === Kind.DDS_FOLDER ? foldersChecked : filesChecked;
@@ -68,9 +69,7 @@ class ListItems extends React.Component {
                                 {child.kind === Kind.DDS_FILE && child.current_version ? BaseUtils.bytesToSize(child.current_version.upload.size) : '---'}
                             </TableRowColumn> : null}
                         <TableRowColumn style={{textAlign: 'right', width: menuWidth}}>
-                            <div onClick={(e) => {
-                                e.stopPropagation()
-                            }}>
+                            <div onClick={(e) => e.stopPropagation()}>
                                 {child.kind === undefined ? <FlatButton label="credentials" primary={true} onTouchTap={() => this.getCredentials(child.id)}/> : child.kind === Kind.DDS_FILE ? fileOptionsMenu : folderOptionsMenu }
                             </div>
                         </TableRowColumn>
@@ -84,13 +83,13 @@ class ListItems extends React.Component {
             <div className="list-items-container">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
                     {!showBatchOps && <div className="mdl-cell mdl-cell--12-col">
-                        { projectRole !== null && projectRole !== (Roles.file_downloader && Roles.project_viewer && Roles.file_downloader) ? <RaisedButton
-                                                                                                label="Upload Files"
-                                                                                                labelPosition="before"
-                                                                                                labelStyle={{color: Color.blue}}
-                                                                                                style={styles.uploadFilesBtn}
-                                                                                                icon={<FileUpload color={Color.pink} />}
-                                                                                                onTouchTap={() => this.toggleUploadManager()}/> : null }
+                        { showUploadButton ? <RaisedButton
+                                                label="Upload Files"
+                                                labelPosition="before"
+                                                labelStyle={{color: Color.blue}}
+                                                style={styles.uploadFilesBtn}
+                                                icon={<FileUpload color={Color.pink} />}
+                                                onTouchTap={() => this.toggleUploadManager()}/> : null }
                         <AddFolderModal {...this.props}/>
                     </div>}
                     {showBatchOps && !this.props.router.location.pathname.includes('agents') ? <BatchOps {...this.props}/> : ''}
@@ -117,7 +116,7 @@ class ListItems extends React.Component {
                             {children}
                         </TableBody>
                     </Table>}
-                    {items.length < totalItems && totalItems > 25 &&
+                    {items.length < totalItems && totalItems > 25 && !this.props.router.location.pathname.includes('agents') &&
                     <div className="mdl-cell mdl-cell--12-col">
                         <RaisedButton
                             label={loading ? "Loading..." : "Load More"}
