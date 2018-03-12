@@ -40,12 +40,12 @@ export const graphOptions = {
             blockShifting: true,
             edgeMinimization: true,
             parentCentralization: true,
-            direction: 'DU',        // UD, DU, LR, RL
+            direction: 'UD',        // UD, DU, LR, RL
             sortMethod: 'directed'   // hubsize, directed
         }
     },
     physics: {
-        enabled: false
+        enabled: true
     }
 };
 

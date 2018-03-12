@@ -2,7 +2,7 @@ import React from 'react'
 import { observer } from 'mobx-react';
 import mainStore from '../stores/mainStore';
 import provenanceStore from '../stores/provenanceStore';
-import { Path } from '../util/urlEnum';
+import { Kind, Path } from '../util/urlEnum';
 import Provenance from '../components/globalComponents/provenance.jsx';
 import VersionDetails from '../components/fileComponents/versionDetails.jsx';
 
@@ -33,7 +33,8 @@ class Version extends React.Component {
         }
         mainStore.setSelectedEntity(null, null);
         mainStore.getEntity(id, Path.FILE_VERSION);
-        provenanceStore.getWasGeneratedByNode(id);
+        // provenanceStore.getWasGeneratedByNode(id); // Todo: changed this here
+        provenanceStore.getProvenance(id, Kind.DDS_FILE_VERSION, null);
     }
 
     render() {

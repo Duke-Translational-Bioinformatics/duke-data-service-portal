@@ -42,7 +42,7 @@ const transportLayer = {
                 id: id
             }
         };
-        return fetch(`${DDS_BASE_URI+apiPrefix}search/provenance?max_hops=1`, getFetchParams('post', authStore.appConfig.apiToken, body))
+        return fetch(`${DDS_BASE_URI+apiPrefix}search/provenance?max_hops=5`, getFetchParams('post', authStore.appConfig.apiToken, body))
     },
     addProvRelation: (kind, body) => {
         return fetch(DDS_BASE_URI+apiPrefix+Path.RELATIONS+kind, getFetchParams('post', authStore.appConfig.apiToken, body))
