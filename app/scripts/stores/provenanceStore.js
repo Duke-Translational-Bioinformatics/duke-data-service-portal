@@ -172,7 +172,7 @@ export class ProvenanceStore {
                     type: edge.type,
                     properties: edge.properties,
                     color: color,
-                    arrows: 'to',
+                    arrows: edge.type !== 'WasDerivedFrom' ? 'from' : 'to;from', // Todo: changed these arrow directions added check for WasDerivedFrom
                     title: '<div style="color: #616161"><span>'
                     + edge.type + '</span></div>'
                 };
@@ -183,7 +183,8 @@ export class ProvenanceStore {
                 if (node.properties.kind === 'dds-activity') {
                     return {
                         id: node.id,
-                        label: `Activity: ${node.properties.name}\nCreated By: ${node.properties.audit.created_by.full_name}`, margin: { top: 10, right: 10, bottom: 10, left: 10 },
+                        label: `Activity: ${node.properties.name}\nDescription: ${node.properties.description}`, margin: { top: 10, right: 10, bottom: 10, left: 10 },
+                        // label: `Activity: ${node.properties.name}\nCreated By: ${node.properties.audit.created_by.full_name}`, margin: { top: 10, right: 10, bottom: 10, left: 10 },
                         labels: node.labels.toString(),
                         properties: node.properties,
                         shape: 'box',
@@ -191,7 +192,8 @@ export class ProvenanceStore {
                         shadow: shadow.activity,
                         title: '<div style="margin: 10px; color: #616161"><span>'
                         + 'Name: ' + node.properties.name + '</span><br/>' +
-                        '<span>' + 'Created By: ' + node.properties.audit.created_by.full_name + '</span><br/>' +
+                        '<span>' + 'Description: ' + node.properties.description + '</span><br/>' + // Todo: changed this here
+                        // '<span>' + 'Created By: ' + node.properties.audit.created_by.full_name + '</span><br/>' +
                         '<span>' + 'Started On: ' + BaseUtils.formatLongDate(node.properties.started_on) + '</span></div>',
                     }
                 }
@@ -247,10 +249,16 @@ export class ProvenanceStore {
         let node1 = null;
         let node2 = null;
         nodes.forEach((node) => {
-            if (data.from === node.id) {
+            // if (data.from === node.id) { // Todo: these have been changed
+            //     node1 = node;
+            // }
+            // if (data.to === node.id) {
+            //     node2 = node;
+            // }
+            if (data.to === node.id) {
                 node1 = node;
             }
-            if (data.to === node.id) {
+            if (data.from === node.id) {
                 node2 = node;
             }
         });
@@ -275,13 +283,17 @@ export class ProvenanceStore {
                     this.relMsg = 'actToActMsg';
                 }
                 if (node1.properties.kind !== node2.properties.kind) {
-                    if (relationKind === 'used') {
-                        from = node1.properties.kind === 'dds-activity' ? node1 : node2;
-                        to = node1.properties.kind === 'dds-activity' ? node2 : node1;
-                    }
-                    if (relationKind === 'was_generated_by') {
+                    if (relationKind === 'used') { // Todo: changed
+                        // from = node1.properties.kind === 'dds-activity' ? node1 : node2;
+                        // to = node1.properties.kind === 'dds-activity' ? node2 : node1;
                         from = node1.properties.kind === 'dds-activity' ? node2 : node1;
                         to = node1.properties.kind === 'dds-activity' ? node1 : node2;
+                    }
+                    if (relationKind === 'was_generated_by') { // Todo: changed
+                        // from = node1.properties.kind === 'dds-activity' ? node2 : node1;
+                        // to = node1.properties.kind === 'dds-activity' ? node1 : node2;
+                        from = node1.properties.kind === 'dds-activity' ? node1 : node2;
+                        to = node1.properties.kind === 'dds-activity' ? node2 : node1;
                     }
                     if (node1.properties.hasOwnProperty('kind') && node2.properties.hasOwnProperty('kind')){
                         this.startAddRelation(relationKind, from, to);
@@ -316,23 +328,27 @@ export class ProvenanceStore {
         let body = {};
         if (kind === 'used') {
             body = {
-                'activity': {
-                    'id': from.id
+                'activity': { // Todo: changed arrow directions
+                    // 'id': from.id
+                    'id': to.id
                 },
                 'entity': {
-                    'kind': 'dds-file-version',
-                    'id': to.id
+                    'kind': 'dds-file-version', // Todo: changed arrow directions
+                    // 'id': to.id
+                    'id': from.id
                 }
             };
         }
         if (kind === 'was_generated_by') {
             body = {
                 'entity': {
-                    'kind': 'dds-file-version',
-                    'id': from.id
+                    'kind': 'dds-file-version', // Todo: changed arrow directions
+                    // 'id': from.id
+                    'id': to.id
                 },
                 'activity': {
-                    'id': to.id
+                    // 'id': to.id // Todo: changed arrow directions
+                    'id': from.id
                 }
             };
         }
@@ -341,10 +357,12 @@ export class ProvenanceStore {
                 'generated_entity': {
                     'kind': 'dds-file-version',
                     'id': from.id
+                    // 'id': to.id
                 },
                 'used_entity': {
                     'kind': 'dds-file-version',
-                    'id': to.id
+                    'id': to.id // Todo: changed arrow directions
+                    // 'id': from.id
                 }
             };
         }
@@ -368,7 +386,7 @@ export class ProvenanceStore {
                         to: edge.to.id,
                         type: edge.kind,
                         color: color,
-                        arrows: 'to',
+                        arrows: edge.type !== 'WasDerivedFrom' ? 'from' : 'to;from', // Todo: changed these arrow directions added check for WasDerivedFrom
                         properties: {
                             audit: edge.audit
                         },
@@ -437,14 +455,16 @@ export class ProvenanceStore {
         this.updatedGraphItem = act.map((json) => {//Update dataset in client
             return {
                 id: json.id,
-                label: 'Activity: \n'+json.name,
+                // label: 'Activity: \n'+json.name,
+                label: `Activity: ${json.name}\nDescription: ${json.description}`, margin: { top: 10, right: 10, bottom: 10, left: 10 },
                 properties: json,
                 shape: 'box',
                 color: graphColors.activity,
                 shadow: shadow.activity,
                 title: '<div style="margin: 10px; color: #616161"><span>'
                 +'Name: '+json.name + '</span><br/>' +
-                '<span>'+'Created By: '+json.audit.created_by.full_name+'</span><br/>' +
+                '<span>' + 'Description: ' + json.description + '</span><br/>' + // Todo: changed this here,
+                // '<span>'+'Created By: '+json.audit.created_by.full_name+'</span><br/>' +
                 '<span>'+'Started On: '+BaseUtils.formatLongDate(json.started_on)+'</span></div>'
             };
         });
@@ -475,15 +495,20 @@ export class ProvenanceStore {
                 this.updatedGraphItem = act.map((json) => {//Update dataset in client
                     return {
                         id: json.id,
-                        label: 'Activity: \n'+json.name,
+                        // label: 'Activity: \n'+json.name, // Todo: changed this here,
+                        label: `Activity: ${json.name}\nDescription: ${json.description}`, margin: { top: 10, right: 10, bottom: 10, left: 10 },
                         properties: json,
                         shape: 'box',
                         color: graphColors.activity,
                         shadow: shadow.activity,
                         title: '<div style="margin: 10px; color: #616161"><span>'
-                        +'Name: '+json.name + '</span><br/>' +
-                        '<span>'+'Created By: '+json.audit.created_by.full_name+'</span><br/>' +
+                        +'Name: '+json.name + '</span><br/>' +  // Todo: changed this here,
+                        '<span>' + 'Description: ' + json.description + '</span><br/>' +
+                        // '<span>'+'Created By: '+json.audit.created_by.full_name+'</span><br/>' +
                         '<span>'+'Started On: '+BaseUtils.formatLongDate(json.started_on)+'</span></div>'
+                        // +'Name: '+json.name + '</span><br/>' +
+                        // '<span>'+'Created By: '+json.audit.created_by.full_name+'</span><br/>' +
+                        // '<span>'+'Started On: '+BaseUtils.formatLongDate(json.started_on)+'</span></div>'
                     };
                 });
                 nodes.push(this.updatedGraphItem[0]);
