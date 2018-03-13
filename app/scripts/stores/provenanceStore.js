@@ -727,8 +727,8 @@ export class ProvenanceStore {
             if (params.nodes.length > 0) {
                 let id = this.onClickProvNode.properties.current_version ? this.onClickProvNode.properties.current_version.id : this.onClickProvNode.properties.id;
                 let kind = this.onClickProvNode.properties.kind === 'dds-activity' ? 'dds-activity' : 'dds-file-version';
-                nodeData.properties.kind === 'dds-activity' ?  this.getProvenance(id, kind, prevGraph) :
-                    this.getWasGeneratedByNode(id, prevGraph);
+                // nodeData.properties.kind === 'dds-activity' ?  this.getProvenance(id, kind, prevGraph) : this.getWasGeneratedByNode(id, prevGraph);
+                this.getProvenance(id, kind, prevGraph)
             }
         }
     }
