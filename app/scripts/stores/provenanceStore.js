@@ -120,12 +120,10 @@ export class ProvenanceStore {
     }
 
     @action getGeneratedByActivity(id) {
-        this.drawerLoading = true;
         this.transportLayer.getWasGeneratedByNode(id)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
-                this.drawerLoading = false;
                 this.generatedByActivity = json.graph.relationships.find(r => r.type === 'WasGeneratedBy' && r.start_node === id);
             }).catch(ex =>mainStore.handleErrors(ex))
     }
@@ -173,7 +171,7 @@ export class ProvenanceStore {
                     properties: edge.properties,
                     color: color,
                     arrows: edge.type !== 'WasDerivedFrom' ? 'from' : 'to;from', // Todo: changed these arrow directions added check for WasDerivedFrom
-                    title: '<div style="color: #616161"><span>'
+                    title: '<div style="color: #616161" class="tooltip"><span>'
                     + edge.type + '</span></div>'
                 };
             }
@@ -190,7 +188,7 @@ export class ProvenanceStore {
                         shape: 'box',
                         color: graphColors.activity,
                         shadow: shadow.activity,
-                        title: '<div style="margin: 10px; color: #616161"><span>'
+                        title: '<div style="margin: 10px; color: #616161" class="tooltip"><span>'
                         + 'Name: ' + node.properties.name + '</span><br/>' +
                         '<span>' + 'Description: ' + node.properties.description + '</span><br/>' + // Todo: changed this here
                         // '<span>' + 'Created By: ' + node.properties.audit.created_by.full_name + '</span><br/>' +
@@ -205,7 +203,7 @@ export class ProvenanceStore {
                         labels: node.labels.toString(),
                         properties: node.properties,
                         color: graphColors.fileVersion,
-                        title: '<div style="margin: 10px; color: #616161"><span>'
+                        title: '<div style="margin: 10px; color: #616161" class="tooltip"><span>'
                         + node.properties.file.name + '</span><br/><span>Version: '
                         + node.properties.version + '</span><br/><span>'
                         + label + '</span></div>'
@@ -218,7 +216,7 @@ export class ProvenanceStore {
                     labels: node.labels.toString(),
                     properties: node.properties,
                     color: graphColors.noPermissions,
-                    title: '<div style="margin: 10px; color: #616161"><span>'
+                    title: '<div style="margin: 10px; color: #616161" class="tooltip"><span>'
                     + 'You do not have permission to view this file.' + '</span></div>'
                 }
             }
@@ -390,7 +388,7 @@ export class ProvenanceStore {
                         properties: {
                             audit: edge.audit
                         },
-                        title: '<div style="color: #616161"><span>'
+                        title: '<div style="color: #616161" class="tooltip"><span>'
                         + edge.kind + '</span></div>'
                     };
                 });
@@ -461,7 +459,7 @@ export class ProvenanceStore {
                 shape: 'box',
                 color: graphColors.activity,
                 shadow: shadow.activity,
-                title: '<div style="margin: 10px; color: #616161"><span>'
+                title: '<div style="margin: 10px; color: #616161" class="tooltip"><span>'
                 +'Name: '+json.name + '</span><br/>' +
                 '<span>' + 'Description: ' + json.description + '</span><br/>' + // Todo: changed this here,
                 // '<span>'+'Created By: '+json.audit.created_by.full_name+'</span><br/>' +
@@ -501,7 +499,7 @@ export class ProvenanceStore {
                         shape: 'box',
                         color: graphColors.activity,
                         shadow: shadow.activity,
-                        title: '<div style="margin: 10px; color: #616161"><span>'
+                        title: '<div style="margin: 10px; color: #616161" class="tooltip"><span>'
                         +'Name: '+json.name + '</span><br/>' +  // Todo: changed this here,
                         '<span>' + 'Description: ' + json.description + '</span><br/>' +
                         // '<span>'+'Created By: '+json.audit.created_by.full_name+'</span><br/>' +
@@ -553,7 +551,7 @@ export class ProvenanceStore {
                     labels: node.current_version.label,
                     properties: node,
                     color: graphColors.fileVersion,
-                    title: '<div style="margin: 10px; color: #616161"><span>'
+                    title: '<div style="margin: 10px; color: #616161" class="tooltip"><span>'
                     + node.name + '</span><br/><span>Version: '
                     + node.current_version.version + '</span><br/><span>'
                     + label + '</span></div>'
@@ -566,7 +564,7 @@ export class ProvenanceStore {
                     labels: 'FileVersion',
                     properties: node,
                     color: graphColors.fileVersion,
-                    title: '<div style="margin: 10px; color: #616161"><span>'
+                    title: '<div style="margin: 10px; color: #616161" class="tooltip"><span>'
                     + node.file.name + '</span><br/><span>Version: '
                     + node.version + '</span><br/><span>'
                     + 'FileVersion' + '</span></div>'
