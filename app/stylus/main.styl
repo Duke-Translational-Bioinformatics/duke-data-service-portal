@@ -131,87 +131,35 @@ input[type=text]::-ms-clear /*To remove the cancel button inside inputs IE10+*/
   transition: visibility 0s, opacity 0.3s linear, max-height 0.3s linear;
   transition-timing-function: ease-in;
 
-//Tooltip Styles
+//div.vis-network-tooltip {
+//  font-family 'Roboto' !important
+//  background: #fff !important;
+//  border-radius: 2px !important;
+//  margin: 1rem !important;
+//  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24) !important;
+//  border none !important;
+//}
 
-#tooltip {
-  opacity: 0;
-  text-align: center;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.6);
-  position: absolute;
-  z-index: 100;
-  padding: 5px;
-  pointer-events: none;
-  border-radius: 5px;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  -o-border-radius: 5px;
-  -ms-border-radius: 5px;
-  transition: all 0.5s ease-in-out;
-  -moz-transition: all 0.5s ease-in-out;
-  -webkit-transition: all 0.5s ease-in-out;
-  -o-transition: all 0.5s ease-in-out;
-  -ms-transition: all 0.5s ease-in-out;
-}
-#tooltip.top {
-  margin-top: 20px;
-}
-#tooltip.show {
-  opacity: 1;
-  margin-top: 10px;
-  pointer-events: all;
-}
-#tooltip.show.top {
-  margin-top: 10px;
-}
-#tooltip:after {
-  width: 0;
-  height: 0;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-top: 10px solid rgba(0, 0, 0, 0.6);
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: -10px;
-  margin-left: -10px;
-}
-#tooltip.top:after {
-  border-top-color: transparent;
-  border-bottom: 10px solid rgba(0, 0, 0, 0.6);
-  top: -20px;
-  bottom: auto;
-}
-#tooltip.left:after {
-  left: 10px;
-  margin: 0;
-}
-#tooltip.right:after {
-  right: 10px;
-  left: auto;
-  margin: 0;
-}
-
-div.vis-network-tooltip {
+.tooltip
   font-family 'Roboto' !important
   background: #fff !important;
-  border-radius: 2px;
-  margin: 1rem !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-  border none;
-}
+  border-radius: 2px !important;
+  margin: -10px !important;
+  padding: 10px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24) !important;
+  border none !important;
 
 //chips styles
-.chip-container {
+.chip-container
   padding-left: 6px;
   display: flex;
   -webkit-flex-wrap: wrap; /* Safari */
-  flex-wrap:         wrap;
+  flex-wrap: wrap;
   -webkit-align-content: space-around; /* Safari */
-  align-content:         space-around;
-}
+  align-content: space-around;
 
-.chip {
+
+.chip
   margin: 2px
   padding: 0 25px;
   min-height: 24px;
@@ -219,9 +167,9 @@ div.vis-network-tooltip {
   line-height: 10px;
   border-radius: 25px;
   background-color: $blue;
-}
 
-.closebtn {
+
+.closebtn
   padding-left: 0;
   margin: 10px -15px 10px 0;
   color: $white;
@@ -229,40 +177,37 @@ div.vis-network-tooltip {
   float: right;
   font-size: 20px;
   cursor: pointer;
-}
 
-.closebtn:hover {
+
+.closebtn:hover
   color: #90CAF9;
-}
 
-.chip-text {
+
+.chip-text
   margin: 10px 10px 10px 0;
   color: $white;
   font-weight: 400;
   float: left;
   font-size: 12px;
-}
 
-.show-filters-transition {
+.show-filters-transition
   margin-left: 23%
   transition: padding-left .3s linear
   transition-timing-function: ease-in;
-}
 
 // Styles for list of file versions in the `add file` provenance modal
-#fileVersionUl {
+#fileVersionUl
   padding-left: 0;
   -webkit-column-width: 60px;
   -webkit-column-count: 6;
   -moz-column-count: 6;
   column-count: 6;
-}
-#fileVersionUl li {
+
+#fileVersionUl li
   color: $blue;
   cursor: pointer;
   display: inline-block;
   padding-bottom: 15px;
-}
 
 @media (max-width: 400px)
   .search {
