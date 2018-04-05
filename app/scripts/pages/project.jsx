@@ -13,7 +13,6 @@ import { Path } from '../util/urlEnum';
 class Project extends React.Component {
 
     componentDidMount() {
-        mainStore.setListItems([]);
         let id = this.props.params.id;
         if(mainStore.openTagManager) mainStore.toggleTagManager();
         mainStore.getChildren(id, Path.PROJECT);
