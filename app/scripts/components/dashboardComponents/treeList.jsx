@@ -42,7 +42,7 @@ class TreeList extends React.Component {
                 ancestorIds = item.ancestors.map((a) => {return(a.id)})
             }
         }
-        
+
         return (
             <Drawer
                 open={drawer.get('open')}
@@ -104,6 +104,7 @@ class TreeList extends React.Component {
     }
 
     buildTree(downloadedItems, ancestorIds) {
+        const { drawer } = dashboardStore;
         let looper = (itemIds) => {
             return (
                 itemIds.map((id) => {
@@ -120,7 +121,7 @@ class TreeList extends React.Component {
                                 primaryText={child.name}
                                 leftIcon={this.iconPicker(child, ancestorIds)}
                                 nestedItems={grandChildren}
-                                open={child.open}
+                                open={!drawer.get('collapsed') || child.open}
                                 onNestedListToggle={() => {dashboardStore.toggleTreeListItem(child.id)}}
                                 onClick={() => {this.handleTouchTap(child)}}
                                 onKeyDown={(e) => {this.handleKeyDown(e, child)} }
@@ -141,9 +142,7 @@ class TreeList extends React.Component {
 
 const styles = {
     drawer: {
-        top: '56px',
-        transform: 'scale(1)',
-        transition: '0.10s linear'
+        top: '56px'
     },
     nestedListStyle: {
         padding: '0px'
