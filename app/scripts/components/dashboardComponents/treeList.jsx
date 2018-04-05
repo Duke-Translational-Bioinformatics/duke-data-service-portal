@@ -42,7 +42,7 @@ class TreeList extends React.Component {
                 ancestorIds = item.ancestors.map((a) => {return(a.id)})
             }
         }
-        
+
         return (
             <Drawer
                 open={drawer.get('open')}
@@ -147,9 +147,7 @@ const styles = {
         color: Color.ltBlue
     },
     drawer: {
-        top: '56px',
-        transform: 'scale(1)',
-        transition: '0.10s linear'
+        top: '56px'
     },
     nestedListStyle: {
         padding: '0px'
