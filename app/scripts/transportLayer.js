@@ -42,7 +42,7 @@ const transportLayer = {
                 id: id
             }
         };
-        return fetch(`${DDS_BASE_URI+apiPrefix}search/provenance?max_hops=1`, getFetchParams('post', authStore.appConfig.apiToken, body))
+        return fetch(`${DDS_BASE_URI+apiPrefix}search/provenance?max_hops=5`, getFetchParams('post', authStore.appConfig.apiToken, body))
     },
     addProvRelation: (kind, body) => {
         return fetch(DDS_BASE_URI+apiPrefix+Path.RELATIONS+kind, getFetchParams('post', authStore.appConfig.apiToken, body))
@@ -81,7 +81,7 @@ const transportLayer = {
         return fetch(`${DDS_BASE_URI+apiPrefix+Path.AGENT}api_token`, getFetchParams('post', authStore.appConfig.apiToken, body))
     },
     getAgents: () => {
-        return fetch(DDS_BASE_URI+apiPrefix+Path.AGENT,getFetchParams('get', authStore.appConfig.apiToken))
+        return fetch(`${DDS_BASE_URI+apiPrefix+Path.AGENT}?per_page=1000`,getFetchParams('get', authStore.appConfig.apiToken))
     },
     addAgent: (name, desc, repo) => {
         const body = {

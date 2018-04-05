@@ -120,12 +120,10 @@ export class ProvenanceStore {
     }
 
     @action getGeneratedByActivity(id) {
-        this.drawerLoading = true;
         this.transportLayer.getWasGeneratedByNode(id)
             .then(this.checkResponse)
             .then(response => response.json())
             .then((json) => {
-                this.drawerLoading = false;
                 this.generatedByActivity = json.graph.relationships.find(r => r.type === 'WasGeneratedBy' && r.start_node === id);
             }).catch(ex =>mainStore.handleErrors(ex))
     }
@@ -172,8 +170,8 @@ export class ProvenanceStore {
                     type: edge.type,
                     properties: edge.properties,
                     color: color,
-                    arrows: 'to',
-                    title: '<div style="color: #616161"><span>'
+                    arrows: edge.type !== 'WasDerivedFrom' ? 'from' : 'to;from', // Todo: changed these arrow directions added check for WasDerivedFrom
+                    title: '<div style="color: #616161" class="tooltip"><span>'
                     + edge.type + '</span></div>'
                 };
             }
@@ -183,15 +181,17 @@ export class ProvenanceStore {
                 if (node.properties.kind === 'dds-activity') {
                     return {
                         id: node.id,
-                        label: `Activity: ${node.properties.name}\nCreated By: ${node.properties.audit.created_by.full_name}`, margin: { top: 10, right: 10, bottom: 10, left: 10 },
+                        label: `Activity: ${node.properties.name}\nDescription: ${node.properties.description}`, margin: { top: 10, right: 10, bottom: 10, left: 10 },
+                        // label: `Activity: ${node.properties.name}\nCreated By: ${node.properties.audit.created_by.full_name}`, margin: { top: 10, right: 10, bottom: 10, left: 10 },
                         labels: node.labels.toString(),
                         properties: node.properties,
                         shape: 'box',
                         color: graphColors.activity,
                         shadow: shadow.activity,
-                        title: '<div style="margin: 10px; color: #616161"><span>'
+                        title: '<div style="margin: 10px; color: #616161" class="tooltip"><span>'
                         + 'Name: ' + node.properties.name + '</span><br/>' +
-                        '<span>' + 'Created By: ' + node.properties.audit.created_by.full_name + '</span><br/>' +
+                        '<span>' + 'Description: ' + node.properties.description + '</span><br/>' + // Todo: changed this here
+                        // '<span>' + 'Created By: ' + node.properties.audit.created_by.full_name + '</span><br/>' +
                         '<span>' + 'Started On: ' + BaseUtils.formatLongDate(node.properties.started_on) + '</span></div>',
                     }
                 }
@@ -203,7 +203,7 @@ export class ProvenanceStore {
                         labels: node.labels.toString(),
                         properties: node.properties,
                         color: graphColors.fileVersion,
-                        title: '<div style="margin: 10px; color: #616161"><span>'
+                        title: '<div style="margin: 10px; color: #616161" class="tooltip"><span>'
                         + node.properties.file.name + '</span><br/><span>Version: '
                         + node.properties.version + '</span><br/><span>'
                         + label + '</span></div>'
@@ -216,7 +216,7 @@ export class ProvenanceStore {
                     labels: node.labels.toString(),
                     properties: node.properties,
                     color: graphColors.noPermissions,
-                    title: '<div style="margin: 10px; color: #616161"><span>'
+                    title: '<div style="margin: 10px; color: #616161" class="tooltip"><span>'
                     + 'You do not have permission to view this file.' + '</span></div>'
                 }
             }
@@ -247,10 +247,16 @@ export class ProvenanceStore {
         let node1 = null;
         let node2 = null;
         nodes.forEach((node) => {
-            if (data.from === node.id) {
+            // if (data.from === node.id) { // Todo: these have been changed
+            //     node1 = node;
+            // }
+            // if (data.to === node.id) {
+            //     node2 = node;
+            // }
+            if (data.to === node.id) {
                 node1 = node;
             }
-            if (data.to === node.id) {
+            if (data.from === node.id) {
                 node2 = node;
             }
         });
@@ -275,13 +281,17 @@ export class ProvenanceStore {
                     this.relMsg = 'actToActMsg';
                 }
                 if (node1.properties.kind !== node2.properties.kind) {
-                    if (relationKind === 'used') {
-                        from = node1.properties.kind === 'dds-activity' ? node1 : node2;
-                        to = node1.properties.kind === 'dds-activity' ? node2 : node1;
-                    }
-                    if (relationKind === 'was_generated_by') {
+                    if (relationKind === 'used') { // Todo: changed
+                        // from = node1.properties.kind === 'dds-activity' ? node1 : node2;
+                        // to = node1.properties.kind === 'dds-activity' ? node2 : node1;
                         from = node1.properties.kind === 'dds-activity' ? node2 : node1;
                         to = node1.properties.kind === 'dds-activity' ? node1 : node2;
+                    }
+                    if (relationKind === 'was_generated_by') { // Todo: changed
+                        // from = node1.properties.kind === 'dds-activity' ? node2 : node1;
+                        // to = node1.properties.kind === 'dds-activity' ? node1 : node2;
+                        from = node1.properties.kind === 'dds-activity' ? node1 : node2;
+                        to = node1.properties.kind === 'dds-activity' ? node2 : node1;
                     }
                     if (node1.properties.hasOwnProperty('kind') && node2.properties.hasOwnProperty('kind')){
                         this.startAddRelation(relationKind, from, to);
@@ -316,23 +326,27 @@ export class ProvenanceStore {
         let body = {};
         if (kind === 'used') {
             body = {
-                'activity': {
-                    'id': from.id
+                'activity': { // Todo: changed arrow directions
+                    // 'id': from.id
+                    'id': to.id
                 },
                 'entity': {
-                    'kind': 'dds-file-version',
-                    'id': to.id
+                    'kind': 'dds-file-version', // Todo: changed arrow directions
+                    // 'id': to.id
+                    'id': from.id
                 }
             };
         }
         if (kind === 'was_generated_by') {
             body = {
                 'entity': {
-                    'kind': 'dds-file-version',
-                    'id': from.id
+                    'kind': 'dds-file-version', // Todo: changed arrow directions
+                    // 'id': from.id
+                    'id': to.id
                 },
                 'activity': {
-                    'id': to.id
+                    // 'id': to.id // Todo: changed arrow directions
+                    'id': from.id
                 }
             };
         }
@@ -341,10 +355,12 @@ export class ProvenanceStore {
                 'generated_entity': {
                     'kind': 'dds-file-version',
                     'id': from.id
+                    // 'id': to.id
                 },
                 'used_entity': {
                     'kind': 'dds-file-version',
-                    'id': to.id
+                    'id': to.id // Todo: changed arrow directions
+                    // 'id': from.id
                 }
             };
         }
@@ -368,11 +384,11 @@ export class ProvenanceStore {
                         to: edge.to.id,
                         type: edge.kind,
                         color: color,
-                        arrows: 'to',
+                        arrows: edge.type !== 'WasDerivedFrom' ? 'from' : 'to;from', // Todo: changed these arrow directions added check for WasDerivedFrom
                         properties: {
                             audit: edge.audit
                         },
-                        title: '<div style="color: #616161"><span>'
+                        title: '<div style="color: #616161" class="tooltip"><span>'
                         + edge.kind + '</span></div>'
                     };
                 });
@@ -437,14 +453,16 @@ export class ProvenanceStore {
         this.updatedGraphItem = act.map((json) => {//Update dataset in client
             return {
                 id: json.id,
-                label: 'Activity: \n'+json.name,
+                // label: 'Activity: \n'+json.name,
+                label: `Activity: ${json.name}\nDescription: ${json.description}`, margin: { top: 10, right: 10, bottom: 10, left: 10 },
                 properties: json,
                 shape: 'box',
                 color: graphColors.activity,
                 shadow: shadow.activity,
-                title: '<div style="margin: 10px; color: #616161"><span>'
+                title: '<div style="margin: 10px; color: #616161" class="tooltip"><span>'
                 +'Name: '+json.name + '</span><br/>' +
-                '<span>'+'Created By: '+json.audit.created_by.full_name+'</span><br/>' +
+                '<span>' + 'Description: ' + json.description + '</span><br/>' + // Todo: changed this here,
+                // '<span>'+'Created By: '+json.audit.created_by.full_name+'</span><br/>' +
                 '<span>'+'Started On: '+BaseUtils.formatLongDate(json.started_on)+'</span></div>'
             };
         });
@@ -475,15 +493,20 @@ export class ProvenanceStore {
                 this.updatedGraphItem = act.map((json) => {//Update dataset in client
                     return {
                         id: json.id,
-                        label: 'Activity: \n'+json.name,
+                        // label: 'Activity: \n'+json.name, // Todo: changed this here,
+                        label: `Activity: ${json.name}\nDescription: ${json.description}`, margin: { top: 10, right: 10, bottom: 10, left: 10 },
                         properties: json,
                         shape: 'box',
                         color: graphColors.activity,
                         shadow: shadow.activity,
-                        title: '<div style="margin: 10px; color: #616161"><span>'
-                        +'Name: '+json.name + '</span><br/>' +
-                        '<span>'+'Created By: '+json.audit.created_by.full_name+'</span><br/>' +
+                        title: '<div style="margin: 10px; color: #616161" class="tooltip"><span>'
+                        +'Name: '+json.name + '</span><br/>' +  // Todo: changed this here,
+                        '<span>' + 'Description: ' + json.description + '</span><br/>' +
+                        // '<span>'+'Created By: '+json.audit.created_by.full_name+'</span><br/>' +
                         '<span>'+'Started On: '+BaseUtils.formatLongDate(json.started_on)+'</span></div>'
+                        // +'Name: '+json.name + '</span><br/>' +
+                        // '<span>'+'Created By: '+json.audit.created_by.full_name+'</span><br/>' +
+                        // '<span>'+'Started On: '+BaseUtils.formatLongDate(json.started_on)+'</span></div>'
                     };
                 });
                 nodes.push(this.updatedGraphItem[0]);
@@ -528,7 +551,7 @@ export class ProvenanceStore {
                     labels: node.current_version.label,
                     properties: node,
                     color: graphColors.fileVersion,
-                    title: '<div style="margin: 10px; color: #616161"><span>'
+                    title: '<div style="margin: 10px; color: #616161" class="tooltip"><span>'
                     + node.name + '</span><br/><span>Version: '
                     + node.current_version.version + '</span><br/><span>'
                     + label + '</span></div>'
@@ -541,7 +564,7 @@ export class ProvenanceStore {
                     labels: 'FileVersion',
                     properties: node,
                     color: graphColors.fileVersion,
-                    title: '<div style="margin: 10px; color: #616161"><span>'
+                    title: '<div style="margin: 10px; color: #616161" class="tooltip"><span>'
                     + node.file.name + '</span><br/><span>Version: '
                     + node.version + '</span><br/><span>'
                     + 'FileVersion' + '</span></div>'
@@ -702,8 +725,8 @@ export class ProvenanceStore {
             if (params.nodes.length > 0) {
                 let id = this.onClickProvNode.properties.current_version ? this.onClickProvNode.properties.current_version.id : this.onClickProvNode.properties.id;
                 let kind = this.onClickProvNode.properties.kind === 'dds-activity' ? 'dds-activity' : 'dds-file-version';
-                nodeData.properties.kind === 'dds-activity' ?  this.getProvenance(id, kind, prevGraph) :
-                    this.getWasGeneratedByNode(id, prevGraph);
+                // nodeData.properties.kind === 'dds-activity' ?  this.getProvenance(id, kind, prevGraph) : this.getWasGeneratedByNode(id, prevGraph);
+                this.getProvenance(id, kind, prevGraph)
             }
         }
     }

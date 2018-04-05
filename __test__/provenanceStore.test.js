@@ -24,17 +24,14 @@ describe('Provenance Store', () => {
     });
 
     it('@action getGeneratedByActivity - gets the generating activity for a file or file version', () => {
-        provenanceStore.drawerLoading = false;
         expect(provenanceStore.drawerLoading).toBe(false);
         provenanceStore.generatedByActivity = null;
         expect(provenanceStore.generatedByActivity).toBe(null);
         transportLayer.getWasGeneratedByNode = jest.fn((id) => respondOK(fake.prov_activity_json));
         provenanceStore.getGeneratedByActivity(FILE_ID);
-        expect(provenanceStore.drawerLoading).toBe(true);
         return sleep(1).then(() => {
             expect(transportLayer.getWasGeneratedByNode).toHaveBeenCalledTimes(1);
             expect(transportLayer.getWasGeneratedByNode).toHaveBeenCalledWith(FILE_ID);
-            expect(provenanceStore.drawerLoading).toBe(false);
         });
     });
 

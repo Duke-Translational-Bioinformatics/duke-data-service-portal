@@ -5,6 +5,7 @@ import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import provenanceStore from '../../stores/provenanceStore';
 import { Roles } from '../../enum';
+import { Kind } from '../../util/urlEnum';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -123,7 +124,8 @@ class VersionsOptionsMenu extends React.Component {
     }
 
     openProv(id, fileId) {
-        if(!provenanceStore.provNodes.length) provenanceStore.getWasGeneratedByNode(id);
+        // if(!provenanceStore.provNodes.length) provenanceStore.getWasGeneratedByNode(id); //: Todo: changed this here
+        if(!provenanceStore.provNodes.length) provenanceStore.getProvenance(id, Kind.DDS_FILE_VERSION, null);
         mainStore.getFileVersions(fileId);
         provenanceStore.toggleProvView();
     }

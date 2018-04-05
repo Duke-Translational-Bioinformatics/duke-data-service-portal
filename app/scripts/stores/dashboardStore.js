@@ -1,5 +1,5 @@
 import React from 'react';
-import { observable, action, map } from 'mobx';
+import { observable, action, map } from 'mobx'; // Todo: remove cruft
 import mainStore from './mainStore';
 import transportLayer from '../transportLayer';
 import { Kind, Path } from '../util/urlEnum';
@@ -164,18 +164,18 @@ export class DashboardStore {
                 mainStore.listItems = parentsChildren
                 this.responseHeaders = headers;
                 mainStore.loading = false;
-            }).catch(ex =>this.handleErrors(ex))
+            }).catch(ex => mainStore.handleErrors(ex))
     }
 
     @action toggleDrawer() {
         this.drawer.set('open', !this.drawer.get('open'))
     }
 
-    @action closeDrawer() {
+    @action closeDrawer() { // Todo: remove cruft
         this.drawer.set('open', false)
     }
 
-    @action openDrawer() {
+    @action openDrawer() { // Todo: remove cruft
         this.drawer.set('open', true)
     }
 
@@ -207,6 +207,7 @@ export class DashboardStore {
     }
 
     @action getItem(id, path, isSelected) {
+        const that = dashboardStore;
         mainStore.loading = true;
         this.transportLayer.getEntity(id, path)
             .then(checkStatusAndConsistency)
@@ -224,7 +225,9 @@ export class DashboardStore {
                     if(isSelected) this.selectedItem = id
                     mainStore.loading = false;
                 } else {
-                    json.code === 'resource_not_consistent' ? mainStore.tryAsyncAgain(getItem, [id, path, isSelected]) : mainStore.handleErrors(json);
+                    const retryArgs = [id, path, isSelected];
+                    const msg = "The item you're requesting is unavailable...";
+                    json.code === 'resource_not_consistent' ? mainStore.tryAsyncAgain(that.getItem, retryArgs, id, msg, false) : mainStore.handleErrors(json);
                 }
             }).catch(ex => mainStore.handleErrors(ex))
     }

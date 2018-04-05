@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import provenanceStore from '../../stores/provenanceStore';
 import { Color } from '../../theme/customTheme';
-import { Path, UrlGen } from '../../util/urlEnum';
+import { Kind, Path, UrlGen } from '../../util/urlEnum';
 import { Roles } from '../../enum';
 import CustomMetadata from './customMetadata.jsx';
 import FileOptionsMenu from './fileOptionsMenu.jsx';
@@ -240,7 +240,8 @@ class FileDetails extends React.Component {
 
     openProv() {
         const versionId = mainStore.entityObj.current_version.id;
-        provenanceStore.getWasGeneratedByNode(versionId);
+        // provenanceStore.getWasGeneratedByNode(versionId); // Todo: changed this here
+        provenanceStore.getProvenance(versionId, Kind.DDS_FILE_VERSION, null);
         provenanceStore.toggleProvView();
         provenanceStore.toggleProvEditor();
         provenanceStore.hideProvAlert();

@@ -24,7 +24,7 @@ export const graphOptions = {
             color: '#343434',
             size: 10,
             face: 'roboto'
-        }
+        },
     },
     interaction: {
         hover: true,
@@ -35,17 +35,21 @@ export const graphOptions = {
         hierarchical: {
             enabled: true,
             levelSeparation: 150,
-            nodeSpacing: 100,
             treeSpacing: 200,
             blockShifting: true,
             edgeMinimization: true,
             parentCentralization: true,
-            direction: 'DU',        // UD, DU, LR, RL
+            direction: 'UD',        // UD, DU, LR, RL
             sortMethod: 'directed'   // hubsize, directed
         }
     },
     physics: {
-        enabled: false
+        enabled: false,
+        hierarchicalRepulsion: {
+            nodeDistance: 110,
+            springLength: 120,
+            springConstant: 0
+        }
     }
 };
 

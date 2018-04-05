@@ -1,5 +1,5 @@
 import React from 'react';
-import { observable, computed, action, map } from 'mobx';
+import { observable, computed, action, map } from 'mobx'; //Todo: remove unused imports (computed, map)
 import cookie from 'react-cookie';
 import UAParser from 'ua-parser-js';
 import authStore from '../stores/authStore';
@@ -13,9 +13,6 @@ import { checkStatus, checkStatusAndConsistency } from '../util/fetchUtil';
 
 export class MainStore {
     @observable addTeamAfterProjectCreation
-    @observable agents
-    @observable agentKey
-    @observable agentApiToken
     @observable allItemsSelected
     @observable autoCompleteLoading
     @observable audit
@@ -110,9 +107,6 @@ export class MainStore {
 
     constructor() {
         this.addTeamAfterProjectCreation = false;
-        this.agents = [];
-        this.agentKey = {};
-        this.agentApiToken = {};
         this.allItemsSelected = false;
         this.autoCompleteLoading = false;
         this.audit = {};
@@ -252,6 +246,8 @@ export class MainStore {
     }
 
     @action setListItems(items) {
+        // Todo: What is this doing? It seems to be an additional request.
+        // Todo: This get's called and then immediately after that listItems gets set again in the dashboard store at line #264
         this.listItems = items
     }
 

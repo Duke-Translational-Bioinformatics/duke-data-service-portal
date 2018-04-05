@@ -55,15 +55,16 @@ class FileOptionsMenu extends React.Component {
     }
 
     toggleProv(id, versionId) {
-        const { currentGraph } = provenanceStore;
+        const { currentGraph, toggleProv } = provenanceStore;
         let projId = this.props.router.location.pathname.includes('project') ? this.props.params.id : mainStore.entityObj.ancestors[0].id;
         mainStore.searchFiles('', projId);
-        if(currentGraph === null || (currentGraph !== null && currentGraph.id !== this.props.params.id)) {
-            provenanceStore.getWasGeneratedByNode(versionId);
-        } else if (currentGraph !== null && currentGraph.id === this.props.params.id) {
+        if(currentGraph === null || (currentGraph !== null && currentGraph.id !== id)) {
+            // provenanceStore.getWasGeneratedByNode(versionId); // Todo: changed this here
+            provenanceStore.getProvenance(versionId, Kind.DDS_FILE_VERSION, null);
+        } else if (currentGraph !== null && currentGraph.id === id) {
             provenanceStore.shouldRenderGraph();
         }
-        provenanceStore.toggleProvView();
+        if(!toggleProv) provenanceStore.toggleProvView();
         !this.props.router.location.pathname.includes(id) ? this.props.router.push('/file/'+id) : null;
     }
 

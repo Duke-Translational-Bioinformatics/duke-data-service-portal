@@ -33,7 +33,7 @@ class TreeList extends React.Component {
     }
 
     render() {
-        const {errorModals, phiModalOpen, toasts, showFilters, screenSize, serviceOutageNoticeModalOpen, projects} = mainStore;
+        const {errorModals, phiModalOpen, toasts, showFilters, screenSize, serviceOutageNoticeModalOpen, projects} = mainStore; // Todo: remove cruft. None of these are being used
         const { downloadedItems, drawer, selectedItem } = dashboardStore;
         let ancestorIds = []
         if (selectedItem) {
@@ -100,8 +100,6 @@ class TreeList extends React.Component {
     listItemStyle(child) {
         if (dashboardStore.selectedItem === child.id) {
             return (styles.selected)
-        } else if (child.childrenDownloaded) {
-            return (styles.childrenDownloaded)
         }
     }
 
@@ -135,7 +133,7 @@ class TreeList extends React.Component {
                 })
             )
         }
-        // console.log('buildTree downloadedItems.size', downloadedItems.size);
+        // console.log('buildTree downloadedItems.size', downloadedItems.size); // Todo: remove cruft
         let projectIds = downloadedItems.get('projectIds')
         let projectTree = projectIds ? looper(projectIds) : null
         return projectTree
@@ -143,9 +141,6 @@ class TreeList extends React.Component {
 };
 
 const styles = {
-    childrenDownloaded: {
-        color: Color.ltBlue
-    },
     drawer: {
         top: '56px'
     },
