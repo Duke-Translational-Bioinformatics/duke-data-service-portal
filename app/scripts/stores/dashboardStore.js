@@ -15,7 +15,7 @@ export class DashboardStore {
     constructor() {
         this.ancestorStatus = observable.map();
         this.downloadedItems = observable.map();
-        this.drawer = observable.map({'open': true, 'width': 350, 'toggleLable': 'Home'});
+        this.drawer = observable.map({'open': true, 'width': 350});
         this.router = null;
         this.selectedItem = null;
         this.transportLayer = transportLayer
@@ -178,24 +178,11 @@ export class DashboardStore {
     @action openDrawer() { // Todo: remove cruft
         this.drawer.set('open', true)
     }
-
-    @action toggleCollapseTree(router) {
-        if (this.drawer.get('collapsed')) {
-            this.downloadedItems.forEach((item) => {
-                item.open = true
-            })
-            this.drawer.set('collapsed', false);
-            this.drawer.set('toggleLable', 'Home');
-        } else {
-            mainStore.listItems = mainStore.projects
-            this.selectedItem = null
-            this.downloadedItems.forEach((item) => {
-                item.open = false
-            })
-            router.push({pathname: ("/dashboard")})
-            this.drawer.set('collapsed', true);
-            this.drawer.set('toggleLable', 'Expand');
-        }
+    
+    @action dashboardHome(router) {
+        mainStore.listItems = mainStore.projects;
+        this.selectedItem = null;
+        router.push({pathname: ("/dashboard")});
     }
     
     @action toggleTreeListItem(id) {
@@ -244,7 +231,6 @@ export class DashboardStore {
     }
 
     @action selectItem(itemId) {
-        this.drawer.set('toggleLable', 'Home');
         mainStore.filesChecked = []
         mainStore.foldersChecked = []
         mainStore.allItemsSelected = false
@@ -258,9 +244,10 @@ export class DashboardStore {
             } else if (childrenIds.length > 0){
                 let newListItems = childrenIds.map((id) => {return(this.downloadedItems.get(id))})
                 mainStore.listItems = newListItems
-                item.open = true
+                item.open = !item.open
             } else {
                 mainStore.listItems = []
+                item.open = !item.open
             }
             this.downloadedItems.delete(itemId)
             this.downloadedItems.set(itemId, item)
