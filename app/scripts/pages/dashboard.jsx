@@ -4,7 +4,7 @@ import mainStore from '../stores/mainStore';
 import dashboardStore from '../stores/dashboardStore';
 import TreeList from '../components/dashboardComponents/treeList.jsx';
 import Breadcrumbs from '../components/dashboardComponents/breadcrumbs.jsx';
-import DashboardListItems from '../components/dashboardComponents/dashboardListItems.jsx';
+import ListItems from '../components/dashboardComponents/listItems.jsx';
 import FileOptions from '../components/fileComponents/fileOptions.jsx';
 import FolderOptions from '../components/folderComponents/folderOptions.jsx';
 import ProjectOptions from '../components/projectComponents/projectOptions.jsx';
@@ -29,7 +29,7 @@ class Dashboard extends React.Component {
                 <TreeList {...this.props} />
                 <div style={this.bodyStyle()}>
                     <Breadcrumbs {...this.props} />
-                    <DashboardListItems {...this.props} />
+                    <ListItems {...this.props} />
                     <FileOptions {...this.props} />
                     <FolderOptions {...this.props} />
                     <ProjectOptions {...this.props} />
