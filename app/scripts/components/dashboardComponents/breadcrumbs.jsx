@@ -21,16 +21,17 @@ class Breadcrumbs extends React.Component {
                 <IconButton
                     iconClassName="material-icons"
                     onClick={() => dashboardStore.toggleDrawer()}
-                    style={styles.drawerToggleButton}
+                    style={styles.breadCrumbButton}
                     hoveredStyle={styles.hover}
                 >
                     {drawerDirectionIcon}
                 </IconButton>
-                <FlatButton
-                    label={drawer.get('toggleLable')}
-                    style={selectedItem ? styles.breadCrumb : styles.breadCrumbSelected}
-                    onClick={() => dashboardStore.toggleCollapseTree(this.props.router)}
-                />
+                <IconButton
+                    iconClassName="material-icons"
+                    onClick={() => dashboardStore.dashboardHome(this.props.router)}
+                    style={styles.breadCrumbButton}
+                    hoveredStyle={styles.hover}
+                >home</IconButton>
                 {this.breadCrumb()}
             </Paper> 
         );
@@ -85,7 +86,7 @@ const styles = {
         top: '-7px',
         height: '36px'
     },
-    drawerToggleButton: {
+    breadCrumbButton: {
         height: '36px',
         paddingTop: '6px'
     },
