@@ -121,7 +121,7 @@ class TreeList extends React.Component {
                                 primaryText={child.name}
                                 leftIcon={this.iconPicker(child, ancestorIds)}
                                 nestedItems={grandChildren}
-                                open={child.open}
+                                open={!drawer.get('collapsed') || child.open}
                                 onNestedListToggle={() => {dashboardStore.toggleTreeListItem(child.id)}}
                                 onClick={() => {this.handleTouchTap(child)}}
                                 onKeyDown={(e) => {this.handleKeyDown(e, child)} }
