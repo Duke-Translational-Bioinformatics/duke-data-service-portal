@@ -26,7 +26,11 @@ import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColu
 class ListItems extends React.Component {
 
     render() {
-        const { allItemsSelected, filesChecked, foldersChecked, isSafari, listItems, loading, nextPage, projectRole, screenSize, tableBodyRenderKey, totalItems, uploads } = mainStore;
+        const {
+            allItemsSelected, filesChecked, foldersChecked, isSafari, listItems,
+            loading, nextPage, projectRole, screenSize, tableBodyRenderKey,
+            totalItems, uploads
+        } = mainStore;
         const { agents } = agentStore;
         const { currentUser } = authStore;
         let items = this.props.router && this.props.router.location.pathname.includes('agents') ? agents.filter(a => a.audit.created_by.id === currentUser.id) : listItems;

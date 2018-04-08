@@ -109,7 +109,7 @@ export class DashboardStore {
     @action getAncestors(ancestors) {
         ancestors.forEach((ancestor) => {
             let {id, kind} = ancestor
-            if(!this.downloadedItems.has(id) && kind !== 'dds-project') {
+            if(!this.downloadedItems.has(id) && kind !== Kind.DDS_PROJECT) {
                 this.getItem(id, this.pathFinder(kind))
             }
         })
@@ -147,7 +147,7 @@ export class DashboardStore {
                 let folderIds = []
                 let parentsChildren = results.map((child) => {
                     childrenIds.push(child.id)
-                    if (child.kind === 'dds-folder') folderIds.push(child.id)
+                    if (child.kind === Kind.DDS_FOLDER) folderIds.push(child.id)
                     child.parentId = parentId
                     if (!this.downloadedItems.has(child.id)) this.downloadedItems.set(child.id, child)
                     return ( child );
@@ -220,7 +220,7 @@ export class DashboardStore {
     }
 
     @action setSelectedItem() {
-        let {id, path} = this.router.params
+        let {id, path} = this.router.params        
         if (id && path) {
             if (this.downloadedItems.has(id)) {
                 this.selectedItem = id
@@ -252,7 +252,7 @@ export class DashboardStore {
             this.downloadedItems.delete(itemId)
             this.downloadedItems.set(itemId, item)
 
-            if (item.kind === 'dds-project') {
+            if (item.kind === Kind.DDS_PROJECT) {
                 mainStore.project = item
             } else {
                 mainStore.project = this.downloadedItems.get(item.project.id)
