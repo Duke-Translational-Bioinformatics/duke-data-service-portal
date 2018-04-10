@@ -18,7 +18,7 @@ export class DashboardStore {
         this.drawer = observable.map({'open': true, 'width': 350});
         this.router = null;
         this.selectedItem = null;
-        this.transportLayer = transportLayer
+        this.transportLayer = transportLayer;
     }
     
     pathFinder(kind) {
@@ -181,12 +181,10 @@ export class DashboardStore {
     
     @action dashboardHome(router) {
         mainStore.listItems = mainStore.projects;
-        this.selectedItem = null;
         router.push({pathname: ("/dashboard")});
     }
     
     @action toggleTreeListItem(id) {
-        this.selectedItem = id;
         let item = this.downloadedItems.get(id)
         item.open = !item.open
         this.downloadedItems.delete(id)
@@ -219,8 +217,8 @@ export class DashboardStore {
             }).catch(ex => mainStore.handleErrors(ex))
     }
 
-    @action setSelectedItem() {
-        let {id, path} = this.router.params        
+    @action setSelectedItem(params) {
+        let {id, path} = params
         if (id && path) {
             if (this.downloadedItems.has(id)) {
                 this.selectedItem = id

@@ -4,6 +4,7 @@ const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import { Color } from '../theme/customTheme';
 import authStore from '../stores/authStore';
+import dashboardStore from '../stores/dashboardStore';
 import mainStore from '../stores/mainStore';
 import Header from '../components/globalComponents/header.jsx';
 import Footer from '../components/globalComponents/footer.jsx';
@@ -87,6 +88,7 @@ class App extends React.Component {
         if(sessionTimeoutWarning) authStore.setRedirectUrl(location.href);
         if(prevProps.location.pathname !== pathname || mainStore.currentLocation === null) {
             this.$$('.page-content').scrollTo(0, 0);
+            dashboardStore.setSelectedItem(params);
             mainStore.setCurrentRouteLocation({path: pathname, id: params.id});
         }
         this.showToasts();

@@ -19,7 +19,6 @@ class TreeList extends React.Component {
         if (projects && projects.length && downloadedItems.size === 0) {
             dashboardStore.setDownloadedItems(projects);
             mainStore.setListItems(projects);
-            dashboardStore.setSelectedItem();
         };
         let item = downloadedItems.get(selectedItem)
         if (item && !ancestorStatus.get('downloadComplete')) {

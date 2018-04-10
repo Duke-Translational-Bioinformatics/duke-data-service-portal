@@ -12,7 +12,7 @@ class ProjectOptionsMenu extends React.Component {
 
     render() {
         return (
-            <IconMenu iconButtonElement={<IconButton iconClassName="material-icons" style={styles.openIcon} onTouchTap={this.props.clickHandler}>more_vert</IconButton>}
+            <IconMenu iconButtonElement={<IconButton iconClassName="material-icons" onTouchTap={this.props.clickHandler}>more_vert</IconButton>}
                       anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                       targetOrigin={{horizontal: 'right', vertical: 'top'}}>
                 <MenuItem primaryText="Edit Project Details" leftIcon={<i className="material-icons">mode_edit</i>} onTouchTap={() => this.toggleModal('editOpen')}/>
@@ -30,12 +30,6 @@ class ProjectOptionsMenu extends React.Component {
         mainStore.toggleTeamManager()
     }
 }
-
-const styles = {
-    openIcon: {
-        margin: '-10px -12px 0px 0px'
-    },
-};
 
 ProjectOptionsMenu.propTypes = {
     project: object
