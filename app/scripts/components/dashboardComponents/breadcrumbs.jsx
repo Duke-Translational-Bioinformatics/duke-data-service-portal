@@ -6,7 +6,7 @@ import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore'; // Todo: remove cruft
 import dashboardStore from '../../stores/dashboardStore';
 import { Color } from '../../theme/customTheme';
-import { Kind, Path } from '../../util/urlEnum';
+import { UrlGen, Kind, Path } from '../../util/urlEnum';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';
@@ -26,12 +26,13 @@ class Breadcrumbs extends React.Component {
                 >
                     {drawerDirectionIcon}
                 </IconButton>
-                <IconButton
-                    iconClassName="material-icons"
-                    onClick={() => dashboardStore.dashboardHome(this.props.router)}
-                    style={styles.breadCrumbButton}
-                    hoveredStyle={styles.hover}
-                >home</IconButton>
+                <a href={UrlGen.routes.dashboardHome()} className="external">
+                    <IconButton
+                        iconClassName="material-icons"
+                        style={styles.breadCrumbButton}
+                        hoveredStyle={styles.hover}
+                    >home</IconButton>
+                </a>
                 {this.breadCrumb()}
             </Paper> 
         );
