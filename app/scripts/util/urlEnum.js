@@ -16,6 +16,11 @@ export const UrlGen = {
         activities: (activityId) => '/#/activity/' + activityId,
         agents: () => '/#/agents',
         agent: (agentId) => '/#/agent/' + agentId
+    },
+    pathname: {
+        agents: () => '/agents',
+        dashboardHome: () => '/dashboard',
+        home: () => '/'
     }
 };
 

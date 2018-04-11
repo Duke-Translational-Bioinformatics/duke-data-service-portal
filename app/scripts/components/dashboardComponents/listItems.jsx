@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-const { object, bool, array, string, number } = PropTypes;
+const { array, bool, number, object, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import agentStore from '../../stores/agentStore';
@@ -8,9 +8,10 @@ import authStore from '../../stores/authStore';
 import BaseUtils from '../../util/baseUtils.js';
 import { UrlGen, Path, Kind } from '../../util/urlEnum';
 import { Roles } from '../../enum';
-import { Color } from '../../theme/customTheme';
+import { Color, WindowBreak } from '../../theme/customTheme';
 import BatchOps from '../../components/globalComponents/batchOps.jsx';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
+import AddProjectModal from '../../components/projectComponents/addProjectModal.jsx';
 import FileOptionsMenu from '../../components/fileComponents/fileOptionsMenu.jsx';
 import FolderOptionsMenu from '../../components/folderComponents/folderOptionsMenu.jsx';
 import ProjectOptionsMenu from '../../components/projectComponents/projectOptionsMenu.jsx';
@@ -29,28 +30,35 @@ class ListItems extends React.Component {
     render() {
         const {
             allItemsSelected, filesChecked, foldersChecked, isSafari, listItems,
-            loading, nextPage, projectRole, screenSize, tableBodyRenderKey,
+            loading, nextPage, projectRole, projectRoles, screenSize, tableBodyRenderKey,
             totalItems, uploads
         } = mainStore;
         const { agents } = agentStore;
         const { currentUser } = authStore;
-        let items = this.props.router && this.props.router.location.pathname.includes('agents') ? agents.filter(a => a.audit.created_by.id === currentUser.id) : listItems;
-        let showBatchOps = !!(filesChecked.length || foldersChecked.length);
-        let menuWidth = this.props.router.location.pathname.includes('agents') ? 118 : screenSize.width > 1230 ? 35 : 28;
+        let items = this.props.router && this.isListKind('Agents') ? agents.filter(a => a.audit.created_by.id === currentUser.id) : listItems;
+        let showBatchOps = this.isListKind('ProjectChildren') && !!(filesChecked.length || foldersChecked.length);
+        let showUploadButton = this.isListKind('ProjectChildren') && projectRole !== null && (projectRole !== Roles.project_viewer && projectRole !== Roles.file_downloader);
+        let showAddFolderButton = this.isListKind('ProjectChildren');
+        let showAddProjectButton = this.isListKind('Projects');
+        let showListItemsTable = items.length > 0;
+        let showLoadMorebutton = !this.isListKind('Agents') && items.length < totalItems && totalItems > 25;
+        let menuWidth = this.isListKind('Agents') ? 118 : screenSize.width > 1230 ? 35 : 28;
         let componentName = this.props.router.routes[1]['component']['name'];
         let checkboxStyle = { maxWidth: 24, float: 'left', marginRight: isSafari ? 16 : 0 };
-        let showUploadButton = projectRole !== null && (projectRole !== Roles.project_viewer && projectRole !== Roles.file_downloader);
-        let showChecks = projectRole !== null && projectRole !== Roles.project_viewer && projectRole !== Roles.file_uploader && projectRole !== Roles.file_downloader;
+        let showCheckboxColumn = this.isListKind('ProjectChildren') && projectRole !== null && projectRole !== Roles.project_viewer && projectRole !== Roles.file_uploader && projectRole !== Roles.file_downloader;
+        let showLastUpdatedColumn = screenSize && screenSize.width >= WindowBreak.sm;
+        let showProjectRoleColumn = this.isListKind('Projects');
+        let showSizeColumn = this.isListKind('ProjectChildren') && screenSize && screenSize.width >= WindowBreak.md;
         let children = items && items.length ? items.map((child) => {
             if(!child.is_deleted) {
-                let itemsChecked = child.kind === undefined ? null : child.kind === Kind.DDS_FOLDER ? foldersChecked : filesChecked;
                 let route = this.listItemRoute(child, componentName)
                 return (
                     <TableRow key={child.id} selectable={false}>
-                        {this.tableRowColumnCheckBox(child, showChecks, checkboxStyle, itemsChecked)}
+                        {showCheckboxColumn && this.tableRowColumnCheckBox(child, checkboxStyle, filesChecked, foldersChecked)}
                         {this.tableRowColumnName(child, route)}
-                        {this.tableRowColumnLastUpdated(child, route, screenSize)}
-                        {this.tableRowColumnSize(child, screenSize)}
+                        {showLastUpdatedColumn && this.tableRowColumnLastUpdated(child, route)}
+                        {showProjectRoleColumn && this.tableRowColumnProjectRole(child, projectRoles)}
+                        {showSizeColumn && this.tableRowColumnSize(child)}
                         {this.tableRowColumnMenu(child, menuWidth)}
                     </TableRow>
                 );
@@ -59,28 +67,17 @@ class ListItems extends React.Component {
 
         return (
             <div className="list-items-container">
-                <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
-                    {!showBatchOps && <div className="mdl-cell mdl-cell--12-col">
-                        { showUploadButton ? <RaisedButton
-                                                label="Upload Files"
-                                                labelPosition="before"
-                                                labelStyle={{color: Color.blue}}
-                                                style={styles.uploadFilesBtn}
-                                                icon={<FileUpload color={Color.pink} />}
-                                                onTouchTap={() => this.toggleUploadManager()}/> : null }
-                        <AddFolderModal {...this.props}/>
-                    </div>}
-                    {showBatchOps && !this.props.router.location.pathname.includes('agents') ? <BatchOps {...this.props}/> : ''}
-                </div>
+                {this.itemsActionBar(showBatchOps, showUploadButton, showAddFolderButton, showAddProjectButton)}
                 {uploads || loading ? <Loaders {...this.props}/> : null}
                 <Paper className="mdl-cell mdl-cell--12-col" style={styles.list}>
-                    {items.length > 0 && <Table fixedHeader={true}>
+                    {showListItemsTable && <Table fixedHeader={true}>
                         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                             <TableRow>
-                                {this.tableHeaderColumnCheckBox(showChecks, checkboxStyle, allItemsSelected)}
+                                {showCheckboxColumn && this.tableHeaderColumnCheckBox(checkboxStyle, allItemsSelected)}
                                 {this.tableHeaderColumnName()}
-                                {this.tableHeaderColumnLastUpdated(screenSize)}
-                                {this.tableHeaderColumnSize(screenSize)}
+                                {showLastUpdatedColumn && this.tableHeaderColumnLastUpdated(screenSize)}
+                                {showProjectRoleColumn && this.tableHeaderColumnProjectRole()}
+                                {showSizeColumn && this.tableHeaderColumnSize()}
                                 {this.tableHeaderColumnMenu(menuWidth)}
                             </TableRow>
                         </TableHeader>
@@ -88,8 +85,7 @@ class ListItems extends React.Component {
                             {children}
                         </TableBody>
                     </Table>}
-                    {items.length < totalItems && totalItems > 25 && !this.props.router.location.pathname.includes('agents') &&
-                    <div className="mdl-cell mdl-cell--12-col">
+                    {showLoadMorebutton && <div className="mdl-cell mdl-cell--12-col">
                         <RaisedButton
                             label={loading ? "Loading..." : "Load More"}
                             secondary={true}
@@ -105,40 +101,41 @@ class ListItems extends React.Component {
     }
 
     // tableHeaders
-    tableHeaderColumnCheckBox(showChecks, checkboxStyle, allItemsSelected) {
-        if (this.props.router.location.pathname !== '/dashboard' ) {
-            return (
-                <TableHeaderColumn style={styles.checkbox}>{showChecks && <Checkbox
+    tableHeaderColumnCheckBox(checkboxStyle, allItemsSelected) {
+        return (
+            <TableHeaderColumn style={styles.columns.header.checkbox}>
+                <Checkbox
                     label="SELECT ALL"
                     labelStyle={{fontSize: 14, color: Color.ltPink}}
                     style={checkboxStyle}
                     onCheck={()=> this.check(!allItemsSelected, null)}
-                    checked={allItemsSelected}
-                />}
-                </TableHeaderColumn>
-            )  
-        }
+                    checked={allItemsSelected}/>
+            </TableHeaderColumn>
+        )  
     }
     tableHeaderColumnName() {
         return <TableHeaderColumn/>;
     }
-    tableHeaderColumnLastUpdated(screenSize) {
-        if (screenSize && screenSize.width >= 680) {
-            return (
-                <TableHeaderColumn style={{fontSize: 14}}>
-                    LAST UPDATED
-                </TableHeaderColumn>
-            )
-        }
+    tableHeaderColumnLastUpdated() {
+        return (
+            <TableHeaderColumn style={styles.columns.header.lastUpdated}>
+                LAST UPDATED
+            </TableHeaderColumn>
+        )
     }
-    tableHeaderColumnSize(screenSize) {
-        if (screenSize && screenSize.width >= 840 && !this.props.router.location.pathname.includes('agents')) {
-            return (
-                <TableHeaderColumn style={{width: 100, fontSize: 14}}>
-                    SIZE
-                </TableHeaderColumn>
-            )
-        }
+    tableHeaderColumnProjectRole() {
+        return (
+            <TableHeaderColumn style={styles.columns.header.projectRole}>
+                PROJECT ROLE
+            </TableHeaderColumn>
+        )
+    }
+    tableHeaderColumnSize() {
+        return (
+            <TableHeaderColumn style={styles.columns.header.size}>
+                SIZE
+            </TableHeaderColumn>
+        )
     }
     tableHeaderColumnMenu(menuWidth) {
         return (
@@ -147,15 +144,16 @@ class ListItems extends React.Component {
     }
 
     // tableRows
-    tableRowColumnCheckBox(child, showChecks, checkboxStyle, itemsChecked) {
-        if (child.kind !== Kind.DDS_PROJECT) {
+    tableRowColumnCheckBox(child, checkboxStyle, filesChecked, foldersChecked) {
+        if (child.kind !== undefined) {
+            let itemsChecked = child.kind === Kind.DDS_FOLDER ? foldersChecked : filesChecked;
             return (
-                <TableRowColumn style={styles.checkbox}>
-                    {showChecks && child.kind !== undefined ? <Checkbox
+                <TableRowColumn style={styles.columns.row.checkbox}>
+                    <Checkbox
                         style={checkboxStyle}
                         onCheck={() => this.check(child.id, child.kind)}
                         checked={itemsChecked.includes(child.id)}
-                    /> : ''}
+                    />
                 </TableRowColumn>
             )  
         }
@@ -173,36 +171,45 @@ class ListItems extends React.Component {
             </TableRowColumn>
         )
     }
-    tableRowColumnLastUpdated(child, route, screenSize) {
-        if (screenSize && screenSize.width >= 680) {
-            let info = this.updatedOrCreatedInfo(child.audit)
-            if (child.kind === Kind.DDS_PROJECT) {
-                info = <a href={route} className="external" onClick={(e) => this.checkForAllItemsSelected(e)}>
-                    {info}
-                </a>
-            }
+    tableRowColumnLastUpdated(child, route) {
+        let audit = child.audit
+        let info = { date: audit.created_on, name: audit.created_by.full_name }
+        if (audit.last_updated_on !== null && audit.last_updated_by !== null) {
+            info.date = audit.last_updated_on
+            info.name = audit.last_updated_by.full_name
+        }
+        let infoString = BaseUtils.formatDate(info.date) + ' by ' + info.name
+        if (this.isListKind('ProjectChildren')) {
             return (
-                <TableRowColumn onTouchTap={()=>this.check(child.id, child.kind)}>
-                    {info}
+                <TableRowColumn onTouchTap={()=>this.check(child.id, child.kind)} style={styles.columns.row.lastUpdated}>
+                    {infoString}
+                </TableRowColumn>
+            )
+        } else {
+            return (
+                <TableRowColumn style={styles.columns.row.lastUpdated}>
+                    {infoString}
                 </TableRowColumn>
             )
         }
     }
-    tableRowColumnSize(child, screenSize) {
-        if (screenSize && screenSize.width >= 840) {
-            let sizeInfo
-            if (child.kind === Kind.DDS_FILE && child.current_version) {
-                sizeInfo = BaseUtils.bytesToSize(child.current_version.upload.size)
-            } else {
-                sizeInfo = '---'
-            }
-
-            return (
-                <TableRowColumn onTouchTap={() => this.check(child.id, child.kind)} style={{width: 100}}>
-                    {sizeInfo}
-                </TableRowColumn>
-            )
+    tableRowColumnProjectRole(child, projectRoles) {
+        let role = projectRoles.get(child.id);
+        return (
+            <TableRowColumn style={styles.columns.row.projectRole}>
+                {role}
+            </TableRowColumn>)
+    }
+    tableRowColumnSize(child) {
+        let sizeInfo = '---'
+        if (child.kind === Kind.DDS_FILE && child.current_version) {
+            sizeInfo = BaseUtils.bytesToSize(child.current_version.upload.size)
         }
+        return (
+            <TableRowColumn onTouchTap={() => this.check(child.id, child.kind)} style={styles.columns.row.size}>
+                {sizeInfo}
+            </TableRowColumn>
+        )
     }
     tableRowColumnMenu(child, menuWidth) {
         let optionsMenu
@@ -223,8 +230,46 @@ class ListItems extends React.Component {
     }
   
     // HelperFunctions
+    isListKind(listKind) {
+        let kind
+        switch (this.props.router.location.pathname) {
+        case UrlGen.pathname.home():
+            kind = 'Projects'
+            break;
+        case UrlGen.pathname.dashboardHome():
+            kind = 'Projects'
+            break;
+        case UrlGen.pathname.agents():
+            kind = 'Agents'
+            break;
+        default:
+            kind = 'ProjectChildren'
+        }
+        return kind === listKind;
+    }
+
+    itemsActionBar(showBatchOps, showUploadButton, showAddFolderButton, showAddProjectButton) {
+        return (
+            <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
+                {!showBatchOps && <div className="mdl-cell mdl-cell--12-col">
+                    {showUploadButton && <RaisedButton
+                                          label="Upload Files"
+                                          labelPosition="before"
+                                          labelStyle={{color: Color.blue}}
+                                          style={styles.uploadFilesBtn}
+                                          icon={<FileUpload color={Color.pink} />}
+                                          onTouchTap={() => this.toggleUploadManager()}/>}
+                    {showAddFolderButton && <AddFolderModal {...this.props}/>}
+                    {showAddProjectButton && <AddProjectModal {...this.props}/>}
+                </div>}
+                {showBatchOps && <BatchOps {...this.props}/>}
+            </div>
+        )
+    }
+
+
     listItemRoute(child, componentName) {
-        if (componentName == 'Dashboard') {
+        if (componentName === 'Dashboard') {
             if (child.kind === Kind.DDS_PROJECT) {
                 return UrlGen.routes.dashboardProject(child.id);
             } else if (child.kind === Kind.DDS_FOLDER) {
@@ -232,7 +277,7 @@ class ListItems extends React.Component {
             }
         } else {
             if (child.kind === undefined) {
-                return UrlGen.routes.agent(child.id);
+                return UrlGen.routes.agents();
             } else if (child.kind === Kind.DDS_FOLDER) {
                 return UrlGen.routes.folder(child.id);
             } else {
@@ -261,15 +306,6 @@ class ListItems extends React.Component {
                 {iconKind}
             </FontIcon>
         )
-    }
-
-    updatedOrCreatedInfo(audit) {
-        let updatedInfo = {'date': audit.created_on, 'name': audit.created_by.full_name}
-        if (audit.last_updated_on !== null && audit.last_updated_by !== null) {
-            updatedInfo.date = audit.last_updated_on
-            updatedInfo.name = audit.last_updated_by.full_name
-        }
-        return `${BaseUtils.formatDate(updatedInfo.date)} by ${updatedInfo.name}`;
     }
 
     check(id, kind) {
@@ -324,9 +360,6 @@ const styles = {
     batchOpsWrapper: {
         marginBottom: 0
     },
-    checkbox: {
-        width: 5
-    },
     icon: {
         marginLeft: -4,
         marginRight: 10,
@@ -343,6 +376,20 @@ const styles = {
         fontWeight: 200,
         float: 'right',
         margin: '0px -8px 0px 18px'
+    },
+    columns: {
+        header: {
+            checkbox: {width: 5},
+            lastUpdated: {fontSize: 14},
+            projectRole: {width: 100, fontSize: 14},
+            size: {width: 100, fontSize: 14},      
+        },
+        row: {
+            checkbox: {width: 5},
+            lastUpdated: {},
+            projectRole: {width: 100},
+            size: {width: 100},      
+        }  
     }
 };
 
@@ -356,6 +403,7 @@ ListItems.propTypes = {
     isSafari: bool,
     nextPage: number,
     projectRole: string,
+    projectRoles: object,
     responseHeaders: object,
     screenSize: object,
     tableBodyRenderKey: number,

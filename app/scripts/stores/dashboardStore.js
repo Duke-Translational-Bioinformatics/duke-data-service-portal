@@ -217,6 +217,7 @@ export class DashboardStore {
             }).catch(ex => mainStore.handleErrors(ex))
     }
 
+    // TODO Refactor to be set by route's pathname updates
     @action setSelectedItem(params) {
         let {id, path} = params
         if (id && path) {
@@ -225,6 +226,9 @@ export class DashboardStore {
             } else {
                 this.getItem(id, `${path}/`, true)
             }
+        } else {
+            this.selectedItem = null;
+            mainStore.listItems = [];
         }
     }
 

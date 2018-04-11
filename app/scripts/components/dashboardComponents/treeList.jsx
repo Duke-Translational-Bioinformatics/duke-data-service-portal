@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import dashboardStore from '../../stores/dashboardStore';
 import { Kind } from '../../util/urlEnum';
-import { Color } from '../../theme/customTheme';
+import { Color, WindowBreak } from '../../theme/customTheme';
 import Drawer from 'material-ui/Drawer';
 import FontIcon from 'material-ui/FontIcon';
 import { List, ListItem } from 'material-ui/List';
@@ -32,7 +32,7 @@ class TreeList extends React.Component {
     }
 
     render() {
-        const {errorModals, phiModalOpen, toasts, showFilters, screenSize, serviceOutageNoticeModalOpen, projects} = mainStore; // Todo: remove cruft. None of these are being used
+        const { leftMenuDrawer, projects, screenSize } = mainStore;
         const { downloadedItems, drawer, selectedItem } = dashboardStore;
         let ancestorIds = []
         if (selectedItem) {
@@ -47,19 +47,18 @@ class TreeList extends React.Component {
                 open={drawer.get('open')}
                 width={drawer.get('width')}
                 zDepth={1}
-                containerStyle={this.drawerStyle()}
-                >
-                  <List>
-                      {this.buildTree(downloadedItems, ancestorIds)}
-                  </List>
+                containerStyle={this.drawerStyle(screenSize, leftMenuDrawer)}
+            >
+                <List>
+                    {this.buildTree(downloadedItems, ancestorIds)}
+                </List>
             </Drawer>
         );
     };
     
-    drawerStyle() {
-        const {leftMenuDrawer} = mainStore;
+    drawerStyle(screenSize, leftMenuDrawer) {
         let style = styles.drawer;
-        if(window.innerWidth > 720) {
+        if(screenSize.width > WindowBreak.tablet) {
             style.marginLeft = leftMenuDrawer.get('open') ? leftMenuDrawer.get('width') : 0
         };
         return style;
@@ -103,7 +102,6 @@ class TreeList extends React.Component {
     }
 
     buildTree(downloadedItems, ancestorIds) {
-        const { drawer } = dashboardStore;
         let looper = (itemIds) => {
             return (
                 itemIds.map((id) => {
