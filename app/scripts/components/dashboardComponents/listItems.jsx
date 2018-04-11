@@ -196,20 +196,12 @@ class ListItems extends React.Component {
             } else {
                 sizeInfo = '---'
             }
-            
-            if (child.kind === Kind.DDS_FILE) {
-                return (
-                    <TableRowColumn onTouchTap={() => this.check(child.id, child.kind)} style={{width: 100}}>
-                        {sizeInfo}
-                    </TableRowColumn>
-                )
-            } else {
-                return (
-                    <TableRowColumn onTouchTap={() => dashboardStore.selectItem(child.id, this.props.router)} style={{width: 100}}>
-                        {sizeInfo}
-                    </TableRowColumn>
-                )
-            }
+
+            return (
+                <TableRowColumn onTouchTap={() => this.check(child.id, child.kind)} style={{width: 100}}>
+                    {sizeInfo}
+                </TableRowColumn>
+            )
         }
     }
     tableRowColumnMenu(child, menuWidth) {
