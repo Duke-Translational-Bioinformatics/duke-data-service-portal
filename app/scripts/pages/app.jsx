@@ -19,7 +19,8 @@ import { Theme } from '../theme/customTheme';
 let zIndex = {
     zIndex: {
         popover: 9999,
-        layer: 5000
+        layer: 5000,
+        tooltip: 9999
     }
 };
 

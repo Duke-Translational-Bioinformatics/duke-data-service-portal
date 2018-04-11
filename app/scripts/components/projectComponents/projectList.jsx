@@ -13,21 +13,37 @@ import ProjectOptions from './projectOptions.jsx';
 import {Card, CardTitle, CardText} from 'material-ui/Card';
 import FontIcon from 'material-ui/FontIcon';
 import RaisedButton from 'material-ui/RaisedButton';
+import IconButton from 'material-ui/IconButton';
+import Toc from 'material-ui/svg-icons/action/toc';
+import ViewModule from 'material-ui/svg-icons/action/view-module';
+
+
 
 @observer
 class ProjectList extends React.Component {
 
     render() {
-        const { loading, nextPage, projects, projectRoles, totalItems } = mainStore;
+        const { loading, nextPage, projects, projectRoles, toggleListStyle, totalItems } = mainStore;
 
         return (
             <div className="project-container mdl-grid">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.listTitle}>
                     <div style={styles.title}>
-                        <h4>Projects</h4>
+                        <h4 style={{margin: 0}}>Projects</h4>
                     </div>
-                    <div style={styles.buttonRow}>
+                    <div style={styles.addProjectButton}>
                         <AddProjectModal {...this.props} />
+                    </div>
+                    <div style={{margin: '6px 10px 0px', float: 'right'}}>
+                        <IconButton
+                            tooltip={!toggleListStyle ? 'list view' : 'tile view'}
+                            onClick={() => this.toggleListStyle()}
+                            iconStyle={{width: 36, height: 36}}
+                            style={{width: 36, height: 36, padding: 0}}
+                            hoveredStyle={{ zIndex: 9999 }}
+                        >
+                            {!toggleListStyle ? <Toc /> : <ViewModule />}
+                        </IconButton>
                     </div>
                     <Loaders {...this.props} />
                     <ProjectOptions {...this.props} />
@@ -70,9 +86,17 @@ class ProjectList extends React.Component {
     setSelectedProject(id) {
         mainStore.setSelectedProject(id);
     }
+
+    toggleListStyle() {
+        mainStore.toggleListView();
+    }
 }
 
 const styles = {
+    addProjectButton: {
+        margin: '6px -16px 0px 12px',
+        float: 'right'
+    },
     card: {
         minHeight: 260,
         padding: 10
@@ -88,10 +112,6 @@ const styles = {
         marginBottom: -15,
         padding: '4px 4px 4px 16px'
     },
-    buttonRow: {
-        position: 'relative',
-        margin: '12px -9px 0px 0px'
-    },
     icon: {
         fontSize: 36,
         float: 'left',
@@ -99,10 +119,10 @@ const styles = {
         color: Color.dkGrey2
     },
     listTitle: {
-        margin: '0px 0px 0px 0px',
+        margin: 0,
+        padding: 8,
         textAlign: 'left',
-        float: 'left',
-        paddingLeft: 20
+        float: 'left'
     },
     menuIcon: {
         float: 'right',
@@ -110,10 +130,10 @@ const styles = {
         marginRight: 3
     },
     title: {
-        margin: '-10px 0px 0px 0px',
+        margin: 0,
+        padding: '8px 0px',
         textAlign: 'left',
-        float: 'left',
-        marginLeft: -14
+        float: 'left'
     }
 };
 

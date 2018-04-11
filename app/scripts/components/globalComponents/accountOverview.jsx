@@ -14,21 +14,22 @@ class AccountOverview extends React.Component {
         const { usage } = mainStore;
 
         return (
-            usage && usage !== null ? <Card className="account-overview content mdl-cell mdl-cell--12-col mdl-color-text--grey-800"
-                  style={styles.card}>
-                <div style={styles.cardSquare} className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
-                    <h4>{usage.project_count + ' Projects'}</h4>
-                    <FontIcon className="material-icons" style={styles.icon}>content_paste</FontIcon>
+            usage && usage !== null ? <div className="mdl-cell mdl-cell--12-col">
+                <div className="list-items-container mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.card}>
+                    <Card  style={styles.cardSquare} className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
+                        <Card style={{width: 80, height: 80, borderRadius: '50%', margin: 30, backgroundColor: '#1565C0'}}><FontIcon className="material-icons" style={styles.icon}>content_paste</FontIcon></Card>
+                        <h4>{usage.project_count + ' Projects'}</h4>
+                    </Card >
+                    <Card  style={styles.cardSquare} className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
+                        <h4>{usage.file_count + ' Files' }</h4>
+                        <FontIcon className="material-icons" style={styles.icon}>description</FontIcon>
+                    </Card >
+                    <Card  style={styles.cardSquare} className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
+                        <h4>{BaseUtils.bytesToSize(usage.storage_bytes)}</h4>
+                        <FontIcon className="material-icons" style={styles.icon}>dns</FontIcon>
+                    </Card >
                 </div>
-                <div style={styles.cardSquare} className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
-                    <h4>{usage.file_count + ' Files' }</h4>
-                    <FontIcon className="material-icons" style={styles.icon}>description</FontIcon>
-                </div>
-                <div style={styles.cardSquare} className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
-                    <h4>{BaseUtils.bytesToSize(usage.storage_bytes)}</h4>
-                    <FontIcon className="material-icons" style={styles.icon}>save</FontIcon>
-                </div>
-            </Card> : null
+            </div> : null
         );
     }
 }
@@ -46,8 +47,13 @@ const styles = {
     icon: {
         fontSize: 52,
         verticalAlign: 'center',
-        color: '#616161'
+        // color: '#616161'
+        color: '#fff'
     }
+};
+
+AccountOverview.propTypes = {
+    usage: object
 };
 
 export default AccountOverview;

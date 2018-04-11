@@ -95,8 +95,9 @@ export class MainStore {
     @observable tagsToAdd
     @observable templateProperties
     @observable toasts
-    @observable totalItems
+    @observable toggleListStyle
     @observable toggleModal
+    @observable totalItems
     @observable totalUploads
     @observable uploadCount
     @observable uploads
@@ -190,8 +191,9 @@ export class MainStore {
         this.tagsToAdd = [];
         this.templateProperties = [];
         this.toasts = [];
-        this.totalItems = null;
+        this.toggleListStyle = false;
         this.toggleModal = {open: false, id: null};
+        this.totalItems = null;
         this.totalUploads = {inProcess: 0, complete: 0};
         this.uploadCount = [];
         this.uploads = observable.map();
@@ -205,6 +207,10 @@ export class MainStore {
 
     checkResponse(response) {
         return checkStatus(response, authStore);
+    }
+
+    @action toggleListView() {
+        this.toggleListStyle = !this.toggleListStyle;
     }
 
     @action addTeamMembersPrompt () {
@@ -325,8 +331,10 @@ export class MainStore {
             let headers = json[1].map;
             if(page <= 1) {
                 this.projects = results;
+                this.listItems = results;
             } else {
                 this.projects = [...this.projects, ...results];
+                this.listItems = [...this.listItems, ...results];
             }
             const userId = authStore.currentUser.id !== undefined ? authStore.currentUser.id : this.currentUser.id !== undefined ? this.currentUser.id : null;
             this.projects.forEach((p) => {
