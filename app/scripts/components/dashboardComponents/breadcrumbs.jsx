@@ -80,15 +80,15 @@ class Breadcrumbs extends React.Component {
 const styles = {
     breadCrumb: {
         top: '-7px',
-        height: '36px',
+        minHeight: '36px',
         color: Color.ltGrey
     },
     breadCrumbSelected: {
         top: '-7px',
-        height: '36px'
+        minHeight: '36px',
     },
     breadCrumbButton: {
-        height: '36px',
+        minHeight: '36px',
         paddingTop: '6px'
     },
     hover: {
