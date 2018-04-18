@@ -36,7 +36,7 @@ class FileDetails extends React.Component {
         const {entityObj, fileVersions, loading, objectMetadata, projectRole, screenSize, uploads} = mainStore;
         const {generatedByActivity, showProvAlert} = provenanceStore;
 
-        let file = entityObj !== null && entityObj.parent && entityObj.current_version && entityObj.audit ? <Card className="project-container mdl-cell mdl-cell--12-col" style={styles.card}>
+        let file = entityObj !== null && entityObj.parent && entityObj.current_version && entityObj.audit ? <Card className="item-info mdl-cell mdl-cell--12-col" style={styles.card}>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
                     <a href={'/#/' + BaseUtils.getUrlPath(entityObj.parent.kind) + entityObj.parent.id } style={styles.back} className="mdl-color-text--grey-800 external" onTouchTap={() => this.goBack()}>

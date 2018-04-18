@@ -21,7 +21,7 @@ class VersionDetails extends React.Component {
         const {entityObj, loading, projectRole} = mainStore;
         const {generatedByActivity} = provenanceStore;
 
-        let version = entityObj !== null && entityObj.file && entityObj.audit && entityObj.upload ? <Card className="project-container mdl-cell mdl-cell--12-col" style={styles.card}>
+        let version = entityObj !== null && entityObj.file && entityObj.audit && entityObj.upload ? <Card className="item-info mdl-cell mdl-cell--12-col" style={styles.card}>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
                     <a href={UrlGen.routes.file(entityObj.file.id)} style={styles.back} className="mdl-color-text--grey-800 external" onTouchTap={() => this.goBack()}>
