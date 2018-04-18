@@ -4,8 +4,8 @@ const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import BaseUtils from '../../util/baseUtils.js';
-import Card from 'material-ui/Card';
 import FontIcon from 'material-ui/FontIcon';
+import Paper from 'material-ui/Paper';
 
 @observer
 class AccountOverview extends React.Component {
@@ -14,22 +14,21 @@ class AccountOverview extends React.Component {
         const { usage } = mainStore;
 
         return (
-            usage && usage !== null ? <div className="mdl-cell mdl-cell--12-col">
-                <div className="list-items-container mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.card}>
-                    <Card  style={styles.cardSquare} className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
-                        <Card style={{width: 80, height: 80, borderRadius: '50%', margin: 30, backgroundColor: '#1565C0'}}><FontIcon className="material-icons" style={styles.icon}>content_paste</FontIcon></Card>
+            usage && usage !== null ?
+                <Paper className="account-overview mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet" style={styles.card}>
+                    <div style={styles.cardSquare} className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
                         <h4>{usage.project_count + ' Projects'}</h4>
-                    </Card >
-                    <Card  style={styles.cardSquare} className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
+                        <FontIcon className="material-icons" style={styles.icon}>content_paste</FontIcon>
+                    </div >
+                    <div style={styles.cardSquare} className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
                         <h4>{usage.file_count + ' Files' }</h4>
                         <FontIcon className="material-icons" style={styles.icon}>description</FontIcon>
-                    </Card >
-                    <Card  style={styles.cardSquare} className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
+                    </div >
+                    <div  style={styles.cardSquare} className="mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet">
                         <h4>{BaseUtils.bytesToSize(usage.storage_bytes)}</h4>
                         <FontIcon className="material-icons" style={styles.icon}>dns</FontIcon>
-                    </Card >
-                </div>
-            </div> : null
+                    </div >
+                </Paper> : null
         );
     }
 }
@@ -47,8 +46,7 @@ const styles = {
     icon: {
         fontSize: 52,
         verticalAlign: 'center',
-        // color: '#616161'
-        color: '#fff'
+        color: '#616161'
     }
 };
 

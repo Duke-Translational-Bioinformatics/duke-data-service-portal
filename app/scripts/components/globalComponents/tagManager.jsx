@@ -84,7 +84,12 @@ class TagManager extends React.Component {
 
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
-                <Drawer docked={false} disableSwipeToOpen={true} width={width} openSecondary={true} open={openTagManager} onRequestChange={() => this.toggleTagManager()}>
+                <Drawer docked={false}
+                        disableSwipeToOpen={true}
+                        width={width}
+                        openSecondary={true}
+                        onRequestChange={() => this.toggleTagManager()}
+                        open={openTagManager}>
                     <div className="mdl-cell mdl-cell--1-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-color-text--grey-800" style={styles.drawer}>
                         <IconButton style={styles.toggleBtn}
                                     onTouchTap={() => this.toggleTagManager()}>
