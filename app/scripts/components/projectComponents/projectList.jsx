@@ -12,9 +12,9 @@ import ProjectOptionsMenu from './projectOptionsMenu.jsx';
 import ProjectOptions from './projectOptions.jsx';
 import {Card, CardTitle, CardText} from 'material-ui/Card';
 import FontIcon from 'material-ui/FontIcon';
-import RaisedButton from 'material-ui/RaisedButton';
 import IconButton from 'material-ui/IconButton';
-import Toc from 'material-ui/svg-icons/action/toc';
+import RaisedButton from 'material-ui/RaisedButton';
+import ViewList from 'material-ui/svg-icons/action/view-list';
 import ViewModule from 'material-ui/svg-icons/action/view-module';
 
 
@@ -42,7 +42,7 @@ class ProjectList extends React.Component {
                             style={{width: 36, height: 36, padding: 0}}
                             hoveredStyle={{ zIndex: 9999 }}
                         >
-                            {!toggleListStyle ? <Toc /> : <ViewModule />}
+                            {!toggleListStyle ? <ViewList /> : <ViewModule />}
                         </IconButton>
                     </div>
                     <Loaders {...this.props} />
