@@ -1,9 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types';
 const { object, string } = PropTypes;
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'; // Todo: remove cruft
 import { observer } from 'mobx-react';
-import mainStore from '../../stores/mainStore'; // Todo: remove cruft
 import dashboardStore from '../../stores/dashboardStore';
 import { Color } from '../../theme/customTheme';
 import { UrlGen, Kind, Path } from '../../util/urlEnum';

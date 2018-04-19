@@ -245,12 +245,6 @@ export class MainStore {
         this.prevLocation = prevLocation;
     }
 
-    @action setListItems(items) {
-        // Todo: What is this doing? It seems to be an additional request.
-        // Todo: This get's called and then immediately after that listItems gets set again in the dashboard store at line #264
-        this.listItems = items
-    }
-
     @action toggleAllItemsSelected(bool) {
         this.allItemsSelected = bool;
     }

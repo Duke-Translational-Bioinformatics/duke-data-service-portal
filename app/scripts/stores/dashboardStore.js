@@ -1,19 +1,17 @@
 import React from 'react';
-import { observable, action, map } from 'mobx'; // Todo: remove cruft
+import { observable, action, map } from 'mobx';
 import mainStore from './mainStore';
 import transportLayer from '../transportLayer';
 import { Kind, Path } from '../util/urlEnum';
 import { checkStatusAndConsistency } from '../util/fetchUtil';
 
 export class DashboardStore {
-    // @observable ancestorStatus
     @observable downloadedItems
     @observable drawer
     @observable listItems
     @observable selectedItem
 
     constructor() {
-        // this.ancestorStatus = observable.map();
         this.downloadedItems = observable.map();
         this.drawer = observable.map({'open': true, 'width': 350});
         this.listItems = [];
@@ -39,7 +37,6 @@ export class DashboardStore {
     }
 
     @action getChildren(id, path, page) {
-        console.log('@action getChildren(id, path, page) {');
         if(this.listItems.length && page === null) this.listItems = [];
         this.loading = true;
         if (page == null) page = 1;
@@ -53,7 +50,6 @@ export class DashboardStore {
             .then((json) => {
                 let results = json[0].results;
                 let headers = json[1].map;
-                console.log('@this.listItems', this.listItems, 'results', results);
                 dashboardStore.addDownloadedItemChildren(results, id);
                 this.responseHeaders = headers;
                 this.nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
@@ -63,19 +59,17 @@ export class DashboardStore {
     }
 
     @action moveDownloadedItem(id, newParentId) {
-        console.log('moveDownloadedItem');
-        let item = this.downloadedItems.get(id)
+        let item = this.downloadedItems.get(id);
         if (item && item.parent && item.parent.id) {
-            let oldParentId = item.parent.id
-            this.removeDownloadedItem(id, oldParentId)
-            this.addDownloadedItem(item, newParentId)
-            this.selectItem(newParentId, false, false, true)
+            let oldParentId = item.parent.id;
+            this.removeDownloadedItem(id, oldParentId);
+            this.addDownloadedItem(item, newParentId);
+            this.selectItem(newParentId, false, false, true);
         }
     }
 
     @action removeDownloadedItem(id, parentId) {
         this.listItems = this.listItems.filter(l => l.id !== id);
-
         if (parentId) {
             let parent = this.downloadedItems.get(parentId);
             let ci = parent.childrenIds.indexOf(id);
@@ -85,7 +79,6 @@ export class DashboardStore {
             this.downloadedItems.delete(parentId);
             this.downloadedItems.set(parentId, parent);
         }
-
         let recursiveDelete = (itemId) => {
             let item = this.downloadedItems.get(itemId);
             if (item) {
@@ -167,19 +160,6 @@ export class DashboardStore {
     @action toggleDrawer() {
         this.drawer.set('open', !this.drawer.get('open'))
     }
-
-    @action closeDrawer() { // Todo: remove cruft
-        this.drawer.set('open', false)
-    }
-
-    @action openDrawer() { // Todo: remove cruft
-        this.drawer.set('open', true)
-    }
-    
-    @action dashboardHome(router) {
-        dashboardStore.listItems = mainStore.projects;
-        router.push({pathname: ("/dashboard")});
-    }
     
     @action toggleTreeListItem(item) {
         item.open = !item.open;
@@ -211,7 +191,6 @@ export class DashboardStore {
             }).catch(ex => mainStore.handleErrors(ex))
     }
 
-    // TODO Refactor to be set by route's pathname updates
     @action setSelectedItem(id, path) {
         if (id && path) {
             if (this.downloadedItems.has(id)) {
@@ -242,9 +221,9 @@ export class DashboardStore {
     }
 
     @action selectItem(itemId, router, toggle, updateSelectedItem) {
-        mainStore.filesChecked = []
-        mainStore.foldersChecked = []
-        mainStore.allItemsSelected = false
+        mainStore.filesChecked = [];
+        mainStore.foldersChecked = [];
+        mainStore.allItemsSelected = false;
         let item = this.downloadedItems.get(itemId);
         if (item) {
             toggle ? item.open = !item.open : null;
@@ -275,108 +254,6 @@ export class DashboardStore {
             }
         }
     }
-    
-    // @action setDownloadedItems(projects) {
-    //     let projectIds = []
-    //     projects.forEach((project) => {
-    //         this.downloadedItems.set(project.id, project)
-    //         projectIds.push(project.id)
-    //     })
-    //     dashboardStore.listItems = projects
-    //     this.downloadedItems.set('projectIds', projectIds);
-    // }
-    //
-    // @action updateAncestorStatus(ancestors) {
-    //     let ancestorsDownloaded = 0
-    //     ancestors.forEach((ancestor) => {
-    //         if(this.downloadedItems.has(ancestor.id)) ancestorsDownloaded++
-    //     })
-    //     if (ancestorsDownloaded === 1) {
-    //         this.ancestorStatus.set('download', true)
-    //     } else if (ancestorsDownloaded === ancestors.length) {
-    //         this.ancestorStatus.set('downloadChildren', true)
-    //     }
-    // }
-    // 
-    // @action getAncestors(ancestors) {
-    //     ancestors.forEach((ancestor) => {
-    //         let {id, kind} = ancestor
-    //         let ancestorOld = this.downloadedItems.get(id)
-    //         if(!ancestorOld || ancestorOld && ancestorOld. kind !== Kind.DDS_PROJECT) {
-    //             this.getItem(id, this.pathFinder(kind))
-    //         }
-    //     })
-    //     this.ancestorStatus.set('download', false)
-    // }
-    // 
-    // @action getAncestorsChildren(ancestors) {
-    //     ancestors.forEach((a) => {
-    //         let {id, kind} = a
-    //         let ancestor = this.downloadedItems.get(id)
-    //         if(ancestor && !ancestor.childrenIds) {
-    //             this.getTreeListChildren(ancestor)
-    //         }
-    //     })
-    //     this.ancestorStatus.set('downloadComplete', true)
-    //     this.ancestorStatus.set('downloadChildren', false)
-    // }
-    //
-    // @action getTreeListChildren(parent) {
-    //     mainStore.loading = true;
-    //     let parentId = parent.id
-    //     let path = this.pathFinder(parent.kind)
-    //     let page = 1
-    //     this.transportLayer.getChildren(parentId, path, page)
-    //         .then(this.checkResponse)
-    //         .then((response) => {
-    //             const results = response.json();
-    //             const headers = response.headers;
-    //             return Promise.all([results, headers]);
-    //         })
-    //         .then((json) => {
-    //             let results = json[0].results;
-    //             let headers = json[1].map;
-    //             let childrenIds = []
-    //             let folderIds = []
-    //             let parentsChildren = results.map((child) => {
-    //                 childrenIds.push(child.id)
-    //                 if (child.kind === Kind.DDS_FOLDER) folderIds.push(child.id)
-    //                 child.parentId = parentId
-    //                 if (!this.downloadedItems.has(child.id)) this.downloadedItems.set(child.id, child)
-    //                 return ( child );
-    //             });
-    //             let downloadedParent = this.downloadedItems.get(parentId)
-    //             if (downloadedParent) {
-    //                 downloadedParent.open = true
-    //                 downloadedParent.childrenDownloaded = true
-    //                 downloadedParent.childrenIds = childrenIds
-    //                 downloadedParent.folderIds = folderIds
-    //                 this.downloadedItems.delete(parentId)
-    //                 this.downloadedItems.set(parentId, downloadedParent)
-    //             }
-    //             dashboardStore.listItems = parentsChildren;
-    //             console.log('dashboardStore.listItems = parentsChildren', dashboardStore.listItems);
-    //             this.responseHeaders = headers;
-    //             mainStore.loading = false;
-    //         }).catch(ex => mainStore.handleErrors(ex))
-    // }
-    // @action setListItems(parent) {
-    //     dashboardStore.listItems = parent.childrenIds.map((id) => {
-    //         return this.downloadedItems.get(id);
-    //     })
-    // }
-    // 
-    // @action getListItems(parentId, path) {
-    //     // let selectedItem = this.downloadedItems.get(parentId);
-    //     // if (selectedItem && selectedItem.childrenIds && selectedItem.childrenIds.length > 0) {
-    //     //     let currentListIds = dashboardStore.listItems.map(li => li.id).sort();
-    //     //     if (JSON.stringify(selectedItem.childrenIds.sort()) !== JSON.stringify(currentListIds)) {
-    //     //         this.setListItems(selectedItem)
-    //     //     }  
-    //     // } else {
-    //         this.getChildren(parentId, path)
-    //     // }
-    // }
   }
 
 const dashboardStore = new DashboardStore();

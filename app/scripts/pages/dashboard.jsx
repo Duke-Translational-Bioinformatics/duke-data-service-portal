@@ -91,10 +91,8 @@ class Dashboard extends React.Component {
         let params = this.props.params;
         mainStore.getEntity(params.id, path);
         dashboardStore.setSelectedItem(params.id, path);
-        // dashboardStore.getListItems(params.id, path);
         dashboardStore.getChildren(params.id, path);
         mainStore.clearSelectedItems(); // Clear checked files and folders from list
-        // mainStore.setSelectedEntity(params.id, Path.PROJECT, true);
         mainStore.getUser(params.id);
     }
 
@@ -103,10 +101,8 @@ class Dashboard extends React.Component {
         let params = this.props.params;
         mainStore.getEntity(params.id, path);
         dashboardStore.setSelectedItem(params.id, path);
-        // dashboardStore.getListItems(params.id, path);
         dashboardStore.getChildren(params.id, path);
         mainStore.clearSelectedItems(); // Clear checked files and folders from list
-        // mainStore.setSelectedEntity(params.id, Path.FOLDER, true);
         if(mainStore.filesChecked || mainStore.foldersChecked) mainStore.handleBatch([],[]);
     }
 

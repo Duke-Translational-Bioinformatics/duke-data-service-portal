@@ -12,47 +12,6 @@ import { List, ListItem } from 'material-ui/List';
 
 @observer
 class TreeList extends React.Component {
-    
-    // componentDidMount() {
-    //     const { projects, selectedEntity } = mainStore;
-    //     const { ancestorStatus, downloadedItems, selectedItem } = dashboardStore;
-    //     console.log('TreeList componentDidMount selectedItem', selectedItem);
-    // 
-    //     // if (projects && projects.length && downloadedItems.size === 0) {
-    //     //     dashboardStore.setDownloadedItems(projects);
-    //     //     mainStore.setListItems(projects);
-    //     // };
-    //     // let item = downloadedItems.get(selectedItem)
-    //     // if (selectedItem && !ancestorStatus.get('downloadComplete')) {
-    //     //     // if(!selectedItem.childrenIds) dashboardStore.getTreeListChildren(selectedItem)
-    //     //     if (selectedItem.ancestors && selectedItem.ancestors.length > 0) {
-    //     //         dashboardStore.updateAncestorStatus(selectedItem.ancestors)
-    //     //         if(ancestorStatus.get('download')) dashboardStore.getAncestors(selectedItem.ancestors)
-    //     //         if(ancestorStatus.get('downloadChildren')) dashboardStore.getAncestorsChildren(selectedItem.ancestors)
-    //     //     }
-    //     // }
-    // }
-
-    // componentDidUpdate() {
-    //     const { projects, selectedEntity } = mainStore;
-    //     const { ancestorStatus, downloadedItems, selectedItem } = dashboardStore;
-    //     console.log('TreeList componentDidUpdate selectedItem.......', selectedItem);
-    // 
-    //     // if (projects && projects.length && downloadedItems.size === 0) {
-    //     //     dashboardStore.setDownloadedItems(projects);
-    //     //     mainStore.setListItems(projects);
-    //     // };
-    //     // let item = downloadedItems.get(selectedItem)
-    //     // if (selectedItem && !ancestorStatus.get('downloadComplete')) {
-    //     //     // if(!selectedItem.childrenIds) dashboardStore.getTreeListChildren(selectedItem)
-    //     //     if (selectedItem.ancestors && selectedItem.ancestors.length > 0) {
-    //     //         dashboardStore.updateAncestorStatus(selectedItem.ancestors)
-    //     //         if(ancestorStatus.get('download')) dashboardStore.getAncestors(selectedItem.ancestors)
-    //     //         if(ancestorStatus.get('downloadChildren')) dashboardStore.getAncestorsChildren(selectedItem.ancestors)
-    //     //     }
-    //     // }
-    // }
-
     render() {
         const { leftMenuDrawer, projects, screenSize } = mainStore;
         const { downloadedItems, drawer, selectedItem } = dashboardStore;
