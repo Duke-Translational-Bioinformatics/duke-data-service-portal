@@ -150,7 +150,6 @@ export class DashboardStore {
               ancestor.downloaded = false;
               this.downloadedItems.set(ancestor.id, {...ancestor, ...ancestorOld})
               if(!ancestorOld.downloaded) {
-                  console.log('this.getItem(id, this.pathFinder(kind))');
                   this.getItem(id, this.pathFinder(kind))
               }
           })
