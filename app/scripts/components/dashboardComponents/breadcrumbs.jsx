@@ -1,12 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types';
 const { object, string } = PropTypes;
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'; // Todo: remove cruft
 import { observer } from 'mobx-react';
-import mainStore from '../../stores/mainStore'; // Todo: remove cruft
 import dashboardStore from '../../stores/dashboardStore';
 import { Color } from '../../theme/customTheme';
-import { Kind, Path } from '../../util/urlEnum';
+import { UrlGen, Kind, Path } from '../../util/urlEnum';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';
@@ -14,8 +12,8 @@ import Paper from 'material-ui/Paper';
 @observer
 class Breadcrumbs extends React.Component {
     render() {
-        const { drawer, selectedItem } = dashboardStore;
-        const drawerDirectionIcon = drawer.get('open') ? 'chevron_left' : 'chevron_right'
+        const { drawer, downloadedItems, selectedItem } = dashboardStore;
+        const drawerDirectionIcon = drawer.get('open') ? 'chevron_left' : 'chevron_right';
         return (
             <Paper style={styles.breadCrumb}>
                 <IconButton
@@ -26,13 +24,14 @@ class Breadcrumbs extends React.Component {
                 >
                     {drawerDirectionIcon}
                 </IconButton>
-                <IconButton
-                    iconClassName="material-icons"
-                    onClick={() => dashboardStore.dashboardHome(this.props.router)}
-                    style={styles.breadCrumbButton}
-                    hoveredStyle={styles.hover}
-                >home</IconButton>
-                {this.breadCrumb()}
+                <a href={UrlGen.routes.dashboardHome()} className="external">
+                    <IconButton
+                        iconClassName="material-icons"
+                        style={styles.breadCrumbButton}
+                        hoveredStyle={styles.hover}
+                    >home</IconButton>
+                </a>
+                {this.breadCrumb(downloadedItems, selectedItem)}
             </Paper> 
         );
     }
@@ -50,22 +49,21 @@ class Breadcrumbs extends React.Component {
         return (path)
     }
 
-    breadCrumb() {
-        const { selectedItem, downloadedItems } = dashboardStore;
-        let item = downloadedItems.get(selectedItem)
-        if (item) {
-            let ancestorPath = [item]
-            if (item.ancestors) {
-                ancestorPath = [...item.ancestors, item]
+    breadCrumb(downloadedItems, selectedItem) {
+        if (selectedItem) {
+            let ancestorPath = [selectedItem]
+            if (selectedItem.ancestors) {
+                ancestorPath = [...selectedItem.ancestors, selectedItem]
             }
             return (
                 ancestorPath.map((bc) => {
+                    let lable = bc.name && bc.name.length > 20 ? bc.name.substring(0, 20) + '...' : bc.name;
                     return (
                         <FlatButton
                             key={bc.id}
-                            label={bc.name.length > 20 ? bc.name.substring(0, 20) + '...' : bc.name}
-                            style={selectedItem === bc.id ? styles.breadCrumbSelected : styles.breadCrumb}
-                            onClick={() => dashboardStore.selectItem(bc.id, this.pathFinder(bc.kind))}
+                            label={lable}
+                            style={selectedItem.id === bc.id ? styles.breadCrumbSelected : styles.breadCrumb}
+                            onClick={() => dashboardStore.selectItem(bc.id, this.props.router)}
                         >
                             <span style={{color: styles.breadCrumb.color}}>/</span>
                         </FlatButton>
@@ -80,6 +78,8 @@ const styles = {
     breadCrumb: {
         top: '-7px',
         height: '36px',
+        whiteSpace: 'nowrap',
+        overflow: 'scroll',
         color: Color.ltGrey
     },
     breadCrumbSelected: {

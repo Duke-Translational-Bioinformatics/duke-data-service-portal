@@ -4,6 +4,7 @@ const { object } = PropTypes;
 import { observer } from 'mobx-react';
 import { Color } from '../theme/customTheme';
 import authStore from '../stores/authStore';
+import dashboardStore from '../stores/dashboardStore';
 import mainStore from '../stores/mainStore';
 import Header from '../components/globalComponents/header.jsx';
 import Footer from '../components/globalComponents/footer.jsx';

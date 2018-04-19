@@ -245,12 +245,6 @@ export class MainStore {
         this.prevLocation = prevLocation;
     }
 
-    @action setListItems(items) {
-        // Todo: What is this doing? It seems to be an additional request.
-        // Todo: This get's called and then immediately after that listItems gets set again in the dashboard store at line #264
-        this.listItems = items
-    }
-
     @action toggleAllItemsSelected(bool) {
         this.allItemsSelected = bool;
     }
@@ -335,8 +329,9 @@ export class MainStore {
             if(getAll) {
                 this.projects.forEach((p) => {
                     this.getProjectTeams(p.id, getAll);
+                    dashboardStore.updateDownloadedItem(p);
                 });
-            }
+            };
             this.responseHeaders = headers;
             this.nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
             this.totalItems = headers !== null && !!headers['x-total'] ? parseInt(headers['x-total'][0], 10) : null;
@@ -410,8 +405,7 @@ export class MainStore {
                 this.projects.forEach((p) => {
                     userId !== null ? this.getAllProjectPermissions(p.id, authStore.currentUser.id) : null;
                 });
-                dashboardStore.downloadedItems.set(json.id, json);
-                dashboardStore.setDownloadedItems(this.projects);
+                dashboardStore.addDownloadedItem(json);
                 this.loading = false;
                 if(this.addTeamAfterProjectCreation) {
                     window.location.href = `${window.location.protocol}//${window.location.host}/#/project/${json.id}`;
@@ -433,8 +427,7 @@ export class MainStore {
                 this.project = json;
                 let index = this.projects.findIndex((p) => p.id === id);
                 this.projects.splice(index, 1, json);
-                dashboardStore.downloadedItems.set(json.id, json);
-                dashboardStore.setDownloadedItems(this.projects);
+                dashboardStore.updateDownloadedItem(json)
             }).catch((ex) => {
             this.addToast('Project Update Failed');
             this.handleErrors(ex)
@@ -449,7 +442,6 @@ export class MainStore {
                 this.addToast('Project Deleted');
                 this.projects = this.projects.filter(p => p.id !== id);
                 dashboardStore.removeDownloadedItem(id)
-                dashboardStore.setDownloadedItems(this.projects);
                 this.totalItems--;
             }).catch((ex) => {
             this.addToast('Project Delete Failed');
@@ -572,7 +564,7 @@ export class MainStore {
                     this.listItems.splice(index, 1, json);
                 }
                 if(this.entityObj && this.entityObj.id === id) this.entityObj = json;
-                dashboardStore.downloadedItems.set(id, json);
+                dashboardStore.updateDownloadedItem(json);
                 this.loading = false;
             }).catch((ex) => {
             this.addToast('Failed to update item');
@@ -615,7 +607,7 @@ export class MainStore {
                 } else if(!this.isListItem) {
                     this.entityObj = json;
                 }
-                dashboardStore.moveDownloadedItem(id, destination)
+                dashboardStore.moveDownloadedItem(id, destination);
                 this.loading = false;
             }).catch((ex) => {
             this.addToast('Failed to move ' + type + ' to new location');
@@ -638,6 +630,7 @@ export class MainStore {
                         mainStore.parent = json.parent;
                         mainStore.moveToObj = json;
                     }
+                    dashboardStore.updateDownloadedItem(json);
                     this.project = json.project;
                     if(!this.currentUser.id) this.getUser(json.project.id);
                     mainStore.loading = false;
@@ -808,6 +801,7 @@ export class MainStore {
     }
 
     @action toggleUploadManager() {
+        dashboardStore.drawer.set('open', this.openUploadManager);
         this.openUploadManager = !this.openUploadManager;
     }
 
@@ -1339,6 +1333,7 @@ export class MainStore {
                 } else {
                     this.listItems = [...this.listItems, ...results];
                 }
+                dashboardStore.addDownloadedItemChildren(results, id);
                 this.responseHeaders = headers;
                 this.nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
                 this.totalItems = headers !== null && !!headers['x-total'] ? parseInt(headers['x-total'][0], 10) : null;
