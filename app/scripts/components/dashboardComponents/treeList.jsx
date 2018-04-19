@@ -4,7 +4,7 @@ const { array, object, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import dashboardStore from '../../stores/dashboardStore';
-import { Kind } from '../../util/urlEnum';
+import { UrlGen, Kind } from '../../util/urlEnum';
 import { Color, WindowBreak } from '../../theme/customTheme';
 import Drawer from 'material-ui/Drawer';
 import FontIcon from 'material-ui/FontIcon';
@@ -13,34 +13,50 @@ import { List, ListItem } from 'material-ui/List';
 @observer
 class TreeList extends React.Component {
     
-    componentDidUpdate() {
-        const { projects } = mainStore;
-        const { ancestorStatus, downloadedItems, selectedItem } = dashboardStore;
-        if (projects && projects.length && downloadedItems.size === 0) {
-            dashboardStore.setDownloadedItems(projects);
-            mainStore.setListItems(projects);
-        };
-        let item = downloadedItems.get(selectedItem)
-        if (item && !ancestorStatus.get('downloadComplete')) {
-            if(!item.childrenIds) dashboardStore.getTreeListChildren(item)
-            if (item.ancestors && item.ancestors.length > 0) {
-                dashboardStore.updateAncestorStatus(item.ancestors)
-                if(ancestorStatus.get('download')) dashboardStore.getAncestors(item.ancestors)
-                if(ancestorStatus.get('downloadChildren')) dashboardStore.getAncestorsChildren(item.ancestors)
-            }
-        }
-    }
+    // componentDidMount() {
+    //     const { projects, selectedEntity } = mainStore;
+    //     const { ancestorStatus, downloadedItems, selectedItem } = dashboardStore;
+    //     console.log('TreeList componentDidMount selectedItem', selectedItem);
+    // 
+    //     // if (projects && projects.length && downloadedItems.size === 0) {
+    //     //     dashboardStore.setDownloadedItems(projects);
+    //     //     mainStore.setListItems(projects);
+    //     // };
+    //     // let item = downloadedItems.get(selectedItem)
+    //     // if (selectedItem && !ancestorStatus.get('downloadComplete')) {
+    //     //     // if(!selectedItem.childrenIds) dashboardStore.getTreeListChildren(selectedItem)
+    //     //     if (selectedItem.ancestors && selectedItem.ancestors.length > 0) {
+    //     //         dashboardStore.updateAncestorStatus(selectedItem.ancestors)
+    //     //         if(ancestorStatus.get('download')) dashboardStore.getAncestors(selectedItem.ancestors)
+    //     //         if(ancestorStatus.get('downloadChildren')) dashboardStore.getAncestorsChildren(selectedItem.ancestors)
+    //     //     }
+    //     // }
+    // }
+
+    // componentDidUpdate() {
+    //     const { projects, selectedEntity } = mainStore;
+    //     const { ancestorStatus, downloadedItems, selectedItem } = dashboardStore;
+    //     console.log('TreeList componentDidUpdate selectedItem.......', selectedItem);
+    // 
+    //     // if (projects && projects.length && downloadedItems.size === 0) {
+    //     //     dashboardStore.setDownloadedItems(projects);
+    //     //     mainStore.setListItems(projects);
+    //     // };
+    //     // let item = downloadedItems.get(selectedItem)
+    //     // if (selectedItem && !ancestorStatus.get('downloadComplete')) {
+    //     //     // if(!selectedItem.childrenIds) dashboardStore.getTreeListChildren(selectedItem)
+    //     //     if (selectedItem.ancestors && selectedItem.ancestors.length > 0) {
+    //     //         dashboardStore.updateAncestorStatus(selectedItem.ancestors)
+    //     //         if(ancestorStatus.get('download')) dashboardStore.getAncestors(selectedItem.ancestors)
+    //     //         if(ancestorStatus.get('downloadChildren')) dashboardStore.getAncestorsChildren(selectedItem.ancestors)
+    //     //     }
+    //     // }
+    // }
 
     render() {
         const { leftMenuDrawer, projects, screenSize } = mainStore;
         const { downloadedItems, drawer, selectedItem } = dashboardStore;
-        let ancestorIds = []
-        if (selectedItem) {
-            let item = downloadedItems.get(selectedItem)
-            if (item && item.ancestors && item.ancestors.length > 0) {
-                ancestorIds = item.ancestors.map((a) => {return(a.id)})
-            }
-        }
+        let projectIds = projects.map(p => p.id)
 
         return (
             <Drawer
@@ -50,7 +66,7 @@ class TreeList extends React.Component {
                 containerStyle={this.drawerStyle(screenSize, leftMenuDrawer)}
             >
                 <List>
-                    {this.buildTree(downloadedItems, ancestorIds)}
+                    {this.buildTree(downloadedItems, projectIds, selectedItem)}
                 </List>
             </Drawer>
         );
@@ -74,18 +90,18 @@ class TreeList extends React.Component {
     }
     
     handleTouchTap(item) {
-        dashboardStore.selectItem(item.id);
+        dashboardStore.selectItem(item.id, this.props.router, true);
     }
 
-    iconPicker(child, ancestorIds) {
+    iconPicker(child, ancestorIds, selectedItem) {
         let iconKind
-        let itemOpen = ancestorIds.includes(child.id) || child.id === dashboardStore.selectedItem
         switch (child.kind) {
         case Kind.DDS_PROJECT:
             iconKind = 'content_paste';
             break;
         case Kind.DDS_FOLDER:
-            iconKind = itemOpen ? 'folder_open' : 'folder';
+            let folderOpen = selectedItem && child.id === selectedItem.id || ancestorIds.includes(child.id);
+            iconKind = folderOpen ? 'folder_open' : 'folder';
             break;
         }
         return (
@@ -95,13 +111,21 @@ class TreeList extends React.Component {
         )
     }
     
-    listItemStyle(child) {
-        if (dashboardStore.selectedItem === child.id) {
+    listItemStyle(child, selectedItem) {
+        if (selectedItem && selectedItem.id === child.id) {
             return (styles.selected)
         }
     }
 
-    buildTree(downloadedItems, ancestorIds) {
+    routeFinder(item) {
+        if (item.kind === Kind.DDS_PROJECT) {
+            return UrlGen.routes.dashboardProject(item.id);
+        } else if (item.kind === Kind.DDS_FOLDER) {
+            return UrlGen.routes.dashboardFolder(item.id);
+        }
+    }
+
+    buildTree(downloadedItems, projectIds, selectedItem) {
         let looper = (itemIds) => {
             return (
                 itemIds.map((id) => {
@@ -116,22 +140,28 @@ class TreeList extends React.Component {
                                 key={child.id}
                                 value={child.id}
                                 primaryText={child.name}
-                                leftIcon={this.iconPicker(child, ancestorIds)}
+                                leftIcon={this.iconPicker(child, ancestorIds, selectedItem)}
                                 nestedItems={grandChildren}
                                 open={child.open}
-                                onNestedListToggle={() => {dashboardStore.toggleTreeListItem(child.id)}}
                                 onClick={() => {this.handleTouchTap(child)}}
                                 onKeyDown={(e) => {this.handleKeyDown(e, child)} }
-                                style={this.listItemStyle(child)}
+                                style={this.listItemStyle(child, selectedItem)}
                                 nestedListStyle={styles.nestedListStyle}
+                                onNestedListToggle={() => {dashboardStore.toggleTreeListItem(child)}}
                             />
                         )
                     }
                 })
             )
         }
-        // console.log('buildTree downloadedItems.size', downloadedItems.size); // Todo: remove cruft
-        let projectIds = downloadedItems.get('projectIds')
+
+        let ancestorIds = []
+        if (selectedItem) {
+            if (downloadedItems.size > 0 && selectedItem && selectedItem.ancestors && selectedItem.ancestors.length > 0) {
+                ancestorIds = selectedItem.ancestors.map((a) => {return(a.id)})
+            }
+        }
+
         let projectTree = projectIds ? looper(projectIds) : null
         return projectTree
     }
@@ -145,8 +175,7 @@ const styles = {
         padding: '0px'
     },
     selected: {
-        backgroundColor: 'rgba(0, 0, 0, 0.2)',
-        color: Color.ltBlue
+        backgroundColor: 'rgba(0, 0, 0, 0.2)'
     }
 }
 

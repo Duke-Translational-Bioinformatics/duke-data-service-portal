@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 const { array, bool, number, object, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
+import dashboardStore from '../../stores/dashboardStore';
 import agentStore from '../../stores/agentStore';
 import authStore from '../../stores/authStore';
 import BaseUtils from '../../util/baseUtils.js';
@@ -29,26 +30,35 @@ class ListItems extends React.Component {
 
     render() {
         const {
-            allItemsSelected, filesChecked, foldersChecked, isSafari, listItems,
-            loading, nextPage, projectRole, projectRoles, screenSize, tableBodyRenderKey,
-            totalItems, uploads
+            allItemsSelected, filesChecked, foldersChecked, isSafari,
+            loading, nextPage, projectRole, projectRoles, projects, screenSize,
+            tableBodyRenderKey, totalItems, uploads
         } = mainStore;
+        const { downloadedItems, listItems } = dashboardStore;
         const { agents } = agentStore;
         const { currentUser } = authStore;
-        let items = this.props.router && this.isListKind('Agents') ? agents.filter(a => a.audit.created_by.id === currentUser.id) : listItems;
-        let showBatchOps = this.isListKind('ProjectChildren') && !!(filesChecked.length || foldersChecked.length);
-        let showUploadButton = this.isListKind('ProjectChildren') && projectRole !== null && (projectRole !== Roles.project_viewer && projectRole !== Roles.file_downloader);
-        let showAddFolderButton = this.isListKind('ProjectChildren');
+        let items
+        if (this.isListKind('Projects')) {
+            items = projects;
+        } else if (this.isListKind('Agents')) {
+            items = agents.filter(a => a.audit.created_by.id === currentUser.id);
+        } else {
+            items = listItems;
+        }
+
+        let showBatchOps = this.isListKind('FoldersFiles') && !!(filesChecked.length || foldersChecked.length);
+        let showUploadButton = this.isListKind('FoldersFiles') && projectRole !== null && (projectRole !== Roles.project_viewer && projectRole !== Roles.file_downloader);
+        let showAddFolderButton = this.isListKind('FoldersFiles');
         let showAddProjectButton = this.isListKind('Projects');
         let showListItemsTable = items.length > 0;
         let showLoadMorebutton = !this.isListKind('Agents') && items.length < totalItems && totalItems > 25;
         let menuWidth = this.isListKind('Agents') ? 118 : screenSize.width > 1230 ? 35 : 28;
         let componentName = this.props.router.routes[1]['component']['name'];
         let checkboxStyle = { maxWidth: 24, float: 'left', marginRight: isSafari ? 16 : 0 };
-        let showCheckboxColumn = this.isListKind('ProjectChildren') && projectRole !== null && projectRole !== Roles.project_viewer && projectRole !== Roles.file_uploader && projectRole !== Roles.file_downloader;
+        let showCheckboxColumn = this.isListKind('FoldersFiles') && projectRole !== null && projectRole !== Roles.project_viewer && projectRole !== Roles.file_uploader && projectRole !== Roles.file_downloader;
         let showLastUpdatedColumn = screenSize && screenSize.width >= WindowBreak.sm;
         let showProjectRoleColumn = this.isListKind('Projects');
-        let showSizeColumn = this.isListKind('ProjectChildren') && screenSize && screenSize.width >= WindowBreak.md;
+        let showSizeColumn = this.isListKind('FoldersFiles') && screenSize && screenSize.width >= WindowBreak.md;
         let children = items && items.length ? items.map((child) => {
             if(!child.is_deleted) {
                 let route = this.listItemRoute(child, componentName)
@@ -179,7 +189,7 @@ class ListItems extends React.Component {
             info.name = audit.last_updated_by.full_name
         }
         let infoString = BaseUtils.formatDate(info.date) + ' by ' + info.name
-        if (this.isListKind('ProjectChildren')) {
+        if (this.isListKind('FoldersFiles')) {
             return (
                 <TableRowColumn onTouchTap={()=>this.check(child.id, child.kind)} style={styles.columns.row.lastUpdated}>
                     {infoString}
@@ -228,24 +238,29 @@ class ListItems extends React.Component {
             </TableRowColumn>
         )
     }
-  
+
     // HelperFunctions
-    isListKind(listKind) {
-        let kind
-        switch (this.props.router.location.pathname) {
-        case UrlGen.pathname.home():
-            kind = 'Projects'
-            break;
-        case UrlGen.pathname.dashboardHome():
-            kind = 'Projects'
-            break;
-        case UrlGen.pathname.agents():
-            kind = 'Agents'
-            break;
-        default:
-            kind = 'ProjectChildren'
+    listKind() {
+        let pathname = this.props.router.location.pathname
+        if (pathname === UrlGen.pathname.home()) {
+            return 'Projects';
+        } else if (pathname === UrlGen.pathname.dashboardHome()) {
+            return 'Projects';
+        } else if (pathname.includes(UrlGen.pathname.agents())) {
+            return 'Agents';
+        } else if (pathname.includes(UrlGen.pathname.dashboardProject())) {
+            return 'ProjectChildren'
+        } else if (pathname.includes(UrlGen.pathname.dashboardFolder())) {
+            return 'FolderChildren'
         }
-        return kind === listKind;
+    }
+
+    isListKind(listKindQuery) {
+        if (listKindQuery === 'FoldersFiles') {
+            return this.listKind() === 'ProjectChildren' || this.listKind() === 'FolderChildren';
+        } else {
+            return listKindQuery === this.listKind();
+        }
     }
 
     itemsActionBar(showBatchOps, showUploadButton, showAddFolderButton, showAddProjectButton) {
@@ -316,7 +331,7 @@ class ListItems extends React.Component {
             files = [];
             folders = [];
             mainStore.toggleAllItemsSelected(id);
-            mainStore.listItems.forEach((i) => {
+            dashboardStore.listItems.forEach((i) => {
                 i.kind === Kind.DDS_FILE ? id === true && !files.includes(i.id) ? files.push(i.id) : files = [] : id === true && !folders.includes(i.id) ? folders.push(i.id) : folders = [];
             })
         } else if (kind !== null && kind === Kind.DDS_FILE) {

@@ -6,21 +6,21 @@ import { Kind, Path } from '../util/urlEnum';
 import { checkStatusAndConsistency } from '../util/fetchUtil';
 
 export class DashboardStore {
-    @observable ancestorStatus
+    // @observable ancestorStatus
     @observable downloadedItems
     @observable drawer
-    @observable router
+    @observable listItems
     @observable selectedItem
 
     constructor() {
-        this.ancestorStatus = observable.map();
+        // this.ancestorStatus = observable.map();
         this.downloadedItems = observable.map();
         this.drawer = observable.map({'open': true, 'width': 350});
-        this.router = null;
+        this.listItems = [];
         this.selectedItem = null;
         this.transportLayer = transportLayer;
     }
-    
+
     pathFinder(kind) {
         let path
         switch (kind) {
@@ -33,107 +33,17 @@ export class DashboardStore {
         }
         return (path)
     }
-    
-    @action setRouter(router) {
-        this.router = router
-    }
-    
-    @action moveDownloadedItem(id, newParentId) {
-        let item = this.downloadedItems.get(id)
-        if (item && item.parentId) {
-            this.removeDownloadedItem(id, item.parentId)
-            this.addDownloadedItem(item, newParentId)
-            this.selectItem(newParentId)
-        }
+
+    @action clearListItems() {
+        dashboardStore.listItems = [];
     }
 
-    @action removeDownloadedItem(id, parentId) {
-        if (parentId) {
-            let parent = this.downloadedItems.get(parentId)
-            let ci = parent.childrenIds.indexOf(id)
-            if(ci > -1) parent.childrenIds.splice(ci, 1)
-            let fi = parent.folderIds.indexOf(id)
-            if(fi > -1) parent.folderIds.splice(fi, 1)
-            this.downloadedItems.delete(parentId)
-            this.downloadedItems.set(parentId, parent)
-        }
-
-        let recursiveDelete = (itemId) => {
-            let item = this.downloadedItems.get(itemId)
-            if (item) {
-                if (item.childrenIds && item.childrenIds.length > 0) {
-                    item.childrenIds.map((childId) => {
-                        recursiveDelete(childId)
-                    })
-                }
-                this.downloadedItems.delete(itemId)
-            }
-        }
-        recursiveDelete(id)
-    }
-
-    @action addDownloadedItem(item, parentId) {
-        let parent = this.downloadedItems.get(parentId)
-        parent.open = true
-        if(parent.childrenIds) parent.childrenIds = [item.id, ...parent.childrenIds]
-        if(parent.folderIds) parent.folderIds = [item.id, ...parent.folderIds]
-        this.downloadedItems.delete(parentId)
-        this.downloadedItems.set(parentId, parent)
-        item.parentId = parentId
-        item.reload = true
-        this.downloadedItems.set(item.id, item)
-    }
-
-    @action setDownloadedItems(projects) {
-        let projectIds = []
-        projects.forEach((project) => {
-            this.downloadedItems.set(project.id, project)
-            projectIds.push(project.id)
-        })
-        mainStore.listItems = projects
-        this.downloadedItems.set('projectIds', projectIds);
-    }
-
-    @action updateAncestorStatus(ancestors) {
-        let ancestorsDownloaded = 0
-        ancestors.forEach((ancestor) => {
-            if(this.downloadedItems.has(ancestor.id)) ancestorsDownloaded++
-        })
-        if (ancestorsDownloaded === 1) {
-            this.ancestorStatus.set('download', true)
-        } else if (ancestorsDownloaded === ancestors.length) {
-            this.ancestorStatus.set('downloadChildren', true)
-        }
-    }
-    
-    @action getAncestors(ancestors) {
-        ancestors.forEach((ancestor) => {
-            let {id, kind} = ancestor
-            if(!this.downloadedItems.has(id) && kind !== Kind.DDS_PROJECT) {
-                this.getItem(id, this.pathFinder(kind))
-            }
-        })
-        this.ancestorStatus.set('download', false)
-    }
-    
-    @action getAncestorsChildren(ancestors) {
-        ancestors.forEach((a) => {
-            let {id, kind} = a
-            let ancestor = this.downloadedItems.get(id)
-            if(ancestor && !ancestor.childrenIds) {
-                this.getTreeListChildren(ancestor)
-            }
-        })
-        this.ancestorStatus.set('downloadComplete', true)
-        this.ancestorStatus.set('downloadChildren', false)
-    }
-
-    @action getTreeListChildren(parent) {
-        mainStore.loading = true;
-        let parentId = parent.id
-        let path = this.pathFinder(parent.kind)
-        let page = 1
-        this.transportLayer.getChildren(parentId, path, page)
+    @action getChildren(id, path, page) {
+        console.log('@action getChildren(id, path, page) {');
+        if(this.listItems.length && page === null) this.listItems = [];
+        this.loading = true;
+        if (page == null) page = 1;
+        this.transportLayer.getChildren(id, path, page)
             .then(this.checkResponse)
             .then((response) => {
                 const results = response.json();
@@ -143,28 +53,115 @@ export class DashboardStore {
             .then((json) => {
                 let results = json[0].results;
                 let headers = json[1].map;
-                let childrenIds = []
-                let folderIds = []
-                let parentsChildren = results.map((child) => {
-                    childrenIds.push(child.id)
-                    if (child.kind === Kind.DDS_FOLDER) folderIds.push(child.id)
-                    child.parentId = parentId
-                    if (!this.downloadedItems.has(child.id)) this.downloadedItems.set(child.id, child)
-                    return ( child );
-                });
-                let downloadedParent = this.downloadedItems.get(parentId)
-                if (downloadedParent) {
-                    downloadedParent.open = true
-                    downloadedParent.childrenDownloaded = true
-                    downloadedParent.childrenIds = childrenIds
-                    downloadedParent.folderIds = folderIds
-                    this.downloadedItems.delete(parentId)
-                    this.downloadedItems.set(parentId, downloadedParent)
-                }
-                mainStore.listItems = parentsChildren
+                console.log('@this.listItems', this.listItems, 'results', results);
+                dashboardStore.addDownloadedItemChildren(results, id);
                 this.responseHeaders = headers;
-                mainStore.loading = false;
-            }).catch(ex => mainStore.handleErrors(ex))
+                this.nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
+                this.totalItems = headers !== null && !!headers['x-total'] ? parseInt(headers['x-total'][0], 10) : null;
+                this.loading = false;
+            }).catch(ex =>this.handleErrors(ex))
+    }
+
+    @action moveDownloadedItem(id, newParentId) {
+        console.log('moveDownloadedItem');
+        let item = this.downloadedItems.get(id)
+        if (item && item.parent && item.parent.id) {
+            let oldParentId = item.parent.id
+            this.removeDownloadedItem(id, oldParentId)
+            this.addDownloadedItem(item, newParentId)
+            this.selectItem(newParentId, false, false, true)
+        }
+    }
+
+    @action removeDownloadedItem(id, parentId) {
+        this.listItems = this.listItems.filter(l => l.id !== id);
+
+        if (parentId) {
+            let parent = this.downloadedItems.get(parentId);
+            let ci = parent.childrenIds.indexOf(id);
+            if(ci > -1) parent.childrenIds.splice(ci, 1);
+            let fi = parent.folderIds.indexOf(id);
+            if(fi > -1) parent.folderIds.splice(fi, 1);
+            this.downloadedItems.delete(parentId);
+            this.downloadedItems.set(parentId, parent);
+        }
+
+        let recursiveDelete = (itemId) => {
+            let item = this.downloadedItems.get(itemId);
+            if (item) {
+                if (item.childrenIds && item.childrenIds.length > 0) {
+                    item.childrenIds.forEach((childId) => {
+                        recursiveDelete(childId);
+                    })
+                }
+                this.downloadedItems.delete(itemId);
+            }
+        }
+        recursiveDelete(id);
+    }
+
+    @action addDownloadedItem(item, parentId) {
+        let parent = this.downloadedItems.get(parentId);
+        if (parent) {
+            parent.open = true;
+            if(parent.childrenIds) parent.childrenIds = [item.id, ...parent.childrenIds];
+            if(parent.folderIds) parent.folderIds = [item.id, ...parent.folderIds];
+            this.downloadedItems.set(parentId, parent);
+            item.parentId = parentId;
+            if(this.selectedItem && this.selectedItem.id === parentId) {
+                this.listItems = [item, ...this.listItems]
+            }
+        }
+        item.downloaded = true
+        this.downloadedItems.set(item.id, item)
+    }
+    
+    @action updateDownloadedItem(item) {
+        let downloadedItem = this.downloadedItems.get(item.id) || {};
+        this.downloadedItems.set(item.id, {...downloadedItem, ...item});
+        let updatedListItems = this.listItems.map((li) => {
+            return item.id === li.id ? {...li, ...item} : li;
+        })
+        this.listItems = updatedListItems;
+    }
+
+    @action addDownloadedItemChildren(children, parentId) {
+        let parent = this.downloadedItems.get(parentId) || {id: parentId};
+        parent.open = true;
+        parent.childrenDownloaded = true;
+        parent.childrenIds = [];
+        parent.folderIds = [];
+        children.forEach((child) => {
+            let childOld = this.downloadedItems.get(child.id) || {};
+            parent.childrenIds.push(child.id);
+            child.kind === Kind.DDS_FOLDER && parent.folderIds.push(child.id);
+            child.downloaded = true;
+            this.downloadedItems.set(child.id, {...childOld, ...child});
+        });
+        this.listItems = children;
+        this.downloadedItems.set(parentId, parent);
+    }
+
+    @action addDownloadedItemAncestors(json) {
+      if (json.ancestors && json.ancestors.length > 0) {
+          json.ancestors.forEach((ancestor, index) => {
+              let {id, kind} = ancestor
+              let child = json.ancestors[index + 1] || json;
+              let ancestorOld = this.downloadedItems.get(ancestor.id) || {};
+              ancestor.childrenIds = [child.id];
+              ancestor.folderIds = [child.id];
+              ancestor.project = json.project;
+              ancestor.ancestors = json.ancestors.slice(0, index);
+              ancestor.open = true;
+              ancestor.childrenDownloaded = false;
+              ancestor.downloaded = false;
+              this.downloadedItems.set(ancestor.id, {...ancestor, ...ancestorOld})
+              if(!ancestorOld.downloaded) {
+                  console.log('this.getItem(id, this.pathFinder(kind))');
+                  this.getItem(id, this.pathFinder(kind))
+              }
+          })
+      }
     }
 
     @action toggleDrawer() {
@@ -180,15 +177,13 @@ export class DashboardStore {
     }
     
     @action dashboardHome(router) {
-        mainStore.listItems = mainStore.projects;
+        dashboardStore.listItems = mainStore.projects;
         router.push({pathname: ("/dashboard")});
     }
     
-    @action toggleTreeListItem(id) {
-        let item = this.downloadedItems.get(id)
-        item.open = !item.open
-        this.downloadedItems.delete(id)
-        this.downloadedItems.set(id, item)
+    @action toggleTreeListItem(item) {
+        item.open = !item.open;
+        this.downloadedItems.set(item.id, item);
     }
 
     @action getItem(id, path, isSelected) {
@@ -199,15 +194,14 @@ export class DashboardStore {
             .then(response => response.json())
             .then((json) => {
                 if(!json.error) {
-                    let item = this.downloadedItems.get(id)
-                    if(item) {
-                        json.open = true
-                        json.childrenIds = item.childrenIds
-                        json.folderIds = item.folderIds
-                        this.downloadedItems.delete(id)
+                    let item = this.downloadedItems.get(id) || {};
+                    json.downloaded = true;
+                    this.downloadedItems.set(id, {...item, ...json})
+                    if(isSelected) {
+                        this.selectedItem = json;
+                        mainStore.project = json.kind === Kind.DDS_PROJECT ? json : json.project;
+                        this.addDownloadedItemAncestors(json);
                     }
-                    this.downloadedItems.set(id, json)
-                    if(isSelected) this.selectedItem = id
                     mainStore.loading = false;
                 } else {
                     const retryArgs = [id, path, isSelected];
@@ -218,63 +212,171 @@ export class DashboardStore {
     }
 
     // TODO Refactor to be set by route's pathname updates
-    @action setSelectedItem(params) {
-        let {id, path} = params
+    @action setSelectedItem(id, path) {
         if (id && path) {
             if (this.downloadedItems.has(id)) {
-                this.selectedItem = id
+                this.selectedItem = this.downloadedItems.get(id);
+                mainStore.project = this.selectedItem.kind === Kind.DDS_PROJECT ? this.selectedItem : this.selectedItem.project;
             } else {
-                this.getItem(id, `${path}/`, true)
+                this.getItem(id, path, true);
             }
         } else {
             this.selectedItem = null;
-            mainStore.listItems = [];
         }
     }
 
-    @action selectItem(itemId) {
+    @action setEntityObject(item) {
+        if(item.kind !== Kind.DDS_PROJECT) mainStore.entityObj = item;
+    }
+    
+    @action setProjPermissions(currentProject) {
+        let projPermissionsCoversion = {
+            'Project Admin': 'prjCrud',
+            'System Admin': 'prjCrud',
+            'Project Viewer': 'viewOnly',
+            'File Editor': 'flCrud',
+            'File Uploader': 'flUpload',
+            'File Downloader': 'flDownload'
+        }
+        mainStore.projPermissions = projPermissionsCoversion[mainStore.projectRoles.get(currentProject.id)]
+    }
+
+    @action selectItem(itemId, router, toggle, updateSelectedItem) {
         mainStore.filesChecked = []
         mainStore.foldersChecked = []
         mainStore.allItemsSelected = false
         let item = this.downloadedItems.get(itemId);
         if (item) {
-            let childrenIds = item.childrenIds
-            this.selectedItem = item.id;
-            if (!childrenIds) {
-                this.getTreeListChildren(item)
-                item.reload = false
-            } else if (childrenIds.length > 0){
-                let newListItems = childrenIds.map((id) => {return(this.downloadedItems.get(id))})
-                mainStore.listItems = newListItems
-                item.open = !item.open
-            } else {
-                mainStore.listItems = []
-                item.open = !item.open
-            }
-            this.downloadedItems.delete(itemId)
-            this.downloadedItems.set(itemId, item)
-
-            if (item.kind === Kind.DDS_PROJECT) {
-                mainStore.project = item
-            } else {
-                mainStore.project = this.downloadedItems.get(item.project.id)
-                mainStore.entityObj = item
-            }
-            let projPermissionsCoversion = {
-                'Project Admin': 'prjCrud',
-                'System Admin': 'prjCrud',
-                'Project Viewer': 'viewOnly',
-                'File Editor': 'flCrud',
-                'File Uploader': 'flUpload',
-                'File Downloader': 'flDownload'
-            }
-            mainStore.projPermissions = projPermissionsCoversion[mainStore.projectRoles.get(mainStore.project.id)]
-
-            if (this.router) {
-                this.router.push({pathname: ('/dashboard/' + this.pathFinder(item.kind) + item.id)})
+            toggle ? item.open = !item.open : null;
+            if (updateSelectedItem || router && router.params && router.params.id !== item.id) {
+                item.open = true;
+                this.selectedItem = item;
+                let childrenIds = item.childrenIds;
+                if (!childrenIds || !item.downloaded) {
+                    this.getChildren(item.id, this.pathFinder(item.kind))
+                } else if (childrenIds.length > 0){
+                    let newListItems = childrenIds.map((id) => {return(this.downloadedItems.get(id))});
+                    dashboardStore.listItems = newListItems;
+                } else {
+                    dashboardStore.listItems = [];
+                }
+                this.downloadedItems.set(itemId, item)
+                let currentProject
+                if (item.kind === Kind.DDS_PROJECT) {
+                    currentProject = item;
+                } else {
+                    currentProject = this.downloadedItems.get(item.project.id);
+                    mainStore.entityObj = item;
+                }
+                mainStore.project = currentProject;
+                this.setProjPermissions(currentProject);
+                this.setEntityObject(item);
+                if(router) router.push({pathname: ('/dashboard/' + this.pathFinder(item.kind) + item.id)});
             }
         }
     }
+    
+    // @action setDownloadedItems(projects) {
+    //     let projectIds = []
+    //     projects.forEach((project) => {
+    //         this.downloadedItems.set(project.id, project)
+    //         projectIds.push(project.id)
+    //     })
+    //     dashboardStore.listItems = projects
+    //     this.downloadedItems.set('projectIds', projectIds);
+    // }
+    //
+    // @action updateAncestorStatus(ancestors) {
+    //     let ancestorsDownloaded = 0
+    //     ancestors.forEach((ancestor) => {
+    //         if(this.downloadedItems.has(ancestor.id)) ancestorsDownloaded++
+    //     })
+    //     if (ancestorsDownloaded === 1) {
+    //         this.ancestorStatus.set('download', true)
+    //     } else if (ancestorsDownloaded === ancestors.length) {
+    //         this.ancestorStatus.set('downloadChildren', true)
+    //     }
+    // }
+    // 
+    // @action getAncestors(ancestors) {
+    //     ancestors.forEach((ancestor) => {
+    //         let {id, kind} = ancestor
+    //         let ancestorOld = this.downloadedItems.get(id)
+    //         if(!ancestorOld || ancestorOld && ancestorOld. kind !== Kind.DDS_PROJECT) {
+    //             this.getItem(id, this.pathFinder(kind))
+    //         }
+    //     })
+    //     this.ancestorStatus.set('download', false)
+    // }
+    // 
+    // @action getAncestorsChildren(ancestors) {
+    //     ancestors.forEach((a) => {
+    //         let {id, kind} = a
+    //         let ancestor = this.downloadedItems.get(id)
+    //         if(ancestor && !ancestor.childrenIds) {
+    //             this.getTreeListChildren(ancestor)
+    //         }
+    //     })
+    //     this.ancestorStatus.set('downloadComplete', true)
+    //     this.ancestorStatus.set('downloadChildren', false)
+    // }
+    //
+    // @action getTreeListChildren(parent) {
+    //     mainStore.loading = true;
+    //     let parentId = parent.id
+    //     let path = this.pathFinder(parent.kind)
+    //     let page = 1
+    //     this.transportLayer.getChildren(parentId, path, page)
+    //         .then(this.checkResponse)
+    //         .then((response) => {
+    //             const results = response.json();
+    //             const headers = response.headers;
+    //             return Promise.all([results, headers]);
+    //         })
+    //         .then((json) => {
+    //             let results = json[0].results;
+    //             let headers = json[1].map;
+    //             let childrenIds = []
+    //             let folderIds = []
+    //             let parentsChildren = results.map((child) => {
+    //                 childrenIds.push(child.id)
+    //                 if (child.kind === Kind.DDS_FOLDER) folderIds.push(child.id)
+    //                 child.parentId = parentId
+    //                 if (!this.downloadedItems.has(child.id)) this.downloadedItems.set(child.id, child)
+    //                 return ( child );
+    //             });
+    //             let downloadedParent = this.downloadedItems.get(parentId)
+    //             if (downloadedParent) {
+    //                 downloadedParent.open = true
+    //                 downloadedParent.childrenDownloaded = true
+    //                 downloadedParent.childrenIds = childrenIds
+    //                 downloadedParent.folderIds = folderIds
+    //                 this.downloadedItems.delete(parentId)
+    //                 this.downloadedItems.set(parentId, downloadedParent)
+    //             }
+    //             dashboardStore.listItems = parentsChildren;
+    //             console.log('dashboardStore.listItems = parentsChildren', dashboardStore.listItems);
+    //             this.responseHeaders = headers;
+    //             mainStore.loading = false;
+    //         }).catch(ex => mainStore.handleErrors(ex))
+    // }
+    // @action setListItems(parent) {
+    //     dashboardStore.listItems = parent.childrenIds.map((id) => {
+    //         return this.downloadedItems.get(id);
+    //     })
+    // }
+    // 
+    // @action getListItems(parentId, path) {
+    //     // let selectedItem = this.downloadedItems.get(parentId);
+    //     // if (selectedItem && selectedItem.childrenIds && selectedItem.childrenIds.length > 0) {
+    //     //     let currentListIds = dashboardStore.listItems.map(li => li.id).sort();
+    //     //     if (JSON.stringify(selectedItem.childrenIds.sort()) !== JSON.stringify(currentListIds)) {
+    //     //         this.setListItems(selectedItem)
+    //     //     }  
+    //     // } else {
+    //         this.getChildren(parentId, path)
+    //     // }
+    // }
   }
 
 const dashboardStore = new DashboardStore();

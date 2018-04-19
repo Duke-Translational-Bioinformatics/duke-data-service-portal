@@ -10,83 +10,124 @@ import FolderOptions from '../components/folderComponents/folderOptions.jsx';
 import ProjectOptions from '../components/projectComponents/projectOptions.jsx';
 import TagManager from '../components/globalComponents/tagManager.jsx'
 import VersionUpload from '../components/fileComponents/versionUpload.jsx';
-import { Path } from '../util/urlEnum';
+import { UrlGen, Path } from '../util/urlEnum';
 
 @observer
 class Dashboard extends React.Component {
     componentDidMount() {
-        if (mainStore.projects.length === 0) {
-            mainStore.getProjects(null, null);
+        const { leftMenuDrawer, openTagManager, selectedEntity } = mainStore;
+        const { selectedItem } = dashboardStore;
+        let params = this.props.params
+        mainStore.getProjects(null, null, true);
+        
+        if(leftMenuDrawer.get('open')) mainStore.toggleLeftMenuDrawer();
+        if(params && params.id) {
+            dashboardStore.clearListItems();
         };
-        dashboardStore.setRouter(this.props.router);
-
-        if(mainStore.openTagManager) mainStore.toggleTagManager();
-        mainStore.leftMenuDrawer.get('open') ? mainStore.toggleLeftMenuDrawer() : null;
-        this.loadView();
+        this.loadItems();
     }
 
     componentDidUpdate(prevProps) {
-        if(prevProps.params.id !== this.props.params.id) {
-            this.loadView();
+        const { projects } = mainStore;
+        const { downloadedItems, selectedItem } = dashboardStore;
+        let params = this.props.params;
+        if(params && prevProps && prevProps.params && prevProps.params.id !== params.id) {
+            dashboardStore.clearListItems();
+            this.loadItems();
+        };
+    }
+
+    // HelperFunctions
+    listKind() {
+        let pathname = this.props.router.location.pathname
+        if (pathname === UrlGen.pathname.home()) {
+            return 'Projects';
+        } else if (pathname === UrlGen.pathname.dashboardHome()) {
+            return 'Projects';
+        } else if (pathname.includes(UrlGen.pathname.agents())) {
+            return 'Agents';
+        } else if (pathname.includes(UrlGen.pathname.dashboardProject())) {
+            return 'ProjectChildren'
+        } else if (pathname.includes(UrlGen.pathname.dashboardFolder())) {
+            return 'FolderChildren'
         }
     }
 
-    loadView() {
-        let {id, path} = this.props.params;
-        
-        switch (path) {
-        case 'projects':
-            this._loadProject();
-            break;
-        case 'folders':
-            this._loadFolder();
-            break;
-        default:
-            this._loadHome();
+    isListKind(listKindQuery) {
+        if (listKindQuery === 'FoldersFiles') {
+            return this.listKind() === 'ProjectChildren' || this.listKind() === 'FolderChildren';
+        } else {
+            return listKindQuery === this.listKind();
         }
     }
 
-    _loadHome() {
-        mainStore.getProjects(null, null, true);
+    loadItems() {
+        let pathname = this.props.router.location.pathname
+        if (pathname === UrlGen.pathname.home()) {
+            this._loadProjects();
+        } else if (pathname === UrlGen.pathname.dashboardHome()) {
+            this._loadProjects();
+        } else if (pathname.includes(UrlGen.pathname.dashboardProject())) {
+            this._loadProjectChildren();
+        } else if (pathname.includes(UrlGen.pathname.dashboardFolder())) {
+            this._loadFolderChildren();
+        } else if (pathname.includes(UrlGen.pathname.agents())) {
+            this._loadAgents();
+        }
     }
 
-    _loadProject() {
+    _loadAgents() {
+        if(authStore.userKey.key) authStore.getUserKey();
+        if(!authStore.currentUser) authStore.getCurrentUser();
+        agentStore.getAgents();
+    }
+
+    _loadProjects() {
+        dashboardStore.setSelectedItem(null);
+    }
+
+    _loadProjectChildren() {
         let path = Path.PROJECT;
-        let id = this.props.params.id;
-        mainStore.getChildren(id, path);
-        mainStore.getProjectDetails(id);
-        mainStore.getProjectMembers(id);
-        mainStore.getTagLabels(); // Used to generate a list of tag labels
+        let params = this.props.params;
+        mainStore.getEntity(params.id, path);
+        dashboardStore.setSelectedItem(params.id, path);
+        // dashboardStore.getListItems(params.id, path);
+        dashboardStore.getChildren(params.id, path);
         mainStore.clearSelectedItems(); // Clear checked files and folders from list
-        mainStore.getUser(id);
+        // mainStore.setSelectedEntity(params.id, Path.PROJECT, true);
+        mainStore.getUser(params.id);
     }
 
-    _loadFolder() {
+    _loadFolderChildren() {
         let path = Path.FOLDER;
-        let id = this.props.params.id;
-        mainStore.getChildren(id, path);
-        mainStore.getEntity(id, path);
-        mainStore.getTagLabels(); // Used to generate a list of tag labels
+        let params = this.props.params;
+        mainStore.getEntity(params.id, path);
+        dashboardStore.setSelectedItem(params.id, path);
+        // dashboardStore.getListItems(params.id, path);
+        dashboardStore.getChildren(params.id, path);
+        mainStore.clearSelectedItems(); // Clear checked files and folders from list
+        // mainStore.setSelectedEntity(params.id, Path.FOLDER, true);
         if(mainStore.filesChecked || mainStore.foldersChecked) mainStore.handleBatch([],[]);
     }
 
     render() {
+      
         return (
             <div style={styles.main}>
                 <TreeList {...this.props} />
                 <div style={this.bodyStyle()}>
                     <Breadcrumbs {...this.props} />
                     <ListItems {...this.props} />
-                    <FileOptions {...this.props} />
-                    <FolderOptions {...this.props} />
-                    <ProjectOptions {...this.props} />
+                    {this.isListKind('FoldersFiles') && <FileOptions {...this.props} />}
+                    {this.isListKind('FolderChildren') && <FolderOptions {...this.props} />}
+                    {this.isListKind('Projects') && <ProjectOptions {...this.props} />}
                     <TagManager {...this.props} />
                     <VersionUpload {...this.props} />
                 </div>
             </div>
         );
     }
-    
+
     bodyStyle() {
         const {drawer} = dashboardStore;
         let style = {}
@@ -99,7 +140,7 @@ class Dashboard extends React.Component {
 
 const styles = {
     main: {
-        marginTop: -20
+        marginTop: '-20px'
     }
 };
 

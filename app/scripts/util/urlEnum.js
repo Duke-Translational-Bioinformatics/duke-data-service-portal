@@ -20,6 +20,8 @@ export const UrlGen = {
     pathname: {
         agents: () => '/agents',
         dashboardHome: () => '/dashboard',
+        dashboardProject: () => '/dashboard/projects',
+        dashboardFolder: () => '/dashboard/folders',
         home: () => '/'
     }
 };
