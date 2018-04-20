@@ -33,7 +33,6 @@ class ProjectTeamManager extends React.Component {
 
     componentDidUpdate() {
         if(mainStore.toggleModal.open && mainStore.toggleModal.id === 'addMember') setTimeout(()=>this.fullName.focus(), 300);
-        if(this.props.router.location.pathname.includes('dashboard') && mainStore.showTeamManager) this.toggleTeamManager();
     }
 
     render() {
