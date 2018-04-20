@@ -15,14 +15,20 @@ export const UrlGen = {
         version: (versionId) => '/#/version/' + versionId,
         activities: (activityId) => '/#/activity/' + activityId,
         agents: () => '/#/agents',
-        agent: (agentId) => '/#/agent/' + agentId
+        agent: (agentId) => '/#/agent/' + agentId,
+        navigatorHome: () => '/#/navigator',
+        navigatorProject: (projectId) => '/#/navigator/projects/' + projectId,
+        navigatorFolder: (folderId) => '/#/navigator/folders/' + folderId,
     },
     pathname: {
         agents: () => '/agents',
         dashboardHome: () => '/dashboard',
         dashboardProject: () => '/dashboard/projects',
         dashboardFolder: () => '/dashboard/folders',
-        home: () => '/'
+        home: () => '/',
+        navigatorHome: () => '/navigator',
+        navigatorProject: () => '/navigator/projects',
+        navigatorFolder: () => '/navigator/folders',
     }
 };
 

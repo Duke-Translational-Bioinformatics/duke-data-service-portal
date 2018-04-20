@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types';
 const { object, string } = PropTypes;
 import { observer } from 'mobx-react';
-import dashboardStore from '../../stores/dashboardStore';
+import navigatorStore from '../../stores/navigatorStore';
 import { Color } from '../../theme/customTheme';
 import { UrlGen, Kind, Path } from '../../util/urlEnum';
 import FlatButton from 'material-ui/FlatButton';
@@ -12,19 +12,19 @@ import Paper from 'material-ui/Paper';
 @observer
 class Breadcrumbs extends React.Component {
     render() {
-        const { drawer, downloadedItems, selectedItem } = dashboardStore;
+        const { drawer, downloadedItems, selectedItem } = navigatorStore;
         const drawerDirectionIcon = drawer.get('open') ? 'chevron_left' : 'chevron_right';
         return (
             <Paper style={styles.breadCrumb}>
                 <IconButton
                     iconClassName="material-icons"
-                    onClick={() => dashboardStore.toggleDrawer()}
+                    onClick={() => navigatorStore.toggleDrawer()}
                     style={styles.breadCrumbButton}
                     hoveredStyle={styles.hover}
                 >
                     {drawerDirectionIcon}
                 </IconButton>
-                <a href={UrlGen.routes.dashboardHome()} className="external">
+                <a href={UrlGen.routes.navigatorHome()} className="external">
                     <IconButton
                         iconClassName="material-icons"
                         style={styles.breadCrumbButton}
@@ -63,7 +63,7 @@ class Breadcrumbs extends React.Component {
                             key={bc.id}
                             label={lable}
                             style={selectedItem.id === bc.id ? styles.breadCrumbSelected : styles.breadCrumb}
-                            onClick={() => dashboardStore.selectItem(bc.id, this.props.router)}
+                            onClick={() => navigatorStore.selectItem(bc.id, this.props.router)}
                         >
                             <span style={{color: styles.breadCrumb.color}}>/</span>
                         </FlatButton>

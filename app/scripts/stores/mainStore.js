@@ -3,7 +3,8 @@ import { observable, computed, action, map } from 'mobx'; //Todo: remove unused 
 import cookie from 'react-cookie';
 import UAParser from 'ua-parser-js';
 import authStore from '../stores/authStore';
-import dashboardStore from '../stores/dashboardStore';
+// import dashboardStore from '../stores/dashboardStore';
+import navigatorStore from '../stores/navigatorStore';
 import provenanceStore from '../stores/provenanceStore';
 import transportLayer from '../transportLayer';
 import BaseUtils from '../util/baseUtils.js';
@@ -329,7 +330,8 @@ export class MainStore {
             if(getAll) {
                 this.projects.forEach((p) => {
                     this.getProjectTeams(p.id, getAll);
-                    dashboardStore.updateDownloadedItem(p);
+                    // dashboardStore.updateDownloadedItem(p);
+                    navigatorStore.updateDownloadedItem(p);
                 });
             };
             this.responseHeaders = headers;
@@ -405,7 +407,8 @@ export class MainStore {
                 this.projects.forEach((p) => {
                     userId !== null ? this.getAllProjectPermissions(p.id, authStore.currentUser.id) : null;
                 });
-                dashboardStore.addDownloadedItem(json);
+                // dashboardStore.addDownloadedItem(json);
+                navigatorStore.addDownloadedItem(json);
                 this.loading = false;
                 if(this.addTeamAfterProjectCreation) {
                     window.location.href = `${window.location.protocol}//${window.location.host}/#/project/${json.id}`;
@@ -427,10 +430,11 @@ export class MainStore {
                 this.project = json;
                 let index = this.projects.findIndex((p) => p.id === id);
                 this.projects.splice(index, 1, json);
-                dashboardStore.updateDownloadedItem(json)
+                // dashboardStore.updateDownloadedItem(json);
+                navigatorStore.updateDownloadedItem(json);
             }).catch((ex) => {
             this.addToast('Project Update Failed');
-            this.handleErrors(ex)
+            this.handleErrors(ex);
         });
     }
 
@@ -441,7 +445,8 @@ export class MainStore {
             .then(() => {
                 this.addToast('Project Deleted');
                 this.projects = this.projects.filter(p => p.id !== id);
-                dashboardStore.removeDownloadedItem(id)
+                // dashboardStore.removeDownloadedItem(id);
+                navigatorStore.removeDownloadedItem(id);
                 this.totalItems--;
             }).catch((ex) => {
             this.addToast('Project Delete Failed');
@@ -466,7 +471,8 @@ export class MainStore {
             .then((json) => {
                 this.addToast('Folder Added');
                 this.listItems = [json, ...this.listItems];
-                dashboardStore.addDownloadedItem(json, id)
+                // dashboardStore.addDownloadedItem(json, id);
+                navigatorStore.addDownloadedItem(json, id);
                 this.loading = false;
             }).catch((ex) => {
             this.addToast('Failed to Add a New Folder');
@@ -504,7 +510,8 @@ export class MainStore {
 
     @action deleteItemSuccess(id, parentId, path) {
         this.loading = false;
-        dashboardStore.removeDownloadedItem(id, parentId)
+        // dashboardStore.removeDownloadedItem(id, parentId)
+        navigatorStore.removeDownloadedItem(id, parentId)
         this.listItems = this.listItems.filter(l => l.id !== id);
         this.totalItems--;
         if(this.listItems.length === 0) this.getChildren(parentId, path)
@@ -564,7 +571,8 @@ export class MainStore {
                     this.listItems.splice(index, 1, json);
                 }
                 if(this.entityObj && this.entityObj.id === id) this.entityObj = json;
-                dashboardStore.updateDownloadedItem(json);
+                // dashboardStore.updateDownloadedItem(json);
+                navigatorStore.updateDownloadedItem(json);
                 this.loading = false;
             }).catch((ex) => {
             this.addToast('Failed to update item');
@@ -607,7 +615,9 @@ export class MainStore {
                 } else if(!this.isListItem) {
                     this.entityObj = json;
                 }
-                dashboardStore.moveDownloadedItem(id, destination);
+                console.log('navigatorStore.moveDownloadedItem(id, destination);');
+                // dashboardStore.moveDownloadedItem(id, destination);
+                navigatorStore.moveDownloadedItem(id, destination);
                 this.loading = false;
             }).catch((ex) => {
             this.addToast('Failed to move ' + type + ' to new location');
@@ -630,7 +640,8 @@ export class MainStore {
                         mainStore.parent = json.parent;
                         mainStore.moveToObj = json;
                     }
-                    dashboardStore.updateDownloadedItem(json);
+                    // dashboardStore.updateDownloadedItem(json);
+                    navigatorStore.updateDownloadedItem(json);
                     this.project = json.project;
                     if(!this.currentUser.id) this.getUser(json.project.id);
                     mainStore.loading = false;
@@ -801,7 +812,8 @@ export class MainStore {
     }
 
     @action toggleUploadManager() {
-        dashboardStore.drawer.set('open', this.openUploadManager);
+        // dashboardStore.drawer.set('open', this.openUploadManager);
+        navigatorStore.drawer.set('open', this.openUploadManager);
         this.openUploadManager = !this.openUploadManager;
     }
 
@@ -1333,7 +1345,8 @@ export class MainStore {
                 } else {
                     this.listItems = [...this.listItems, ...results];
                 }
-                dashboardStore.addDownloadedItemChildren(results, id);
+                // dashboardStore.addDownloadedItemChildren(results, id);
+                navigatorStore.addDownloadedItemChildren(results, id);
                 this.responseHeaders = headers;
                 this.nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
                 this.totalItems = headers !== null && !!headers['x-total'] ? parseInt(headers['x-total'][0], 10) : null;

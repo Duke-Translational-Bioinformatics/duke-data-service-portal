@@ -57,6 +57,12 @@ class LeftMenu extends React.Component {
                        leftIcon={<i className="material-icons" style={styles.navIcon}>view_list</i>}
                        primaryText="Dashboard"
                     />}
+                    {screenSize.width >= 1080 && <ListItem
+                       value={'/navigator'}
+                       onClick={() => this.setNavIndex('/navigator')}
+                       leftIcon={<i className="material-icons" style={styles.navIcon}>view_list</i>}
+                       primaryText="Navigator"
+                    />}
                     <ListItem
                         value={'/metadata'}
                         onClick={() => this.setNavIndex('/metadata')}
