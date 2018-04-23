@@ -36,13 +36,13 @@ let BaseUtils = {
             }) : '';
         },
 
-        getUrlPath (parentKind, toDashboard) {
+        getUrlPath (parentKind, toNavigator) {
             let urlPath = '';
-            if (toDashboard) {
+            if (toNavigator) {
                 if (parentKind === 'dds-project') {
-                    urlPath = 'dashboard/projects/'
+                    urlPath = 'navigator/projects/'
                 } else {
-                    urlPath = 'dashboard/folders/'
+                    urlPath = 'navigator/folders/'
                 }
             } else {
                 if (parentKind === 'dds-project') {

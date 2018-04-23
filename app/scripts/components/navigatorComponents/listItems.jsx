@@ -60,7 +60,7 @@ class ListItems extends React.Component {
         let showProjectRoleColumn = this.isListKind('Projects');
         let showSizeColumn = this.isListKind('FoldersFiles') && screenSize && screenSize.width >= WindowBreak.md;
         let children = items && items.length ? items.map((child) => {
-            if(!child.is_deleted) {
+            if(child && !child.is_deleted) {
                 let route = this.listItemRoute(child, componentName)
                 return (
                     <TableRow key={child.id} selectable={false}>

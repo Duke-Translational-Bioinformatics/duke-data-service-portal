@@ -59,18 +59,16 @@ export class NavigatorStore {
     }
 
     @action moveDownloadedItem(id, newParentId) {
-        console.log('@action moveDownloadedItem(id, newParentId) {');
         let item = this.downloadedItems.get(id);
         if (item && item.parent && item.parent.id) {
             let oldParentId = item.parent.id;
-            this.removeDownloadedItem(id, oldParentId);
             this.addDownloadedItem(item, newParentId);
+            this.removeDownloadedItem(id, oldParentId);
             this.selectItem(newParentId, false, false, true);
         }
     }
 
     @action removeDownloadedItem(id, parentId) {
-      console.log('@action removeDownloadedItem(id, parentId) {');
         this.listItems = this.listItems.filter(l => l.id !== id);
         if (parentId) {
             let parent = this.downloadedItems.get(parentId);
@@ -96,7 +94,6 @@ export class NavigatorStore {
     }
 
     @action addDownloadedItem(item, parentId) {
-      console.log('@action addDownloadedItem(item, parentId) {');
         let parent = this.downloadedItems.get(parentId);
         if (parent) {
             parent.open = true;
@@ -105,11 +102,11 @@ export class NavigatorStore {
             this.downloadedItems.set(parentId, parent);
             item.parentId = parentId;
             if(this.selectedItem && this.selectedItem.id === parentId) {
-                this.listItems = [item, ...this.listItems]
+                this.listItems = [item, ...this.listItems];
             }
         }
-        item.downloaded = true
-        this.downloadedItems.set(item.id, item)
+        item.downloaded = true;
+        this.downloadedItems.set(item.id, item);
     }
     
     @action updateDownloadedItem(item) {
@@ -160,9 +157,17 @@ export class NavigatorStore {
     }
 
     @action toggleDrawer() {
-        this.drawer.set('open', !this.drawer.get('open'))
+        this.drawer.set('open', !this.drawer.get('open'));
     }
-    
+
+    @action closeDrawer() {
+        this.drawer.set('open', false);
+    }
+
+    @action openDrawer() {
+        this.drawer.set('open', true);
+    }
+
     @action toggleTreeListItem(item) {
         item.open = !item.open;
         this.downloadedItems.set(item.id, item);

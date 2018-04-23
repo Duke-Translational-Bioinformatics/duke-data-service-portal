@@ -5,6 +5,7 @@ import { observer } from 'mobx-react';
 import navigatorStore from '../../stores/navigatorStore';
 import { Color } from '../../theme/customTheme';
 import { UrlGen, Kind, Path } from '../../util/urlEnum';
+import BaseUtils from '../../util/baseUtils';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';
@@ -15,7 +16,7 @@ class Breadcrumbs extends React.Component {
         const { drawer, downloadedItems, selectedItem } = navigatorStore;
         const drawerDirectionIcon = drawer.get('open') ? 'chevron_left' : 'chevron_right';
         return (
-            <Paper style={styles.breadCrumb}>
+            <Paper>
                 <IconButton
                     iconClassName="material-icons"
                     onClick={() => navigatorStore.toggleDrawer()}
@@ -58,15 +59,18 @@ class Breadcrumbs extends React.Component {
             return (
                 ancestorPath.map((bc) => {
                     let lable = bc.name && bc.name.length > 20 ? bc.name.substring(0, 20) + '...' : bc.name;
+                    let route = `/#/${BaseUtils.getUrlPath(bc.kind, true) + bc.id}`;
                     return (
-                        <FlatButton
-                            key={bc.id}
-                            label={lable}
-                            style={selectedItem.id === bc.id ? styles.breadCrumbSelected : styles.breadCrumb}
-                            onClick={() => navigatorStore.selectItem(bc.id, this.props.router)}
-                        >
-                            <span style={{color: styles.breadCrumb.color}}>/</span>
-                        </FlatButton>
+                        <a key={bc.id} href={route} className="external">
+                            <FlatButton
+                                label={lable}
+                                style={selectedItem.id === bc.id ? styles.breadCrumbSelected : styles.breadCrumb}
+                                onClick={() => navigatorStore.selectItem(bc.id, this.props.router)}
+                                hoveredStyle={styles.hover}
+                            >
+                                <span style={{color: styles.breadCrumb.color}}> / </span>
+                            </FlatButton>
+                        </a>
                     )
                 })
             )
@@ -77,28 +81,28 @@ class Breadcrumbs extends React.Component {
 const styles = {
     breadCrumb: {
         top: '-7px',
-        height: '36px',
-        whiteSpace: 'nowrap',
-        overflow: 'scroll',
-        color: Color.ltGrey
+        minHeight: '36px',
+        color: Color.blue,
     },
     breadCrumbSelected: {
         top: '-7px',
-        height: '36px'
+        minHeight: '36px',
     },
     breadCrumbButton: {
-        height: '36px',
-        paddingTop: '6px'
+        minHeight: '36px',
+        paddingTop: '6px',
     },
     hover: {
-        backgroundColor: Color.ltGrey3
+        backgroundColor: Color.ltGrey3,
+        color: 'blue',
+        textDecoration: 'underline',
     }
 };
 
 Breadcrumbs.propTypes = {
     downloadedItems: object,
     drawer: object,
-    selectedItem: string
+    selectedItem: string,
 };
 
 export default Breadcrumbs;
