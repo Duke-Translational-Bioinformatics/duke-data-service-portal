@@ -45,3 +45,8 @@ export const Color = {
     white: '#FFF',
 };
 
+export const WindowBreak = {
+    sm: 680,
+    md: 840,
+    tablet: 720,
+};
