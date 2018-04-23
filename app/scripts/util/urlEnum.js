@@ -1,9 +1,6 @@
 export const UrlGen = {
     routes: {
         apiPrefix: '/api/v1/',
-        dashboardHome: () => '/#/dashboard',
-        dashboardProject: (projectId) => '/#/dashboard/projects/' + projectId,
-        dashboardFolder: (folderId) => '/#/dashboard/folders/' + folderId,
         login: () => '/login',
         home: () => '/',
         metadata: () => '/#/metadata',
@@ -22,9 +19,6 @@ export const UrlGen = {
     },
     pathname: {
         agents: () => '/agents',
-        dashboardHome: () => '/dashboard',
-        dashboardProject: () => '/dashboard/projects',
-        dashboardFolder: () => '/dashboard/folders',
         home: () => '/',
         navigatorHome: () => '/navigator',
         navigatorProject: () => '/navigator/projects',
