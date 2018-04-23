@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 const { array, object, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
-import dashboardStore from '../../stores/dashboardStore';
+import navigatorStore from '../../stores/navigatorStore';
 import { UrlGen, Kind } from '../../util/urlEnum';
 import { Color, WindowBreak } from '../../theme/customTheme';
 import Drawer from 'material-ui/Drawer';
@@ -14,7 +14,7 @@ import { List, ListItem } from 'material-ui/List';
 class TreeList extends React.Component {
     render() {
         const { leftMenuDrawer, projects, screenSize } = mainStore;
-        const { downloadedItems, drawer, selectedItem } = dashboardStore;
+        const { downloadedItems, drawer, selectedItem } = navigatorStore;
         let projectIds = projects.map(p => p.id)
 
         return (
@@ -49,7 +49,7 @@ class TreeList extends React.Component {
     }
     
     handleTouchTap(item) {
-        dashboardStore.selectItem(item.id, this.props.router, true);
+        navigatorStore.selectItem(item.id, this.props.router, true);
     }
 
     iconPicker(child, ancestorIds, selectedItem) {
@@ -78,9 +78,9 @@ class TreeList extends React.Component {
 
     routeFinder(item) {
         if (item.kind === Kind.DDS_PROJECT) {
-            return UrlGen.routes.dashboardProject(item.id);
+            return UrlGen.routes.navigatorProject(item.id);
         } else if (item.kind === Kind.DDS_FOLDER) {
-            return UrlGen.routes.dashboardFolder(item.id);
+            return UrlGen.routes.navigatorFolder(item.id);
         }
     }
 
@@ -106,7 +106,7 @@ class TreeList extends React.Component {
                                 onKeyDown={(e) => {this.handleKeyDown(e, child)} }
                                 style={this.listItemStyle(child, selectedItem)}
                                 nestedListStyle={styles.nestedListStyle}
-                                onNestedListToggle={() => {dashboardStore.toggleTreeListItem(child)}}
+                                onNestedListToggle={() => {navigatorStore.toggleTreeListItem(child)}}
                             />
                         )
                     }

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 const { array, bool, number, object, string } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
-import dashboardStore from '../../stores/dashboardStore';
+import navigatorStore from '../../stores/navigatorStore';
 import agentStore from '../../stores/agentStore';
 import authStore from '../../stores/authStore';
 import BaseUtils from '../../util/baseUtils.js';
@@ -34,7 +34,7 @@ class ListItems extends React.Component {
             loading, nextPage, projectRole, projectRoles, projects, screenSize,
             tableBodyRenderKey, totalItems, uploads
         } = mainStore;
-        const { downloadedItems, listItems } = dashboardStore;
+        const { downloadedItems, listItems } = navigatorStore;
         const { agents } = agentStore;
         const { currentUser } = authStore;
         let items
@@ -60,7 +60,7 @@ class ListItems extends React.Component {
         let showProjectRoleColumn = this.isListKind('Projects');
         let showSizeColumn = this.isListKind('FoldersFiles') && screenSize && screenSize.width >= WindowBreak.md;
         let children = items && items.length ? items.map((child) => {
-            if(!child.is_deleted) {
+            if(child && !child.is_deleted) {
                 let route = this.listItemRoute(child, componentName)
                 return (
                     <TableRow key={child.id} selectable={false}>
@@ -244,13 +244,13 @@ class ListItems extends React.Component {
         let pathname = this.props.router.location.pathname
         if (pathname === UrlGen.pathname.home()) {
             return 'Projects';
-        } else if (pathname === UrlGen.pathname.dashboardHome()) {
+        } else if (pathname === UrlGen.pathname.navigatorHome()) {
             return 'Projects';
         } else if (pathname.includes(UrlGen.pathname.agents())) {
             return 'Agents';
-        } else if (pathname.includes(UrlGen.pathname.dashboardProject())) {
+        } else if (pathname.includes(UrlGen.pathname.navigatorProject())) {
             return 'ProjectChildren'
-        } else if (pathname.includes(UrlGen.pathname.dashboardFolder())) {
+        } else if (pathname.includes(UrlGen.pathname.navigatorFolder())) {
             return 'FolderChildren'
         }
     }
@@ -284,11 +284,11 @@ class ListItems extends React.Component {
 
 
     listItemRoute(child, componentName) {
-        if (componentName === 'Dashboard') {
+        if (componentName === 'Navigator') {
             if (child.kind === Kind.DDS_PROJECT) {
-                return UrlGen.routes.dashboardProject(child.id);
+                return UrlGen.routes.navigatorProject(child.id);
             } else if (child.kind === Kind.DDS_FOLDER) {
-                return UrlGen.routes.dashboardFolder(child.id);
+                return UrlGen.routes.navigatorFolder(child.id);
             }
         } else {
             if (child.kind === undefined) {
@@ -331,7 +331,7 @@ class ListItems extends React.Component {
             files = [];
             folders = [];
             mainStore.toggleAllItemsSelected(id);
-            dashboardStore.listItems.forEach((i) => {
+            navigatorStore.listItems.forEach((i) => {
                 i.kind === Kind.DDS_FILE ? id === true && !files.includes(i.id) ? files.push(i.id) : files = [] : id === true && !folders.includes(i.id) ? folders.push(i.id) : folders = [];
             })
         } else if (kind !== null && kind === Kind.DDS_FILE) {

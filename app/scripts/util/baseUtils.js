@@ -26,9 +26,9 @@ let BaseUtils = {
                 if(kind === 'dds-file') {
                     return '/file/';
                 } else if(kind === 'dds-folder') {
-                    return '/folder/'
+                    return '/folder/';
                 }
-                return '/project/'
+                return '/project/';
             };
             return ancestors !== null ? ancestors.map((obj)=>{
                 let kind = getKind(obj.kind);
@@ -36,12 +36,20 @@ let BaseUtils = {
             }) : '';
         },
 
-        getUrlPath (parentKind) {
+        getUrlPath (parentKind, toNavigator) {
             let urlPath = '';
-            if (parentKind === 'dds-project') {
-                urlPath = 'project/'
+            if (toNavigator) {
+                if (parentKind === 'dds-project') {
+                    urlPath = 'navigator/projects/'
+                } else {
+                    urlPath = 'navigator/folders/'
+                }
             } else {
-                urlPath = 'folder/'
+                if (parentKind === 'dds-project') {
+                    urlPath = 'project/'
+                } else {
+                    urlPath = 'folder/'
+                }
             }
             return urlPath;
         },

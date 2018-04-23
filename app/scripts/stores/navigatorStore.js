@@ -5,7 +5,7 @@ import transportLayer from '../transportLayer';
 import { Kind, Path } from '../util/urlEnum';
 import { checkStatusAndConsistency } from '../util/fetchUtil';
 
-export class DashboardStore {
+export class NavigatorStore {
     @observable downloadedItems
     @observable drawer
     @observable listItems
@@ -33,7 +33,7 @@ export class DashboardStore {
     }
 
     @action clearListItems() {
-        dashboardStore.listItems = [];
+        navigatorStore.listItems = [];
     }
 
     @action getChildren(id, path, page) {
@@ -50,7 +50,7 @@ export class DashboardStore {
             .then((json) => {
                 let results = json[0].results;
                 let headers = json[1].map;
-                dashboardStore.addDownloadedItemChildren(results, id);
+                navigatorStore.addDownloadedItemChildren(results, id);
                 this.responseHeaders = headers;
                 this.nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
                 this.totalItems = headers !== null && !!headers['x-total'] ? parseInt(headers['x-total'][0], 10) : null;
@@ -62,8 +62,8 @@ export class DashboardStore {
         let item = this.downloadedItems.get(id);
         if (item && item.parent && item.parent.id) {
             let oldParentId = item.parent.id;
-            this.removeDownloadedItem(id, oldParentId);
             this.addDownloadedItem(item, newParentId);
+            this.removeDownloadedItem(id, oldParentId);
             this.selectItem(newParentId, false, false, true);
         }
     }
@@ -102,11 +102,11 @@ export class DashboardStore {
             this.downloadedItems.set(parentId, parent);
             item.parentId = parentId;
             if(this.selectedItem && this.selectedItem.id === parentId) {
-                this.listItems = [item, ...this.listItems]
+                this.listItems = [item, ...this.listItems];
             }
         }
-        item.downloaded = true
-        this.downloadedItems.set(item.id, item)
+        item.downloaded = true;
+        this.downloadedItems.set(item.id, item);
     }
     
     @action updateDownloadedItem(item) {
@@ -157,16 +157,24 @@ export class DashboardStore {
     }
 
     @action toggleDrawer() {
-        this.drawer.set('open', !this.drawer.get('open'))
+        this.drawer.set('open', !this.drawer.get('open'));
     }
-    
+
+    @action closeDrawer() {
+        this.drawer.set('open', false);
+    }
+
+    @action openDrawer() {
+        this.drawer.set('open', true);
+    }
+
     @action toggleTreeListItem(item) {
         item.open = !item.open;
         this.downloadedItems.set(item.id, item);
     }
 
     @action getItem(id, path, isSelected) {
-        const that = dashboardStore;
+        const that = navigatorStore;
         mainStore.loading = true;
         this.transportLayer.getEntity(id, path)
             .then(checkStatusAndConsistency)
@@ -234,9 +242,9 @@ export class DashboardStore {
                     this.getChildren(item.id, this.pathFinder(item.kind))
                 } else if (childrenIds.length > 0){
                     let newListItems = childrenIds.map((id) => {return(this.downloadedItems.get(id))});
-                    dashboardStore.listItems = newListItems;
+                    navigatorStore.listItems = newListItems;
                 } else {
-                    dashboardStore.listItems = [];
+                    navigatorStore.listItems = [];
                 }
                 this.downloadedItems.set(itemId, item)
                 let currentProject
@@ -249,12 +257,12 @@ export class DashboardStore {
                 mainStore.project = currentProject;
                 this.setProjPermissions(currentProject);
                 this.setEntityObject(item);
-                if(router) router.push({pathname: ('/dashboard/' + this.pathFinder(item.kind) + item.id)});
+                if(router) router.push({pathname: ('/navigator/' + this.pathFinder(item.kind) + item.id)});
             }
         }
     }
   }
 
-const dashboardStore = new DashboardStore();
+const navigatorStore = new NavigatorStore();
 
-export default dashboardStore;
+export default navigatorStore;

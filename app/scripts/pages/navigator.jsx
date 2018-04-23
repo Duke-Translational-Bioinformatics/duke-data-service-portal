@@ -1,10 +1,10 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import mainStore from '../stores/mainStore';
-import dashboardStore from '../stores/dashboardStore';
-import TreeList from '../components/dashboardComponents/treeList.jsx';
-import Breadcrumbs from '../components/dashboardComponents/breadcrumbs.jsx';
-import ListItems from '../components/dashboardComponents/listItems.jsx';
+import navigatorStore from '../stores/navigatorStore';
+import TreeList from '../components/navigatorComponents/treeList.jsx';
+import Breadcrumbs from '../components/navigatorComponents/breadcrumbs.jsx';
+import ListItems from '../components/navigatorComponents/listItems.jsx';
 import FileOptions from '../components/fileComponents/fileOptions.jsx';
 import FolderOptions from '../components/folderComponents/folderOptions.jsx';
 import ProjectOptions from '../components/projectComponents/projectOptions.jsx';
@@ -13,26 +13,26 @@ import VersionUpload from '../components/fileComponents/versionUpload.jsx';
 import { UrlGen, Path } from '../util/urlEnum';
 
 @observer
-class Dashboard extends React.Component {
+class Navigator extends React.Component {
     componentDidMount() {
         const { leftMenuDrawer, openTagManager, selectedEntity } = mainStore;
-        const { selectedItem } = dashboardStore;
+        const { selectedItem } = navigatorStore;
         let params = this.props.params
         mainStore.getProjects(null, null, true);
         
         if(leftMenuDrawer.get('open')) mainStore.toggleLeftMenuDrawer();
         if(params && params.id) {
-            dashboardStore.clearListItems();
+            navigatorStore.clearListItems();
         };
         this.loadItems();
     }
 
     componentDidUpdate(prevProps) {
         const { projects } = mainStore;
-        const { downloadedItems, selectedItem } = dashboardStore;
+        const { downloadedItems, selectedItem } = navigatorStore;
         let params = this.props.params;
         if(params && prevProps && prevProps.params && prevProps.params.id !== params.id) {
-            dashboardStore.clearListItems();
+            navigatorStore.clearListItems();
             this.loadItems();
         };
     }
@@ -42,13 +42,13 @@ class Dashboard extends React.Component {
         let pathname = this.props.router.location.pathname
         if (pathname === UrlGen.pathname.home()) {
             return 'Projects';
-        } else if (pathname === UrlGen.pathname.dashboardHome()) {
+        } else if (pathname === UrlGen.pathname.navigatorHome()) {
             return 'Projects';
         } else if (pathname.includes(UrlGen.pathname.agents())) {
             return 'Agents';
-        } else if (pathname.includes(UrlGen.pathname.dashboardProject())) {
+        } else if (pathname.includes(UrlGen.pathname.navigatorProject())) {
             return 'ProjectChildren'
-        } else if (pathname.includes(UrlGen.pathname.dashboardFolder())) {
+        } else if (pathname.includes(UrlGen.pathname.navigatorFolder())) {
             return 'FolderChildren'
         }
     }
@@ -65,11 +65,11 @@ class Dashboard extends React.Component {
         let pathname = this.props.router.location.pathname
         if (pathname === UrlGen.pathname.home()) {
             this._loadProjects();
-        } else if (pathname === UrlGen.pathname.dashboardHome()) {
+        } else if (pathname === UrlGen.pathname.navigatorHome()) {
             this._loadProjects();
-        } else if (pathname.includes(UrlGen.pathname.dashboardProject())) {
+        } else if (pathname.includes(UrlGen.pathname.navigatorProject())) {
             this._loadProjectChildren();
-        } else if (pathname.includes(UrlGen.pathname.dashboardFolder())) {
+        } else if (pathname.includes(UrlGen.pathname.navigatorFolder())) {
             this._loadFolderChildren();
         } else if (pathname.includes(UrlGen.pathname.agents())) {
             this._loadAgents();
@@ -83,15 +83,15 @@ class Dashboard extends React.Component {
     }
 
     _loadProjects() {
-        dashboardStore.setSelectedItem(null);
+        navigatorStore.setSelectedItem(null);
     }
 
     _loadProjectChildren() {
         let path = Path.PROJECT;
         let params = this.props.params;
         mainStore.getEntity(params.id, path);
-        dashboardStore.setSelectedItem(params.id, path);
-        dashboardStore.getChildren(params.id, path);
+        navigatorStore.setSelectedItem(params.id, path);
+        navigatorStore.getChildren(params.id, path);
         mainStore.clearSelectedItems(); // Clear checked files and folders from list
         mainStore.getUser(params.id);
     }
@@ -100,8 +100,8 @@ class Dashboard extends React.Component {
         let path = Path.FOLDER;
         let params = this.props.params;
         mainStore.getEntity(params.id, path);
-        dashboardStore.setSelectedItem(params.id, path);
-        dashboardStore.getChildren(params.id, path);
+        navigatorStore.setSelectedItem(params.id, path);
+        navigatorStore.getChildren(params.id, path);
         mainStore.clearSelectedItems(); // Clear checked files and folders from list
         if(mainStore.filesChecked || mainStore.foldersChecked) mainStore.handleBatch([],[]);
     }
@@ -125,7 +125,7 @@ class Dashboard extends React.Component {
     }
 
     bodyStyle() {
-        const {drawer} = dashboardStore;
+        const {drawer} = navigatorStore;
         let style = {}
         if(window.innerWidth > 720) {
             style.marginLeft = drawer.get('open') ? drawer.get('width') : 0
@@ -140,4 +140,4 @@ const styles = {
     }
 };
 
-export default Dashboard;
+export default Navigator;
