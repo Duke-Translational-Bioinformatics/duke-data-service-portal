@@ -230,15 +230,18 @@ export class MainStore {
     }
     
     @action toggleLeftMenuDrawer() {
-        this.leftMenuDrawer.set('open', !this.leftMenuDrawer.get('open'))
+        this.leftMenuDrawer.get('open') ? dashboardStore.openDrawer() : dashboardStore.closeDrawer();
+        this.leftMenuDrawer.set('open', !this.leftMenuDrawer.get('open'));
     }
 
     @action closeLeftMenuDrawer() {
-        this.leftMenuDrawer.set('open', false)
+        this.leftMenuDrawer.set('open', false);
+        dashboardStore.openDrawer();
     }
     
     @action openLeftMenuDrawer() {
-        this.leftMenuDrawer.set('open', true)
+        this.leftMenuDrawer.set('open', true);
+        dashboardStore.closeDrawer();
     }
 
     @action toggleBackButtonVisibility(bool, prevLocation){

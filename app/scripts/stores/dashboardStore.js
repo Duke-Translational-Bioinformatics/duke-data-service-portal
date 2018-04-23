@@ -62,8 +62,8 @@ export class DashboardStore {
         let item = this.downloadedItems.get(id);
         if (item && item.parent && item.parent.id) {
             let oldParentId = item.parent.id;
-            this.removeDownloadedItem(id, oldParentId);
             this.addDownloadedItem(item, newParentId);
+            this.removeDownloadedItem(id, oldParentId);
             this.selectItem(newParentId, false, false, true);
         }
     }
@@ -102,11 +102,11 @@ export class DashboardStore {
             this.downloadedItems.set(parentId, parent);
             item.parentId = parentId;
             if(this.selectedItem && this.selectedItem.id === parentId) {
-                this.listItems = [item, ...this.listItems]
+                this.listItems = [item, ...this.listItems];
             }
         }
-        item.downloaded = true
-        this.downloadedItems.set(item.id, item)
+        item.downloaded = true;
+        this.downloadedItems.set(item.id, item);
     }
     
     @action updateDownloadedItem(item) {
@@ -157,9 +157,17 @@ export class DashboardStore {
     }
 
     @action toggleDrawer() {
-        this.drawer.set('open', !this.drawer.get('open'))
+        this.drawer.set('open', !this.drawer.get('open'));
     }
-    
+
+    @action closeDrawer() {
+        this.drawer.set('open', false);
+    }
+
+    @action openDrawer() {
+        this.drawer.set('open', true);
+    }
+
     @action toggleTreeListItem(item) {
         item.open = !item.open;
         this.downloadedItems.set(item.id, item);
