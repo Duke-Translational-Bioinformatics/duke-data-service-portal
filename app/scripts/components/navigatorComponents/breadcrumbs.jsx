@@ -66,7 +66,6 @@ class Breadcrumbs extends React.Component {
                                 label={lable}
                                 style={selectedItem.id === bc.id ? styles.breadCrumbSelected : styles.breadCrumb}
                                 onClick={() => navigatorStore.selectItem(bc.id, this.props.router)}
-                                hoveredStyle={styles.hover}
                             >
                                 <span style={{color: styles.breadCrumb.color}}> / </span>
                             </FlatButton>

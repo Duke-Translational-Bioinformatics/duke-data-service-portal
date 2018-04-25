@@ -11,6 +11,7 @@ import { UrlGen, Path, Kind } from '../../util/urlEnum';
 import { Roles } from '../../enum';
 import { Color, WindowBreak } from '../../theme/customTheme';
 import BatchOps from '../../components/globalComponents/batchOps.jsx';
+import AddAgentModal from '../../components/globalComponents/addAgentModal.jsx';
 import AddFolderModal from '../../components/folderComponents/addFolderModal.jsx';
 import AddProjectModal from '../../components/projectComponents/addProjectModal.jsx';
 import FileOptionsMenu from '../../components/fileComponents/fileOptionsMenu.jsx';
@@ -30,9 +31,19 @@ class ListItems extends React.Component {
 
     render() {
         const {
-            allItemsSelected, filesChecked, foldersChecked, isSafari,
-            loading, nextPage, projectRole, projectRoles, projects, screenSize,
-            tableBodyRenderKey, totalItems, uploads
+            allItemsSelected,
+            filesChecked,
+            foldersChecked,
+            isSafari,
+            loading,
+            nextPage,
+            projectRole,
+            projectRoles,
+            projects,
+            screenSize,
+            tableBodyRenderKey,
+            totalItems,
+            uploads,
         } = mainStore;
         const { downloadedItems, listItems } = navigatorStore;
         const { agents } = agentStore;
@@ -47,11 +58,12 @@ class ListItems extends React.Component {
         }
 
         let showBatchOps = this.isListKind('FoldersFiles') && !!(filesChecked.length || foldersChecked.length);
-        let showUploadButton = this.isListKind('FoldersFiles') && projectRole !== null && (projectRole !== Roles.project_viewer && projectRole !== Roles.file_downloader);
+        let showUploadButton = this.isListKind('FoldersFiles') && projectRole !== null && projectRole !== Roles.project_viewer && projectRole !== Roles.file_downloader;
+        let showAddAgentButton = this.isListKind('Agents');
         let showAddFolderButton = this.isListKind('FoldersFiles');
         let showAddProjectButton = this.isListKind('Projects');
         let showListItemsTable = items.length > 0;
-        let showLoadMorebutton = !this.isListKind('Agents') && items.length < totalItems && totalItems > 25;
+        let showLoadMoreButton = !this.isListKind('Agents') && items.length < totalItems && totalItems > 25;
         let menuWidth = this.isListKind('Agents') ? 118 : screenSize.width > 1230 ? 35 : 28;
         let componentName = this.props.router.routes[1]['component']['name'];
         let checkboxStyle = { maxWidth: 24, float: 'left', marginRight: isSafari ? 16 : 0 };
@@ -77,7 +89,7 @@ class ListItems extends React.Component {
 
         return (
             <div className="list-items-container">
-                {this.itemsActionBar(showBatchOps, showUploadButton, showAddFolderButton, showAddProjectButton)}
+                {this.itemsActionBar(showBatchOps, showAddAgentButton, showUploadButton, showAddFolderButton, showAddProjectButton)}
                 {uploads || loading ? <Loaders {...this.props}/> : null}
                 <Paper className="mdl-cell mdl-cell--12-col" style={styles.list}>
                     {showListItemsTable && <Table fixedHeader={true}>
@@ -95,7 +107,7 @@ class ListItems extends React.Component {
                             {children}
                         </TableBody>
                     </Table>}
-                    {showLoadMorebutton && <div className="mdl-cell mdl-cell--12-col">
+                    {showLoadMoreButton && <div className="mdl-cell mdl-cell--12-col">
                         <RaisedButton
                             label={loading ? "Loading..." : "Load More"}
                             secondary={true}
@@ -249,9 +261,9 @@ class ListItems extends React.Component {
         } else if (pathname.includes(UrlGen.pathname.agents())) {
             return 'Agents';
         } else if (pathname.includes(UrlGen.pathname.navigatorProject())) {
-            return 'ProjectChildren'
+            return 'ProjectChildren';
         } else if (pathname.includes(UrlGen.pathname.navigatorFolder())) {
-            return 'FolderChildren'
+            return 'FolderChildren';
         }
     }
 
@@ -263,7 +275,7 @@ class ListItems extends React.Component {
         }
     }
 
-    itemsActionBar(showBatchOps, showUploadButton, showAddFolderButton, showAddProjectButton) {
+    itemsActionBar(showBatchOps, showAddAgentButton, showUploadButton, showAddFolderButton, showAddProjectButton) {
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
                 {!showBatchOps && <div className="mdl-cell mdl-cell--12-col">
@@ -274,6 +286,7 @@ class ListItems extends React.Component {
                                           style={styles.uploadFilesBtn}
                                           icon={<FileUpload color={Color.pink} />}
                                           onTouchTap={() => this.toggleUploadManager()}/>}
+                    {showAddAgentButton && <AddAgentModal {...this.props}/>}
                     {showAddFolderButton && <AddFolderModal {...this.props}/>}
                     {showAddProjectButton && <AddProjectModal {...this.props}/>}
                 </div>}
@@ -314,7 +327,7 @@ class ListItems extends React.Component {
                 iconKind = 'description';
                 break;
             default:
-                iconKind = 'laptop_mac'
+                iconKind = 'laptop_mac';
         }
         return (
             <FontIcon className="material-icons" style={styles.icon}>
@@ -373,24 +386,24 @@ class ListItems extends React.Component {
 
 const styles = {
     batchOpsWrapper: {
-        marginBottom: 0
+        marginBottom: 0,
     },
     icon: {
         marginLeft: -4,
         marginRight: 10,
-        verticalAlign: -6
+        verticalAlign: -6,
     },
     linkColor: {
-        color: Color.blue
+        color: Color.blue,
     },
     list: {
         float: 'right',
-        marginTop: '10 auto'
+        marginTop: '10 auto',
     },
     uploadFilesBtn: {
         fontWeight: 200,
         float: 'right',
-        margin: '0px -8px 0px 18px'
+        margin: '0px -8px 0px 18px',
     },
     columns: {
         header: {
@@ -404,8 +417,8 @@ const styles = {
             lastUpdated: {},
             projectRole: {width: 100},
             size: {width: 100},      
-        }  
-    }
+        },
+    },
 };
 
 ListItems.propTypes = {
@@ -413,18 +426,17 @@ ListItems.propTypes = {
     allItemsSelected: bool,
     filesChecked: array,
     foldersChecked: array,
-    listItems: array,
-    entityObj: object,
     isSafari: bool,
+    listItems: array,
+    loading: bool,
     nextPage: number,
     projectRole: string,
     projectRoles: object,
-    responseHeaders: object,
+    projects: array,
     screenSize: object,
     tableBodyRenderKey: number,
     totalItems: number,
     uploads: object,
-    loading: bool
 };
 
 export default ListItems;

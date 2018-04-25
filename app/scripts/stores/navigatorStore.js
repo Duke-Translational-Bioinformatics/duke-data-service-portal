@@ -239,12 +239,9 @@ export class NavigatorStore {
                 this.selectedItem = item;
                 let childrenIds = item.childrenIds;
                 if (!childrenIds || !item.downloaded) {
-                    this.getChildren(item.id, this.pathFinder(item.kind))
-                } else if (childrenIds.length > 0){
-                    let newListItems = childrenIds.map((id) => {return(this.downloadedItems.get(id))});
-                    navigatorStore.listItems = newListItems;
+                    this.getChildren(item.id, this.pathFinder(item.kind));
                 } else {
-                    navigatorStore.listItems = [];
+                    navigatorStore.listItems = childrenIds.map(id => this.downloadedItems.get(id));
                 }
                 this.downloadedItems.set(itemId, item)
                 let currentProject
