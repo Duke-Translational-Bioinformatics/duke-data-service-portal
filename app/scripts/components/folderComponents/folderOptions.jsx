@@ -23,8 +23,8 @@ class FolderOptions extends React.Component {
         const { entityObj, screenSize, selectedEntity, toggleModal } = mainStore;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
         let id = selectedEntity !== null ? selectedEntity.id : entityObj !== null ? entityObj.id : null;
-        let parentId = selectedEntity !== null ? selectedEntity.parent.id : entityObj !== null ? entityObj.parent.id : null;
-        let parentKind = selectedEntity !== null ? selectedEntity.parent.kind : entityObj !== null ? entityObj.parent.kind : null;
+        let parentId = selectedEntity !== null ? selectedEntity.parent.id : entityObj !== null && entityObj.parent ? entityObj.parent.id : null;
+        let parentKind = selectedEntity !== null ? selectedEntity.parent.kind : entityObj !== null && entityObj.parent ? entityObj.parent.kind : null;
         let fName = selectedEntity !== null ? selectedEntity.name : null;
         if(fName === null) fName = entityObj && entityObj !== null ? entityObj.name : null;
         const deleteActions = [
