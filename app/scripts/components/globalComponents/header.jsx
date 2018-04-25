@@ -18,7 +18,7 @@ class Header extends React.Component {
     render() {
         const { appConfig } = authStore;
         const { showSearch } = mainStore;
-        let header = null
+        let header = null;
         if (!!appConfig.apiToken) {
             header = !showSearch ? this.navBar() : <Search {...this.props} />;
         }
@@ -46,7 +46,7 @@ class Header extends React.Component {
 
     menuButton() {
         const { leftMenuDrawer } = mainStore;
-        let menuIcon = leftMenuDrawer.get('open') ? 'close' : 'menu'
+        let menuIcon = leftMenuDrawer.get('open') ? 'close' : 'menu';
         return (
             <a href="#" onTouchTap={()=>this.toggleNav()}>
                 <FontIcon className="material-icons" style={styles.menuIcon}>{menuIcon}</FontIcon>
@@ -71,7 +71,8 @@ const styles = {
         maxWidth: '20%',
         minWidth: 58,
         minHeight: 46,
-        marginBottom: 4
+        marginBottom: 4,
+        marginLeft: 20,
     },
     navBar: {
         height: 76,

@@ -22,9 +22,11 @@ import Checkbox from 'material-ui/Checkbox';
 import FlatButton from 'material-ui/FlatButton'
 import FileUpload from 'material-ui/svg-icons/file/file-upload'
 import FontIcon from 'material-ui/FontIcon';
-import RaisedButton from 'material-ui/RaisedButton';
+import IconButton from 'material-ui/IconButton';
 import Paper from 'material-ui/Paper';
+import RaisedButton from 'material-ui/RaisedButton';
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
+import ViewModule from 'material-ui/svg-icons/action/view-module';
 
 @observer
 class ListItems extends React.Component {
@@ -42,6 +44,7 @@ class ListItems extends React.Component {
             projects,
             screenSize,
             tableBodyRenderKey,
+            toggleListStyle,
             totalItems,
             uploads,
         } = mainStore;
@@ -88,10 +91,10 @@ class ListItems extends React.Component {
         }) : null;
 
         return (
-            <div className="list-items-container">
-                {this.itemsActionBar(showBatchOps, showAddAgentButton, showUploadButton, showAddFolderButton, showAddProjectButton)}
+            <div className="navigator-list-items-container">
+                {this.itemsActionBar(showBatchOps, showAddAgentButton, showUploadButton, showAddFolderButton, showAddProjectButton, toggleListStyle)}
                 {uploads || loading ? <Loaders {...this.props}/> : null}
-                <Paper className="mdl-cell mdl-cell--12-col" style={styles.list}>
+                <Paper className="mdl-cell mdl-cell--12-col" style={styles.table}>
                     {showListItemsTable && <Table fixedHeader={true}>
                         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                             <TableRow>
@@ -275,10 +278,10 @@ class ListItems extends React.Component {
         }
     }
 
-    itemsActionBar(showBatchOps, showAddAgentButton, showUploadButton, showAddFolderButton, showAddProjectButton) {
+    itemsActionBar(showBatchOps, showAddAgentButton, showUploadButton, showAddFolderButton, showAddProjectButton, toggleListStyle) {
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
-                {!showBatchOps && <div className="mdl-cell mdl-cell--12-col">
+                {!showBatchOps && <div>
                     {showUploadButton && <RaisedButton
                                           label="Upload Files"
                                           labelPosition="before"
@@ -289,6 +292,17 @@ class ListItems extends React.Component {
                     {showAddAgentButton && <AddAgentModal {...this.props}/>}
                     {showAddFolderButton && <AddFolderModal {...this.props}/>}
                     {showAddProjectButton && <AddProjectModal {...this.props}/>}
+                    <div style={styles.listStyleToggle}>
+                        <IconButton
+                            tooltip={!toggleListStyle ? 'list view' : 'tile view'}
+                            onClick={() => this.toggleListStyle()}
+                            iconStyle={styles.listStyleToggle.icon}
+                            style={styles.listStyleToggle.iconRoot}
+                            hoveredStyle={styles.listStyleToggle.tooltipHover}
+                        >
+                            {toggleListStyle && <ViewModule />}
+                        </IconButton>
+                    </div>
                 </div>}
                 {showBatchOps && <BatchOps {...this.props}/>}
             </div>
@@ -308,6 +322,8 @@ class ListItems extends React.Component {
                 return UrlGen.routes.agents();
             } else if (child.kind === Kind.DDS_FOLDER) {
                 return UrlGen.routes.folder(child.id);
+            } else if (child.kind === Kind.DDS_PROJECT) {
+                return UrlGen.routes.project(child.id);
             } else {
                 return UrlGen.routes.file(child.id);
             }
@@ -315,7 +331,7 @@ class ListItems extends React.Component {
     }
 
     iconPicker(kind) {
-        let iconKind = ''
+        let iconKind = '';
         switch (kind) {
             case Kind.DDS_PROJECT:
                 iconKind = 'content_paste';
@@ -373,6 +389,7 @@ class ListItems extends React.Component {
         mainStore.getChildren(id, kind, page);
     }
 
+
     setSelectedEntity(id, path, isListItem) {
         mainStore.setSelectedEntity(id, path, isListItem);
     }
@@ -381,6 +398,10 @@ class ListItems extends React.Component {
         mainStore.toggleUploadManager();
         mainStore.defineTagsToAdd([]);
         mainStore.processFilesToUpload([], []);
+    }
+
+    toggleListStyle() {
+        mainStore.toggleListView();
     }
 }
 
@@ -398,12 +419,28 @@ const styles = {
     },
     list: {
         float: 'right',
-        marginTop: '10 auto',
+        padding: '14px 0px',
+    },
+    listStyleToggle: {
+        margin: '0px 22px 0px',
+        float: 'right',
+        icon: {
+            width: 36,
+            height: 36,
+        },
+        iconRoot: {
+            width: 36,
+            height: 36,
+            padding: 0,
+        },
+        tooltipHover: {
+            zIndex: 9999,
+        }
     },
     uploadFilesBtn: {
         fontWeight: 200,
         float: 'right',
-        margin: '0px -8px 0px 18px',
+        margin: '0px 0px 0px 18px',
     },
     columns: {
         header: {
@@ -418,6 +455,11 @@ const styles = {
             projectRole: {width: 100},
             size: {width: 100},      
         },
+    },
+    table: {
+        float: 'right',
+        padding: 0,
+        marginTop: 0,
     },
 };
 

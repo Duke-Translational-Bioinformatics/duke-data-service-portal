@@ -14,10 +14,7 @@ import {Card, CardTitle, CardText} from 'material-ui/Card';
 import FontIcon from 'material-ui/FontIcon';
 import IconButton from 'material-ui/IconButton';
 import RaisedButton from 'material-ui/RaisedButton';
-import ViewList from 'material-ui/svg-icons/action/view-list';
-import ViewModule from 'material-ui/svg-icons/action/view-module';
-
-
+import List from 'material-ui/svg-icons/action/list';
 
 @observer
 class ProjectList extends React.Component {
@@ -26,23 +23,23 @@ class ProjectList extends React.Component {
         const { loading, nextPage, projects, projectRoles, toggleListStyle, totalItems } = mainStore;
 
         return (
-            <div className="project-container mdl-grid">
+            <div className="project-container mdl-grid" style={{padding: '8px 0px'}}>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.listTitle}>
                     <div style={styles.title}>
-                        <h4 style={{margin: 0}}>Projects</h4>
+                        <h4 style={styles.title.h4}>Projects</h4>
                     </div>
                     <div style={styles.addProjectButton}>
                         <AddProjectModal {...this.props} />
                     </div>
-                    <div style={{margin: '6px 10px 0px', float: 'right'}}>
+                    <div style={styles.listStyleToggle}>
                         <IconButton
                             tooltip={!toggleListStyle ? 'list view' : 'tile view'}
                             onClick={() => this.toggleListStyle()}
-                            iconStyle={{width: 36, height: 36}}
-                            style={{width: 36, height: 36, padding: 0}}
-                            hoveredStyle={{ zIndex: 9999 }}
+                            iconStyle={styles.listStyleToggle.icon}
+                            style={styles.listStyleToggle.iconRoot}
+                            hoveredStyle={styles.listStyleToggle.tooltipHover}
                         >
-                            {!toggleListStyle ? <ViewList /> : <ViewModule />}
+                            {!toggleListStyle && <List />}
                         </IconButton>
                     </div>
                     <Loaders {...this.props} />
@@ -95,45 +92,64 @@ class ProjectList extends React.Component {
 const styles = {
     addProjectButton: {
         margin: '6px -16px 0px 12px',
-        float: 'right'
+        float: 'right',
     },
     card: {
         minHeight: 260,
-        padding: 10
+        padding: 10,
     },
     cardTitle: {
         fontWeight: 200,
         marginBottom: -15,
         marginRight: 24,
-        wordWrap: 'break-word'
+        wordWrap: 'break-word',
     },
     cardTitle2: {
         fontWeight: 200,
         marginBottom: -15,
-        padding: '4px 4px 4px 16px'
+        padding: '4px 4px 4px 16px',
     },
     icon: {
         fontSize: 36,
         float: 'left',
         margin: '20px 15px 0px 13px',
-        color: Color.dkGrey2
+        color: Color.dkGrey2,
     },
     listTitle: {
         margin: 0,
         padding: 8,
         textAlign: 'left',
-        float: 'left'
+        float: 'left',
+    },
+    listStyleToggle: {
+        margin: '6px 10px 0px',
+        float: 'right',
+        icon: {
+            width: 36,
+            height: 36,
+        },
+        iconRoot: {
+            width: 36,
+            height: 36,
+            padding: 0,
+        },
+        tooltipHover: {
+            zIndex: 9999,
+        }
     },
     menuIcon: {
         float: 'right',
         marginTop: 19,
-        marginRight: 3
+        marginRight: 3,
     },
     title: {
         margin: 0,
         padding: '8px 0px',
         textAlign: 'left',
-        float: 'left'
+        float: 'left',
+        h4: {
+            margin: 0,
+        }
     }
 };
 

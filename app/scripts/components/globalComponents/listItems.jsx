@@ -29,9 +29,10 @@ class ListItems extends React.Component {
         const { allItemsSelected, filesChecked, foldersChecked, isSafari, listItems, loading, nextPage, projectRole, screenSize, tableBodyRenderKey, totalItems, uploads } = mainStore;
         const { agents } = agentStore;
         const { currentUser } = authStore;
-        let items = this.props.router && this.props.router.location.pathname.includes('agents') ? agents.filter(a => a.audit.created_by.id === currentUser.id) : listItems;
+        const pathname = this.props.router.location.pathname;
+        let items = pathname.includes('agents') ? agents.filter(a => a.audit.created_by.id === currentUser.id) : listItems;
         let showBatchOps = !!(filesChecked.length || foldersChecked.length);
-        let menuWidth = this.props.router.location.pathname.includes('agents') ? 118 : screenSize.width > 1230 ? 35 : 28;
+        let menuWidth = pathname.includes('agents') ? 118 : screenSize.width > 1230 ? 35 : 28;
         let checkboxStyle = { maxWidth: 24, float: 'left', marginRight: isSafari ? 16 : 0 };
         let showUploadButton = projectRole !== null && (projectRole !== Roles.project_viewer && projectRole !== Roles.file_downloader);
         let showChecks = projectRole !== null && projectRole !== Roles.project_viewer && projectRole !== Roles.file_uploader && projectRole !== Roles.file_downloader;
@@ -82,20 +83,21 @@ class ListItems extends React.Component {
         return (
             <div className="list-items-container">
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
-                    {!showBatchOps && <div className="mdl-cell mdl-cell--12-col">
-                        { showUploadButton ? <RaisedButton
-                                                label="Upload Files"
-                                                labelPosition="before"
-                                                labelStyle={{color: Color.blue}}
-                                                style={styles.uploadFilesBtn}
-                                                icon={<FileUpload color={Color.pink} />}
-                                                onTouchTap={() => this.toggleUploadManager()}/> : null }
-                        <AddFolderModal {...this.props}/>
-                    </div>}
-                    {showBatchOps && !this.props.router.location.pathname.includes('agents') ? <BatchOps {...this.props}/> : ''}
+                    {!showBatchOps && !pathname.includes('agents')
+                        ? <div className="mdl-cell mdl-cell--12-col">
+                            { showUploadButton ? <RaisedButton
+                                                    label="Upload Files"
+                                                    labelPosition="before"
+                                                    labelStyle={{color: Color.blue}}
+                                                    style={styles.uploadFilesBtn}
+                                                    icon={<FileUpload color={Color.pink} />}
+                                                    onTouchTap={() => this.toggleUploadManager()}/> : null }
+                            <AddFolderModal {...this.props}/>
+                    </div> : null}
+                    {showBatchOps && !pathname.includes('agents') ? <BatchOps {...this.props}/> : ''}
                 </div>
                 {uploads || loading ? <Loaders {...this.props}/> : null}
-                <Paper className="mdl-cell mdl-cell--12-col" style={styles.list}>
+                {children && children.length ? <Paper className="mdl-cell mdl-cell--12-col" style={styles.list}>
                     {items.length > 0 && <Table fixedHeader={true}>
                         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
                             <TableRow>
@@ -108,7 +110,7 @@ class ListItems extends React.Component {
                                 />}
                                 </TableHeaderColumn>
                                 {screenSize && screenSize.width >= 680 ? <TableHeaderColumn style={{fontSize: 14}}>LAST UPDATED</TableHeaderColumn> : null}
-                                {screenSize && screenSize.width >= 840 && !this.props.router.location.pathname.includes('agents') ? <TableHeaderColumn style={{width: 100, fontSize: 14}}>SIZE</TableHeaderColumn> : null}
+                                {screenSize && screenSize.width >= 840 && !pathname.includes('agents') ? <TableHeaderColumn style={{width: 100, fontSize: 14}}>SIZE</TableHeaderColumn> : null}
                                 <TableHeaderColumn style={{textAlign: 'right', width: menuWidth}}></TableHeaderColumn>
                             </TableRow>
                         </TableHeader>
@@ -116,7 +118,7 @@ class ListItems extends React.Component {
                             {children}
                         </TableBody>
                     </Table>}
-                    {items.length < totalItems && totalItems > 25 && !this.props.router.location.pathname.includes('agents') &&
+                    {items.length < totalItems && totalItems > 25 && !pathname.includes('agents') &&
                     <div className="mdl-cell mdl-cell--12-col">
                         <RaisedButton
                             label={loading ? "Loading..." : "Load More"}
@@ -127,7 +129,7 @@ class ListItems extends React.Component {
                             style={loading ? {backgroundColor: Color.ltBlue2} : {}}
                             labelStyle={loading ? {color: Color.blue} : {fontWeight: '100'}}/>
                     </div>}
-                </Paper>
+                </Paper> : null}
             </div>
         );
     }
@@ -194,7 +196,8 @@ const styles = {
     },
     list: {
         float: 'right',
-        marginTop: '10 auto'
+        marginTop: 0,
+        padding: '8px 0px'
     },
     uploadFilesBtn: {
         fontWeight: 200,
