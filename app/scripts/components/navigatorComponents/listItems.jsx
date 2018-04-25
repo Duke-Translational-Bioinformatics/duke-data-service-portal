@@ -30,9 +30,19 @@ class ListItems extends React.Component {
 
     render() {
         const {
-            allItemsSelected, filesChecked, foldersChecked, isSafari,
-            loading, nextPage, projectRole, projectRoles, projects, screenSize,
-            tableBodyRenderKey, totalItems, uploads
+            allItemsSelected,
+            filesChecked,
+            foldersChecked,
+            isSafari,
+            loading,
+            nextPage,
+            projectRole,
+            projectRoles,
+            projects,
+            screenSize,
+            tableBodyRenderKey,
+            totalItems,
+            uploads,
         } = mainStore;
         const { downloadedItems, listItems } = navigatorStore;
         const { agents } = agentStore;
@@ -413,18 +423,17 @@ ListItems.propTypes = {
     allItemsSelected: bool,
     filesChecked: array,
     foldersChecked: array,
-    listItems: array,
-    entityObj: object,
     isSafari: bool,
+    listItems: array,
+    loading: bool,
     nextPage: number,
     projectRole: string,
     projectRoles: object,
-    responseHeaders: object,
+    projects: array,
     screenSize: object,
     tableBodyRenderKey: number,
     totalItems: number,
     uploads: object,
-    loading: bool
 };
 
 export default ListItems;
