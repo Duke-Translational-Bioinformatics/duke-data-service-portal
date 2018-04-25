@@ -20,7 +20,7 @@ class ActivityDetails extends React.Component {
         const { screenSize, showBackButton, uploads, loading, objectMetadata } = mainStore;
         const width = screenSize !== null && Object.keys(screenSize).length !== 0 ? screenSize.width : window.innerWidth;
 
-        const activityDetails = activity !== null && <Card className="project-container mdl-color--white content mdl-color-text--grey-800" style={styles.card}>
+        const activityDetails = activity !== null && <Card className="item-info mdl-color--white content mdl-color-text--grey-800" style={styles.card}>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
                         { showBackButton && <a style={styles.back} className="mdl-color-text--grey-800 external" onTouchTap={() => this.goBack()}>

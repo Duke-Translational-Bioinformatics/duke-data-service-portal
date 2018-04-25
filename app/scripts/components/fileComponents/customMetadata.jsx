@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-const { array, object } = PropTypes;
+const { array } = PropTypes;
 import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import { Color } from '../../theme/customTheme';
@@ -14,7 +14,7 @@ class CustomMetadata extends React.Component {
         const {objectMetadata} = mainStore;
 
         return (
-            <div className="project-container mdl-cell mdl-cell--12-col" style={styles.wrapper}>
+            <div className="item-info mdl-cell mdl-cell--12-col" style={styles.wrapper}>
                 <h5 className="mdl-color-text--grey-800" style={styles.heading}>Custom Metadata</h5>
                 <Card style={styles.card}>
                     <div className="mdl-cell mdl-cell--12-col" style={styles.list}>

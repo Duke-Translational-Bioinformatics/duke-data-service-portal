@@ -37,7 +37,7 @@ class Agent extends React.Component {
         let lastUpdatedOn = entityObj && entityObj.audit ? entityObj.audit.last_updated_on : null;
         let lastUpdatedBy = entityObj && entityObj.audit.last_updated_by ? entityObj.audit.last_updated_by.full_name : null;
         let repoUrl = entityObj ? entityObj.repo_url : null;
-        let agent = <Card className="project-container mdl-color--white content mdl-color-text--grey-800" style={styles.card}>
+        let agent = <Card className="item-info mdl-color--white content mdl-color-text--grey-800" style={styles.card}>
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                 <div style={styles.menuIcon}>
                     <AgentOptionsMenu {...this.props}/>

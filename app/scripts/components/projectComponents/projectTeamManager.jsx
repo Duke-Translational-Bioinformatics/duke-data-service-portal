@@ -39,7 +39,7 @@ class ProjectTeamManager extends React.Component {
         const { currentUser, project, projectTeams, selectedTeam, showAlert, showTeamManager, users } = mainStore;
         let userName = currentUser ? currentUser.full_name : null;
         let id = this.props.router.location.pathname.includes('project') ? this.props.params.id : project ? project.id : null;
-
+        let width = window.innerWidth > 640 ? window.innerWidth*.8 : window.innerWidth;
         let autoCompleteData = users.map((user)=>{
             return {text: user.full_name, value: user.full_name, id: user.uid}
         });
@@ -78,7 +78,7 @@ class ProjectTeamManager extends React.Component {
         return (
                 <Drawer docked={false}
                         disableSwipeToOpen={true}
-                        width={window.innerWidth*.8}
+                        width={width}
                         openSecondary={true}
                         onRequestChange={() => this.toggleTeamManager()}
                         open={showTeamManager}>

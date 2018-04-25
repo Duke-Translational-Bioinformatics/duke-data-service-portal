@@ -98,7 +98,7 @@ const styles = {
     container: {
         overflow: 'auto',
         padding: '10px 0px 10px 0px',
-        maxWidth: 1228,
+        maxWidth: 1230,
         margin: '0 auto'
     },
     createdBy: {

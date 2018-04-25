@@ -44,7 +44,7 @@ class MetadataTemplateList extends React.Component {
                     <li key={ obj.id } className="hover" style={styles.listItem}>
                         <a className="item-content external" onTouchTap={()=> this.viewTemplate(obj.id)}>
                             <div className="item-media">
-                                <FontIcon className="material-icons" style={styles.icon}>view_list</FontIcon>
+                                <FontIcon className="material-icons" style={styles.icon}>info_outline</FontIcon>
                             </div>
                             <div className="item-inner">
                                 <div className="item-title-row">
@@ -61,7 +61,7 @@ class MetadataTemplateList extends React.Component {
                         <li key={ obj.id } className="hover" style={styles.listItem}>
                             <a className="item-content external aTag" onTouchTap={()=> this.viewTemplate(obj.id)}>
                                 <div className="item-media">
-                                    <FontIcon className="material-icons" style={styles.icon}>view_list</FontIcon>
+                                    <FontIcon className="material-icons" style={styles.icon}>info_outline</FontIcon>
                                 </div>
                                 <div className="item-inner">
                                     <div className="item-title-row">
