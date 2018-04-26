@@ -278,7 +278,7 @@ class ListItems extends React.Component {
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
                 {!showBatchOps && <div>
-                    {!this.props.location.pathname.includes('navigator') && <div style={styles.title}>
+                    {!this.props.location.pathname.includes('navigator/') && <div style={styles.title}>
                         <h4 style={styles.title.h4}>Projects</h4>
                     </div>}
                     {showUploadButton && <RaisedButton
@@ -469,7 +469,7 @@ const styles = {
     },
     title: {
         margin: 0,
-        padding: 0,
+        padding: '2px 0px',
         textAlign: 'left',
         float: 'left',
         h4: {
