@@ -180,9 +180,18 @@ class UploadManager extends React.Component {
         mainStore.defineTagsToAdd(tags);
     }
 
+    getProjectId() {
+        const path = this.props.router.location.pathname;
+        if(path.includes('project')) {
+            return this.props.params.id
+        } else {
+            return mainStore.entityObj.project.id;
+        }
+    }
+
     handleUploadButton(filesToUpload, isFolderUpload, tagsToAdd) {
         if (filesToUpload.length) {
-            let projectId = mainStore.project.id != null ? mainStore.project.id : mainStore.entityObj.project.id;
+            let projectId = this.getProjectId();
             let parentKind = this.props.router.location.pathname.includes('project') ? Kind.DDS_PROJECT : Kind.DDS_FOLDER;
             let parentId = this.props.params.id;
             if(!isFolderUpload) {
