@@ -67,7 +67,7 @@ class ListItems extends React.Component {
         let showListItemsTable = items.length > 0;
         let showLoadMoreButton = !this.isListKind('Agents') && items.length < totalItems && totalItems > 25;
         let menuWidth = this.isListKind('Agents') ? 118 : screenSize.width > 1230 ? 35 : 28;
-        let componentName = this.props.router.routes[1]['component']['name'];
+        let componentName = this.props.location.pathname;
         let checkboxStyle = { maxWidth: 24, float: 'left', marginRight: isSafari ? 16 : 0 };
         let showCheckboxColumn = this.isListKind('FoldersFiles') && projectRole !== null && projectRole !== Roles.project_viewer && projectRole !== Roles.file_uploader && projectRole !== Roles.file_downloader;
         let showLastUpdatedColumn = screenSize && screenSize.width >= WindowBreak.sm;
@@ -256,10 +256,8 @@ class ListItems extends React.Component {
 
     // HelperFunctions
     listKind() {
-        let pathname = this.props.router.location.pathname
-        if (pathname === UrlGen.pathname.home()) {
-            return 'Projects';
-        } else if (pathname === UrlGen.pathname.navigatorHome()) {
+        let pathname = this.props.router.location.pathname;
+        if (pathname === UrlGen.pathname.home() || pathname === UrlGen.pathname.navigatorHome()) {
             return 'Projects';
         } else if (pathname.includes(UrlGen.pathname.agents())) {
             return 'Agents';
@@ -282,6 +280,9 @@ class ListItems extends React.Component {
         return (
             <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.list}>
                 {!showBatchOps && <div>
+                    {!this.props.location.pathname.includes('navigator') && <div style={styles.title}>
+                        <h4 style={styles.title.h4}>Projects</h4>
+                    </div>}
                     {showUploadButton && <RaisedButton
                                           label="Upload Files"
                                           labelPosition="before"
@@ -311,7 +312,7 @@ class ListItems extends React.Component {
 
 
     listItemRoute(child, componentName) {
-        if (componentName === 'Navigator') {
+        if (componentName.includes('navigator')) {
             if (child.kind === Kind.DDS_PROJECT) {
                 return UrlGen.routes.navigatorProject(child.id);
             } else if (child.kind === Kind.DDS_FOLDER) {
@@ -460,6 +461,15 @@ const styles = {
         float: 'right',
         padding: 0,
         marginTop: 0,
+    },
+    title: {
+        margin: 0,
+        padding: 0,
+        textAlign: 'left',
+        float: 'left',
+        h4: {
+            margin: 0,
+        }
     },
 };
 
