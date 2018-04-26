@@ -120,7 +120,6 @@ class TreeList extends React.Component {
                 ancestorIds = selectedItem.ancestors.map((a) => {return(a.id)})
             }
         }
-        // console.log('buildTree', selectedItem);
         let projectTree = projectIds ? looper(projectIds) : null
         return projectTree
     }
