@@ -1,5 +1,5 @@
 import React from 'react';
-import { observable, action, map } from 'mobx';
+import { observable, action } from 'mobx';
 import mainStore from './mainStore';
 import transportLayer from '../transportLayer';
 import { Kind, Path } from '../util/urlEnum';
@@ -9,13 +9,19 @@ export class NavigatorStore {
     @observable downloadedItems
     @observable drawer
     @observable listItems
+    @observable nextPage
+    @observable responseHeaders
+    @observable totalItems
     @observable selectedItem
 
     constructor() {
         this.downloadedItems = observable.map();
         this.drawer = observable.map({'open': true, 'width': 350});
         this.listItems = [];
+        this.nextPage = null;
+        this.responseHeaders = {};
         this.selectedItem = null;
+        this.totalItems = null;
         this.transportLayer = transportLayer;
     }
 
@@ -33,13 +39,13 @@ export class NavigatorStore {
     }
 
     @action clearListItems() {
-        navigatorStore.listItems = [];
+        this.listItems = [];
     }
 
     @action getChildren(id, path, page) {
         if(this.listItems.length && page === null) this.listItems = [];
         this.loading = true;
-        if (page == null) page = 1;
+        if (page == null || page === '') page = 1;
         this.transportLayer.getChildren(id, path, page)
             .then(this.checkResponse)
             .then((response) => {
@@ -50,7 +56,12 @@ export class NavigatorStore {
             .then((json) => {
                 let results = json[0].results;
                 let headers = json[1].map;
-                navigatorStore.addDownloadedItemChildren(results, id);
+                if(page <= 1) {
+                    this.listItems = results;
+                } else {
+                    this.listItems = [...this.listItems, ...results];
+                }
+                navigatorStore.addDownloadedItemChildren(this.listItems, id);
                 this.responseHeaders = headers;
                 this.nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
                 this.totalItems = headers !== null && !!headers['x-total'] ? parseInt(headers['x-total'][0], 10) : null;
@@ -89,7 +100,7 @@ export class NavigatorStore {
                 }
                 this.downloadedItems.delete(itemId);
             }
-        }
+        };
         recursiveDelete(id);
     }
 
@@ -112,10 +123,9 @@ export class NavigatorStore {
     @action updateDownloadedItem(item) {
         let downloadedItem = this.downloadedItems.get(item.id) || {};
         this.downloadedItems.set(item.id, {...downloadedItem, ...item});
-        let updatedListItems = this.listItems.map((li) => {
+        this.listItems = this.listItems.map((li) => {
             return item.id === li.id ? {...li, ...item} : li;
-        })
-        this.listItems = updatedListItems;
+        });
     }
 
     @action addDownloadedItemChildren(children, parentId) {
@@ -148,7 +158,7 @@ export class NavigatorStore {
               ancestor.open = true;
               ancestor.childrenDownloaded = false;
               ancestor.downloaded = false;
-              this.downloadedItems.set(ancestor.id, {...ancestor, ...ancestorOld})
+              this.downloadedItems.set(ancestor.id, {...ancestor, ...ancestorOld});
               if(!ancestorOld.downloaded) {
                   this.getItem(id, this.pathFinder(kind))
               }
@@ -256,7 +266,7 @@ export class NavigatorStore {
                 if (!childrenIds || !item.downloaded) {
                     this.getChildren(item.id, this.pathFinder(item.kind));
                 } else {
-                    navigatorStore.listItems = childrenIds.map(id => this.downloadedItems.get(id));
+                    this.listItems = childrenIds.map(id => this.downloadedItems.get(id));
                 }
                 this.downloadedItems.set(itemId, item);
                 this.setCurrentProject(item);

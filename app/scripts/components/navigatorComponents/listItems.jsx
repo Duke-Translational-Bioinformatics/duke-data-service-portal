@@ -38,17 +38,15 @@ class ListItems extends React.Component {
             foldersChecked,
             isSafari,
             loading,
-            nextPage,
             projectRole,
             projectRoles,
             projects,
             screenSize,
             tableBodyRenderKey,
             toggleListStyle,
-            totalItems,
             uploads,
         } = mainStore;
-        const { downloadedItems, listItems } = navigatorStore;
+        const { listItems, nextPage, totalItems } = navigatorStore;
         const { agents } = agentStore;
         const { currentUser } = authStore;
         let items;
@@ -67,7 +65,7 @@ class ListItems extends React.Component {
         let showListItemsTable = items.length > 0;
         let showLoadMoreButton = !this.isListKind('Agents') && items.length < totalItems && totalItems > 25;
         let menuWidth = this.isListKind('Agents') ? 118 : screenSize.width > 1230 ? 35 : 28;
-        let componentName = this.props.location.pathname;
+        let pathName = this.props.location.pathname;
         let checkboxStyle = { maxWidth: 24, float: 'left', marginRight: isSafari ? 16 : 0 };
         let showCheckboxColumn = this.isListKind('FoldersFiles') && projectRole !== null && projectRole !== Roles.project_viewer && projectRole !== Roles.file_uploader && projectRole !== Roles.file_downloader;
         let showLastUpdatedColumn = screenSize && screenSize.width >= WindowBreak.sm;
@@ -75,7 +73,7 @@ class ListItems extends React.Component {
         let showSizeColumn = this.isListKind('FoldersFiles') && screenSize && screenSize.width >= WindowBreak.md;
         let children = items && items.length ? items.map((child) => {
             if(child && !child.is_deleted) {
-                let route = this.listItemRoute(child, componentName)
+                let route = this.listItemRoute(child, pathName);
                 return (
                     <TableRow key={child.id} selectable={false}>
                         {showCheckboxColumn && this.tableRowColumnCheckBox(child, checkboxStyle, filesChecked, foldersChecked)}
@@ -114,7 +112,7 @@ class ListItems extends React.Component {
                             label={loading ? "Loading..." : "Load More"}
                             secondary={true}
                             disabled={!!loading}
-                            onTouchTap={()=>this.loadMore(nextPage)}
+                            onTouchTap={() => this.loadMore(nextPage)}
                             fullWidth={true}
                             style={loading ? {backgroundColor: Color.ltBlue2} : {}}
                             labelStyle={loading ? {color: Color.blue} : {fontWeight: '100'}}/>
@@ -225,7 +223,7 @@ class ListItems extends React.Component {
             </TableRowColumn>)
     }
     tableRowColumnSize(child) {
-        let sizeInfo = '---'
+        let sizeInfo = '---';
         if (child.kind === Kind.DDS_FILE && child.current_version) {
             sizeInfo = BaseUtils.bytesToSize(child.current_version.upload.size)
         }
@@ -236,14 +234,14 @@ class ListItems extends React.Component {
         )
     }
     tableRowColumnMenu(child, menuWidth, projectRoles, projectRole) {
-        let optionsMenu
+        let optionsMenu;
         if (child.kind === Kind.DDS_FILE) {
-            optionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FILE, true)}/>
+            optionsMenu = <FileOptionsMenu {...this.props} clickHandler={() => this.setSelectedEntity(child.id, Path.FILE, true)}/>
         } else if (child.kind === Kind.DDS_FOLDER) {
             optionsMenu = projectRole && projectRole !== Roles.project_viewer && projectRole !== Roles.file_uploader && projectRole !== Roles.file_downloader && <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FOLDER, true)}/>
         } else if (child.kind === Kind.DDS_PROJECT) {
             let role = projectRoles.get(child.id);
-            optionsMenu = role && role === 'Project Admin' && <ProjectOptionsMenu {...this.props} clickHandler={()=>mainStore.setSelectedProject(child.id)}/>
+            optionsMenu = role && role === 'Project Admin' && <ProjectOptionsMenu {...this.props} clickHandler={() => mainStore.setSelectedProject(child.id)}/>
         }
         return (
             <TableRowColumn style={{textAlign: 'right', width: menuWidth}}>
@@ -311,8 +309,8 @@ class ListItems extends React.Component {
     }
 
 
-    listItemRoute(child, componentName) {
-        if (componentName.includes('navigator')) {
+    listItemRoute(child, pathName) {
+        if (pathName.includes('navigator')) {
             if (child.kind === Kind.DDS_PROJECT) {
                 return UrlGen.routes.navigatorProject(child.id);
             } else if (child.kind === Kind.DDS_FOLDER) {
@@ -386,8 +384,13 @@ class ListItems extends React.Component {
 
     loadMore(page) {
         const id = this.props.params.id;
-        const kind = this.props.router.location.pathname.includes('project') ? Path.PROJECT : Path.FOLDER;
-        mainStore.getChildren(id, kind, page);
+        const path = this.props.router.location.pathname;
+        const kind = path.includes('project') ? Path.PROJECT : Path.FOLDER;
+        if(path === '/navigator' || path === '/') {
+            mainStore.getProjects(page, null, true);
+        } else {
+            mainStore.getChildren(id, kind, page);
+        }
     }
 
 

@@ -1328,7 +1328,7 @@ export class MainStore {
     @action getChildren(id, path, page) {
         if(this.listItems.length && page === null) this.listItems = [];
         this.loading = true;
-        if (page == null) page = 1;
+        if (page == null || page === '') page = 1;
         this.transportLayer.getChildren(id, path, page)
             .then(this.checkResponse)
             .then((response) => {
@@ -1344,7 +1344,7 @@ export class MainStore {
                 } else {
                     this.listItems = [...this.listItems, ...results];
                 }
-                navigatorStore.addDownloadedItemChildren(results, id);
+                navigatorStore.addDownloadedItemChildren(this.listItems, id);
                 this.responseHeaders = headers;
                 this.nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
                 this.totalItems = headers !== null && !!headers['x-total'] ? parseInt(headers['x-total'][0], 10) : null;
