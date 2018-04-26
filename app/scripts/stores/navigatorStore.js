@@ -186,8 +186,8 @@ export class NavigatorStore {
                     this.downloadedItems.set(id, {...item, ...json})
                     if(isSelected) {
                         this.selectedItem = json;
-                        mainStore.project = json.kind === Kind.DDS_PROJECT ? json : json.project;
                         this.addDownloadedItemAncestors(json);
+                        this.setCurrentProject(json);
                     }
                     mainStore.loading = false;
                 } else {
@@ -201,8 +201,10 @@ export class NavigatorStore {
     @action setSelectedItem(id, path) {
         if (id && path) {
             if (this.downloadedItems.has(id)) {
-                this.selectedItem = this.downloadedItems.get(id);
-                mainStore.project = this.selectedItem.kind === Kind.DDS_PROJECT ? this.selectedItem : this.selectedItem.project;
+                let item = this.downloadedItems.get(id);
+                this.selectedItem = item;
+                this.setCurrentProject(item);
+                this.addDownloadedItemAncestors(item);
             } else {
                 this.getItem(id, path, true);
             }
@@ -215,16 +217,29 @@ export class NavigatorStore {
         if(item.kind !== Kind.DDS_PROJECT) mainStore.entityObj = item;
     }
     
-    @action setProjPermissions(currentProject) {
-        let projPermissionsCoversion = {
-            'Project Admin': 'prjCrud',
-            'System Admin': 'prjCrud',
-            'Project Viewer': 'viewOnly',
-            'File Editor': 'flCrud',
-            'File Uploader': 'flUpload',
-            'File Downloader': 'flDownload'
+    @action setProjectRole(currentProject) {
+        let projRolesCoversion = {
+            'Project Admin': 'project_admin',
+            'System Admin': 'system_admin',
+            'Project Viewer': 'project_viewer',
+            'File Editor': 'file_editor',
+            'File Uploader': 'file_uploader',
+            'File Downloader': 'file_downloader',
+        };
+        let currentProjectRole = mainStore.projectRoles.get(currentProject.id)
+        currentProjectRole ? mainStore.projectRole = projRolesCoversion[currentProjectRole] : getPermissions(currentProject.id, authStore.currentUser.id);
+    }
+
+    @action setCurrentProject(item) {
+        let currentProject;
+        if (item.kind === Kind.DDS_PROJECT) {
+            currentProject = item;
+        } else {
+            currentProject = this.downloadedItems.get(item.project.id);
+            mainStore.entityObj = item;
         }
-        mainStore.projPermissions = projPermissionsCoversion[mainStore.projectRoles.get(currentProject.id)]
+        mainStore.project = currentProject;
+        this.setProjectRole(currentProject);
     }
 
     @action selectItem(itemId, router, toggle, updateSelectedItem) {
@@ -243,16 +258,8 @@ export class NavigatorStore {
                 } else {
                     navigatorStore.listItems = childrenIds.map(id => this.downloadedItems.get(id));
                 }
-                this.downloadedItems.set(itemId, item)
-                let currentProject
-                if (item.kind === Kind.DDS_PROJECT) {
-                    currentProject = item;
-                } else {
-                    currentProject = this.downloadedItems.get(item.project.id);
-                    mainStore.entityObj = item;
-                }
-                mainStore.project = currentProject;
-                this.setProjPermissions(currentProject);
+                this.downloadedItems.set(itemId, item);
+                this.setCurrentProject(item);
                 this.setEntityObject(item);
                 if(router) router.push({pathname: ('/navigator/' + this.pathFinder(item.kind) + item.id)});
             }

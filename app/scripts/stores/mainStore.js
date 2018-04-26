@@ -618,7 +618,6 @@ export class MainStore {
                 } else if(!this.isListItem) {
                     this.entityObj = json;
                 }
-                console.log('navigatorStore.moveDownloadedItem(id, destination);');
                 navigatorStore.moveDownloadedItem(id, destination);
                 this.loading = false;
             }).catch((ex) => {

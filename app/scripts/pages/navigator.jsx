@@ -15,11 +15,10 @@ import { UrlGen, Path } from '../util/urlEnum';
 @observer
 class Navigator extends React.Component {
     componentDidMount() {
-        const { leftMenuDrawer, openTagManager, selectedEntity } = mainStore;
+        const { leftMenuDrawer, openTagManager, selectedEntity, projects } = mainStore;
         const { selectedItem } = navigatorStore;
         let params = this.props.params
-        mainStore.getProjects(null, null, true);
-        
+        if(!projects.length) mainStore.getProjects(null, null, true);
         if(leftMenuDrawer.get('open')) mainStore.toggleLeftMenuDrawer();
         if(params && params.id) {
             navigatorStore.clearListItems();
