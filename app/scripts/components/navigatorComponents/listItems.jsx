@@ -51,15 +51,14 @@ class ListItems extends React.Component {
         const { downloadedItems, listItems } = navigatorStore;
         const { agents } = agentStore;
         const { currentUser } = authStore;
-        let items
+        let items;
         if (this.isListKind('Projects')) {
             items = projects;
         } else if (this.isListKind('Agents')) {
             items = agents.filter(a => a.audit.created_by.id === currentUser.id);
         } else {
             items = listItems;
-        }
-
+        };
         let showBatchOps = this.isListKind('FoldersFiles') && !!(filesChecked.length || foldersChecked.length);
         let showUploadButton = this.isListKind('FoldersFiles') && projectRole !== null && projectRole !== Roles.project_viewer && projectRole !== Roles.file_downloader;
         let showAddAgentButton = this.isListKind('Agents');
@@ -239,9 +238,11 @@ class ListItems extends React.Component {
     tableRowColumnMenu(child, menuWidth, projectRoles) {
         let optionsMenu
         if (child.kind === Kind.DDS_FILE) {
-            optionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FILE, true)}/>
+            let role = projectRoles.get(child.project.id);
+            optionsMenu = role && role === 'Project Admin' && <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FILE, true)}/>
         } else if (child.kind === Kind.DDS_FOLDER) {
-            optionsMenu = <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FOLDER, true)}/>
+            let role = projectRoles.get(child.project.id);
+            optionsMenu = role && role === 'Project Admin' && <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FOLDER, true)}/>
         } else if (child.kind === Kind.DDS_PROJECT) {
             let role = projectRoles.get(child.id);
             optionsMenu = role && role === 'Project Admin' && <ProjectOptionsMenu {...this.props} clickHandler={()=>mainStore.setSelectedProject(child.id)}/>
