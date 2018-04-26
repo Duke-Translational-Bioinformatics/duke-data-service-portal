@@ -194,13 +194,13 @@ class ListItems extends React.Component {
         )
     }
     tableRowColumnLastUpdated(child, route) {
-        let audit = child.audit
-        let info = { date: audit.created_on, name: audit.created_by.full_name }
+        let audit = child.audit;
+        let info = { date: audit.created_on, name: audit.created_by.full_name };
         if (audit.last_updated_on !== null && audit.last_updated_by !== null) {
-            info.date = audit.last_updated_on
-            info.name = audit.last_updated_by.full_name
+            info.date = audit.last_updated_on;
+            info.name = audit.last_updated_by.full_name;
         }
-        let infoString = BaseUtils.formatDate(info.date) + ' by ' + info.name
+        let infoString = BaseUtils.formatDate(info.date) + ' by ' + info.name;
         if (this.isListKind('FoldersFiles')) {
             return (
                 <TableRowColumn onTouchTap={()=>this.check(child.id, child.kind)} style={styles.columns.row.lastUpdated}>
@@ -315,6 +315,8 @@ class ListItems extends React.Component {
                 return UrlGen.routes.navigatorProject(child.id);
             } else if (child.kind === Kind.DDS_FOLDER) {
                 return UrlGen.routes.navigatorFolder(child.id);
+            } else if (child.kind === Kind.DDS_FILE) {
+                return UrlGen.routes.file(child.id);
             }
         } else {
             if (child.kind === undefined) {
