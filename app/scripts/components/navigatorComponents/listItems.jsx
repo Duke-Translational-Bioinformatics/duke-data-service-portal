@@ -81,7 +81,7 @@ class ListItems extends React.Component {
                         {showLastUpdatedColumn && this.tableRowColumnLastUpdated(child, route)}
                         {showProjectRoleColumn && this.tableRowColumnProjectRole(child, projectRoles)}
                         {showSizeColumn && this.tableRowColumnSize(child)}
-                        {this.tableRowColumnMenu(child, menuWidth)}
+                        {this.tableRowColumnMenu(child, menuWidth, projectRoles)}
                     </TableRow>
                 );
             }
@@ -233,14 +233,15 @@ class ListItems extends React.Component {
             </TableRowColumn>
         )
     }
-    tableRowColumnMenu(child, menuWidth) {
+    tableRowColumnMenu(child, menuWidth, projectRoles) {
         let optionsMenu
         if (child.kind === Kind.DDS_FILE) {
             optionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FILE, true)}/>
         } else if (child.kind === Kind.DDS_FOLDER) {
             optionsMenu = <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FOLDER, true)}/>
         } else if (child.kind === Kind.DDS_PROJECT) {
-            optionsMenu = <ProjectOptionsMenu {...this.props} clickHandler={()=>mainStore.setSelectedProject(child.id)}/>
+            let role = projectRoles.get(child.id);
+            optionsMenu = role && role === 'Project Admin' && <ProjectOptionsMenu {...this.props} clickHandler={()=>mainStore.setSelectedProject(child.id)}/>
         }
         return (
             <TableRowColumn style={{textAlign: 'right', width: menuWidth}}>
