@@ -122,8 +122,11 @@ class LeftMenu extends React.Component {
     }
 
     setNavIndex(index) {
-        const { screenSize } = mainStore;
+        const { screenSize, showTeamManager } = mainStore;
         mainStore.setLeftNavIndex(index);
+        //For some reason the drawer in projectTeamManager won't close when navigating to the dashboard.
+        // All other drawers close as expected. The next line closes the drawer if it's open.
+        if(index === '/navigator' && showTeamManager) mainStore.toggleTeamManager();
         screenSize.width < 700 ? this.toggleNav() : null;
     }
 

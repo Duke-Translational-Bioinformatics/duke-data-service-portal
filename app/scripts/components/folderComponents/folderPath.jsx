@@ -18,7 +18,7 @@ class FolderPath extends React.Component {
         const {entityObj, projectRole} = mainStore;
 
         return (
-            entityObj !== null && entityObj.parent ? <Card className="project-container mdl-cell mdl-cell--12-col" style={styles.container}>
+            entityObj !== null && entityObj.parent ? <Card className="item-info mdl-cell mdl-cell--12-col" style={styles.container}>
                 <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800">
                     <div className="mdl-cell mdl-cell--12-col mdl-color-text--grey-800" style={styles.arrow}>
                         <a href={'/#/' + BaseUtils.getUrlPath(entityObj.parent.kind) + entityObj.parent.id } className="mdl-color-text--grey-800 external" onTouchTap={() => this.goBack()}>
