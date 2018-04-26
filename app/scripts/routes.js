@@ -37,6 +37,8 @@ const routes = (
             <Route path="version/:id" component={ Version } />
             <Route path="login" component={ Login } />
             <Route path="navigator" component={ Navigator } />
+            <Redirect from="/navigator/:path" to="navigator" />
+            <Redirect from="/navigator/:path/" to="navigator" />
             <Route path="navigator/:path/:id" component={ Navigator } />
             <Route path="/(:access_token)" component={ Login } />
         </Route>

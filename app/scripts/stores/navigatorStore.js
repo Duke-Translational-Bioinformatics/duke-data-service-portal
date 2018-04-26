@@ -148,8 +148,8 @@ export class NavigatorStore {
     @action addDownloadedItemAncestors(json) {
       if (json.ancestors && json.ancestors.length > 0) {
           json.ancestors.forEach((ancestor, index) => {
-              let {id, kind} = ancestor
-              let child = json.ancestors[index + 1] || json;
+              let {id, kind} = ancestor;
+              let child = json.ancestors.length && json.ancestors.length > index + 1 ? json.ancestors[index + 1] : json;
               let ancestorOld = this.downloadedItems.get(ancestor.id) || {};
               ancestor.childrenIds = [child.id];
               ancestor.folderIds = [child.id];
