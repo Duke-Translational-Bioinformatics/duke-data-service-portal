@@ -83,7 +83,7 @@ class ListItems extends React.Component {
                         {showLastUpdatedColumn && this.tableRowColumnLastUpdated(child, route)}
                         {showProjectRoleColumn && this.tableRowColumnProjectRole(child, projectRoles)}
                         {showSizeColumn && this.tableRowColumnSize(child)}
-                        {this.tableRowColumnMenu(child, menuWidth, projectRoles)}
+                        {this.tableRowColumnMenu(child, menuWidth, projectRoles, projectRole)}
                     </TableRow>
                 );
             }
@@ -235,14 +235,12 @@ class ListItems extends React.Component {
             </TableRowColumn>
         )
     }
-    tableRowColumnMenu(child, menuWidth, projectRoles) {
+    tableRowColumnMenu(child, menuWidth, projectRoles, projectRole) {
         let optionsMenu
         if (child.kind === Kind.DDS_FILE) {
-            let role = projectRoles.get(child.project.id);
-            optionsMenu = role && role === 'Project Admin' && <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FILE, true)}/>
+            optionsMenu = <FileOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FILE, true)}/>
         } else if (child.kind === Kind.DDS_FOLDER) {
-            let role = projectRoles.get(child.project.id);
-            optionsMenu = role && role === 'Project Admin' && <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FOLDER, true)}/>
+            optionsMenu = projectRole && projectRole !== Roles.project_viewer && projectRole !== Roles.file_uploader && projectRole !== Roles.file_downloader && <FolderOptionsMenu {...this.props} clickHandler={()=>this.setSelectedEntity(child.id, Path.FOLDER, true)}/>
         } else if (child.kind === Kind.DDS_PROJECT) {
             let role = projectRoles.get(child.id);
             optionsMenu = role && role === 'Project Admin' && <ProjectOptionsMenu {...this.props} clickHandler={()=>mainStore.setSelectedProject(child.id)}/>
