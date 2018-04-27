@@ -8,7 +8,6 @@ import { Color } from '../../theme/customTheme';
 import { UrlGen } from '../../util/urlEnum';
 import { Roles } from '../../enum';
 import ProjectOptionsMenu from './projectOptionsMenu.jsx';
-import ProjectOptions from './projectOptions.jsx';
 import Details from './details.jsx';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
@@ -40,7 +39,6 @@ class ProjectDetails extends React.Component {
                         </Link>
                         <div style={styles.menuIcon}>
                             { projectRole === Roles.project_admin || projectRole === Roles.system_admin ? <ProjectOptionsMenu {...this.props} /> : null}
-                            <ProjectOptions {...this.props}/>
                         </div>
                     </div>
                     <div className="mdl-cell mdl-cell--9-col mdl-cell--4-col-tablet mdl-cell--4-col-phone"

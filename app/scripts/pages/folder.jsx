@@ -3,8 +3,6 @@ import { observer } from 'mobx-react';
 import mainStore from '../stores/mainStore';
 import {Path} from '../util/urlEnum';
 import FolderPath from '../components/folderComponents/folderPath.jsx';
-import FileOptions from '../components/fileComponents/fileOptions.jsx';
-import FolderOptions from '../components/folderComponents/folderOptions.jsx';
 import ListItems from '../components/globalComponents/listItems.jsx';
 import TagManager from '../components/globalComponents/tagManager.jsx'
 import VersionUpload from '../components/fileComponents/versionUpload.jsx';
@@ -43,8 +41,6 @@ class Folder extends React.Component {
             <div>
                 <FolderPath {...this.props} />
                 <ListItems {...this.props} />
-                <FileOptions {...this.props} />
-                <FolderOptions {...this.props} />
                 <TagManager {...this.props} />
                 <VersionUpload {...this.props} />
             </div>

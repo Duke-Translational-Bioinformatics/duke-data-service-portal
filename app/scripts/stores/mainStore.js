@@ -316,7 +316,7 @@ export class MainStore {
 
     @action getProjects(page, perPage, getAll) {
         this.loading = true;
-        if (page == null) page = 1;
+        if (page == null || page === '') page = 1;
         if (perPage == null) perPage = 25;
         this.transportLayer.getProjects(page, perPage)
             .then(this.checkResponse).then((response) => {

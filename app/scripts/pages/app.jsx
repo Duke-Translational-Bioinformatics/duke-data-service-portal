@@ -8,6 +8,9 @@ import mainStore from '../stores/mainStore';
 import Header from '../components/globalComponents/header.jsx';
 import Footer from '../components/globalComponents/footer.jsx';
 import LeftMenu from '../components/globalComponents/leftMenu.jsx';
+import ProjectOptions from '../components/projectComponents/projectOptions.jsx';
+import FileOptions from '../components/fileComponents/fileOptions.jsx';
+import FolderOptions from '../components/folderComponents/folderOptions.jsx';
 import RetryUploads from '../components/globalComponents/retryUploads.jsx';
 import UploadManager from '../components/globalComponents/uploadManager.jsx';
 import Dialog from 'material-ui/Dialog';
@@ -243,6 +246,9 @@ class App extends React.Component {
                                     {dialogs}
                                     <UploadManager {...this.props}/>
                                     <RetryUploads {...this.props} {...this.state}/>
+                                    <FileOptions {...this.props}/>
+                                    <FolderOptions {...this.props}/>
+                                    <ProjectOptions {...this.props}/>
                                 </div>
                             </div>
                         </div>

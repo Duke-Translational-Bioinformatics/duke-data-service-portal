@@ -37,16 +37,19 @@ class ListItems extends React.Component {
             filesChecked,
             foldersChecked,
             isSafari,
+            listItems,
             loading,
+            nextPage,
             projectRole,
             projectRoles,
             projects,
             screenSize,
             tableBodyRenderKey,
+            totalItems,
             toggleListStyle,
             uploads,
         } = mainStore;
-        const { listItems, nextPage, totalItems } = navigatorStore;
+        const { } = navigatorStore;
         const { agents } = agentStore;
         const { currentUser } = authStore;
         let items;
@@ -56,19 +59,19 @@ class ListItems extends React.Component {
             items = agents.filter(a => a.audit.created_by.id === currentUser.id);
         } else {
             items = listItems;
-        };
+        }
+        let checkboxStyle = { maxWidth: 24, float: 'left', marginRight: isSafari ? 16 : 0 };
+        let menuWidth = this.isListKind('Agents') ? 118 : screenSize.width > 1230 ? 35 : 28;
+        let pathName = this.props.location.pathname;
         let showBatchOps = this.isListKind('FoldersFiles') && !!(filesChecked.length || foldersChecked.length);
         let showUploadButton = this.isListKind('FoldersFiles') && projectRole !== null && projectRole !== Roles.project_viewer && projectRole !== Roles.file_downloader;
         let showAddAgentButton = this.isListKind('Agents');
         let showAddFolderButton = this.isListKind('FoldersFiles');
         let showAddProjectButton = this.isListKind('Projects');
         let showListItemsTable = items.length > 0;
-        let showLoadMoreButton = !this.isListKind('Agents') && items.length < totalItems && totalItems > 25;
-        let menuWidth = this.isListKind('Agents') ? 118 : screenSize.width > 1230 ? 35 : 28;
-        let pathName = this.props.location.pathname;
-        let checkboxStyle = { maxWidth: 24, float: 'left', marginRight: isSafari ? 16 : 0 };
         let showCheckboxColumn = this.isListKind('FoldersFiles') && projectRole !== null && projectRole !== Roles.project_viewer && projectRole !== Roles.file_uploader && projectRole !== Roles.file_downloader;
         let showLastUpdatedColumn = screenSize && screenSize.width >= WindowBreak.sm;
+        let showLoadMoreButton = !this.isListKind('Agents') && items.length < totalItems && totalItems > 25;
         let showProjectRoleColumn = this.isListKind('Projects');
         let showSizeColumn = this.isListKind('FoldersFiles') && screenSize && screenSize.width >= WindowBreak.md;
         let children = items && items.length ? items.map((child) => {
@@ -361,7 +364,7 @@ class ListItems extends React.Component {
             files = [];
             folders = [];
             mainStore.toggleAllItemsSelected(id);
-            navigatorStore.listItems.forEach((i) => {
+            mainStore.listItems.forEach((i) => {
                 i.kind === Kind.DDS_FILE ? id === true && !files.includes(i.id) ? files.push(i.id) : files = [] : id === true && !folders.includes(i.id) ? folders.push(i.id) : folders = [];
             })
         } else if (kind !== null && kind === Kind.DDS_FILE) {

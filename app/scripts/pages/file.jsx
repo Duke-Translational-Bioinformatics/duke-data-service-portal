@@ -4,7 +4,6 @@ import mainStore from '../stores/mainStore';
 import provenanceStore from '../stores/provenanceStore';
 import { Kind, Path } from '../util/urlEnum';
 import FileDetails from '../components/fileComponents/fileDetails.jsx';
-import FileOptions from '../components/fileComponents/fileOptions.jsx';
 import Provenance from '../components/globalComponents/provenance.jsx';
 import TagManager from '../components/globalComponents/tagManager.jsx';
 
@@ -44,7 +43,6 @@ class File extends React.Component {
             <div>
                 <Provenance {...this.props} />
                 <FileDetails {...this.props} />
-                <FileOptions {...this.props} />
                 <TagManager {...this.props} />
             </div>
         );
