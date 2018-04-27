@@ -8,7 +8,6 @@ import { checkStatusAndConsistency } from '../util/fetchUtil';
 export class NavigatorStore {
     @observable downloadedItems
     @observable drawer
-    @observable listItems
     @observable nextPage
     @observable responseHeaders
     @observable totalItems
@@ -17,7 +16,6 @@ export class NavigatorStore {
     constructor() {
         this.downloadedItems = observable.map();
         this.drawer = observable.map({'open': true, 'width': 350});
-        this.listItems = [];
         this.nextPage = null;
         this.responseHeaders = {};
         this.selectedItem = null;
@@ -39,34 +37,7 @@ export class NavigatorStore {
     }
 
     @action clearListItems() {
-        this.listItems = [];
-    }
-
-    @action getChildren(id, path, page) {
-        if(this.listItems.length && page === null) this.listItems = [];
-        this.loading = true;
-        if (page == null || page === '') page = 1;
-        this.transportLayer.getChildren(id, path, page)
-            .then(this.checkResponse)
-            .then((response) => {
-                const results = response.json();
-                const headers = response.headers;
-                return Promise.all([results, headers]);
-            })
-            .then((json) => {
-                let results = json[0].results;
-                let headers = json[1].map;
-                if(page <= 1) {
-                    this.listItems = results;
-                } else {
-                    this.listItems = [...this.listItems, ...results];
-                }
-                navigatorStore.addDownloadedItemChildren(this.listItems, id);
-                this.responseHeaders = headers;
-                this.nextPage = headers !== null && !!headers['x-next-page'] ? headers['x-next-page'][0] : null;
-                this.totalItems = headers !== null && !!headers['x-total'] ? parseInt(headers['x-total'][0], 10) : null;
-                this.loading = false;
-            }).catch(ex =>this.handleErrors(ex))
+        mainStore.listItems = [];
     }
 
     @action moveDownloadedItem(id, newParentId) {
@@ -80,7 +51,8 @@ export class NavigatorStore {
     }
 
     @action removeDownloadedItem(id, parentId) {
-        this.listItems = this.listItems.filter(l => l.id !== id);
+        mainStore.listItems = mainStore.listItems.filter(l => l.id !== id);
+        mainStore.totalItems = mainStore.listItems.length;
         if (parentId) {
             let parent = this.downloadedItems.get(parentId);
             let ci = parent.childrenIds.indexOf(id);
@@ -113,7 +85,8 @@ export class NavigatorStore {
             this.downloadedItems.set(parentId, parent);
             item.parentId = parentId;
             if(this.selectedItem && this.selectedItem.id === parentId) {
-                this.listItems = [item, ...this.listItems];
+                mainStore.listItems = [item, ...mainStore.listItems];
+                mainStore.totalItems = mainStore.listItems.length;
             }
         }
         item.downloaded = true;
@@ -123,9 +96,10 @@ export class NavigatorStore {
     @action updateDownloadedItem(item) {
         let downloadedItem = this.downloadedItems.get(item.id) || {};
         this.downloadedItems.set(item.id, {...downloadedItem, ...item});
-        this.listItems = this.listItems.map((li) => {
+        mainStore.listItems = mainStore.listItems.map((li) => {
             return item.id === li.id ? {...li, ...item} : li;
         });
+        mainStore.totalItems = mainStore.listItems.length;
     }
 
     @action addDownloadedItemChildren(children, parentId) {
@@ -141,7 +115,8 @@ export class NavigatorStore {
             child.downloaded = true;
             this.downloadedItems.set(child.id, {...childOld, ...child});
         });
-        this.listItems = children;
+        mainStore.listItems = children;
+        mainStore.totalItems = mainStore.listItems.length;
         this.downloadedItems.set(parentId, parent);
     }
 
@@ -264,9 +239,10 @@ export class NavigatorStore {
                 this.selectedItem = item;
                 let childrenIds = item.childrenIds;
                 if (!childrenIds || !item.downloaded) {
-                    this.getChildren(item.id, this.pathFinder(item.kind));
+                    mainStore.getChildren(item.id, this.pathFinder(item.kind));
                 } else {
-                    this.listItems = childrenIds.map(id => this.downloadedItems.get(id));
+                    mainStore.listItems = childrenIds.map(id => this.downloadedItems.get(id));
+                    mainStore.totalItems = mainStore.listItems.length;
                 }
                 this.downloadedItems.set(itemId, item);
                 this.setCurrentProject(item);

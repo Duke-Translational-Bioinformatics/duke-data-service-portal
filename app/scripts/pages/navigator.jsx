@@ -30,30 +30,6 @@ class Navigator extends React.Component {
         }
     }
 
-    // HelperFunctions
-    listKind() {
-        let pathname = this.props.router.location.pathname;
-        if (pathname === UrlGen.pathname.home()) {
-            return 'Projects';
-        } else if (pathname === UrlGen.pathname.navigatorHome()) {
-            return 'Projects';
-        } else if (pathname.includes(UrlGen.pathname.agents())) {
-            return 'Agents';
-        } else if (pathname.includes(UrlGen.pathname.navigatorProject())) {
-            return 'ProjectChildren'
-        } else if (pathname.includes(UrlGen.pathname.navigatorFolder())) {
-            return 'FolderChildren'
-        }
-    }
-
-    isListKind(listKindQuery) {
-        if (listKindQuery === 'FoldersFiles') {
-            return this.listKind() === 'ProjectChildren' || this.listKind() === 'FolderChildren';
-        } else {
-            return listKindQuery === this.listKind();
-        }
-    }
-
     loadItems() {
         let pathname = this.props.router.location.pathname;
         if (pathname === UrlGen.pathname.home()) {
@@ -84,7 +60,7 @@ class Navigator extends React.Component {
         let params = this.props.params;
         mainStore.getEntity(params.id, path);
         navigatorStore.setSelectedItem(params.id, path);
-        navigatorStore.getChildren(params.id, path);
+        mainStore.getChildren(params.id, path);
         mainStore.clearSelectedItems(); // Clear checked files and folders from list
         mainStore.getUser(params.id);
     }
@@ -94,13 +70,12 @@ class Navigator extends React.Component {
         let params = this.props.params;
         mainStore.getEntity(params.id, path);
         navigatorStore.setSelectedItem(params.id, path);
-        navigatorStore.getChildren(params.id, path);
+        mainStore.getChildren(params.id, path);
         mainStore.clearSelectedItems(); // Clear checked files and folders from list
         if(mainStore.filesChecked || mainStore.foldersChecked) mainStore.handleBatch([],[]);
     }
 
     render() {
-      
         return (
             <div style={styles.main}>
                 <TreeList {...this.props} />
