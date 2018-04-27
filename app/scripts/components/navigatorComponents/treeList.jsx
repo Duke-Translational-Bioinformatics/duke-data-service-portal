@@ -76,14 +76,6 @@ class TreeList extends React.Component {
         }
     }
 
-    routeFinder(item) { // Todo: remove unused method
-        if (item.kind === Kind.DDS_PROJECT) {
-            return UrlGen.routes.navigatorProject(item.id);
-        } else if (item.kind === Kind.DDS_FOLDER) {
-            return UrlGen.routes.navigatorFolder(item.id);
-        }
-    }
-
     buildTree(downloadedItems, projectIds, selectedItem) {
         const looper = (itemIds) => {
             return (

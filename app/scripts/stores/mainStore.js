@@ -328,10 +328,10 @@ export class MainStore {
             let headers = json[1].map;
             if(page <= 1) {
                 this.projects = results;
-                this.listItems = results;
+                // this.listItems = results;
             } else {
                 this.projects = [...this.projects, ...results];
-                this.listItems = [...this.listItems, ...results];
+                // this.listItems = [...this.listItems, ...results];
             }
             const userId = authStore.currentUser.id !== undefined ? authStore.currentUser.id : this.currentUser.id !== undefined ? this.currentUser.id : null;
             this.projects.forEach((p) => {

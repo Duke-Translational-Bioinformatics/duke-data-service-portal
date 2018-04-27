@@ -5,9 +5,6 @@ import navigatorStore from '../stores/navigatorStore';
 import TreeList from '../components/navigatorComponents/treeList.jsx';
 import Breadcrumbs from '../components/navigatorComponents/breadcrumbs.jsx';
 import ListItems from '../components/navigatorComponents/listItems.jsx';
-import FileOptions from '../components/fileComponents/fileOptions.jsx';
-import FolderOptions from '../components/folderComponents/folderOptions.jsx';
-import ProjectOptions from '../components/projectComponents/projectOptions.jsx';
 import TagManager from '../components/globalComponents/tagManager.jsx'
 import VersionUpload from '../components/fileComponents/versionUpload.jsx';
 import { UrlGen, Path } from '../util/urlEnum';
@@ -110,9 +107,6 @@ class Navigator extends React.Component {
                 <div style={this.bodyStyle()}>
                     <Breadcrumbs {...this.props} />
                     <ListItems {...this.props} />
-                    {this.isListKind('FoldersFiles') && <FileOptions {...this.props} />}
-                    {this.isListKind('FolderChildren') && <FolderOptions {...this.props} />}
-                    {this.isListKind('Projects') && <ProjectOptions {...this.props} />}
                     <TagManager {...this.props} />
                     <VersionUpload {...this.props} />
                 </div>
