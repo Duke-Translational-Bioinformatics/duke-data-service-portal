@@ -294,7 +294,7 @@ class ListItems extends React.Component {
                     {showAddAgentButton && <AddAgentModal {...this.props}/>}
                     {showAddFolderButton && <AddFolderModal {...this.props}/>}
                     {showAddProjectButton && <AddProjectModal {...this.props}/>}
-                    <div style={styles.listStyleToggle}>
+                    {!this.props.location.pathname.includes('navigator') && <div style={styles.listStyleToggle}>
                         <IconButton
                             tooltip={!toggleListStyle ? 'list view' : 'tile view'}
                             onClick={() => this.toggleListStyle()}
@@ -304,7 +304,7 @@ class ListItems extends React.Component {
                         >
                             {toggleListStyle && <ViewModule />}
                         </IconButton>
-                    </div>
+                    </div>}
                 </div>}
                 {showBatchOps && <BatchOps {...this.props}/>}
             </div>
