@@ -8,18 +8,12 @@ import { checkStatusAndConsistency } from '../util/fetchUtil';
 export class NavigatorStore {
     @observable downloadedItems
     @observable drawer
-    @observable nextPage
-    @observable responseHeaders
-    @observable totalItems
     @observable selectedItem
 
     constructor() {
         this.downloadedItems = observable.map();
         this.drawer = observable.map({'open': true, 'width': 350});
-        this.nextPage = null;
-        this.responseHeaders = {};
         this.selectedItem = null;
-        this.totalItems = null;
         this.transportLayer = transportLayer;
     }
 
