@@ -15,30 +15,27 @@ import { UrlGen, Path } from '../util/urlEnum';
 @observer
 class Navigator extends React.Component {
     componentDidMount() {
-        const { leftMenuDrawer, openTagManager, selectedEntity, projects } = mainStore;
-        const { selectedItem } = navigatorStore;
-        let params = this.props.params
+        const { leftMenuDrawer, projects } = mainStore;
+        let params = this.props.params;
         if(!projects.length) mainStore.getProjects(null, null, true);
         if(leftMenuDrawer.get('open')) mainStore.toggleLeftMenuDrawer();
         if(params && params.id) {
             navigatorStore.clearListItems();
-        };
+        }
         this.loadItems();
     }
 
     componentDidUpdate(prevProps) {
-        const { projects } = mainStore;
-        const { downloadedItems, selectedItem } = navigatorStore;
         let params = this.props.params;
         if(params && prevProps && prevProps.params && prevProps.params.id !== params.id) {
             navigatorStore.clearListItems();
             this.loadItems();
-        };
+        }
     }
 
     // HelperFunctions
     listKind() {
-        let pathname = this.props.router.location.pathname
+        let pathname = this.props.router.location.pathname;
         if (pathname === UrlGen.pathname.home()) {
             return 'Projects';
         } else if (pathname === UrlGen.pathname.navigatorHome()) {
@@ -61,7 +58,7 @@ class Navigator extends React.Component {
     }
 
     loadItems() {
-        let pathname = this.props.router.location.pathname
+        let pathname = this.props.router.location.pathname;
         if (pathname === UrlGen.pathname.home()) {
             this._loadProjects();
         } else if (pathname === UrlGen.pathname.navigatorHome()) {
@@ -125,10 +122,10 @@ class Navigator extends React.Component {
 
     bodyStyle() {
         const {drawer} = navigatorStore;
-        let style = {}
+        let style = {};
         if(window.innerWidth > 720) {
             style.marginLeft = drawer.get('open') ? drawer.get('width') : 0
-        };
+        }
         return style;
     };
 }

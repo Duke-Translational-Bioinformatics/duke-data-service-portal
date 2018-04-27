@@ -23,6 +23,7 @@ const routes = (
             <IndexRoute component={Home}/>
             <Route path="/404" component={ NotFound } />
             <Redirect from="/home" to="/" />
+            <Redirect from="/navigator/" to="navigator" />
             <Route path="metadata" component={ Metadata } />
             <Route path="privacy" component={ Privacy } />
             <Route path="public_privacy" component={ PublicPrivacy } />
@@ -37,6 +38,8 @@ const routes = (
             <Route path="version/:id" component={ Version } />
             <Route path="login" component={ Login } />
             <Route path="navigator" component={ Navigator } />
+            <Redirect from="/navigator/:path" to="navigator" />
+            <Redirect from="/navigator/:path/" to="navigator" />
             <Route path="navigator/:path/:id" component={ Navigator } />
             <Route path="/(:access_token)" component={ Login } />
         </Route>

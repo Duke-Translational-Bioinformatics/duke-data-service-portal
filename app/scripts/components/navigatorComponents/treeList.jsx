@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import mainStore from '../../stores/mainStore';
 import navigatorStore from '../../stores/navigatorStore';
 import { UrlGen, Kind } from '../../util/urlEnum';
-import { Color, WindowBreak } from '../../theme/customTheme';
+import { WindowBreak } from '../../theme/customTheme';
 import Drawer from 'material-ui/Drawer';
 import FontIcon from 'material-ui/FontIcon';
 import { List, ListItem } from 'material-ui/List';
@@ -15,7 +15,7 @@ class TreeList extends React.Component {
     render() {
         const { leftMenuDrawer, projects, screenSize } = mainStore;
         const { downloadedItems, drawer, selectedItem } = navigatorStore;
-        let projectIds = projects.map(p => p.id)
+        let projectIds = projects.map(p => p.id);
 
         return (
             <Drawer
@@ -35,7 +35,7 @@ class TreeList extends React.Component {
         let style = styles.drawer;
         if(screenSize.width > WindowBreak.tablet) {
             style.marginLeft = leftMenuDrawer.get('open') ? leftMenuDrawer.get('width') : 0
-        };
+        }
         return style;
     };
 
@@ -53,7 +53,7 @@ class TreeList extends React.Component {
     }
 
     iconPicker(child, ancestorIds, selectedItem) {
-        let iconKind
+        let iconKind;
         switch (child.kind) {
         case Kind.DDS_PROJECT:
             iconKind = 'content_paste';
@@ -76,7 +76,7 @@ class TreeList extends React.Component {
         }
     }
 
-    routeFinder(item) {
+    routeFinder(item) { // Todo: remove unused method
         if (item.kind === Kind.DDS_PROJECT) {
             return UrlGen.routes.navigatorProject(item.id);
         } else if (item.kind === Kind.DDS_FOLDER) {
@@ -85,12 +85,12 @@ class TreeList extends React.Component {
     }
 
     buildTree(downloadedItems, projectIds, selectedItem) {
-        let looper = (itemIds) => {
+        const looper = (itemIds) => {
             return (
                 itemIds.map((id) => {
-                    let child = downloadedItems.get(id)
+                    let child = downloadedItems.get(id);
                     if (child && child.kind !== 'dds-file') {
-                        let grandChildren = []
+                        let grandChildren = [];
                         if (child.folderIds && child.folderIds.length > 0) {
                             grandChildren = looper(child.folderIds)
                         }
@@ -102,32 +102,32 @@ class TreeList extends React.Component {
                                 leftIcon={this.iconPicker(child, ancestorIds, selectedItem)}
                                 nestedItems={grandChildren}
                                 open={child.open}
-                                onClick={() => {this.handleTouchTap(child)}}
-                                onKeyDown={(e) => {this.handleKeyDown(e, child)} }
+                                onClick={() => this.handleTouchTap(child)}
+                                onKeyDown={(e) => this.handleKeyDown(e, child)}
                                 style={this.listItemStyle(child, selectedItem)}
                                 nestedListStyle={styles.nestedListStyle}
-                                onNestedListToggle={() => {navigatorStore.toggleTreeListItem(child)}}
+                                onNestedListToggle={() => navigatorStore.toggleTreeListItem(child)}
                             />
                         )
                     }
                 })
             )
-        }
+        };
 
-        let ancestorIds = []
+        let ancestorIds = [];
         if (selectedItem) {
             if (downloadedItems.size > 0 && selectedItem && selectedItem.ancestors && selectedItem.ancestors.length > 0) {
-                ancestorIds = selectedItem.ancestors.map((a) => {return(a.id)})
+                ancestorIds = selectedItem.ancestors.map((a) => a.id)
             }
         }
-        let projectTree = projectIds ? looper(projectIds) : null
-        return projectTree
+        return projectIds ? looper(projectIds) : null;
     }
-};
+}
 
 const styles = {
     drawer: {
-        top: '56px'
+        top: '56px',
+        paddingBottom: 64,
     },
     nestedListStyle: {
         padding: '0px'
@@ -135,7 +135,7 @@ const styles = {
     selected: {
         backgroundColor: 'rgba(0, 0, 0, 0.2)'
     }
-}
+};
 
 TreeList.propTypes = {
     downloadedItems: object,

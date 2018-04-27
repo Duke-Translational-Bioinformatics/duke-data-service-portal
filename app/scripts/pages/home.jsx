@@ -9,11 +9,16 @@ import ListItems from '../components/navigatorComponents/listItems.jsx';
 class Home extends React.Component {
 
     componentDidMount() {
-        mainStore.getProjects(null, null, true);
+        this.loadProjects();
     }
-    
+
     componentDidUpdate() {
-        mainStore.getProjects(null, null, true);
+        this.loadProjects();
+    }
+
+    loadProjects() {
+        const { projects } = mainStore;
+        if(!projects.length) mainStore.getProjects(null, null, true);
     }
 
     render() {
