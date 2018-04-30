@@ -29,6 +29,7 @@ class File extends React.Component {
     _loadFile() {
         let id = this.props.params.id;
         provenanceStore.resetGeneratedByActivity();
+        mainStore.clearTags();
         mainStore.setSelectedEntity(null, null);
         mainStore.getEntity(id, Path.FILE);
         mainStore.getFileVersions(id);
