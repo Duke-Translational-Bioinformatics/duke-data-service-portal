@@ -44,6 +44,13 @@ describe('Main Store', () => {
         mainStore.listItems = [];
     });
 
+    it('@action clearTags - should clear objectTags array', () => {
+        mainStore.objectTags = fake.tag_labels_json.results;
+        expect(mainStore.objectTags.length).toBe(3);
+        mainStore.clearTags();
+        expect(mainStore.objectTags.length).toBe(0);
+    });
+
     it('@action addTeamMembersPrompt - should be true or false', () => {
         expect(mainStore.addTeamAfterProjectCreation).toBe(false);
         mainStore.addTeamMembersPrompt();

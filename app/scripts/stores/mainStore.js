@@ -209,6 +209,10 @@ export class MainStore {
         return checkStatus(response, authStore);
     }
 
+    @action clearTags() {
+        this.objectTags = [];
+    }
+
     @action toggleListView() {
         this.toggleListStyle = !this.toggleListStyle;
     }
