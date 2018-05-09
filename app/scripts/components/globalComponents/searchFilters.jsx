@@ -56,11 +56,11 @@ class SearchFilters extends React.Component {
                 nestedItems={[
                     <ListItem key={BaseUtils.generateUniqueKey()} onClick={(e) => this.search(e, searchValue, Kind.DDS_FILE, null, null, null)}
                               primaryText={<span style={styles.checkbox.label}>Files</span>}
-                              leftCheckbox={<Checkbox style={styles.checkbox} disabled={!searchResultsFiles.length} checked={searchFilters.includes(Kind.DDS_FILE)} />}
+                              leftCheckbox={<Checkbox style={styles.checkbox} checked={searchFilters.includes(Kind.DDS_FILE)} />}
                               style={styles.listItem}/>,
                     <ListItem key={BaseUtils.generateUniqueKey()} onClick={(e) => this.search(e, searchValue, Kind.DDS_FOLDER, null, null, null)}
                               primaryText={<span style={styles.checkbox.label}>Folders</span>}
-                              leftCheckbox={<Checkbox style={styles.checkbox} disabled={!searchResultsFolders.length} checked={searchFilters.includes(Kind.DDS_FOLDER)} />}
+                              leftCheckbox={<Checkbox style={styles.checkbox} checked={searchFilters.includes(Kind.DDS_FOLDER)} />}
                               style={styles.listItem}/>
                 ]}
                 initiallyOpen={true}
