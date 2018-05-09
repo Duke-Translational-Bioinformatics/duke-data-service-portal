@@ -31,20 +31,20 @@ class SearchFilters extends React.Component {
         const { screenSize, searchFilters, searchProjectsPostFilters, searchTagsPostFilters, searchResultsFiles, searchResultsFolders, searchResultsProjects, searchResultsTags, searchValue, showFilters } = mainStore;
         let projects = searchResultsProjects.map((obj) => {
             const projectPostFilter = obj.key;
-            let text = <span style={styles.checkbox.label}>{`${obj.key}`}<span style={styles.checkbox.count}>{` (${obj.doc_count})`}</span></span>;
-            return <ListItem key={obj.key} onTouchTap={(e) => this.search(e, searchValue, null, projectPostFilter, null, null)}
-                        primaryText={text}
-                        leftCheckbox={<Checkbox style={styles.checkbox} checked={searchProjectsPostFilters['project.name'].includes(obj.key)} />}
-                        style={styles.listItem}/>;
+            let text = <span style={styles.checkbox.label}>{`${obj.key} `}<span style={styles.checkbox.count}>{` (${obj.doc_count})`}</span></span>;
+            return <ListItem key={obj.key} onClick={(e) => this.search(e, searchValue, null, projectPostFilter, null, null)}
+                             primaryText={text}
+                             leftCheckbox={<Checkbox style={styles.checkbox} checked={searchProjectsPostFilters['project.name'].includes(obj.key)} />}
+                             style={styles.listItem}/>;
         });
 
         let tags = searchResultsTags.map((obj) => {
             const tagPostFilter = obj.key;
             let text = <span style={styles.checkbox.label}>{`${obj.key} `}<span style={styles.checkbox.count}>{` (${obj.doc_count})`}</span></span>;
-            return <ListItem key={obj.key} onTouchTap={(e) => this.search(e, searchValue, null, null, tagPostFilter, null)}
-                    primaryText={text}
-                    leftCheckbox={<Checkbox style={styles.checkbox} checked={searchTagsPostFilters['tags.label'].includes(obj.key)} />}
-                    style={styles.listItem}/>;
+            return <ListItem key={obj.key} onClick={(e) => this.search(e, searchValue, null, null, tagPostFilter, null)}
+                             primaryText={text}
+                             leftCheckbox={<Checkbox style={styles.checkbox} checked={searchTagsPostFilters['tags.label'].includes(obj.key)} />}
+                             style={styles.listItem}/>;
         });
 
         let kindFilter = projects.length ? <List style={styles.list}>
@@ -54,14 +54,14 @@ class SearchFilters extends React.Component {
                 primaryTogglesNestedList={true}
                 onNestedListToggle={() => this.toggleNestedList('kindListToggleIcon')}
                 nestedItems={[
-                    <ListItem key={BaseUtils.generateUniqueKey()} onTouchTap={searchResultsFiles.length ? (e) => this.search(e, searchValue, Kind.DDS_FILE, null, null, null) : null}
-                        primaryText={<span style={styles.checkbox.label}>Files</span>}
-                        leftCheckbox={<Checkbox style={styles.checkbox} disabled={!searchResultsFiles.length} checked={searchFilters.includes(Kind.DDS_FILE)} />}
-                        style={styles.listItem}/>,
-                    <ListItem key={BaseUtils.generateUniqueKey()} onTouchTap={searchResultsFolders.length ? (e) => this.search(e, searchValue, Kind.DDS_FOLDER, null, null, null) : null}
-                        primaryText={<span style={styles.checkbox.label}>Folders</span>}
-                        leftCheckbox={<Checkbox style={styles.checkbox} disabled={!searchResultsFolders.length} checked={searchFilters.includes(Kind.DDS_FOLDER)} />}
-                        style={styles.listItem}/>
+                    <ListItem key={BaseUtils.generateUniqueKey()} onClick={(e) => this.search(e, searchValue, Kind.DDS_FILE, null, null, null)}
+                              primaryText={<span style={styles.checkbox.label}>Files</span>}
+                              leftCheckbox={<Checkbox style={styles.checkbox} disabled={!searchResultsFiles.length} checked={searchFilters.includes(Kind.DDS_FILE)} />}
+                              style={styles.listItem}/>,
+                    <ListItem key={BaseUtils.generateUniqueKey()} onClick={(e) => this.search(e, searchValue, Kind.DDS_FOLDER, null, null, null)}
+                              primaryText={<span style={styles.checkbox.label}>Folders</span>}
+                              leftCheckbox={<Checkbox style={styles.checkbox} disabled={!searchResultsFolders.length} checked={searchFilters.includes(Kind.DDS_FOLDER)} />}
+                              style={styles.listItem}/>
                 ]}
                 initiallyOpen={true}
                 innerDivStyle={{paddingLeft: 4}}
@@ -73,56 +73,56 @@ class SearchFilters extends React.Component {
             <div>
                 <Drawer open={showFilters} width={showFilters ? 240 : null} zDepth={1} openSecondary={true}>
                     <div style={styles.spacer}></div>
-                        <div style={styles.drawer}>
-                            {screenSize.width <= 700 ? <div className="mdl-cell mdl-cell--12-col">
-                                <RaisedButton
-                                    label="Hide Filters"
-                                    labelStyle={styles.button.label}
-                                    style={styles.button}
-                                    secondary={true}
-                                    onTouchTap={() => this.toggleFilters()}/>
-                            </div> : null}
-                            {projects.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.filterWrapper}>
-                                {kindFilter}
-                            </div> : null}
-                            {projects.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.filterWrapper}>
-                                <List style={styles.list}>
-                                    <ListItem
-                                        primaryText="Projects"
-                                        rightToggle={<FontIcon className="material-icons" style={{width: 24}}>{this.state.projectListToggleIcon ? 'remove' : 'add'}</FontIcon>}
-                                        primaryTogglesNestedList={true}
-                                        onNestedListToggle={() => this.toggleNestedList('projectListToggleIcon')}
-                                        nestedItems={projects}
-                                        initiallyOpen={true}
-                                        innerDivStyle={{paddingLeft: 4}}
-                                        style={{ fontSize: 14, borderBottom: '1px solid' + Color.ltGrey2}}
-                                        nestedListStyle={{marginLeft: -18}}
-                                    />
-                                </List>
-                            </div> : null}
-                            {tags.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.filterWrapper}>
-                                <List style={styles.list}>
-                                    <ListItem
-                                        primaryText="Tags"
-                                        rightToggle={<FontIcon className="material-icons" style={{width: 24}}>{this.state.tagListToggleIcon ? 'remove' : 'add'}</FontIcon>}
-                                        primaryTogglesNestedList={true}
-                                        onNestedListToggle={() => this.toggleNestedList('tagListToggleIcon')}
-                                        nestedItems={tags}
-                                        initiallyOpen={true}
-                                        innerDivStyle={{paddingLeft: 4}}
-                                        style={{ fontSize: 14, borderBottom: '1px solid' + Color.ltGrey2}}
-                                        nestedListStyle={{marginLeft: -18}}
-                                    />
-                                </List>
-                            </div> : null}
-                            {searchProjectsPostFilters['project.name'].length || searchTagsPostFilters['tags.label'].length || searchFilters.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
-                                <RaisedButton
-                                    label="Clear Filters"
-                                    labelStyle={styles.button.label}
-                                    style={styles.button}
-                                    secondary={true}
-                                    onTouchTap={()=>this.clearFilters(searchValue)}/>
-                            </div> : null}
+                    <div style={styles.drawer}>
+                        {screenSize.width <= 700 ? <div className="mdl-cell mdl-cell--12-col">
+                            <RaisedButton
+                                label="Hide Filters"
+                                labelStyle={styles.button.label}
+                                style={styles.button}
+                                secondary={true}
+                                onTouchTap={() => this.toggleFilters()}/>
+                        </div> : null}
+                        {projects.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.filterWrapper}>
+                            {kindFilter}
+                        </div> : null}
+                        {projects.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.filterWrapper}>
+                            <List style={styles.list}>
+                                <ListItem
+                                    primaryText="Projects"
+                                    rightToggle={<FontIcon className="material-icons" style={{width: 24}}>{this.state.projectListToggleIcon ? 'remove' : 'add'}</FontIcon>}
+                                    primaryTogglesNestedList={true}
+                                    onNestedListToggle={() => this.toggleNestedList('projectListToggleIcon')}
+                                    nestedItems={projects}
+                                    initiallyOpen={true}
+                                    innerDivStyle={{paddingLeft: 4}}
+                                    style={{ fontSize: 14, borderBottom: '1px solid' + Color.ltGrey2}}
+                                    nestedListStyle={{marginLeft: -18}}
+                                />
+                            </List>
+                        </div> : null}
+                        {tags.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.filterWrapper}>
+                            <List style={styles.list}>
+                                <ListItem
+                                    primaryText="Tags"
+                                    rightToggle={<FontIcon className="material-icons" style={{width: 24}}>{this.state.tagListToggleIcon ? 'remove' : 'add'}</FontIcon>}
+                                    primaryTogglesNestedList={true}
+                                    onNestedListToggle={() => this.toggleNestedList('tagListToggleIcon')}
+                                    nestedItems={tags}
+                                    initiallyOpen={true}
+                                    innerDivStyle={{paddingLeft: 4}}
+                                    style={{ fontSize: 14, borderBottom: '1px solid' + Color.ltGrey2}}
+                                    nestedListStyle={{marginLeft: -18}}
+                                />
+                            </List>
+                        </div> : null}
+                        {searchProjectsPostFilters['project.name'].length || searchTagsPostFilters['tags.label'].length || searchFilters.length ? <div className="mdl-cell mdl-cell--12-col" style={styles.button.wrapper}>
+                            <RaisedButton
+                                label="Clear Filters"
+                                labelStyle={styles.button.label}
+                                style={styles.button}
+                                secondary={true}
+                                onTouchTap={()=>this.clearFilters(searchValue)}/>
+                        </div> : null}
                     </div>
                 </Drawer>
             </div>
