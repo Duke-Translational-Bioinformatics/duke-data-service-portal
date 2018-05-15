@@ -59,7 +59,7 @@ The portal interfaces with the [Duke Data Service API](https://github
 
 ## Javascript
 
-Javascript entry file: `app/scripts/main.js` <br />
+Javascript entry file: `app/scripts/index.js` <br />
 
 **MobX**
 
