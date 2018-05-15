@@ -1,6 +1,15 @@
 {
-  "name": "ctti_app_starter",
-  "version": "0.1.0",
+  "name": "duke-data-service-portal",
+  "version": "0.2.0",
+  "description": "Web portal for the Duke Data Service API",
+  "author": "@caseychoiniere",
+  "license": "MIT",
+  "keywords": [
+    "duke data service portal",
+    "mobx",
+    "react",
+    "react-router"
+  ],
   "private": true,
   "dependencies": {
     "autoprefixer": "7.1.2",
