@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
 import navigatorStore from '../../stores/navigatorStore';
 import { Color } from '../../theme/customTheme';
-import { UrlGen, Kind, Path } from '../../util/urlEnum';
+import { UrlGen } from '../../util/urlEnum';
 import BaseUtils from '../../util/baseUtils';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
@@ -13,7 +13,7 @@ const { object, string } = PropTypes;
 @observer
 class Breadcrumbs extends React.Component {
     render() {
-        const { drawer, downloadedItems, selectedItem } = navigatorStore;
+        const { drawer, selectedItem } = navigatorStore;
         const drawerDirectionIcon = drawer.get('open') ? 'chevron_left' : 'chevron_right';
         return (
             <Paper>
@@ -32,28 +32,12 @@ class Breadcrumbs extends React.Component {
                         hoveredStyle={styles.hover}
                     >home</IconButton>
                 </a>
-                {this.breadCrumb(downloadedItems, selectedItem)}
+                {this.breadCrumb(selectedItem)}
             </Paper> 
         );
     }
 
-    pathFinder(kind) {
-        let path;
-        switch (kind) {
-            case Kind.DDS_PROJECT:
-                path = Path.PROJECT;
-                break;
-            case Kind.DDS_FOLDER:
-                path = Path.FOLDER;
-                break;
-            default:
-                path = null;
-                break;
-        }
-        return (path)
-    }
-
-    breadCrumb(downloadedItems, selectedItem) {
+    breadCrumb(selectedItem) {
         if (selectedItem) {
             let ancestorPath = [selectedItem];
             if (selectedItem.ancestors) {
@@ -102,7 +86,6 @@ const styles = {
 };
 
 Breadcrumbs.propTypes = {
-    downloadedItems: object,
     drawer: object,
     selectedItem: string,
 };
