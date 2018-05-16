@@ -129,5 +129,8 @@
   },
   "eslintConfig": {
     "extends": "react-app"
+  },
+  "engines": {
+    "node": "9.11.1"
   }
 }
