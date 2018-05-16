@@ -326,7 +326,7 @@ class ListItems extends React.Component {
             } else {
                 return UrlGen.routes.file(child.id);
             }
-        };
+        }
     }
 
     iconPicker(kind) {
