@@ -17,7 +17,7 @@ $ git clone https://github.com/Duke-Translational-Bioinformatics/duke-data-servi
 Install all dependencies. 
 
 ```
-$ `npm install`
+$ npm install
 ```
 
 ## Development
@@ -80,17 +80,24 @@ CSS entry file: `src/styles/index.css`<br />
 ## Webpack Hints
 
 You can find the webpack configuration in the [webpack.config.js file](./config/webpack.config.js).
-We use the babel-loader in order to load .jsx and .js files via webpack. If it's possible install all your dependencies with NPM. Packages installed with NPM can be used like this:
+We use the babel-loader in order to load .jsx and .js files via webpack. If it's possible install all your dependencies with NPM. Packages installed with NPM can be used as es6 modules or via require:
+
+```language-javascript
+
+import moduleXYZ from 'moduleXYZ';
+
+```
+or
 
 ```language-javascript
 
 var moduleXYZ = require('moduleXYZ');
 
 ```
+
 You can find all loaders in this [list](http://webpack.github.io/docs/list-of-loaders.html).
 
 
 ###Requirements
 * node
 * npm
-* gulp

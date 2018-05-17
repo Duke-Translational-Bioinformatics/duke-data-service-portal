@@ -19,15 +19,7 @@
     <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.0/material.blue-pink.min.css">
     <script type="text/javascript" src="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.min.js"></script>
     <script type="text/javascript">
-                function randomString(length, chars) {
-                    let result = '';
-                    for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
-                    return result;
-                }
-                const security = randomString(32, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
                 window.DDS_PORTAL_CONFIG = {
-                    baseUrl: '',
-                    securityState: security,
                     environment: "%NODE_ENV%"
                 };
     </script>
