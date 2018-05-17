@@ -80,13 +80,13 @@
     "webpack-dashboard": "^1.0.0-2",
     "webpack-dev-server": "2.7.1",
     "webpack-manifest-plugin": "1.2.1",
-    "whatwg-fetch": "2.0.3"
+    "whatwg-fetch": "2.0.3",
+    "worker-loader": "^1.1.1"
   },
   "devDependencies": {
     "custom-react-scripts": "0.2.1",
     "mobx-react-devtools": "^4.2.11",
-    "whatwg-fetch": "^2.0.3",
-    "worker-loader": "^1.1.1"
+    "whatwg-fetch": "^2.0.3"
   },
   "scripts": {
     "start": "PORT=1337 node scripts/start.js",
