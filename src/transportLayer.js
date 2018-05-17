@@ -2,10 +2,11 @@ import { UrlGen, Path, Kind } from './util/urlEnum';
 import { getFetchParams } from './util/fetchUtil';
 import authStore from './stores/authStore';
 
-const DDS_BASE_URI = process.env.NODE_ENV === 'production' ? process.env.DDS_API_URL : 'https://apidev.dataservice.duke.edu';
+const DDS_BASE_URI = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_DDS_API_URL : 'https://apidev.dataservice.duke.edu';
 const apiPrefix = UrlGen.routes.apiPrefix;
-console.log(process.env.DDS_API_URL)
-console.log(process.env.NODE_ENV)
+console.log(process.env);
+console.log(process.env.REACT_APP_DDS_API_URL)
+console.log(process.env.NODE_ENV);
 
 const transportLayer = {
     getAuthProviders: () => {
