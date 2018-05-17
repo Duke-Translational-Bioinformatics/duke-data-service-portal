@@ -19,6 +19,7 @@ class AgentList extends React.Component {
         const { agentApiToken, agentKey } = agentStore;
         const { userKey } = authStore;
         const { loading, screenSize, toggleModal } = mainStore;
+        const publicUrl = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_DDS_API_URL : 'https://apidev.dataservice.duke.edu';
         let dialogStyle= screenSize.width < 580 ? {width: '100%', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'} : {position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'};
         let msg = Object.keys(agentApiToken).length > 0 ?
             <h6 style={styles.apiMsg2}>The API token included with these credentials will expire in 2 hours.</h6> :
@@ -48,7 +49,7 @@ class AgentList extends React.Component {
             {!loading ? <TextField
                 textareaStyle={styles.textArea}
                 style={styles.keyModal}
-                defaultValue={JSON.stringify({agent_key: agentKey.key, user_key: userKey.key, api_token: agentApiToken.api_token, url: window.DDS_PORTAL_CONFIG.baseUrl+'/api/v1'}, null, 4)}
+                defaultValue={JSON.stringify({agent_key: agentKey.key, user_key: userKey.key, api_token: agentApiToken.api_token, url: publicUrl+'/api/v1'}, null, 4)}
                 floatingLabelText="Agent Credentials"
                 id="keyText"
                 ref={(input) => this.keyText = input}
