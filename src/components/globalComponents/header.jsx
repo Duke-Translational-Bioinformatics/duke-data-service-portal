@@ -92,7 +92,7 @@ const styles = {
     menuIcon: {
         fontSize: 24,
         color: Color.white,
-        margin: '4px 10px 0px 10px'
+        margin: '8px 10px'
     },
     searchIcon: {
         color: Color.white,

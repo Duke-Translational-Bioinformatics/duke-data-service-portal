@@ -63,7 +63,7 @@ const styles = {
     icon: {
         color: "#fff",
         fontSize: 24,
-        margin: '2px 10px'
+        margin: '8px 10px'
     },
     popoverList: {
         padding: '0px 10px 0px 10px'
