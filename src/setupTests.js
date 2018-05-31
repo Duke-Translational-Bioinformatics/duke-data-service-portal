@@ -1,0 +1,1 @@
+window.open = () => { }; // Mock global window object

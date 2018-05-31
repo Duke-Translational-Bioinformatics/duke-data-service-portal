@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="Duke Data Service">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#000000">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <link rel="shortcut icon" href="%PUBLIC_URL%/fav.png">
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
+    <link rel="stylesheet" href="%PUBLIC_URL%/lib/vis.min.css"/>
+    <link rel="stylesheet" href="%PUBLIC_URL%/lib/vis-network.min.css"/>
+    <link rel="stylesheet" href="%PUBLIC_URL%/lib/framework7.material.min.css"/>
+    <link rel="stylesheet" href="%PUBLIC_URL%/lib/framework7.material.colors.min.css"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.0/material.blue-pink.min.css">
+    <script type="text/javascript" src="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.min.js"></script>
+    <title>Duke Data Service</title>
+  </head>
+  <body class="theme-blue">
+    <noscript>
+      You need to enable JavaScript to run this app.
+    </noscript>
+    <script type="text/javascript">
+        // Force `fetch` polyfill to workaround Chrome not displaying request body
+        // in developer tools for the native `fetch`.
+        self.fetch = null;
+    </script>
+    <div class="mdl-grid" style="padding: 0; height: 100%;">
+      <div id="root" style="width: 100%"></div>
+    </div>
+  </body>
+</html>
