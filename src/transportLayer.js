@@ -12,6 +12,9 @@ const transportLayer = {
     getApiToken: (accessToken, appConfig) => {
         return fetch(`${DDS_BASE_URI+apiPrefix+Path.ACCESS_TOKEN+accessToken}&authentication_service_id=${appConfig.serviceId}`, getFetchParams('get'))
     },
+    getAppStatus: () => {
+        return fetch(`${DDS_BASE_URI+apiPrefix+Path.APP_STATUS}`, getFetchParams('get'))
+    },
     getCurrentUser: () => {
         return fetch(DDS_BASE_URI+apiPrefix+Path.CURRENT_USER, getFetchParams('get', authStore.appConfig.apiToken))
     },

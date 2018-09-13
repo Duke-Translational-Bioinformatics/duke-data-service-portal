@@ -60,6 +60,7 @@ class App extends React.Component {
         };
         mainStore.getDeviceType(device);
         if(appConfig.apiToken) {
+            mainStore.getAppStatus();
             authStore.getCurrentUser();
             mainStore.getUsageDetails();
             mainStore.loadMetadataTemplates(null);

@@ -14,6 +14,7 @@ import SparkMD5 from 'spark-md5';
 export class MainStore {
     @observable addTeamAfterProjectCreation
     @observable allItemsSelected
+    @observable appStatus
     @observable autoCompleteLoading
     @observable audit
     @observable counter
@@ -109,6 +110,7 @@ export class MainStore {
     constructor() {
         this.addTeamAfterProjectCreation = false;
         this.allItemsSelected = false;
+        this.appStatus = {};
         this.autoCompleteLoading = false;
         this.audit = {};
         this.currentLocation = null;
@@ -209,21 +211,30 @@ export class MainStore {
         return checkStatus(response, authStore);
     }
 
+    @action addTeamMembersPrompt () {
+        this.addTeamAfterProjectCreation = !this.addTeamAfterProjectCreation;
+    }
+
     @action clearTags() {
         this.objectTags = [];
     }
 
-    @action toggleListView() {
-        this.toggleListStyle = !this.toggleListStyle;
-    }
-
-    @action addTeamMembersPrompt () {
-        this.addTeamAfterProjectCreation = !this.addTeamAfterProjectCreation;
+    @action getAppStatus() {
+        this.transportLayer.getAppStatus()
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => {
+                this.appStatus = json;
+            }).catch(ex => this.handleErrors(ex))
     }
 
     @action setSelectedTeam (id) {
         this.selectedTeam = !this.selectedTeam.includes(id) ? [id] : [];
         if(this.showAlert) this.toggleAlert();
+    }
+
+    @action toggleListView() {
+        this.toggleListStyle = !this.toggleListStyle;
     }
 
     @action toggleTeamManager() {
