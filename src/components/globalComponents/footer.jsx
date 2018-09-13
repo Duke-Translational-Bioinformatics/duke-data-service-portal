@@ -9,10 +9,9 @@ class Footer extends React.Component {
     render() {
         let envColor = "#555";
         let appName = '';
-        let environment = process.NODE_ENV === 'production' ? process.env.REACT_APP_DDS_API_ENVIRONMENT : 'development';
-        let { loading } = mainStore;
+        let { loading, appStatus } = mainStore;
 
-        switch(environment){
+        switch(appStatus.environment){
             case 'development':
                 envColor = Color.red;
                 appName = ' - DEVELOPMENT';
