@@ -58,5 +58,5 @@ workflows:
             - build
           filters:
             branches:
-              only:
-                - /.*/
+              ignore:
+                - /pull\/.*/
