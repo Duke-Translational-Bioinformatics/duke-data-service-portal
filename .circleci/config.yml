@@ -39,5 +39,22 @@ jobs:
       # Save artifacts
       - store_artifacts:
           path: /tmp/circleci-artifacts
-      - store_artifacts:
-          path: /tmp/circleci-test-results
+  deploy:
+    machine:
+      enabled: true
+    steps:
+      - checkout
+      - run:
+          name: Ensure heroku app name variable is set
+          command: .circleci/heroku-app-name.sh
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
