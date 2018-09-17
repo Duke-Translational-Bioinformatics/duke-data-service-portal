@@ -11,3 +11,33 @@ jobs:
 
     steps:
       - checkout
+      - run: mkdir -p $CIRCLE_ARTIFACTS $CIRCLE_TEST_REPORTS
+      - restore_cache:
+          keys:
+          - v1-dep-{{ .Branch }}-
+          - v1-dep-develop-
+          - v1-dep-
+      - run: if [ -z "${NODE_ENV:-}" ]; then export NODE_ENV=test; fi
+      - run: export PATH="~/Duke-Translational-Bioinformatics/duke-data-service-portal/node_modules/.bin:$PATH"
+      - run: npm install
+      # Save dependency cache
+      - save_cache:
+          key: v1-dep-{{ .Branch }}-{{ epoch }}
+          paths:
+          # This is a broad list of cache paths to include many possible development environments
+          # You can probably delete some of these entries
+          - ~/virtualenvs
+          - ~/.m2
+          - ~/.ivy2
+          - ~/.gradle
+          - ~/.cache/bower
+          - ./node_modules
+      - run: npm test
+      # Save test results
+      - store_test_results:
+          path: /tmp/circleci-test-results
+      # Save artifacts
+      - store_artifacts:
+          path: /tmp/circleci-artifacts
+      - store_artifacts:
+          path: /tmp/circleci-test-results
