@@ -10,4 +10,4 @@ jobs:
       - image: node:9.11.1
 
     steps:
-      -checkout
+      - checkout
