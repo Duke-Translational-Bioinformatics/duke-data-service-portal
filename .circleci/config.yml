@@ -47,6 +47,12 @@ jobs:
       - run:
           name: Ensure heroku app name variable is set
           command: .circleci/heroku-app-name.sh
+      - run: heroku maintenance:on --app "$(.circleci/heroku-app-name.sh)"
+      - run:
+          name: Deploy to Heroku
+          command: |
+            git push "https://heroku:$HEROKU_API_KEY@git.heroku.com/$(.circleci/heroku-app-name.sh).git" HEAD:master
+      - run: heroku maintenance:off --app "$(.circleci/heroku-app-name.sh)"
 
 workflows:
   version: 2
