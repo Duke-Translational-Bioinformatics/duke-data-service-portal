@@ -75,5 +75,7 @@ workflows:
             - build
           filters:
             branches:
-              ignore:
-                - /pull\/.*/
+              only:
+                - develop
+                - ua_test
+                - production
