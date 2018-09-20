@@ -1,0 +1,81 @@
+version: 2
+jobs:
+  build:
+    parallelism: 1
+    environment:
+      CIRCLE_ARTIFACTS: /tmp/circleci-artifacts
+      CIRCLE_TEST_REPORTS: /tmp/circleci-test-results
+
+    docker:
+      - image: node:9.11.1
+
+    steps:
+      - checkout
+      - run: mkdir -p $CIRCLE_ARTIFACTS $CIRCLE_TEST_REPORTS
+      - restore_cache:
+          keys:
+          - v1-dep-{{ .Branch }}-
+          - v1-dep-develop-
+          - v1-dep-
+      - run: if [ -z "${NODE_ENV:-}" ]; then export NODE_ENV=test; fi
+      - run: export PATH="~/Duke-Translational-Bioinformatics/duke-data-service-portal/node_modules/.bin:$PATH"
+      - run: npm install
+      # Save dependency cache
+      - save_cache:
+          key: v1-dep-{{ .Branch }}-{{ epoch }}
+          paths:
+          # This is a broad list of cache paths to include many possible development environments
+          # You can probably delete some of these entries
+          - ~/virtualenvs
+          - ~/.m2
+          - ~/.ivy2
+          - ~/.gradle
+          - ~/.cache/bower
+          - ./node_modules
+      - run: npm test
+      # Save test results
+      - store_test_results:
+          path: /tmp/circleci-test-results
+      # Save artifacts
+      - store_artifacts:
+          path: /tmp/circleci-artifacts
+  deploy:
+    machine:
+      enabled: true
+    steps:
+      - checkout
+      - run:
+          name: Ensure heroku app name variable is set
+          command: .circleci/heroku-app-name.sh
+      - run: heroku maintenance:on --app "$(.circleci/heroku-app-name.sh)"
+      - run:
+          name: Store current heroku config
+          command: |
+            heroku config --shell -a "$(.circleci/heroku-app-name.sh)" | cut -d= -f1 | tee /tmp/heroku-config-var-names
+      - run:
+          name: Required heroku config vars
+          command: cat .circleci/required-config-var-names
+      - run:
+          name: Ensure required heroku config vars are set
+          command: |
+            ! grep -Fvxf /tmp/heroku-config-var-names .circleci/required-config-var-names
+      - run:
+          name: Deploy to Heroku
+          command: |
+            git push "https://heroku:$HEROKU_API_KEY@git.heroku.com/$(.circleci/heroku-app-name.sh).git" HEAD:master
+      - run: heroku maintenance:off --app "$(.circleci/heroku-app-name.sh)"
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - develop
+                - ua_test
+                - production
