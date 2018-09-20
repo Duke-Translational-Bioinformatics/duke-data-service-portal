@@ -221,11 +221,8 @@ export class MainStore {
 
     @action getAppStatus() {
         this.transportLayer.getAppStatus()
-            .then(this.checkResponse)
             .then(response => response.json())
-            .then((json) => {
-                this.appStatus = json;
-            }).catch(ex => this.handleErrors(ex))
+            .then((json) => this.appStatus = json)
     }
 
     @action setSelectedTeam (id) {

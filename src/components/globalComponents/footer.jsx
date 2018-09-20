@@ -6,32 +6,23 @@ import { Color } from '../../theme/customTheme';
 @observer
 class Footer extends React.Component {
 
-    render() {
-        let envColor = "#555";
-        let appName = '';
-        let { loading, appStatus } = mainStore;
+    getAppStatus = () => {
+        const { appStatus } = mainStore;
+        const status = new Map();
+        status.set('development', {color: Color.red, name:  '- DEVELOPMENT'});
+        status.set('production', {color: Color.blue, name:  ''});
+        status.set('ua_test', {color: Color.green, name: '- UA_TEST'});
+        return status.get(appStatus.environment) || {color: Color.blue, name:  ''};
+    };
 
-        switch(appStatus.environment){
-            case 'development':
-                envColor = Color.red;
-                appName = ' - DEVELOPMENT';
-                break;
-            case 'production':
-                envColor = Color.blue;
-                appName = '';
-                break;
-            case 'ua_test':
-                envColor = Color.green;
-                appName = ' - UA TEST';
-                break;
-            default:
-                break;
-        }
+    render() {
+        const { loading } = mainStore;
+        let status = this.getAppStatus();
 
         return (
-            !loading && <footer style={{backgroundColor : envColor, padding: '10px 16px 10px 16px', position: 'relative'}}>
+            !loading && <footer style={{backgroundColor : status.color, padding: '10px 16px 10px 16px', position: 'relative'}}>
                 <div>
-                    <h6 style={styles.logo}>Duke Data Service {' ' + appName}</h6>
+                    <h6 style={styles.logo}>Duke Data Service {status.name}</h6>
                 </div>
                 <div>
                     {window.innerWidth < 600 ? null : <span style={styles.phi}><b>The Health Insurance Portability and Accountability Act of 1996 (HIPAA)
