@@ -1,8 +1,7 @@
-FROM node:0.12-onbuild
+FROM node:9.11.1
 
 ADD ./ /var/www/app
 WORKDIR /var/www/app
-RUN ["npm", "install", "-g"]
-RUN ["npm", "link"]
+RUN npm install -g && npm link
 EXPOSE 1337 35729
-CMD ["node", "app.js"]
+CMD ["npm", "start"]
