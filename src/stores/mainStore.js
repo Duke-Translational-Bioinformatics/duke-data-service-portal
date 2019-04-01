@@ -963,7 +963,7 @@ export class MainStore {
     }
 
     @action startUpload(projId, blob, parentId, parentKind, label, fileId, tags) {
-        let chunkNum = 0,
+        let chunkNum = 1,
             fileName = blob.name,
             contentType = blob.type,
             slicedFile = null,
@@ -1176,19 +1176,26 @@ export class MainStore {
         const chunkUpdates = chunk.chunkUpdates;
         const md5 = new SparkMD5.ArrayBuffer();
         const fileReader = new FileReader();
+        const retryArgs = [uploadId, chunkBlob, chunk];
         fileReader.onload = function (e) {
             md5.append(e.target.result);
             const hash = md5.end();
             const algorithm = 'MD5';
             mainStore.transportLayer.getChunkUrl(uploadId, chunkNum, chunkBlob.size, hash, algorithm)
-                .then(this.checkResponse)
+                .then(checkStatusAndConsistency)
                 .then(response => response.json())
                 .then((json) => {
                     const chunkObj = json;
                     if (chunkObj && chunkObj.url && chunkObj.host) {
                         mainStore.uploadChunk(uploadId, chunkObj.host + chunkObj.url, chunkBlob, chunkNum, chunkUpdates)
                     } else {
-                        throw new Error('error: Unexpected response');
+                        if(json.code === 'resource_not_consistent') {
+                            this.loading = false;
+                            const msg = "Uploading...";
+                            mainStore.tryAsyncAgain(mainStore.getChunkUrl, retryArgs, 500, uploadId, msg, false)
+                        } else {
+                          throw new Error('error: Unexpected response');
+                        }
                     }
                 }).catch(ex => mainStore.updateAndProcessChunks(uploadId, chunkNum, {status: StatusEnum.STATUS_RETRY}));
         };
