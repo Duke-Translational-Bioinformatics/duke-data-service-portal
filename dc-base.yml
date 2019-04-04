@@ -1,10 +1,9 @@
 webapp:
   build: .
   ports:
-    - 1337:1337
+    - 31337:1337
     - 35729:35729
   volumes:
     - .:/var/www/app
   env_file:
     - portal.env
-    - auth_service.env

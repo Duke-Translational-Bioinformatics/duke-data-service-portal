@@ -49,6 +49,7 @@ class App extends React.Component {
 
     componentDidMount() {
         const { appConfig } = authStore;
+        const { appStatus } = mainStore;
         authStore.getAuthProviders();
         mainStore.getScreenSize(window.innerHeight, window.innerWidth);
         window.addEventListener('resize', this.handleResize);
@@ -59,8 +60,8 @@ class App extends React.Component {
             iphone: this.app.device.iphone
         };
         mainStore.getDeviceType(device);
+        if(!appStatus.environment) mainStore.getAppStatus();
         if(appConfig.apiToken) {
-            mainStore.getAppStatus();
             authStore.getCurrentUser();
             mainStore.getUsageDetails();
             mainStore.loadMetadataTemplates(null);
@@ -111,7 +112,7 @@ class App extends React.Component {
     };
 
     render() {
-        const {errorModals, leftMenuDrawer, phiModalOpen, toasts, showFilters, screenSize, serviceOutageNoticeModalOpen} = mainStore;
+        const {appStatus, errorModals, leftMenuDrawer, phiModalOpen, toasts, showFilters, screenSize, serviceOutageNoticeModalOpen} = mainStore;
         const {appConfig} = authStore;
         const {location} = this.props;
         let dialogWidth = screenSize.width < 580 ? {width: '100%'} : {};
