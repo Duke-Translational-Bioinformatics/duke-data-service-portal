@@ -4,7 +4,7 @@ const calcMD5 = (f, id) => {
     const blobSlice = Blob.prototype.slice;
     const chunkSize = 2097152;
     const chunks = Math.ceil(f.size / chunkSize);
-    let spark = new SparkMD5();
+    let spark = new SparkMD5.ArrayBuffer();
     let currentChunk = 0;
 
     const fr = new FileReader();
