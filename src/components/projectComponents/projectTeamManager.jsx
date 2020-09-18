@@ -27,6 +27,7 @@ class ProjectTeamManager extends React.Component {
         this.state = {
             errorText: null,
             floatingErrorText: '',
+            chosenUser: null,
             value: null
         };
         this.search = debounce(this.search ,500);
@@ -42,7 +43,8 @@ class ProjectTeamManager extends React.Component {
         let id = this.props.router.location.pathname.includes('project') ? this.props.params.id : project ? project.id : null;
         let width = window.innerWidth > 640 ? window.innerWidth*.8 : window.innerWidth;
         let autoCompleteData = users.map((user)=>{
-            return {text: user.full_name, value: user.full_name, id: user.uid}
+            const autocompleteText = user.full_name + " (" + user.uid + ")";
+            return {text: autocompleteText, value: user.full_name, id: user.uid}
         });
 
         const teams = Array.from(projectTeams.values()).map((p) => {
@@ -156,7 +158,8 @@ class ProjectTeamManager extends React.Component {
     }
 
     addTeamMember(userName, id) {
-        let  fullName = this.fullName.state.searchText;
+        let chosenUser = this.state.chosenUser;
+        let fullName = this.fullName.state.searchText;
         let role;
         switch(this.state.value){
             case 0:
@@ -186,7 +189,11 @@ class ProjectTeamManager extends React.Component {
             this.setState({floatingErrorText: "You can't add yourself or change your role"});
             return null
         } else {
-            mainStore.getUserId(fullName, id, role);
+            if (chosenUser) {
+                mainStore.addProjectMemberForUid(chosenUser.uid, id, role)
+            } else {
+                mainStore.getUserId(fullName, id, role);
+            }
             this.toggleTeamManager();
             this.setState({value: null});
         }
@@ -196,6 +203,21 @@ class ProjectTeamManager extends React.Component {
         if(e === -1) return false;
         let id = value.id;
         mainStore.registerNewUser(id);
+        // record chosenUser if it was selected from the autocomplete list
+        var chosenUser = null;
+        if (value.id) {
+            var fullName = value.text;
+            // Remove "( uuid )" from fullName text in edit box This allow users to easily changing the name after selecting a user.
+            fullName = fullName.replace(/ \(.*\)/, '');
+            chosenUser = {
+                uid: value.id,
+                fullName: fullName,
+            };
+            this.fullName.setState({
+                searchText: fullName
+            })
+        }
+        this.setState({ chosenUser: chosenUser });
     }
 
     createTeam() {
