@@ -158,8 +158,12 @@ class ProjectTeamManager extends React.Component {
     }
 
     addTeamMember(userName, id) {
-        let chosenUser = this.state.chosenUser;
         let fullName = this.fullName.state.searchText;
+        let chosenUser = null;
+        //only use chosen user if the fullName field still matches what user has typed
+        if (this.state.chosenUser && this.state.chosenUser.fullName == fullName) {
+            chosenUser = this.state.chosenUser;
+        }
         let role;
         switch(this.state.value){
             case 0:
