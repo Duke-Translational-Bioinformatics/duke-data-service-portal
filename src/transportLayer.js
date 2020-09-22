@@ -195,6 +195,9 @@ const transportLayer = {
     getUserId: (fullName) => {
         return fetch(`${DDS_BASE_URI+apiPrefix}users?full_name_contains=${fullName}&page=1&per_page=500`, getFetchParams('get', authStore.appConfig.apiToken))
     },
+    getUserByUid: (uid) => {
+        return fetch(`${DDS_BASE_URI+apiPrefix}users?username=${uid}&page=1&per_page=500`, getFetchParams('get', authStore.appConfig.apiToken))
+    },
     addProjectMember: (id, userId, role) => {
         const body = {
             'auth_role': {'id': role}
