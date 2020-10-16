@@ -760,6 +760,20 @@ export class MainStore {
             }).catch(ex => this.handleErrors(ex));
     }
 
+    @action addProjectMemberForUid(uid, id, role) {
+        this.loading = true;
+        this.transportLayer.getUserByUid(uid)
+            .then(this.checkResponse)
+            .then(response => response.json())
+            .then((json) => {
+                let userInfo = json.results.map((result) => {return result.id});
+                let getName = json.results.map((result) => {return result.full_name});
+                let userId = userInfo.toString();
+                let name = getName.toString();
+                this.addProjectMember(id, userId, role, name);
+            }).catch(ex => this.handleErrors(ex));
+    }
+
     @action addProjectTeam(id, userId, role, projectName) {
         this.transportLayer.addProjectMember(id, userId, role)
             .then(this.checkResponse)
