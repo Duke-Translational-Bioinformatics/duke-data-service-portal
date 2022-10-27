@@ -1,5 +1,8 @@
 # Duke Data Service Portal
 
+
+*** This Project is no longer being maintained ***
+
 This is a UI web portal built for use with the [Duke Data Service API](https://github.com/Duke-Translational-Bioinformatics/duke-data-service/tree/master).
 It is based on [webpack](https://github.com/webpack/webpack).
 The internal data flow is handled with [MobX](https://mobx.js.org/refguide/api.html) and routing is managed with
